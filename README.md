@@ -21,13 +21,13 @@ SHORTCOMINGS
 - DOM model does not exactly match browser DOM API right now (this will be fixed so API for DomObject heirachy will change -- avoid using 
   DOM element methods directly, instead use Attr() to change attributes)
 - Some nuances of element properties (e.g."checked") may not exactly mimic browser behavior. This isn't consistent across browsers though,
-- Doesn't currently handle text nodes (some jQuery methods do deal with them). They are parsed and stored in the DOM and output properly,
+- Doesn't completely handle text nodes (some jQuery methods do deal with them). They are parsed and stored in the DOM and output properly.
   but cannot be manipulated directly. Probably not hard to fix.
 
 HELP ME!
 
 This code has a really, really simple infrastructure for the DOM, and selector engine. 
-Implementing new selectors, methods, etc should is REALLY EASY. I wrote this 
+Implementing new selectors, methods, etc should be REALLY EASY. I wrote this 
 to serve a specific purpose, and even though it's a fun project I don't have time to work 
 on a lot of features I don't need right now. I will keep updating it over time but feel 
 free to add any new methods you want.
@@ -56,7 +56,9 @@ free to add any new methods you want.
 
 **Create a new jQuery from existing one**
 
-    var d2 = new CsQuery("<div>",d);
+    var d2 = new CsQuery("div",d);  <= First parm is a selector, second is an existing CsQuery object. Internally, this method is
+                                       used for many methods to create the return object. Like jQuery, CsQuery returns a new object
+                                       for most methods, except for methods designed to affect the DOM like "remove" and "append."
 
 **Render DOM**
 
@@ -69,7 +71,7 @@ free to add any new methods you want.
 
 **Each**
 
-    d.Find('<div>').Each((index,e) => {
+    d.Find('div').Each((index,e) => {
         if (index==1) {
            d.Remove(e);
         }
