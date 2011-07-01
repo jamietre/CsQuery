@@ -1,4 +1,4 @@
-CsQuery - C# jQuery Port
+## CsQuery - C# jQuery Port
 
 7/1/2011 - Version 0.5
 
@@ -10,18 +10,18 @@ Requires: .NET 4.0 Framework
 
 FEATURES:
 
-* Fast, non-recursive, forgiving HTML parser
-* Extensible with simple plugin model (see Server folder) 
-* Included plugin to handle form postback values (e.g. update DOM with values from form posts)
-* It's just like jQuery
+- Fast, non-recursive, forgiving HTML parser
+- Extensible with simple plugin model (see Server folder) 
+- Included plugin to handle form postback values (e.g. update DOM with values from form posts)
+- It's just like jQuery
 
 SHORTCOMINGS
 
-* Small subset of jQuery API
-* DOM model does not exactly match browser DOM API right now (this will be fixed so API for DomObject heirachy will change -- avoid using 
+- Small subset of jQuery API
+- DOM model does not exactly match browser DOM API right now (this will be fixed so API for DomObject heirachy will change -- avoid using 
   DOM element methods directly, instead use Attr() to change attributes)
-* Some nuances of element properties (e.g."checked") may not exactly mimic browser behavior. This isn't consistent across browsers though,
-* Doesn't currently handle text nodes (some jQuery methods do deal with them). They are parsed and stored in the DOM and output properly,
+- Some nuances of element properties (e.g."checked") may not exactly mimic browser behavior. This isn't consistent across browsers though,
+- Doesn't currently handle text nodes (some jQuery methods do deal with them). They are parsed and stored in the DOM and output properly,
   but cannot be manipulated directly. Probably not hard to fix.
 
 HELP ME!
@@ -33,7 +33,7 @@ on a lot of features I don't need right now. I will keep updating it over time b
 free to add any new methods you want.
 
 
-* Object Model *
+**Object Model**
 
     CsQuery               like $, a jQuery object
     Selectors             a Selectors object (contains one or more Selector objects, defines a selection set)
@@ -50,24 +50,24 @@ free to add any new methods you want.
     DomRoot               special purpose node to contain the DOM
     DomElement            a regular DOM element
 
-* Create DOM *
+**Create DOM**
 
     var d = CsQuery.Create(html);
 
-* Create a new jQuery from existing one
+**Create a new jQuery from existing one**
 
     var d2 = new CsQuery("<div>",d);
 
-* Render DOM *
+**Render DOM**
 
     string html = d.Render();
 
-* Inspect HTML *
+**Inspect HTML**
 
     d.Find('div')[0].html   <= [0] returns a DomElement object (just like a dom element in javascript). 
                                html renders its html. InnerHtml renders its inner html (just like javascript)
 
-* Each *
+**Each**
 
     d.Find('<div>').Each((index,e) => {
         if (index==1) {
@@ -75,12 +75,12 @@ free to add any new methods you want.
         }
     });
 
-* Everything Else *
+**Everything Else**
 
 Matches jQuery syntax
 
 
-* Implemented selectors so far *
+**Implemented selectors so far**
 
     :checkbox
     :checked
@@ -93,7 +93,7 @@ Matches jQuery syntax
     ,                 matches any of multiple selectors
 
 
-* Implemented methods so far: *
+**Implemented methods so far:**
 
     jQuery (create new jQuery object from existing object, HTML, or DOM element(s))
 
