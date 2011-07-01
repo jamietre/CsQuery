@@ -35,45 +35,45 @@ free to add any new methods you want.
 
 * Object Model *
 
-CsQuery               like $, a jQuery object
-Selectors             a Selectors object (contains one or more Selector objects, defines a selection set)
-Selector              a single selector
+    CsQuery               like $, a jQuery object
+    Selectors             a Selectors object (contains one or more Selector objects, defines a selection set)
+    Selector              a single selector
 
-CsQuery.Dom           The DOM. This is parsed from the html provided when a CsQuery is created. 
-                      CsQuery objects that are created as a result of methods all reference the .Dom from the uppermost object.
-CsQuery.Elements      results of the selection
-CsQuery.Selectors     current selectors applied to create the Elements
+    CsQuery.Dom           The DOM. This is parsed from the html provided when a CsQuery is created. 
+                          CsQuery objects that are created as a result of methods all reference the .Dom from the uppermost object.
+    CsQuery.Elements      results of the selection
+    CsQuery.Selectors     current selectors applied to create the Elements
 
-DomObject             abstract base class for any element in the DOM
-DomLiteral            a text node
-DomContainer          abstract class for any DOM element that can contain other elements
-DomRoot               special purpose node to contain the DOM
-DomElement            a regular DOM element
+    DomObject             abstract base class for any element in the DOM
+    DomLiteral            a text node
+    DomContainer          abstract class for any DOM element that can contain other elements
+    DomRoot               special purpose node to contain the DOM
+    DomElement            a regular DOM element
 
 * Create DOM *
 
-var d = CsQuery.Create(html);
+    var d = CsQuery.Create(html);
 
 * Create a new jQuery from existing one
 
-var d2 = new CsQuery("<div>",d);
+    var d2 = new CsQuery("<div>",d);
 
 * Render DOM *
 
-string html = d.Render();
+    string html = d.Render();
 
 * Inspect HTML *
 
-d.Find('div')[0].html   <= [0] returns a DomElement object (just like a dom element in javascript). 
-                           html renders its html. InnerHtml renders its inner html (just like javascript)
+    d.Find('div')[0].html   <= [0] returns a DomElement object (just like a dom element in javascript). 
+                               html renders its html. InnerHtml renders its inner html (just like javascript)
 
 * Each *
 
-d.Find('<div>').Each((index,e) => {
-    if (index==1) {
-       d.Remove(e);
-    }
-});
+    d.Find('<div>').Each((index,e) => {
+        if (index==1) {
+           d.Remove(e);
+        }
+    });
 
 * Everything Else *
 
@@ -82,34 +82,33 @@ Matches jQuery syntax
 
 * Implemented selectors so far *
 
-*
-:checkbox
-:checked
-:contains
-.class
-#id
-[attr]            attribute exists
-[attr="value"]    attribute equals
-[attr^="value"]   attribute starts with
-,                 matches any of multiple selectors
+    :checkbox
+    :checked
+    :contains
+    .class
+    #id
+    [attr]            attribute exists
+    [attr="value"]    attribute equals
+    [attr^="value"]   attribute starts with
+    ,                 matches any of multiple selectors
 
 
 * Implemented methods so far: *
 
-- jQuery (create new jQuery object from existing object, HTML, or DOM element(s))
+    jQuery (create new jQuery object from existing object, HTML, or DOM element(s))
 
-- Add
-- Append
-- Attr
-- Children
-- Each (uses delegates - can pass a function delegate or anonymous function)
-- Eq
-- First
-- InsertAfter
-- Is
-- Next
-- Parent
-- Prev
-- Remove
-- Val
+    Add
+    Append
+    Attr
+    Children
+    Each (uses delegates - can pass a function delegate or anonymous function)
+    Eq
+    First
+    InsertAfter
+    Is
+    Next
+    Parent
+    Prev
+    Remove
+    Val
 
