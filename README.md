@@ -84,14 +84,23 @@ Matches jQuery syntax
 
 **Implemented selectors so far**
 
-    :checkbox
-    :checked
-    :contains
+    tagname
     .class
     #id
+    
     [attr]            attribute exists
     [attr="value"]    attribute equals
     [attr^="value"]   attribute starts with
+    [attr*="value"]   attribute contains
+    
+    :button
+    :checkbox
+    :checked
+    :contains
+    :disabled
+    :enabled
+    :selected
+
     ,                 matches any of multiple selectors
 
 
@@ -103,14 +112,31 @@ Matches jQuery syntax
     Append
     Attr
     Children
+    Clone
+    Css
     Each (uses delegates - can pass a function delegate or anonymous function)
     Eq
+    Find
     First
+    Hide
     InsertAfter
     Is
     Next
     Parent
     Prev
     Remove
+    Show
     Val
 
+**Special/Nonstandard Methods:**
+    
+    Select(selector)
+    
+Because there's no notion of a global DOM in a C# app, the DOM is part of a CsQuery object. Each
+object that gets created as a result of a selection refers to the root object which was created
+from an HTML string or elements. Therefore the "Select" method is the equivalent of $('selector').
+
+    CssGet
+    
+Same as Css( name ) to get a style. This signature is used to assign Css from a JSON object in
+this implementation (as this is the more useful/more common usage).
