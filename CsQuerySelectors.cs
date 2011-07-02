@@ -51,107 +51,148 @@ namespace Jtc.CsQuery
             }
 
         } private CsQuerySelector _Current = null;
+        protected bool CurrentExists
+        {
+            get
+            {
+                return (_Current != null);
+            }
+        }
         protected void ParseSelector(string selector)
         {
             string sel = _Selector.Trim();
+            
             if (IsHtml)
             {
                 Current.Html = sel;
-                sel = String.Empty;
+                //sel = String.Empty;
+                return;
             }
-            
+            StringScanner scanner = new StringScanner(sel);
+            scanner.StopChars = " :.=#,*()[]^'\"";
+            scanner.Next();
+            while (!scanner.AtEnd) {
 
-            while (sel.Length > 0)
-            {
-                switch (sel[0])
+                switch (scanner.Current)
                 {
                     case '*':
                         Current.SelectorType |= SelectorType.All;
-                        sel = String.Empty;
+                        scanner.End();
                         break;
                     case '<':
                         // not selecting - creating html
                         Current.Html = sel;
-                        sel = String.Empty;
+                        scanner.End();
                         break;
                     case ':':
-                        sel = sel.Substring(1);
-                        string key = GetNextPart(ref sel);
+                        string key = scanner.Seek().ToLower();
                         switch (key)
                         {
                             case "checkbox":
+                            case "button":
                                 Current.SelectorType |= SelectorType.Attribute;
+                                Current.AttributeSelectorType = AttributeSelectorType.Equals;
                                 Current.AttributeName = "type";
-                                Current.AttributeValue = "checkbox";
+                                Current.AttributeValue = key;
+                                if (key == "button" && !Current.SelectorType.HasFlag(SelectorType.Tag))
+                                {
+                                    // add anothre selector for actual "button" elements
+                                    Selectors.Add(Current);
+                                    _Current = null;
+                                    Current.SelectorType |= SelectorType.Tag;
+                                    Current.Tag = "button";
+                                }
                                 break;
                             case "checked":
+                            case "selected":
+                            case "disabled":
                                 Current.SelectorType |= SelectorType.Attribute;
-                                Current.AttributeName = "checked";
+                                Current.AttributeSelectorType = AttributeSelectorType.Exists;
+                                Current.AttributeName = key;
                                 break;
                             case "contains":
                                 Current.SelectorType |= SelectorType.Contains;
-                                Current.Contains = ParseFunction(ref sel);
+                                scanner.Expect('(');
+                                scanner.AllowQuoting();
+
+                                Current.Contains = scanner.Seek(")");
+                                scanner.Next();
                                 break;
+                            case "enabled":
+                                Current.SelectorType |= SelectorType.Attribute;
+                                Current.AttributeSelectorType = AttributeSelectorType.NotExists;
+                                Current.AttributeName = "disabled";
+                                break;
+                            default:
+                                throw new Exception("Unknown selector :\""+key+"\"");
+
                         }
                         break;
                     case '.':
                         Current.SelectorType |= SelectorType.Class;
-                        sel = sel.Substring(1);
-                        Current.Class = GetNextPart(ref sel);
+                        Current.Class = scanner.Seek();
 
                         break;
                     case '#':
                         Current.SelectorType |= SelectorType.ID;
-                        sel = sel.Substring(1);
-                        Current.ID = GetNextPart(ref sel);
+                        Current.ID = scanner.Seek();
                         break;
                     case '[':
                         
-                        sel = sel.Substring(1);
-                        Current.AttributeName = GetNextPart(ref sel);
-                        if (sel != String.Empty)
-                        {
-                            Current.SelectorType |= SelectorType.Attribute;
-
-                            bool finishedSel=false;
-                            while(!finishedSel) {
-                                switch(sel[0]) {
-                                    case '=':
-                                        sel = sel.Substring(1);
-                                        Current.AttributeValue = GetNextPart(ref sel);
-                                        if (Current.AttributeSelectorType == 0)
-                                        {
-                                            Current.AttributeSelectorType = AttributeSelectorType.Equals;
-                                        }
-                                        sel = sel.Substring(1);
-                                        finishedSel = true;
-                                        break;
-                                    case '^':
-                                        Current.AttributeSelectorType = AttributeSelectorType.StartsWith;
-                                        sel = sel.Substring(1);
-                                        break;
-                                    case ']':
-                                        Current.AttributeSelectorType = AttributeSelectorType.Exists;
-                                        sel = sel.Substring(1);
-                                        finishedSel = true;
-                                        break;
-                                    }
-                                }
-                            }
+                        Current.AttributeName = scanner.Seek();
+                        Current.SelectorType |= SelectorType.Attribute;
                         
-            
+                        bool finished = false;
+                        while (!scanner.AtEnd && !finished)
+                        {
+                            switch (scanner.Current)
+                            {
+                                case '=':
+                                    scanner.AllowQuoting();
+                                    Current.AttributeValue = scanner.Seek("]");
+                                    if (Current.AttributeSelectorType == 0)
+                                    {
+                                        Current.AttributeSelectorType = AttributeSelectorType.Equals;
+                                    }
+                                    finished = true;
+                                    break;
+                                case '^':
+                                    Current.AttributeSelectorType = AttributeSelectorType.StartsWith;
+                                    break;
+                                case '*':
+                                    Current.AttributeSelectorType = AttributeSelectorType.Contains;
+                                    break;
+                                case ']':
+                                    Current.AttributeSelectorType = AttributeSelectorType.Exists;
+                                    finished = true;
+                                    break;
+                                default:
+                                    scanner.ThrowUnexpectedCharacterException("Malformed attribute selector.");
+                                    break;
+                            }
+                            scanner.Next();
+                            
+                        }
+                        if (!scanner.AtEnd)
+                        {
+                            scanner.Expect(" ,");
+                            scanner.Next();
+                        }
                         break;
                     case ',':
-                        sel = sel.Substring(1);
-                        if (_Current != null)
+                        if (!CurrentExists)
                         {
-                            Selectors.Add(_Current);
-                            _Current = null;
+                            scanner.ThrowUnexpectedCharacterException();
                         }
+                        Selectors.Add(_Current);
+                        _Current = null;
+                        scanner.Next();
+                        scanner.SkipWhitespace();
                         break;
                     default:
                         Current.SelectorType |= SelectorType.Tag;
-                        Current.Tag = GetNextPart(ref sel);
+                        scanner.Prev();
+                        Current.Tag = scanner.Seek();
                         break;
                 }
             }
@@ -240,7 +281,7 @@ namespace Jtc.CsQuery
         protected string GetNextPart(ref string sel)
         {
             string result;
-            int subPos = sel.IndexOfAny(new char[] { ' ', ':', '.', '=', '#', ',','(',')','[',']','^' });
+            int subPos = sel.IndexOfAny(new char[] { ' ', ':', '.', '=', '#', ',','*','(',')','[',']','^','\'' });
             if (subPos < 0)
             {
                 result = sel.Trim();
@@ -273,17 +314,6 @@ namespace Jtc.CsQuery
                 return Selectors[index];
             }
         }
-
-    //      var stack = new Stack<Tree<T>>();
-    //     stack.Push(root);
-    //     while (stack.Count != 0)
-    //{
-    //    var current = stack.Pop();
-    //    if (current == null) continue;
-    //    yield return current.Value;
-    //    stack.Push(current.Left);
-    //    stack.Push(current.Right);
-    //}
 
         public IEnumerable<DomElement> GetMatches(IEnumerable<DomElement> list)
         {
@@ -337,7 +367,14 @@ namespace Jtc.CsQuery
                 {
                     string value;
                     match = obj.TryGetAttribute(selector.AttributeName, out value);
-                    if (!match) continue;
+                    if (!match)
+                    {
+                        if (selector.AttributeSelectorType == AttributeSelectorType.NotExists)
+                        {
+                            match = true;
+                        }
+                        continue;
+                    }
 
                     switch(selector.AttributeSelectorType) {
                         case AttributeSelectorType.Exists:
@@ -348,7 +385,12 @@ namespace Jtc.CsQuery
                         case AttributeSelectorType.StartsWith:
                             match = value.Length >= selector.AttributeValue.Length &&
                                 value.Substring(0, selector.AttributeValue.Length) == selector.AttributeValue;
-                        break;
+                            break;
+                        case AttributeSelectorType.Contains:
+                            match = value.IndexOf(selector.AttributeValue) >= 0;
+                            break;
+                        default:
+                            throw new Exception("No AttributeSelectorType set");
                     }
                     if (!match) continue;
                 }
@@ -389,6 +431,7 @@ namespace Jtc.CsQuery
             return false;
 
         }
+
         #region IEnumerable<CsQuerySelector> Members
 
         public IEnumerator<CsQuerySelector> GetEnumerator()
@@ -407,6 +450,7 @@ namespace Jtc.CsQuery
 
         #endregion
     }
+    
     [Flags]
     public enum SelectorType
     {
@@ -421,10 +465,16 @@ namespace Jtc.CsQuery
     {
         Exists=1,
         Equals=2,
-        StartsWith=3
+        StartsWith=3,
+        Contains=4,
+        NotExists=5
     }
     public class CsQuerySelector
     {
+        public CsQuerySelector()
+        {
+            AttributeSelectorType = AttributeSelectorType.Equals;
+        }
         public SelectorType SelectorType { get; set; }
         public AttributeSelectorType AttributeSelectorType { get; set; }
         public string Html = null;
