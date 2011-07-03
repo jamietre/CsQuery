@@ -101,7 +101,9 @@ Matches jQuery syntax
     :enabled
     :selected
 
-    ,                 matches any of multiple selectors
+    selectorA, selectorB 	cumulative selector
+    selectorA selectorB		descendant selector
+    selecotrA > selectorB	child selector
 
 
 **Implemented methods so far:**

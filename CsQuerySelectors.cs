@@ -51,13 +51,7 @@ namespace Jtc.CsQuery
             }
 
         } private CsQuerySelector _Current = null;
-        protected bool CurrentExists
-        {
-            get
-            {
-                return (_Current != null);
-            }
-        }
+        StringScanner scanner;
         protected void ParseSelector(string selector)
         {
             string sel = _Selector.Trim();
@@ -68,14 +62,16 @@ namespace Jtc.CsQuery
                 //sel = String.Empty;
                 return;
             }
-            StringScanner scanner = new StringScanner(sel);
-            scanner.StopChars = " :.=#,*()[]^'\"";
+            scanner = new StringScanner(sel);
+            scanner.StopChars = " >:.=#$|,*()[]^'\"";
             scanner.Next();
+            StartNewSelector();
             while (!scanner.AtEnd) {
 
                 switch (scanner.Current)
                 {
                     case '*':
+
                         Current.SelectorType |= SelectorType.All;
                         scanner.End();
                         break;
@@ -96,9 +92,7 @@ namespace Jtc.CsQuery
                                 Current.AttributeValue = key;
                                 if (key == "button" && !Current.SelectorType.HasFlag(SelectorType.Tag))
                                 {
-                                    // add anothre selector for actual "button" elements
-                                    Selectors.Add(Current);
-                                    _Current = null;
+                                    StartNewSelector(CombinatorType.Cumulative);
                                     Current.SelectorType |= SelectorType.Tag;
                                     Current.Tag = "button";
                                 }
@@ -162,6 +156,15 @@ namespace Jtc.CsQuery
                                 case '*':
                                     Current.AttributeSelectorType = AttributeSelectorType.Contains;
                                     break;
+                                case '~':
+                                    Current.AttributeSelectorType = AttributeSelectorType.ContainsWord;
+                                    break;
+                                case '$':
+                                    Current.AttributeSelectorType = AttributeSelectorType.EndsWith;
+                                    break;
+                                case '!':
+                                    Current.AttributeSelectorType = AttributeSelectorType.NotEquals;
+                                    break;
                                 case ']':
                                     Current.AttributeSelectorType = AttributeSelectorType.Exists;
                                     finished = true;
@@ -173,21 +176,36 @@ namespace Jtc.CsQuery
                             scanner.Next();
                             
                         }
-                        if (!scanner.AtEnd)
-                        {
-                            scanner.Expect(" ,");
-                            scanner.Next();
-                        }
+                        //if (!scanner.AtEnd)
+                        //{
+                        //    scanner.Expect(" ,");
+                        //    scanner.Next();
+                        //}
                         break;
                     case ',':
-                        if (!CurrentExists)
+                        // thre should be a selector already
+                        StartNewSelector(CombinatorType.Cumulative);
+                        scanner.SkipWhitespace();
+                        scanner.Next();
+                        if (Selectors.Count==0)
                         {
                             scanner.ThrowUnexpectedCharacterException();
                         }
-                        Selectors.Add(_Current);
-                        _Current = null;
-                        scanner.Next();
+                        break;
+                    case '>':
+                        StartNewSelector(CombinatorType.Child);
+
+                        if (Selectors.Count == 0)
+                        {
+                            scanner.ThrowUnexpectedCharacterException();
+                        }
                         scanner.SkipWhitespace();
+                        scanner.Next();
+                        break;
+                    case ' ':
+                        StartNewSelector(CombinatorType.Descendant);
+                        scanner.SkipWhitespace();
+                        scanner.Next();
                         break;
                     default:
                         Current.SelectorType |= SelectorType.Tag;
@@ -196,10 +214,35 @@ namespace Jtc.CsQuery
                         break;
                 }
             }
-            if (_Current != null)
+            StartNewSelector();
+
+        }
+        protected void StartNewSelector()
+        {
+            // First selector should always be "cumulative"
+            if (Selectors.Count == 0)
+            {
+                StartNewSelector(CombinatorType.Cumulative);
+            }
+            else
+            {
+                StartNewSelector(CombinatorType.Descendant);
+            }
+
+        }
+        /// <summary>
+        /// Start a new selector. If current one exists and is complete, 
+        /// </summary>
+        /// <param name="type"></param>
+        protected void StartNewSelector(CombinatorType type)
+        {
+            if (_Current != null && Current.IsComplete)
             {
                 Selectors.Add(Current);
+                _Current = null;
             }
+
+            Current.CombinatorType = type;
         }
         protected string ParseFunction(ref string sel)
         {
@@ -315,99 +358,165 @@ namespace Jtc.CsQuery
             }
         }
 
+        /// <summary>
+        /// Primary selection engine: returns a subset of "list" based on selectors.
+        /// This can be optimized -- class and id selectors should be added to a global hashtable when the dom is built
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="recurse"></param>
+        /// <returns></returns>
         public IEnumerable<DomElement> GetMatches(IEnumerable<DomElement> list)
         {
             // Maintain a hashset of every element already searched. Since result sets frequently contain items which are
             // children of other items in the list, we would end up searching the tree repeatedly
-            HashSet<DomElement> uniqueElements = new HashSet<DomElement>();
+            HashSet<DomElement> uniqueElements=null;
             
-            var stack = new Stack<DomElement>();
+            Stack<DomElement> stack = null;
+            IEnumerable<DomElement> curList = list;
+            HashSet<DomElement> temporaryResults = new HashSet<DomElement>();
 
-            foreach (var e in list)
+            bool simple = Selectors.Count == 1;
+            for (int i=0;i<Selectors.Count;i++)
             {
-                if (uniqueElements.Add(e))
+                var selector = Selectors[i];
+                // The unique list has to be reset for each sub-selector
+                uniqueElements = new HashSet<DomElement>();
+                // For progressive combinatores, start with the previous round's results for each successive selection.
+                // Otherwise always search the original heirarchy and add to results (cumulate)
+                if (selector.CombinatorType != CombinatorType.Cumulative)
                 {
-                    stack.Push(e);
-                    while (stack.Count != 0)
+                    curList = temporaryResults;
+                    temporaryResults = new HashSet<DomElement>();
+                }
+
+                stack = new Stack<DomElement>();
+                foreach (var e in curList)
+                {
+                    if (uniqueElements.Add(e))
                     {
-                        var current = stack.Pop();
-                        if (Matches(current)) yield return current;
-                        for (int i = current._Children.Count - 1; i >= 0; i--)
+                        stack.Push(e);
+                        while (stack.Count != 0)
                         {
-                            DomObject obj = current._Children[i];
-                            if (obj is DomElement && uniqueElements.Add((DomElement)obj))
+                            var current = stack.Pop();
+                            if (Matches(selector, current))
                             {
-                                stack.Push((DomElement)obj);
+                                if (simple)
+                                {
+                                    yield return current;
+                                }
+                                else
+                                {
+                                    temporaryResults.Add(current);
+                                }
+                            }
+                            // For child -never go below first level.
+                            if (selector.CombinatorType != CombinatorType.Child || stack.Count==0)
+                            {
+                                for (int j = current._Children.Count - 1; j >= 0; j--)
+                                {
+                                    DomObject obj = current._Children[j];
+                                    if (obj is DomElement && uniqueElements.Add((DomElement)obj))
+                                    {
+                                        stack.Push((DomElement)obj);
+                                    }
+                                }
                             }
                         }
                     }
                 }
+
+            }
+            if (!simple)
+            {
+                foreach (var e in temporaryResults)
+                {
+                    yield return e;
+                }
             }
         }
-        protected bool Matches(DomElement obj) 
+        protected bool Matches(CsQuerySelector selector,DomElement obj) 
         {
             bool match = true;
-            foreach (CsQuerySelector selector in this)
+            if (selector.SelectorType.HasFlag(SelectorType.All))
             {
-                if (selector.SelectorType.HasFlag(SelectorType.All))
-                {
-                    break;
-                }
-                if (selector.SelectorType.HasFlag(SelectorType.Tag) && 
-                    !String.Equals(obj.Tag, selector.Tag, StringComparison.CurrentCultureIgnoreCase))
-                {
-                    match = false; continue;
-                }
-                if (selector.SelectorType.HasFlag(SelectorType.ID) &&
-                    selector.ID != obj.ID) 
-                {
-                    match = false; continue;
-                }
-                if (selector.SelectorType.HasFlag(SelectorType.Attribute))
-                {
-                    string value;
-                    match = obj.TryGetAttribute(selector.AttributeName, out value);
-                    if (!match)
-                    {
-                        if (selector.AttributeSelectorType == AttributeSelectorType.NotExists)
-                        {
-                            match = true;
-                        }
-                        continue;
-                    }
-
-                    switch(selector.AttributeSelectorType) {
-                        case AttributeSelectorType.Exists:
-                            break;
-                        case AttributeSelectorType.Equals:
-                            match = selector.AttributeValue == value;
-                            break;
-                        case AttributeSelectorType.StartsWith:
-                            match = value.Length >= selector.AttributeValue.Length &&
-                                value.Substring(0, selector.AttributeValue.Length) == selector.AttributeValue;
-                            break;
-                        case AttributeSelectorType.Contains:
-                            match = value.IndexOf(selector.AttributeValue) >= 0;
-                            break;
-                        default:
-                            throw new Exception("No AttributeSelectorType set");
-                    }
-                    if (!match) continue;
-                }
-                if (selector.SelectorType.HasFlag(SelectorType.Class) &&
-                    !obj.HasClass(selector.Class))
-                {
-                    match = false; continue;
-                }
-                if (selector.SelectorType.HasFlag(SelectorType.Contains) &&
-                    !ContainsText(obj, selector.Contains)) 
-                {
-                    match = false; continue;
-                }
-                match = true;
-                break;
+                return true;
             }
+            if (selector.SelectorType.HasFlag(SelectorType.Tag) && 
+                !String.Equals(obj.Tag, selector.Tag, StringComparison.CurrentCultureIgnoreCase))
+            {
+                //match = false; continue;
+                return false;
+            }
+            if (selector.SelectorType.HasFlag(SelectorType.ID) &&
+                selector.ID != obj.ID) 
+            {
+                //match = false; continue;
+                return false;
+            }
+            if (selector.SelectorType.HasFlag(SelectorType.Attribute))
+            {
+                string value;
+                match = obj.TryGetAttribute(selector.AttributeName, out value);
+                if (!match)
+                {
+                    if (selector.AttributeSelectorType.IsOneOf(AttributeSelectorType.NotExists, AttributeSelectorType.NotEquals))
+                    {
+                        match = true;
+                    }
+                    return match;
+                }
+
+                switch(selector.AttributeSelectorType) {
+                    case AttributeSelectorType.Exists:
+                        break;
+                    case AttributeSelectorType.Equals:
+                        match = selector.AttributeValue == value;
+                        break;
+                    case AttributeSelectorType.StartsWith:
+                        match = value.Length >= selector.AttributeValue.Length &&
+                            value.Substring(0, selector.AttributeValue.Length) == selector.AttributeValue;
+                        break;
+                    case AttributeSelectorType.Contains:
+                        match = value.IndexOf(selector.AttributeValue) >= 0;
+                        break;
+                    case AttributeSelectorType.ContainsWord:
+                        match = ContainsWord(value,selector.AttributeValue);
+                        break;
+                    case AttributeSelectorType.NotEquals:
+                        match = value.IndexOf(selector.AttributeValue) == 0;
+                        break;
+                    case AttributeSelectorType.EndsWith:
+                        int len = selector.AttributeValue.Length;
+                        match = value.Length >= len &&
+                            value.Substring(value.Length - len) == selector.AttributeValue;
+                        break;
+                    default:
+                        throw new Exception("No AttributeSelectorType set");
+                }
+                if (!match)
+                {
+                    return false;
+                }
+            }
+            if (selector.SelectorType.HasFlag(SelectorType.Class) &&
+                !obj.HasClass(selector.Class))
+            {
+                match = false; 
+                return match;
+            }
+            if (selector.SelectorType.HasFlag(SelectorType.Contains) &&
+                !ContainsText(obj, selector.Contains)) 
+            {
+                match = false; 
+                return match;
+            }
+            match = true;
             return match;
+        }
+        protected bool ContainsWord(string text, string word)
+        {
+            HashSet<string> words = new HashSet<string>(word.Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+            return words.Contains(text);
         }
         protected bool ContainsText(DomElement obj, string text)
         {
@@ -467,16 +576,37 @@ namespace Jtc.CsQuery
         Equals=2,
         StartsWith=3,
         Contains=4,
-        NotExists=5
+        NotExists=5,
+        ContainsWord=6,
+        EndsWith=7,
+        NotEquals=8,
+
+
+    }
+    public enum CombinatorType
+    {
+        Cumulative = 1,
+        Descendant = 2,
+        Child = 3
     }
     public class CsQuerySelector
     {
         public CsQuerySelector()
         {
+            SelectorType=0;
             AttributeSelectorType = AttributeSelectorType.Equals;
+            CombinatorType = CombinatorType.Descendant;
         }
         public SelectorType SelectorType { get; set; }
         public AttributeSelectorType AttributeSelectorType { get; set; }
+        public CombinatorType CombinatorType { get; set; }
+        public bool IsComplete
+        {
+            get
+            {
+                return SelectorType != 0;
+            }
+        }
         public string Html = null;
 
 

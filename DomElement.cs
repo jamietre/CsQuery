@@ -230,7 +230,6 @@ namespace Jtc.CsQuery
         {
             DomElement e = new DomElement();
             e.Tag = Tag;
-            e.Type = Type;
             
             e._Styles = new Dictionary<string, string>(_Styles);
             e._Classes = new HashSet<string>(_Classes);
