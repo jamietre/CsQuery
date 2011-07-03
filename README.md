@@ -1,5 +1,12 @@
 ## CsQuery - C# jQuery Port
 
+
+7/3/2011 - Version 0.6
+
+- Added a bunch of selectors
+- Remodel the engine to support descendent/child selectors
+- Changes to the DOM objets to better support cloning, css and style transparently
+
 7/1/2011 - Version 0.5
 
 (c) 2011 James Treworgy
@@ -92,6 +99,9 @@ Matches jQuery syntax
     [attr="value"]    attribute equals
     [attr^="value"]   attribute starts with
     [attr*="value"]   attribute contains
+    [attr~="value"]   attribute contains word
+    [attr!="value"]   attribute not equal (nor does not exist)
+    [attr$="value"]   attribute ends with
     
     :button
     :checkbox
