@@ -8,7 +8,7 @@ using Jtc.ExtensionMethods;
 namespace Jtc.CsQuery
 {
     public class CsQuerySelectors : IEnumerable<CsQuerySelector>
-    {
+    { 
         protected int CurrentPos = 0;
 
         public string Selector
@@ -23,7 +23,7 @@ namespace Jtc.CsQuery
                 ParseSelector(value);
             }
         } protected string _Selector = null;
-        public CsQuerySelectors(string selector)
+        public CsQuerySelectors(string selector)   
         {
             Selector = selector;
         }
@@ -65,24 +65,15 @@ namespace Jtc.CsQuery
             scanner = new StringScanner(sel);
             scanner.StopChars = " >:.=#$|,*()[]^'\"";
             scanner.Next();
-<<<<<<< HEAD
             
             StartNewSelector();
             
-=======
-            StartNewSelector();
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
             while (!scanner.AtEnd) {
 
                 switch (scanner.Current)
                 {
                     case '*':
-<<<<<<< HEAD
                         Current.SelectorType = SelectorType.All;
-=======
-
-                        Current.SelectorType |= SelectorType.All;
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
                         scanner.End();
                         break;
                     case '<':
@@ -96,15 +87,11 @@ namespace Jtc.CsQuery
                         {
                             case "checkbox":
                             case "button":
-<<<<<<< HEAD
                             case "file":
-=======
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
                                 Current.SelectorType |= SelectorType.Attribute;
                                 Current.AttributeSelectorType = AttributeSelectorType.Equals;
                                 Current.AttributeName = "type";
                                 Current.AttributeValue = key;
-<<<<<<< HEAD
 
                                 if (key == "button" && !Current.SelectorType.HasFlag(SelectorType.Tag))
                                 {
@@ -116,14 +103,6 @@ namespace Jtc.CsQuery
                                 {
                                     FinishSelector();
                                 }
-=======
-                                if (key == "button" && !Current.SelectorType.HasFlag(SelectorType.Tag))
-                                {
-                                    StartNewSelector(CombinatorType.Cumulative);
-                                    Current.SelectorType |= SelectorType.Tag;
-                                    Current.Tag = "button";
-                                }
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
                                 break;
                             case "checked":
                             case "selected":
@@ -131,7 +110,6 @@ namespace Jtc.CsQuery
                                 Current.SelectorType |= SelectorType.Attribute;
                                 Current.AttributeSelectorType = AttributeSelectorType.Exists;
                                 Current.AttributeName = key;
-<<<<<<< HEAD
                                 FinishSelector();
                                 break;
                             case "enabled":
@@ -139,13 +117,10 @@ namespace Jtc.CsQuery
                                 Current.AttributeSelectorType = AttributeSelectorType.NotExists;
                                 Current.AttributeName = "disabled";
                                 FinishSelector();
-=======
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
                                 break;
                             case "contains":
                                 StartNewSelector();
                                 Current.SelectorType |= SelectorType.Contains;
-<<<<<<< HEAD
                                 Current.TraversalType = TraversalType.Descendent;
                                 scanner.Expect('(');
                                 scanner.AllowQuoting();
@@ -181,18 +156,6 @@ namespace Jtc.CsQuery
                                 StartNewPositionSelector();
                                 Current.PositionType = PositionType.Last;
                                 FinishSelector();
-=======
-                                scanner.Expect('(');
-                                scanner.AllowQuoting();
-
-                                Current.Contains = scanner.Seek(")");
-                                scanner.Next();
-                                break;
-                            case "enabled":
-                                Current.SelectorType |= SelectorType.Attribute;
-                                Current.AttributeSelectorType = AttributeSelectorType.NotExists;
-                                Current.AttributeName = "disabled";
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
                                 break;
                             default:
                                 throw new Exception("Unknown selector :\""+key+"\"");
@@ -200,7 +163,6 @@ namespace Jtc.CsQuery
                         }
                         break;
                     case '.':
-<<<<<<< HEAD
                         Current.SelectorType = SelectorType.Class;
                         Current.Class = scanner.Seek();
                         StartNewSelector();
@@ -210,24 +172,11 @@ namespace Jtc.CsQuery
                         Current.SelectorType = SelectorType.ID;
                         Current.ID = scanner.Seek();
                         StartNewSelector();
-=======
-                        Current.SelectorType |= SelectorType.Class;
-                        Current.Class = scanner.Seek();
-
-                        break;
-                    case '#':
-                        Current.SelectorType |= SelectorType.ID;
-                        Current.ID = scanner.Seek();
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
                         break;
                     case '[':
                         
                         Current.AttributeName = scanner.Seek();
-<<<<<<< HEAD
                         Current.SelectorType = SelectorType.Attribute;
-=======
-                        Current.SelectorType |= SelectorType.Attribute;
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
                         
                         bool finished = false;
                         while (!scanner.AtEnd && !finished)
@@ -276,29 +225,13 @@ namespace Jtc.CsQuery
                         //}
                         break;
                     case ',':
-<<<<<<< HEAD
                         
                         StartNewSelector(CombinatorType.Cumulative);
                         // thre should be a selector closed from the previous line
-=======
-                        // thre should be a selector already
-                        StartNewSelector(CombinatorType.Cumulative);
-                        scanner.SkipWhitespace();
-                        scanner.Next();
-                        if (Selectors.Count==0)
-                        {
-                            scanner.ThrowUnexpectedCharacterException();
-                        }
-                        break;
-                    case '>':
-                        StartNewSelector(CombinatorType.Child);
-
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
                         if (Selectors.Count == 0)
                         {
                             scanner.ThrowUnexpectedCharacterException();
                         }
-<<<<<<< HEAD
 
                         scanner.SkipWhitespace();
                         scanner.Next();
@@ -315,13 +248,10 @@ namespace Jtc.CsQuery
                         Current.TraversalType = TraversalType.Child;
                         Current.ChildDepth = 1;
 
-=======
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
                         scanner.SkipWhitespace();
                         scanner.Next();
                         break;
                     case ' ':
-<<<<<<< HEAD
                         // if a ">" or "," is later found, it will be overridden.
                         StartNewSelector(CombinatorType.Chained);
                         Current.TraversalType = TraversalType.Descendent;
@@ -332,20 +262,11 @@ namespace Jtc.CsQuery
                         break;
                     default:
                         Current.SelectorType = SelectorType.Tag;
-=======
-                        StartNewSelector(CombinatorType.Descendant);
-                        scanner.SkipWhitespace();
-                        scanner.Next();
-                        break;
-                    default:
-                        Current.SelectorType |= SelectorType.Tag;
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
                         scanner.Prev();
                         Current.Tag = scanner.Seek();
                         break;
                 }
             }
-<<<<<<< HEAD
             // Close any open selectors
             StartNewSelector();
 
@@ -373,48 +294,19 @@ namespace Jtc.CsQuery
         }
         /// <summary>
         /// Start a new selector. If current one exists and is complete, it is closed first.
-=======
-            StartNewSelector();
-
-        }
-        protected void StartNewSelector()
-        {
-            // First selector should always be "cumulative"
-            if (Selectors.Count == 0)
-            {
-                StartNewSelector(CombinatorType.Cumulative);
-            }
-            else
-            {
-                StartNewSelector(CombinatorType.Descendant);
-            }
-
-        }
-        /// <summary>
-        /// Start a new selector. If current one exists and is complete, 
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
         /// </summary>
         /// <param name="type"></param>
         protected void StartNewSelector(CombinatorType type)
         {
-<<<<<<< HEAD
             CombinatorType defaultType = CombinatorType.Chained;
-=======
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
             if (_Current != null && Current.IsComplete)
             {
                 Selectors.Add(Current);
                 _Current = null;
-<<<<<<< HEAD
                 defaultType = CombinatorType.Chained;
             }
 
             Current.CombinatorType = type==0?defaultType : type;
-=======
-            }
-
-            Current.CombinatorType = type;
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
         }
         protected string ParseFunction(ref string sel)
         {
@@ -603,13 +495,10 @@ namespace Jtc.CsQuery
             public DomElement Element { get { return (DomElement)Object; } }
         }
 
-<<<<<<< HEAD
         public IEnumerable<DomObject> GetMatches(IEnumerable<DomObject> list)
         {
             return GetMatches(list, list, 0);
         }
-=======
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
         /// <summary>
         /// Primary selection engine: returns a subset of "list" based on selectors.
         /// This can be optimized -- class and id selectors should be added to a global hashtable when the dom is built
@@ -617,7 +506,6 @@ namespace Jtc.CsQuery
         /// <param name="list"></param>
         /// <param name="recurse"></param>
         /// <returns></returns>
-<<<<<<< HEAD
         public IEnumerable<DomObject> GetMatches(IEnumerable<DomObject> baseList, IEnumerable<DomObject> list, int firstSelector)
         {
             // Maintain a hashset of every element already searched. Since result sets frequently contain items which are
@@ -672,38 +560,10 @@ namespace Jtc.CsQuery
 
                 stack = new Stack<MatchElement>();
                 int depth = 0;
-=======
-        public IEnumerable<DomElement> GetMatches(IEnumerable<DomElement> list)
-        {
-            // Maintain a hashset of every element already searched. Since result sets frequently contain items which are
-            // children of other items in the list, we would end up searching the tree repeatedly
-            HashSet<DomElement> uniqueElements=null;
-            
-            Stack<DomElement> stack = null;
-            IEnumerable<DomElement> curList = list;
-            HashSet<DomElement> temporaryResults = new HashSet<DomElement>();
-
-            bool simple = Selectors.Count == 1;
-            for (int i=0;i<Selectors.Count;i++)
-            {
-                var selector = Selectors[i];
-                // The unique list has to be reset for each sub-selector
-                uniqueElements = new HashSet<DomElement>();
-                // For progressive combinatores, start with the previous round's results for each successive selection.
-                // Otherwise always search the original heirarchy and add to results (cumulate)
-                if (selector.CombinatorType != CombinatorType.Cumulative)
-                {
-                    curList = temporaryResults;
-                    temporaryResults = new HashSet<DomElement>();
-                }
-
-                stack = new Stack<DomElement>();
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
                 foreach (var e in curList)
                 {
                     if (uniqueElements.Add(e))
                     {
-<<<<<<< HEAD
                         stack.Push(new MatchElement(e,depth));
                         int matchIndex = 0;
                         while (stack.Count != 0)
@@ -734,32 +594,6 @@ namespace Jtc.CsQuery
                                     if (obj is DomElement && uniqueElements.Add((DomElement)obj))
                                     {
                                         stack.Push(new MatchElement(obj,current.Depth+1));
-=======
-                        stack.Push(e);
-                        while (stack.Count != 0)
-                        {
-                            var current = stack.Pop();
-                            if (Matches(selector, current))
-                            {
-                                if (simple)
-                                {
-                                    yield return current;
-                                }
-                                else
-                                {
-                                    temporaryResults.Add(current);
-                                }
-                            }
-                            // For child -never go below first level.
-                            if (selector.CombinatorType != CombinatorType.Child || stack.Count==0)
-                            {
-                                for (int j = current._Children.Count - 1; j >= 0; j--)
-                                {
-                                    DomObject obj = current._Children[j];
-                                    if (obj is DomElement && uniqueElements.Add((DomElement)obj))
-                                    {
-                                        stack.Push((DomElement)obj);
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
                                     }
                                 }
                             }
@@ -767,7 +601,6 @@ namespace Jtc.CsQuery
                     }
                 }
 
-<<<<<<< HEAD
 
             }
             // for complex cases, return each final result
@@ -816,36 +649,12 @@ namespace Jtc.CsQuery
 
             if (selector.SelectorType.HasFlag(SelectorType.Tag) &&
                 !String.Equals(elm.Tag, selector.Tag, StringComparison.CurrentCultureIgnoreCase))
-=======
-            }
-            if (!simple)
-            {
-                foreach (var e in temporaryResults)
-                {
-                    yield return e;
-                }
-            }
-        }
-        protected bool Matches(CsQuerySelector selector,DomElement obj) 
-        {
-            bool match = true;
-            if (selector.SelectorType.HasFlag(SelectorType.All))
-            {
-                return true;
-            }
-            if (selector.SelectorType.HasFlag(SelectorType.Tag) && 
-                !String.Equals(obj.Tag, selector.Tag, StringComparison.CurrentCultureIgnoreCase))
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
             {
                 //match = false; continue;
                 return false;
             }
             if (selector.SelectorType.HasFlag(SelectorType.ID) &&
-<<<<<<< HEAD
                 selector.ID != elm.ID) 
-=======
-                selector.ID != obj.ID) 
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
             {
                 //match = false; continue;
                 return false;
@@ -853,11 +662,7 @@ namespace Jtc.CsQuery
             if (selector.SelectorType.HasFlag(SelectorType.Attribute))
             {
                 string value;
-<<<<<<< HEAD
                 match = elm.TryGetAttribute(selector.AttributeName, out value);
-=======
-                match = obj.TryGetAttribute(selector.AttributeName, out value);
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
                 if (!match)
                 {
                     if (selector.AttributeSelectorType.IsOneOf(AttributeSelectorType.NotExists, AttributeSelectorType.NotEquals))
@@ -865,7 +670,6 @@ namespace Jtc.CsQuery
                         match = true;
                     }
                     return match;
-<<<<<<< HEAD
                 }
 
                 switch(selector.AttributeSelectorType) {
@@ -988,61 +792,6 @@ namespace Jtc.CsQuery
         {
             HashSet<string> words = new HashSet<string>(word.Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
             return words.Contains(text);
-=======
-                }
-
-                switch(selector.AttributeSelectorType) {
-                    case AttributeSelectorType.Exists:
-                        break;
-                    case AttributeSelectorType.Equals:
-                        match = selector.AttributeValue == value;
-                        break;
-                    case AttributeSelectorType.StartsWith:
-                        match = value.Length >= selector.AttributeValue.Length &&
-                            value.Substring(0, selector.AttributeValue.Length) == selector.AttributeValue;
-                        break;
-                    case AttributeSelectorType.Contains:
-                        match = value.IndexOf(selector.AttributeValue) >= 0;
-                        break;
-                    case AttributeSelectorType.ContainsWord:
-                        match = ContainsWord(value,selector.AttributeValue);
-                        break;
-                    case AttributeSelectorType.NotEquals:
-                        match = value.IndexOf(selector.AttributeValue) == 0;
-                        break;
-                    case AttributeSelectorType.EndsWith:
-                        int len = selector.AttributeValue.Length;
-                        match = value.Length >= len &&
-                            value.Substring(value.Length - len) == selector.AttributeValue;
-                        break;
-                    default:
-                        throw new Exception("No AttributeSelectorType set");
-                }
-                if (!match)
-                {
-                    return false;
-                }
-            }
-            if (selector.SelectorType.HasFlag(SelectorType.Class) &&
-                !obj.HasClass(selector.Class))
-            {
-                match = false; 
-                return match;
-            }
-            if (selector.SelectorType.HasFlag(SelectorType.Contains) &&
-                !ContainsText(obj, selector.Contains)) 
-            {
-                match = false; 
-                return match;
-            }
-            match = true;
-            return match;
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
-        }
-        protected bool ContainsWord(string text, string word)
-        {
-            HashSet<string> words = new HashSet<string>(word.Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-            return words.Contains(text);
         }
         protected bool ContainsText(DomElement obj, string text)
         {
@@ -1106,7 +855,6 @@ namespace Jtc.CsQuery
         NotExists=5,
         ContainsWord=6,
         EndsWith=7,
-<<<<<<< HEAD
         NotEquals=8
     }
     
@@ -1130,17 +878,6 @@ namespace Jtc.CsQuery
         First = 4,
         Last = 5,
         Index = 6
-=======
-        NotEquals=8,
-
-
-    }
-    public enum CombinatorType
-    {
-        Cumulative = 1,
-        Descendant = 2,
-        Child = 3
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
     }
     public class CsQuerySelector
     {
@@ -1148,13 +885,9 @@ namespace Jtc.CsQuery
         {
             SelectorType=0;
             AttributeSelectorType = AttributeSelectorType.Equals;
-<<<<<<< HEAD
             CombinatorType = CombinatorType.Chained;
             TraversalType = TraversalType.All;
             PositionType = PositionType.All;
-=======
-            CombinatorType = CombinatorType.Descendant;
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
         }
         public SelectorType SelectorType { get; set; }
         public AttributeSelectorType AttributeSelectorType { get; set; }

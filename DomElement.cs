@@ -148,11 +148,7 @@ namespace Jtc.CsQuery
         /// Add all elements as children of this element
         /// </summary>
         /// <param name="elements"></param>
-<<<<<<< HEAD
         public virtual void AddRange(IEnumerable<DomObject> elements)
-=======
-        public void AddRange(IEnumerable<DomObject> elements)
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
         {
             foreach (DomObject e in elements)
             {
@@ -197,7 +193,6 @@ namespace Jtc.CsQuery
                 Remove(_Children[i]);
             }
         }
-    
     }
 
     public class DomRoot : DomContainer
@@ -382,13 +377,10 @@ namespace Jtc.CsQuery
             }
             return null;
         }
-<<<<<<< HEAD
                    // move to imp
             //            List<DomElement> list;
 //            foreach (string c in element.
 //            if (SelectorXref.TryGetValue(
-=======
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
         public void SetAttribute(string name, string value)
         {
             string lowName = name.ToLower();
@@ -473,11 +465,7 @@ namespace Jtc.CsQuery
             return _Attributes.TryGetValue(name.ToLower(),out  value);
 
         }
-<<<<<<< HEAD
         
-=======
-
->>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
         public string Style
         {
             get
