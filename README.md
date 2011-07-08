@@ -119,6 +119,7 @@ Matches jQuery syntax
     [attr!="value"]   attribute not equal (nor does not exist)
     [attr$="value"]   attribute ends with
     
+<<<<<<< HEAD
     :button           type="button" or <button>
     :checkbox         type="checkbox"
     :checked          checked
@@ -131,6 +132,14 @@ Matches jQuery syntax
     :file
     :last
     :odd
+=======
+    :button
+    :checkbox
+    :checked
+    :contains
+    :disabled
+    :enabled
+>>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
     :selected
 
     selectorA, selectorB 	cumulative selector

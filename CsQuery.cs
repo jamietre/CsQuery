@@ -141,6 +141,14 @@ namespace Jtc.CsQuery
             DomRoot = csq;
         }
 
+<<<<<<< HEAD
+=======
+        protected void CreateDomImpl(string html)
+        {
+            Dom.Clear();
+            Dom.AddRange(ElementFactory.CreateObjects(html));
+        }
+>>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
 
 
 
@@ -347,6 +355,7 @@ namespace Jtc.CsQuery
         /// <param name="elements"></param>
         /// <returns></returns>
         public CsQuery Add(IEnumerable<DomElement> elements)
+<<<<<<< HEAD
         {
             CsQuery res = new CsQuery(this);
             res.AddSelectionRange(elements);
@@ -359,6 +368,20 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery Add(string html)
         {
+=======
+        {
+            CsQuery res = new CsQuery(Elements);
+            res.Dom.AddRange(elements);
+            return this;
+        }
+        /// <summary>
+        /// Add elements to the set of matched elements from an HTML fragment. Returns a new jQuery object.
+        /// </summary>
+        /// <param name="html"></param>
+        /// <returns></returns>
+        public CsQuery Add(string html)
+        {
+>>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
             return Add(ElementFactory.CreateElements(html));
         }
 
@@ -370,16 +393,26 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery Append(string content)
         {
+<<<<<<< HEAD
             foreach (DomElement obj in SelectedElements)
+=======
+            foreach (DomElement obj in Elements)
+>>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
             {
                 obj.AddRange(ElementFactory.CreateObjects(content));
             }
             return this;
         }
         public CsQuery Append(CsQuery elements) {
+<<<<<<< HEAD
             foreach (var obj in SelectedElements)
             {
                 foreach (var e in elements.Selection )
+=======
+            foreach (var obj in Elements)
+            {
+                foreach (var e in elements)
+>>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
                 {
                     obj.Add(e);
                 }
@@ -397,7 +430,11 @@ namespace Jtc.CsQuery
         public CsQuery Append(Func<int, string, string> func)
         {
             int index = 0;
+<<<<<<< HEAD
             foreach (DomElement obj in SelectedElements)
+=======
+            foreach (DomElement obj in Elements)
+>>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
             {
                 string clientValue = func(index, obj.InnerHtml);
                 IEnumerable<DomObject> objects = ElementFactory.CreateObjects(clientValue);
@@ -443,7 +480,11 @@ namespace Jtc.CsQuery
             {
                 val = value.ToString();
             }
+<<<<<<< HEAD
             foreach (DomElement e in SelectedElements)
+=======
+            foreach (DomElement e in Elements)
+>>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
             {
                 if (remove)
                 {
@@ -467,7 +508,11 @@ namespace Jtc.CsQuery
         public CsQuery Children(string selector)
         {
             List<DomElement> list = new List<DomElement>();
+<<<<<<< HEAD
             foreach (DomElement obj in SelectedElements)
+=======
+            foreach (DomElement obj in Elements)
+>>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
             {
                 list.AddRange(obj.Elements);
             }
@@ -482,11 +527,19 @@ namespace Jtc.CsQuery
         public CsQuery Clone()
         {
             CsQuery csq = new CsQuery();
+<<<<<<< HEAD
             foreach (DomElement e in SelectedElements)
             {
                 csq.AddSelection(e.Clone());
             }
             return csq;
+=======
+            foreach (DomElement e in Elements)
+            {
+                csq.Dom.Add(e.Clone());
+            }
+            return csq.Select("*");
+>>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
         }
 
         /// <summary>
@@ -515,7 +568,11 @@ namespace Jtc.CsQuery
         {
             string style = String.Empty;
 
+<<<<<<< HEAD
             foreach (DomElement e in SelectedElements)
+=======
+            foreach (DomElement e in Elements)
+>>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
             {
                 e.AddStyle(name, value);
             }
@@ -537,7 +594,11 @@ namespace Jtc.CsQuery
             }
             else
             {
+<<<<<<< HEAD
                 return this[0].GetStyle(style);
+=======
+                return _Elements[0].GetStyle(style);
+>>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
             }
         }
         /// <summary>
@@ -557,7 +618,11 @@ namespace Jtc.CsQuery
         public CsQuery Each(Action<int, DomElement> func)
         {
             int index = 0;
+<<<<<<< HEAD
             foreach (DomElement obj in Selection)
+=======
+            foreach (DomElement obj in Elements)
+>>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
             {
                 func(index, obj);
             }
@@ -595,7 +660,11 @@ namespace Jtc.CsQuery
             {
                 index = Length + index;
             }
+<<<<<<< HEAD
             return new CsQuery(this[index],this);
+=======
+            return CsQuery.CreateFromElement(_Elements[index]);
+>>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
         }
 
         /// <summary>
@@ -605,6 +674,7 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery Find(string selector)
         {
+<<<<<<< HEAD
             CsQuery csq = new CsQuery(this);
             CsQuerySelectors  selectors = new CsQuerySelectors(selector);
             foreach (DomElement elm in SelectedElements )
@@ -629,6 +699,11 @@ namespace Jtc.CsQuery
             AddSelectionRange(selectors.Select(Dom));
             return this;
         }
+=======
+            return new CsQuery(selector,this);
+        }
+
+>>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
         /// <summary>
         /// Reduce the set of matched elements to the first in the set.
         /// </summary>
@@ -736,7 +811,11 @@ namespace Jtc.CsQuery
         {
             List<DomElement> list = new List<DomElement>();
 
+<<<<<<< HEAD
             foreach (DomElement obj in SelectedElements)
+=======
+            foreach (DomElement obj in Elements)
+>>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
             {
                 if (obj.Parent is DomElement)
                 {
@@ -798,6 +877,22 @@ namespace Jtc.CsQuery
             return this;
         }
         /// <summary>
+<<<<<<< HEAD
+=======
+        /// Remove all the elements from the DOM
+        /// </summary>
+        /// <param name="elements"></param>
+        /// <returns></returns>
+        public CsQuery Remove(IEnumerable<DomElement> elements)
+        {
+            foreach (DomElement e in elements)
+            {
+                Remove(e);
+            }
+            return this;
+        }
+        /// <summary>
+>>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
         /// Remove all elements matching the selector from the DOM
         /// </summary>
         /// <param name="selector"></param>
@@ -812,6 +907,7 @@ namespace Jtc.CsQuery
         }
         public CsQuery Remove()
         {
+<<<<<<< HEAD
             for (int i=Length-1;i>=0;i--)
             {
                 Remove(this[i]);
@@ -822,6 +918,28 @@ namespace Jtc.CsQuery
         public CsQuery Show()
         {
             foreach (DomElement e in SelectedElements)
+=======
+            foreach (DomElement e in Elements)
+            {
+                Remove(e);
+            }
+            return this;
+        }
+        /// <summary>
+        /// This is the equivalent of $(...). It creates a new selection from the master DOM.
+        /// </summary>
+        /// <returns></returns>
+        public CsQuery Select(string selector)
+        {
+            _Elements.Clear();
+            Selectors = new CsQuerySelectors(selector);
+            _Elements.AddRange(Selectors.GetMatches(Dom.Elements));
+            return this;
+        }
+        public CsQuery Show()
+        {
+            foreach (DomElement e in Elements)
+>>>>>>> 299b40fafc66f18bcc3e4463b42fdf35dd5a6b0b
             {
                 e.RemoveStyle("display");
             }

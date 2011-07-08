@@ -4,6 +4,8 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Web;
+using System.Web.UI;
+using System.IO;
 
 namespace Jtc.CsQuery.Server
 {
@@ -83,6 +85,65 @@ namespace Jtc.CsQuery.Server
             }
             return Owner;
         }
+        public HtmlTextWriter Writer
+        {
+            get
+            {
+                if (_Writer == null)
+                {
+                   _sb = new StringBuilder();
+                    _sw = new StringWriter(_sb);
+
+                    _Writer = new HtmlTextWriter(_sw);
+                }
+                return _Writer;
+            }
+        } protected HtmlTextWriter _Writer;
+        protected StringBuilder _sb;
+        protected StringWriter _sw;
+        public void CreateFromWriter()
+        {
+
+            CsQuery csq = CsQuery.Create(_sb.ToString());
+            Owner.Dom = csq.Dom;
+            
+            //using (HtmlTextWriter myWriter = new HtmlTextWriter(sw))
+            //{
+            //    InfopanelBody.DoRender(writer);
+            //}
+
+            //    Response.Write(sb.ToString());
+                
+            ////context.Response.Write("Hello World");
+            //    Response.End();
+        }
+        HtmlTextWriter RealWriter;
+        public void CreateFromRender(Action<HtmlTextWriter> renderMethod, HtmlTextWriter writer)
+        {
+            RealWriter = writer;
+            renderMethod(Writer);
+            CreateFromWriter();
+        }
+        //protected override void Render(HtmlTextWriter writer)
+        //{
+        //    StringBuilder sb = new StringBuilder();
+        //    StringWriter sw = new StringWriter(sb);
+
+        //    using (HtmlTextWriter myWriter = new HtmlTextWriter(sw))
+        //    {
+        //        InfopanelBody.DoRender(writer);
+        //    }
+
+        //    Response.Write(sb.ToString());
+        //    //context.Response.Write("Hello World");
+        //    Response.End();
+        //}
+
+        public void Render()
+        {
+            RealWriter.Write(Owner.Render());
+        }
+
     }
     public class SimpleDictionary<T> where T: class
     {
