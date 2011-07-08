@@ -59,7 +59,7 @@ namespace Jtc.CsQuery
 
         protected void CreateDomImpl(string html)
         {
-            Dom.RemoveChildren();
+            Dom = null;
             Dom.AddRange(ElementFactory.CreateObjects(html));
             AddSelectionRange(Dom.Children);
         }
@@ -168,7 +168,10 @@ namespace Jtc.CsQuery
             {
                 _Dom = value;
                 ClearSelections();
-                AddSelectionRange(_Dom.Children);
+                if (_Dom != null)
+                {
+                    AddSelectionRange(_Dom.Children);
+                }
             }
         } protected DomRoot _Dom = null;
         /// <summary>
@@ -457,6 +460,30 @@ namespace Jtc.CsQuery
             return this;
         }
         /// <summary>
+        /// Insert content, specified by the parameter, before each element in the set of matched elements.
+        /// </summary>
+        /// <param name="?"></param>
+        /// <returns></returns>
+        public CsQuery Before(string selector)
+        {
+            CsQuery csq = new CsQuery(selector, this);
+            return Before(csq);
+
+        }
+        public CsQuery Before(CsQuery selection)
+        {
+            foreach (DomObject element in this)
+            {
+                int index = GetElementIndex(element);
+                foreach (DomObject obj in selection)
+                {
+                    element.Parent.Insert(index, obj);
+                    index++;
+                }
+            }
+            return this;
+        }
+        /// <summary>
         /// Get the children of each element in the set of matched elements, optionally filtered by a selector.
         /// </summary>
         /// <returns></returns>
@@ -655,16 +682,7 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery InsertAfter(DomElement element)
         {
-            int count = 0;
-            foreach (DomElement e in element.Parent.Elements)
-            {
-                if (ReferenceEquals(e,element))
-                {
-                    break;
-                }
-                count++;
-            }
-            element.Parent.Insert(count, element);
+            element.Parent.Insert(GetElementIndex(element)+1, element);
             return this;
         }
         public CsQuery InsertAfter(CsQuery obj) {
@@ -802,14 +820,6 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="selector"></param>
         /// <returns></returns>
-        public CsQuery Remove(string selector)
-        {
-            CsQuerySelectors selectors = new CsQuerySelectors(selector);
-            foreach (DomElement e in selectors.GetMatches(SelectedElements)) {
-                Remove(e);
-            }
-            return this;
-        }
         public CsQuery Remove()
         {
             for (int i=Length-1;i>=0;i--)
@@ -818,7 +828,29 @@ namespace Jtc.CsQuery
             }
             return this;
         }
-
+        public CsQuery Remove(string selector)
+        {
+            CsQuerySelectors selectors = new CsQuerySelectors(selector);
+            foreach (DomElement e in selectors.GetMatches(SelectedElements))
+            {
+                Remove(e);
+            }
+            return this;
+        }
+        /// <summary>
+        /// Replace each element in the set of matched elements with the provided new content.
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        public CsQuery ReplaceWith(string selector)
+        {
+            CsQuery newContent = new CsQuery(selector, this);
+            return Before(selector).Remove();
+        }
+        public CsQuery ReplaceWith(CsQuery selection)
+        {
+            return Before(selection).Remove();
+        }
         public CsQuery Show()
         {
             foreach (DomElement e in SelectedElements)
@@ -932,7 +964,18 @@ namespace Jtc.CsQuery
             return dict;
         }
         
-
+        protected int GetElementIndex(DomObject element) {
+            int count = 0;
+            foreach (DomObject e in element.Parent.Children)
+            {
+                if (ReferenceEquals(e, element))
+                {
+                    break;
+                }
+                count++;
+            }
+            return count;
+        }
         #region IEnumerable<DomObject> Members
 
         public IEnumerator<DomElement> GetEnumerator()

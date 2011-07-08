@@ -50,6 +50,16 @@ namespace Jtc.ExtensionMethods
             }
             return (false);
         }
+        /// <summary>
+        /// Returns true if the enum is any of the parameters in question
+        /// </summary>
+        /// <param name="theEnum"></param>
+        /// <param name="value1"></param>
+        /// <param name="value2"></param>
+        /// <param name="value3"></param>
+        /// <param name="value4"></param>
+        /// <param name="value5"></param>
+        /// <returns></returns>
         public static bool IsOneOf(this Enum theEnum, Enum value1, Enum value2 = null, Enum value3 = null, Enum value4 = null, Enum value5 = null)
         {
             Enum[] values = { null, value5, value4, value3, value2, value1 };
@@ -63,6 +73,7 @@ namespace Jtc.ExtensionMethods
             }
             return false;
         }
+
         public static bool TryParse<T>(this Enum theEnum, string strType, out T result)
         {
             string strTypeFixed = strType.Replace(' ', '_');

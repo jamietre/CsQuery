@@ -27,18 +27,14 @@ namespace Jtc.CsQuery
         {
             Selector = selector;
         }
-        /// <summary>
-        /// Always treats this selector as new HTML
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="isHtml"></param>
-        public CsQuerySelectors(string selector, bool isHtml)
-        {
-            IsHtml = isHtml;
-            Selector = selector;
 
+        public bool IsHtml
+        {
+            get
+            {
+                return !String.IsNullOrEmpty(Selector) && Selector[0] == '<';
+            }
         }
-        public bool IsHtml = false;
         protected CsQuerySelector Current
         {
             get
@@ -59,7 +55,8 @@ namespace Jtc.CsQuery
             if (IsHtml)
             {
                 Current.Html = sel;
-                //sel = String.Empty;
+                Current.SelectorType = SelectorType.HTML;
+                Selectors.Add(Current);
                 return;
             }
             scanner = new StringScanner(sel);
@@ -428,8 +425,8 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public IEnumerable<DomObject> Select(DomRoot root)
         {
-            IEnumerable<DomElement> results;
-            HashSet<DomElement> selectorResults = new HashSet<DomElement>();
+            IEnumerable<DomObject> results;
+            HashSet<DomObject> selectorResults = new HashSet<DomObject>();
     
             var selector = Selectors[0];
             string key = String.Empty;
@@ -447,6 +444,7 @@ namespace Jtc.CsQuery
             if (key != String.Empty)
             {
                 HashSet<DomElement> list;
+
                 if (root.SelectorXref.TryGetValue(key, out list))
                 {
                     foreach (DomElement e in list)
@@ -508,6 +506,7 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public IEnumerable<DomObject> GetMatches(IEnumerable<DomObject> baseList, IEnumerable<DomObject> list, int firstSelector)
         {
+
             // Maintain a hashset of every element already searched. Since result sets frequently contain items which are
             // children of other items in the list, we would end up searching the tree repeatedly
             HashSet<DomObject> uniqueElements = null;
@@ -521,8 +520,9 @@ namespace Jtc.CsQuery
             for (int i=firstSelector;i<Selectors.Count;i++)
             {
                 var selector = Selectors[i];
+                
                 // If there is only one selector, and it's possible to know its results before all are found, allow it to be yielded directly
-                if (selector.SelectorType == SelectorType.Position )
+                if (selector.SelectorType.IsOneOf(SelectorType.Position, SelectorType.HTML) )
                 {
                     simple = false;
                 }
@@ -548,6 +548,16 @@ namespace Jtc.CsQuery
 
                 // The unique list has to be reset for each sub-selector
                 uniqueElements = new HashSet<DomObject>();
+
+                if (selector.SelectorType == SelectorType.HTML)
+                {
+                    DomElementFactory factory = new DomElementFactory();
+                    foreach (var obj in factory.CreateObjects(selector.Html))
+                    {
+                        temporaryResults.Add(obj);
+                    }
+                    break;
+                }
 
                 // Position selectors are simple -- skip out of main matching code if so
                 if (selector.SelectorType == SelectorType.Position)
@@ -844,7 +854,8 @@ namespace Jtc.CsQuery
         Class=8,
         Attribute=16,
         Contains =32,
-        Position = 64
+        Position = 64,
+        HTML = 128
     }
     public enum AttributeSelectorType
     {

@@ -156,7 +156,7 @@ namespace Jtc.CsQuery
             }
         }
         /// <summary>
-        /// Adds a child element to the end of the list
+        /// Adds a child element at a specific index
         /// </summary>
         /// <param name="index"></param>
         /// <param name="element"></param>
