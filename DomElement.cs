@@ -11,6 +11,7 @@ namespace Jtc.CsQuery
     /// </summary>
     public abstract class DomObject
     {
+        public DomRoot Root;
         public DomContainer Parent;
 
         public abstract string Html
@@ -50,7 +51,7 @@ namespace Jtc.CsQuery
     /// <summary>
     /// Base class for Dom object that contain other elements
     /// </summary>
-    public abstract class DomContainer : DomObject, IEnumerable<DomElement>
+    public abstract class DomContainer : DomObject
     {
         public DomContainer()
         {
@@ -116,10 +117,6 @@ namespace Jtc.CsQuery
                 return _Children.Count;
             }
         }
-        public void Clear()
-        {
-            _Children.Clear();
-        }
         public override string Html
         {
             get
@@ -132,36 +129,58 @@ namespace Jtc.CsQuery
                 return (sb.ToString());
             }
         } 
-
-        /// <summary>
+       /// <summary>
         /// Add a child to this element 
         /// </summary>
         /// <param name="element"></param>
-        public void Add(DomObject element)
+        public virtual void Add(DomObject element)
         {
             element.Parent = this;
+            element.Root = this.Root;
             _Children.Add(element);
+            if (Root != null)
+            {
+                Root.AddToIndex(element);
+            }
+ 
         }
         /// <summary>
         /// Add all elements as children of this element
         /// </summary>
         /// <param name="elements"></param>
-        public void Add(IEnumerable<DomObject> elements)
+        public virtual void AddRange(IEnumerable<DomObject> elements)
         {
             foreach (DomObject e in elements)
             {
-                e.Parent = this;
-                _Children.Add(e);
+                Add(e);
             }
         }
+        /// <summary>
+        /// Adds a child element to the end of the list
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="element"></param>
         public void Insert(int index, DomObject element)
         {
             element.Parent = this;
+            element.Root = this.Root;
             _Children.Insert(index, element);
+            if (Root != null)
+            {
+                Root.AddToIndex(element);
+            }
         }
+   
         public void Remove(DomObject obj)
         {
+
             _Children.Remove(obj);
+            if (Root != null)
+            {
+                Root.RemoveFromIndex(obj);
+            }
+            obj.Parent = null;
+            obj.Root = null;
         }
  
         /// <summary>
@@ -169,37 +188,88 @@ namespace Jtc.CsQuery
         /// </summary>
         public void RemoveChildren()
         {
-            _Children.Clear();
+            for (int i=_Children.Count-1;i>=0;i--)
+            {
+                Remove(_Children[i]);
+            }
         }
-
-
-        #region IEnumerable<DomElement> Members
-
-        public IEnumerator<DomElement> GetEnumerator()
-        {
-            return Elements.GetEnumerator();
-        }
-
-        #endregion
-
-        #region IEnumerable Members
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        #endregion
+    
     }
 
     public class DomRoot : DomContainer
     {
+        public DomRoot()
+            : base()
+        {
+        }
         public DomRoot(IEnumerable<DomObject> elements)
             : base(elements)
         {
 
         }
+        public Dictionary<string, HashSet<DomElement>> SelectorXref = new Dictionary<string, HashSet<DomElement>>();
+        protected IEnumerable<string> IndexKeys(DomElement e)
+        {
+            yield return e.Tag;
+            if (!String.IsNullOrEmpty(e.ID)) {
+                yield return "#"+e.ID;
+            }
+            foreach (string cls in e.Classes)
+            {
+                yield return "."+cls;
+            }
+            //todo -add attributes?
+        }
+        public void AddToIndex(DomObject obj)
+        {
+            if (obj is DomElement)
+            {
+                HashSet<DomElement> list;
 
+                DomElement e = (DomElement)obj;
+                // ENsure all children from unbound elements become part of this DOM
+                if (e.Root == null)
+                {
+                    e.Root = this;
+                }
+
+                foreach (string key in IndexKeys(e))
+                {
+                    if (SelectorXref.TryGetValue(key, out list))
+                    {
+                        list.Add(e);
+                    }
+                    else
+                    {
+                        list= new HashSet<DomElement>();
+                        list.Add(e);
+                        SelectorXref[key] = list;
+                    }
+                }
+                foreach (DomElement child in e.Elements)
+                {
+                    AddToIndex(child);
+                }
+            }
+        }
+        public void RemoveFromIndex(DomObject obj)
+        {
+            if (obj is DomElement) {
+                HashSet<DomElement> list;
+                DomElement e = (DomElement)obj;
+                foreach (DomElement child in e.Elements)
+                {
+                    RemoveFromIndex(child);
+                }
+                foreach (string key in IndexKeys(e))
+                {
+                    if (SelectorXref.TryGetValue(key, out list))
+                    {
+                        list.Remove(e);
+                    }
+                }
+            }
+        }
 
     }
     public enum ElementType
@@ -215,8 +285,41 @@ namespace Jtc.CsQuery
         public DomElement()
         {
         }
+
+
         public ElementType ElementType = ElementType.Normal;
 
+        /// <summary>
+        /// Creates a deep clone of this
+        /// </summary>
+        /// <returns></returns>
+        public DomElement Clone()
+        {
+            DomElement e = new DomElement();
+            e.Tag = Tag;
+            
+            e._Styles = new Dictionary<string, string>(_Styles);
+            e._Classes = new HashSet<string>(_Classes);
+            foreach (var attr in _Attributes)
+            {
+                e.SetAttribute(attr.Key, attr.Value);
+            }
+            foreach (DomObject obj in _Children)
+            {
+                if (obj is DomElement)
+                {
+                    e.Add(((DomElement)obj).Clone());
+                }
+                else if (obj is DomLiteral)
+                {
+                    DomLiteral lit = new DomLiteral(((DomLiteral)obj).Html);
+                    e.AppendChild(lit);
+                } else {
+                    throw new Exception("Unexpected element type while cloning a DomElement");
+                }
+            }
+            return e;
+        }
 
         public IEnumerable<string> Classes
         {
@@ -228,11 +331,57 @@ namespace Jtc.CsQuery
                 }
             }
         } protected HashSet<string> _Classes = new HashSet<string>();
-
+        public IEnumerable<KeyValuePair<string,string>> Styles
+        {
+            get
+            {
+                foreach (var kvp in _Styles)
+                {
+                    yield return kvp;
+                }
+            }
+        } protected Dictionary<string, string> _Styles = new Dictionary<string, string>();
+        public void AppendChild(DomObject obj) {
+            obj.Parent = this;
+            _Children.Add(obj);
+        }
         public bool HasClass(string name)
         {
             return _Classes.Contains(name);
         }
+        public bool AddClass(string name)
+        {
+            return _Classes.Add(name);
+        }
+        public bool RemoveClass(string name)
+        {
+            return _Classes.Remove(name);
+        }
+        public void AddStyle(string name, string value)
+        {
+            _Styles[name.Trim()] = value.Replace(";",String.Empty).Trim();
+        }
+        public void AddStyle(string style)
+        {
+            string[] kvp = style.Split(':');
+            AddStyle(kvp[0], kvp[1]);
+        }
+        public bool RemoveStyle(string name)
+        {
+            return _Styles.Remove(name);
+        }
+        public string GetStyle(string name)
+        {
+            string value;
+            if (_Styles.TryGetValue(name,out value)) {
+                return value;
+            }
+            return null;
+        }
+                   // move to imp
+            //            List<DomElement> list;
+//            foreach (string c in element.
+//            if (SelectorXref.TryGetValue(
         public void SetAttribute(string name, string value)
         {
             string lowName = name.ToLower();
@@ -246,8 +395,22 @@ namespace Jtc.CsQuery
                         _Classes.Add(val);
                     }
                     break;
+                case "style":
+                    _Styles.Clear();
+                    string[] styles = value.Trim().Split(new char[] {';'},StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string val in styles)
+                    {
+                        if (val.IndexOf(":") > 0)
+                        {
+                            string[] kvps = val.Split(':');
+                            _Styles[kvps[0]] = kvps[1];
+                        }
+                    }
+                    break;
+                default:
+                    _Attributes[lowName] = value;
+                    break;
             }
-            _Attributes[lowName] = value;
         }
         /// <summary>
         /// Sets an attribute with no value
@@ -261,6 +424,9 @@ namespace Jtc.CsQuery
         {
             return _Attributes.Remove(name);
         }
+
+        
+
         /// <summary>
         /// Gets an attribute value, or returns null if the value is missing. If a valueless attribute is found, this will also return null. HasAttribute should be used
         /// to test for such attributes. Attributes with an empty string value will return String.Empty.
@@ -269,15 +435,7 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public string GetAttribute(string name)
         {
-            string value = null;
-            if (_Attributes.TryGetValue(name, out value))
-            {
-                return value;
-            }
-            else
-            {
-                return null;
-            }
+            return GetAttribute(name, null);
         }
         /// <summary>
         /// Returns the value of an attribute or a default value if it could not be found.
@@ -287,6 +445,13 @@ namespace Jtc.CsQuery
         public string GetAttribute(string name, string defaultValue)
         {
             string value;
+            switch (name.ToLower())
+            {
+                case "style":
+                    return Style;
+                case "class":
+                    return Class;
+            }
             if (_Attributes.TryGetValue(name.ToLower(), out value))
             {
                 return value;
@@ -300,6 +465,31 @@ namespace Jtc.CsQuery
         {
             return _Attributes.TryGetValue(name.ToLower(),out  value);
 
+        }
+        
+        public string Style
+        {
+            get
+            {
+                string style = String.Empty;
+                foreach (var kvp in _Styles)
+                {
+                    style += (style==String.Empty?String.Empty:" ") + kvp.Key + ": " + kvp.Value + ";";
+                }
+                return style;
+            }
+        }
+        public string Class
+        {
+            get
+            {
+                string cls = String.Empty;
+                foreach (var val in _Classes)
+                {
+                    cls += (cls == String.Empty ? String.Empty : " ") + val;
+                }
+                return cls;
+            }
         }
         public IEnumerable<KeyValuePair<string, string>> Attributes
         {
@@ -427,18 +617,38 @@ namespace Jtc.CsQuery
                 }
             }
         }
-
+        /// <summary>
+        /// Returns the completel HTML for this element and its children
+        /// </summary>
         public override string Html
         {
             get
             {
-                return GetHtml();
+                return GetHtml(true);
             }
-        } 
-        protected string GetHtml()
+        }
+        /// <summary>
+        /// Returns the HTML for this element, ignoring children/innerHTML
+        /// </summary>
+        public string ElementHtml
+        {
+            get
+            {
+                return GetHtml(false);
+            }
+        }
+        protected string GetHtml(bool includeChildren)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("<" + Tag);
+            if (_Classes.Count > 0)
+            {
+                sb.Append(" class=\"" + Class+"\"");
+            }
+            if (_Styles.Count > 0)
+            {
+                sb.Append(" style=\"" + Style+"\"");
+            }
             foreach (var kvp in _Attributes)
             {
                 string val = kvp.Value;
@@ -457,7 +667,7 @@ namespace Jtc.CsQuery
             }
             if (InnerHtmlAllowed)
             {
-                sb.Append(String.Format(">{0}</" + Tag + ">", InnerHtml));
+                sb.Append(String.Format(">{0}</" + Tag + ">", includeChildren ? InnerHtml : String.Empty));
             }
             else
             {

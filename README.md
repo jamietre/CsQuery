@@ -1,5 +1,12 @@
 ## CsQuery - C# jQuery Port
 
+
+7/3/2011 - Version 0.6
+
+- Added a bunch of selectors
+- Remodel the engine to support descendent/child selectors
+- Changes to the DOM objets to better support cloning, css and style transparently
+
 7/1/2011 - Version 0.5
 
 (c) 2011 James Treworgy
@@ -17,20 +24,10 @@ FEATURES:
 
 SHORTCOMINGS
 
-- Small subset of jQuery API
-- DOM model does not exactly match browser DOM API right now (this will be fixed so API for DomObject heirachy will change -- avoid using 
-  DOM element methods directly, instead use Attr() to change attributes)
+- Subset of jQuery API
+- DOM model does not exactly match browser DOM API. Am not sure whether the convenience of having
+  a better API outwieighs the lack of portability between client and server - may revisit this.
 - Some nuances of element properties (e.g."checked") may not exactly mimic browser behavior. This isn't consistent across browsers though,
-- Doesn't completely handle text nodes (some jQuery methods do deal with them). They are parsed and stored in the DOM and output properly.
-  but cannot be manipulated directly. Probably not hard to fix.
-
-HELP ME!
-
-This code has a really, really simple infrastructure for the DOM, and selector engine. 
-Implementing new selectors, methods, etc should be REALLY EASY. I wrote this 
-to serve a specific purpose, and even though it's a fun project I don't have time to work 
-on a lot of features I don't need right now. I will keep updating it over time but feel 
-free to add any new methods you want.
 
 
 **Object Model**
@@ -53,12 +50,38 @@ free to add any new methods you want.
 **Create DOM**
 
     var d = CsQuery.Create(html);
+	var d = CsQuery.CreateFromElement(DomObject e);
+	var d = CsQuery.CreateFromElement(IEnumerable<DomObject> e);
 
 **Create a new jQuery from existing one**
 
-    var d2 = new CsQuery("div",d);  <= First parm is a selector, second is an existing CsQuery object. Internally, this method is
+    var d = new CsQuery("div",d);  <= First parm is a selector, second is an existing CsQuery object. Internally, this method is
                                        used for many methods to create the return object. Like jQuery, CsQuery returns a new object
                                        for most methods, except for methods designed to affect the DOM like "remove" and "append."
+
+	var d = new CsQuery(DomObject e, CsQuery context);
+	var d = new CsQuery(IEnumerable<DomObject> e, CsQuery context);
+	
+	var d = new CsQuery(CsQuery context)  <= Copies exactly
+
+**Selecting**
+
+A CsQuery object is representative of a specific DOM. Unlike a web browser, you can have any number of DOMs - each CsQuery is bound to the dom from which it
+was created using one of the static methods.
+
+The Select method creates a selection in that object. If subselection methods are used before a Select, then the top-level elements of the DOM are returned
+as the selection. 
+
+    var d = CsQuery.Select("selector"); <= this is the equivalent of $('selector');
+
+This would return matches *within the children* of the top level matches. Assuming your DOM was created from a fully formed HTML document, this would be 
+the children of the <html> element.
+    
+	var d = CsQuery.Find("body");  <= return just the body
+	var d = CsQuery.Find("html");  <= returns nothing - html is a top-level element
+
+	var d = CsQuery.Select("html") <= returns the DOM (except for any text nodes that may exist outside the <html> tag
+	var d = CsQuery.Select("body") <= same result as .Find("body")
 
 **Render DOM**
 
@@ -84,15 +107,35 @@ Matches jQuery syntax
 
 **Implemented selectors so far**
 
-    :checkbox
-    :checked
-    :contains
+    tagname
     .class
     #id
+    
     [attr]            attribute exists
     [attr="value"]    attribute equals
     [attr^="value"]   attribute starts with
-    ,                 matches any of multiple selectors
+    [attr*="value"]   attribute contains
+    [attr~="value"]   attribute contains word
+    [attr!="value"]   attribute not equal (nor does not exist)
+    [attr$="value"]   attribute ends with
+    
+    :button           type="button" or <button>
+    :checkbox         type="checkbox"
+    :checked          checked
+    :contains         
+    :disabled
+    :enabled
+    :even
+    :first
+    :eq(n)            nth matching result
+    :file
+    :last
+    :odd
+    :selected
+
+    selectorA, selectorB 	cumulative selector
+    selectorA selectorB		descendant selector
+    selecotrA > selectorB	child selector
 
 
 **Implemented methods so far:**
@@ -103,14 +146,31 @@ Matches jQuery syntax
     Append
     Attr
     Children
+    Clone
+    Css
     Each (uses delegates - can pass a function delegate or anonymous function)
     Eq
+    Find
     First
+    Hide
     InsertAfter
     Is
     Next
     Parent
     Prev
     Remove
+    Show
     Val
 
+**Special/Nonstandard Methods:**
+    
+    Select(selector)
+    
+Because there's no notion of a global DOM in a C# app, the DOM is part of a CsQuery object. Each
+object that gets created as a result of a selection refers to the root object which was created
+from an HTML string or elements. Therefore the "Select" method is the equivalent of $('selector').
+
+    CssGet
+    
+Same as Css( name ) to get a style. This signature is used to assign Css from a JSON object in
+this implementation (as this is the more useful/more common usage).
