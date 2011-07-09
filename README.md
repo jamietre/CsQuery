@@ -119,19 +119,24 @@ Matches jQuery syntax
     [attr!="value"]   attribute not equal (nor does not exist)
     [attr$="value"]   attribute ends with
     
-    :button           type="button" or <button>
-    :checkbox         type="checkbox"
     :checked          checked
     :contains         
     :disabled
     :enabled
-    :even
-    :first
-    :eq(n)            nth matching result
-    :file
-    :last
-    :odd
     :selected
+	    
+	:eq(n)            nth matching result
+    :gt(n)
+	:lt(n)
+	:even
+    :odd
+    :first
+	:last
+	
+    :file
+    :button           type="button" or <button>
+    :checkbox         type="checkbox"    
+	
 
     selectorA, selectorB 	cumulative selector
     selectorA selectorB		descendant selector
@@ -145,6 +150,7 @@ Matches jQuery syntax
     Add
     Append
     Attr
+    Before
     Children
     Clone
     Css
@@ -159,6 +165,7 @@ Matches jQuery syntax
     Parent
     Prev
     Remove
+    ReplaceWith
     Show
     Val
 
@@ -174,3 +181,17 @@ from an HTML string or elements. Therefore the "Select" method is the equivalent
     
 Same as Css( name ) to get a style. This signature is used to assign Css from a JSON object in
 this implementation (as this is the more useful/more common usage).
+
+**Other Methods**
+
+    SelectionHtml()
+
+Returns the full HTML for each element in the selection, separated by commas.
+
+    SelectionElements()
+
+Returns the markup for each element in the selection excluding inner HTML and children.
+
+   Render()
+
+Render the entire DOM as a string.
