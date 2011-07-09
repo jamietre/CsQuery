@@ -312,7 +312,26 @@ namespace Jtc.CsQuery
             StringBuilder sb = new StringBuilder();
             foreach (DomObject elm in this)
             {
+                sb.Append(sb.Length == 0 ? String.Empty : ", ");
                 sb.Append(elm.Html);
+            }
+            return sb.ToString();
+        }
+        /// <summary>
+        /// Returns markup for the selected elements, *excluding* any inner HTML or children.
+        /// </summary>
+        /// <returns></returns>
+        public string SelectionElements()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (DomObject elm in this)
+            {
+                sb.Append(sb.Length == 0 ? String.Empty : ", ");
+                if (elm is DomElement) {
+                    sb.Append(((DomElement)elm).ElementHtml);
+                } else {
+                    sb.Append(elm.Html);
+                }
             }
             return sb.ToString();
         }

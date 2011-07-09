@@ -126,8 +126,14 @@ namespace Jtc.CsQuery
                                 FinishSelector();
                                 break;
                             case "eq":
+                            case "gt":
+                            case "lt":
                                 StartNewPositionSelector();
-                                Current.PositionType = PositionType.Index;
+                                switch(key) {
+                                    case "eq": Current.PositionType=PositionType.IndexEquals; break;
+                                    case "lt": Current.PositionType = PositionType.IndexLessThan; break;
+                                    case "gt": Current.PositionType = PositionType.IndexGreaterThan; break;
+                                }
                                 scanner.Expect('(');
                                 scanner.AllowQuoting();
                                 Current.PositionIndex = Convert.ToInt32(scanner.Seek(")"));
@@ -173,7 +179,7 @@ namespace Jtc.CsQuery
                     case '[':
                         
                         Current.AttributeName = scanner.Seek();
-                        Current.SelectorType = SelectorType.Attribute;
+                        Current.SelectorType |= SelectorType.Attribute;
                         
                         bool finished = false;
                         while (!scanner.AtEnd && !finished)
@@ -556,7 +562,7 @@ namespace Jtc.CsQuery
                     {
                         temporaryResults.Add(obj);
                     }
-                    break;
+                    continue;
                 }
 
                 // Position selectors are simple -- skip out of main matching code if so
@@ -565,7 +571,7 @@ namespace Jtc.CsQuery
                     foreach (var obj in GetPositionMatches(curList, selector)) {
                         temporaryResults.Add(obj);
                     }
-                    break;
+                    continue;
                 }
 
                 stack = new Stack<MatchElement>();
@@ -748,7 +754,7 @@ namespace Jtc.CsQuery
                         yield return obj;
                     }
                     break;
-                default:
+                case PositionType.IndexEquals:
                     int critIndex = selector.PositionIndex;
                     if (critIndex < 0)
                     {
@@ -756,6 +762,30 @@ namespace Jtc.CsQuery
                     }
                     
                     yield return list.ElementAt(critIndex);
+                    break;
+                case PositionType.IndexGreaterThan:
+                    int index=0;
+                    foreach (DomObject obj in list)
+                    {
+                        if (index++ > selector.PositionIndex)
+                        {
+                            yield return obj;
+                        }
+                    }
+                    break;
+                case PositionType.IndexLessThan:
+                    int indexLess = 0;
+                    foreach (DomObject obj in list)
+                    {
+                        if (indexLess++< selector.PositionIndex)
+                        {
+                            yield return obj;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
                     break;
             }
         }
@@ -888,7 +918,9 @@ namespace Jtc.CsQuery
         Odd = 3,
         First = 4,
         Last = 5,
-        Index = 6
+        IndexEquals = 6,
+        IndexLessThan=7,
+        IndexGreaterThan=8
     }
     public class CsQuerySelector
     {
