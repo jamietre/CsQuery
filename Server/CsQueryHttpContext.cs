@@ -67,8 +67,8 @@ namespace Jtc.CsQuery.Server
             {
                 string value;
                 
-                if (PostData.TryGetValue(e.Name,out value)) {
-                    switch (e.Type)
+                if (PostData.TryGetValue(e["name"],out value)) {
+                    switch (e["type"])
                     {
                         case "checkbox":
                             e.SetAttribute("checked");

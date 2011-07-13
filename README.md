@@ -1,6 +1,17 @@
 ## CsQuery - C# jQuery Port
 
 
+7/13/2011 - 0.6.1
+
+- Changed selection index to use range selectors, allowing indexed performance across any subset
+- Bugfixes in HTML parser (was omitting top-level elements with no children, e.g. doctype)
+- added Get()
+- Refactored DOM object model to use interfaces properly
+- Added DOM objects for text, comment, doctype nodes
+- Added "NodeType" property to DOM elements
+- Ensured selection results are output in the order they appear in the DOM regardless of where they were added during a single selection operation
+
+
 7/3/2011 - Version 0.6
 
 - Added a bunch of selectors
@@ -41,7 +52,7 @@ SHORTCOMINGS
     CsQuery.Elements      results of the selection
     CsQuery.Selectors     current selectors applied to create the Elements
 
-    DomObject             abstract base class for any element in the DOM
+    IDomObject             abstract base class for any element in the DOM
     DomLiteral            a text node
     DomContainer          abstract class for any DOM element that can contain other elements
     DomRoot               special purpose node to contain the DOM
@@ -50,8 +61,8 @@ SHORTCOMINGS
 **Create DOM**
 
     var d = CsQuery.Create(html);
-	var d = CsQuery.CreateFromElement(DomObject e);
-	var d = CsQuery.CreateFromElement(IEnumerable<DomObject> e);
+	var d = CsQuery.CreateFromElement(IDomObject e);
+	var d = CsQuery.CreateFromElement(IEnumerable<IDomObject> e);
 
 **Create a new jQuery from existing one**
 
@@ -59,8 +70,8 @@ SHORTCOMINGS
                                        used for many methods to create the return object. Like jQuery, CsQuery returns a new object
                                        for most methods, except for methods designed to affect the DOM like "remove" and "append."
 
-	var d = new CsQuery(DomObject e, CsQuery context);
-	var d = new CsQuery(IEnumerable<DomObject> e, CsQuery context);
+	var d = new CsQuery(IDomObject e, CsQuery context);
+	var d = new CsQuery(IEnumerable<IDomObject> e, CsQuery context);
 	
 	var d = new CsQuery(CsQuery context)  <= Copies exactly
 

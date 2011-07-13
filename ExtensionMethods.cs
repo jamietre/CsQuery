@@ -15,7 +15,7 @@ using System.Web.Script.Serialization;
 //    {
 //    }
 //}
-namespace Jtc.ExtensionMethods.Scripting
+namespace Jtc.Scripting
 {
 
     public static class ExtensionMethods
@@ -442,8 +442,7 @@ namespace Jtc.ExtensionMethods
             }
             return (newList);
         }
-
-        public static void AddToList<T>(this ICollection<T> baseList, ICollection<T> list)
+        public static void AddRange<T>(this ICollection<T> baseList, IEnumerable<T> list)
         {
             foreach (T obj in list)
             {

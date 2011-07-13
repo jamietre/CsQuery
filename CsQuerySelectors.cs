@@ -388,24 +388,6 @@ namespace Jtc.CsQuery
             }
             return result;
         }
-        protected string GetNextPart(ref string sel)
-        {
-            string result;
-            int subPos = sel.IndexOfAny(new char[] { ' ', ':', '.', '=', '#', ',','*','(',')','[',']','^','\'' });
-            if (subPos < 0)
-            {
-                result = sel.Trim();
-                sel = String.Empty;
-                return result;
-            }
-            else
-            {
-                result = sel.Substring(0, subPos).Trim();
-                sel = sel.Substring(subPos).Trim();
-                return result;
-            }
-
-        }
         protected List<CsQuerySelector> Selectors
         {
             get
@@ -429,11 +411,10 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        public IEnumerable<DomObject> Select(DomRoot root)
+        public IEnumerable<IDomObject> Select(DomRoot root)
         {
-            IEnumerable<DomObject> results;
-            HashSet<DomObject> selectorResults = new HashSet<DomObject>();
-    
+            IEnumerable<IDomObject> lastResult=null;
+
             var selector = Selectors[0];
             string key = String.Empty;
             if (selector.SelectorType.HasFlag(SelectorType.Tag))
@@ -447,61 +428,74 @@ namespace Jtc.CsQuery
                 key = "." + selector.Class;
                 selector.SelectorType &= ~SelectorType.Class;
             }
+            // If we can use an indexed selector, do it here
             if (key != String.Empty)
             {
-                HashSet<DomElement> list;
-
-                if (root.SelectorXref.TryGetValue(key, out list))
-                {
-                    foreach (DomElement e in list)
-                    {
-                        selectorResults.Add(e);
+                if (lastResult==null) {
+                    lastResult = root.SelectorXref.GetRange(key);
+                } else {
+                    var tempResult= new HashSet<IDomObject>();
+                    foreach (IDomObject obj in lastResult) {
+                        tempResult.AddRange(root.SelectorXref.GetRange(key+">"+obj.Path));
                     }
+                    lastResult = tempResult;
                 }
-                results = selectorResults;
             }
-            else
-            {
-                results = root.Elements;
-            }
+
             // If there's another subquery within this selector, or any subselects, pass it on to the matching engine
             if (selector.SelectorType != 0)
             {
-                return GetMatches(root.Elements,results, 0);
+                return ReorderSelection(root, GetMatches(root.Elements, lastResult, 0));
             }
             else if (Selectors.Count > 1)
             {
-                return GetMatches(root.Elements,results, 1);
+                return ReorderSelection(root,GetMatches(root.Elements, lastResult, 1));
             }
             else
             {
-                return results;
+                return ReorderSelection(root, lastResult);
             }
         }
+        /// <summary>
+        /// Because selectors may not always return the items in DOM order (e.g. "OR" queries or chained full-dom selectors) fix that now.
+        /// </summary>
+        /// <param name="elements"></param>
+        protected IEnumerable<IDomObject> ReorderSelection(DomRoot root, IEnumerable<IDomObject> elements)
+        {
+            SortedSet<string> ordered = new SortedSet<string>();
+            foreach (var e in elements)
+            {
+                ordered.Add(e.Path);
+            }
+            foreach (var key in ordered)
+            {
+                yield return root.SelectorXref[">"+key];
+            }
 
+        }
         protected class MatchElement
         {
-            public MatchElement(DomObject element)
+            public MatchElement(IDomObject element)
             {
                 Initialize(element, 0);
             }
-            public MatchElement(DomObject element, int depth)
+            public MatchElement(IDomObject element, int depth)
             {
                 Initialize(element, depth);
             }
-            protected void Initialize(DomObject element, int depth)
+            protected void Initialize(IDomObject element, int depth)
             {
                 Object = element;
                 Depth = depth;
             }
-            public DomObject Object { get; set; }
+            public IDomObject Object { get; set; }
             public int Depth { get; set; }
             public DomElement Element { get { return (DomElement)Object; } }
         }
 
-        public IEnumerable<DomObject> GetMatches(IEnumerable<DomObject> list)
+        public IEnumerable<IDomObject> GetMatches(IEnumerable<IDomObject> list)
         {
-            return GetMatches(list, list, 0);
+            return GetMatches(list, null, 0);
         }
         /// <summary>
         /// Primary selection engine: returns a subset of "list" based on selectors.
@@ -510,16 +504,16 @@ namespace Jtc.CsQuery
         /// <param name="list"></param>
         /// <param name="recurse"></param>
         /// <returns></returns>
-        public IEnumerable<DomObject> GetMatches(IEnumerable<DomObject> baseList, IEnumerable<DomObject> list, int firstSelector)
+        public IEnumerable<IDomObject> GetMatches(IEnumerable<IDomObject> baseList, IEnumerable<IDomObject> list, int firstSelector)
         {
 
             // Maintain a hashset of every element already searched. Since result sets frequently contain items which are
             // children of other items in the list, we would end up searching the tree repeatedly
-            HashSet<DomObject> uniqueElements = null;
+            HashSet<IDomObject> uniqueElements = null;
 
             Stack<MatchElement> stack = null;
-            IEnumerable<DomObject> curList = list;
-            HashSet<DomObject> temporaryResults = new HashSet<DomObject>();
+            IEnumerable<IDomObject> curList = list ?? baseList;
+            HashSet<IDomObject> temporaryResults = new HashSet<IDomObject>();
 
             bool simple = false;
 
@@ -546,14 +540,14 @@ namespace Jtc.CsQuery
                     if (selector.CombinatorType == CombinatorType.Chained)
                     {
                         curList = temporaryResults;
-                        temporaryResults = new HashSet<DomObject>();
+                        temporaryResults = new HashSet<IDomObject>();
                     }  else {
                         curList = baseList;
                     }
                 }
 
                 // The unique list has to be reset for each sub-selector
-                uniqueElements = new HashSet<DomObject>();
+                uniqueElements = new HashSet<IDomObject>();
 
                 if (selector.SelectorType == SelectorType.HTML)
                 {
@@ -606,7 +600,7 @@ namespace Jtc.CsQuery
                                 DomElement elm = current.Element;
                                 for (int j = elm.Count - 1; j >= 0; j--)
                                 {
-                                    DomObject obj = elm[j];
+                                    IDomObject obj = elm[j];
                                     if (obj is DomElement && uniqueElements.Add((DomElement)obj))
                                     {
                                         stack.Push(new MatchElement(obj,current.Depth+1));
@@ -637,7 +631,7 @@ namespace Jtc.CsQuery
         /// <param name="matchIndex"></param>
         /// <param name="depth"></param>
         /// <returns></returns>
-        protected bool Matches(CsQuerySelector selector, DomObject obj, int depth) 
+        protected bool Matches(CsQuerySelector selector, IDomObject obj, int depth) 
         {
             bool match = true;
 
@@ -736,7 +730,7 @@ namespace Jtc.CsQuery
             match = true;
             return match;
         }
-        protected IEnumerable<DomObject> GetPositionMatches(IEnumerable<DomObject> list, CsQuerySelector selector) 
+        protected IEnumerable<IDomObject> GetPositionMatches(IEnumerable<IDomObject> list, CsQuerySelector selector) 
         {
 
             switch (selector.PositionType)
@@ -765,7 +759,7 @@ namespace Jtc.CsQuery
                     break;
                 case PositionType.IndexGreaterThan:
                     int index=0;
-                    foreach (DomObject obj in list)
+                    foreach (IDomObject obj in list)
                     {
                         if (index++ > selector.PositionIndex)
                         {
@@ -775,7 +769,7 @@ namespace Jtc.CsQuery
                     break;
                 case PositionType.IndexLessThan:
                     int indexLess = 0;
-                    foreach (DomObject obj in list)
+                    foreach (IDomObject obj in list)
                     {
                         if (indexLess++< selector.PositionIndex)
                         {
@@ -789,10 +783,10 @@ namespace Jtc.CsQuery
                     break;
             }
         }
-        protected IEnumerable<DomObject> GetOddEventMatches(IEnumerable<DomObject> list, PositionType positionType)
+        protected IEnumerable<IDomObject> GetOddEventMatches(IEnumerable<IDomObject> list, PositionType positionType)
         {
             int index=0;
-            foreach (DomObject obj in list) {
+            foreach (IDomObject obj in list) {
                 index++;
                 switch (positionType)
                 {
@@ -835,9 +829,9 @@ namespace Jtc.CsQuery
         }
         protected bool ContainsText(DomElement obj, string text)
         {
-            foreach (DomObject e in obj.Children)
+            foreach (IDomObject e in obj.Children)
             {
-                if (e is DomLiteral)
+                if (e is DomText)
                 {
                     if (e.Html.IndexOf(text) > 0)
                     {

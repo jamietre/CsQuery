@@ -37,11 +37,11 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="html"></param>
         /// <returns></returns>
-        public IEnumerable<DomElement> CreateElements(string html)
+        public IEnumerable<IDomElement> CreateElements(string html)
         {
-            foreach (DomObject obj in CreateObjectsImpl(html, false))
+            foreach (IDomObject obj in CreateObjectsImpl(html, false))
             {
-                yield return (DomElement)obj;
+                yield return (IDomElement)obj;
             }
         }
         /// <summary>
@@ -49,10 +49,10 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="html"></param>
         /// <returns></returns>
-        public DomElement CreateElement(string html)
+        public IDomElement CreateElement(string html)
         {
             BaseHtml = html;
-            return (DomElement)Parse(false).First();
+            return (IDomElement)Parse(false).First();
         }
         /// <summary>
         /// Returns a list of elements created by parsing the string. If allowLiterals is false, any literal text that is not
@@ -61,11 +61,11 @@ namespace Jtc.CsQuery
         /// <param name="html"></param>
         /// <param name="allowLiterals"></param>
         /// <returns></returns>
-        public IEnumerable<DomObject> CreateObjects(string html)
+        public IEnumerable<IDomObject> CreateObjects(string html)
         {
             return CreateObjectsImpl(html, true);
         }
-        protected IEnumerable<DomObject> CreateObjectsImpl(string html, bool allowLiterals)
+        protected IEnumerable<IDomObject> CreateObjectsImpl(string html, bool allowLiterals)
         {
             BaseHtml = html;
             return Parse(allowLiterals);
@@ -73,7 +73,7 @@ namespace Jtc.CsQuery
         protected class IterationData
         {
             public IterationData Parent;
-            public DomObject Object
+            public IDomObject Object
             {
                 get
                 {
@@ -83,12 +83,12 @@ namespace Jtc.CsQuery
                 {
                     _Object = value;
                 }
-            } protected DomObject _Object;
-            public DomElement Element
+            } protected IDomObject _Object;
+            public IDomElement Element
             {
                 get
                 {
-                    return (DomElement)Object;
+                    return (IDomElement)Object;
                 }
             }
             public int Pos;
@@ -112,7 +112,7 @@ namespace Jtc.CsQuery
             }
         }
       
-        protected IEnumerable<DomObject> Parse(bool allowLiterals)
+        protected IEnumerable<IDomObject> Parse(bool allowLiterals)
         {
             int pos=0;
             Stack<IterationData> stack = new Stack<IterationData>();
@@ -149,7 +149,7 @@ namespace Jtc.CsQuery
                             case 1:
                                 if (current.Pos > current.HtmlStart)
                                 {
-                                    DomObject literal = GetLiteral(current);
+                                    IDomObject literal = GetLiteral(current);
                                     if (literal != null)
                                     {
                                         yield return literal;
@@ -209,21 +209,34 @@ namespace Jtc.CsQuery
                                     }
                                 }
                                 // seems to be a new tag. Parse it
-                                current.Object = new DomElement();                                
+
+                                
+                                ISpecialElement specialElement = null;
+                                if (newTag.ToLower()=="!doctype")
+                                {
+                                    specialElement = new DomSpecialElement(NodeType.DOCUMENT_TYPE_NODE);
+                                    current.Object = specialElement;
+                                } else if (newTag[0] == '!')
+                                {
+                                    specialElement = new DomComment();
+                                    current.Object = specialElement;
+                                }
+                                else {
+                                    current.Object = new DomElement();
+                                    current.Element.Tag = newTag;
+                                }
 
                                 // Check for informational tag types
-                                current.Element.Tag = newTag;
+                                
                                // Debug.Assert(newTag != "p");
-                                if (current.Element.Tag[0] == '!')
+                                if (current.Object is ISpecialElement)
                                 {
-                                    current.Element.ElementType = ElementType.Informational;
                                     int tagEndPos = BaseHtml.IndexOf(">", current.Pos);
                                     if (tagEndPos > EndPos)
                                     {
-                                        throw new Exception("Unclosed XHTML element '" + current.Element.Tag + "'");
-
+                                        throw new Exception("Unclosed HTML element '" + current.Element.Tag + "'");
                                     }
-                                    current.Element.NonAttributeData = BaseHtml.SubstringBetween(current.Pos, tagEndPos);
+                                    specialElement.NonAttributeData = BaseHtml.SubstringBetween(current.Pos, tagEndPos);
                                     current.Pos = tagEndPos;
                                 }
                                 else
@@ -243,14 +256,22 @@ namespace Jtc.CsQuery
                                 // I think there's a slightly better way to do this, capturing all the yield logic at the end of the
                                 // stack but it works for now.
 
+                                // For some reason I cannot get my head around a way to perform these logical steps with fewer conditional statements
+                                // They must be performed in this order.
+
                                 if (current.Parent != null)
                                 {
                                     current.Parent.Element.Add(current.Object);
+                                } else if (!hasChildren) {
+                                    yield return current.Object;
                                 }
 
                                 if (!hasChildren)
                                 {
                                     current.Reset();
+                                }
+                                if (!hasChildren)
+                                {
                                     continue;
                                 }
 
@@ -287,7 +308,7 @@ namespace Jtc.CsQuery
                 /// Check for any straggling text - typically the case for non-dom-bound data.
                 if (!current.Finished && current.Pos > current.HtmlStart)
                 {
-                    DomObject literal = GetLiteral(current);
+                    IDomObject literal = GetLiteral(current);
                     if (literal != null)
                     {
                         yield return literal;
@@ -300,15 +321,15 @@ namespace Jtc.CsQuery
 
         }
 
-        protected DomObject GetLiteral(IterationData current)
+        protected IDomObject GetLiteral(IterationData current)
         {
             // There's plain text -return it as a literal.
             string text = BaseHtml.SubstringBetween(current.HtmlStart, current.Pos);
-            DomObject textObj = null;
-            DomLiteral lit = new DomLiteral(text);
+            IDomObject textObj = null;
+            DomText lit = new DomText(text);
             if (!current.AllowLiterals)
             {
-                DomElement wrapper = new DomElement();
+                IDomElement wrapper = new DomElement();
                 wrapper.Tag = "span";
                 wrapper.Add(lit);
                 textObj = wrapper;
@@ -349,7 +370,7 @@ namespace Jtc.CsQuery
                     }
                     else
                     {
-                        inner = current.Element.InnerHtmlAllowed;
+                        inner = current.Object.InnerHtmlAllowed;
                     }
                     finished = true;
                     current.HtmlStart = current.Pos + 1;

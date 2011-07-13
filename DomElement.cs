@@ -3,34 +3,324 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jtc.ExtensionMethods;
+using System.Diagnostics;
 
 namespace Jtc.CsQuery
 {
+    public enum NodeType
+    {
+        ELEMENT_NODE  =1,
+        //ATTRIBUTE_NODE =2,
+        TEXT_NODE = 3,
+        //CDATA_SECTION_NODE = 4,
+        //ENTITY_REFERENCE_NODE = 5,
+        //ENTITY_NODE=  6,
+        //PROCESSING_INSTRUCTION_NODE =7,
+        COMMENT_NODE =  8,
+        DOCUMENT_NODE =  9,
+        DOCUMENT_TYPE_NODE = 10,
+        //DOCUMENT_FRAGMENT_NODE = 11,
+        //NOTATION_NODE  =12
+    }
+    public interface IDomObject
+    {
+        IDomContainer Parent { get; set; }
+        NodeType NodeType {get;}
+        string PathID {get;}
+        string Path { get; }
+        DomRoot Root { get; set;}
+        string Html { get; }
+        void AddToIndex();
+        void RemoveFromIndex();
+        IDomObject Clone();
+        bool InnerHtmlAllowed {get;}
+        bool Complete { get; }
+        
+    }
+    public interface ISpecialElement: IDomObject
+    {
+        string NonAttributeData { get; set; }
+    }
+
+    public interface IDomContainer : IDomObject
+    {
+        IEnumerable<IDomObject> Children {get;}
+        IEnumerable<IDomElement> Elements { get; }
+        void Add(IDomObject element);
+        void AddRange(IEnumerable<IDomObject> element);
+        void Remove(IDomObject element);
+        void RemoveChildren();
+        void Insert(IDomObject element, int index);
+        string GetNextChildID();
+        int Count { get; }
+
+    }
+    public interface IDomElement : IDomContainer
+    {
+        IEnumerable<string> Classes { get; }
+        IEnumerable<KeyValuePair<string, string>> Styles { get; }
+
+        bool HasClass(string className);
+        bool AddClass(string className);
+        bool RemoveClass(string className);
+        void AddStyle(string name, string value);
+        void AddStyle(string styleString);
+        bool RemoveStyle(string name);
+        string GetStyle(string name);
+
+        void SetAttribute(string name);
+        void SetAttribute(string name, string value);
+        string GetAttribute(string name);
+        string GetAttribute(string name, string defaultValue);
+        bool TryGetAttribute(string name, out string value);
+        bool HasAttribute(string name);
+        bool RemoveAttribute(string name);
+
+        string Tag { get; set; }
+        string ID { get; set; }
+        string Style { get; }
+        string Class { get; }
+        string InnerHtml { get; }
+        IEnumerable<KeyValuePair<string, string>> Attributes { get; }
+        string this[string index] { get; set; }
+
+        string ElementHtml { get; }
+    }
     /// <summary>
     /// Base class for anything that exists in the DOM
     /// </summary>
-    public abstract class DomObject
+    /// 
+    public abstract class DomObject<T>: IDomObject where T: IDomObject,new()
     {
-        public DomRoot Root;
-        public DomContainer Parent;
+        public abstract bool InnerHtmlAllowed { get;}
+        public virtual DomRoot Root { get; set; }
+        public abstract NodeType NodeType { get; }
+        public virtual T Clone()
+        {
+            T clone = new T();
+            clone.Root = Root;
+            clone.Parent = null;
+            return clone;
+        }
 
+        // Unique ID assigned when added to a dom
+        public string PathID
+        {
+            get
+            {
+                if (_PathID ==null) {
+
+                    _PathID = (Parent == null ? String.Empty : Parent.GetNextChildID());
+               }
+               return _PathID;
+            }
+
+        } protected string _PathID = null;
+        public string Path {
+            get
+            {
+                if (_Path != null) {
+                    return _Path;
+                }
+                return (Parent == null ? String.Empty : Parent.Path + "/") + PathID;
+            }
+        }
+        protected string _Path = null;
+        
+        public IDomContainer Parent
+        {
+            get
+            {
+                return _Parent;
+            }
+            set
+            {
+                _Path = null;
+                _PathID = null;
+                _Parent = value;
+            }
+        }
+
+        protected IDomContainer _Parent = null;
+        public abstract bool Complete { get; }
         public abstract string Html
         { get;  }
+        protected int IDCount = 0;
+
+        protected IEnumerable<string> IndexKeys()
+        {
+            if (!(this is DomElement)) {
+                yield break;
+            }
+
+            DomElement e = this as DomElement;
+            if (!Complete)
+            {
+                throw new Exception("This element is incomplete and cannot be added to a DOM.");
+            }
+            // Add just the element to the index no matter what so we have an ordered representation of the dom traversal
+            yield return IndexKey(String.Empty);
+            yield return IndexKey(e.Tag);
+            if (!String.IsNullOrEmpty(e.ID))
+            {
+                yield return IndexKey("#" + e.ID);
+            }
+            foreach (string cls in e.Classes)
+            {
+                yield return IndexKey("." + cls);
+            }
+            //todo -add attributes?
+        }
+        protected int UniqueID = 0;
+
+        public void AddToIndex()
+        {
+            if (Root!=null && this is IDomElement)
+            {
+                // Fix the path when it's added to the index.
+                // This is a little confusing. Would rather that we can't access it until it's added to a DOM.
+                _Path = Path;
+                foreach (string key in IndexKeys())
+                {
+                    AddToIndex(key);
+                }
+                if (this is IDomContainer)
+                {
+                    IDomContainer e = (IDomContainer)this;
+
+                    foreach (IDomObject child in e.Children)
+                    {
+                        // Move root in case this is coming from an unmapped or alternate DOM
+                        child.Root = Root;
+                        child.AddToIndex();
+                    }
+                }
+            }
+        }
+        public void RemoveFromIndex()
+        {
+            if (Root!=null && this is IDomElement)
+            {
+                if (this is IDomContainer)
+                {
+                    IDomContainer e = (IDomContainer)this;
+
+                    foreach (DomElement child in e.Elements)
+                    {
+                        child.RemoveFromIndex();
+                    }
+                }
+                foreach (string key in IndexKeys())
+                {
+                    RemoveFromIndex(key);
+                }
+            }
+        }
+        /// <summary>
+        /// Remove only a single index, not the entire object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="key"></param>
+        public void RemoveFromIndex(string key)
+        {
+            Root.SelectorXref.Remove(key);
+        }
+        public void AddToIndex(string key)
+        {
+            Root.SelectorXref.Add(key, this as DomElement);
+        }
+        protected string IndexKey( string key)
+        {
+            return key + ">" + Path;
+        }
+
+
+
+
+        IDomObject IDomObject.Clone()
+        {
+            return Clone();
+        }
+
+        
+    }
+    
+    /// <summary>
+    /// Catch-all for unimplemented node types (e.g.
+    /// </summary>
+    public class DomSpecialElement : DomObject<DomSpecialElement>, ISpecialElement 
+    {
+        public DomSpecialElement(): base()
+        {
+        }
+        public DomSpecialElement(NodeType nodeType): base()
+        {
+            _NodeType = nodeType;
+        }
+        
+        /// <summary>
+        /// For special tag types, like !DOCTYPE or comments, any data that is not really a tag.
+        /// </summary>
+        public string NonAttributeData { get; set; }
+
+        public override string Html
+        {
+            get { return "<" + NonAttributeData + ">"; }
+        }
+
+        public override bool InnerHtmlAllowed
+        {
+            get
+            {
+                switch (NodeType)
+                {
+                    case NodeType.DOCUMENT_TYPE_NODE:
+                        return false;
+                    default:
+                        return false;
+                }
+            }
+        }
+        public override NodeType NodeType
+        {
+            get{
+                return _NodeType;
+            }
+        } protected NodeType _NodeType;
+        public void SetNodeType(NodeType nodeType)
+        {
+            _NodeType = nodeType;
+        }
+        public override DomSpecialElement Clone()
+        {
+            DomSpecialElement clone = base.Clone();
+            clone._NodeType = NodeType;
+            clone.NonAttributeData = NonAttributeData;
+            return clone;
+        }
+        public override bool Complete
+        {
+            get { return NodeType != 0; }
+        }
+            
     }
 
     /// <summary>
     /// Used for literal text (not part of a tag)
     /// </summary>
-    public class DomLiteral : DomObject
+    public class DomText : DomObject<DomText>
     {
-        public DomLiteral()
+        public DomText()
         {
         }
-        public DomLiteral(string html)
+        public DomText(string html)
         {
             _Html = html;
         }
-
+        public override NodeType NodeType
+        {
+            get { return NodeType.TEXT_NODE; }
+        }
         public override string Html
         {
             get
@@ -38,77 +328,83 @@ namespace Jtc.CsQuery
                 return _Html;
             }
         }
+        public override DomText Clone()
+        {
+            DomText text = base.Clone();
+            text._Html = Html;
+            return text;
+        }
         protected string _Html=String.Empty;
-        //public override int GetHashCode()
-        //{
-        //    return _Html.GetHashCode();
-        //}
-        //public override bool Equals(object obj)
-        //{
-        //    return this == obj;
-        //}
+        public override bool InnerHtmlAllowed
+        {
+            get { return false; }
+        }
+        public override bool Complete
+        {
+            get { return !String.IsNullOrEmpty(Html);  }
+        }
     }
+
     /// <summary>
     /// Base class for Dom object that contain other elements
     /// </summary>
-    public abstract class DomContainer : DomObject
-    {
+    public abstract class DomContainer<T> : DomObject<T>, IDomContainer where T: IDomObject,IDomContainer, new()
+    { 
         public DomContainer()
         {
 
         }
-
-        public DomContainer(IEnumerable<DomObject> elements)
+        
+        public DomContainer(IEnumerable<IDomObject> elements)
         {
             _Children.AddRange(elements);   
         }
+
         /// <summary>
         /// Returns all children (including inner HTML as objects);
         /// </summary>
-        public IEnumerable<DomObject> Children
+        public IEnumerable<IDomObject> Children
         {
             get
             {
-               
                 return _Children;
             }
         }
-        internal List<DomObject> _Children
+        internal List<IDomObject> _Children
         {
             get
             {
                 if (__Children == null)
                 {
-                    __Children = new List<DomObject>();
+                    __Children = new List<IDomObject>();
                 }
                 return __Children;
             }
         } 
-        protected List<DomObject> __Children = null;
+        protected List<IDomObject> __Children = null;
         /// <summary>
         /// Returns all elements
         /// </summary>
-        public IEnumerable<DomElement> Elements
+        public IEnumerable<IDomElement> Elements
         {
             get
             {
-                foreach (DomObject elm in Children)
+                foreach (IDomObject elm in Children)
                 {
                     if (elm is DomElement)
                     {
-                        yield return (DomElement)elm;
+                        yield return (IDomElement)elm;
                     }
                 }
                 yield break;
             }
         }
-        public DomObject this[int index]
+        public IDomObject this[int index]
         {
             get
             {
                 return _Children[index];
             }
-
         }
         public int Count
         {
@@ -122,7 +418,7 @@ namespace Jtc.CsQuery
             get
             {
                 StringBuilder sb = new StringBuilder();
-                foreach (DomObject e in Children )
+                foreach (IDomObject e in Children )
                 {
                     sb.Append(e.Html);
                 }
@@ -133,24 +429,25 @@ namespace Jtc.CsQuery
         /// Add a child to this element 
         /// </summary>
         /// <param name="element"></param>
-        public virtual void Add(DomObject element)
+        public virtual void Add(IDomObject element)
         {
+            if (!this.InnerHtmlAllowed)
+            {
+                throw new Exception("Cannot add children to this element type. Inner HTML is not allowed.");
+            }
             element.Parent = this;
             element.Root = this.Root;
+            //AddPath(element);
             _Children.Add(element);
-            if (Root != null)
-            {
-                Root.AddToIndex(element);
-            }
- 
+            element.AddToIndex();
+
         }
-        /// <summary>
-        /// Add all elements as children of this element
+
         /// </summary>
         /// <param name="elements"></param>
-        public virtual void AddRange(IEnumerable<DomObject> elements)
+        public virtual void AddRange(IEnumerable<IDomObject> elements)
         {
-            foreach (DomObject e in elements)
+            foreach (IDomObject e in elements)
             {
                 Add(e);
             }
@@ -160,27 +457,23 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="index"></param>
         /// <param name="element"></param>
-        public void Insert(int index, DomObject element)
+        public void Insert(IDomObject element,int index)
         {
             element.Parent = this;
             element.Root = this.Root;
+            //AddPath(element);
             _Children.Insert(index, element);
-            if (Root != null)
-            {
-                Root.AddToIndex(element);
-            }
+            element.AddToIndex();
         }
    
-        public void Remove(DomObject obj)
+        public void Remove(IDomObject element)
         {
 
-            _Children.Remove(obj);
-            if (Root != null)
-            {
-                Root.RemoveFromIndex(obj);
-            }
-            obj.Parent = null;
-            obj.Root = null;
+            _Children.Remove(element);
+            element.RemoveFromIndex();
+           
+            element.Parent = null;
+            element.Root = null;
         }
  
         /// <summary>
@@ -193,106 +486,166 @@ namespace Jtc.CsQuery
                 Remove(_Children[i]);
             }
         }
+
+        public override T Clone()
+        {
+
+            T clone = base.Clone();
+            foreach (IDomObject obj in _Children) {
+                clone.Add(obj.Clone());
+           }
+            return clone;
+        }
+        
+        /// <summary>
+        /// This is used to assign sequential IDs to children. Since they are requested by the children the method needs to be maintained in the parent.
+        /// </summary>
+        public string GetNextChildID()
+        {
+            
+            return Base62Code(++IDCount);
+            
+        }
+        // Just didn't use the / and the +. A three character ID will permit over 250,000 possible children at each level
+        // so that should be plenty
+        protected string Base62Code(int number)
+        {
+            string chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz=";
+            string output = String.Empty;
+            int cur = 0;
+            do
+            {
+
+                if (number >= 62)
+                {
+                    cur = (int)Math.Floor((float)(number / 62));
+                    number /= cur * 62;
+                }
+                else
+                {
+                    cur = number;
+                    number = -1;
+                }
+                output += chars[cur];
+            } while (number >= 0);
+            return output.PadLeft(3, '0');
+        }
     }
 
-    public class DomRoot : DomContainer
+    /// <summary>
+    /// Special node type to represent the DOM.
+    /// </summary>
+    public class DomRoot : DomContainer<DomRoot>
     {
         public DomRoot()
             : base()
         {
         }
-        public DomRoot(IEnumerable<DomObject> elements)
+        public DomRoot(IEnumerable<IDomObject> elements)
             : base(elements)
         {
 
         }
-        public Dictionary<string, HashSet<DomElement>> SelectorXref = new Dictionary<string, HashSet<DomElement>>();
-        protected IEnumerable<string> IndexKeys(DomElement e)
+        public override DomRoot  Root
         {
-            yield return e.Tag;
-            if (!String.IsNullOrEmpty(e.ID)) {
-                yield return "#"+e.ID;
-            }
-            foreach (string cls in e.Classes)
-            {
-                yield return "."+cls;
-            }
-            //todo -add attributes?
+	          get 
+	        { 
+		         return this;
+	        }
+	          set 
+	        { 
+		        throw new Exception("You cannot set the Root for a DomRoot type object.");
+	        }
         }
-        public void AddToIndex(DomObject obj)
+        public override NodeType NodeType
         {
-            if (obj is DomElement)
-            {
-                HashSet<DomElement> list;
-
-                DomElement e = (DomElement)obj;
-                // ENsure all children from unbound elements become part of this DOM
-                if (e.Root == null)
-                {
-                    e.Root = this;
-                }
-
-                foreach (string key in IndexKeys(e))
-                {
-                    if (SelectorXref.TryGetValue(key, out list))
-                    {
-                        list.Add(e);
-                    }
-                    else
-                    {
-                        list= new HashSet<DomElement>();
-                        list.Add(e);
-                        SelectorXref[key] = list;
-                    }
-                }
-                foreach (DomElement child in e.Elements)
-                {
-                    AddToIndex(child);
-                }
-            }
+            get { return NodeType.DOCUMENT_NODE; }
         }
-        public void RemoveFromIndex(DomObject obj)
+        public RangeSortedDictionary<DomElement> SelectorXref = new RangeSortedDictionary<DomElement>();
+        public override bool InnerHtmlAllowed
         {
-            if (obj is DomElement) {
-                HashSet<DomElement> list;
-                DomElement e = (DomElement)obj;
-                foreach (DomElement child in e.Elements)
-                {
-                    RemoveFromIndex(child);
-                }
-                foreach (string key in IndexKeys(e))
-                {
-                    if (SelectorXref.TryGetValue(key, out list))
-                    {
-                        list.Remove(e);
-                    }
-                }
-            }
+            get { return true; }
         }
-
+        public override bool Complete
+        {
+            get { return true; }
+        }
     }
-    public enum ElementType
+
+    /// <summary>
+    /// A comment
+    /// </summary>
+    public class DomComment : DomObject<DomComment>, ISpecialElement
     {
-        Normal=1,
-        Informational=2
+        public override NodeType NodeType
+        {
+            get { return NodeType.ELEMENT_NODE; }
+        }
+
+        public string Text
+        {
+            get
+            {
+                return NonAttributeData;
+            }
+            set
+            {
+                NonAttributeData = value;
+            }
+        }
+        public override string Html
+        {
+            get { return "<!--" + Text + "-->"; }
+        }
+
+        public override bool InnerHtmlAllowed
+        {
+            get
+            {
+                return false;
+            }
+
+        }
+
+        public override DomComment Clone()
+        {
+            DomComment clone = base.Clone();
+            clone.NonAttributeData = NonAttributeData;
+            return clone;
+        }
+        public override bool Complete
+        {
+            get { return true; }
+        }
+        #region ISpecialElement Members
+
+        public string NonAttributeData
+        {
+            get;
+            set;
+        }
+
+        #endregion
     }
+
     /// <summary>
     /// HTML elements
     /// </summary>
-    public class DomElement : DomContainer
+    public class DomElement : DomContainer<DomElement>, IDomElement
     {
         public DomElement()
         {
         }
-
-
-        public ElementType ElementType = ElementType.Normal;
-
+        public override NodeType NodeType
+        {
+            get { return NodeType.ELEMENT_NODE; }
+        }
+        protected Dictionary<string, string> _Attributes = new Dictionary<string, string>();
         /// <summary>
         /// Creates a deep clone of this
         /// </summary>
         /// <returns></returns>
-        public DomElement Clone()
+        public override DomElement Clone()
         {
             DomElement e = new DomElement();
             e.Tag = Tag;
@@ -303,16 +656,16 @@ namespace Jtc.CsQuery
             {
                 e.SetAttribute(attr.Key, attr.Value);
             }
-            foreach (DomObject obj in _Children)
+            foreach (IDomObject obj in _Children)
             {
                 if (obj is DomElement)
                 {
                     e.Add(((DomElement)obj).Clone());
                 }
-                else if (obj is DomLiteral)
+                else if (obj is DomText)
                 {
-                    DomLiteral lit = new DomLiteral(((DomLiteral)obj).Html);
-                    e.AppendChild(lit);
+                    DomText lit = new DomText(((DomText)obj).Html);
+                    e.Add(lit);
                 } else {
                     throw new Exception("Unexpected element type while cloning a DomElement");
                 }
@@ -340,21 +693,30 @@ namespace Jtc.CsQuery
                 }
             }
         } protected Dictionary<string, string> _Styles = new Dictionary<string, string>();
-        public void AppendChild(DomObject obj) {
-            obj.Parent = this;
-            _Children.Add(obj);
-        }
+
         public bool HasClass(string name)
         {
             return _Classes.Contains(name);
         }
         public bool AddClass(string name)
         {
-            return _Classes.Add(name);
+            if (_Classes.Add(name))
+            {
+                AddToIndex(IndexKey("."+name));
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         public bool RemoveClass(string name)
         {
-            return _Classes.Remove(name);
+            if (_Classes.Remove(name))
+            {
+                RemoveFromIndex(IndexKey("." + name));
+            }
+            return false;
         }
         public void AddStyle(string name, string value)
         {
@@ -377,10 +739,18 @@ namespace Jtc.CsQuery
             }
             return null;
         }
-                   // move to imp
-            //            List<DomElement> list;
-//            foreach (string c in element.
-//            if (SelectorXref.TryGetValue(
+        public bool HasAttribute(string name)
+        {
+            string value;
+            if (_Attributes.TryGetValue(name.ToLower(), out value))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         public void SetAttribute(string name, string value)
         {
             string lowName = name.ToLower();
@@ -423,8 +793,6 @@ namespace Jtc.CsQuery
         {
             return _Attributes.Remove(name);
         }
-
-        
 
         /// <summary>
         /// Gets an attribute value, or returns null if the value is missing. If a valueless attribute is found, this will also return null. HasAttribute should be used
@@ -500,18 +868,6 @@ namespace Jtc.CsQuery
                 }
             }
         }
-        public bool HasAttribute(string name)
-        {
-            string value;
-            if (_Attributes.TryGetValue(name.ToLower(), out value))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
         public string Tag
         {
             get
@@ -520,52 +876,17 @@ namespace Jtc.CsQuery
             }
             set
             {
-                _Tag = value.ToLower();
-            }
-        } protected string _Tag = String.Empty;
-        public string Type
-        {
-            get
-            {
-                return GetAttribute("type", String.Empty);
-            }
-            set
-            {
-                _Attributes["type"] = value;
-            }
-        } protected string _Type = String.Empty;
-        protected Dictionary<string, string> _Attributes = new Dictionary<string, string>();
-
-
-        public IEnumerable<string> Errors
-        {
-            get
-            {
-                if (__Errors == null)
+                if (String.IsNullOrEmpty(Tag))
                 {
-                    yield break;
+                    _Tag = value.ToLower();
                 }
                 else
                 {
-                    foreach (string error in _Errors)
-                    {
-                        yield return error;
-                    }
+                    throw new Exception("You can't change the tag of an element once it has been created.");
                 }
+                
             }
-        }
-        protected List<string> _Errors
-        {
-
-            get
-            {
-                if (__Errors == null)
-                {
-                    __Errors = new List<string>();
-                }
-                return __Errors;
-            }
-        } private List<string> __Errors = null;
+        } protected string _Tag = null;
         public string ID
         {
             get
@@ -574,26 +895,27 @@ namespace Jtc.CsQuery
             }
             set
             {
+                string id = _Attributes["id"];
+                if (!String.IsNullOrEmpty(id))
+                {
+                    RemoveFromIndex(IndexKey("#" + id));
+                }
                 _Attributes["id"] = value;
+                AddToIndex(IndexKey("#" + value));
             }
         }
-        public string Name
+
+        public string this[string name]
         {
             get
             {
-                return GetAttribute("name",String.Empty);
+                return GetAttribute(name);
             }
             set
             {
-                _Attributes["name"] = value;
+                SetAttribute(name, value);
             }
-
         }
-        /// <summary>
-        /// For special tag types, like !DOCTYPE or comments, any data that is not really a tag.
-        /// </summary>
-        public string NonAttributeData { get; set; }
-        
         /// <summary>
         /// Returns text of the inner HTMl
         /// </summary>
@@ -608,7 +930,7 @@ namespace Jtc.CsQuery
                 else
                 {
                     StringBuilder sb = new StringBuilder();
-                    foreach (DomObject elm in Children)
+                    foreach (IDomObject elm in Children)
                     {
                         sb.Append(elm.Html);
                     }
@@ -636,6 +958,7 @@ namespace Jtc.CsQuery
                 return GetHtml(false);
             }
         }
+
         protected string GetHtml(bool includeChildren)
         {
             StringBuilder sb = new StringBuilder();
@@ -660,10 +983,7 @@ namespace Jtc.CsQuery
                     sb.Append(" " + kvp.Key);
                 }
             }
-            if (ElementType == ElementType.Informational)
-            {
-                sb.Append(" " + NonAttributeData.Trim());
-            }
+
             if (InnerHtmlAllowed)
             {
                 sb.Append(String.Format(">{0}</" + Tag + ">", includeChildren ? InnerHtml : String.Empty));
@@ -674,13 +994,17 @@ namespace Jtc.CsQuery
             }
             return sb.ToString();
         }
-     
 
+
+        public override string ToString()
+        {
+            return Html;
+        }
         /// <summary>
         /// This object type can have inner HTML.
         /// </summary>
         /// <returns></returns>
-        public bool InnerHtmlAllowed
+        public override bool InnerHtmlAllowed
         {
             get
             {
@@ -706,13 +1030,9 @@ namespace Jtc.CsQuery
                 }
             }
         }
-        //public override int GetHashCode()
-        //{
-        //    return Tag.GetHashCode() + _Attributes.GetHashCode();
-        //}
-        //public override bool Equals(object obj)
-        //{
-        //    return obj == this;
-        //}
+        public override bool Complete
+        {
+            get { return !String.IsNullOrEmpty(Tag); }
+        }
     }
 }
