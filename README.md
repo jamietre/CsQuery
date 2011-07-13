@@ -1,6 +1,15 @@
 ## CsQuery - C# jQuery Port
 
 
+7/13/2011 - 0.6.2.
+
+- Actually live tested this against a big ugly asp.net web page, fixed a few bugs, and it works!
+- Handle "quoted" and non-quoted comment types
+- Finish implementing DOM interfaces
+- Handle CDATA
+- Better handling of broken close tags (seek nearest match up tree, if none found, ignore, optionally remove)
+- Add "DomRenderingOptions" to control handing of bad tags (remove) and allow removing comments
+
 7/13/2011 - 0.6.1
 
 - Changed selection index to use range selectors, allowing indexed performance across any subset
@@ -52,11 +61,44 @@ SHORTCOMINGS
     CsQuery.Elements      results of the selection
     CsQuery.Selectors     current selectors applied to create the Elements
 
-    IDomObject             abstract base class for any element in the DOM
-    DomLiteral            a text node
-    DomContainer          abstract class for any DOM element that can contain other elements
-    DomRoot               special purpose node to contain the DOM
-    DomElement            a regular DOM element
+	INTERFACES 
+
+    IDomObject            any element in the DOM (all interfaces inherit this)
+	IDomSpecialElement    any element that contains its information in the tag itself (comments, doctype, cdata)
+
+	IDomContainer         Any DOM element that can contain other elements
+
+    IDomRoot              The DOM itself
+	    :IDomContainer
+    IDomElement           A regular DOM element
+	    :IDomContainer
+	IDomText              A text node
+	   :IDomSpecialElement
+	IDomInvalidElement    A text node that looks like an HTML closing tag, but is mismatched (treated like text)
+	   :IDomText
+	IDomComment           A comment
+	   :IDomSpecialElement
+	IDomCData             A CDATA node
+	   :IDomSpecialElement
+	IDomDocumentType      A doctype node
+	   :IDomSpecialElement
+
+	ABSTRACT CLASSES
+
+	DomContainer<T>:  DomObject<T>
+	DomObject<T>: IDomObject
+
+	OBJECTS
+
+	DomRoot: DomContainer, IDomRoot
+	DomDocumentType: DomContainer, IDomRoot
+	DomElement: DomContainer, IDomElement
+	DomText: IDomText
+	DomInvalidElement: IDomInvalidElement
+	DomComment: IDomComment
+	DomCData: IDomCData
+	DomDocumentType: IDomDocumentType
+
 
 **Create DOM**
 

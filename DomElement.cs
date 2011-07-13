@@ -7,12 +7,25 @@ using System.Diagnostics;
 
 namespace Jtc.CsQuery
 {
+    [Flags]
+    public enum DomRenderingOptions
+    {
+        RemoveMismatchedCloseTags = 1,
+        RemoveComments = 2
+    }
+    public enum DocType
+    {
+        HTML5 = 1,
+        HTML4 = 2,
+        XHTML = 3,
+        Unknown = 4
+    }
     public enum NodeType
     {
         ELEMENT_NODE  =1,
         //ATTRIBUTE_NODE =2,
         TEXT_NODE = 3,
-        //CDATA_SECTION_NODE = 4,
+        CDATA_SECTION_NODE = 4,
         //ENTITY_REFERENCE_NODE = 5,
         //ENTITY_NODE=  6,
         //PROCESSING_INSTRUCTION_NODE =7,
@@ -34,14 +47,36 @@ namespace Jtc.CsQuery
         void RemoveFromIndex();
         IDomObject Clone();
         bool InnerHtmlAllowed {get;}
-        bool Complete { get; }
-        
+        bool Complete { get; }        
     }
-    public interface ISpecialElement: IDomObject
+    /// <summary>
+    /// Defines an interface for elements whose defintion (not innerhtml) contain non-tag or attribute formed data
+    /// </summary>
+    public interface IDomSpecialElement: IDomObject 
     {
         string NonAttributeData { get; set; }
+        string Text { get; set; }
     }
-
+    public interface IDomText : IDomObject
+    {
+    }
+    /// <summary>
+    /// A marker interface an element that will be rendered as text because it was determined to be a mismatched tag
+    /// </summary>
+    public interface IDomInvalidElement : IDomText
+    {
+        
+    }
+    public interface IDomComment :  IDomSpecialElement
+    {
+        bool IsQuoted { get; set; }
+    }
+    public interface IDomCData :  IDomSpecialElement
+    {
+    }
+    public interface IDomDocumentType :  IDomSpecialElement
+    {
+    }
     public interface IDomContainer : IDomObject
     {
         IEnumerable<IDomObject> Children {get;}
@@ -53,7 +88,11 @@ namespace Jtc.CsQuery
         void Insert(IDomObject element, int index);
         string GetNextChildID();
         int Count { get; }
-
+    }
+    public interface IDomRoot : IDomContainer
+    {
+        DocType DocType { get; set; }
+        DomRenderingOptions DomRenderingOptions { get; set; }
     }
     public interface IDomElement : IDomContainer
     {
@@ -100,6 +139,11 @@ namespace Jtc.CsQuery
             T clone = new T();
             clone.Root = Root;
             clone.Parent = null;
+            // prob should just implemnt this in the subclass but easier for now
+            if (clone is IDomSpecialElement)
+            {
+                ((IDomSpecialElement)clone).NonAttributeData = ((IDomSpecialElement)this).NonAttributeData;
+            }
             return clone;
         }
 
@@ -234,9 +278,6 @@ namespace Jtc.CsQuery
             return key + ">" + Path;
         }
 
-
-
-
         IDomObject IDomObject.Clone()
         {
             return Clone();
@@ -245,106 +286,306 @@ namespace Jtc.CsQuery
         
     }
     
+    
+
     /// <summary>
     /// Catch-all for unimplemented node types (e.g.
     /// </summary>
-    public class DomSpecialElement : DomObject<DomSpecialElement>, ISpecialElement 
+    
+    public class DomDocumentType : DomObject<DomDocumentType>,IDomDocumentType 
     {
-        public DomSpecialElement(): base()
+        public DomDocumentType()
+            : base()
         {
-        }
-        public DomSpecialElement(NodeType nodeType): base()
-        {
-            _NodeType = nodeType;
-        }
-        
-        /// <summary>
-        /// For special tag types, like !DOCTYPE or comments, any data that is not really a tag.
-        /// </summary>
-        public string NonAttributeData { get; set; }
 
-        public override string Html
-        {
-            get { return "<" + NonAttributeData + ">"; }
         }
-
-        public override bool InnerHtmlAllowed
+        public override NodeType NodeType
+        {
+            get { return NodeType.DOCUMENT_TYPE_NODE; }
+        }
+        public DocType DocType
         {
             get
             {
-                switch (NodeType)
+                if (_DocType != 0)
                 {
-                    case NodeType.DOCUMENT_TYPE_NODE:
-                        return false;
-                    default:
-                        return false;
+                    return _DocType;
+                }
+                else
+                {
+                    return GetDocType();
                 }
             }
-        }
-        public override NodeType NodeType
-        {
-            get{
-                return _NodeType;
+            set
+            {
+                _DocType = value;
             }
-        } protected NodeType _NodeType;
-        public void SetNodeType(NodeType nodeType)
-        {
-            _NodeType = nodeType;
         }
-        public override DomSpecialElement Clone()
-        {
-            DomSpecialElement clone = base.Clone();
-            clone._NodeType = NodeType;
-            clone.NonAttributeData = NonAttributeData;
-            return clone;
-        }
-        public override bool Complete
-        {
-            get { return NodeType != 0; }
-        }
-            
-    }
+        protected DocType _DocType = 0;
 
-    /// <summary>
-    /// Used for literal text (not part of a tag)
-    /// </summary>
-    public class DomText : DomObject<DomText>
-    {
-        public DomText()
+        public override string  Html
         {
+            get { return "<!DOCTYPE " + NonAttributeData + ">"; }
         }
-        public DomText(string html)
-        {
-            _Html = html;
-        }
-        public override NodeType NodeType
-        {
-            get { return NodeType.TEXT_NODE; }
-        }
-        public override string Html
+
+        public string  NonAttributeData
         {
             get
             {
-                return _Html;
+                if (_DocType == 0)
+                {
+                    return _NonAttributeData;
+                }
+                else
+                {
+                    switch (_DocType)
+                    {
+                        case DocType.HTML5:
+                            return "html";
+                        case DocType.XHTML:
+                            return "html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"";
+                        case DocType.HTML4:
+                            return "html PUBLIC \"-//W3C//DTD HTML 4.01 Frameset//EN\" \"http://www.w3.org/TR/html4/frameset.dtd\"";
+                        default:
+                            throw new Exception("Unimplemented doctype");
+                    }
+
+                }
+            }
+	        set 
+	        { 
+		        _NonAttributeData = value;
+	        }
+        }
+        protected string _NonAttributeData = String.Empty;
+        protected DocType GetDocType()
+        {
+            string data = NonAttributeData.Trim().ToLower();
+            if (data == "html")
+            {
+                return DocType.HTML5;
+            } else if (data.IndexOf("xhtml 1")>=0) {
+                return DocType.XHTML;
+            }
+            else if (data.IndexOf("html 4") >= 0)
+            {
+                return DocType.HTML4;
+            }
+            else
+            {
+                return DocType.Unknown;
             }
         }
-        public override DomText Clone()
+
+        public override bool Complete
         {
-            DomText text = base.Clone();
-            text._Html = Html;
-            return text;
+            get { return true; }
         }
-        protected string _Html=String.Empty;
+        public override bool InnerHtmlAllowed
+        {
+            get { return false; }
+        }
+        #region IDomSpecialElement Members
+
+        public string Text
+        {
+            get
+            {
+                return NonAttributeData;
+            }
+            set
+            {
+                NonAttributeData = value;
+            }
+        }
+
+        #endregion
+
+        
+  
+    }
+    public class DomCData : DomObject<DomCData>, IDomCData
+    {
+        public DomCData()
+            : base()
+        {
+
+        }
+        public override NodeType NodeType
+        {
+            get { return NodeType.CDATA_SECTION_NODE; }
+        }
+        public override string Html
+        {
+            get { return "<![CDATA[" + NonAttributeData + ">"; }
+        }
+
+        #region IDomSpecialElement Members
+
+        public string NonAttributeData
+        {
+            get;
+            set;
+        }
         public override bool InnerHtmlAllowed
         {
             get { return false; }
         }
         public override bool Complete
         {
-            get { return !String.IsNullOrEmpty(Html);  }
+            get { return true; }
+        }
+        public string Text
+        {
+            get
+            {
+                return NonAttributeData;
+            }
+            set
+            {
+               NonAttributeData=value;
+            }
+        }
+
+        #endregion
+    }
+    public class DomComment : DomObject<DomComment>, IDomComment 
+    {
+        public DomComment()
+            : base()
+        {
+        }
+        public override NodeType NodeType
+        {
+            get { return NodeType.COMMENT_NODE; }
+        }
+        public bool IsQuoted { get; set; }
+        protected string TagOpener
+        {
+            get { return IsQuoted ? "<!--" : "<!"; }
+        }
+        protected string TagCloser
+        {
+            get { return IsQuoted ? "-->" : ">"; }
+        }
+        public override string Html
+        {
+            get {
+                if (Root.DomRenderingOptions.HasFlag(DomRenderingOptions.RemoveComments))
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    return TagOpener + NonAttributeData + TagCloser;
+                }
+            }
+        }
+
+        public override bool InnerHtmlAllowed
+        {
+            get { return false; }
+        }
+        public override bool Complete
+        {
+            get { return true; }
+        }
+        #region IDomSpecialElement Members
+
+        public string NonAttributeData
+        {
+            get;
+            set;
+        }
+
+        public string Text
+        {
+            get
+            {
+                return NonAttributeData;
+            }
+            set
+            {
+                NonAttributeData = value;
+            }
+        }
+
+        #endregion
+    }
+    /// <summary>
+    /// Used for literal text (not part of a tag)
+    /// </summary>
+    public class DomText : DomObject<DomText>, IDomText
+    {
+        public DomText()
+        {
+            Initialize();
+        }
+        public DomText(string text): base()
+        {
+            Initialize();
+            Text = text;
+        }
+        protected void Initialize()
+        {
+            Text = String.Empty;
+        }
+        public override NodeType NodeType
+        {
+            get { return NodeType.TEXT_NODE; }
+        }
+        public string Text
+        {
+            get;
+            set;
+        }
+
+        public override string Html
+        {
+            get
+            {
+                return Text;
+            }
+        }
+        public override DomText Clone()
+        {
+            DomText domText = base.Clone();
+            domText.Text = Text;
+            return domText;
+        }
+        
+        public override bool InnerHtmlAllowed
+        {
+            get { return false; }
+        }
+        public override bool Complete
+        {
+            get { return !String.IsNullOrEmpty(Text);  }
         }
     }
 
+    public class DomInvalidElement : DomText, IDomInvalidElement
+    {
+        public DomInvalidElement()
+            : base()
+        {
+        }
+        public DomInvalidElement(string text): base(text)
+        {
+
+        }
+        public override string Html
+        {
+            get
+            {
+                if (Root.DomRenderingOptions.HasFlag(DomRenderingOptions.RemoveMismatchedCloseTags)) {
+                    return String.Empty;
+                } else {
+                    return base.Html;
+                }
+            }
+        }
+    }
     /// <summary>
     /// Base class for Dom object that contain other elements
     /// </summary>
@@ -535,7 +776,7 @@ namespace Jtc.CsQuery
     /// <summary>
     /// Special node type to represent the DOM.
     /// </summary>
-    public class DomRoot : DomContainer<DomRoot>
+    public class DomRoot : DomContainer<DomRoot>,IDomRoot 
     {
         public DomRoot()
             : base()
@@ -546,6 +787,19 @@ namespace Jtc.CsQuery
         {
 
         }
+        public DomRenderingOptions DomRenderingOptions
+        { 
+            get
+            {
+             return _DomRenderingOptions;
+            } 
+            set
+            {
+                _DomRenderingOptions=value;
+            } 
+        }
+
+        protected DomRenderingOptions _DomRenderingOptions = DomRenderingOptions.RemoveMismatchedCloseTags;
         public override DomRoot  Root
         {
 	          get 
@@ -561,6 +815,42 @@ namespace Jtc.CsQuery
         {
             get { return NodeType.DOCUMENT_NODE; }
         }
+        public DomDocumentType  DocTypeNode {
+            get
+            {
+                foreach (IDomObject obj in Root.Children)
+                {
+                    if (obj.NodeType == NodeType.DOCUMENT_TYPE_NODE)
+                    {
+                        return (DomDocumentType)obj;
+                    }
+                }
+                return null;
+            }
+        }
+        public DocType DocType
+        {
+            get
+            {
+                if (_DocType==0) {
+                    DomDocumentType docType = DocTypeNode;
+                    if (docType == null)
+                    {
+                        _DocType = DocType.XHTML;
+                    }
+                    else
+                    {
+                        _DocType = docType.DocType;
+                    }
+                }
+                return _DocType;
+            }
+            set
+            {
+                _DocType = value;
+            }
+        }
+        protected DocType _DocType = 0;
         public RangeSortedDictionary<DomElement> SelectorXref = new RangeSortedDictionary<DomElement>();
         public override bool InnerHtmlAllowed
         {
@@ -571,63 +861,7 @@ namespace Jtc.CsQuery
             get { return true; }
         }
     }
-
-    /// <summary>
-    /// A comment
-    /// </summary>
-    public class DomComment : DomObject<DomComment>, ISpecialElement
-    {
-        public override NodeType NodeType
-        {
-            get { return NodeType.ELEMENT_NODE; }
-        }
-
-        public string Text
-        {
-            get
-            {
-                return NonAttributeData;
-            }
-            set
-            {
-                NonAttributeData = value;
-            }
-        }
-        public override string Html
-        {
-            get { return "<!--" + Text + "-->"; }
-        }
-
-        public override bool InnerHtmlAllowed
-        {
-            get
-            {
-                return false;
-            }
-
-        }
-
-        public override DomComment Clone()
-        {
-            DomComment clone = base.Clone();
-            clone.NonAttributeData = NonAttributeData;
-            return clone;
-        }
-        public override bool Complete
-        {
-            get { return true; }
-        }
-        #region ISpecialElement Members
-
-        public string NonAttributeData
-        {
-            get;
-            set;
-        }
-
-        #endregion
-    }
-
+    
     /// <summary>
     /// HTML elements
     /// </summary>
@@ -662,9 +896,9 @@ namespace Jtc.CsQuery
                 {
                     e.Add(((DomElement)obj).Clone());
                 }
-                else if (obj is DomText)
+                else if (obj is IDomText)
                 {
-                    DomText lit = new DomText(((DomText)obj).Html);
+                    DomText lit = new DomText(((IDomText)obj).Html);
                     e.Add(lit);
                 } else {
                     throw new Exception("Unexpected element type while cloning a DomElement");
@@ -958,9 +1192,22 @@ namespace Jtc.CsQuery
                 return GetHtml(false);
             }
         }
-
+        protected DocType DocType
+        {
+            get
+            {
+                if (_DocType == 0)
+                {
+                    _DocType = Root == null ? DocType.XHTML : Root.DocType;
+                }
+                return _DocType;
+            }
+        }
+        private DocType _DocType;
+        
         protected string GetHtml(bool includeChildren)
         {
+            
             StringBuilder sb = new StringBuilder();
             sb.Append("<" + Tag);
             if (_Classes.Count > 0)
@@ -986,16 +1233,24 @@ namespace Jtc.CsQuery
 
             if (InnerHtmlAllowed)
             {
-                sb.Append(String.Format(">{0}</" + Tag + ">", includeChildren ? InnerHtml : String.Empty));
+                sb.Append(String.Format(">{0}</" + Tag + ">",
+                    includeChildren ? InnerHtml : String.Empty
+                    ));
             }
             else
             {
-                sb.Append(" />");
+                if (DocType == DocType.XHTML)
+                {
+                    sb.Append(" />");
+                }
+                else
+                {
+                    sb.Append(" >");
+                }
             }
             return sb.ToString();
         }
-
-
+        
         public override string ToString()
         {
             return Html;

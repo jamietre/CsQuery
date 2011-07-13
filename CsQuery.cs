@@ -8,6 +8,7 @@ using System.Diagnostics;
 
 namespace Jtc.CsQuery
 {
+
     public class CsQuery : IEnumerable<IDomElement>
     {
         // Used to manage extension methods by keeping a reference within the base CsQuery to whatever object it creates.
@@ -343,6 +344,11 @@ namespace Jtc.CsQuery
         public string Render()
         {
             return Dom.Html;
+        }
+        public string Render(DomRenderingOptions renderingOptions)
+        {
+            Dom.DomRenderingOptions = renderingOptions;
+            return Render();
         }
         /// <summary>
         /// Add elements

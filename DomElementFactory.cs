@@ -9,6 +9,11 @@ namespace Jtc.CsQuery
 {
     public class DomElementFactory
     {
+        public DomElementFactory()
+        {
+            
+        }
+
         protected string BaseHtml
         {
             set
@@ -95,6 +100,7 @@ namespace Jtc.CsQuery
             public int Step = 0;
             public bool Finished;
             public bool AllowLiterals;
+            public bool Invalid = false;
             public int HtmlStart = 0;
             /// <summary>
             /// Use this to prepare the iterator object to continue finding siblings. It retains the parent.
@@ -160,6 +166,7 @@ namespace Jtc.CsQuery
 
                                 int tagStartPos = current.Pos;
                                 string newTag = GetTagOpener(current);
+                                string newTagLower = newTag.ToLower();
 
                                 // when Element exists, it's because a previous iteration created it: it's our parent
                                 string parentTag = String.Empty;
@@ -174,25 +181,56 @@ namespace Jtc.CsQuery
                                     current.Pos = tagStartPos + 1;
                                     //Debug.Assert(curPos != 1504);
                                     string closeTag = GetCloseTag(current);
+                                   // Debug.Assert(closeTag != "ul");
+                                    // Ignore empty tags, or closing tags found when no parent is open
+
+
+                                    bool isProperClose = closeTag.ToLower() == parentTag;
                                     if (closeTag == String.Empty)
                                     {
                                         // ignore empty tags
                                         continue;
-                                    } else if (closeTag.ToLower() != parentTag)
-                                    {
-                                        // it wasn't ours. Assume it's something above us (so go back to previous position) and stop here.
-                                        current.Pos = tagStartPos;
                                     }
+                                    else
+                                    {
+                                        // locate match for this closer up the heirarchy
+                                        IterationData actualParent =null;
+                                        
+                                        if (!isProperClose)
+                                        {
+                                            actualParent = current.Parent;
+                                            while (actualParent != null && actualParent.Element.Tag.ToLower() != closeTag.ToLower())
+                                            {
+                                                actualParent = actualParent.Parent;
+                                            }
+                                        }
+                                        // if no matching close tag was found up the tree, ignore it
+                                        // otherwise always close this and repeat at the same position until the match is found
+                                        if (!isProperClose && actualParent == null)
+                                        {
+                                            current.Invalid = true;
+                                            continue;
+                                        }
+                                    }
+                                   // element is closed 
+                                    
                                     if (current.Parent.Parent == null)
                                     {
                                         yield return current.Parent.Element;
                                     }
-                                    current.Parent.Reset(current.Pos);
                                     current.Finished = true;
+                                    if (isProperClose)
+                                    {
+                                        current.Parent.Reset(current.Pos);
+                                    }
+                                    else
+                                    {
+                                        current.Parent.Reset(tagStartPos);
+                                    }
                                     // already been returned before we added the children
                                     continue;
                                 }
-
+                                // Before we keep going see if this is an implicit close
                                 if (parentTag != String.Empty)
                                 {
                                     if (TagHasImplicitClose(parentTag,newTag)
@@ -205,37 +243,66 @@ namespace Jtc.CsQuery
                                         }
                                         current.Parent.Reset(tagStartPos);
                                         current.Finished = true;
+
                                         continue;
                                     }
                                 }
                                 // seems to be a new tag. Parse it
 
                                 
-                                ISpecialElement specialElement = null;
-                                if (newTag.ToLower()=="!doctype")
+                                IDomSpecialElement specialElement = null;
+                                
+                                if (newTagLower[0] == '!')
                                 {
-                                    specialElement = new DomSpecialElement(NodeType.DOCUMENT_TYPE_NODE);
-                                    current.Object = specialElement;
-                                } else if (newTag[0] == '!')
-                                {
-                                    specialElement = new DomComment();
-                                    current.Object = specialElement;
+                                    if (newTagLower.StartsWith("!doctype"))
+                                    {
+                                        specialElement = new DomDocumentType();
+                                        current.Object = specialElement;
+                                    }
+                                    else if (newTagLower.StartsWith("![cdata["))
+                                    {
+                                        specialElement = new DomCData();
+                                        current.Object = specialElement;
+                                        current.Pos = tagStartPos + 9;
+                                    }
+                                    else 
+                                    {
+                                        specialElement = new DomComment();
+                                        current.Object = specialElement;
+                                        if (newTagLower.StartsWith("!--"))
+                                        {
+                                            ((DomComment)specialElement).IsQuoted = true;
+                                            current.Pos = tagStartPos + 4;
+                                        } else {
+                                            current.Pos = tagStartPos+1;
+                                        }
+                                    }
                                 }
-                                else {
+                                else
+                                {
                                     current.Object = new DomElement();
                                     current.Element.Tag = newTag;
                                 }
-
+                                
                                 // Check for informational tag types
                                 
                                // Debug.Assert(newTag != "p");
-                                if (current.Object is ISpecialElement)
+                                if (current.Object is IDomSpecialElement)
                                 {
-                                    int tagEndPos = BaseHtml.IndexOf(">", current.Pos);
-                                    if (tagEndPos > EndPos)
+                                    string endTag = (current.Object is IDomComment && ((IDomComment)current.Object).IsQuoted) ? "-->" : ">";
+                                        
+                                    int tagEndPos = BaseHtml.IndexOf(endTag, current.Pos);
+                                    if (tagEndPos <0)
                                     {
-                                        throw new Exception("Unclosed HTML element '" + current.Element.Tag + "'");
+                                        // if a tag is unclosed entirely, then just find a new line.
+                                        tagEndPos = BaseHtml.IndexOf(System.Environment.NewLine, current.Pos);
                                     }
+                                    if (tagEndPos < 0)
+                                    {
+                                        // Never closed, no newline - junk, treat it like such
+                                        tagEndPos = EndPos;
+                                    }
+
                                     specialElement.NonAttributeData = BaseHtml.SubstringBetween(current.Pos, tagEndPos);
                                     current.Pos = tagEndPos;
                                 }
@@ -326,7 +393,12 @@ namespace Jtc.CsQuery
             // There's plain text -return it as a literal.
             string text = BaseHtml.SubstringBetween(current.HtmlStart, current.Pos);
             IDomObject textObj = null;
-            DomText lit = new DomText(text);
+            DomText lit;
+            if (current.Invalid) {
+                lit = new DomInvalidElement(text);
+            } else {
+                lit = new DomText(text);
+            }
             if (!current.AllowLiterals)
             {
                 IDomElement wrapper = new DomElement();
@@ -393,7 +465,7 @@ namespace Jtc.CsQuery
                 switch (step)
                 {
                     case 0:
-                        if (isValidNameChar(c))
+                        if (validNameStartCharacters.Contains(c))
                         {
                             nameStart = current.Pos;
                             step = 1;
@@ -401,7 +473,7 @@ namespace Jtc.CsQuery
                         current.Pos++;
                         break;
                     case 1:
-                        if (!isValidNameChar(c))
+                        if (!validNameCharacters.Contains(c))
                         {
                             name = BaseHtml.SubstringBetween(nameStart, current.Pos);
                             step = 2;
@@ -439,7 +511,7 @@ namespace Jtc.CsQuery
                 switch (step)
                 {
                     case 0: // find name
-                        if (isValidNameChar(c))
+                        if (validNameStartCharacters.Contains(c))
                         {
                             step = 1;
                             nameStart = current.Pos;
@@ -456,7 +528,7 @@ namespace Jtc.CsQuery
 
                         break;
                     case 1:
-                        if (!isValidNameChar(c))
+                        if (!validNameCharacterSet.Contains(c))
                         {
                             step = 2;
                             aName = BaseHtml.SubstringBetween(nameStart, current.Pos);
@@ -483,32 +555,38 @@ namespace Jtc.CsQuery
                         }
                         break;
                     case 3: // find quote start
-                        if (c == '"' || c == '\'')
+                        if (c=='\\' || c=='>')
                         {
-                            isQuoted = true;
-                            quoteChar = c;
-                            step = 4;
-                            valStart = current.Pos + 1;
-                            current.Pos++;
-                        }
-                        else if (isValidNameChar(c))
-                        {
-                            step = 4;
-                            valStart = current.Pos;
-                            current.Pos++;
-                        }
-                        else if (c != ' ')
-                        {
-                            // bad html - no quote
+                            // early ending tag
                             finished = true;
+                            //step = 4;
+                            //valStart = current.Pos;
+                            //current.Pos++;
+                        }
+                        else if (c == ' ')
+                        {
+                            current.Pos++;
                         }
                         else
                         {
-                            current.Pos++;
+                            if (c == '"' || c == '/')
+                            {
+                                isQuoted = true;
+                                valStart = current.Pos+1;
+                                current.Pos++;
+                                quoteChar = c;
+                            } else {
+                                valStart = current.Pos;
+                            }
+                            
+                            step = 4;
+                        
+                            // any non-whitespace is part of the attribute   
                         }
                         break;
-                    case 4: // finished
-                        if ((isQuoted && c == quoteChar) || (!isQuoted && !isValidNameChar(c)))
+                    case 4: // parse the attribute until whitespace or closing quote
+                        if ((isQuoted && c == quoteChar) || 
+                            (!isQuoted && (c==' ' || c=='/' || c=='>')))
                         {
                             aValue = BaseHtml.SubstringBetween(valStart, current.Pos);
                             if (isQuoted)
@@ -599,11 +677,12 @@ namespace Jtc.CsQuery
             }
             return String.Empty;
         }
+        const string validNameStartCharacters = "abcdefghijklmnopqrstuvwxyzABCEDFGHIJKLMNOPQRSTUVWXYZ0123456789_:";
+        const string validNameCharacters = validNameStartCharacters + ".-";
 
-        protected bool isValidNameChar(char c)
-        {
-            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c>='0' && c<='9') || c == '_' ;
-        }
+        protected HashSet<char> validNameStartCharacterSet = new HashSet<char>(validNameStartCharacters.ToArray());
+        protected HashSet<char> validNameCharacterSet = new HashSet<char>(validNameCharacters.ToArray());
+
         protected bool isTagChar(char c)
         {
             return (c == '<' || c == '>' || c == '/');
