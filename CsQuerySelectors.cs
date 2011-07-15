@@ -406,14 +406,19 @@ namespace Jtc.CsQuery
                 return Selectors[index];
             }
         }
+
+        public IEnumerable<IDomObject> Select(DomRoot root)
+        {
+            return Select(root, null);
+        }
         /// <summary>
         /// Select from DOM using index. First non-class/tag/id selector will result in this being passed off to GetMatches
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        public IEnumerable<IDomObject> Select(DomRoot root)
+        public IEnumerable<IDomObject> Select(DomRoot root, IEnumerable<IDomObject> selectWithin)
         {
-            IEnumerable<IDomObject> lastResult=null;
+            IEnumerable<IDomObject> lastResult = selectWithin;
 
             var selector = Selectors[0];
             string key = String.Empty;
@@ -833,7 +838,7 @@ namespace Jtc.CsQuery
             {
                 if (e is DomText)
                 {
-                    if (e.Html.IndexOf(text) > 0)
+                    if (((IDomText)e).Text.IndexOf(text) > 0)
                     {
                         return true;
                     }

@@ -3,12 +3,19 @@
 
 7/13/2011 - 0.6.2.
 
+- Added support for UpdatePanel processing in Server module. ASP.NET encodes updatepanel data with a length checksum
+  which causes the client code to break if you alter anything. Server module now parses it an provides direct access
+  to the components of each updatepanel.
+- Added ability to select DocType 
+- Fixed a problem with cloning. Clones now create their own DOM/index when created. This adds a little overhead when 
+  cloning but otherwise it created special cases for clones. This makes much mores sense, it is consistent.
 - Actually live tested this against a big ugly asp.net web page, fixed a few bugs, and it works!
 - Handle "quoted" and non-quoted comment types
 - Finish implementing DOM interfaces
 - Handle CDATA
 - Better handling of broken close tags (seek nearest match up tree, if none found, ignore, optionally remove)
 - Add "DomRenderingOptions" to control handing of bad tags (remove) and allow removing comments
+- SELECT not returning a new DOM object. (Should it select within the current CSQ? Or just use Find?)
 
 7/13/2011 - 0.6.1
 
@@ -27,7 +34,12 @@
 - Remodel the engine to support descendent/child selectors
 - Changes to the DOM objets to better support cloning, css and style transparently
 
-7/1/2011 - Version 0.5
+7/1/2011 - Version 0.5 
+
+TODO
+
+Rendering attributes without quotes (when setting doctype to HTML4) seems to break things - must not be handling some condition properly
+   * This needs to be an option, not a function of doctype
 
 (c) 2011 James Treworgy
 MIT License
@@ -201,6 +213,7 @@ Matches jQuery syntax
     jQuery (create new jQuery object from existing object, HTML, or DOM element(s))
 
     Add
+	AddClass
     Append
     Attr
     Before
@@ -218,6 +231,7 @@ Matches jQuery syntax
     Parent
     Prev
     Remove
+	RemoveClass
     ReplaceWith
     Show
     Val

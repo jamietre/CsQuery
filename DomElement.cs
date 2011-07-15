@@ -41,13 +41,15 @@ namespace Jtc.CsQuery
         NodeType NodeType {get;}
         string PathID {get;}
         string Path { get; }
-        DomRoot Root { get; set;}
-        string Html { get; }
+        CsQuery Owner { get; set; }
+        DomRoot Dom { get; }
+        string Render();
         void AddToIndex();
         void RemoveFromIndex();
         IDomObject Clone();
         bool InnerHtmlAllowed {get;}
-        bool Complete { get; }        
+        bool Complete { get; }
+        int DescendantCount();
     }
     /// <summary>
     /// Defines an interface for elements whose defintion (not innerhtml) contain non-tag or attribute formed data
@@ -59,6 +61,7 @@ namespace Jtc.CsQuery
     }
     public interface IDomText : IDomObject
     {
+        string Text { get; set; }
     }
     /// <summary>
     /// A marker interface an element that will be rendered as text because it was determined to be a mismatched tag
@@ -88,6 +91,7 @@ namespace Jtc.CsQuery
         void Insert(IDomObject element, int index);
         string GetNextChildID();
         int Count { get; }
+        IEnumerable<IDomObject> CloneChildren();
     }
     public interface IDomRoot : IDomContainer
     {
@@ -119,7 +123,8 @@ namespace Jtc.CsQuery
         string ID { get; set; }
         string Style { get; }
         string Class { get; }
-        string InnerHtml { get; }
+        string InnerHtml { get; set; }
+        string InnerText { get; set; }
         IEnumerable<KeyValuePair<string, string>> Attributes { get; }
         string this[string index] { get; set; }
 
@@ -132,13 +137,48 @@ namespace Jtc.CsQuery
     public abstract class DomObject<T>: IDomObject where T: IDomObject,new()
     {
         public abstract bool InnerHtmlAllowed { get;}
-        public virtual DomRoot Root { get; set; }
+        public virtual CsQuery Owner {
+            get
+            {
+                return _Owner;
+            }
+            set
+            {
+                _Owner = value;
+                if (this is IDomContainer)
+                {
+                    foreach (IDomObject obj in ((IDomContainer)this).Children)
+                    {
+                        obj.Owner = value;
+                    }
+                }
+            }
+        }
+        protected CsQuery _Owner = null;
+
+        // Owner can be null (this is an unbound element)
+        // if so create an arbitrary one.
+
+        public virtual DomRoot Dom
+        {
+            get
+            {
+                if (Owner != null)
+                {
+                    return Owner.Dom;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+        
         public abstract NodeType NodeType { get; }
         public virtual T Clone()
         {
             T clone = new T();
-            clone.Root = Root;
-            clone.Parent = null;
+
             // prob should just implemnt this in the subclass but easier for now
             if (clone is IDomSpecialElement)
             {
@@ -187,8 +227,8 @@ namespace Jtc.CsQuery
 
         protected IDomContainer _Parent = null;
         public abstract bool Complete { get; }
-        public abstract string Html
-        { get;  }
+        public abstract string Render();
+        
         protected int IDCount = 0;
 
         protected IEnumerable<string> IndexKeys()
@@ -219,7 +259,7 @@ namespace Jtc.CsQuery
 
         public void AddToIndex()
         {
-            if (Root!=null && this is IDomElement)
+            if (Dom!=null && this is IDomElement)
             {
                 // Fix the path when it's added to the index.
                 // This is a little confusing. Would rather that we can't access it until it's added to a DOM.
@@ -235,7 +275,7 @@ namespace Jtc.CsQuery
                     foreach (IDomObject child in e.Children)
                     {
                         // Move root in case this is coming from an unmapped or alternate DOM
-                        child.Root = Root;
+                        child.Owner = Owner;
                         child.AddToIndex();
                     }
                 }
@@ -243,7 +283,7 @@ namespace Jtc.CsQuery
         }
         public void RemoveFromIndex()
         {
-            if (Root!=null && this is IDomElement)
+            if (Dom != null && this is IDomElement)
             {
                 if (this is IDomContainer)
                 {
@@ -267,11 +307,17 @@ namespace Jtc.CsQuery
         /// <param name="key"></param>
         public void RemoveFromIndex(string key)
         {
-            Root.SelectorXref.Remove(key);
+            if (Dom != null)
+            {
+                Dom.SelectorXref.Remove(key);
+            }
         }
         public void AddToIndex(string key)
         {
-            Root.SelectorXref.Add(key, this as DomElement);
+            if (Dom != null)
+            {
+                Dom.SelectorXref.Add(key, this as DomElement);
+            }
         }
         protected string IndexKey( string key)
         {
@@ -282,12 +328,13 @@ namespace Jtc.CsQuery
         {
             return Clone();
         }
-
+        public virtual int DescendantCount()
+        {
+            return 0;
+        }
         
     }
     
-    
-
     /// <summary>
     /// Catch-all for unimplemented node types (e.g.
     /// </summary>
@@ -319,13 +366,14 @@ namespace Jtc.CsQuery
             set
             {
                 _DocType = value;
+                Dom.DocType = value;
             }
         }
         protected DocType _DocType = 0;
 
-        public override string  Html
+        public override string Render()
         {
-            get { return "<!DOCTYPE " + NonAttributeData + ">"; }
+            return "<!DOCTYPE " + NonAttributeData + ">"; 
         }
 
         public string  NonAttributeData
@@ -385,6 +433,10 @@ namespace Jtc.CsQuery
         {
             get { return false; }
         }
+        public override string ToString()
+        {
+            return Render();
+        }
         #region IDomSpecialElement Members
 
         public string Text
@@ -415,11 +467,19 @@ namespace Jtc.CsQuery
         {
             get { return NodeType.CDATA_SECTION_NODE; }
         }
-        public override string Html
+        public override string Render()
         {
-            get { return "<![CDATA[" + NonAttributeData + ">"; }
+            return GetHtml(NonAttributeData);
         }
-
+        protected string GetHtml(string innerText)
+        {
+            return "<![CDATA[" + innerText + ">";
+        }
+        public override string ToString()
+        {
+            string innerText = NonAttributeData.Length > 80 ? NonAttributeData.Substring(0, 80) + " ... " : NonAttributeData;
+            return GetHtml(innerText);
+        }
         #region IDomSpecialElement Members
 
         public string NonAttributeData
@@ -468,18 +528,20 @@ namespace Jtc.CsQuery
         {
             get { return IsQuoted ? "-->" : ">"; }
         }
-        public override string Html
+        public override string Render()
         {
-            get {
-                if (Root.DomRenderingOptions.HasFlag(DomRenderingOptions.RemoveComments))
-                {
-                    return String.Empty;
-                }
-                else
-                {
-                    return TagOpener + NonAttributeData + TagCloser;
-                }
+            if (Dom != null && Dom.DomRenderingOptions.HasFlag(DomRenderingOptions.RemoveComments))
+            {
+                return String.Empty;
             }
+            else
+            {
+                return GetComment(NonAttributeData);
+            }
+        }
+        protected string GetComment(string innerText)
+        {
+            return TagOpener + innerText + TagCloser;
         }
 
         public override bool InnerHtmlAllowed
@@ -489,6 +551,11 @@ namespace Jtc.CsQuery
         public override bool Complete
         {
             get { return true; }
+        }
+        public override string ToString()
+        {
+            string innerText = NonAttributeData.Length > 80 ? NonAttributeData.Substring(0, 80) + " ... " : NonAttributeData;
+            return GetComment(innerText);
         }
         #region IDomSpecialElement Members
 
@@ -540,12 +607,9 @@ namespace Jtc.CsQuery
             set;
         }
 
-        public override string Html
+        public override string Render()
         {
-            get
-            {
-                return Text;
-            }
+            return Text;
         }
         public override DomText Clone()
         {
@@ -562,6 +626,11 @@ namespace Jtc.CsQuery
         {
             get { return !String.IsNullOrEmpty(Text);  }
         }
+        public override string ToString()
+        {
+            return Text;
+        }
+
     }
 
     public class DomInvalidElement : DomText, IDomInvalidElement
@@ -574,15 +643,13 @@ namespace Jtc.CsQuery
         {
 
         }
-        public override string Html
+        public override string Render()
         {
-            get
-            {
-                if (Root.DomRenderingOptions.HasFlag(DomRenderingOptions.RemoveMismatchedCloseTags)) {
-                    return String.Empty;
-                } else {
-                    return base.Html;
-                }
+            if (Dom != null &&
+                Dom.DomRenderingOptions.HasFlag(DomRenderingOptions.RemoveMismatchedCloseTags)) {
+                return String.Empty;
+            } else {
+                return base.Render();
             }
         }
     }
@@ -601,6 +668,7 @@ namespace Jtc.CsQuery
             _Children.AddRange(elements);   
         }
 
+        public abstract IEnumerable<IDomObject> CloneChildren();
         /// <summary>
         /// Returns all children (including inner HTML as objects);
         /// </summary>
@@ -654,17 +722,14 @@ namespace Jtc.CsQuery
                 return _Children.Count;
             }
         }
-        public override string Html
+        public override string Render()
         {
-            get
-            {
                 StringBuilder sb = new StringBuilder();
                 foreach (IDomObject e in Children )
                 {
-                    sb.Append(e.Html);
+                    sb.Append(e.Render());
                 }
                 return (sb.ToString());
-            }
         } 
        /// <summary>
         /// Add a child to this element 
@@ -676,8 +741,14 @@ namespace Jtc.CsQuery
             {
                 throw new Exception("Cannot add children to this element type. Inner HTML is not allowed.");
             }
+            
+            if (element.Owner !=null && element.Owner != Owner)
+            {
+                element.Owner.Remove(element);
+            }
+            // Set owner recursively
+            element.Owner = this.Owner;
             element.Parent = this;
-            element.Root = this.Root;
             //AddPath(element);
             _Children.Add(element);
             element.AddToIndex();
@@ -701,12 +772,16 @@ namespace Jtc.CsQuery
         public void Insert(IDomObject element,int index)
         {
             element.Parent = this;
-            element.Root = this.Root;
+            element.Owner = this.Owner;
             //AddPath(element);
             _Children.Insert(index, element);
             element.AddToIndex();
         }
-   
+        
+        /// <summary>
+        /// Remove an element from this element's children
+        /// </summary>
+        /// <param name="element"></param>
         public void Remove(IDomObject element)
         {
 
@@ -714,7 +789,7 @@ namespace Jtc.CsQuery
             element.RemoveFromIndex();
            
             element.Parent = null;
-            element.Root = null;
+            element.Owner = null;
         }
  
         /// <summary>
@@ -728,15 +803,15 @@ namespace Jtc.CsQuery
             }
         }
 
-        public override T Clone()
-        {
-
-            T clone = base.Clone();
-            foreach (IDomObject obj in _Children) {
-                clone.Add(obj.Clone());
-           }
-            return clone;
-        }
+        //public override T Clone()
+        //{
+        //    T clone = base.Clone();
+        //    foreach (IDomObject obj in _Children)
+        //    {
+        //        clone.Add(obj.Clone());
+        //    }
+        //    return clone;
+        //}
         
         /// <summary>
         /// This is used to assign sequential IDs to children. Since they are requested by the children the method needs to be maintained in the parent.
@@ -771,6 +846,15 @@ namespace Jtc.CsQuery
             } while (number >= 0);
             return output.PadLeft(3, '0');
         }
+        public override int DescendantCount()
+        {
+            int count = 0;
+            foreach (IDomObject obj in Children)
+            {
+                count += 1 + obj.DescendantCount();
+            }
+            return count;
+        }
     }
 
     /// <summary>
@@ -800,15 +884,11 @@ namespace Jtc.CsQuery
         }
 
         protected DomRenderingOptions _DomRenderingOptions = DomRenderingOptions.RemoveMismatchedCloseTags;
-        public override DomRoot  Root
+        public override DomRoot  Dom
         {
 	          get 
 	        { 
 		         return this;
-	        }
-	          set 
-	        { 
-		        throw new Exception("You cannot set the Root for a DomRoot type object.");
 	        }
         }
         public override NodeType NodeType
@@ -818,7 +898,7 @@ namespace Jtc.CsQuery
         public DomDocumentType  DocTypeNode {
             get
             {
-                foreach (IDomObject obj in Root.Children)
+                foreach (IDomObject obj in Dom.Children)
                 {
                     if (obj.NodeType == NodeType.DOCUMENT_TYPE_NODE)
                     {
@@ -828,6 +908,9 @@ namespace Jtc.CsQuery
                 return null;
             }
         }
+        /// <summary>
+        /// Gets the DocType for this node. This can be changed through the DomRoot
+        /// </summary>
         public DocType DocType
         {
             get
@@ -847,9 +930,20 @@ namespace Jtc.CsQuery
             }
             set
             {
+                // Keep synchronized with DocTypeNode
+                if (_settingDocType) return;
+                _settingDocType = true;
                 _DocType = value;
+                DomDocumentType docType = DocTypeNode;
+                if (docType != null)
+                {
+                    DocTypeNode.DocType = value;
+                }
+                _settingDocType = false;
+            
             }
         }
+        private bool _settingDocType = false;
         protected DocType _DocType = 0;
         public RangeSortedDictionary<DomElement> SelectorXref = new RangeSortedDictionary<DomElement>();
         public override bool InnerHtmlAllowed
@@ -859,6 +953,17 @@ namespace Jtc.CsQuery
         public override bool Complete
         {
             get { return true; }
+        }
+        public override string ToString()
+        {
+            return "DOM Root (" + DocType.ToString()+", " + DescendantCount().ToString() + " elements)";
+        }
+        public override IEnumerable<IDomObject> CloneChildren()
+        {
+            foreach (IDomObject obj in Children)
+            {
+                yield return obj.Clone();
+            }
         }
     }
     
@@ -881,30 +986,27 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public override DomElement Clone()
         {
-            DomElement e = new DomElement();
+            DomElement e = base.Clone();
             e.Tag = Tag;
             
             e._Styles = new Dictionary<string, string>(_Styles);
             e._Classes = new HashSet<string>(_Classes);
+
             foreach (var attr in _Attributes)
             {
                 e.SetAttribute(attr.Key, attr.Value);
             }
-            foreach (IDomObject obj in _Children)
-            {
-                if (obj is DomElement)
-                {
-                    e.Add(((DomElement)obj).Clone());
-                }
-                else if (obj is IDomText)
-                {
-                    DomText lit = new DomText(((IDomText)obj).Html);
-                    e.Add(lit);
-                } else {
-                    throw new Exception("Unexpected element type while cloning a DomElement");
-                }
-            }
+            e.AddRange(CloneChildren());
+
+
             return e;
+        }
+        public  override IEnumerable<IDomObject> CloneChildren()
+        {
+            foreach (IDomObject obj in Children)
+            {
+                yield return obj.Clone();
+            }
         }
 
         public IEnumerable<string> Classes
@@ -1151,7 +1253,7 @@ namespace Jtc.CsQuery
             }
         }
         /// <summary>
-        /// Returns text of the inner HTMl
+        /// Returns text of the inner HTMl. When setting, any children will be removed.
         /// </summary>
         public string InnerHtml
         {
@@ -1166,21 +1268,58 @@ namespace Jtc.CsQuery
                     StringBuilder sb = new StringBuilder();
                     foreach (IDomObject elm in Children)
                     {
-                        sb.Append(elm.Html);
+                        sb.Append(elm.Render());
                     }
                     return sb.ToString();
                 }
+            }
+            set
+            {
+                if (Count > 0)
+                {
+                    RemoveChildren();
+                }
+                CsQuery csq = CsQuery.Create(value);
+                AddRange(csq.Dom.Children);
+            }
+        }
+        public string InnerText
+        {
+            get
+            {
+                if (Children.IsNullOrEmpty())
+                {
+                    return String.Empty;
+                }
+                else
+                {
+                    StringBuilder sb = new StringBuilder();
+                    foreach (IDomObject elm in Children)
+                    {
+                        if (elm is IDomText)
+                        {
+                            sb.Append(elm.Render());
+                        }
+                    }
+                    return sb.ToString();
+                }
+            }
+            set
+            {
+                if (Count > 0)
+                {
+                    RemoveChildren();
+                }
+                DomText text = new DomText(value);
+                Add(text);
             }
         }
         /// <summary>
         /// Returns the completel HTML for this element and its children
         /// </summary>
-        public override string Html
+        public override string Render()
         {
-            get
-            {
-                return GetHtml(true);
-            }
+            return GetHtml(true);
         }
         /// <summary>
         /// Returns the HTML for this element, ignoring children/innerHTML
@@ -1198,13 +1337,14 @@ namespace Jtc.CsQuery
             {
                 if (_DocType == 0)
                 {
-                    _DocType = Root == null ? DocType.XHTML : Root.DocType;
+                    _DocType = Dom.DocType;
                 }
                 return _DocType;
             }
         }
         private DocType _DocType;
         
+        char[] needsQuoting = new char[] {' ', '\'', '"'};
         protected string GetHtml(bool includeChildren)
         {
             
@@ -1212,18 +1352,31 @@ namespace Jtc.CsQuery
             sb.Append("<" + Tag);
             if (_Classes.Count > 0)
             {
-                sb.Append(" class=\"" + Class+"\"");
+                //if (_Classes.Count == 1 && DocType != DocType.XHTML)
+                //{
+                //    sb.Append(" class=" + Class);
+                //}
+                //else
+               // {
+                    sb.Append(" class=\"" + Class + "\"");
+                //}
             }
             if (_Styles.Count > 0)
             {
                 sb.Append(" style=\"" + Style+"\"");
             }
+
             foreach (var kvp in _Attributes)
             {
                 string val = kvp.Value;
-                if (val != String.Empty)
+                if (!String.IsNullOrEmpty(val))
                 {
-                    sb.Append(" " + kvp.Key + "=\"" + kvp.Value + "\"");
+                    //if (DocType== DocType.XHTML || val.IndexOfAny(needsQuoting) >=0) {
+                        string quoteChar = val.IndexOf("\"") >= 0 ? "'" : "\"";
+                        sb.Append(" " + kvp.Key + "=" + quoteChar + val + quoteChar);
+                    //} else {
+                    //    sb.Append(" " + kvp.Key + "=" + val);
+                   // }
                 }
                 else
                 {
@@ -1234,7 +1387,8 @@ namespace Jtc.CsQuery
             if (InnerHtmlAllowed)
             {
                 sb.Append(String.Format(">{0}</" + Tag + ">",
-                    includeChildren ? InnerHtml : String.Empty
+                    includeChildren ? InnerHtml : 
+                    (Count>0 ? "...":String.Empty)
                     ));
             }
             else
@@ -1253,7 +1407,7 @@ namespace Jtc.CsQuery
         
         public override string ToString()
         {
-            return Html;
+            return ElementHtml;
         }
         /// <summary>
         /// This object type can have inner HTML.

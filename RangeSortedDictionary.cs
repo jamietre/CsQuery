@@ -26,7 +26,12 @@ namespace Jtc.CsQuery
      */
     public class RangeSortedDictionary<TValue> : IRangeSortedDictionary<TValue>
     {
-        protected SortedSet<string> Keys = new SortedSet<string>();
+        public RangeSortedDictionary()
+        {
+            Keys = new SortedSet<string>(Comparer);
+        }
+        IComparer<string> Comparer = StringComparer.Ordinal;
+        protected SortedSet<string> Keys;
         protected Dictionary<string,TValue> Index = new Dictionary<string,TValue>();
         public IEnumerable<string> GetRangeKeys(string subkey)
         {
