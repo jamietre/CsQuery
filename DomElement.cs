@@ -263,6 +263,7 @@ namespace Jtc.CsQuery
             {
                 // Fix the path when it's added to the index.
                 // This is a little confusing. Would rather that we can't access it until it's added to a DOM.
+
                 _Path = Path;
                 foreach (string key in IndexKeys())
                 {
@@ -826,25 +827,45 @@ namespace Jtc.CsQuery
         // so that should be plenty
         protected string Base62Code(int number)
         {
-            string chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz=";
-            string output = String.Empty;
-            int cur = 0;
+            string chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            //string output = String.Empty;
+            //int cur = 0;
+            //int div = 0;
+            //int mod;
+            //int digit = 1;
+            //do
+            //{
+
+            //    if (number >= 62)
+            //    {
+            //        div = (int)Math.Floor((float)(number / 62));
+            //        mod = number - div * 62;
+            //        if (mod>0) {
+
+
+            //        cur = number - div;
+            //        number -= div;
+            //    }
+            //    else
+            //    {
+            //        cur = number;
+            //        number = -1;
+            //    }
+            //    output += chars[cur];
+            //} while (number >= 0);
+            //return output.PadLeft(3, '0');
+            int ks_len = chars.Length;
+            string sc_result = "";
+            long num_to_encode = number;
+            long i = 0;
             do
             {
-
-                if (number >= 62)
-                {
-                    cur = (int)Math.Floor((float)(number / 62));
-                    number /= cur * 62;
-                }
-                else
-                {
-                    cur = number;
-                    number = -1;
-                }
-                output += chars[cur];
-            } while (number >= 0);
-            return output.PadLeft(3, '0');
+                i++;
+                sc_result = chars[(int)(num_to_encode % ks_len)] + sc_result;
+                num_to_encode = ((num_to_encode - (num_to_encode % ks_len)) / ks_len);
+            }
+            while (num_to_encode != 0);
+            return sc_result.PadLeft(3, '0');
         }
         public override int DescendantCount()
         {

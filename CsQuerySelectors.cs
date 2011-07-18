@@ -467,7 +467,7 @@ namespace Jtc.CsQuery
         /// <param name="elements"></param>
         protected IEnumerable<IDomObject> ReorderSelection(DomRoot root, IEnumerable<IDomObject> elements)
         {
-            SortedSet<string> ordered = new SortedSet<string>();
+            SortedSet<string> ordered = new SortedSet<string>(StringComparer.Ordinal);
             foreach (var e in elements)
             {
                 ordered.Add(e.Path);

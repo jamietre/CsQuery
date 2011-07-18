@@ -2,7 +2,7 @@
 
 
 7/13/2011 - 0.6.2.
-
+- Bug in Base62 function. Learned "don't reinvent" lesson.
 - Added support for UpdatePanel processing in Server module. ASP.NET encodes updatepanel data with a length checksum
   which causes the client code to break if you alter anything. Server module now parses it an provides direct access
   to the components of each updatepanel.

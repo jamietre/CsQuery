@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.UI;
 using System.IO;
 using Jtc.ExtensionMethods;
+using System.Web.Script.Serialization;
 
 namespace Jtc.CsQuery.Server
 {
@@ -168,7 +169,17 @@ namespace Jtc.CsQuery.Server
         }
         HtmlTextWriter RealWriter;
         protected Page CurrentPage;
-
+        protected StringBuilder UserOutput
+        {
+            get
+            {
+                if (_UserOutput == null)
+                {
+                    _UserOutput = new StringBuilder();
+                }
+                return _UserOutput;
+            }
+        } protected StringBuilder _UserOutput = null;
         /// <summary>
         /// Creates a new CSQuery object from a Page.Render method. The base Render method of a page should be overridden,
         /// and this called from inside it to configure the CsQUery
@@ -182,6 +193,16 @@ namespace Jtc.CsQuery.Server
             CurrentPage = page;
             renderMethod(Writer);
             CreateFromWriter();
+        }
+
+        /// <summary>
+        /// Write json data to a global variable
+        /// </summary>
+        /// <param name="data"></param>
+        public void WriteJson(string target, object data)
+        {
+            UserOutput.Append(CsQueryHttpContext.JsonStringDef(target, data));
+
         }
 
 
@@ -201,30 +222,6 @@ namespace Jtc.CsQuery.Server
         }
         public void Render()
         {
-            //ScriptManager mgr = ScriptManager.GetCurrent(CurrentPage);
-
-            //// Asp.Net async postbacks structure data like:
-            //// "Len | Type | ID | Content" is the format of each asp.net postback
-            //// Len must match length of Content or it chokes. 
-
-            //if (mgr != null && mgr.IsInAsyncPostBack)
-            //{
-            //    string output = Owner.Render();
-            //    int index=0;
-            //    string[] parts = SplitQuotedString(output,'|');
-            //    while (index+3 < parts.Length)
-            //    {
-            //        parts[index] = parts[index + 3].Length.ToString();
-            //        index+=4;
-            //    }
-            //    for (int i = 0; i < parts.Length; i++)
-            //    {
-            //        RealWriter.Write(parts[i]+ (i<parts.Length-1 ? "|" : String.Empty));
-            //    }
-            //    RealWriter.Write(output);
-            //} else {
-            //    RealWriter.Write(Owner.Render());
-            //}
             if (_AsyncPostbackData != null)
             {
                 foreach (var data in _AsyncPostbackData)
@@ -234,7 +231,12 @@ namespace Jtc.CsQuery.Server
             }
             else
             {
-                RealWriter.Write(Owner.Render());
+                string content = Owner.Render();
+                if (_UserOutput != null)
+                {
+                    content += "<script type=\"text/javascript\">" + System.Environment.NewLine + UserOutput.ToString() + "</script>";
+                }
+                RealWriter.Write(content);
             }
         }
         
@@ -293,11 +295,39 @@ namespace Jtc.CsQuery.Server
 
             return valueList.ToArray();
         }
-    
+        internal static string JsonStringDef(string target, object data)
+        {
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            return "var " + target + "=$.parseJSON(" +
+                serializer.Serialize(data) +
+                ");" + System.Environment.NewLine;
+        }
 
     }
     public class AsyncPostbackData
     {
+        /// <summary>
+        /// Write JSON data to a global variable
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="data"></param>
+
+        protected StringBuilder UserOutput
+        {
+            get
+            {
+                if (_UserOutput == null)
+                {
+                    _UserOutput = new StringBuilder();
+                }
+                return _UserOutput;
+            }
+        } protected StringBuilder _UserOutput = null;
+        public void WriteJson(string target, object data)
+        {
+            UserOutput.Append(CsQueryHttpContext.JsonStringDef(target, data));
+
+        }
         public void Create(int length, string type, string id, string content)
         {
             Content = content;
@@ -308,6 +338,11 @@ namespace Jtc.CsQuery.Server
         public string Render()
         {
             string content = _Dom != null ? Dom.Render() : Content;
+            if (_UserOutput != null)
+            {
+                content += "<script type=\"text/javascript\">" + System.Environment.NewLine+ UserOutput.ToString() + "</script>";
+            }
+            
             return content.Length.ToString() + "|" + DataType + "|" + ID + "|" + content + "|";
 
         }
