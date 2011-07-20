@@ -7,6 +7,8 @@ using System.Web.UI;
 using System.Text.RegularExpressions;
 using System.Linq;
 using System.Web.Script.Serialization;
+using System.Dynamic;
+using System.Text;
 
 //namespace System.Runtime.CompilerServices
 //{
@@ -23,16 +25,41 @@ namespace Jtc.Scripting
         public static string toJSON(this object objectToSerialize)
         {
             JavaScriptSerializer serializer = new JavaScriptSerializer();
-            return (serializer.Serialize(objectToSerialize));
+            if (objectToSerialize is ExpandoObject)
+            {
+                return Flatten((ExpandoObject)objectToSerialize);
+            }
+            else
+            {
+                return (serializer.Serialize(objectToSerialize));
+            }
         }
         public static T fromJSON<T>(this string objectToDeserialize)
         {
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             return (T)serializer.Deserialize(objectToDeserialize, typeof(T));
         }
+        public static string Flatten(this ExpandoObject expando)
+        {
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            StringBuilder sb = new StringBuilder();
+            List<string> contents = new List<string>();
+            var d = expando as IDictionary<string, object>;
+            sb.Append("{");
+
+            foreach (KeyValuePair<string, object> kvp in d)
+            {
+                contents.Add(String.Format("\"{0}\": {1}", kvp.Key,
+                   serializer.Serialize(kvp.Value)));
+            }
+            sb.Append(String.Join(",", contents.ToArray()));
+
+            sb.Append("}");
+
+            return sb.ToString();
+        }
 
     }
-
 }
 namespace Jtc.ExtensionMethods
 {
@@ -454,6 +481,16 @@ namespace Jtc.ExtensionMethods
             return (baseList == null ||
                 baseList.Count == 0);
 
+        }
+        public static int OccurrencesOf(this string text, char find) {
+            int pos=0;
+            int count = 0;
+            while ((pos = text.IndexOf(find,pos))>=0)
+            {
+                count++;
+                pos++;
+            }
+            return count;
         }
         public static string AddListItem(this string list, string value, string separator)
         {

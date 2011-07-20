@@ -4,11 +4,25 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 using Jtc.ExtensionMethods;
+using Jtc.Scripting;
 using System.Diagnostics;
 
 namespace Jtc.CsQuery
 {
-
+    /// <summary>
+    /// Relationship between Dom and Selections
+    /// 
+    /// Dom represents a "DOM" and is shared among related CsQuery objects. This is the actual heirarchy. When a subquery is run, it 
+    /// uses the same DOM as its parent. 
+    /// Selections is a set of elements matching a selector. It is always a subset of DOM. 
+    /// 
+    /// DomRoot is a reference to the original CsQuery object that a DOM was created. 
+    /// 
+    /// Only CsQuery.Create creates a new DOM. Any other methods create unbound elements.
+    /// Cloning elements also creates unbound elements. They are not part of any DOM until added. So removing something from a clone will have no effect on 
+    /// a DOM.
+    /// </summary>
+    
     public class CsQuery : IEnumerable<IDomElement>
     {
         // Used to manage extension methods by keeping a reference within the base CsQuery to whatever object it creates.
@@ -16,9 +30,9 @@ namespace Jtc.CsQuery
         {
             get
             {
-                if (DomRoot != null)
+                if (DomOwner != null)
                 {
-                    return DomRoot.ExtensionCache;
+                    return DomOwner.ExtensionCache;
                 } else {
                     if (_ExtensionCache == null)
                     {
@@ -30,9 +44,9 @@ namespace Jtc.CsQuery
         } protected Dictionary<string, object> _ExtensionCache = null;
 
         /// <summary>
-        /// The CsQuery object that represents the actual DOM for which is is a selector. 
+        /// The CsQuery object that contains the actual DOM for which is is a selector. 
         /// </summary>
-        protected CsQuery DomRoot { get; set; }
+        protected CsQuery DomOwner { get; set; }
 
         protected DomElementFactory ElementFactory
         {
@@ -45,48 +59,41 @@ namespace Jtc.CsQuery
                 return (_ElementFactory);
             }
         } private DomElementFactory _ElementFactory = null;
+
         /// <summary>
-        /// Creates a new instance representing a DOM.
+        /// Creates a new DOM. This will DESTROY any existing DOM. This is not the same as Select.
         /// </summary>
         /// <param name="html"></param>
         /// <returns></returns>
-        public static CsQuery Create(string html)
+        public void CreateNew(string html)
         {
-            CsQuery csq = new CsQuery();
-            csq.CreateDomImpl(html);
-
-            return csq;
-        }
-
-        protected void CreateDomImpl(string html)
-        {
-            Dom = null;
+            _Dom = new DomRoot();
+            _Dom.Owner = this;
+            ClearSelections();
             Dom.AddRange(ElementFactory.CreateObjects(html));
             AddSelectionRange(Dom.Children);
         }
-
-
-
         /// <summary>
-        /// Create a new CsQuery object in a given DOM context
+        /// Creates a new DOM. This will DESTROY any existing DOM. This is not the same as Select.
         /// </summary>
-        /// <param name="element"></param>
-        /// <param name="context"></param>
+        /// <param name="html"></param>
         /// <returns></returns>
-        public static CsQuery CreateFromElement(IDomObject element)
+        public void CreateNew(IEnumerable<IDomObject> elements)
         {
-            CsQuery csq = new CsQuery();
-            csq.Dom.Add(element);
-            csq.AddSelection(element);
-            return csq;
+            _Dom = new DomRoot();
+            _Dom.Owner = this;
+            ClearSelections();
+            Dom.AddRange(elements);
+            AddSelectionRange(Dom.Children);
         }
-        public static CsQuery CreateFromElements(IEnumerable<IDomObject> elements)
-        {
-            CsQuery csq = new CsQuery();
-            csq.Dom.AddRange(elements);
-            csq.AddSelectionRange(elements);
-            return csq;
-        }
+        
+        //public static CsQuery CreateFromElements(IEnumerable<IDomObject> elements)
+        //{
+        //    CsQuery csq = new CsQuery();
+        //    csq.Dom.AddRange(elements);
+        //    csq.AddSelectionRange(elements);
+        //    return csq;
+        //}
         /// <summary>
         /// Creates a new, empty jQuery object.
         /// </summary>
@@ -103,9 +110,9 @@ namespace Jtc.CsQuery
         {
             // when creating a new CsQuery from another, leave Dom blank - it will be populated automatically with the
             // contents of the selector.
-            DomRoot = context;
+            DomOwner = context;
 
-            if (selector == "*" || selector == null)
+            if (selector == null)
             {
                 AddSelectionRange(context.Selection);
             }
@@ -116,34 +123,94 @@ namespace Jtc.CsQuery
             }
         }
         /// <summary>
+        /// Create a new CsQuery from a single elemement, using its own context
+        /// </summary>
+        /// <param name="element"></param>
+        public CsQuery(IDomObject element)
+        {
+            DomOwner = element.Owner;
+            AddSelection(element);
+        }
+        /// <summary>
+        /// Create a new CsQuery object from a set of DOM elements, using the DOM of the first element.
+        /// could contain more than one context)
+        /// </summary>
+        /// <param name="elements"></param>
+        public CsQuery(IEnumerable<IDomObject> elements)
+        {
+            DomOwner = elements.First().Owner;
+            
+            //if (!(this is CsQuery))
+            //{
+                AddSelectionRange(elements);
+            //}
+        }
+
+        /// <summary>
+        /// Create a new CsQuery object from a set of DOM elements, using the DOM of the first element.
+        /// could contain more than one context)
+        /// </summary>
+        /// <param name="elements"></param>
+        public CsQuery(IEnumerable<IDomObject> elements, CsQuery context)
+        {
+            DomOwner = context;
+            AddSelectionRange(elements);
+        }
+
+        /// <summary>
         /// Create a new CsQuery from a single DOM element
         /// </summary>
         /// <param name="element"></param>
         public CsQuery(IDomObject element, CsQuery context)
         {
-            DomRoot = context;
+            DomOwner = context;
             AddSelection(element);
         }
+
         /// <summary>
-        /// Create a new CsQuery object from a set of DOM elements, based on an existing DOM
+        /// Creeate a new DOM from HTML text
         /// </summary>
-        /// <param name="elements"></param>
-        public CsQuery(IEnumerable<IDomObject> elements, CsQuery context)
+        /// <param name="html"></param>
+        /// <returns></returns>
+        public static CsQuery Create(string html)
         {
-            DomRoot = context;
-            AddSelectionRange(elements);
+            CsQuery csq = new CsQuery();
+            
+            csq.CreateNew(html);
+
+            return csq;
         }
         /// <summary>
-        /// Create a new CsQuery object from a set of DOM elements
+        /// Creeate a new DOM from elements
         /// </summary>
-        /// <param name="elements"></param>
-        public CsQuery(CsQuery csq)
+        /// <param name="html"></param>
+        /// <returns></returns>
+        public static CsQuery Create(IEnumerable<IDomObject> elements)
         {
-            DomRoot = csq;
+            CsQuery csq = new CsQuery();
+            csq.CreateNew(elements);
+            return csq;
         }
-
-
-
+        /// <summary>
+        /// Mimics .Create
+        /// </summary>
+        /// <param name="html"></param>
+        /// <returns></returns>
+        public static implicit operator CsQuery(string html)
+        {
+            return CsQuery.Create(html);
+        }
+        /// <summary>
+        /// Create a new CsQuery object using the DOM context from an element
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static implicit operator CsQuery(DomElement element)
+        {
+            CsQuery csq = new CsQuery(element);
+            return csq;
+        }
 
         /// <summary>
         /// Represents the full, parsed DOM for an object created with an HTML parameter
@@ -153,27 +220,27 @@ namespace Jtc.CsQuery
             get {
                 if (_Dom == null)
                 {
-                    if (DomRoot != null)
+                    if (DomOwner != null)
                     {
-                        _Dom = DomRoot.Dom;
+                        _Dom = DomOwner.Dom;
                     }
                     else
                     {
                         _Dom = new DomRoot();
-//                        _Dom.Root = _Dom;
+                        _Dom.Owner =this;
                     }
                 }
                 return _Dom;
             }
-            set
-            {
-                _Dom = value;
-                ClearSelections();
-                if (_Dom != null)
-                {
-                    AddSelectionRange(_Dom.Children);
-                }
-            }
+            //set
+            //{
+            //    _Dom = value;
+            //    ClearSelections();
+            //    if (_Dom != null)
+            //    {
+            //        AddSelectionRange(_Dom.Children);
+            //    }
+            //}
         } protected DomRoot _Dom = null;
         /// <summary>
         /// Only elements that match the selection. 
@@ -191,7 +258,16 @@ namespace Jtc.CsQuery
         }
         protected List<IDomObject> _Selection = new List<IDomObject>();
         private HashSet<IDomObject> _SelectionUnique = new HashSet<IDomObject>();
+        
+        /// <summary>
+        /// Add an item to the list of selected elements. It should be part of this DOM.
+        /// </summary>
+        /// <param name="element"></param>
         protected void AddSelection(IDomObject element) {
+            //if (!ReferenceEquals(element.Dom, Dom))
+            //{
+            //    throw new Exception("Cannot add unbound elements or elements bound to another DOM directly to a selection set.");
+            //}
             if (_SelectionUnique.Add(element))
             {
                 _Selection.Add(element);
@@ -239,15 +315,39 @@ namespace Jtc.CsQuery
         public IDomElement this[int index]
         {
             get {
-            if (_Selection[index] is IDomElement)
-            {
-                return (IDomElement)_Selection[index];
-            }
-            else
-            {
-                throw new Exception("Object at this index is not an IDomElement.");
+                if (_Selection[index] is IDomElement)
+                {
+                    return (IDomElement)_Selection[index];
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
+
+        
+        public CsQuery this[string selector]
+        {
+            get
+            {
+                return Select(selector);
+            }
+        }
+
+        public CsQuery this[IDomObject element]
+        {
+            get
+            {
+                return Select(element);
+            }
+        }
+        public CsQuery this[IEnumerable<IDomObject> element]
+        {
+            get
+            {
+                return Select(element);
+            }
         }
         public IDomObject Get(int index)
         {
@@ -305,6 +405,7 @@ namespace Jtc.CsQuery
                 return String.Empty;
             }
         }
+
         /// <summary>
         /// Returns the HTML for all selected documents, separated by commas. No inner html or children are included.
         /// </summary>
@@ -313,7 +414,19 @@ namespace Jtc.CsQuery
         {
             return SelectionHtml(false);
         }
-
+        /// <summary>
+        /// Renders just the selection set completely.
+        /// </summary>
+        /// <returns></returns>
+        public string RenderSelection()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (IDomObject elm in this)
+            {
+                sb.Append(elm.Render());
+            }
+            return sb.ToString();
+        }
         public string SelectionHtml(bool includeInner)
         {
             StringBuilder sb = new StringBuilder();
@@ -321,21 +434,14 @@ namespace Jtc.CsQuery
             {
                 
                 sb.Append(sb.Length == 0 ? String.Empty : ", ");
-                if (includeInner || !(elm is IDomContainer))
-                {
-                    sb.Append(elm.Html);
-                }
-                else
-                {
-                    sb.Append(((DomElement)elm).ElementHtml);
-                }
+                sb.Append(includeInner ? elm.Render() : elm.ToString());
             }
             return sb.ToString();
         }
 
         public override string ToString()
         {
-            return SelectionHtml(true);
+            return SelectionHtml();
         }
          /// <summary>
         /// Renders the DOM to a string
@@ -343,7 +449,7 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public string Render()
         {
-            return Dom.Html;
+            return Dom.Render();
         }
         public string Render(DomRenderingOptions renderingOptions)
         {
@@ -378,8 +484,9 @@ namespace Jtc.CsQuery
         {
             CsQuery res = new CsQuery(this);
             res.AddSelectionRange(elements);
-            return this;
+            return res;
         }
+
         /// <summary>
         /// Add elements to the set of matched elements from an HTML fragment. Returns a new jQuery object.
         /// </summary>
@@ -390,6 +497,19 @@ namespace Jtc.CsQuery
             return Add(ElementFactory.CreateElements(html));
         }
 
+        /// <summary>
+        /// Adds the specified class(es) to each of the set of matched elements.
+        /// </summary>
+        /// <param name="className"></param>
+        /// <returns></returns>
+        public CsQuery AddClass(string className)
+        {
+            foreach (var item in this)
+            {
+                item.AddClass(className);
+            }
+            return this;
+        }
         /// <summary>
         /// Insert content, specified by the parameter, to the end of each element in the set of matched elements.
         /// TODO: Add overloads with multiple values
@@ -534,9 +654,13 @@ namespace Jtc.CsQuery
         public CsQuery Clone()
         {
             CsQuery csq = new CsQuery();
-            foreach (IDomElement e in SelectedElements)
+            
+            foreach (IDomObject elm in SelectedElements)
             {
-                csq.AddSelection(e.Clone());
+                IDomObject clone = elm.Clone();
+                csq.Dom.Add(clone);
+                csq.AddSelection(clone);
+                
             }
             return csq;
         }
@@ -591,6 +715,35 @@ namespace Jtc.CsQuery
             {
                 return this[0].GetStyle(style);
             }
+        }
+        /// <summary>
+        /// Returns value at named data store for the first element in the jQuery collection, as set by data(name, value).
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public object getData<T>(string key) {
+            string json = getData(key);
+            return json.fromJSON<T>();
+        }
+        public string getData(string key) {
+            return this.First()[0].GetAttribute("data-"+key);
+        }
+        public CsQuery Data(string key,string jsonData)
+        {
+            this.Each((IDomElement e) =>
+            {
+                e.SetAttribute("data-" + key, jsonData);
+            });
+            return this;
+        }
+        public CsQuery Data(string key, object data)
+        {
+            this.Each((IDomElement e) =>
+            {
+                e.SetAttribute("data-" + key, data.toJSON());
+            });
+            return this;
         }
         /// <summary>
         /// Iterate over each matched element.
@@ -657,30 +810,46 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery Find(string selector)
         {
-            CsQuery csq = new CsQuery(this);
-            CsQuerySelectors  selectors = new CsQuerySelectors(selector);
-            foreach (IDomElement elm in SelectedElements)
-            {
-                if (elm.Count > 0)
-                {
-                    csq.AddSelectionRange(selectors.GetMatches(elm.Children));
-                }
-            }
-
+            CsQuery csq = new CsQuery();
+            csq.DomOwner = this;
+            CsQuerySelectors selectors = new CsQuerySelectors(selector);
+            csq.AddSelectionRange(selectors.Select(Dom,Children()));
             return csq;
+
+
         }
+
+        public CsQuery Filter(string selector)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
-        /// Updates the current object with a new selection
+        /// Select from the whole DOM and return a new CSQuery object 
         /// </summary>
         /// <param name="selector"></param>
         /// <returns></returns>
         public CsQuery Select(string selector)
-        {
+       {
+            CsQuery csq = new CsQuery();
+            csq.DomOwner = this;
             CsQuerySelectors selectors = new CsQuerySelectors(selector);
-            ClearSelections();
-            AddSelectionRange(selectors.Select(Dom));
-            return this;
+            csq.AddSelectionRange(selectors.Select(Dom));
+            return csq;
         }
+
+        public CsQuery Select(IDomObject element)
+        {
+            CsQuery csq = new CsQuery(element);
+            return csq;
+        }
+        public CsQuery Select(IEnumerable<IDomObject> elements)
+        {
+            CsQuery csq = new CsQuery(elements);
+            return csq;
+        }
+
+
         /// <summary>
         /// Reduce the set of matched elements to the first in the set.
         /// </summary>
@@ -703,31 +872,63 @@ namespace Jtc.CsQuery
         /// <summary>
         /// Insert every element in the set of matched elements after the target.
         /// </summary>
-        /// <param name="element"></param>
+        /// <param name="target"></param>
         /// <returns></returns>
-        public CsQuery InsertAfter(IDomObject element)
+        public CsQuery InsertAfter(IDomObject target)
         {
-            element.Parent.Insert(element,GetElementIndex(element)+1);
+            return InsertAtOffset(target,1);
+        }
+        public CsQuery InsertAfter(CsQuery target) {
+            return InsertAtOffset(target, 1);
+        }
+        /// <summary>
+        /// Support for InsertAfter and InsertBefore. An offset of 0 will insert before the current element. 1 after.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        protected CsQuery InsertAtOffset(IDomObject target, int offset)
+        {
+            int index = GetElementIndex(target);
+            foreach (var item in this)
+            {
+                target.Parent.Insert(item, index+offset);
+                index++;
+            }
             return this;
         }
-        public CsQuery InsertAfter(CsQuery obj) {
+        public CsQuery InsertAtOffset(CsQuery target, int offset)
+        {
             bool isFirst = true;
-            foreach (IDomElement e in obj)
+            foreach (IDomElement e in target)
             {
                 if (isFirst)
                 {
-                    InsertAfter(e);
+                    InsertAtOffset(e,offset);
                     isFirst = false;
                 }
                 else
                 {
                     e.Clone();
                     IDomObject clone = e.Clone();
-                    InsertAfter(clone);
+                    InsertAtOffset(clone,offset);
                 }
             }
             return this;
         }
+        /// <summary>
+        /// A selector, element, HTML string, or jQuery object; the matched set of elements will be inserted before the element(s) specified by this parameter.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public CsQuery InsertBefore(IDomObject target)
+        {
+            return InsertAtOffset(target, 0);
+        }
+        public CsQuery InsertBefore(CsQuery target)
+        {
+            return InsertAtOffset(target, 0);
+        }
+
         /// <summary>
         /// Get the immediately following sibling of each element in the set of matched elements. 
         /// If a selector is provided, it retrieves the next sibling only if it matches that selector.
@@ -865,6 +1066,21 @@ namespace Jtc.CsQuery
             }
             return this;
         }
+        
+        /// <summary>
+        /// Remove a single class, multiple classes, or all classes from each element in the set of matched elements.
+        /// </summary>
+        /// <param name="className"></param>
+        /// <returns></returns>
+        public CsQuery RemoveClass(string className)
+        {
+            foreach (var elm in this)
+            {
+                elm.RemoveClass(className);
+            }
+            return this;
+        }
+
         /// <summary>
         /// Replace each element in the set of matched elements with the provided new content.
         /// </summary>
@@ -895,7 +1111,7 @@ namespace Jtc.CsQuery
         {
             if (Length > 0)
             {
-                IDomElement e = this[0];
+                IDomElement e = this.SelectedElements.First();
                 switch(e.Tag) {
                     case "textarea":
                         return e.InnerHtml;
@@ -904,6 +1120,17 @@ namespace Jtc.CsQuery
                             default:
                                 return e.GetAttribute("value");
                         }
+                    case "select":
+                        string result = String.Empty;
+
+                        foreach (IDomElement child in e.Elements)
+                        {
+                            if (e.Tag == "option" && e.HasAttribute("selected"))
+                            {
+                                result += (result == String.Empty ? String.Empty : ",") + e["value"];
+                            }
+                        }
+                        return result;
                     default:
                         return e.GetAttribute("value");
                 }
@@ -914,7 +1141,8 @@ namespace Jtc.CsQuery
             }
         }
         /// <summary>
-        /// Set the value of each element in the set of matched elements.
+        /// Set the value of each element in the set of matched elements. If a comma-separated value is passed to a multuple select list, then it
+        /// will be treated as an array.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -926,9 +1154,7 @@ namespace Jtc.CsQuery
                 {
                     case "textarea":
                         // should we delete existing children first? they should not exist
-                        e.RemoveChildren();
-                        DomText lit = new DomText(value);
-                        e.Add(lit);
+                        e.InnerText = value;
                         break;
                     case "input":
                         switch (e.GetAttribute("type",String.Empty))
@@ -936,6 +1162,26 @@ namespace Jtc.CsQuery
                             default:
                                 e.SetAttribute("value", value);
                                 break;
+                        }
+                        break;
+                    case "select":
+                        bool multiple = e.HasAttribute("multiple");
+                        HashSet<string> values=null;
+                        if (multiple)
+                        {
+                            values = new HashSet<string>(value.Split(','));
+                        }
+                        foreach (IDomElement child in e.Elements)
+                        {
+                            if (e.Tag == "option" 
+                                && (multiple ? values.Contains(e["value"]) : e["value"] == value))
+                            {
+                                e.SetAttribute("selected");
+                            }
+                            else
+                            {
+                                e.RemoveAttribute("selected");
+                            }
                         }
                         break;
                     default:
@@ -946,7 +1192,25 @@ namespace Jtc.CsQuery
             }
             return this;
         }
-   
+        /// <summary>
+        /// Set the value of each mutiple select element in the set of matched elements. Any elements not of type &lt;SELECT multiple&gt;&lt;/SELECT&gt; will be ignored.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public CsQuery Val(IEnumerable<object> values) {
+            string valueString=String.Empty;
+            foreach (object val in values) {
+                valueString+=(val==String.Empty?String.Empty:",") + val.ToString();
+            }
+            foreach (IDomElement e in SelectedElements)
+            {
+                if (e.Tag == "select" && e.HasAttribute("multiple"))
+                {
+                    Val(valueString);
+                }
+            }
+            return this;
+        }
         /// <summary>
         /// Check the current matched set of elements against a selector and return true if at least one of these elements matches the selector.
         /// </summary>
@@ -962,6 +1226,7 @@ namespace Jtc.CsQuery
             else
             {
                 return true;
+                
             }
         }
 #endregion

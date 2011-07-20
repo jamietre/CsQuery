@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jtc.ExtensionMethods;
 
 namespace Jtc.CsQuery
 {
@@ -26,7 +27,11 @@ namespace Jtc.CsQuery
      */
     public class RangeSortedDictionary<TValue> : IRangeSortedDictionary<TValue>
     {
-        protected SortedSet<string> Keys = new SortedSet<string>();
+        public RangeSortedDictionary()
+        {
+            Keys = new SortedSet<string>(StringComparer.Ordinal);
+        }
+        protected SortedSet<string> Keys;
         protected Dictionary<string,TValue> Index = new Dictionary<string,TValue>();
         public IEnumerable<string> GetRangeKeys(string subkey)
         {
@@ -40,6 +45,35 @@ namespace Jtc.CsQuery
                 if (key != lastKey)
                 {
                     yield return key;
+                }
+            }
+        }
+        /// <summary>
+        /// Return only keys at depth. Zero is the matching key.
+        /// </summary>
+        /// <param name="subKey"></param>
+        /// <param name="depth"></param>
+        /// <returns></returns>
+        public IEnumerable<TValue> GetRange(string subKey, int depth, bool descendants)
+        {
+            if (depth == 0 && !descendants)
+            {
+                yield return Index[subKey];
+            }
+            else
+            {
+                int len = subKey.Length;
+                int curDepth=0;
+                foreach (var key in GetRangeKeys(subKey))
+                {
+                    if (key.Length > len)
+                    {
+                        curDepth = key.Substring(len).OccurrencesOf('/');
+                    }
+                    if (curDepth == depth || (descendants && curDepth >= depth))
+                    {
+                        yield return Index[key];
+                    }
                 }
             }
         }
