@@ -9,6 +9,7 @@ using System.Linq;
 using System.Web.Script.Serialization;
 using System.Dynamic;
 using System.Text;
+using System.Reflection;
 
 //namespace System.Runtime.CompilerServices
 //{
@@ -22,6 +23,105 @@ namespace Jtc.Scripting
 
     public static class ExtensionMethods
     {
+        public static object Clone(this object obj)
+        {
+            return obj.Clone(false);
+        }
+        public static object Clone(this object obj, bool deep)
+        {
+            if (obj.IsImmutable()) {
+                return obj;
+            }
+            else if (obj is IEnumerable)
+            {
+                // captures expando objects too
+                return ((IEnumerable)obj).CloneList(deep);
+            }
+            else
+            {
+                // TODO - check for existence of a "clone" method
+                // convert regular objects to expando objects
+                return (obj.ToExpando());
+            }
+        }
+        /// <summary>
+        /// Deep clone an enumerable. Deals with expando objects.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static IEnumerable CloneList(this IEnumerable obj)
+        {
+            return obj.CloneList(false);
+        }
+        public static IEnumerable CloneList(this IEnumerable obj,bool deep)
+        {
+            IEnumerable newList;
+            // TODO - check for existence of a "clone" method
+            //if (obj.GetType().IsArray)
+            //{
+            //    return (IEnumerable)((Array)obj).Clone();
+            //} 
+            if (obj.IsExpando())
+            {
+                newList = new ExpandoObject();
+                var newListDict = (IDictionary<string, object>)newList;
+                foreach (var kvp in ((IDictionary<string,object>)obj))
+                {
+                    newListDict.Add(kvp.Key, deep ? kvp.Value.Clone(true): kvp.Value);
+                }
+            }
+            else
+            {
+                newList = new List<object>();
+                foreach (var item in obj)
+                {
+                    ((List<object>)newList).Add(deep ? item.Clone(true): item);
+                }
+            }
+            return newList;
+        }
+        /// <summary>
+        /// Converts a regular object to an expando object
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static ExpandoObject ToExpando(this object source)
+        {
+            return source.ToExpando(false);
+        }
+        public static ExpandoObject ToExpando(this object source, bool deep)
+        {
+            ExpandoObject target = new ExpandoObject();
+            IDictionary<string,object> targetDict = target;
+
+            IEnumerable<MemberInfo> members = source.GetType().GetMembers();
+            foreach (var member in members)
+            {
+                string name = member.Name;
+                object value = null;
+                if (member is PropertyInfo)
+                {
+                    value = ((PropertyInfo)member).GetGetMethod().Invoke(source, null);
+
+                }
+                else if (member is FieldInfo)
+                {
+                    value = ((FieldInfo)member).GetValue(source);
+                }
+                else
+                {
+                    continue;
+                }
+                targetDict[name] = deep ? value.Clone(true) : value;
+            }
+            return target;
+
+        }
+        /// <summary>
+        /// Serailize the object o a JSON string
+        /// </summary>
+        /// <param name="objectToSerialize"></param>
+        /// <returns></returns>
         public static string toJSON(this object objectToSerialize)
         {
             JavaScriptSerializer serializer = new JavaScriptSerializer();
@@ -34,6 +134,12 @@ namespace Jtc.Scripting
                 return (serializer.Serialize(objectToSerialize));
             }
         }
+        /// <summary>
+        /// Deserialize the JSON string to a typed object
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="objectToDeserialize"></param>
+        /// <returns></returns>
         public static T fromJSON<T>(this string objectToDeserialize)
         {
             JavaScriptSerializer serializer = new JavaScriptSerializer();
@@ -59,7 +165,57 @@ namespace Jtc.Scripting
             return sb.ToString();
         }
 
-
+        public static IEnumerable<KeyValuePair<string, object>> ToKvpList(this ExpandoObject obj)
+        {
+            return ((IDictionary<string, object>)obj).ToList();
+        }
+        /// <summary>
+        /// Returns false if this is a value type, string, or enumerable type other than an Expando object.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static bool IsExtendableType(this object obj)
+        {
+            return obj.IsExpando() ||
+                !(obj.IsImmutable() || obj is IEnumerable);
+        }
+        /// <summary>
+        /// Only value types, strings, and null
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static bool IsImmutable(this object obj)
+        {
+            return obj == null ||
+                obj is string ||
+                (obj is ValueType && !(obj.IsKeyValuePair()));
+        }
+        /// <summary>
+        /// Test if is an expando object. Remarkably we need a separate method for actual expando types
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static bool IsExpando(this object obj)
+        {
+            return (obj is IDictionary<string, object>);
+        }
+        public static bool IsExpando(this ExpandoObject  obj)
+        {
+            return true;
+        }
+        public static bool IsKeyValuePair(this object obj)
+        {
+            Type valueType = obj.GetType();
+            if (valueType.IsGenericType)
+            {
+                Type baseType = valueType.GetGenericTypeDefinition();
+                if (baseType == typeof(KeyValuePair<,>))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }
 namespace Jtc.ExtensionMethods
@@ -656,6 +812,24 @@ namespace Jtc.ExtensionMethods
                 break;
             }
             return (result);
+        }
+        public static bool TryGetFirst<T>(this IEnumerable<T> baseList, out T firstElement)
+        {
+            if (baseList == null)
+            {
+                firstElement = default(T);
+                return false;
+            }
+            bool result = false;
+            // I think this is the most efficient way to verify an empty IEnumerable
+            firstElement=default(T);
+            foreach (T obj in baseList)
+            {
+                result = true;
+                firstElement = obj;
+                break;
+            }
+            return result;
         }
         public static void ForEach<T>(this IEnumerable<T> list, Action<T> func)
         {

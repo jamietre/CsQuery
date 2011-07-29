@@ -6,6 +6,9 @@ using System.Text;
 using Jtc.ExtensionMethods;
 using Jtc.Scripting;
 using System.Diagnostics;
+using System.Dynamic;
+using System.Reflection;
+using System.Web.Script.Serialization;
 
 namespace Jtc.CsQuery
 {
@@ -23,7 +26,7 @@ namespace Jtc.CsQuery
     /// a DOM.
     /// </summary>
     
-    public class CsQuery : IEnumerable<IDomElement>
+    public class CsQuery : IEnumerable<IDomObject>
     {
         // Used to manage extension methods by keeping a reference within the base CsQuery to whatever object it creates.
         internal Dictionary<string, object> ExtensionCache
@@ -70,8 +73,8 @@ namespace Jtc.CsQuery
             _Dom = new DomRoot();
             _Dom.Owner = this;
             ClearSelections();
-            Dom.AddRange(ElementFactory.CreateObjects(html));
-            AddSelectionRange(Dom.Children);
+            Dom.ChildNodes.AddRange(ElementFactory.CreateObjects(html));
+            AddSelectionRange(Dom.ChildNodes);
         }
         /// <summary>
         /// Creates a new DOM. This will DESTROY any existing DOM. This is not the same as Select.
@@ -83,8 +86,8 @@ namespace Jtc.CsQuery
             _Dom = new DomRoot();
             _Dom.Owner = this;
             ClearSelections();
-            Dom.AddRange(elements);
-            AddSelectionRange(Dom.Children);
+            Dom.ChildNodes.AddRange(elements);
+            AddSelectionRange(Dom.ChildNodes);
         }
         
         //public static CsQuery CreateFromElements(IEnumerable<IDomObject> elements)
@@ -101,6 +104,16 @@ namespace Jtc.CsQuery
         {
             
         }
+        public CsQuery(string selector)
+        {
+            CreateNew(selector);
+        }
+        public CsQuery(string selector, string css)
+        {
+            CreateNew(selector);
+            Css(css);
+
+        }
         /// <summary>
         /// Create a new CsQuery object using an existing instance and a selector
         /// </summary>
@@ -112,14 +125,16 @@ namespace Jtc.CsQuery
             // contents of the selector.
             DomOwner = context;
 
+            //Find(selector);
+
             if (selector == null)
             {
-                AddSelectionRange(context.Selection);
+                AddSelectionRange(context.Children());
             }
             else
             {
                 Selectors = new CsQuerySelectors(selector);
-                AddSelectionRange(Selectors.GetMatches(context.Selection));
+                AddSelectionRange(Selectors.Select(Dom,context.Children()));
             }
         }
         /// <summary>
@@ -138,12 +153,13 @@ namespace Jtc.CsQuery
         /// <param name="elements"></param>
         public CsQuery(IEnumerable<IDomObject> elements)
         {
+            IDomObject el;
+            if (!elements.TryGetFirst(out el))
+            {
+                return;
+            }
             DomOwner = elements.First().Owner;
-            
-            //if (!(this is CsQuery))
-            //{
-                AddSelectionRange(elements);
-            //}
+            AddSelectionRange(elements);
         }
 
         /// <summary>
@@ -174,11 +190,20 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public static CsQuery Create(string html)
         {
-            CsQuery csq = new CsQuery();
-            
-            csq.CreateNew(html);
-
-            return csq;
+            return new CsQuery(html);
+        }
+        public static CsQuery Create(string html, string css)
+        {
+            return new CsQuery(html, css);
+        }
+        /// <summary>
+        /// Creates a new DOM from a file
+        /// </summary>
+        /// <param name="htmlFile"></param>
+        /// <returns></returns>
+        public static CsQuery LoadFile(string htmlFile)
+        {
+            return new CsQuery(Support.GetFile(htmlFile));
         }
         /// <summary>
         /// Creeate a new DOM from elements
@@ -285,8 +310,10 @@ namespace Jtc.CsQuery
             _Selection.Clear();
             _SelectionUnique.Clear();
         }
-
-        protected IEnumerable<IDomElement> SelectedElements
+        /// <summary>
+        /// Returns just IDomElements from the selection list.
+        /// </summary>
+        public IEnumerable<IDomElement> Elements
         {
             get
             {
@@ -315,14 +342,7 @@ namespace Jtc.CsQuery
         public IDomElement this[int index]
         {
             get {
-                if (_Selection[index] is IDomElement)
-                {
-                    return (IDomElement)_Selection[index];
-                }
-                else
-                {
-                    return null;
-                }
+                return (IDomElement)Get(index);
             }
         }
 
@@ -349,9 +369,22 @@ namespace Jtc.CsQuery
                 return Select(element);
             }
         }
+        public IEnumerable<IDomObject> Get()
+        {
+            return Selection;
+        }
         public IDomObject Get(int index)
         {
-            return (IDomObject)_Selection[index];
+            int effectiveIndex = index < 0 ? _Selection.Count+index-1 : index;
+
+            if (effectiveIndex >= 0 && effectiveIndex < _Selection.Count)
+            {
+                return (IDomObject)_Selection[effectiveIndex];
+            }
+            else
+            {
+                return null;
+            }
 
         }
         /// <summary>
@@ -383,10 +416,10 @@ namespace Jtc.CsQuery
             {
                 if (!obj.InnerHtmlAllowed)
                 {
-                    throw new Exception("Attempted to add Html to element with tag '" + obj.Tag + "' which is not allowed.");
+                    throw new Exception("Attempted to add Html to element with tag '" + obj.NodeName + "' which is not allowed.");
                 }
-                obj.RemoveChildren();
-                obj.AddRange(newElements.Children);
+                obj.ChildNodes.Clear();
+                obj.ChildNodes.AddRange(newElements.ChildNodes);
             }
             return this;
         }
@@ -467,7 +500,11 @@ namespace Jtc.CsQuery
             if (selector != null)
             {
                 CsQuerySelectors selectors = new CsQuerySelectors(selector);
-                return selectors.GetMatches(elements);
+                if (selectors.Count > 0)
+                {
+                    selectors[0].TraversalType = TraversalType.Filter;
+                }
+                return selectors.Select(Dom,elements);
             }
             else
             {
@@ -504,7 +541,7 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery AddClass(string className)
         {
-            foreach (var item in this)
+            foreach (var item in Elements)
             {
                 item.AddClass(className);
             }
@@ -518,18 +555,18 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery Append(string content)
         {
-            foreach (DomElement obj in SelectedElements)
+            foreach (DomElement obj in Elements)
             {
-                obj.AddRange(ElementFactory.CreateObjects(content));
+                obj.ChildNodes.AddRange(ElementFactory.CreateObjects(content));
             }
             return this;
         }
         public CsQuery Append(CsQuery elements) {
-            foreach (var obj in SelectedElements)
+            foreach (var obj in Elements)
             {
                 foreach (var e in elements.Selection )
                 {
-                    obj.Add(e);
+                    obj.AppendChild(e);
                 }
             }
             return this;
@@ -545,11 +582,11 @@ namespace Jtc.CsQuery
         public CsQuery Append(Func<int, string, string> func)
         {
             int index = 0;
-            foreach (DomElement obj in SelectedElements)
+            foreach (DomElement obj in Elements)
             {
                 string clientValue = func(index, obj.InnerHtml);
                 IEnumerable<IDomObject> objects = ElementFactory.CreateObjects(clientValue);
-                obj.AddRange(objects); ;
+                obj.ChildNodes.AddRange(objects); ;
                 index++;
             }
             return this;
@@ -591,7 +628,7 @@ namespace Jtc.CsQuery
             {
                 val = value.ToString();
             }
-            foreach (DomElement e in SelectedElements)
+            foreach (DomElement e in Elements)
             {
                 if (remove)
                 {
@@ -622,7 +659,7 @@ namespace Jtc.CsQuery
                 int index = GetElementIndex(element);
                 foreach (IDomObject obj in selection)
                 {
-                    element.Parent.Insert( obj,index);
+                    element.ParentNode.ChildNodes.Insert(index,obj);
                     index++;
                 }
             }
@@ -639,7 +676,7 @@ namespace Jtc.CsQuery
         public CsQuery Children(string selector)
         {
             List<IDomElement> list = new List<IDomElement>();
-            foreach (IDomElement obj in SelectedElements)
+            foreach (IDomElement obj in Elements)
             {
                 list.AddRange(obj.Elements);
             }
@@ -655,10 +692,10 @@ namespace Jtc.CsQuery
         {
             CsQuery csq = new CsQuery();
             
-            foreach (IDomObject elm in SelectedElements)
+            foreach (IDomObject elm in Elements)
             {
                 IDomObject clone = elm.Clone();
-                csq.Dom.Add(clone);
+                csq.Dom.AppendChild(clone);
                 csq.AddSelection(clone);
                 
             }
@@ -691,7 +728,7 @@ namespace Jtc.CsQuery
         {
             string style = String.Empty;
 
-            foreach (IDomElement e in SelectedElements)
+            foreach (IDomElement e in Elements)
             {
                 e.AddStyle(name, value);
             }
@@ -713,7 +750,7 @@ namespace Jtc.CsQuery
             }
             else
             {
-                return this[0].GetStyle(style);
+                return ((IDomElement)this[0]).GetStyle(style);
             }
         }
         /// <summary>
@@ -750,40 +787,25 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="func"></param>
         /// <returns></returns>
-        public CsQuery Each(Action<int, IDomObject> func)
-        {
-            int index = 0;
-            foreach (IDomObject obj in Selection)
-            {
-                func(index, obj);
-            }
-            return this;
-        }
         public CsQuery Each(Action<int, IDomElement> func)
         {
             int index = 0;
-            foreach (IDomElement obj in Selection)
+            foreach (IDomElement obj in Elements)
             {
                 func(index, obj);
             }
             return this;
         }
+
         /// <summary>
         /// Iterate over each matched element.
         /// </summary>
         /// <param name="func"></param>
         /// <returns></returns>
+
         public CsQuery Each(Action<IDomElement> func)
         {
-            foreach (IDomElement obj in SelectedElements)
-            {
-                func(obj);
-            }
-            return this;
-        }
-        public CsQuery Each(Action<IDomObject> func)
-        {
-            foreach (IDomObject obj in Selection)
+            foreach (IDomElement obj in Elements)
             {
                 func(obj);
             }
@@ -798,11 +820,23 @@ namespace Jtc.CsQuery
         {
             if (index < 0)
             {
-                index = Length + index;
+                index = Length + index-1;
             }
-            return new CsQuery(this[index],this);
+            if (index >= 0 && index < Length)
+            {
+                return new CsQuery(this[index], this);
+            }
+            else
+            {
+                return EmptySelection();
+            }
         }
-
+        protected CsQuery EmptySelection()
+        {
+            CsQuery empty = new CsQuery();
+            empty.DomOwner = this;
+            return empty;
+        }
         /// <summary>
         /// Get the descendants of each element in the current set of matched elements, filtered by a selector, jQuery object, or element.
         /// </summary>
@@ -859,6 +893,14 @@ namespace Jtc.CsQuery
             return Eq(0);
         }
         /// <summary>
+        /// Reduce the set of matched elements to the last in the set.
+        /// </summary>
+        /// <returns></returns>
+        public CsQuery Last()
+        {
+            return Eq(_Selection.Count - 1);
+        }
+        /// <summary>
         /// Hide the matched elements.
         /// </summary>
         /// <returns></returns>
@@ -891,7 +933,7 @@ namespace Jtc.CsQuery
             int index = GetElementIndex(target);
             foreach (var item in this)
             {
-                target.Parent.Insert(item, index+offset);
+                target.ParentNode.ChildNodes.Insert(index+offset,item);
                 index++;
             }
             return this;
@@ -938,12 +980,12 @@ namespace Jtc.CsQuery
         public CsQuery Next(string selector)
         {
             List<IDomElement> list = new List<IDomElement>();
-            foreach (IDomElement obj in SelectedElements)
+            foreach (IDomElement obj in Elements)
             {
                 // Extraordinarily inefficient way to get next. TODO: make structure a linked list
                 
                 IDomElement next=null;
-                var children = obj.Parent.Children.GetEnumerator();
+                var children = obj.ParentNode.ChildNodes.GetEnumerator();
                 children.Reset();
                 bool found = false;
                 while (children.MoveNext())
@@ -984,11 +1026,11 @@ namespace Jtc.CsQuery
         {
             List<IDomElement> list = new List<IDomElement>();
 
-            foreach (IDomElement obj in SelectedElements)
+            foreach (IDomElement obj in Elements)
             {
-                if (obj.Parent is IDomElement)
+                if (obj.ParentNode is IDomElement)
                 {
-                    list.Add((IDomElement)obj.Parent);
+                    list.Add((IDomElement)obj.ParentNode);
                 }
             }
             return new CsQuery(_FilterElements(list, selector), this);
@@ -1004,11 +1046,11 @@ namespace Jtc.CsQuery
         public CsQuery Prev(string selector)
         {
             List<IDomElement> list = new List<IDomElement>();
-            foreach (IDomElement obj in SelectedElements)
+            foreach (IDomElement obj in Elements)
             {
                 // Extraordinarily inefficient way to get next. TODO: make structure a linked list
                 
-                var children = obj.Parent.Children.GetEnumerator();
+                var children = obj.ParentNode.ChildNodes.GetEnumerator();
                 children.Reset();
                 IDomElement prev = null;
                 while(children.MoveNext()) {
@@ -1037,11 +1079,11 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery Remove(IDomObject element)
         {
-            if (element.Parent == null)
+            if (element.ParentNode == null)
             {
                 throw new Exception("The element is not part of a DOM.");
             }
-            element.Parent.Remove(element);
+            element.ParentNode.RemoveChild(element);
             return this;
         }
         /// <summary>
@@ -1060,7 +1102,7 @@ namespace Jtc.CsQuery
         public CsQuery Remove(string selector)
         {
             CsQuerySelectors selectors = new CsQuerySelectors(selector);
-            foreach (IDomElement e in selectors.GetMatches(SelectedElements))
+            foreach (IDomElement e in selectors.Select(Dom))
             {
                 Remove(e);
             }
@@ -1074,7 +1116,7 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery RemoveClass(string className)
         {
-            foreach (var elm in this)
+            foreach (var elm in this.Elements)
             {
                 elm.RemoveClass(className);
             }
@@ -1097,7 +1139,7 @@ namespace Jtc.CsQuery
         }
         public CsQuery Show()
         {
-            foreach (IDomElement e in SelectedElements)
+            foreach (IDomElement e in Elements)
             {
                 e.RemoveStyle("display");
             }
@@ -1111,8 +1153,8 @@ namespace Jtc.CsQuery
         {
             if (Length > 0)
             {
-                IDomElement e = this.SelectedElements.First();
-                switch(e.Tag) {
+                IDomElement e = this.Elements.First();
+                switch(e.NodeName) {
                     case "textarea":
                         return e.InnerHtml;
                     case "input":
@@ -1125,7 +1167,7 @@ namespace Jtc.CsQuery
 
                         foreach (IDomElement child in e.Elements)
                         {
-                            if (e.Tag == "option" && e.HasAttribute("selected"))
+                            if (e.NodeName == "option" && e.HasAttribute("selected"))
                             {
                                 result += (result == String.Empty ? String.Empty : ",") + e["value"];
                             }
@@ -1148,9 +1190,9 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery Val(string value)
         {
-            foreach (IDomElement e in SelectedElements)
+            foreach (IDomElement e in Elements)
             {
-                switch (e.Tag)
+                switch (e.NodeName)
                 {
                     case "textarea":
                         // should we delete existing children first? they should not exist
@@ -1173,7 +1215,7 @@ namespace Jtc.CsQuery
                         }
                         foreach (IDomElement child in e.Elements)
                         {
-                            if (e.Tag == "option" 
+                            if (e.NodeName == "option" 
                                 && (multiple ? values.Contains(e["value"]) : e["value"] == value))
                             {
                                 e.SetAttribute("selected");
@@ -1200,11 +1242,11 @@ namespace Jtc.CsQuery
         public CsQuery Val(IEnumerable<object> values) {
             string valueString=String.Empty;
             foreach (object val in values) {
-                valueString+=(val==String.Empty?String.Empty:",") + val.ToString();
+                valueString+=(String.IsNullOrEmpty(val.ToString())?String.Empty:",") + val.ToString();
             }
-            foreach (IDomElement e in SelectedElements)
+            foreach (IDomElement e in Elements)
             {
-                if (e.Tag == "select" && e.HasAttribute("multiple"))
+                if (e.NodeName == "select" && e.HasAttribute("multiple"))
                 {
                     Val(valueString);
                 }
@@ -1219,7 +1261,7 @@ namespace Jtc.CsQuery
         public bool Is(string selector)
         {
             CsQuerySelectors selectors = new CsQuerySelectors(selector);
-            if (selectors.GetMatches(Selection).IsNullOrEmpty())
+            if (selectors.Select(Dom,Selection).IsNullOrEmpty())
             {
                 return false;
             }
@@ -1229,9 +1271,165 @@ namespace Jtc.CsQuery
                 
             }
         }
+        public static ExpandoObject Extend(ExpandoObject target, object source1, object source2 = null, object source3 = null, object source4 = null, object source5 = null, object source6 = null, object source7 = null)
+        {
+            return Extend(false, target, source1, source2, source3, source4, source5, source6, source7);
+        }
+        public static ExpandoObject Extend(bool deep,ExpandoObject target, object source1, object source2 = null, object source3 = null, object source4 = null, object source5 = null, object source6 = null, object source7 = null)
+        {
+            // Add all non-null parameters to a processing queue
+            Queue<object> sources = new Queue<object>();
+            foreach (object obj in new object[] { source1, source2, source3, source4, source5, source6, source7 })
+            {
+                if (obj != null)
+                {
+                    sources.Enqueue(obj);
+                }
+            }
+            // Create a new empty object if there's no existing target -- same as using {} as the jQuery parameter
+            if (target == null)
+            {
+                target = new ExpandoObject();
+            }
+
+            var targetDic = (IDictionary<string, object>)target;
+            int index = 0;
+            // use a while because Count may change if an enumerable extends the list
+            
+            //sources = sources.Dequeue();
+            object source;
+            while (sources.Count>0) 
+            {
+                source = sources.Dequeue();
+                if (source == null)
+                {
+                    continue;
+                }
+                
+                if (source is IDictionary<string, object>)
+                {
+                    // Expando object -- copy/clone it
+                    foreach (var kvp in ( IDictionary<string, object>)source) {
+                        object curValue;
+                        if (deep && kvp.Value.IsExtendableType() && targetDic.TryGetValue(kvp.Key, out curValue))
+                        {
+                            // we have to start from a null object b/c it may not be an expando object to start with
+                            // If the current value is NOT an extendable type, overwrite it instead (e.g. ignore it by passing null)
+                            targetDic[kvp.Key]=Extend(true, null, curValue.IsExtendableType() ? curValue : null, kvp.Value);
+                        }
+                        else
+                        {
+                            targetDic[kvp.Key] = deep ? kvp.Value.Clone(true) : kvp.Value;
+                        }
+                    }
+                } else if (source is IEnumerable) {
+                    // For enumerables, treat each value as another object. Append to the operation list 
+                    foreach (object obj in ((IEnumerable)source))
+                    {
+                        sources.Enqueue(obj);
+                    }
+                } else {
+                    // treat it as a regular object - try to copy fields/properties
+                    IEnumerable<MemberInfo> members = source.GetType().GetMembers();
+                    foreach (var member in members)
+                    {
+                        string name = member.Name;
+                        object value = null;
+                        if (member is PropertyInfo)
+                        {
+                            value = ((PropertyInfo)member).GetGetMethod().Invoke(source, null);
+
+                        }
+                        else if (member is FieldInfo)
+                        {
+                            value = ((FieldInfo)member).GetValue(source);
+                        }
+                        else
+                        {
+                            //It's a method or something we don't know how to handle. Skip it.
+                            continue;
+                        }
+                        object curValue;
+                        if (deep && value.IsExtendableType() &&  targetDic.TryGetValue(name, out curValue))
+                        {
+                            targetDic[name]=Extend(true, null, curValue.IsExtendableType() ? curValue : null, value);
+                        }
+                        else
+                        {
+                            targetDic[name] = deep ? value.Clone(true) : value;
+                        }
+                        
+                    }
+                }
+                index++;
+            }
+            return target;
+        }
+        /// <summary>
+        /// Convert an object to JSON
+        /// </summary>
+        /// <param name="objectToSerialize"></param>
+        /// <returns></returns>
+        public static string ToJSON(object objectToSerialize)
+        {
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            if (objectToSerialize is ExpandoObject)
+            {
+                return Flatten((ExpandoObject)objectToSerialize);
+            }
+            else
+            {
+                return (serializer.Serialize(objectToSerialize));
+            }
+            
+        }
+        /// <summary>
+        /// Parse JSON into a typed object
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="objectToDeserialize"></param>
+        /// <returns></returns>
+        public static T FromJSON<T>(string objectToDeserialize)
+        {
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            return (T)serializer.Deserialize(objectToDeserialize, typeof(T));
+        }
+        /// <summary>
+        /// Parse JSON into an expando object
+        /// </summary>
+        /// <param name="objectToDeserialize"></param>
+        /// <returns></returns>
+        public static ExpandoObject FromJSON(string objectToDeserialize)
+        {
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            Dictionary<string, object> dict = (Dictionary<string, object>)serializer.Deserialize(objectToDeserialize, typeof(Dictionary<string, object>));
+            return Extend(true,null,dict);
+        }
+
+        protected static string Flatten(ExpandoObject expando)
+        {
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            StringBuilder sb = new StringBuilder();
+            List<string> contents = new List<string>();
+            var d = expando as IDictionary<string, object>;
+            sb.Append("{");
+
+            foreach (KeyValuePair<string, object> kvp in d)
+            {
+                contents.Add(String.Format("\"{0}\": {1}", kvp.Key,
+                   serializer.Serialize(kvp.Value)));
+            }
+            sb.Append(String.Join(",", contents.ToArray()));
+
+            sb.Append("}");
+
+            return sb.ToString();
+        }
+
 #endregion
         /// <summary>
         /// Parses SIMPLE (non-nested) object
+        /// TODO this needs a lot of work, theremust be something out there to parse json
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
@@ -1259,7 +1457,7 @@ namespace Jtc.CsQuery
         
         protected int GetElementIndex(IDomObject element) {
             int count = 0;
-            foreach (IDomObject e in element.Parent.Children)
+            foreach (IDomObject e in element.ParentNode.ChildNodes)
             {
                 if (ReferenceEquals(e, element))
                 {
@@ -1271,9 +1469,9 @@ namespace Jtc.CsQuery
         }
         #region IEnumerable<IDomElement> Members
 
-        public IEnumerator<IDomElement> GetEnumerator()
+        public IEnumerator<IDomObject> GetEnumerator()
         {
-            return SelectedElements.GetEnumerator();
+            return Selection.GetEnumerator();
         }
         #endregion
 
@@ -1285,6 +1483,7 @@ namespace Jtc.CsQuery
         }
 
         #endregion
+
     }
 
 

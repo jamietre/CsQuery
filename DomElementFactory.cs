@@ -72,7 +72,7 @@ namespace Jtc.CsQuery
         }
         protected IEnumerable<IDomObject> CreateObjectsImpl(string html, bool allowLiterals)
         {
-            BaseHtml = html;
+            BaseHtml = html ?? String.Empty;
             return Parse(allowLiterals);
         }
         protected class IterationData
@@ -123,7 +123,7 @@ namespace Jtc.CsQuery
             int pos=0;
             Stack<IterationData> stack = new Stack<IterationData>();
 
-            while (pos < EndPos)
+            while (pos <= EndPos)
             {
                 IterationData current = new IterationData();
                 current.AllowLiterals = allowLiterals;
@@ -172,7 +172,7 @@ namespace Jtc.CsQuery
                                 string parentTag = String.Empty;
                                 if (current.Parent != null)
                                 {
-                                    parentTag = current.Parent.Element.Tag.ToLower();
+                                    parentTag = current.Parent.Element.NodeName.ToLower();
                                 }
 
                                 if (newTag == String.Empty)
@@ -199,7 +199,7 @@ namespace Jtc.CsQuery
                                         if (!isProperClose)
                                         {
                                             actualParent = current.Parent;
-                                            while (actualParent != null && actualParent.Element.Tag.ToLower() != closeTag.ToLower())
+                                            while (actualParent != null && actualParent.Element.NodeName.ToLower() != closeTag.ToLower())
                                             {
                                                 actualParent = actualParent.Parent;
                                             }
@@ -281,7 +281,7 @@ namespace Jtc.CsQuery
                                 else
                                 {
                                     current.Object = new DomElement();
-                                    current.Element.Tag = newTag;
+                                    current.Element.NodeName = newTag;
                                 }
                                 
                                 // Check for informational tag types
@@ -328,7 +328,7 @@ namespace Jtc.CsQuery
 
                                 if (current.Parent != null)
                                 {
-                                    current.Parent.Element.Add(current.Object);
+                                    current.Parent.Element.AppendChild(current.Object);
                                 } else if (!hasChildren) {
                                     yield return current.Object;
                                 }
@@ -402,8 +402,8 @@ namespace Jtc.CsQuery
             if (!current.AllowLiterals)
             {
                 IDomElement wrapper = new DomElement();
-                wrapper.Tag = "span";
-                wrapper.Add(lit);
+                wrapper.NodeName = "span";
+                wrapper.AppendChild(lit);
                 textObj = wrapper;
             }
             else
@@ -413,7 +413,7 @@ namespace Jtc.CsQuery
 
             if (current.Parent != null)
             {
-                current.Parent.Element.Add(textObj);
+                current.Parent.Element.AppendChild(textObj);
                 current.Reset();
                 return null;
             }

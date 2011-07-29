@@ -1,5 +1,20 @@
 ## CsQuery - C# jQuery Port
 
+
+7/29/2011 - 0.99
+
+- Added many new utility functions: Extend, ToJSON, FromJSON, and some more methods
+- Extend works by returning ExpandoObjects, but can take anything as its source
+- Added test suite. Started adding applicable jQuery unit tests (got through most of Core)
+- Updated DOM model to more closely match actual browser DOM
+  - Some IDomElement properties became part of IDomObject to simplify access to different element types.
+    Because enumerators need to return IDomObject to handle all node types, but most of the time you are interested in
+	IDomElement properties, common properties were moved to the base interaface and will return no data and thrown
+	an exception if attempting to set for an invalid node type. 
+  - Add/Remove/Insert operations have become part of the ChildNode object
+  - This will probably change some more to continue to more closely match the browser DOM.
+
+
 7/19/2011
 
 - Added "select" and "textarea" functionality to val()

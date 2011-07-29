@@ -71,7 +71,7 @@ namespace Jtc.CsQuery.Server
             {
                 string value;
                 if (PostData.TryGetValue(e["name"],out value)) {
-                    switch(e.Tag) {
+                    switch(e.NodeName) {
                         case "textarea":
                             e.InnerText = value;
                             break;

@@ -389,6 +389,13 @@ namespace Jtc.CsQuery
             }
             return result;
         }
+        public int Count
+        {
+            get
+            {
+                return Selectors.Count;
+            }
+        }
         protected List<CsQuerySelector> Selectors
         {
             get
@@ -453,7 +460,7 @@ namespace Jtc.CsQuery
                     var newSource = new HashSet<IDomObject>();
                     foreach (IDomObject el in selectionSource) {
                         if (el is IDomContainer) {
-                            newSource.AddRange(((IDomContainer)el).Children);
+                            newSource.AddRange(((IDomContainer)el).ChildNodes);
                         }
                     }
                     selectionSource=newSource;
@@ -548,7 +555,17 @@ namespace Jtc.CsQuery
             //}
             //else
            // {
-                return ReorderSelection(root, lastResult);
+            if (lastResult.IsNullOrEmpty())
+            {
+                yield break;
+            }
+            else
+            {
+                foreach (IDomObject item in ReorderSelection(root, lastResult))
+                {
+                    yield return item;
+                }
+            }
             //}
         }
         /// <summary>
@@ -653,7 +670,7 @@ namespace Jtc.CsQuery
                             current.Object is DomElement)
                         {
                             DomElement elm = current.Element;
-                            for (int j = elm.Count - 1; j >= 0; j--)
+                            for (int j = elm.ChildNodes.Count - 1; j >= 0; j--)
                             {
                                 IDomObject obj = elm[j];
                                 if (obj is DomElement && uniqueElements.Add((DomElement)obj))
@@ -673,135 +690,135 @@ namespace Jtc.CsQuery
             yield break;
         }
 
-        public IEnumerable<IDomObject> GetMatches(IEnumerable<IDomObject> list)
-        {
-            return GetMatches(list, null, 0);
-        }
-        /// <summary>
-        /// Primary selection engine: returns a subset of "list" based on selectors.
-        /// This can be optimized -- class and id selectors should be added to a global hashtable when the dom is built
-        /// </summary>
-        /// <param name="list"></param>
-        /// <param name="recurse"></param>
-        /// <returns></returns>
-        public IEnumerable<IDomObject> GetMatches(IEnumerable<IDomObject> baseList, IEnumerable<IDomObject> list, int firstSelector)
-        {
+        //public IEnumerable<IDomObject> GetMatches(IEnumerable<IDomObject> list)
+        //{
+        //    return GetMatches(list, null, 0);
+        //}
+        ///// <summary>
+        ///// Primary selection engine: returns a subset of "list" based on selectors.
+        ///// This can be optimized -- class and id selectors should be added to a global hashtable when the dom is built
+        ///// </summary>
+        ///// <param name="list"></param>
+        ///// <param name="recurse"></param>
+        ///// <returns></returns>
+        //public IEnumerable<IDomObject> GetMatches(IEnumerable<IDomObject> baseList, IEnumerable<IDomObject> list, int firstSelector)
+        //{
 
-            // Maintain a hashset of every element already searched. Since result sets frequently contain items which are
-            // children of other items in the list, we would end up searching the tree repeatedly
-            HashSet<IDomObject> uniqueElements = null;
+        //    // Maintain a hashset of every element already searched. Since result sets frequently contain items which are
+        //    // children of other items in the list, we would end up searching the tree repeatedly
+        //    HashSet<IDomObject> uniqueElements = null;
 
-            Stack<MatchElement> stack = null;
-            IEnumerable<IDomObject> curList = list ?? baseList;
-            HashSet<IDomObject> temporaryResults = new HashSet<IDomObject>();
+        //    Stack<MatchElement> stack = null;
+        //    IEnumerable<IDomObject> curList = list ?? baseList;
+        //    HashSet<IDomObject> temporaryResults = new HashSet<IDomObject>();
 
-            bool simple = false;
+        //    bool simple = false;
 
-            for (int i=firstSelector;i<Selectors.Count;i++)
-            {
-                var selector = Selectors[i];
+        //    for (int i=firstSelector;i<Selectors.Count;i++)
+        //    {
+        //        var selector = Selectors[i];
                 
-                // If there is only one selector, and it's possible to know its results before all are found, allow it to be yielded directly
-                if (selector.SelectorType.IsOneOf(SelectorType.Position, SelectorType.HTML) )
-                {
-                    simple = false;
-                }
-                else
-                {
-                    simple = firstSelector == Selectors.Count - 1;
-                }
+        //        // If there is only one selector, and it's possible to know its results before all are found, allow it to be yielded directly
+        //        if (selector.SelectorType.IsOneOf(SelectorType.Position, SelectorType.HTML) )
+        //        {
+        //            simple = false;
+        //        }
+        //        else
+        //        {
+        //            simple = firstSelector == Selectors.Count - 1;
+        //        }
                 
 
-                // For chained combinators, clear the temporary list - we only want the results from each successive round. Otherwise,
-                // reset the source to the original list but keep the results of the previous round.
+        //        // For chained combinators, clear the temporary list - we only want the results from each successive round. Otherwise,
+        //        // reset the source to the original list but keep the results of the previous round.
                 
-                //if (i != firstSelector) {
-                //    if (selector.CombinatorType == CombinatorType.Chained)
-                //    {
-                //        curList = temporaryResults;
-                //        temporaryResults = new HashSet<IDomObject>();
-                //    }  else {
-                //        curList = baseList;
-                //    }
-                //}
+        //        //if (i != firstSelector) {
+        //        //    if (selector.CombinatorType == CombinatorType.Chained)
+        //        //    {
+        //        //        curList = temporaryResults;
+        //        //        temporaryResults = new HashSet<IDomObject>();
+        //        //    }  else {
+        //        //        curList = baseList;
+        //        //    }
+        //        //}
 
-                // The unique list has to be reset for each sub-selector
-                uniqueElements = new HashSet<IDomObject>();
+        //        // The unique list has to be reset for each sub-selector
+        //        uniqueElements = new HashSet<IDomObject>();
 
-                if (selector.SelectorType == SelectorType.HTML)
-                {
-                    DomElementFactory factory = new DomElementFactory();
+        //        if (selector.SelectorType == SelectorType.HTML)
+        //        {
+        //            DomElementFactory factory = new DomElementFactory();
 
-                    foreach (var obj in factory.CreateElements(selector.Html))
-                    {
-                        temporaryResults.Add(obj);
-                    }
-                    continue;
-                }
+        //            foreach (var obj in factory.CreateElements(selector.Html))
+        //            {
+        //                temporaryResults.Add(obj);
+        //            }
+        //            continue;
+        //        }
 
-                // Position selectors are simple -- skip out of main matching code if so
-                if (selector.SelectorType == SelectorType.Position)
-                {
-                    foreach (var obj in GetPositionMatches(curList, selector)) {
-                        temporaryResults.Add(obj);
-                    }
-                    continue;
-                }
+        //        // Position selectors are simple -- skip out of main matching code if so
+        //        if (selector.SelectorType == SelectorType.Position)
+        //        {
+        //            foreach (var obj in GetPositionMatches(curList, selector)) {
+        //                temporaryResults.Add(obj);
+        //            }
+        //            continue;
+        //        }
 
-                stack = new Stack<MatchElement>();
-                int depth = 0;
-                foreach (var e in curList)
-                {
-                    if (uniqueElements.Add(e))
-                    {
-                        stack.Push(new MatchElement(e,depth));
-                        int matchIndex = 0;
-                        while (stack.Count != 0)
-                        {
-                            var current = stack.Pop();
+        //        stack = new Stack<MatchElement>();
+        //        int depth = 0;
+        //        foreach (var e in curList)
+        //        {
+        //            if (uniqueElements.Add(e))
+        //            {
+        //                stack.Push(new MatchElement(e,depth));
+        //                int matchIndex = 0;
+        //                while (stack.Count != 0)
+        //                {
+        //                    var current = stack.Pop();
 
-                            if (Matches(selector, current.Object,current.Depth ))
-                            {
-                                if (simple)
-                                {
-                                    yield return current.Object;
-                                }
-                                else
-                                {
-                                    temporaryResults.Add(current.Object);
-                                }   
-                                matchIndex++;
-                            }
-                            // Add children to stack (in reverse order, so they are processed in the correct order when popped)
+        //                    if (Matches(selector, current.Object,current.Depth ))
+        //                    {
+        //                        if (simple)
+        //                        {
+        //                            yield return current.Object;
+        //                        }
+        //                        else
+        //                        {
+        //                            temporaryResults.Add(current.Object);
+        //                        }   
+        //                        matchIndex++;
+        //                    }
+        //                    // Add children to stack (in reverse order, so they are processed in the correct order when popped)
                             
-                            if (selector.TraversalType != TraversalType.Filter && 
-                                current.Object is DomElement)
-                            {
-                                DomElement elm = current.Element;
-                                for (int j = elm.Count - 1; j >= 0; j--)
-                                {
-                                    IDomObject obj = elm[j];
-                                    if (obj is DomElement && uniqueElements.Add((DomElement)obj))
-                                    {
-                                        stack.Push(new MatchElement(obj,current.Depth+1));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+        //                    if (selector.TraversalType != TraversalType.Filter && 
+        //                        current.Object is DomElement)
+        //                    {
+        //                        DomElement elm = current.Element;
+        //                        for (int j = elm.Count - 1; j >= 0; j--)
+        //                        {
+        //                            IDomObject obj = elm[j];
+        //                            if (obj is DomElement && uniqueElements.Add((DomElement)obj))
+        //                            {
+        //                                stack.Push(new MatchElement(obj,current.Depth+1));
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
 
 
-            }
-            // for complex cases, return each final result
-            if (!simple)
-            {
-                foreach (var obj in temporaryResults)
-                {
-                    yield return obj;
-                }
-            }
-        }
+        //    }
+        //    // for complex cases, return each final result
+        //    if (!simple)
+        //    {
+        //        foreach (var obj in temporaryResults)
+        //        {
+        //            yield return obj;
+        //        }
+        //    }
+        //}
         /// <summary>
         /// Test obj for a match with selector. matchIndex is the current index for items returned by the selector, and depth is the current
         /// node depth.
@@ -838,7 +855,7 @@ namespace Jtc.CsQuery
             DomElement elm = (DomElement)obj;
 
             if (selector.SelectorType.HasFlag(SelectorType.Tag) &&
-                !String.Equals(elm.Tag, selector.Tag, StringComparison.CurrentCultureIgnoreCase))
+                !String.Equals(elm.NodeName, selector.Tag, StringComparison.CurrentCultureIgnoreCase))
             {
                 //match = false; continue;
                 return false;
@@ -1021,7 +1038,7 @@ namespace Jtc.CsQuery
         }
         protected bool ContainsText(DomElement obj, string text)
         {
-            foreach (IDomObject e in obj.Children)
+            foreach (IDomObject e in obj.ChildNodes)
             {
                 if (e is DomText)
                 {

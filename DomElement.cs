@@ -37,7 +37,7 @@ namespace Jtc.CsQuery
     }
     public interface IDomObject
     {
-        IDomContainer Parent { get; set; }
+        IDomContainer ParentNode { get; set; }
         NodeType NodeType {get;}
         string PathID {get;}
         string Path { get; }
@@ -48,9 +48,23 @@ namespace Jtc.CsQuery
         void RemoveFromIndex();
         IDomObject Clone();
         bool InnerHtmlAllowed {get;}
+        string InnerHtml { get; set; }
         bool Complete { get; }
         int DescendantCount();
+
+        //? These are really only part of IDomContainer. However, to avoid awful typecasting all the time, they are part of the interface
+        // for objects.
+
+        string NodeName { get; set; }
+        IEnumerable<IDomElement> Elements { get; }
+        NodeList ChildNodes { get; }
+        IDomObject FirstChild { get; }
+        IDomObject LastChild { get; }
+        void AppendChild(IDomObject element);
+        void RemoveChild(IDomObject element);
+
     }
+
     /// <summary>
     /// Defines an interface for elements whose defintion (not innerhtml) contain non-tag or attribute formed data
     /// </summary>
@@ -58,6 +72,8 @@ namespace Jtc.CsQuery
     {
         string NonAttributeData { get; set; }
         string Text { get; set; }
+        
+       
     }
     public interface IDomText : IDomObject
     {
@@ -82,16 +98,12 @@ namespace Jtc.CsQuery
     }
     public interface IDomContainer : IDomObject
     {
-        IEnumerable<IDomObject> Children {get;}
-        IEnumerable<IDomElement> Elements { get; }
-        void Add(IDomObject element);
-        void AddRange(IEnumerable<IDomObject> element);
-        void Remove(IDomObject element);
-        void RemoveChildren();
-        void Insert(IDomObject element, int index);
+
+        //void Insert(IDomObject element, int index);
         string GetNextChildID();
-        int Count { get; }
+        
         IEnumerable<IDomObject> CloneChildren();
+
     }
     public interface IDomRoot : IDomContainer
     {
@@ -119,16 +131,17 @@ namespace Jtc.CsQuery
         bool HasAttribute(string name);
         bool RemoveAttribute(string name);
 
-        string Tag { get; set; }
         string ID { get; set; }
         string Style { get; }
         string Class { get; }
-        string InnerHtml { get; set; }
+
         string InnerText { get; set; }
         IEnumerable<KeyValuePair<string, string>> Attributes { get; }
         string this[string index] { get; set; }
 
         string ElementHtml { get; }
+        bool Selected { get; }
+        bool Checked { get; }
     }
     /// <summary>
     /// Base class for anything that exists in the DOM
@@ -147,15 +160,37 @@ namespace Jtc.CsQuery
                 _Owner = value;
                 if (this is IDomContainer)
                 {
-                    foreach (IDomObject obj in ((IDomContainer)this).Children)
+                    foreach (IDomObject obj in ((IDomContainer)this).ChildNodes)
                     {
                         obj.Owner = value;
                     }
                 }
             }
         }
+
         protected CsQuery _Owner = null;
 
+        public virtual string NodeName 
+        {
+            get {
+                return String.Empty;
+            }
+            set
+            {
+                throw new Exception("You can't change the node name.");
+            }
+        }
+        public virtual string InnerHtml
+        {
+            get
+            {
+                return String.Empty;
+            }
+            set
+            {
+                throw new Exception("Assigning InnerHtml is not valid for this element type.");
+            }
+        }
         // Owner can be null (this is an unbound element)
         // if so create an arbitrary one.
 
@@ -194,7 +229,7 @@ namespace Jtc.CsQuery
             {
                 if (_PathID ==null) {
 
-                    _PathID = (Parent == null ? String.Empty : Parent.GetNextChildID());
+                    _PathID = (ParentNode == null ? String.Empty : ParentNode.GetNextChildID());
                }
                return _PathID;
             }
@@ -206,12 +241,12 @@ namespace Jtc.CsQuery
                 if (_Path != null) {
                     return _Path;
                 }
-                return (Parent == null ? String.Empty : Parent.Path + "/") + PathID;
+                return (ParentNode == null ? String.Empty : ParentNode.Path + "/") + PathID;
             }
         }
         protected string _Path = null;
         
-        public IDomContainer Parent
+        public IDomContainer ParentNode
         {
             get
             {
@@ -244,7 +279,7 @@ namespace Jtc.CsQuery
             }
             // Add just the element to the index no matter what so we have an ordered representation of the dom traversal
             yield return IndexKey(String.Empty);
-            yield return IndexKey(e.Tag);
+            yield return IndexKey(e.NodeName);
             if (!String.IsNullOrEmpty(e.ID))
             {
                 yield return IndexKey("#" + e.ID);
@@ -273,7 +308,7 @@ namespace Jtc.CsQuery
                 {
                     IDomContainer e = (IDomContainer)this;
 
-                    foreach (IDomObject child in e.Children)
+                    foreach (IDomObject child in e.ChildNodes)
                     {
                         // Move root in case this is coming from an unmapped or alternate DOM
                         child.Owner = Owner;
@@ -332,6 +367,37 @@ namespace Jtc.CsQuery
         public virtual int DescendantCount()
         {
             return 0;
+        }
+
+        public virtual IEnumerable<IDomElement> Elements
+        {
+            get
+            {
+                yield break;
+            }
+        }
+        public virtual NodeList ChildNodes
+        {
+            get
+            {
+                return null;
+            }
+        }
+        public virtual IDomObject FirstChild
+        {
+            get { return null; }
+        }
+        public virtual IDomObject LastChild
+        {
+            get { return null; }
+        }
+        public virtual void AppendChild(IDomObject element)
+        {
+            throw new Exception("This type of element does not have children.");
+        }
+        public virtual void RemoveChild(IDomObject element)
+        {
+            throw new Exception("This type of element does not have children.");
         }
         
     }
@@ -654,6 +720,7 @@ namespace Jtc.CsQuery
             }
         }
     }
+    
     /// <summary>
     /// Base class for Dom object that contain other elements
     /// </summary>
@@ -666,40 +733,68 @@ namespace Jtc.CsQuery
         
         public DomContainer(IEnumerable<IDomObject> elements)
         {
-            _Children.AddRange(elements);   
+            ChildNodes.AddRange(elements);   
         }
 
         public abstract IEnumerable<IDomObject> CloneChildren();
         /// <summary>
         /// Returns all children (including inner HTML as objects);
         /// </summary>
-        public IEnumerable<IDomObject> Children
+        public override NodeList ChildNodes
         {
             get
             {
-                return _Children;
+                if (_ChildNodes==null) {
+                    _ChildNodes = new NodeList(this);
+                }
+                return _ChildNodes;
             }
         }
-        internal List<IDomObject> _Children
+        protected NodeList _ChildNodes = null;
+        public override IDomObject FirstChild
         {
             get
             {
-                if (__Children == null)
+                if (ChildNodes.Count > 0)
                 {
-                    __Children = new List<IDomObject>();
+                    return ChildNodes[0];
                 }
-                return __Children;
+                else
+                {
+                    return null;
+                }
             }
-        } 
-        protected List<IDomObject> __Children = null;
+        }
+        public override IDomObject LastChild
+        {
+            get
+            {
+                if (ChildNodes.Count > 0)
+                {
+                    return ChildNodes[ChildNodes.Count - 1];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+        public override void AppendChild(IDomObject item)
+        {
+            ChildNodes.Add(item);
+        }
+        public override void RemoveChild(IDomObject item)
+        {
+            ChildNodes.Remove(item);
+        }
         /// <summary>
         /// Returns all elements
         /// </summary>
-        public IEnumerable<IDomElement> Elements
+        public override IEnumerable<IDomElement> Elements
         {
             get
             {
-                foreach (IDomObject elm in Children)
+                foreach (IDomObject elm in ChildNodes)
                 {
                     if (elm is DomElement)
                     {
@@ -713,102 +808,26 @@ namespace Jtc.CsQuery
         {
             get
             {
-                return _Children[index];
+                return ChildNodes[index];
             }
         }
-        public int Count
-        {
-            get
-            {
-                return _Children.Count;
-            }
-        }
+
         public override string Render()
         {
                 StringBuilder sb = new StringBuilder();
-                foreach (IDomObject e in Children )
+                foreach (IDomObject e in ChildNodes)
                 {
                     sb.Append(e.Render());
                 }
                 return (sb.ToString());
         } 
-       /// <summary>
-        /// Add a child to this element 
-        /// </summary>
-        /// <param name="element"></param>
-        public virtual void Add(IDomObject element)
-        {
-            PrepareElement(element);
-          
-            _Children.Add(element);
-            element.AddToIndex();
 
-        }
 
         /// </summary>
         /// <param name="elements"></param>
-        public virtual void AddRange(IEnumerable<IDomObject> elements)
-        {
-            // because elements will be removed from their parent while adding, we need to copy the
-            // enumerable first since it will change otherwise
-            List<IDomObject> copy= new List<IDomObject>(elements);
-            foreach (IDomObject e in copy)
-            {
-                Add(e);
-            }
-        }
-        /// <summary>
-        /// Adds a child element at a specific index
-        /// </summary>
-        /// <param name="index"></param>
-        /// <param name="element"></param>
-        public void Insert(IDomObject element,int index)
-        {
-            PrepareElement(element);
-            _Children.Insert(index, element);
-            element.AddToIndex();
-        }
-        protected void PrepareElement(IDomObject element)
-        {
-            if (!this.InnerHtmlAllowed)
-            {
-                throw new Exception("Cannot add children to this element type. Inner HTML is not allowed.");
-            }
-            // Must always remove from the DOM. It doesn't matter if it's the same DOM or not. An element can't be part of two DOMs - that would require a clone.
-            // If it is the same DOM, it would remain a child of the old parent as well as the new one if we didn't remove first.
-            if (element.Parent != null)
-            {
-                element.Parent.Remove(element);
-            }
-            
-            // Set owner recursively
-            element.Owner = this.Owner;
-            element.Parent = this;
-        }
-        /// <summary>
-        /// Remove an element from this element's children
-        /// </summary>
-        /// <param name="element"></param>
-        public void Remove(IDomObject element)
-        {
 
-            _Children.Remove(element);
-            element.RemoveFromIndex();
-           
-            element.Parent = null;
-            element.Owner = null;
-        }
- 
-        /// <summary>
-        /// Removes all children
-        /// </summary>
-        public void RemoveChildren()
-        {
-            for (int i=_Children.Count-1;i>=0;i--)
-            {
-                Remove(_Children[i]);
-            }
-        }
+        
+
 
         //public override T Clone()
         //{
@@ -876,7 +895,7 @@ namespace Jtc.CsQuery
         public override int DescendantCount()
         {
             int count = 0;
-            foreach (IDomObject obj in Children)
+            foreach (IDomObject obj in ChildNodes)
             {
                 count += 1 + obj.DescendantCount();
             }
@@ -925,7 +944,7 @@ namespace Jtc.CsQuery
         public DomDocumentType  DocTypeNode {
             get
             {
-                foreach (IDomObject obj in Dom.Children)
+                foreach (IDomObject obj in Dom.ChildNodes)
                 {
                     if (obj.NodeType == NodeType.DOCUMENT_TYPE_NODE)
                     {
@@ -987,7 +1006,7 @@ namespace Jtc.CsQuery
         }
         public override IEnumerable<IDomObject> CloneChildren()
         {
-            foreach (IDomObject obj in Children)
+            foreach (IDomObject obj in ChildNodes)
             {
                 yield return obj.Clone();
             }
@@ -1014,7 +1033,7 @@ namespace Jtc.CsQuery
         public override DomElement Clone()
         {
             DomElement e = base.Clone();
-            e.Tag = Tag;
+            e.NodeName = NodeName;
             
             e._Styles = new Dictionary<string, string>(_Styles);
             e._Classes = new HashSet<string>(_Classes);
@@ -1023,14 +1042,14 @@ namespace Jtc.CsQuery
             {
                 e.SetAttribute(attr.Key, attr.Value);
             }
-            e.AddRange(CloneChildren());
+            e.ChildNodes.AddRange(CloneChildren());
 
 
             return e;
         }
         public  override IEnumerable<IDomObject> CloneChildren()
         {
-            foreach (IDomObject obj in Children)
+            foreach (IDomObject obj in ChildNodes)
             {
                 yield return obj.Clone();
             }
@@ -1231,7 +1250,7 @@ namespace Jtc.CsQuery
                 }
             }
         }
-        public string Tag
+        public override string NodeName
         {
             get
             {
@@ -1239,7 +1258,7 @@ namespace Jtc.CsQuery
             }
             set
             {
-                if (String.IsNullOrEmpty(Tag))
+                if (String.IsNullOrEmpty(NodeName))
                 {
                     _Tag = value.ToLower();
                 }
@@ -1282,18 +1301,18 @@ namespace Jtc.CsQuery
         /// <summary>
         /// Returns text of the inner HTMl. When setting, any children will be removed.
         /// </summary>
-        public string InnerHtml
+        public override string InnerHtml
         {
             get
             {
-                if (Children.IsNullOrEmpty())
+                if (ChildNodes.IsNullOrEmpty())
                 {
                     return String.Empty;
                 }
                 else
                 {
                     StringBuilder sb = new StringBuilder();
-                    foreach (IDomObject elm in Children)
+                    foreach (IDomObject elm in ChildNodes)
                     {
                         sb.Append(elm.Render());
                     }
@@ -1302,26 +1321,26 @@ namespace Jtc.CsQuery
             }
             set
             {
-                if (Count > 0)
+                if (ChildNodes.Count > 0)
                 {
-                    RemoveChildren();
+                    ChildNodes.Clear();
                 }
                 CsQuery csq = CsQuery.Create(value);
-                AddRange(csq.Dom.Children);
+                ChildNodes.AddRange(csq.Dom.ChildNodes);
             }
         }
         public string InnerText
         {
             get
             {
-                if (Children.IsNullOrEmpty())
+                if (ChildNodes.IsNullOrEmpty())
                 {
                     return String.Empty;
                 }
                 else
                 {
                     StringBuilder sb = new StringBuilder();
-                    foreach (IDomObject elm in Children)
+                    foreach (IDomObject elm in ChildNodes)
                     {
                         if (elm is IDomText)
                         {
@@ -1333,12 +1352,27 @@ namespace Jtc.CsQuery
             }
             set
             {
-                if (Count > 0)
+                if (ChildNodes.Count > 0)
                 {
-                    RemoveChildren();
+                    ChildNodes.Clear();
                 }
                 DomText text = new DomText(value);
-                Add(text);
+                ChildNodes.Add(text);
+            }
+        }
+
+        public bool Selected
+        {
+            get
+            {
+                return HasAttribute("selected");
+            }
+        }
+        public bool Checked
+        {
+            get
+            {
+                return HasAttribute("checked");
             }
         }
         /// <summary>
@@ -1376,7 +1410,7 @@ namespace Jtc.CsQuery
         {
             
             StringBuilder sb = new StringBuilder();
-            sb.Append("<" + Tag);
+            sb.Append("<" + NodeName);
             if (_Classes.Count > 0)
             {
                 //if (_Classes.Count == 1 && DocType != DocType.XHTML)
@@ -1413,9 +1447,9 @@ namespace Jtc.CsQuery
 
             if (InnerHtmlAllowed)
             {
-                sb.Append(String.Format(">{0}</" + Tag + ">",
-                    includeChildren ? InnerHtml : 
-                    (Count>0 ? "...":String.Empty)
+                sb.Append(String.Format(">{0}</" + NodeName + ">",
+                    includeChildren ? InnerHtml :
+                    (ChildNodes.Count > 0 ? "..." : String.Empty)
                     ));
             }
             else
@@ -1444,7 +1478,7 @@ namespace Jtc.CsQuery
         {
             get
             {
-                switch (Tag.ToLower())
+                switch (NodeName.ToLower())
                 {
                     case "base":
                     case "basefont":
@@ -1468,7 +1502,7 @@ namespace Jtc.CsQuery
         }
         public override bool Complete
         {
-            get { return !String.IsNullOrEmpty(Tag); }
+            get { return !String.IsNullOrEmpty(NodeName); }
         }
     }
 }
