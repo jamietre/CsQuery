@@ -35,8 +35,20 @@ namespace CsqueryTests
                 throw new Exception("Invalid parameter");
             }
         }
-
-        protected CsQuery Dom;
+        protected IDomRoot document;
+        protected CsQuery Dom
+        {
+            get
+            {
+                return _Dom;
+            }
+            set
+            {
+                _Dom = value;
+                document = _Dom.Dom;
+            }
+        }
+        private CsQuery _Dom = null;
         protected IEnumerable<IDomObject> q(string id1, string id2 = null, string id3 = null, string id4 = null, string id5 = null, string id6 = null, string id7 = null, string id8 = null, string id9 = null)
         {
             string[] ids = new string[] { id1, id2, id3, id4, id5, id6, id7, id8, id9 };

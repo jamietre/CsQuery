@@ -27,7 +27,22 @@ namespace Jtc.CsQuery
         {
             Selector = selector;
         }
+        public CsQuerySelectors(IEnumerable<IDomObject> elements ) {
 
+            CsQuerySelector sel = new CsQuerySelector();
+            sel.SelectorType = SelectorType.Elements;
+            sel.SelectElements = elements;
+            Selectors.Add(sel);
+        }
+        public CsQuerySelectors(IDomObject element)
+        {
+
+            CsQuerySelector sel = new CsQuerySelector();
+            sel.SelectorType = SelectorType.Elements;
+            sel.SelectElements = new List<IDomObject>();
+            ((List<IDomObject>)sel.SelectElements).Add(element);
+            Selectors.Add(sel);
+        }
         public bool IsHtml
         {
             get
@@ -50,7 +65,7 @@ namespace Jtc.CsQuery
         StringScanner scanner;
         protected void ParseSelector(string selector)
         {
-            string sel = _Selector.Trim();
+            string sel = ( _Selector ?? String.Empty).Trim();
             
             if (IsHtml)
             {
@@ -161,6 +176,16 @@ namespace Jtc.CsQuery
                                 Current.PositionType = PositionType.Last;
                                 FinishSelector();
                                 break;
+                            case "has":
+                                Current.TraversalType = TraversalType.Descendent;
+                                Current.SelectorType |= SelectorType.SubSelector;
+                                scanner.Expect('(');
+                                scanner.AllowQuoting();
+                                string criteria= scanner.Seek(")");
+                                scanner.Next();
+                                CsQuerySelectors subSelectors = new CsQuerySelectors(criteria);
+                                Current.SubSelectors.Add(subSelectors);
+                                break;
                             default:
                                 throw new Exception("Unknown selector :\""+key+"\"");
 
@@ -242,15 +267,12 @@ namespace Jtc.CsQuery
                         
                         break;
                     case '>':
-                        StartNewSelector();
-
-                        if (Selectors.Count == 0)
-                        {
-                            scanner.ThrowUnexpectedCharacterException();
-                        }
+                        //StartNewSelector();
 
                         Current.TraversalType = TraversalType.Child;
-                        Current.ChildDepth = 1;
+                        // This is a wierd thing because if you use the > selector against a set directly, the meaning is "filter" 
+                        // whereas if it is used in a combination selector the meaning is "filter for 1st child"
+                        Current.ChildDepth = (Current.CombinatorType==CombinatorType.Root ? 0 : 1);
 
                         scanner.SkipWhitespace();
                         scanner.Next();
@@ -302,15 +324,18 @@ namespace Jtc.CsQuery
         /// <param name="type"></param>
         protected void StartNewSelector(CombinatorType type)
         {
-            CombinatorType defaultType = CombinatorType.Chained;
+            CombinatorType defaultType = CombinatorType.Root;
             if (_Current != null && Current.IsComplete)
             {
                 Selectors.Add(Current);
                 _Current = null;
                 defaultType = CombinatorType.Chained;
             }
-
+            Current.TraversalType = TraversalType.All;
+            Current.PositionType = PositionType.All;
             Current.CombinatorType = type==0?defaultType : type;
+            
+
         }
         protected string ParseFunction(ref string sel)
         {
@@ -420,6 +445,13 @@ namespace Jtc.CsQuery
             return Select(root, null);
         }
         DomRoot Dom;
+
+        public IEnumerable<IDomObject> Is(DomRoot root, IDomObject element)
+        {
+            List<IDomObject> list = new List<IDomObject>();
+            list.Add(element);
+            return Select(root, list);
+        }
         /// <summary>
         /// Select from DOM using index. First non-class/tag/id selector will result in this being passed off to GetMatches
         /// </summary>
@@ -435,6 +467,7 @@ namespace Jtc.CsQuery
             for (int selIndex = 0; selIndex < Selectors.Count; selIndex++)
             {
                 var selector = Selectors[selIndex];
+                SelectorType type = selector.SelectorType;
 
                 // Determine what kind of combining method we will use with previous selection results
 
@@ -456,33 +489,36 @@ namespace Jtc.CsQuery
                         // default (chained): leave lastresult alone
                     }
                 }
-                if (selector.TraversalType == TraversalType.Child) {
-                    var newSource = new HashSet<IDomObject>();
-                    foreach (IDomObject el in selectionSource) {
-                        if (el is IDomContainer) {
-                            newSource.AddRange(((IDomContainer)el).ChildNodes);
-                        }
-                    }
-                    selectionSource=newSource;
-                }
+                //if (selector.TraversalType == TraversalType.Child) {
+                //    var newSource = new HashSet<IDomObject>();
+                //    foreach (IDomObject el in selectionSource) {
+                //        if (el is IDomContainer) {
+                //            newSource.AddRange(((IDomContainer)el).Elements);
+                //        }
+                //    }
+                //    selectionSource=newSource;
+                //}
 
                 HashSet<IDomObject> tempResult = null;
+                IEnumerable<IDomObject> interimResult = lastResult;
+
                 string key = String.Empty;
-                if (selector.SelectorType.HasFlag(SelectorType.Tag))
+                if (type.HasFlag(SelectorType.Tag))
                 {
                     key = selector.Tag;
-                    selector.SelectorType &= ~SelectorType.Tag;
+                    type &= ~SelectorType.Tag;
                 }
-                else if (selector.SelectorType.HasFlag(SelectorType.ID))
+                else if (type.HasFlag(SelectorType.ID))
                 {
                     key = "#" + selector.ID;
-                    selector.SelectorType &= ~SelectorType.ID;
+                    type &= ~SelectorType.ID;
                 }
-                else if (selector.SelectorType.HasFlag(SelectorType.Class))
+                else if (type.HasFlag(SelectorType.Class))
                 {
                     key = "." + selector.Class;
-                    selector.SelectorType &= ~SelectorType.Class;
+                    type &= ~SelectorType.Class;
                 }
+
                 // If we can use an indexed selector, do it here
                 if (key != String.Empty)
                 {
@@ -491,7 +527,7 @@ namespace Jtc.CsQuery
 
                     switch(selector.TraversalType) {
                         case TraversalType.Child:
-                            depth=1;
+                            depth=selector.ChildDepth;;
                             descendants=false;
                             break;
                         case TraversalType.Filter:
@@ -504,57 +540,101 @@ namespace Jtc.CsQuery
                             break;
                     }
 
-                    if (lastResult != null)
-                    {
-                        tempResult = new HashSet<IDomObject>();
-                        tempResult.AddRange(lastResult);
-                    }
-                    
+
                     if (selectionSource == null)
                     {
-                        if (tempResult != null) {
-                            tempResult.AddRange(root.SelectorXref.GetRange(key + ">",depth,descendants));
-                            lastResult=tempResult;
-                        } else {
-                            lastResult = root.SelectorXref.GetRange(key + ">",depth,descendants);
-                        }
+                        //if (tempResult != null) {
+                        //    tempResult.AddRange(root.SelectorXref.GetRange(key + ">",depth,descendants));
+                        //} else {
+                        //    lastResult = root.SelectorXref.GetRange(key + ">",depth,descendants);
+                        //}
+                        interimResult = root.SelectorXref.GetRange(key + ">", depth, descendants);
                     }
                     else
                     {
-                        if (tempResult == null)
-                        {
-                            tempResult = new HashSet<IDomObject>();
-                        }
+                        //if (tempResult == null)
+                        //{
+                        //    tempResult = new HashSet<IDomObject>();
+                        //}
 
-                        if (selector.CombinatorType == CombinatorType.Cumulative)
-                        {
-                            tempResult.AddRange(lastResult);
-                        }
-
+                        //if (selector.CombinatorType == CombinatorType.Cumulative)
+                        //{
+                        //    tempResult.AddRange(lastResult);
+                        //}
+                        interimResult = new HashSet<IDomObject>();
                         foreach (IDomObject obj in selectionSource)
                         {
-                            tempResult.AddRange(root.SelectorXref.GetRange(key + ">" + obj.Path,depth,descendants));
+                            ((HashSet<IDomObject>)interimResult).AddRange(root.SelectorXref.GetRange(key + ">" + obj.Path,depth,descendants));
                         }
-                        lastResult = tempResult;
                     }
                 }
-                if (selector.SelectorType != 0)
+                else if (type.HasFlag(SelectorType.Elements))
                 {
-                    // if there are no temporary results (b/c there was no indexed selector) then use the whole set
-                    lastResult = GetMatch(root.Elements, lastResult ?? selectionSource ,selector);
+                    type &= ~SelectorType.Elements;
+                    HashSet<IDomObject> source = new HashSet<IDomObject>(selectionSource);
+                    //source.IntersectWith(selectionSource);
+                    interimResult = new HashSet<IDomObject>();
+
+                    foreach (IDomObject obj in selectionSource)
+                    {
+                        key = ">"+obj.Path;
+                        HashSet<IDomObject> srcKeys = new HashSet<IDomObject>(root.SelectorXref.GetRange(key));
+                        foreach (IDomObject match in selector.SelectElements)
+                        {
+                            if (srcKeys.Contains(match)) {
+                                 ((HashSet<IDomObject>)interimResult).Add(match);
+                            }
+                        }
+                    }
                 }
+                // TODO - GetMatch should work if passed with no selectors (returning nothing), now it returns eveyrthing
+                if ((type & ~SelectorType.SubSelector) != 0)
+                {
+                    
+                    IEnumerable<IDomObject> finalSelectWithin = interimResult ?? lastResult ?? selectionSource;
+                        
+                    
+                    // if there are no temporary results (b/c there was no indexed selector) then use the whole set
+                    interimResult = GetMatch(root.Elements, finalSelectWithin, selector);
+                    
+                }
+                // there must be a better way to do this! Need to adjust the selector engine logic to be able to return something other than what it's looking it.
+
+                if (type.HasFlag(SelectorType.SubSelector))
+                {
+                    IEnumerable<IDomObject> subSelectWithin = interimResult ?? lastResult ?? selectionSource;
+                    // subselects are a filter. start a new interim result.
+                    HashSet<IDomObject> filteredResults = new HashSet<IDomObject>();
+
+                    foreach (IDomObject obj in subSelectWithin)
+                    {
+                        bool match = true;
+                        foreach (var sub in selector.SubSelectors)
+                        {
+                            List<IDomObject> listOfOne = new List<IDomObject>();
+                            listOfOne.Add(obj);
+
+                            match &= !sub.Select(root, listOfOne).IsNullOrEmpty();
+                        }
+                        if (match) 
+                        {
+                            filteredResults.Add(obj);
+                        }
+                    }
+                    interimResult = filteredResults;
+                }
+                tempResult = new HashSet<IDomObject>();
+                if (lastResult != null)
+                {
+                    tempResult.AddRange(lastResult);
+                }
+                if (interimResult != null)
+                {
+                    tempResult.AddRange(interimResult);
+                }
+                lastResult = tempResult.IsNullOrEmpty() ? null : tempResult;
             }
-            // If there's another subquery within this selector, or any subselects, pass it on to the matching engine
-            //if (selector.SelectorType != 0)
-            //{
-            //    return ReorderSelection(root, GetMatches(root.Elements, lastResult, 0));
-            //}
-            //else if (Selectors.Count > 1)
-            //{
-            //    return ReorderSelection(root,GetMatches(root.Elements, lastResult, 1));
-            //}
-            //else
-           // {
+
             if (lastResult.IsNullOrEmpty())
             {
                 yield break;
@@ -690,135 +770,7 @@ namespace Jtc.CsQuery
             yield break;
         }
 
-        //public IEnumerable<IDomObject> GetMatches(IEnumerable<IDomObject> list)
-        //{
-        //    return GetMatches(list, null, 0);
-        //}
-        ///// <summary>
-        ///// Primary selection engine: returns a subset of "list" based on selectors.
-        ///// This can be optimized -- class and id selectors should be added to a global hashtable when the dom is built
-        ///// </summary>
-        ///// <param name="list"></param>
-        ///// <param name="recurse"></param>
-        ///// <returns></returns>
-        //public IEnumerable<IDomObject> GetMatches(IEnumerable<IDomObject> baseList, IEnumerable<IDomObject> list, int firstSelector)
-        //{
-
-        //    // Maintain a hashset of every element already searched. Since result sets frequently contain items which are
-        //    // children of other items in the list, we would end up searching the tree repeatedly
-        //    HashSet<IDomObject> uniqueElements = null;
-
-        //    Stack<MatchElement> stack = null;
-        //    IEnumerable<IDomObject> curList = list ?? baseList;
-        //    HashSet<IDomObject> temporaryResults = new HashSet<IDomObject>();
-
-        //    bool simple = false;
-
-        //    for (int i=firstSelector;i<Selectors.Count;i++)
-        //    {
-        //        var selector = Selectors[i];
-                
-        //        // If there is only one selector, and it's possible to know its results before all are found, allow it to be yielded directly
-        //        if (selector.SelectorType.IsOneOf(SelectorType.Position, SelectorType.HTML) )
-        //        {
-        //            simple = false;
-        //        }
-        //        else
-        //        {
-        //            simple = firstSelector == Selectors.Count - 1;
-        //        }
-                
-
-        //        // For chained combinators, clear the temporary list - we only want the results from each successive round. Otherwise,
-        //        // reset the source to the original list but keep the results of the previous round.
-                
-        //        //if (i != firstSelector) {
-        //        //    if (selector.CombinatorType == CombinatorType.Chained)
-        //        //    {
-        //        //        curList = temporaryResults;
-        //        //        temporaryResults = new HashSet<IDomObject>();
-        //        //    }  else {
-        //        //        curList = baseList;
-        //        //    }
-        //        //}
-
-        //        // The unique list has to be reset for each sub-selector
-        //        uniqueElements = new HashSet<IDomObject>();
-
-        //        if (selector.SelectorType == SelectorType.HTML)
-        //        {
-        //            DomElementFactory factory = new DomElementFactory();
-
-        //            foreach (var obj in factory.CreateElements(selector.Html))
-        //            {
-        //                temporaryResults.Add(obj);
-        //            }
-        //            continue;
-        //        }
-
-        //        // Position selectors are simple -- skip out of main matching code if so
-        //        if (selector.SelectorType == SelectorType.Position)
-        //        {
-        //            foreach (var obj in GetPositionMatches(curList, selector)) {
-        //                temporaryResults.Add(obj);
-        //            }
-        //            continue;
-        //        }
-
-        //        stack = new Stack<MatchElement>();
-        //        int depth = 0;
-        //        foreach (var e in curList)
-        //        {
-        //            if (uniqueElements.Add(e))
-        //            {
-        //                stack.Push(new MatchElement(e,depth));
-        //                int matchIndex = 0;
-        //                while (stack.Count != 0)
-        //                {
-        //                    var current = stack.Pop();
-
-        //                    if (Matches(selector, current.Object,current.Depth ))
-        //                    {
-        //                        if (simple)
-        //                        {
-        //                            yield return current.Object;
-        //                        }
-        //                        else
-        //                        {
-        //                            temporaryResults.Add(current.Object);
-        //                        }   
-        //                        matchIndex++;
-        //                    }
-        //                    // Add children to stack (in reverse order, so they are processed in the correct order when popped)
-                            
-        //                    if (selector.TraversalType != TraversalType.Filter && 
-        //                        current.Object is DomElement)
-        //                    {
-        //                        DomElement elm = current.Element;
-        //                        for (int j = elm.Count - 1; j >= 0; j--)
-        //                        {
-        //                            IDomObject obj = elm[j];
-        //                            if (obj is DomElement && uniqueElements.Add((DomElement)obj))
-        //                            {
-        //                                stack.Push(new MatchElement(obj,current.Depth+1));
-        //                            }
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
-
-
-        //    }
-        //    // for complex cases, return each final result
-        //    if (!simple)
-        //    {
-        //        foreach (var obj in temporaryResults)
-        //        {
-        //            yield return obj;
-        //        }
-        //    }
-        //}
+      
         /// <summary>
         /// Test obj for a match with selector. matchIndex is the current index for items returned by the selector, and depth is the current
         /// node depth.
@@ -1078,125 +1030,5 @@ namespace Jtc.CsQuery
         #endregion
     }
     
-    [Flags]
-    public enum SelectorType
-    {
-        All = 1,
-        Tag = 2,
-        ID=4,
-        Class=8,
-        Attribute=16,
-        Contains =32,
-        Position = 64,
-        HTML = 128
-    }
-    public enum AttributeSelectorType
-    {
-        Exists=1,
-        Equals=2,
-        StartsWith=3,
-        Contains=4,
-        NotExists=5,
-        ContainsWord=6,
-        EndsWith=7,
-        NotEquals=8
-    }
-    
-    public enum CombinatorType
-    {
-        Cumulative = 1,
-        Chained = 2,
-        Root = 3
-    }
-    public enum TraversalType
-    {
-        All = 1,
-        Filter = 2,
-        Descendent=3,
-        Child=4
-    }
-    public enum PositionType
-    {
-        All = 1,
-        Even = 2,
-        Odd = 3,
-        First = 4,
-        Last = 5,
-        IndexEquals = 6,
-        IndexLessThan=7,
-        IndexGreaterThan=8
-    }
-    public class CsQuerySelector
-    {
-        public CsQuerySelector()
-        {
-            SelectorType=0;
-            AttributeSelectorType = AttributeSelectorType.Equals;
-            CombinatorType = CombinatorType.Root;
-            TraversalType = TraversalType.All;
-            PositionType = PositionType.All;
-        }
-        public SelectorType SelectorType { get; set; }
-        public AttributeSelectorType AttributeSelectorType { get; set; }
-        public CombinatorType CombinatorType { get; set; }
-        public bool IsComplete
-        {
-            get
-            {
-                return SelectorType != 0;
-            }
-        }
-        public string Html = null;
-
-
-        /// <summary>
-        /// Selection tag name
-        /// </summary>
-        public string Tag {
-            get;set;
-        }
-        public TraversalType TraversalType
-        { get; set; }
-        public PositionType PositionType
-        { get; set; }
-        /// <summary>
-        /// Selection criteria for attibute selector functions
-        /// </summary>
-        public string Criteria
-        {
-            get
-            {
-                return _Criteria;
-            }
-            set
-            {
-                _Criteria = value;   
-            }
-        } protected string _Criteria = null;
-        /// <summary>
-        /// For Position selectors, the position. Negative numbers start from the end.
-        /// </summary>
-        public int PositionIndex
-        { get; set; }
-        /// <summary>
-        /// For Child selectors, the depth of the child.
-        /// </summary>
-        public int ChildDepth
-        { get; set; }
-        public string AttributeName
-        {
-            get
-            {
-                return _AttributeName;
-            }
-            set
-            {
-                _AttributeName = (value == null ? value : value.ToLower());
-            }
-        } protected string _AttributeName = null;
-        public string AttributeValue = null;
-        public string Class = null;
-        public string ID = null;
-
-    }
+  
 }

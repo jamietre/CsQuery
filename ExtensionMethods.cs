@@ -23,6 +23,25 @@ namespace Jtc.Scripting
 
     public static class ExtensionMethods
     {
+        
+
+        public static bool IsTruthy(this object obj)
+        {
+            if (obj == null) return false;
+            if (obj is string)
+            {
+                return !String.IsNullOrEmpty((string)obj);
+            }
+            if (obj is bool)
+            {
+                return (bool)obj;
+            }
+            if (obj is double || obj is float || obj is long || obj is int)
+            {
+                return Convert.ToDouble(obj) != 0;
+            }
+            return true;
+        }
         public static object Clone(this object obj)
         {
             return obj.Clone(false);
@@ -118,7 +137,7 @@ namespace Jtc.Scripting
 
         }
         /// <summary>
-        /// Serailize the object o a JSON string
+        /// Serailize the object to a JSON string
         /// </summary>
         /// <param name="objectToSerialize"></param>
         /// <returns></returns>
@@ -191,7 +210,7 @@ namespace Jtc.Scripting
                 (obj is ValueType && !(obj.IsKeyValuePair()));
         }
         /// <summary>
-        /// Test if is an expando object. Remarkably we need a separate method for actual expando types
+        /// Test if is an expando object.
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
@@ -199,9 +218,14 @@ namespace Jtc.Scripting
         {
             return (obj is IDictionary<string, object>);
         }
-        public static bool IsExpando(this ExpandoObject  obj)
+        /// <summary>
+        /// Returns true for expando objects with no properties
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static bool IsEmptyExpando(this object obj)
         {
-            return true;
+            return obj.IsExpando() && ((IDictionary<string,object>)obj).Count==0;
         }
         public static bool IsKeyValuePair(this object obj)
         {

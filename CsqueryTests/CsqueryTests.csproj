@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attribute.cs" />
     <Compile Include="Core.cs" />
     <Compile Include="CsQueryTest.cs" />
     <Compile Include="ExtensionMethods.cs" />
@@ -59,6 +60,7 @@
     <Compile Include="TCsQuery2.cs" />
     <Compile Include="TCsQueryCore.cs" />
     <Compile Include="TCsQueryUtils.cs" />
+    <Compile Include="Traversing.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\jquery-unit-index.htm">

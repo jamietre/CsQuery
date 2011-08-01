@@ -29,5 +29,40 @@ namespace Jtc.CsQuery
             fs.Close();
             return (result);
         }
+        /// <summary>
+        ///  Gets a resource from the calling assembly
+        /// </summary>
+        /// <param name="resourceName"></param>
+        /// <returns></returns>
+        public static Stream GetResourceStream(string resourceName)
+        {
+            return GetResourceStream(resourceName, Assembly.GetCallingAssembly());
+        }
+
+        /// <summary>
+        /// Gets a resource name using the assembly and resource name
+        /// </summary>
+        /// <param name="resourceName"></param>
+        /// <param name="assembly"></param>
+        /// <returns></returns>
+        public static Stream GetResourceStream(string resourceName, Assembly assembly)
+        {
+
+            Stream fileStream = assembly.GetManifestResourceStream(resourceName);
+            return (fileStream);
+        }
+        public static Stream GetResourceStream(string resourceName, string assembly)
+        {
+            Assembly loadedAssembly = Assembly.Load(assembly);
+            return GetResourceStream(resourceName, loadedAssembly);
+        }
+
+        public static string StreamToString(Stream stream)
+        {
+            byte[] data = new byte[stream.Length];
+            stream.Position = 0;
+            stream.Read(data, 0, (int)stream.Length);
+            return (Encoding.ASCII.GetString(data));
+        }
     }
 }

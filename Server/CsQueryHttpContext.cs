@@ -254,60 +254,60 @@ namespace Jtc.CsQuery.Server
         }
         
         
-        protected static string[] SplitQuotedString(string stringToSplit, char token)
-        {
-            int count = 0;
-            List<string> valueList = new List<string>();
-            StringBuilder sb = new StringBuilder();
-            bool inQuotes = false;
-            char closeQuoteChar = '"';
+        //protected static string[] SplitQuotedString(string stringToSplit, char token)
+        //{
+        //    int count = 0;
+        //    List<string> valueList = new List<string>();
+        //    StringBuilder sb = new StringBuilder();
+        //    bool inQuotes = false;
+        //    char closeQuoteChar = '"';
 
-            foreach (Char character in stringToSplit)
-            {
-                if (character == '\\')
-                {
-                    continue;
-                }
-                if (!inQuotes) {
-                    switch(character) {
-                        case '"':
-                        case '\'':
-                        case '(':
-                            inQuotes = !inQuotes;
-                            closeQuoteChar = character == '(' ? ')': character;
-                            break;
-                    }
-                }
-                else if (character == closeQuoteChar)
-                {
-                    inQuotes = false;
-                }
+        //    foreach (Char character in stringToSplit)
+        //    {
+        //        if (character == '\\')
+        //        {
+        //            continue;
+        //        }
+        //        if (!inQuotes) {
+        //            switch(character) {
+        //                case '"':
+        //                case '\'':
+        //                case '(':
+        //                    inQuotes = !inQuotes;
+        //                    closeQuoteChar = character == '(' ? ')': character;
+        //                    break;
+        //            }
+        //        }
+        //        else if (character == closeQuoteChar)
+        //        {
+        //            inQuotes = false;
+        //        }
 
-                if (!inQuotes && character == token)
-                {
-                    // check if in 1st position, if so, double-check by trying to parse it. If its not an int then continue on as if nothing happened.
-                    // Since this data is HTML is could be messy - this is not a perfect algorithm but it should be rare for it to fail with typical markup
-                    if (count>0 && count % 4==0)
-                    {
-                        int val;
-                        if (!int.TryParse(sb.ToString(),out val)) {
-                            valueList[valueList.Count - 1] += token + sb.ToString();
-                            continue;
-                        }
-                    }
-                    count++;
-                    valueList.Add(sb.ToString());
-                    sb = new StringBuilder();
-                }
-                else
-                    sb.Append(character);
-            }
+        //        if (!inQuotes && character == token)
+        //        {
+        //            // check if in 1st position, if so, double-check by trying to parse it. If its not an int then continue on as if nothing happened.
+        //            // Since this data is HTML is could be messy - this is not a perfect algorithm but it should be rare for it to fail with typical markup
+        //            if (count>0 && count % 4==0)
+        //            {
+        //                int val;
+        //                if (!int.TryParse(sb.ToString(),out val)) {
+        //                    valueList[valueList.Count - 1] += token + sb.ToString();
+        //                    continue;
+        //                }
+        //            }
+        //            count++;
+        //            valueList.Add(sb.ToString());
+        //            sb = new StringBuilder();
+        //        }
+        //        else
+        //            sb.Append(character);
+        //    }
 
-            if (sb.Length > 0)
-                valueList.Add(sb.ToString());
+        //    if (sb.Length > 0)
+        //        valueList.Add(sb.ToString());
 
-            return valueList.ToArray();
-        }
+        //    return valueList.ToArray();
+        //}
         internal static string JsonStringDef(string target, object data)
         {
             JavaScriptSerializer serializer = new JavaScriptSerializer();

@@ -7,7 +7,7 @@ using Jtc.CsQuery;
 using NUnit.Framework;
 using Jtc.Scripting;
 
-namespace Jtc.CsQuery.Tests
+namespace CsqueryTests
 {
 
     [TestFixture, Description("CsQuery Core Tests ")]

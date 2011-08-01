@@ -58,7 +58,14 @@ namespace Jtc.CsQuery
         {
             if (depth == 0 && !descendants)
             {
-                yield return Index[subKey];
+                if (Index.ContainsKey(subKey))
+                {
+                    yield return Index[subKey];
+                }
+                else
+                {
+                    yield break;
+                }
             }
             else
             {

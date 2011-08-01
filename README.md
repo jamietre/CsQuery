@@ -1,9 +1,19 @@
 ## CsQuery - C# jQuery Port
 
+0.92
+- Added ability to select from other selector results (list of IDomObject)
+- Started in on Traversing test suite, 
 
-7/29/2011 - 0.99
+8/1/2011 - 0.91
+- Many, many new methods
+- Added half of jquery "attribute" test suite and many compatibility enhancements to attr
+- Broad support for passing JSON strings to functions that take an object (e.g. css)
+- Updated HTML parser to treat contents of <textarea> as text.
+- Change to DOM model so most methods/properties of IDomElement are also in IDomObject with default behavior
 
-- Added many new utility functions: Extend, ToJSON, FromJSON, and some more methods
+7/29/2011 - 0.90
+
+- Added many new utility functions: Extend, ToJSON, ParseJSON, and some more methods
 - Extend works by returning ExpandoObjects, but can take anything as its source
 - Added test suite. Started adding applicable jQuery unit tests (got through most of Core)
 - Updated DOM model to more closely match actual browser DOM

@@ -96,6 +96,20 @@ namespace Jtc.CsQuery
                     return (IDomElement)Object;
                 }
             }
+            // when true, the contents will be treated as text until the next close tag
+            public bool ReadTextOnly {
+                get
+                {
+                    return _ReadTextOnly;
+                }
+                set{
+                    _ReadTextOnly = value;
+                    if (value)
+                    {
+                        Step = -1;
+                    }
+                }
+            } protected bool _ReadTextOnly= false;
             public int Pos;
             public int Step = 0;
             public bool Finished;
@@ -109,6 +123,7 @@ namespace Jtc.CsQuery
             {
                 Step = 0;
                 HtmlStart = Pos;
+                ReadTextOnly = false;
                 Object = null;
             }
             public void Reset(int pos)
@@ -141,9 +156,27 @@ namespace Jtc.CsQuery
                         char c = BaseHtml[current.Pos];
                         switch (current.Step)
                         {
+                                // special case for textareas
+                            case -1:
+                                if (c == '<')
+                                {
+                                    // read ahead to see if a close tag
+                                    int endPos = BaseHtml.IndexOf('>',current.Pos);
+                                    if (endPos>0) {
+                                        string tag = BaseHtml.SubstringBetween(current.Pos+1,endPos);
+                                        if (tag.ToLower().Trim()=="/textarea") {
+                                            current.Step=1;
+                                            current.ReadTextOnly = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                                current.Pos++;
+                                break;
                             case 0:
                                 if (c == '<')
                                 {
+                                    
                                     // found a tag-- it could be a close tag, or a new HTML tag
                                     current.Step = 1;
                                 }
@@ -282,6 +315,10 @@ namespace Jtc.CsQuery
                                 {
                                     current.Object = new DomElement();
                                     current.Element.NodeName = newTag;
+                                    if (newTagLower == "textarea")
+                                    {
+                                        current.ReadTextOnly = true;
+                                    }
                                 }
                                 
                                 // Check for informational tag types
@@ -336,20 +373,18 @@ namespace Jtc.CsQuery
                                 if (!hasChildren)
                                 {
                                     current.Reset();
-                                }
-                                if (!hasChildren)
-                                {
                                     continue;
                                 }
+
 
                                 stack.Push(current);
                                 //Debug.Assert(current.Object == null);
 
                                 IterationData subItem = new IterationData();
-                                
                                 subItem.Parent = current;
                                 subItem.AllowLiterals = true;
                                 subItem.Reset(current.Pos);
+                                subItem.ReadTextOnly = current.ReadTextOnly;
                                 current = subItem;
                                 break;
 
@@ -569,7 +604,7 @@ namespace Jtc.CsQuery
                         }
                         else
                         {
-                            if (c == '"' || c == '/')
+                            if (c == '"' || c == '\'')
                             {
                                 isQuoted = true;
                                 valStart = current.Pos+1;

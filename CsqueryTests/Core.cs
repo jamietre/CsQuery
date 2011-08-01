@@ -63,28 +63,31 @@ namespace CsqueryTests
             // Cheating - since we have no direct way to obtain the "body" element other than CsQuery
             // but the point it to test passing a node to the factory so it doesn't matter how we get it.
 
-            IDomElement body = jQuery("body")[0];
+            IDomElement body = (IDomElement)jQuery("body")[0];
 
             Assert.AreEqual(jQuery("body").Get(0),jQuery(body).Get(0), "Test passing an html node to the factory" );
             
-            // Todo: 1) not set up for this in the first place. 2) our "json deserializer" sucks, need/write somethign that works
+            // TODO: 1) not set up for this in the first place. 
+            // 2. Need to parse #s into PX
+            // 3. Add a "style" object
+
 //            bool exec = false;
             var elem = CsQuery.Create("<div/>", @"{
                     width: 10,
-                    css: { paddingLeft:1, paddingRight:1 },
-                    click: function(){ ok(exec, ""Click executed.""); },
-                    text: ""test\"",
-                    ""class\"": ""test2"",
-                    id: ""test3""}");
+                    css: { padding-left:1, padding-right:1 },
+                    click: 'function(){ ok(exec, ""Click executed.""); }',
+                    text: 'test',
+                    class:'test2',
+                    id: 'test3'}");
             
-//            Assert.AreEqual("10px", elem[0].GetStyle("width"), "jQuery() quick setter width");
-            //    equals( elem[0].style.width, "10px", "jQuery() quick setter width");
-            //    equals( elem[0].style.paddingLeft, "1px", "jQuery quick setter css");
-            //    equals( elem[0].style.paddingRight, "1px", "jQuery quick setter css");
-            //    equals( elem[0].childNodes.length, 1, "jQuery quick setter text");
-            //    equals( elem[0].firstChild.nodeValue, "test", "jQuery quick setter text");
-            //    equals( elem[0].className, "test2", "jQuery() quick setter class");
-            //    equals( elem[0].id, "test3", "jQuery() quick setter id");
+           Assert.AreEqual("10px", elem[0].Style["width"], "jQuery() quick setter width");
+
+           Assert.AreEqual("1px", elem[0].Style["padding-left"], "jQuery quick setter css");
+           Assert.AreEqual("1px", elem[0].Style["padding-right"], "jQuery quick setter css");
+            Assert.AreEqual(1,elem[0].ChildNodes.Length, "jQuery quick setter text");
+            Assert.AreEqual(elem[0].FirstChild.NodeValue, "test", "jQuery quick setter text");
+            Assert.AreEqual(elem[0].Class, "test2", "jQuery() quick setter class");
+            Assert.AreEqual(elem[0].ID, "test3", "jQuery() quick setter id");
 
             // Unnecessary
 
@@ -119,7 +122,7 @@ namespace CsqueryTests
         public void Html_ElementTypes()
         {
                 // Test multi-line HTML
-            IDomElement div = jQuery("<div>\r\nsome text\n<p>some p</p>\nmore text\r\n</div>")[0];
+            IDomObject  div = jQuery("<div>\r\nsome text\n<p>some p</p>\nmore text\r\n</div>")[0];
             Assert.AreEqual("DIV",div.NodeName.ToUpper(),  "Make sure we're getting a div." );
             Assert.AreEqual(3,(int)div.FirstChild.NodeType,  "Text node." );
             Assert.AreEqual(3,(int)div.LastChild.NodeType,  "Text node.");
@@ -311,20 +314,19 @@ namespace CsqueryTests
         [Test]
         public void Extend()
         {
-            dynamic settings = CsQuery.FromJSON("{ 'xnumber1': 5, 'xnumber2': 7, 'xstring1': 'peter', 'xstring2': 'pan' }");
-            dynamic options = CsQuery.FromJSON("{ 'xnumber2': 1, 'xstring2': 'x', 'xxx': 'newstring'}");
-                
-            dynamic optionsCopy = CsQuery.FromJSON("{ 'xnumber2': 1, 'xstring2': 'x', 'xxx': 'newstring' }");
-            dynamic merged = CsQuery.FromJSON("{ 'xnumber1': 5, 'xnumber2': 1, 'xstring1': 'peter', 'xstring2': 'x', 'xxx': 'newstring' }");
+            dynamic settings = CsQuery.ParseJSON("{ 'xnumber1': 5, 'xnumber2': 7, 'xstring1': 'peter', 'xstring2': 'pan' }");
+            dynamic options = CsQuery.ParseJSON("{ 'xnumber2': 1, 'xstring2': 'x', 'xxx': 'newstring'}");
+            dynamic optionsCopy = CsQuery.ParseJSON("{ 'xnumber2': 1, 'xstring2': 'x', 'xxx': 'newstring' }");
+            dynamic merged = CsQuery.ParseJSON("{ 'xnumber1': 5, 'xnumber2': 1, 'xstring1': 'peter', 'xstring2': 'x', 'xxx': 'newstring' }");
 
-            dynamic deep1 = CsQuery.FromJSON("{ 'foo': { 'bar': true } }");
-            dynamic deep1copy = CsQuery.FromJSON("{ 'foo': { 'bar': true } }");
+            dynamic deep1 = CsQuery.ParseJSON("{ 'foo': { 'bar': true } }");
+            dynamic deep1copy = CsQuery.ParseJSON("{ 'foo': { 'bar': true } }");
 
 
-            dynamic deep2 = CsQuery.FromJSON("{ 'foo': { 'baz': true }, 'foo2': 'document' }");
-            dynamic deep2copy = CsQuery.FromJSON("{ 'foo': { 'baz': true }, 'foo2': 'document' }");
+            dynamic deep2 = CsQuery.ParseJSON("{ 'foo': { 'baz': true }, 'foo2': 'document' }");
+            dynamic deep2copy = CsQuery.ParseJSON("{ 'foo': { 'baz': true }, 'foo2': 'document' }");
 
-            dynamic deepmerged = CsQuery.FromJSON("{ 'foo': { 'bar': true, 'baz': true }, 'foo2': 'document' }");
+            dynamic deepmerged = CsQuery.ParseJSON("{ 'foo': { 'bar': true, 'baz': true }, 'foo2': 'document' }");
             
             var arr = new int[] {1, 2, 3};
             dynamic nestedarray = new ExpandoObject();
@@ -350,10 +352,10 @@ namespace CsqueryTests
             //Assert.AreEqual(document, deep1.foo2, "Make sure that a deep clone was not attempted on the document");
 
                 
-            var nullUndef = CsQuery.Extend(null, options, CsQuery.FromJSON("{ 'xnumber2': null }"));
+            var nullUndef = CsQuery.Extend(null, options, CsQuery.ParseJSON("{ 'xnumber2': null }"));
             Assert.IsTrue( nullUndef.xnumber2 == null, "Check to make sure null values are copied");
 
-            nullUndef = CsQuery.Extend(null, options, CsQuery.FromJSON("{ 'xnumber0': null }"));
+            nullUndef = CsQuery.Extend(null, options, CsQuery.ParseJSON("{ 'xnumber0': null }"));
             Assert.IsTrue(nullUndef.xnumber0 == null, "Check to make sure null values are inserted");
             
             // Test nested arrays
@@ -365,20 +367,20 @@ namespace CsqueryTests
             Assert.AreNotSame(extendedArr.arr,arr, "Deep extend of object must clone child array");
 
             // #5991
-            dynamic emptyArrObj = CsQuery.FromJSON("{ arr: {} }");
+            dynamic emptyArrObj = CsQuery.ParseJSON("{ arr: {} }");
             dynamic extendedArr2= CsQuery.Extend(true,emptyArrObj, nestedarray);
 
             Assert.IsTrue(extendedArr2.arr is IEnumerable, "Cloned array heve to be an Array" );
 
             dynamic simpleArrObj = new ExpandoObject();
             simpleArrObj.arr = arr;
-            emptyArrObj = CsQuery.FromJSON("{ arr: {} }");
+            emptyArrObj = CsQuery.ParseJSON("{ arr: {} }");
             dynamic result = CsQuery.Extend(true, simpleArrObj, emptyArrObj);
             Assert.IsTrue(!(result.arr is Array), "Cloned object heve to be an plain object" );
 
 
             dynamic  empty = new ExpandoObject();
-            dynamic optionsWithLength = CsQuery.FromJSON("{ 'foo': { 'length': -1 } }");
+            dynamic optionsWithLength = CsQuery.ParseJSON("{ 'foo': { 'length': -1 } }");
             CsQuery.Extend(true, empty, optionsWithLength);
             Assert.AreEqual( empty.foo, optionsWithLength.foo, "The length property must copy correctly" );
 
@@ -406,59 +408,65 @@ namespace CsqueryTests
             //    var ret = jQuery.extend(true, { foo: 4 }, { foo: new Number(5) } );
             //    ok( ret.foo == 5, "Wrapped numbers copy correctly" );
 
-            nullUndef = CsQuery.Extend(null, options, CsQuery.FromJSON("{ 'xnumber2': null }"));
+            nullUndef = CsQuery.Extend(null, options,"{ 'xnumber2': null }");
             Assert.IsTrue( nullUndef.xnumber2 == null, "Check to make sure null values are copied");
 
             //    nullUndef = jQuery.extend({}, options, { xnumber2: undefined });
             //    ok( nullUndef.xnumber2 === options.xnumber2, "Check to make sure undefined values are not copied");
 
-            nullUndef = CsQuery.Extend(null, options, CsQuery.FromJSON("{ 'xnumber0': null }"));
+            nullUndef = CsQuery.Extend(null, options, "{ 'xnumber0': null }");
             Assert.IsTrue( nullUndef.xnumber0 == null, "Check to make sure null values are inserted");
+
+            dynamic target = new ExpandoObject();
+            dynamic recursive = new ExpandoObject();
+            recursive.bar = 5;
+            recursive.foo = target;
+
+            CsQuery.Extend(true, target, recursive);
+            dynamic compare = CsQuery.ParseJSON("{ 'bar':5 }");
+
+            Assert.AreEqual(target, compare, "Check to make sure a recursive obj doesn't go never-ending loop by not copying it over");
+
+            // These next checks don't really apply as they are specific to javascript nuances, but can't hurt
+
+            dynamic ret = CsQuery.Extend(true, CsQuery.ParseJSON(" { 'foo': [] }"), CsQuery.ParseJSON("{ 'foo': [0] }")); // 1907
+            // arrays are returned as List<object> when casting to expando object
+            Assert.AreEqual(1,ret.foo.Count, "Check to make sure a value with coersion 'false' copies over when necessary to fix #1907" );
+
+            ret = CsQuery.Extend(true, CsQuery.ParseJSON("{ 'foo': '1,2,3' }"), CsQuery.ParseJSON("{ 'foo': [1, 2, 3] }"));
+            Assert.IsTrue( !(ret.foo is string), "Check to make sure values equal with coersion (but not actually equal) overwrite correctly" );
+
+
+
+            dynamic obj = CsQuery.ParseJSON("{ 'foo':null }");
+            CsQuery.Extend(true, obj, CsQuery.ParseJSON("{ 'foo':'notnull' }"));
+            Assert.AreEqual(obj.foo, "notnull", "Make sure a null value can be overwritten" );
+
+            //    function func() {}
+            //    jQuery.extend(func, { key: "value" } );
+            //    equals( func.key, "value", "Verify a function can be extended" );
+
+            dynamic defaults = CsQuery.ParseJSON("{ 'xnumber1': 5, 'xnumber2': 7, 'xstring1': 'peter', 'xstring2': 'pan' }");
+            dynamic defaultsCopy = CsQuery.ParseJSON(" { xnumber1: 5, xnumber2: 7, xstring1: 'peter', xstring2: 'pan' }");
+            dynamic options1 = CsQuery.ParseJSON("{ xnumber2: 1, xstring2: 'x' }");
+            dynamic options1Copy = CsQuery.ParseJSON(" { xnumber2: 1, xstring2: 'x' }");
+            dynamic options2 = CsQuery.ParseJSON(" { xstring2: 'xx', xxx: 'newstringx'}");
+            dynamic options2Copy = CsQuery.ParseJSON(" { xstring2: 'xx', xxx: 'newstringx'}");
+            dynamic merged2 = CsQuery.ParseJSON(" { xnumber1: 5, xnumber2: 1, xstring1: 'peter', xstring2: 'xx', xxx: 'newstringx' }");
+
+
+            ret = CsQuery.Extend(true, CsQuery.ParseJSON(" { foo:'bar' }"), CsQuery.ParseJSON("{ foo:null }"));
+            Assert.IsTrue(ret.foo ==null, "Make sure a null value doesn't crash with deep extend, for #1908" );
+           
+            settings = CsQuery.Extend(null, defaults, options1, options2);
+            Assert.AreEqual(merged2, settings, "Check if extended: settings must be extended");
+            Assert.AreEqual(defaults, defaultsCopy, "Check if not modified: options1 must not be modified");
+            Assert.AreEqual(options1, options1Copy, "Check if not modified: options1 must not be modified");
+            Assert.AreEqual(options2, options2Copy, "Check if not modified: options2 must not be modified");
         }
 
-
-
-        
-
-        //    var target = {};
-        //    var recursive = { foo:target, bar:5 };
-        //    jQuery.extend(true, target, recursive);
-        //    same( target, { bar:5 }, "Check to make sure a recursive obj doesn't go never-ending loop by not copying it over" );
-
-        //    var ret = jQuery.extend(true, { foo: [] }, { foo: [0] } ); // 1907
-        //    equals( ret.foo.length, 1, "Check to make sure a value with coersion 'false' copies over when necessary to fix #1907" );
-
-        //    var ret = jQuery.extend(true, { foo: "1,2,3" }, { foo: [1, 2, 3] } );
-        //    ok( typeof ret.foo != "string", "Check to make sure values equal with coersion (but not actually equal) overwrite correctly" );
-
-        //    var ret = jQuery.extend(true, { foo:"bar" }, { foo:null } );
-        //    ok( typeof ret.foo !== "undefined", "Make sure a null value doesn't crash with deep extend, for #1908" );
-
-        //    var obj = { foo:null };
-        //    jQuery.extend(true, obj, { foo:"notnull" } );
-        //    equals( obj.foo, "notnull", "Make sure a null value can be overwritten" );
-
-        //    function func() {}
-        //    jQuery.extend(func, { key: "value" } );
-        //    equals( func.key, "value", "Verify a function can be extended" );
-
-        //    var defaults = { xnumber1: 5, xnumber2: 7, xstring1: "peter", xstring2: "pan" },
-        //        defaultsCopy = { xnumber1: 5, xnumber2: 7, xstring1: "peter", xstring2: "pan" },
-        //        options1 = { xnumber2: 1, xstring2: "x" },
-        //        options1Copy = { xnumber2: 1, xstring2: "x" },
-        //        options2 = { xstring2: "xx", xxx: "newstringx" },
-        //        options2Copy = { xstring2: "xx", xxx: "newstringx" },
-        //        merged2 = { xnumber1: 5, xnumber2: 1, xstring1: "peter", xstring2: "xx", xxx: "newstringx" };
-
-        //    var settings = jQuery.extend({}, defaults, options1, options2);
-        //    same( settings, merged2, "Check if extended: settings must be extended" );
-        //    same( defaults, defaultsCopy, "Check if not modified: options1 must not be modified" );
-        //    same( options1, options1Copy, "Check if not modified: options1 must not be modified" );
-        //    same( options2, options2Copy, "Check if not modified: options2 must not be modified" );
-        //});
-
         /*
-         * The Each implementation only applies to the jQuery selections. No sense in duplication of regular langauce constructs.
+         * The Each implementation only applies to the jQuery selections. No sense in duplication of regular c# language constructs.
          */
 
         //test("jQuery.each(Object,Function)", function() {
@@ -547,6 +555,10 @@ namespace CsqueryTests
         //    same( jQuery.makeArray({length: "5"}), [], "Make sure object is coerced properly.");
         //});
 
+        /*
+         * Not implemented - C# extension methods more useful
+         */
+ 
         //test("jQuery.isEmptyObject", function(){
         //    expect(2);
 
@@ -556,6 +568,10 @@ namespace CsqueryTests
         //    // What about this ?
         //    // equals(true, jQuery.isEmptyObject(null), "isEmptyObject on null" );
         //});
+
+        /*
+         * Not implemented
+         */
 
         //test("jQuery.proxy", function(){
         //    expect(7);
@@ -587,187 +603,183 @@ namespace CsqueryTests
         //    var test4 = { meth: function( a ){ equals( a, "boom", "Ensure old syntax works." ); } };
         //    jQuery.proxy( test4, "meth" )( "boom" );
         //});
+        [Test]
+        public void ParseJson()
+        {
+           Assert.AreEqual(CsQuery.ParseJSON(null), null, "Nothing in, null out." );
+           Assert.AreEqual(CsQuery.ParseJSON( "" ), null, "Nothing in, null out." );
 
-//test("jQuery.parseJSON", function(){
-//    expect(8);
+          Assert.AreEqual(CsQuery.ParseJSON("{}"), new ExpandoObject(), "Plain object parsing." );
 
-//    equals( jQuery.parseJSON(), null, "Nothing in, null out." );
-//    equals( jQuery.parseJSON( null ), null, "Nothing in, null out." );
-//    equals( jQuery.parseJSON( "" ), null, "Nothing in, null out." );
+            // everything else - just the JS Serializer
 
-//    same( jQuery.parseJSON("{}"), {}, "Plain object parsing." );
-//    same( jQuery.parseJSON("{\"test\":1}"), {"test":1}, "Plain object parsing." );
+        }
 
-//    same( jQuery.parseJSON("\n{\"test\":1}"), {"test":1}, "Make sure leading whitespaces are handled." );
+        /*
+         * We could do this.. probably useful
+         */
 
-//    try {
-//        jQuery.parseJSON("{a:1}");
-//        ok( false, "Test malformed JSON string." );
-//    } catch( e ) {
-//        ok( true, "Test malformed JSON string." );
-//    }
+        //test("jQuery.parseXML", 4, function(){
+        //    var xml, tmp;
+        //    try {
+        //        xml = jQuery.parseXML( "<p>A <b>well-formed</b> xml string</p>" );
+        //        tmp = xml.getElementsByTagName( "p" )[ 0 ];
+        //        ok( !!tmp, "<p> present in document" );
+        //        tmp = tmp.getElementsByTagName( "b" )[ 0 ];
+        //        ok( !!tmp, "<b> present in document" );
+        //        strictEqual( tmp.childNodes[ 0 ].nodeValue, "well-formed", "<b> text is as expected" );
+        //    } catch (e) {
+        //        strictEqual( e, undefined, "unexpected error" );
+        //    }
+        //    try {
+        //        xml = jQuery.parseXML( "<p>Not a <<b>well-formed</b> xml string</p>" );
+        //        ok( false, "invalid xml not detected" );
+        //    } catch( e ) {
+        //        strictEqual( e, "Invalid XML: <p>Not a <<b>well-formed</b> xml string</p>", "invalid xml detected" );
+        //    }
+        //});
 
-//    try {
-//        jQuery.parseJSON("{'a':1}");
-//        ok( false, "Test malformed JSON string." );
-//    } catch( e ) {
-//        ok( true, "Test malformed JSON string." );
-//    }
-//});
+        /*
+         * This one really has no purpose in C#
+         */
 
-//test("jQuery.parseXML", 4, function(){
-//    var xml, tmp;
-//    try {
-//        xml = jQuery.parseXML( "<p>A <b>well-formed</b> xml string</p>" );
-//        tmp = xml.getElementsByTagName( "p" )[ 0 ];
-//        ok( !!tmp, "<p> present in document" );
-//        tmp = tmp.getElementsByTagName( "b" )[ 0 ];
-//        ok( !!tmp, "<b> present in document" );
-//        strictEqual( tmp.childNodes[ 0 ].nodeValue, "well-formed", "<b> text is as expected" );
-//    } catch (e) {
-//        strictEqual( e, undefined, "unexpected error" );
-//    }
-//    try {
-//        xml = jQuery.parseXML( "<p>Not a <<b>well-formed</b> xml string</p>" );
-//        ok( false, "invalid xml not detected" );
-//    } catch( e ) {
-//        strictEqual( e, "Invalid XML: <p>Not a <<b>well-formed</b> xml string</p>", "invalid xml detected" );
-//    }
-//});
+        //test("jQuery.sub() - Static Methods", function(){
+        //    expect(18);
+        //    var Subclass = jQuery.sub();
+        //    Subclass.extend({
+        //        topLevelMethod: function() {return this.debug;},
+        //        debug: false,
+        //        config: {
+        //            locale: "en_US"
+        //        },
+        //        setup: function(config) {
+        //            this.extend(true, this.config, config);
+        //        }
+        //    });
+        //    Subclass.fn.extend({subClassMethod: function() { return this;}});
 
-//test("jQuery.sub() - Static Methods", function(){
-//    expect(18);
-//    var Subclass = jQuery.sub();
-//    Subclass.extend({
-//        topLevelMethod: function() {return this.debug;},
-//        debug: false,
-//        config: {
-//            locale: "en_US"
-//        },
-//        setup: function(config) {
-//            this.extend(true, this.config, config);
-//        }
-//    });
-//    Subclass.fn.extend({subClassMethod: function() { return this;}});
+        //    //Test Simple Subclass
+        //    ok(Subclass.topLevelMethod() === false, "Subclass.topLevelMethod thought debug was true");
+        //    ok(Subclass.config.locale == "en_US", Subclass.config.locale + " is wrong!");
+        //    same(Subclass.config.test, undefined, "Subclass.config.test is set incorrectly");
+        //    equal(jQuery.ajax, Subclass.ajax, "The subclass failed to get all top level methods");
 
-//    //Test Simple Subclass
-//    ok(Subclass.topLevelMethod() === false, "Subclass.topLevelMethod thought debug was true");
-//    ok(Subclass.config.locale == "en_US", Subclass.config.locale + " is wrong!");
-//    same(Subclass.config.test, undefined, "Subclass.config.test is set incorrectly");
-//    equal(jQuery.ajax, Subclass.ajax, "The subclass failed to get all top level methods");
+        //    //Create a SubSubclass
+        //    var SubSubclass = Subclass.sub();
 
-//    //Create a SubSubclass
-//    var SubSubclass = Subclass.sub();
+        //    //Make Sure the SubSubclass inherited properly
+        //    ok(SubSubclass.topLevelMethod() === false, "SubSubclass.topLevelMethod thought debug was true");
+        //    ok(SubSubclass.config.locale == "en_US", SubSubclass.config.locale + " is wrong!");
+        //    same(SubSubclass.config.test, undefined, "SubSubclass.config.test is set incorrectly");
+        //    equal(jQuery.ajax, SubSubclass.ajax, "The subsubclass failed to get all top level methods");
 
-//    //Make Sure the SubSubclass inherited properly
-//    ok(SubSubclass.topLevelMethod() === false, "SubSubclass.topLevelMethod thought debug was true");
-//    ok(SubSubclass.config.locale == "en_US", SubSubclass.config.locale + " is wrong!");
-//    same(SubSubclass.config.test, undefined, "SubSubclass.config.test is set incorrectly");
-//    equal(jQuery.ajax, SubSubclass.ajax, "The subsubclass failed to get all top level methods");
+        //    //Modify The Subclass and test the Modifications
+        //    SubSubclass.fn.extend({subSubClassMethod: function() { return this;}});
+        //    SubSubclass.setup({locale: "es_MX", test: "worked"});
+        //    SubSubclass.debug = true;
+        //    SubSubclass.ajax = function() {return false;};
+        //    ok(SubSubclass.topLevelMethod(), "SubSubclass.topLevelMethod thought debug was false");
+        //    same(SubSubclass(document).subClassMethod, Subclass.fn.subClassMethod, "Methods Differ!");
+        //    ok(SubSubclass.config.locale == "es_MX", SubSubclass.config.locale + " is wrong!");
+        //    ok(SubSubclass.config.test == "worked", "SubSubclass.config.test is set incorrectly");
+        //    notEqual(jQuery.ajax, SubSubclass.ajax, "The subsubclass failed to get all top level methods");
 
-//    //Modify The Subclass and test the Modifications
-//    SubSubclass.fn.extend({subSubClassMethod: function() { return this;}});
-//    SubSubclass.setup({locale: "es_MX", test: "worked"});
-//    SubSubclass.debug = true;
-//    SubSubclass.ajax = function() {return false;};
-//    ok(SubSubclass.topLevelMethod(), "SubSubclass.topLevelMethod thought debug was false");
-//    same(SubSubclass(document).subClassMethod, Subclass.fn.subClassMethod, "Methods Differ!");
-//    ok(SubSubclass.config.locale == "es_MX", SubSubclass.config.locale + " is wrong!");
-//    ok(SubSubclass.config.test == "worked", "SubSubclass.config.test is set incorrectly");
-//    notEqual(jQuery.ajax, SubSubclass.ajax, "The subsubclass failed to get all top level methods");
+        //    //This shows that the modifications to the SubSubClass did not bubble back up to it's superclass
+        //    ok(Subclass.topLevelMethod() === false, "Subclass.topLevelMethod thought debug was true");
+        //    ok(Subclass.config.locale == "en_US", Subclass.config.locale + " is wrong!");
+        //    same(Subclass.config.test, undefined, "Subclass.config.test is set incorrectly");
+        //    same(Subclass(document).subSubClassMethod, undefined, "subSubClassMethod set incorrectly");
+        //    equal(jQuery.ajax, Subclass.ajax, "The subclass failed to get all top level methods");
+        //});
 
-//    //This shows that the modifications to the SubSubClass did not bubble back up to it's superclass
-//    ok(Subclass.topLevelMethod() === false, "Subclass.topLevelMethod thought debug was true");
-//    ok(Subclass.config.locale == "en_US", Subclass.config.locale + " is wrong!");
-//    same(Subclass.config.test, undefined, "Subclass.config.test is set incorrectly");
-//    same(Subclass(document).subSubClassMethod, undefined, "subSubClassMethod set incorrectly");
-//    equal(jQuery.ajax, Subclass.ajax, "The subclass failed to get all top level methods");
-//});
+        //test("jQuery.sub() - .fn Methods", function(){
+        //    expect(378);
 
-//test("jQuery.sub() - .fn Methods", function(){
-//    expect(378);
+        //    var Subclass = jQuery.sub(),
+        //            SubclassSubclass = Subclass.sub(),
+        //            jQueryDocument = jQuery(document),
+        //            selectors, contexts, methods, method, arg, description;
 
-//    var Subclass = jQuery.sub(),
-//            SubclassSubclass = Subclass.sub(),
-//            jQueryDocument = jQuery(document),
-//            selectors, contexts, methods, method, arg, description;
+        //    jQueryDocument.toString = function(){ return "jQueryDocument"; };
 
-//    jQueryDocument.toString = function(){ return "jQueryDocument"; };
+        //    Subclass.fn.subclassMethod = function(){};
+        //    SubclassSubclass.fn.subclassSubclassMethod = function(){};
 
-//    Subclass.fn.subclassMethod = function(){};
-//    SubclassSubclass.fn.subclassSubclassMethod = function(){};
+        //    selectors = [
+        //        "body",
+        //        "html, body",
+        //        "<div></div>"
+        //    ];
 
-//    selectors = [
-//        "body",
-//        "html, body",
-//        "<div></div>"
-//    ];
+        //    methods = [ // all methods that return a new jQuery instance
+        //        ["eq", 1],
+        //        ["add", document],
+        //        ["end"],
+        //        ["has"],
+        //        ["closest", "div"],
+        //        ["filter", document],
+        //        ["find", "div"]
+        //    ];
 
-//    methods = [ // all methods that return a new jQuery instance
-//        ["eq", 1],
-//        ["add", document],
-//        ["end"],
-//        ["has"],
-//        ["closest", "div"],
-//        ["filter", document],
-//        ["find", "div"]
-//    ];
+        //    contexts = [undefined, document, jQueryDocument];
 
-//    contexts = [undefined, document, jQueryDocument];
+        //    jQuery.each(selectors, function(i, selector){
 
-//    jQuery.each(selectors, function(i, selector){
+        //        jQuery.each(methods, function(){
+        //            method = this[0];
+        //            arg = this[1];
 
-//        jQuery.each(methods, function(){
-//            method = this[0];
-//            arg = this[1];
+        //            jQuery.each(contexts, function(i, context){
 
-//            jQuery.each(contexts, function(i, context){
+        //                description = "(\""+selector+"\", "+context+")."+method+"("+(arg||"")+")";
 
-//                description = "(\""+selector+"\", "+context+")."+method+"("+(arg||"")+")";
+        //                same(
+        //                    jQuery(selector, context)[method](arg).subclassMethod, undefined,
+        //                    "jQuery"+description+" doesn't have Subclass methods"
+        //                );
+        //                same(
+        //                    jQuery(selector, context)[method](arg).subclassSubclassMethod, undefined,
+        //                    "jQuery"+description+" doesn't have SubclassSubclass methods"
+        //                );
+        //                same(
+        //                    Subclass(selector, context)[method](arg).subclassMethod, Subclass.fn.subclassMethod,
+        //                    "Subclass"+description+" has Subclass methods"
+        //                );
+        //                same(
+        //                    Subclass(selector, context)[method](arg).subclassSubclassMethod, undefined,
+        //                    "Subclass"+description+" doesn't have SubclassSubclass methods"
+        //                );
+        //                same(
+        //                    SubclassSubclass(selector, context)[method](arg).subclassMethod, Subclass.fn.subclassMethod,
+        //                    "SubclassSubclass"+description+" has Subclass methods"
+        //                );
+        //                same(
+        //                    SubclassSubclass(selector, context)[method](arg).subclassSubclassMethod, SubclassSubclass.fn.subclassSubclassMethod,
+        //                    "SubclassSubclass"+description+" has SubclassSubclass methods"
+        //                );
 
-//                same(
-//                    jQuery(selector, context)[method](arg).subclassMethod, undefined,
-//                    "jQuery"+description+" doesn't have Subclass methods"
-//                );
-//                same(
-//                    jQuery(selector, context)[method](arg).subclassSubclassMethod, undefined,
-//                    "jQuery"+description+" doesn't have SubclassSubclass methods"
-//                );
-//                same(
-//                    Subclass(selector, context)[method](arg).subclassMethod, Subclass.fn.subclassMethod,
-//                    "Subclass"+description+" has Subclass methods"
-//                );
-//                same(
-//                    Subclass(selector, context)[method](arg).subclassSubclassMethod, undefined,
-//                    "Subclass"+description+" doesn't have SubclassSubclass methods"
-//                );
-//                same(
-//                    SubclassSubclass(selector, context)[method](arg).subclassMethod, Subclass.fn.subclassMethod,
-//                    "SubclassSubclass"+description+" has Subclass methods"
-//                );
-//                same(
-//                    SubclassSubclass(selector, context)[method](arg).subclassSubclassMethod, SubclassSubclass.fn.subclassSubclassMethod,
-//                    "SubclassSubclass"+description+" has SubclassSubclass methods"
-//                );
+        //            });
+        //        });
+        //    });
 
-//            });
-//        });
-//    });
+        //});
 
-//});
+        /*
+         * Not hard, not important
+         */
 
-//test("jQuery.camelCase()", function() {
+        //test("jQuery.camelCase()", function() {
 
-//    var tests = {
-//        "foo-bar": "fooBar",
-//        "foo-bar-baz": "fooBarBaz"
-//    };
+        //    var tests = {
+        //        "foo-bar": "fooBar",
+        //        "foo-bar-baz": "fooBarBaz"
+        //    };
 
-//    expect(2);
+        //    expect(2);
 
-//    jQuery.each( tests, function( key, val ) {
-//        equal( jQuery.camelCase( key ), val, "Converts: " + key + " => " + val );
-//    });
-//});
+        //    jQuery.each( tests, function( key, val ) {
+        //        equal( jQuery.camelCase( key ), val, "Converts: " + key + " => " + val );
+        //    });
+        //});
     }
 }

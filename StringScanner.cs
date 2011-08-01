@@ -383,7 +383,7 @@ namespace Jtc.CsQuery
             {
                 error += ".. ";
             }
-            error += Text.SubstringBetween(LastPos, Pos) + "\"";
+            error += Text.SubstringBetween(LastPos<0 ?0:LastPos, Pos) + "\"";
 
             throw new Exception(error);
         }
