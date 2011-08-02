@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
 using System.Text;
-using Jtc.ExtensionMethods;
+using Jtc.CsQuery.ExtensionMethods;
 
 namespace Jtc.CsQuery
 {

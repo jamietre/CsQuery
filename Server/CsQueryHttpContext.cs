@@ -6,7 +6,7 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.IO;
-using Jtc.ExtensionMethods;
+using Jtc.CsQuery.ExtensionMethods;
 using System.Web.Script.Serialization;
 
 namespace Jtc.CsQuery.Server

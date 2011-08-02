@@ -6,8 +6,7 @@ using System.Text;
 using System.Dynamic;
 using System.Reflection;
 using System.Web.Script.Serialization;
-using Jtc.ExtensionMethods;
-using Jtc.Scripting;
+using Jtc.CsQuery.ExtensionMethods;
 
 namespace Jtc.CsQuery.Utility
 {
@@ -31,19 +30,22 @@ namespace Jtc.CsQuery.Utility
                 parents.Add(target);
             }
             // Add all non-null parameters to a processing queue
-            Queue<object> sources = new Queue<object>();
+            Queue<object> inputs = new Queue<object>(new object[] { source1, source2, source3, source4, source5, source6, source7 });
+            Queue<object> sources= new Queue<object>();
             HashSet<object> unique = new HashSet<object>();
-            foreach (object obj in new object[] { source1, source2, source3, source4, source5, source6, source7 })
+
+            while (inputs.Count>0)
             {
-                object src = obj;
-                if (src is string)
+                object src = inputs.Dequeue();
+                if (src is string && ((string)src).IsJson())
                 {
-                    string json = (string)obj;
-                    if (!String.IsNullOrEmpty(json) && json[0] == '{')
+                    src= CsQuery.ParseJSON((string)src);
+                }
+                if (!src.IsExpando() && src is IEnumerable)
+                {
+                    foreach (var innerSrc in (IEnumerable)src)
                     {
-                        src= CsQuery.ParseJSON(json);
-                    } else {
-                        continue;
+                        inputs.Enqueue(innerSrc);
                     }
                 }
                 if (!src.IsImmutable() && unique.Add(src))

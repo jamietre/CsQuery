@@ -81,6 +81,22 @@ namespace CsqueryTests
 
         }
         [Test]
+        public void Extend2()
+        {
+            dynamic test = "{ prop1: 'val1', prop2: 'val2',prop3: 'original'}".FromJSON();
+            dynamic test2 = "{ prop1: 'from_enum1'}".FromJSON();
+            dynamic test3 = "{ prop2: 'from_enum2'}".FromJSON();
+            var enumer = new List<ExpandoObject>();
+            enumer.Add(test2);
+            enumer.Add(test3);
+            var merged = CsQuery.Extend(null, test, enumer);
+
+            Assert.AreEqual("{prop1: 'from_enum1', prop2: 'from_enum2', prop3: 'original'}".FromJSON(), merged,"Merged with an enumerable parameter");
+
+            Assert.AreNotEqual("{prop1: 'from_enum1', prop2: 'from_enum2'}".FromJSON(), merged,"Sanity check");
+
+        }
+        [Test]
         public void Styles()
         {
             var styleDefs = HtmlDom.StyleDefs;

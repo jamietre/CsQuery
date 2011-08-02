@@ -43,17 +43,45 @@ namespace Jtc.CsQuery.Utility
         /// </summary>
         /// <param name="objectToDeserialize"></param>
         /// <returns></returns>
-        public static ExpandoObject ParseJSON(string objectToDeserialize)
+        public static object ParseJSON(string objectToDeserialize)
         {
             if (String.IsNullOrEmpty(objectToDeserialize))
             {
                 return null;
             }
+            switch (objectToDeserialize.Trim()[0])
+            {
+                case '{':
+                    return Utility.JSON.ParseJSONObject(objectToDeserialize);
+                case '\"':
+                    return Utility.JSON.ParseJSON<string>(objectToDeserialize);
+                default:
+                    int integer;
+                    if (int.TryParse(objectToDeserialize, out integer))
+                    {
+                        return integer;
+                    }
+                    double dbl;
+                    if (double.TryParse(objectToDeserialize, out dbl))
+                    {
+                        return dbl;
+                    }
+                    bool boolean;
+                    if (bool.TryParse(objectToDeserialize, out boolean))
+                    {
+                        return boolean;
+                    }
+                    return objectToDeserialize;
+
+
+            }
+        }
+        private static ExpandoObject ParseJSONObject(string objectToDeserialize)
+        {
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             Dictionary<string, object> dict = (Dictionary<string, object>)serializer.Deserialize(objectToDeserialize, typeof(Dictionary<string, object>));
             return (ExpandoObject)CsQuery.Extend(true, null, dict);
         }
-
         private static string Flatten(ExpandoObject expando)
         {
             JavaScriptSerializer serializer = new JavaScriptSerializer();

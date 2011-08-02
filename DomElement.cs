@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jtc.ExtensionMethods;
 using System.Diagnostics;
 using System.Web;
+using Jtc.CsQuery.ExtensionMethods;
 
 namespace Jtc.CsQuery
 {

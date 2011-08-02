@@ -7,8 +7,7 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Reflection;
 using System.Web.Script.Serialization;
-using Jtc.ExtensionMethods;
-using Jtc.Scripting;
+using Jtc.CsQuery.ExtensionMethods;
 using Jtc.CsQuery.Utility;
 
 namespace Jtc.CsQuery
@@ -714,23 +713,24 @@ namespace Jtc.CsQuery
             }
             return null;
         }
-        public CsQuery AttrSet(string attrJson)
-        {
-           return AttrSet(ParseJSON(attrJson));
- 
-        }
+
         public CsQuery AttrSet(object attributes) 
         {
-            IDictionary<string, object> data;
-            if (attributes.IsExpando())
+            
+            if (attributes is string)
             {
-                data = (IDictionary<string, object>)attributes;
+                if (((string)attributes).IsJson())
+                {
+                    attributes = CsQuery.ParseJSON((string)attributes);
+                }
+                else
+                {
+                    throw new Exception("AttrSet(object) must be passed a JSON string, object, or ExpandoObject");
+                }
             }
-            else
-            {
-               
-                data = (IDictionary<string, object>)Extend(null, attributes);
-            }
+            
+            IDictionary<string, object> data = (IDictionary<string, object>)attributes.ToExpando();
+
             foreach (IDomElement el in Elements)
             {
                 foreach (var kvp in data)
@@ -955,12 +955,13 @@ namespace Jtc.CsQuery
             IDictionary<string, object> dict = (ExpandoObject)ParseJSON(cssJson);
             return CssSet(dict);
         }
-        public CsQuery CssSet(IDictionary<string,object> css)
+        public CsQuery CssSet(object css)
         {
+            IDictionary<string, object> data = css.ToExpando();
+
             return this.Each((IDomElement e) =>
             {
-
-                foreach (var key in css)
+                foreach (var key in data)
                 {
                     e.Style[key.Key]= key.Value.ToString();
                 }
@@ -1009,7 +1010,7 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public object getData<T>(string key) {
             string json = getData(key);
-            return json.fromJSON<T>();
+            return json.FromJSON<T>();
         }
         public string getData(string key) {
             return this.First()[0].GetAttribute("data-"+key);
@@ -1753,37 +1754,7 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public static object ParseJSON(string objectToDeserialize)
         {
-            if (String.IsNullOrEmpty(objectToDeserialize))
-            {
-                return null;
-            }
-            switch (objectToDeserialize.Trim()[0])
-            {
-                case '{':
-                    return Utility.JSON.ParseJSON(objectToDeserialize);
-                case '\"':
-                    return Utility.JSON.ParseJSON<string>(objectToDeserialize);
-                default:
-                    int integer;
-                    if (int.TryParse(objectToDeserialize, out integer))
-                    {
-                        return integer;
-                    }
-                    double dbl;
-                    if (double.TryParse(objectToDeserialize, out dbl))
-                    {
-                        return dbl;
-                    }
-                    bool boolean;
-                    if (bool.TryParse(objectToDeserialize, out boolean))
-                    {
-                        return boolean;
-                    }
-                    return objectToDeserialize;
-
-
-            }
-            
+            return Utility.JSON.ParseJSON(objectToDeserialize);
         }
 
 #endregion
