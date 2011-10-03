@@ -22,7 +22,30 @@ namespace Jtc.CsQuery.Utility
         {
             yield break;
         }
-        public static object Extend(HashSet<object> parents, bool deep, object target, object source1, object source2 = null, object source3 = null, object source4 = null, object source5 = null, object source6 = null, object source7 = null)
+
+        /// <summary>
+        /// Convert (recursively) an IDictionary<string,object> to expando objects
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static ExpandoObject Dict2Expando(IDictionary<string, object> obj)
+        {
+            ExpandoObject returnObj = new ExpandoObject();
+            IDictionary<string, object> dict = (IDictionary<string, object>)returnObj;
+            foreach (KeyValuePair<string, object> kvp in obj)
+            {
+                if (kvp.Value.GetType() == typeof(IDictionary<string, object>))
+                {
+                    dict[kvp.Key] = Dict2Expando((IDictionary<string, object>)kvp.Value);
+                }
+                else
+                {
+                    dict[kvp.Key] = kvp.Value;
+                }
+            }
+            return returnObj;
+        }
+        public static object Extend(HashSet<object> parents, bool deep, object target, params object[] inputObjects )
         {
             if (deep && parents == null)
             {
@@ -30,7 +53,7 @@ namespace Jtc.CsQuery.Utility
                 parents.Add(target);
             }
             // Add all non-null parameters to a processing queue
-            Queue<object> inputs = new Queue<object>(new object[] { source1, source2, source3, source4, source5, source6, source7 });
+            Queue<object> inputs = new Queue<object>(inputObjects);
             Queue<object> sources= new Queue<object>();
             HashSet<object> unique = new HashSet<object>();
 
@@ -119,6 +142,7 @@ namespace Jtc.CsQuery.Utility
             }
             return target;
         }
+
         private static void AddExtendKVP(bool deep, HashSet<object> parents, object target, string name, object value)
         {
             IDictionary<string, object> targetDict = null;

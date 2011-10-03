@@ -51,6 +51,8 @@
     <Compile Include="DomAttributes.cs" />
     <Compile Include="DomElementStyle.cs" />
     <Compile Include="ExtensionMethods.Internal.cs" />
+    <Compile Include="Server\WebContent.cs" />
+    <Compile Include="Utility\LazyObject.cs" />
     <Compile Include="NodeList.cs" />
     <Compile Include="RangeSortedDictionary.cs" />
     <Compile Include="Server\CsQuery.Server.cs" />

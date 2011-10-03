@@ -18,7 +18,7 @@ namespace CsqueryTests
         }
         protected void ResetQunit()
         {
-            Dom = CsQuery.LoadFile("resources\\jquery-unit-index.htm");
+            Dom = Dom = CsQuery.Create(Support.GetFile("resources\\jquery-unit-index.htm"));
         }
         [Test]
         public void Strings()
@@ -486,85 +486,98 @@ namespace CsqueryTests
             element.Attr("tabindex", -1);
             Assert.AreEqual(element.Attr("tabindex"), "-1", "set negative tabindex");
         }
-//[Test]
-//public void RemoveAttr()
-//{
+        [Test]
+        public void RemoveAttr()
+        {
 
-//Assert.AreEqual(jQuery("#mark").RemoveAttr("class")[0].className, "", "remove class");
-//Assert.AreEqual(jQuery("#form").RemoveAttr("id").Attr("id"), null, "Remove id");
-//Assert.AreEqual(jQuery("#foo").Attr("style", "position:absolute;").removeAttr("style").Attr("style"), null, "Check removing style attribute");
-//Assert.AreEqual(jQuery("#form").Attr("style", "position:absolute;").removeAttr("style").Attr("style"), null, "Check removing style attribute on a form");
-//Assert.AreEqual(jQuery("#fx-test-group").Attr("height", "3px").removeAttr("height").css("height"), "1px", "Removing height attribute has no effect on height set with style attribute");
+            Assert.AreEqual(jQuery("#mark").RemoveAttr("class")[0].ClassName, "", "remove class");
+            Assert.AreEqual(jQuery("#form").RemoveAttr("id").Attr("id"), null, "Remove id");
+            Assert.AreEqual(jQuery("#foo").Attr("style", "position:absolute;").RemoveAttr("style").Attr("style"), null, "Check removing style attribute");
+            Assert.AreEqual(jQuery("#form").Attr("style", "position:absolute;").RemoveAttr("style").Attr("style"), null, "Check removing style attribute on a form");
+            Assert.AreEqual(jQuery("#fx-test-group").Attr("height", "3px").RemoveAttr("height").Css("height"), "1px", "Removing height attribute has no effect on height set with style attribute");
 
-////    jQuery("#check1").removeAttr("checked").Prop("checked", true).removeAttr("checked");
-//Assert.AreEqual(document.GetElementById("check1").Checked, false, "removeAttr sets boolean properties to false");
-////    jQuery("#text1").Prop("readOnly", true).removeAttr("readonly");
-//Assert.AreEqual(document.GetElementById("text1").ReadOnly, false, "removeAttr sets boolean properties to false");
-////});
-//}
+            jQuery("#check1").RemoveAttr("checked").Prop("checked", true).RemoveAttr("checked");
+            Assert.AreEqual(document.GetElementById("check1").Checked, false, "removeAttr sets boolean properties to false");
+            jQuery("#text1").Prop("readOnly", true).RemoveAttr("readonly");
+            Assert.AreEqual(document.GetElementById("text1").ReadOnly, false, "removeAttr sets boolean properties to false");
+            
+        }
 
 
-////test("prop(String, Object)", function() {
-////    expect(30);
+        [Test]
+        public void AttributeObject() {
+            //Assert.AreEqual(jQuery("#text1").Prop("value"), "Test", "Check for value attribute" );
+            //Assert.AreEqual(jQuery("#text1").Prop("value", "Test2").Prop("defaultValue"), "Test", "Check for defaultValue attribute" );
+            //Assert.AreEqual(jQuery("#select2").Prop("selectedIndex"), 3, "Check for selectedIndex attribute" );
+            //Assert.AreEqual(jQuery("#foo").Prop("nodeName").toUpperCase(), "DIV", "Check for nodeName attribute" );
+            //Assert.AreEqual(jQuery("#foo").Prop("tagName").toUpperCase(), "DIV", "Check for tagName attribute" );
+            Assert.AreEqual(jQuery("<option/>").Prop("selected"), false, "Check selected attribute on disconnected element." );
 
-//Assert.AreEqual(jQuery("#text1").Prop("value"), "Test", "Check for value attribute" );
-//Assert.AreEqual(jQuery("#text1").Prop("value", "Test2").Prop("defaultValue"), "Test", "Check for defaultValue attribute" );
-//Assert.AreEqual(jQuery("#select2").Prop("selectedIndex"), 3, "Check for selectedIndex attribute" );
-//Assert.AreEqual(jQuery("#foo").Prop("nodeName").toUpperCase(), "DIV", "Check for nodeName attribute" );
-//Assert.AreEqual(jQuery("#foo").Prop("tagName").toUpperCase(), "DIV", "Check for tagName attribute" );
-//Assert.AreEqual(jQuery("<option/>").Prop("selected"), false, "Check selected attribute on disconnected element." );
+            //Assert.AreEqual(jQuery("#listWithTabIndex").Prop("tabindex"), 5, "Check retrieving tabindex" );
+            jQuery("#text1").Prop("readonly", true);
+            Assert.AreEqual(document.GetElementById("text1").ReadOnly, true, "Check setting readOnly property with 'readonly'" );
+            //Assert.AreEqual(jQuery("#label-for").Prop("for"), "action", "Check retrieving htmlFor" );
+            jQuery("#text1").Prop("class", "test");
+            Assert.AreEqual(document.GetElementById("text1").ClassName, "test", "Check setting className with 'class'" );
+            
+            // Using ATTR  instead: we don't retrieve props
+            Assert.AreEqual(jQuery("#text1").AttrInt("maxlength"), 30, "Check retriieving maxLength" );
+            jQuery("#table").Attr("cellspacing", 1);
+            Assert.AreEqual(jQuery("#table").AttrInt("cellSpacing"), 1, "Check setting and retrieving cellSpacing");
+            jQuery("#table").Prop("cellpadding", 1);
+            Assert.AreEqual(jQuery("#table").AttrInt("cellPadding"),1, "Check setting and retrieving cellPadding");
+            jQuery("#table").Prop("rowspan", 1);
+            Assert.AreEqual(jQuery("#table").AttrInt("rowSpan"), 1, "Check setting and retrieving rowSpan");
+            jQuery("#table").Prop("colspan", 1);
+            Assert.AreEqual(jQuery("#table").AttrInt("colSpan"), 1, "Check setting and retrieving colSpan");
+            jQuery("#table").Prop("usemap", 1);
+            Assert.AreEqual(jQuery("#table").AttrInt("useMap"), 1, "Check setting and retrieving useMap");
+            jQuery("#table").Prop("frameborder", 1);
+            Assert.AreEqual(jQuery("#table").AttrInt("frameBorder"), 1, "Check setting and retrieving frameBorder");
+            //added for csquery
+            Assert.AreEqual(jQuery("#table").AttrInt("nonexistent"), null, "Check retriving missing prop with AttrInt");
+            
+            ResetQunit();
 
-//Assert.AreEqual(jQuery("#listWithTabIndex").Prop("tabindex"), 5, "Check retrieving tabindex" );
-////    jQuery("#text1").Prop("readonly", true);
-//Assert.AreEqual(document.GetElementById("text1").ReadOnly, true, "Check setting readOnly property with 'readonly'" );
-//Assert.AreEqual(jQuery("#label-for").Prop("for"), "action", "Check retrieving htmlFor" );
-////    jQuery("#text1").Prop("class", "test");
-//Assert.AreEqual(document.GetElementById("text1").className, "test", "Check setting className with 'class'" );
-//Assert.AreEqual(jQuery("#text1").Prop("maxlength"), 30, "Check retrieving maxLength" );
-////    jQuery("#table").Prop("cellspacing", 1);
-//Assert.AreEqual(jQuery("#table").Prop("cellSpacing"), "1", "Check setting and retrieving cellSpacing" );
-////    jQuery("#table").Prop("cellpadding", 1);
-//Assert.AreEqual(jQuery("#table").Prop("cellPadding"), "1", "Check setting and retrieving cellPadding" );
-////    jQuery("#table").Prop("rowspan", 1);
-//Assert.AreEqual(jQuery("#table").Prop("rowSpan"), 1, "Check setting and retrieving rowSpan" );
-////    jQuery("#table").Prop("colspan", 1);
-//Assert.AreEqual(jQuery("#table").Prop("colSpan"), 1, "Check setting and retrieving colSpan" );
-////    jQuery("#table").Prop("usemap", 1);
-//Assert.AreEqual(jQuery("#table").Prop("useMap"), 1, "Check setting and retrieving useMap" );
-////    jQuery("#table").Prop("frameborder", 1);
-//Assert.AreEqual(jQuery("#table").Prop("frameBorder"), 1, "Check setting and retrieving frameBorder" );
-////    QUnit.reset();
+            // We are not using Prop for this purpose. Use attr to add attributes.
+            //var body = document.GetElementById("body");
+            //var jbody = jQuery( body );
+            //Assert.IsTrue( jbody.prop("nextSibling") === null, "Make sure a null expando returns null" );
+            //body.foo = "bar";
+            //Assert.AreEqual(jbody.prop("foo"), "bar", "Make sure the expando is preferred over the dom attribute" );
+            //body.foo = undefined;
+            //Assert.IsTrue(j$body.prop("foo") === undefined, "Make sure the expando is preferred over the dom attribute, even if undefined" );
 
-////    var body = document.body, $body = jQuery( body );
-////   Assert.IsTrue( $body.prop("nextSibling") === null, "Make sure a null expando returns null" );
-////    body.foo = "bar";
-//Assert.AreEqual($body.prop("foo"), "bar", "Make sure the expando is preferred over the dom attribute" );
-////    body.foo = undefined;
-////   Assert.IsTrue( $body.prop("foo") === undefined, "Make sure the expando is preferred over the dom attribute, even if undefined" );
+            var select = new DomElement("select");
+            var optgroup = new DomElement("optgroup");
+            var option = new DomElement("option");
+            optgroup.AppendChild( option );
+            select.AppendChild( optgroup );
 
-////    var select = document.createElement("select"), optgroup = document.createElement("optgroup"), option = document.createElement("option");
-////    optgroup.appendChild( option );
-////    select.appendChild( optgroup );
+            // the original test created the group from "option". Ours would only start with "option" as the root, ignoring its parents.
+            // this is an edge case, i think it is intuitive that if you want something in the dom, you add from the root of what you want.
 
-//Assert.AreEqual(jQuery(option).Prop("selected"), true, "Make sure that a single option is selected, even when in an optgroup." );
-//Assert.AreEqual(jQuery(document).Prop("nodeName"), "#document", "prop works correctly on document nodes (bug #7451)." );
+            // original
+            //Assert.AreEqual(CsQuery.Create( option).Prop("selected"), true, "Make sure that a single option is selected, even when in an optgroup." );
+            Assert.AreEqual(CsQuery.Create(select).Select("option").Prop("selected"), true, "Make sure that a single option is selected, even when in an optgroup.");
+           //Assert.AreEqual(jQuery(document).Prop("nodeName"), "#document", "prop works correctly on document nodes (bug #7451)." );
 
-////    var attributeNode = document.createAttribute("irrelevant"),
-////        commentNode = document.createComment("some comment"),
-////        textNode = document.createTextNode("some text"),
-////        obj = {};
-////    jQuery.each( [document, attributeNode, commentNode, textNode, obj, "#firstp"], function( i, ele ) {
-////        strictEqual( jQuery(ele).Prop("nonexisting"), undefined, "prop works correctly for non existing attributes (bug #7500)." );
-////    });
+            //var attributeNode = document.createAttribute("irrelevant"),
+            //    commentNode = document.createComment("some comment"),
+            //    textNode = document.createTextNode("some text"),
+            //    obj = {};
+            //jQuery.each( [document, attributeNode, commentNode, textNode, obj, "#firstp"], function( i, ele ) {
+            //    strictEqual( jQuery(ele).Prop("nonexisting"), undefined, "prop works correctly for non existing attributes (bug #7500)." );
+            //});
 
-////    var obj = {};
-////    jQuery.each( [document, obj], function( i, ele ) {
-////        var $ele = jQuery( ele );
-////        $ele.prop( "nonexisting", "foo" );
-////        Assert.AreEqual( $ele.prop("nonexisting"), "foo", "prop(name, value) works correctly for non existing attributes (bug #7500)." );
-////    });
-////    jQuery( document ).removeProp("nonexisting");
-////});
+            //var obj = {};
+            //jQuery.each( [document, obj], function( i, ele ) {
+            //    var $ele = jQuery( ele );
+            //    $ele.prop( "nonexisting", "foo" );
+            //    Assert.AreEqual( $ele.prop("nonexisting"), "foo", "prop(name, value) works correctly for non existing attributes (bug #7500)." );
+            //});
+            //jQuery( document ).removeProp("nonexisting");
+        }
 
 ////test("removeProp(String)", function() {
 ////    expect(6);
@@ -587,76 +600,81 @@ namespace CsqueryTests
 ////    });
 ////});
 
-////test("val()", function() {
-////    expect(26);
+        [Test]
+        public void Val()
+        {
 
-////    document.GetElementById("text1").value = "bla";
-//Assert.AreEqual(jQuery("#text1").val(), "bla", "Check for modified value of input element" );
+            document.GetElementById("text1").Value = "bla";
+            Assert.AreEqual(jQuery("#text1").Val(), "bla", "Check for modified value of input element");
 
-////    QUnit.reset();
+            ResetQunit();
 
-//Assert.AreEqual(jQuery("#text1").val(), "Test", "Check for value of input element" );
-////    // ticket #1714 this caused a JS error in IE
-//Assert.AreEqual(jQuery("#first").val(), "", "Check a paragraph element to see if it has a value" );
-////   Assert.IsTrue( jQuery([]).val() === undefined, "Check an empty jQuery object will return undefined from val" );
+            Assert.AreEqual(jQuery("#text1").Val(), "Test", "Check for value of input element" );
+                // ticket #1714 this caused a JS error in IE
+            Assert.AreEqual(jQuery("#first").Val(), "", "Check a paragraph element to see if it has a value" );
+           Assert.IsTrue( (new CsQuery()).Val() == null, "Check an empty jQuery object will return undefined from val" );
 
-//Assert.AreEqual(jQuery("#select2").val(), "3", "Call val() on a single=\"single\" select" );
+            Assert.AreEqual(jQuery("#select2").Val(), "3", "Call Val() on a single=\"single\" select" );
 
-////    same( jQuery("#select3").val(), ["1", "2"], "Call val() on a multiple=\"multiple\" select" );
+             Assert.AreEqual ( jQuery("#select3").Val(), "1,2", "Call Val() on a multiple=\"multiple\" select" );
 
-//Assert.AreEqual(jQuery("#option3c").val(), "2", "Call val() on a option element with value" );
+            Assert.AreEqual(jQuery("#option3c").Val(), "2", "Call Val() on a option element with value" );
 
-//Assert.AreEqual(jQuery("#option3a").val(), "", "Call val() on a option element with empty value" );
+            Assert.AreEqual(jQuery("#option3a").Val(), "", "Call Val() on a option element with empty value" );
 
-//Assert.AreEqual(jQuery("#option3e").val(), "no value", "Call val() on a option element with no value attribute" );
+            Assert.AreEqual(jQuery("#option3e").Val(), "no value", "Call Val() on a option element with no value attribute" );
 
-//Assert.AreEqual(jQuery("#option3a").val(), "", "Call val() on a option element with no value attribute" );
+            Assert.AreEqual(jQuery("#option3a").Val(), "", "Call Val() on a option element with no value attribute" );
 
-////    jQuery("#select3").val("");
-////    same( jQuery("#select3").val(), [""], "Call val() on a multiple=\"multiple\" select" );
+            jQuery("#select3").Val("");
+            Assert.AreEqual( jQuery("#select3").Val(), "", "Call Val() on a multiple=\"multiple\" select" );
 
-////    same( jQuery("#select4").val(), [], "Call val() on multiple=\"multiple\" select with all disabled options" );
+            Assert.AreEqual( jQuery("#select4").Val(), "", "Call Val() on multiple=\"multiple\" select with all disabled options" );
 
-////    jQuery("#select4 optgroup").add("#select4 > [disabled]").Attr("disabled", false);
-////    same( jQuery("#select4").val(), ["2", "3"], "Call val() on multiple=\"multiple\" select with some disabled options" );
+            jQuery("#select4 optgroup").Add("#select4 > [disabled]").Attr("disabled", false);
+            Assert.AreEqual( jQuery("#select4").Val(), "2,3", "Call Val() on multiple=\"multiple\" select with some disabled options" );
 
-////    jQuery("#select4").Attr("disabled", true);
-////    same( jQuery("#select4").val(), ["2", "3"], "Call val() on disabled multiple=\"multiple\" select" );
+            jQuery("#select4").Attr("disabled", true);
+            Assert.AreEqual( jQuery("#select4").Val(), "2,3", "Call Val() on disabled multiple=\"multiple\" select" );
 
-//Assert.AreEqual(jQuery("#select5").val(), "3", "Check value on ambiguous select." );
+            Assert.AreEqual(jQuery("#select5").Val(), "3", "Check value on ambiguous select." );
 
-////    jQuery("#select5").val(1);
-//Assert.AreEqual(jQuery("#select5").val(), "1", "Check value on ambiguous select." );
+                jQuery("#select5").Val(1);
+            Assert.AreEqual(jQuery("#select5").Val(), "1", "Check value on ambiguous select." );
 
-////    jQuery("#select5").val(3);
-//Assert.AreEqual(jQuery("#select5").val(), "3", "Check value on ambiguous select." );
+                jQuery("#select5").Val(3);
+            Assert.AreEqual(jQuery("#select5").Val(), "3", "Check value on ambiguous select." );
 
-////    var checks = jQuery("<input type='checkbox' name='test' value='1'/><input type='checkbox' name='test' value='2'/><input type='checkbox' name='test' value=''/><input type='checkbox' name='test'/>").appendTo("#form");
+                var checks = jQuery("<input type='checkbox' name='test' value='1'/><input type='checkbox' name='test' value='2'/><input type='checkbox' name='test' value=''/><input type='checkbox' name='test'/>").AppendTo("#form");
 
-////    same( checks.serialize(), "", "Get unchecked values." );
+               // Assert.AreEqual( checks.serialize(), "", "Get unchecked values." );
 
-//Assert.AreEqual(checks.eq(3).val(), "on", "Make sure a value of 'on' is provided if none is specified." );
+            Assert.AreEqual(checks.Eq(3).Val(), "on", "Make sure a value of 'on' is provided if none is specified." );
 
-////    checks.val([ "2" ]);
-////    same( checks.serialize(), "test=2", "Get a single checked value." );
+            //TODO:
+            // add Serialize method to jQuery
 
-////    checks.val([ "1", "" ]);
-////    same( checks.serialize(), "test=1&test=", "Get multiple checked values." );
+            //    checks.Val([ "2" ]);
+            //   Assert.AreEqual( checks.serialize(), "test=2", "Get a single checked value." );
 
-////    checks.val([ "", "2" ]);
-////    same( checks.serialize(), "test=2&test=", "Get multiple checked values." );
+            //    checks.Val([ "1", "" ]);
+            //   Assert.AreEqual(checks.serialize(), "test=1&test=", "Get multiple checked values." );
 
-////    checks.val([ "1", "on" ]);
-////    same( checks.serialize(), "test=1&test=on", "Get multiple checked values." );
+            //    checks.Val([ "", "2" ]);
+            //    Assert.AreEqual( checks.serialize(), "test=2&test=", "Get multiple checked values." );
 
-////    checks.remove();
+            //    checks.Val([ "1", "on" ]);
+            //   Assert.AreEqual( checks.serialize(), "test=1&test=on", "Get multiple checked values." );
 
-////    var $button = jQuery("<button value='foobar'>text</button>").insertAfter("#button");
-//Assert.AreEqual($button.val(), "foobar", "Value retrieval on a button does not return innerHTML" );
-//Assert.AreEqual($button.val("baz").html(), "text", "Setting the value does not change innerHTML" );
-	
-//Assert.AreEqual(jQuery("<option/>").val("test").Attr("value"), "test", "Setting value sets the value attribute" );
-////});
+            //    checks.remove();
+
+            //    var $button = jQuery("<button value='foobar'>text</button>").insertAfter("#button");
+            //Assert.AreEqual($button.Val(), "foobar", "Value retrieval on a button does not return innerHTML" );
+            //Assert.AreEqual($button.val("baz").html(), "text", "Setting the value does not change innerHTML" );
+
+            //Assert.AreEqual(jQuery("<option/>").val("test").Attr("value"), "test", "Setting value sets the value attribute" );
+
+        }
 
 ////if ( "value" in document.createElement("meter") && 
 ////            "value" in document.createElement("progress") ) {

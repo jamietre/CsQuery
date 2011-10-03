@@ -1,10 +1,13 @@
 ## CsQuery - C# jQuery Port
 
 0.92
+
+- Extend can support Enumerable parameters containing objects
 - Added ability to select from other selector results (list of IDomObject)
 - Started in on Traversing test suite, 
 
 8/1/2011 - 0.91
+
 - Many, many new methods
 - Added half of jquery "attribute" test suite and many compatibility enhancements to attr
 - Broad support for passing JSON strings to functions that take an object (e.g. css)

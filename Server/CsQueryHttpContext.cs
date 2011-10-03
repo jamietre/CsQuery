@@ -113,6 +113,14 @@ namespace Jtc.CsQuery.Server
         } protected HtmlTextWriter _Writer;
         protected StringBuilder _sb;
         protected StringWriter _sw;
+
+        public void CreateFromUrl(string url)
+        {
+            WebData con = new WebData();
+            con.Get(url);
+            Owner.Load(con.Html);
+        }
+        
         public void CreateFromWriter()
         {
 
@@ -171,7 +179,7 @@ namespace Jtc.CsQuery.Server
             }
             else
             {
-                Owner.CreateNew(_sb.ToString());
+                Owner.Load(_sb.ToString());
             }
         }
         HtmlTextWriter RealWriter;

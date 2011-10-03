@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Collections;
 using System.Linq;
 using System.Text;
@@ -68,7 +69,7 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="html"></param>
         /// <returns></returns>
-        public void CreateNew(string html)
+        public void Load(string html)
         {
             _Dom = new DomRoot();
             _Dom.Owner = this;
@@ -81,7 +82,7 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="html"></param>
         /// <returns></returns>
-        public void CreateNew(IEnumerable<IDomObject> elements)
+        protected void Load(IEnumerable<IDomObject> elements)
         {
             _Dom = new DomRoot();
             _Dom.Owner = this;
@@ -106,14 +107,15 @@ namespace Jtc.CsQuery
         }
         public CsQuery(string selector)
         {
-            CreateNew(selector);
+            Load(selector);
         }
         public CsQuery(string selector, string css)
         {
-            CreateNew(selector);
+            Load(selector);
             AttrSet(css);
 
         }
+
         /// <summary>
         /// Create a new CsQuery object using an existing instance and a selector
         /// </summary>
@@ -213,7 +215,14 @@ namespace Jtc.CsQuery
         public static CsQuery Create(IEnumerable<IDomObject> elements)
         {
             CsQuery csq = new CsQuery();
-            csq.CreateNew(elements);
+            csq.Load(elements);
+            return csq;
+        }
+
+        public static CsQuery Create(IDomObject element)
+        {
+            CsQuery csq = new CsQuery();
+            csq.Load(Objects.Enumerate(element));
             return csq;
         }
         /// <summary>
@@ -445,6 +454,11 @@ namespace Jtc.CsQuery
                 return String.Empty;
             }
         }
+        public CsQuery Not(string selector)
+        {
+            return Select(Selection.Except(Select(selector)));
+          
+        }
         /// <summary>
         /// Set the content of each element in the set of matched elements to the specified text.
         /// </summary>
@@ -585,9 +599,9 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="html"></param>
         /// <returns></returns>
-        public CsQuery Add(string html)
+        public CsQuery Add(string selector)
         {
-            return Add(ElementFactory.CreateElements(html));
+            return Add(Select(selector));
         }
 
         /// <summary>
@@ -616,23 +630,17 @@ namespace Jtc.CsQuery
         }
         public CsQuery Append(IDomObject element)
         {
-            bool first = true;
-            foreach (var obj in Elements)
-            {
-                if (element is IDomContainer)
-                {
-                    obj.AppendChild(first ? element : element.Clone());
-                    first = false;
-                }
-            }
-            return this;
+            return Append(Objects.Enumerate(element));
         }
         public CsQuery Append(IEnumerable<IDomObject> elements)
         {
             bool first = true;
             foreach (var obj in Elements )
             {
-                foreach (var e in elements)
+                // must copy the enumerable first, since this can cause
+                // els to be removed from it
+                List<IDomObject> list = new List<IDomObject>(elements);
+                foreach (var e in list)
                 {
                     obj.AppendChild(first ? e : e.Clone());
                 }
@@ -691,10 +699,12 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public string Attr(string name)
         {
+            name= name.ToLower();
             if (Length > 0)
             {
                 string value;
-                if (this[0].TryGetAttribute(name, out value))
+                var el = this[0];
+                if (el.TryGetAttribute(name, out value))
                 {
                     if (HtmlDom.BooleanAttributes.Contains(name))
                     {
@@ -704,12 +714,15 @@ namespace Jtc.CsQuery
                     }
                     else
                     {
-                       
-                        return value;
+     
+                        return value; 
                     }
-                } else if (this[0].NodeName=="textarea") {
-                    return this[0].InnerText;
-                }
+                } else if (name=="value" &&
+                    (el.NodeName =="input" || el.NodeName=="select" || el.NodeName=="option")) {
+                    return Val();
+                } else if (el.NodeName =="textarea") {
+                    return el.InnerText;
+                } 
             }
             return null;
         }
@@ -786,7 +799,7 @@ namespace Jtc.CsQuery
             }
             else
             {
-                val = value.ToString();
+                val = GetValueString(value);
             }
 
             foreach (DomElement e in Elements)
@@ -907,8 +920,7 @@ namespace Jtc.CsQuery
                 selectionSet = new HashSet<IDomObject>();
                 selectionSet.AddRange(elements);
             }
-            CsQuery csq = new CsQuery();
-            csq.DomOwner = this;
+            CsQuery csq =  this.Empty();
 
             foreach (var el in Selection)
             {
@@ -1090,10 +1102,14 @@ namespace Jtc.CsQuery
             }
             else
             {
-                return EmptySelection();
+                return Empty();
             }
         }
-        protected CsQuery EmptySelection()
+        /// <summary>
+        /// Returns a new empty CsQuery object bound to this domain
+        /// </summary>
+        /// <returns></returns>
+        protected CsQuery Empty()
         {
             CsQuery empty = new CsQuery();
             empty.DomOwner = this;
@@ -1134,6 +1150,30 @@ namespace Jtc.CsQuery
         {
             return new CsQuery(_FilterElements(Selection, selector));
 
+        }
+        public CsQuery Filter(Func<IDomObject, bool> function)
+        {
+            CsQuery result = Empty();
+            foreach (IDomObject obj in Selection)
+            {
+                if (function(obj)) {
+                    result.AddSelection(obj);
+                }
+            }
+            return result;
+        }
+        public CsQuery Filter(Func<IDomObject, int, bool> function)
+        {
+            CsQuery result = Empty();
+            int index = 0;
+            foreach (IDomObject obj in Selection)
+            {
+                if (function(obj,index++))
+                {
+                    result.AddSelection(obj);
+                }
+            }
+            return result;
         }
 
         /// <summary>
@@ -1381,17 +1421,52 @@ namespace Jtc.CsQuery
         {
             // Prop actually works on things other than boolean - e.g. SelectedIndex. For now though only use prop for booleans
 
-            if (HtmlDom.BooleanAttributes.Contains(name.ToLower())) {
+            if (HtmlDom.BooleanAttributes.Contains(name.ToLower()))
+            {
                 SetProp(name, value);
+            }
+            else
+            {
+                Attr(name, value);
             }
             return this;
         }
         public bool Prop(string name)
         {
+            name=name.ToLower();
             if (Length>0 && HtmlDom.BooleanAttributes.Contains(name.ToLower())) {
-                return this[0].HasAttribute(name);
+                bool has = this[0].HasAttribute(name);
+                // if there is nothing with the "selected" attribute, in non-multiple select lists, the first one
+                // is selected by default. We will return that same information when using prop.
+                // TODO: this won't work for the "selected" selector. Need to move this logic into DomElement 
+                // and use selected property instead.
+                if (name == "selected" && !has)
+                {
+                    var owner = First().Closest("select");
+                    string ownerSelected = owner.Val();
+                    if (ownerSelected == String.Empty && !owner.Prop("multiple"))
+                    {
+                        return ReferenceEquals(owner.Find("option")[0], this[0]);
+                    }
+
+                }
+                return has;
             }
             return false;
+        }
+        public int? AttrInt(string name)
+        {
+            string value;
+            if (Length > 0 && this[0].TryGetAttribute(name,out value))
+            {
+                int intValue;
+                if (int.TryParse(value,out intValue)) {
+                    return intValue;
+                } else {
+                    return null;
+                }
+            }
+            return null;
         }
         /// <summary>
         /// Helper function for Attr & Prop
@@ -1561,21 +1636,40 @@ namespace Jtc.CsQuery
                     case "select":
                         string result = String.Empty;
                         // TODO optgroup handling (just like the setter code)
-                        foreach (IDomElement child in e.Elements)
+                        var options =Find("option");
+                        if (options.Length==0) {
+                            return null;
+                        }
+                        
+                        foreach (IDomElement child in options)
                         {
-                            if (e.NodeName == "option" && e.HasAttribute("selected"))
+                            bool disabled = child.HasAttribute("disabled") || (child.ParentNode.NodeName == "optgroup" && child.ParentNode.HasAttribute("disabled"));
+
+                            if (child.HasAttribute("selected") && !disabled)
                             {
-                                result += (result == String.Empty ? String.Empty : ",") + e["value"];
+                                result = result.ListAdd(child.GetAttribute("value", String.Empty), ",");
+                                if (!e.HasAttribute("multiple"))
+                                {
+                                    break;
+                                }
                             }
                         }
+                        
+                        if (result == String.Empty)
+                        {
+                            result = options[0].GetAttribute("value", String.Empty);
+                        }
                         return result;
+                    case "option":
+                        val = e.GetAttribute("value");
+                        return val ?? e.InnerText;
                     default:
-                        return e.GetAttribute("value");
+                        return e.GetAttribute("value",String.Empty);
                 }
             }
             else
             {
-                return String.Empty;
+                return null;
             }
         }
         /// <summary>
@@ -1584,85 +1678,153 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public CsQuery Val(string value)
+        public CsQuery Val(object value)
         {
+            bool first = true;
+            string val = GetValueString(value);
             foreach (IDomElement e in Elements)
             {
                 switch (e.NodeName)
                 {
                     case "textarea":
                         // should we delete existing children first? they should not exist
-                        e.InnerText = value;
+                        e.InnerText = val;
                         break;
                     case "input":
                         switch (e.GetAttribute("type",String.Empty))
                         {
+                            case "checkbox":
+                            case "radio":
+                                if (first)
+                                {
+                                    SetOptionSelected(Elements, value, true);
+                                }
+                                break;
                             default:
-                                e.SetAttribute("value", value);
+                                e.SetAttribute("value", val);
                                 break;
                         }
                         break;
                     case "select":
-                        bool multiple = e.HasAttribute("multiple");
-                        HashSet<string> values = null;
-                        if (multiple)
-                        {
-                            values = new HashSet<string>(value.Split(','));
+                        if (first) {
+                            var multiple = e.HasAttribute("multiple");
+                            SetOptionSelected(e.Elements, value, multiple);
                         }
-                        SetOptionSelected(e.Elements, value,values, multiple);
                         break;
                     default:
-                        e.SetAttribute("value", value);
+                        e.SetAttribute("value", val);
                         break;
                 }
+                first = false;
 
             }
             return this;
         }
+        protected string GetValueString(object value)
+        {
+            return  value==null ? null :
+                    (value is string ? (string)value :
+                        (value is IEnumerable ? 
+                            ((IEnumerable)value).Join() : value.ToString()
+                        )
+                    );
+                
+
+        }
+        protected HashSet<string> MapMultipleValues(object value)
+        {
+            var values = new HashSet<string>();
+            if (value is string)
+            {
+                values.AddRange(value.ToString().Split(','));
+
+            }
+            if (value is IEnumerable)
+            {
+                foreach (object obj in (IEnumerable)value)
+                {
+                    values.Add(obj.ToString());
+                }
+            }
+
+            if (values.Count == 0)
+            {
+                if (value != null)
+                {
+                    values.Add(value.ToString());
+                }
+            }
+            return values;
+
+        }
         /// <summary>
-        /// Helper function for option groups
+        /// Helper function for option groups. I am sure these can be simplified
         /// </summary>
         /// <param name="elements"></param>
         /// <param name="value"></param>
-        protected void SetOptionSelected(IEnumerable<IDomElement> elements, string value, HashSet<string> values, bool multiple)
+        /// 
+        protected void SetOptionSelected(IEnumerable<IDomElement> elements, object value, bool multiple)
         {
+            HashSet<string> values = MapMultipleValues(value);
+            SetOptionSelected(elements, values, multiple);
+        }
+        protected void SetOptionSelected(IEnumerable<IDomElement> elements, HashSet<string> values, bool multiple)
+        {
+            bool setOne = false;
+            string attribute;
 
             foreach (IDomElement e in elements)
             {
+                attribute = String.Empty;
                 switch(e.NodeName) {
                     case "option":
-                        if (multiple ? values.Contains(e["value"]) : e["value"] == value) {
-                            e.SetAttribute("selected");
-                        } else {
-                            e.RemoveAttribute("selected");
+                        attribute = "selected";
+                        break;
+                    case "input":
+                        switch (e["type"])
+                        {
+                            case "checkbox":
+                            case "radio":
+                                attribute = "checked";
+                                break;
                         }
                         break;
                     case "optgroup":
-                        SetOptionSelected(e.Elements, value, values, multiple);
+                        SetOptionSelected(e.Elements, values, multiple);
                         break;
+                }
+                if (attribute != String.Empty && !setOne && values.Contains(e["value"])) {
+                    e.SetAttribute(attribute);
+                    if (!multiple)
+                    {
+                        setOne = true;
+                    }
+                } else {
+                    e.RemoveAttribute(attribute);
                 }
               
             }
         }
+
         /// <summary>
         /// Set the value of each mutiple select element in the set of matched elements. Any elements not of type &lt;SELECT multiple&gt;&lt;/SELECT&gt; will be ignored.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public CsQuery Val(IEnumerable<object> values) {
-            string valueString=String.Empty;
-            foreach (object val in values) {
-                valueString+=(String.IsNullOrEmpty(val.ToString())?String.Empty:",") + val.ToString();
-            }
-            foreach (IDomElement e in Elements)
-            {
-                if (e.NodeName == "select" && e.HasAttribute("multiple"))
-                {
-                    Val(valueString);
-                }
-            }
-            return this;
-        }
+        //public CsQuery Val(IEnumerable<object> values) {
+        //    string valueString=String.Empty;
+        //    foreach (object val in values) {
+        //        valueString+=(String.IsNullOrEmpty(val.ToString())?String.Empty:",") + val.ToString();
+        //    }
+        //    foreach (IDomElement e in Elements)
+        //    {
+        //        if (e.NodeName == "select" && e.HasAttribute("multiple"))
+        //        {
+        //            Val(valueString);
+        //        }
+        //    }
+        //    return this;
+        //}
         /// <summary>
         /// Set the CSS width of each element in the set of matched elements.
         /// </summary>
@@ -1717,13 +1879,13 @@ namespace Jtc.CsQuery
             //return !selectors.Select(Dom, Selection).IsNullOrEmpty();
         }
 
-        public static object Extend(object target, object source1, object source2 = null, object source3 = null, object source4 = null, object source5 = null, object source6 = null, object source7 = null)
+        public static object Extend(object target, params object[] sources)
         {
-            return CsQuery.Extend(false, target, source1, source2, source3, source4, source5, source6, source7);
+            return CsQuery.Extend(false, target, sources);
         }
-        public static object Extend(bool deep, object target, object source1, object source2 = null, object source3 = null, object source4 = null, object source5 = null, object source6 = null, object source7 = null)
+        public static object Extend(bool deep, object target, params object[] sources)
         {
-            return Utility.Objects.Extend(null,deep,target,source1,source2,source3,source4,source5,source6,source7);
+            return Utility.Objects.Extend(null,deep,target, sources);
         }
         
         /// <summary>
@@ -1756,7 +1918,49 @@ namespace Jtc.CsQuery
         {
             return Utility.JSON.ParseJSON(objectToDeserialize);
         }
+        /// <summary>
+        /// Convert a dictionary to an expando object. Use to get another expando object from a sub-object of an expando object,
+        /// e.g. as returned from JSON data
+        /// </summary>
+        /// <param name="?"></param>
+        /// <returns></returns>
+        public static ExpandoObject ToExpando(object obj)
+        {
+            ExpandoObject result;
 
+
+            if (obj is IDictionary<string, object>)
+            {
+                result = Objects.Dict2Expando((IDictionary<string, object>)obj);
+            }
+            else
+            {
+                throw new Exception("This is not tested at all.");
+                //return obj.ToExpando();
+            }
+            return result;
+        }
+        /// <summary>
+        /// Enumerate the properties of an object. Indexed properties are ignored, and enumerable objects are not enumerated.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static IEnumerable<KeyValuePair<string,object>> Enumerate(object obj) {
+            IDictionary<string,object> source;
+
+            if (obj is IDictionary<string,object>) {
+                source = (IDictionary<string,object>)obj;
+            } else {
+                source = obj.ToExpando();
+            }
+            foreach (KeyValuePair<string,object> kvp in source) {
+                
+                yield return new KeyValuePair<string,object>(kvp.Key, 
+                     kvp.Value is IDictionary<string,object> ? 
+                        ToExpando((IDictionary<string,object>)kvp.Value) :
+                        kvp.Value);
+            }
+        }
 #endregion
         
         protected int GetElementIndex(IDomObject element) {

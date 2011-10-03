@@ -2,11 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jtc.CsQuery.ExtensionMethods;
 
 namespace Jtc.CsQuery
 {
     public class DomAttributes: IDictionary<string, string>, IEnumerable<KeyValuePair<string, string>>
     {
+        public DomAttributes(IDomElement owner)
+        {
+            Owner = owner;
+        }
+        public Action StyleChanged = null;
+
+        protected IDomElement Owner;
         protected Dictionary<string, string> Attributes = new Dictionary<string, string>();
         //public override string ToString()
         //{
@@ -28,7 +36,7 @@ namespace Jtc.CsQuery
         }
         public DomAttributes Clone()
         {
-            DomAttributes clone = new DomAttributes();
+            DomAttributes clone = new DomAttributes(Owner);
             clone.Attributes = new Dictionary<string, string>();
             foreach (var kvp in Attributes)
             {
@@ -47,17 +55,26 @@ namespace Jtc.CsQuery
                 Set(name, value);
             }
         }
-
+        private static HashSet<string> _emptyDefaults = new HashSet<string>(new string[] { "input", "option", "select" });
         protected string Get(string name)
         {
             string value;
-            if (Attributes.TryGetValue(name.ToLower(), out value))
+            name = name.ToLower();
+            if (Attributes.TryGetValue(name, out value))
             {
+ 
                 return value;
             }
             else
             {
-                return null;
+                string defaultValue = null;
+
+                //if (name.Equals("value", StringComparison.CurrentCultureIgnoreCase) &&
+                //        (Owner.NodeName.IsOneOf("input", "option", "select")))
+                //{
+                //    defaultValue = String.Empty;
+                //}
+                return defaultValue;
             }
         }
 
@@ -66,7 +83,24 @@ namespace Jtc.CsQuery
             //string parsedVal;
             name = name.Trim().ToLower();
 
-            Attributes[name] = value;
+
+            switch (name)
+            {
+                case "style":
+                    Attributes[name] = value; value.CleanUp();
+                    if (StyleChanged != null)
+                    {
+                        StyleChanged();
+                    }
+                    break;
+                case "class":
+                    Attributes[name] = value.CleanUp();
+                    break;
+                default:
+                    Attributes[name]=value;
+                    break;
+            }
+
         }
 
 
@@ -93,7 +127,9 @@ namespace Jtc.CsQuery
 
         public bool TryGetValue(string key, out string value)
         {
-            return Attributes.TryGetValue(key, out value);
+            // do not use trygetvalue from dictionary. We need default handling in Get
+            value = Get(key);
+            return value !=null || Attributes.ContainsKey(key);
         }
 
         public ICollection<string> Values

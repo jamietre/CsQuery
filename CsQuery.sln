@@ -3,13 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsQuery", "CsQuery.csproj", "{C38DFFE9-321B-4941-B031-29D718AB5C31}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsqueryTests", "CsqueryTests\CsqueryTests.csproj", "{F8920741-0BB4-4939-A774-0F9059B2B7F0}"
+EndProject
 Global
 	GlobalSection(SourceCodeControl) = preSolution
-		SccNumberOfProjects = 1
+		SccNumberOfProjects = 2
 		SccProjectUniqueName0 = CsQuery.csproj
 		SccProjectName0 = \u0022$/ProjectsDotNet4.0/CsQuery.root/CsQuery\u0022,\u0020VGNAAAAA
 		SccLocalPath0 = .
 		SccProvider0 = MSSCCI:Microsoft\u0020Visual\u0020SourceSafe
+		SccProjectUniqueName1 = CsqueryTests\\CsqueryTests.csproj
+		SccProjectName1 = \u0022$/ProjectsDotNet4.0/NUnitRunner.root/NUnitRunner/CsQuery/CsqueryTests\u0022,\u0020ZLNAAAAA
+		SccLocalPath1 = CsqueryTests
+		SccProvider1 = MSSCCI:Microsoft\u0020Visual\u0020SourceSafe
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +26,10 @@ Global
 		{C38DFFE9-321B-4941-B031-29D718AB5C31}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C38DFFE9-321B-4941-B031-29D718AB5C31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C38DFFE9-321B-4941-B031-29D718AB5C31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8920741-0BB4-4939-A774-0F9059B2B7F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8920741-0BB4-4939-A774-0F9059B2B7F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8920741-0BB4-4939-A774-0F9059B2B7F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8920741-0BB4-4939-A774-0F9059B2B7F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

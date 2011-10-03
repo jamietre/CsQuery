@@ -41,8 +41,91 @@ namespace Jtc.CsQuery
 
     public class CSSStyleDeclaration : IDictionary<string,string>, IEnumerable<KeyValuePair<string,string>>
     {
-
-        protected Dictionary<string, string> Styles = new Dictionary<string, string>();
+        public CSSStyleDeclaration()
+        {
+            GetStyleString = DefaultGetStyleString;
+            SetStyleString=DefaultSetStyleString;
+        }
+        public CSSStyleDeclaration(Func<string> getStyle, Action<string> setStyle)
+        {
+            GetStyleString = getStyle;
+            SetStyleString = setStyle;
+        }
+        /// <summary>
+        /// In order to maintain consistency with the attribute model, we want to keep the style string as an attribute.
+        /// However we also  want to be able to provide decent access to the individual styles for the purposes of this model.
+        /// So the delegates here are linked to the "GetAttribute" / "SetAttribute" methods in the owner DOMElement object.
+        /// Additionally, the same owner object binds a delegate in the Attributes object that is called when the style
+        /// attribute changes, which in turn tells this object to clear its cached dictionary. This should provide very good
+        /// performance: no work done during HTML parsing, styles parsed on first access, and cached unless changed otherwise.
+        /// </summary>
+        public Func<string> GetStyleString;
+        public Action<string> SetStyleString;
+        protected string DefaultGetStyleString()
+        {
+            return _Style;
+        }
+        protected void DefaultSetStyleString(string style)
+        {
+            _Style = style;
+        }
+        protected string _Style = String.Empty;
+        protected Dictionary<string, string> _Styles=null;
+        
+        private bool Cached { get; set; }
+        protected Dictionary<string, string> Styles
+        {
+            get
+            {
+                if (_Styles == null)
+                {
+                    _Styles = new Dictionary<string, string>();
+                    Cached = false;
+                }
+                if (!Cached)
+                {
+                    Cached = true;
+                    SetStylesImpl(GetStyleString(),false);
+                }
+                return _Styles;
+            }
+        }
+        public void SetStyles(string styles, bool strict)
+        {
+             if (Cached)
+            {
+                Styles.Clear();
+            }
+            SetStylesImpl(styles, strict);
+        }
+        private void SetStylesImpl(string styles, bool strict)
+        {
+            string[] stList = GetStyleString().Trim().Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+ 
+            foreach (string val in stList)
+            {
+                AddStyle(val, strict);
+            }
+        }
+        public void AddStyle(string style, bool strict)
+        {
+            int index = style.IndexOf(":");
+            string stName;
+            string stValue;
+            if (index > 0)
+            {
+                stName = style.Substring(0, index).Trim();
+                stValue = style.Substring(index + 1).Trim();
+                if (!strict)
+                {
+                    SetRaw(stName, stValue);
+                }
+                else
+                {
+                    Add(stName,stValue);
+                }
+            }
+        }
         public override string ToString()
         {
             string style = String.Empty;
@@ -52,7 +135,11 @@ namespace Jtc.CsQuery
             }
             return style;
         }
-        
+        public void ClearCache()
+        {
+            Styles.Clear();
+            Cached = false;
+        }
         public bool Remove(string name)
         {
             return Styles.Remove(name);
@@ -61,16 +148,16 @@ namespace Jtc.CsQuery
         {
             this[name] = value;
         }
-        public CSSStyleDeclaration Clone()
-        {
-            CSSStyleDeclaration clone = new CSSStyleDeclaration();
-            clone.Styles = new Dictionary<string, string>();
-            foreach (var kvp in Styles)
-            {
-                clone.Styles[kvp.Key] = kvp.Value;
-            }
-            return clone;
-        }
+        //public CSSStyleDeclaration Clone()
+        //{
+        //    CSSStyleDeclaration clone = new CSSStyleDeclaration();
+        //    clone.Styles = new Dictionary<string, string>();
+        //    foreach (var kvp in Styles)
+        //    {
+        //        clone.Styles[kvp.Key] = kvp.Value;
+        //    }
+        //    return clone;
+        //}
         public string this[string name]
         {
             get

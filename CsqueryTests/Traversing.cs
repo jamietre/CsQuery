@@ -13,7 +13,8 @@ namespace CsqueryTests
         [SetUp]
         public void Init()
         {
-            Dom = CsQuery.LoadFile("resources\\jquery-unit-index.htm");
+
+            Dom = CsQuery.Create(Support.GetFile("resources\\jquery-unit-index.htm"));
         }
         [Test]
         public void Find_String()
@@ -167,8 +168,8 @@ namespace CsqueryTests
             Assert.AreEqual(jQuery("p").Filter("#ap, #sndp").Get(), q("ap", "sndp"), "filter('String, String')" );
             Assert.AreEqual(jQuery("p").Filter("#ap,#sndp").Get(), q("ap", "sndp"), "filter('String,String')" );
 
-            Assert.AreEqual(jQuery("p").Filter(null).Length, 0, "filter(null) should return an empty jQuery object");
-            Assert.AreEqual(jQuery("p").Filter(null).Length, 0, "filter(undefined) should return an empty jQuery object");
+            Assert.AreEqual(jQuery("p").Filter((string)null).Length, 0, "filter(null) should return an empty jQuery object");
+            Assert.AreEqual(jQuery("p").Filter((string)null).Length, 0, "filter(undefined) should return an empty jQuery object");
             //Assert.AreEqual(jQuery("p").Filter(0).Get(),         [], "filter(0) should return an empty jQuery object");
             Assert.AreEqual(jQuery("p").Filter("").Length,        0, "filter('') should return an empty jQuery object");
 
@@ -177,14 +178,25 @@ namespace CsqueryTests
             Assert.AreEqual(j.Filter("span").Length, 1, "Check node,textnode,comment to filter the one span" );
             Assert.AreEqual(j.Filter("[name]").Length, 0, "Check node,textnode,comment to filter the one span" );
 
+            
         }
-//test("filter(Function)", function() {
-//    expect(2);
+        [Test]
+        public void Filter_Function()
+        {
+            Func<IDomObject,bool> testFunction1 = (obj) => {
+                return jQuery(obj).Find("a").Length == 0;
+            };
 
-//    Assert.AreEqual(jQuery("#qunit-fixture p").filter(function() { return !jQuery("a", this).Length }).Get(), q("sndp", "first"), "filter(Function)" );
+            Func<IDomObject,int,bool> testFunction2 = (obj,i) => {
+                return jQuery(obj).Find("a").Length == 0;
+            };
 
-//    Assert.AreEqual(jQuery("#qunit-fixture p").filter(function(i, elem) { return !jQuery("a", elem).Length }).Get(), q("sndp", "first"), "filter(Function) using arg" );
-//});
+            Assert.AreEqual(jQuery("#qunit-fixture p").Filter(testFunction1)
+                .Get(), q("sndp", "first"), "filter(Function)" );
+
+            Assert.AreEqual(jQuery("#qunit-fixture p").Filter(testFunction2)
+                .Get(), q("sndp", "first"), "filter(Function) using arg" );
+        }
 
     
 //test("filter(Element)", function() {
@@ -267,22 +279,30 @@ namespace CsqueryTests
             Assert.IsTrue( jchild.Closest( jbody.Add(jparent) ).Is("#nothiddendiv"), "Closest ancestor retrieved." );
 
         }
+        [Test]
+        public void NotSelector()
+        {
+            Assert.AreEqual(jQuery("#qunit-fixture > p#ap > a").Not("#google").Length, 2, "not('selector')" );
+            Assert.AreEqual(jQuery("p").Not(".result").Get(), q("firstp", "ap", "sndp", "en", "sap", "first"), "not('.class')" );
+            Assert.AreEqual(jQuery("p").Not("#ap, #sndp, .result").Get(), q("firstp", "en", "sap", "first"), "not('selector, selector')" );
+
+            // # I believe option5a should be returned, and the jQuery test is buggy
+           // Assert.AreEqual(jQuery("#form option").Not("option.emptyopt:contains('Nothing'),[selected],[value='1']").Get(), q("option1c", "option1d", "option2c", "option3d", "option3e", "option4e","option5b"), "not('complex selector')");
+            Assert.AreEqual(jQuery("#form option").Not("option.emptyopt:contains('Nothing'),[selected],[value='1']").Get(), q("option1c", "option1d", "option2c", "option3d", "option3e", "option4e", "option5a", "option5b"), "not('complex selector')");
+            Assert.AreEqual(jQuery("#ap *").Not("code").Get(), q("google", "groups", "anchor1", "mark"), "not('tag selector')" );
+            Assert.AreEqual(jQuery("#ap *").Not("code, #mark").Get(), q("google", "groups", "anchor1"), "not('tag, ID selector')" );
+            Assert.AreEqual(jQuery("#ap *").Not("#mark, code").Get(), q("google", "groups", "anchor1"), "not('ID, tag selector')");
+
+            var all = jQuery("p").Get();
+            Assert.AreEqual(jQuery("p").Not(null).Get(),      all, "not(null) should have no effect");
+            Assert.AreEqual(jQuery("p").Not(null).Get(), all, "not(undefined) should have no effect");
+            //Assert.AreEqual(jQuery("p").Not(0).Get(),         all, "not(0) should have no effect");
+            Assert.AreEqual(jQuery("p").Not("").Get(),        all, "not('') should have no effect");
+        }
+
 //test("not(Selector|undefined)", function() {
 //    expect(11);
-//    Assert.AreEqual(jQuery("#qunit-fixture > p#ap > a").not("#google").Length, 2, "not('selector')" );
-//    Assert.AreEqual(jQuery("p").not(".result").Get(), q("firstp", "ap", "sndp", "en", "sap", "first"), "not('.class')" );
-//    Assert.AreEqual(jQuery("p").not("#ap, #sndp, .result").Get(), q("firstp", "en", "sap", "first"), "not('selector, selector')" );
-//    Assert.AreEqual(jQuery("#form option").not("option.emptyopt:contains('Nothing'),[selected],[value='1']").Get(), q("option1c", "option1d", "option2c", "option3d", "option3e", "option4e","option5b"), "not('complex selector')");
 
-//    Assert.AreEqual(jQuery("#ap *").not("code").Get(), q("google", "groups", "anchor1", "mark"), "not('tag selector')" );
-//    Assert.AreEqual(jQuery("#ap *").not("code, #mark").Get(), q("google", "groups", "anchor1"), "not('tag, ID selector')" );
-//    Assert.AreEqual(jQuery("#ap *").not("#mark, code").Get(), q("google", "groups", "anchor1"), "not('ID, tag selector')");
-
-//    var all = jQuery("p").Get();
-//    Assert.AreEqual(jQuery("p").not(null).Get(),      all, "not(null) should have no effect");
-//    Assert.AreEqual(jQuery("p").not(undefined).Get(), all, "not(undefined) should have no effect");
-//    Assert.AreEqual(jQuery("p").not(0).Get(),         all, "not(0) should have no effect");
-//    Assert.AreEqual(jQuery("p").not("").Get(),        all, "not('') should have no effect");
 //});
 
 //test("not(Element)", function() {

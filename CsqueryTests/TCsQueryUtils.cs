@@ -25,8 +25,6 @@ namespace CsqueryTests
         [Test]
         public void Json()
         {
-            
-            
 
             //dynamic obj = CsQuery.FromJSON("{\"test\": \"value\", \"number\": 2}");
             dynamic obj = CsQuery.ParseJSON("{test: 'value',number: 2}");
@@ -37,6 +35,16 @@ namespace CsqueryTests
 
             Assert.AreEqual("subproperty1 value", obj.test.subprop1);
             Assert.AreEqual(2, obj.number);
+
+            var tc3 = new TestClass3();
+            var expected = "{\"list\":[\"item1\",\"item2\"],"
+                +"\"listMixed\":[3,\"hello\",{\"Prop1\":\"TC1 value1\",\"Prop2\":null},999],"
+                +"\"floatingPointProp\":123.33,\"stringProp\":\"asdad\"}";
+
+            string json = CsQuery.ToJSON(tc3);
+            Assert.AreEqual(expected, json, "CsQuery.ToJson works");
+
+            
         }
         protected class TestExpando
         {
@@ -116,6 +124,23 @@ namespace CsqueryTests
         {
             public string Prop2;
             public string Prop3;
+        }
+        protected class TestClass3
+        {
+            public List<string> list = new List<string>(new string[] {"item1","item2"});
+            public List<object> listMixed= new List<object>();
+            public TestClass3() {
+                listMixed.Add(3);
+                listMixed.Add("hello");
+                TestClass1 tc1 = new TestClass1();
+                tc1.Prop1="TC1 value1";
+                tc1.Prop2 = null;
+                listMixed.Add(tc1);
+                listMixed.Add(999);
+
+            }
+            public double floatingPointProp = 123.33;
+            public string stringProp = "asdad";
         }
     }
 }

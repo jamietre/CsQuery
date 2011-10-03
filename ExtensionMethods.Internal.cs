@@ -51,6 +51,20 @@ namespace Jtc.CsQuery.ExtensionMethods
             return false;
         }
 
+        public static bool IsOneOf(this string match, string value1, string value2 = null, string value3 = null, string value4 = null, string value5 = null, bool matchCase=true)
+        {
+            string[] values = { null, value5, value4, value3, value2, value1 };
+            int i = values.Length;
+            StringComparison comp = matchCase ? StringComparison.CurrentCulture: StringComparison.CurrentCultureIgnoreCase;
+            while (values[--i] != null)
+            {
+                if (match.Equals(values[i],comp))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         public static bool TryParse<T>(this Enum theEnum, string strType, out T result)
         {
             string strTypeFixed = strType.Replace(' ', '_');
@@ -442,7 +456,8 @@ namespace Jtc.CsQuery.ExtensionMethods
             }
             return count;
         }
-        public static string AddListItem(this string list, string value, string separator)
+
+        public static string ListAdd(this string list, string value, string separator)
         {
             if (String.IsNullOrEmpty(value))
             {
@@ -476,7 +491,7 @@ namespace Jtc.CsQuery.ExtensionMethods
                 return (list);
             }
         }
-        public static string RemoveListItem(this string list, string value, string separator)
+        public static string ListRemove(this string list, string value, string separator)
         {
             string result = (separator + list).Replace(separator + value, "");
             if (result.Substring(0, 1) == separator)
@@ -519,6 +534,29 @@ namespace Jtc.CsQuery.ExtensionMethods
             {
                 return String.Empty;
             }
+        }
+        /// <summary>
+        /// Returns the part of two strings that match
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="match"></param>
+        /// <returns></returns>
+        public static string CommonStart(this string text, string match)
+        {
+            int pos = 0;
+            if (string.IsNullOrEmpty(text) || String.IsNullOrEmpty(match)) {
+                return String.Empty;
+            }
+            while (pos<text.Length && pos<match.Length)
+            {
+                if (text.Substring(0, pos+1) != match.Substring(0, pos+1))
+                {
+                    break;
+                }
+                pos++;
+            }
+            return text.Substring(0, pos);
+
         }
         /// <summary>
         /// Returns the string after the end of the first occurrence of "find"
@@ -630,6 +668,86 @@ namespace Jtc.CsQuery.ExtensionMethods
             {
                 func(obj);
             }
+        }
+        /// <summary>
+        /// Converts null to String.Empty and trims
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string CleanUp(this string value)
+        {
+            return (value ?? String.Empty).Trim();
+        }
+        public static bool IsKeyValuePair(this object obj)
+        {
+            Type valueType = obj.GetType();
+            if (valueType.IsGenericType)
+            {
+                Type baseType = valueType.GetGenericTypeDefinition();
+                if (baseType == typeof(KeyValuePair<,>))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public static string Join(this IEnumerable<string> list)
+        {
+            return Join(list, ",");
+        }
+        private static IEnumerable<string> toStringList(IEnumerable source) {
+             foreach (var item in source) {
+                yield return item.ToString();
+             }
+        }
+        public static string Join(this IEnumerable list) {
+            return Join(toStringList(list),",");
+        }
+        /// <summary>
+        /// Combine elements of a list into a single string, separated by separator
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static string Join(this IEnumerable<string> list, string separator)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (string item in list)
+            {
+                sb.Append(sb.Length == 0 ? item : separator + item);
+            }
+            return sb.ToString();
+        }
+        public static string IfNullOrEmpty(this string value, string alternate)
+        {
+            return value.IsNullOrEmpty() ? alternate : value;
+        }
+        public static string IfNull(this string value, string alternate)
+        {
+            return value==null ? alternate : value;
+        }
+        public static IEnumerable<T> Do<T>(this IEnumerable<T> list, Action<T> action) where T: class
+        {
+            foreach (T obj in list) {
+                action(obj);
+            }
+            return list;
+        }
+        public static IEnumerable<T> DoWhen<T>(this IEnumerable<T> list, Action<T> action, Func<T,bool> condition) where T : class
+        {
+            foreach (T obj in list)
+            {
+                if (condition(obj)) action(obj);
+            }
+            return list;
+        }
+        public static string DoBuildString<T>(this IEnumerable<T> list, Func<T, string> action)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (T obj in list)
+            {
+                sb.Append(action(obj));
+            }
+            return sb.ToString();
         }
     }
 }

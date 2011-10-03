@@ -35,6 +35,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Jtc.CsQuery, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\Debug\Jtc.CsQuery.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=2.5.10.11092, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Program Files\NUnit 2.5.10\bin\net-2.0\framework\nunit.framework.dll</HintPath>
@@ -61,6 +65,7 @@
     <Compile Include="TCsQueryCore.cs" />
     <Compile Include="TCsQueryUtils.cs" />
     <Compile Include="Traversing.cs" />
+    <Compile Include="WebIO.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\jquery-unit-index.htm">
@@ -68,12 +73,6 @@
     </Content>
     <Content Include="Resources\TestHtml.htm" />
     <Content Include="Resources\TestHtml2.htm" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CsQuery.csproj">
-      <Project>{C38DFFE9-321B-4941-B031-29D718AB5C31}</Project>
-      <Name>CsQuery</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

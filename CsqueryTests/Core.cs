@@ -18,7 +18,7 @@ namespace CsqueryTests
         [SetUp]
         public void Init()
         {
-            Dom = CsQuery.LoadFile("resources\\jquery-unit-index.htm");
+            Dom = Dom = CsQuery.Create(Support.GetFile("resources\\jquery-unit-index.htm"));
         }
 
 
@@ -86,7 +86,7 @@ namespace CsqueryTests
            Assert.AreEqual("1px", elem[0].Style["padding-right"], "jQuery quick setter css");
             Assert.AreEqual(1,elem[0].ChildNodes.Length, "jQuery quick setter text");
             Assert.AreEqual(elem[0].FirstChild.NodeValue, "test", "jQuery quick setter text");
-            Assert.AreEqual(elem[0].Class, "test2", "jQuery() quick setter class");
+            Assert.AreEqual(elem[0].ClassName, "test2", "jQuery() quick setter class");
             Assert.AreEqual(elem[0].ID, "test3", "jQuery() quick setter id");
 
             // Unnecessary

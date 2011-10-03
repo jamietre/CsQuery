@@ -4,30 +4,39 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.IO;
+using Jtc.CsQuery.ExtensionMethods;
 
 namespace Jtc.CsQuery
 {
     public static class Support
     {
+        /// <summary>
+        /// If unset, will be set when GetFile is called to the guessed path
+        /// </summary>
+        public static string RootPath
+        { get; set; }
+        // Read a path, or from the calling app root
         public static string GetFile(string fileName)
         {
-
-            byte[] filedata;
-            System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
-            string filePath = string.Empty;
-            // if appears to be relative, treat it as such
-            if (!(filePath.IndexOf(":")>0 || filePath.StartsWith("\\\\"))) 
+            if (Path.IsPathRooted(fileName))
             {
-                filePath = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location) + "\\";
-            } 
-            
+                return File.ReadAllText(fileName);
+            }
+            else
+            {
+                if (String.IsNullOrEmpty(RootPath))
+                {
+                    string file = "\\" + fileName.AfterLast("\\");
+                    string callingAssPath = Assembly.GetCallingAssembly().Location;
+                    RootPath = fileName.CommonStart(callingAssPath);
+                    if (RootPath == String.Empty)
+                    {
+                        RootPath = callingAssPath.BeforeLast("\\");
+                    }
+                }
+                return File.ReadAllText(RootPath + "\\" + fileName);
 
-            FileStream fs = System.IO.File.Open(filePath  + fileName, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read);
-            filedata = new byte[fs.Length];
-            fs.Read(filedata, 0, (int)fs.Length);
-            string result = enc.GetString(filedata).Replace("\r", " ").Replace("\n", " ");
-            fs.Close();
-            return (result);
+            }
         }
         /// <summary>
         ///  Gets a resource from the calling assembly

@@ -62,7 +62,8 @@ namespace Jtc.CsQuery
         string ID { get; set; }
         CSSStyleDeclaration Style { get; }
         DomAttributes Attributes { get; }
-        string Class { get; }
+        string ClassName { get; set; }
+        string Value { get; set; }
 
         string NodeName { get; set; }
         string NodeValue { get; set; }
@@ -148,19 +149,109 @@ namespace Jtc.CsQuery
 
 
 
-        string this[string index] { get; set; }
+        string this[string attribute] { get; set; }
 
         string ElementHtml { get; }
 
     }
     /// <summary>
+    /// Base abstract class, used only internally
+    /// </summary>
+    public abstract class DomObject 
+    {
+        public virtual NodeList ChildNodes
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        // Unique ID assigned when added to a dom
+        public string PathID
+        {
+            get
+            {
+                if (_PathID == null)
+                {
+
+                    _PathID = (ParentNode == null ? String.Empty : ParentNode.GetNextChildID());
+                }
+                return _PathID;
+            }
+
+        } protected string _PathID = null;
+        public string Path
+        {
+            get
+            {
+                if (_Path != null)
+                {
+                    return _Path;
+                }
+                return (ParentNode == null ? String.Empty : ParentNode.Path + "/") + PathID;
+            }
+        }
+        protected string _Path = null;
+
+        public IDomContainer ParentNode
+        {
+            get
+            {
+                return _Parent;
+            }
+            set
+            {
+                ResetPath();
+
+                _Parent = value;
+
+            }
+        }
+        /// <summary>
+        /// Erase stored path information. This must be done whenever a node is added to a new DOM.
+        /// </summary>
+        protected void ResetPath()
+        {
+            _Path = null;
+            _PathID = null;
+            // Also must clear values of child nodes
+            if (ChildNodes != null)
+            {
+                foreach (DomObject node in ChildNodes)
+                {
+                    node.ResetPath();
+                }
+            }
+        }
+        protected IDomContainer _Parent = null;
+
+       
+
+    }
+
+
+    /// <summary>
     /// Base class for anything that exists in the DOM
     /// </summary>
     /// 
-    public abstract class DomObject<T>: IDomObject where T: IDomObject,new()
+    public abstract class DomObject<T>: DomObject, IDomObject where T: IDomObject,new()
     {
-        public abstract bool InnerHtmlAllowed { get;}
-        public virtual CsQuery Owner {
+           
+        public virtual T Clone()
+        {
+            T clone = new T();
+
+            // prob should just implemnt this in the subclass but easier for now
+            if (clone is IDomSpecialElement)
+            {
+                ((IDomSpecialElement)clone).NonAttributeData = ((IDomSpecialElement)this).NonAttributeData;
+            }
+            return clone;
+        }
+        public abstract bool InnerHtmlAllowed { get; }
+        public virtual CsQuery Owner
+        {
             get
             {
                 return _Owner;
@@ -197,18 +288,33 @@ namespace Jtc.CsQuery
         {
             get
             {
-                return String.Empty;
+                return null;
             }
             set
             {
                 throw new Exception("Cannot set ID for this node type.");
             }
         }
-        public virtual string Class
+        public virtual string Value
         {
             get
             {
-                return String.Empty;
+                return null;
+            }
+            set
+            {
+                throw new Exception("Cannot set value for this node type.");
+            }
+        }
+        public virtual string ClassName
+        {
+            get
+            {
+                return null;
+            }
+            set
+            {
+                throw new Exception("ClassName is not applicable to this node type.");
             }
         }
         public virtual DomAttributes Attributes
@@ -225,10 +331,11 @@ namespace Jtc.CsQuery
                 throw new Exception("Style is not applicable to this node type.");
             }
         }
-        public virtual string NodeName 
+        public virtual string NodeName
         {
-            get {
-                return String.Empty;
+            get
+            {
+                return null;
             }
             set
             {
@@ -272,65 +379,17 @@ namespace Jtc.CsQuery
         // if so create an arbitrary one.
 
         public abstract NodeType NodeType { get; }
-        public virtual T Clone()
-        {
-            T clone = new T();
 
-            // prob should just implemnt this in the subclass but easier for now
-            if (clone is IDomSpecialElement)
-            {
-                ((IDomSpecialElement)clone).NonAttributeData = ((IDomSpecialElement)this).NonAttributeData;
-            }
-            return clone;
-        }
 
-        // Unique ID assigned when added to a dom
-        public string PathID
-        {
-            get
-            {
-                if (_PathID ==null) {
-
-                    _PathID = (ParentNode == null ? String.Empty : ParentNode.GetNextChildID());
-               }
-               return _PathID;
-            }
-
-        } protected string _PathID = null;
-        public string Path {
-            get
-            {
-                if (_Path != null) {
-                    return _Path;
-                }
-                return (ParentNode == null ? String.Empty : ParentNode.Path + "/") + PathID;
-            }
-        }
-        protected string _Path = null;
-        
-        public IDomContainer ParentNode
-        {
-            get
-            {
-                return _Parent;
-            }
-            set
-            {
-                _Path = null;
-                _PathID = null;
-                _Parent = value;
-            }
-        }
-
-        protected IDomContainer _Parent = null;
         public abstract bool Complete { get; }
         public abstract string Render();
-        
+
         protected int IDCount = 0;
 
         protected IEnumerable<string> IndexKeys()
         {
-            if (!(this is DomElement)) {
+            if (!(this is DomElement))
+            {
                 yield break;
             }
 
@@ -366,7 +425,7 @@ namespace Jtc.CsQuery
         }
         public void AddToIndex()
         {
-            if (Dom!=null && this is IDomElement)
+            if (Dom != null && this is IDomElement)
             {
                 // Fix the path when it's added to the index.
                 // This is a little confusing. Would rather that we can't access it until it's added to a DOM.
@@ -427,15 +486,11 @@ namespace Jtc.CsQuery
                 Dom.SelectorXref.Add(key, this as DomElement);
             }
         }
-        protected string IndexKey( string key)
+        protected string IndexKey(string key)
         {
             return key + ">" + Path;
         }
 
-        IDomObject IDomObject.Clone()
-        {
-            return Clone();
-        }
         public virtual int DescendantCount()
         {
             return 0;
@@ -448,13 +503,7 @@ namespace Jtc.CsQuery
                 yield break;
             }
         }
-        public virtual NodeList ChildNodes
-        {
-            get
-            {
-                return null;
-            }
-        }
+
         public virtual IDomObject FirstChild
         {
             get { return null; }
@@ -538,6 +587,13 @@ namespace Jtc.CsQuery
                 throw new Exception("Not valid for this element type.");
             }
         }
+
+        IDomObject IDomObject.Clone()
+        {
+            return Clone();
+        }
+
+
     }
     
     /// <summary>
@@ -1132,7 +1188,7 @@ namespace Jtc.CsQuery
 
         }
 
-        protected DomRenderingOptions _DomRenderingOptions = DomRenderingOptions.RemoveMismatchedCloseTags;
+        protected DomRenderingOptions _DomRenderingOptions = 0;
         public override DomRoot  Dom
         {
 	          get 
@@ -1241,17 +1297,16 @@ namespace Jtc.CsQuery
             DomElement e = base.Clone();
             e.NodeName = NodeName;
 
-            if (_Style != null)
+            //if (_Style != null)
+            //{
+            //    e._Style = Style.Clone();
+            //}
+            if (_Attributes != null)
             {
-                e._Style = Style.Clone();
-            }
-            if (_Classes != null)
-            {
-                e._Classes = new HashSet<string>(Classes);
-            }
-            foreach (var attr in _Attributes)
-            {
-                e.SetAttribute(attr.Key, attr.Value);
+                foreach (var attr in _Attributes)
+                {
+                    e.SetAttribute(attr.Key, attr.Value);
+                }
             }
             e.ChildNodes.AddRange(CloneChildren());
 
@@ -1270,21 +1325,26 @@ namespace Jtc.CsQuery
         {
             get
             {
-                foreach (string val in _Classes)
+                foreach (string cls in ClassName
+                    .Split(splitSep, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    yield return val;
+                    yield return cls;
                 }
             }
-        } protected HashSet<string> _Classes = new HashSet<string>();
+        } 
+        
+        private static char[] splitSep = new char[] {' '};
+
 
         public bool HasClass(string name)
         {
-            return _Classes.Contains(name);
+            return (GetAttribute("class",String.Empty) + " ").IndexOf(name + " ") >= 0;
         }
         public bool AddClass(string name)
         {
-            if (_Classes.Add(name))
+            if (!HasClass(name))
             {
+                SetAttribute("class", ClassName.ListAdd(name," "));
                 AddToIndex(IndexKey("."+name));
                 return true;
             }
@@ -1295,8 +1355,9 @@ namespace Jtc.CsQuery
         }
         public bool RemoveClass(string name)
         {
-            if (_Classes.Remove(name))
+            if (HasClass(name))
             {
+                SetAttribute("class", ClassName.ListRemove(name, " "));
                 RemoveFromIndex(IndexKey("." + name));
             }
             return false;
@@ -1310,24 +1371,9 @@ namespace Jtc.CsQuery
         {
             AddStyle(style,true);
         }
-        public void AddStyle(string style,bool raw)
+        public void AddStyle(string style,bool strict)
         {
-            int index = style.IndexOf(":");
-            string stName;
-            string stValue;
-            if (index > 0)
-            {
-                stName = style.Substring(0, index).Trim();
-                stValue = style.Substring(index + 1).Trim();
-                if (raw)
-                {
-                    Style.SetRaw(stName, stValue);
-                }
-                else
-                {
-                    Style[stName] = stValue;
-                }
-            }
+            Style.AddStyle(style, strict);
         }
         public bool RemoveStyle(string name)
         {
@@ -1351,13 +1397,7 @@ namespace Jtc.CsQuery
         }
         public void SetStyles(string styles, bool strict)
         {
-            Style.Clear();
-            string[] stList = styles.Trim().Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-
-            foreach (string val in stList)
-            {
-                AddStyle(val,strict);
-            }
+            Style.SetStyles(styles, strict);
         }
         /// <summary>
         /// Set the value of an attribute to "value." 
@@ -1366,25 +1406,7 @@ namespace Jtc.CsQuery
         /// <param name="value"></param>
         public override void SetAttribute(string name, string value)
         {
-            name = name.ToLower();
-            // TODO this is not right, should be able to set Class attribute, seaprate this handling
-            switch (name)
-            {
-                case "class":
-                    _Classes.Clear();
-                    foreach (string val in value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
-                    {
-                        _Classes.Add(val);
-                    }
-                    break;
-                case "style":
-                    // when setting "style" using SetAttribute, use raw mode.
-                    SetStyles(value, true);
-                    break;
-                default:
-                    Attributes[name] = value;
-                    break;
-            }
+            Attributes[name.ToLower()] = value;
         }
         /// <summary>
         /// Sets an attribute with no value
@@ -1398,8 +1420,6 @@ namespace Jtc.CsQuery
         {
             return Attributes.Remove(name.ToLower());
         }
-
-
         /// <summary>
         /// Gets an attribute value, or returns null if the value is missing. If a valueless attribute is found, this will also return null. HasAttribute should be used
         /// to test for such attributes. Attributes with an empty string value will return String.Empty.
@@ -1408,13 +1428,7 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public override string GetAttribute(string name)
         {
-            string defaultValue = null;
- 
-            if (name.Equals("value",StringComparison.CurrentCultureIgnoreCase) && 
-                (NodeName == "input" || NodeName=="option" || NodeName=="select")) {
-                defaultValue = String.Empty;
-            }
-            return GetAttribute(name, defaultValue);
+            return GetAttribute(name, null);
         }
         /// <summary>
         /// Returns the value of an attribute or a default value if it could not be found.
@@ -1424,11 +1438,7 @@ namespace Jtc.CsQuery
         public override string GetAttribute(string name, string defaultValue)
         {
             name = name.ToLower();
-            string value = GetNonDictionaryAttribute(name);
-            if (value != null)
-            {
-                return value;
-            }
+            string value = null;
             if (Attributes.TryGetValue(name, out value))
             {
                  return value;
@@ -1440,37 +1450,36 @@ namespace Jtc.CsQuery
         }
         public override bool TryGetAttribute(string name, out string value)
         {
-            value = GetNonDictionaryAttribute(name);
-            bool result = (GetNonDictionaryAttribute(name) != null) 
-                || Attributes.TryGetValue(name.ToLower(), out  value);
-            // use GetAttribute to actually get it because of all the exceptions. 
-            value = GetAttribute(name);
-            // even if the lookup failed, special attributes could return data in the main code
-            return result || (value != null);
+            //value = GetNonDictionaryAttribute(name);
+            //bool result = (GetNonDictionaryAttribute(name) != null) 
+           //     || Attributes.TryGetValue(name.ToLower(), out  value);
+            return Attributes.TryGetValue(name.ToLower(), out value);
+           
         }
-        protected string GetNonDictionaryAttribute(string name)
-        {
-            switch (name)
-            {
-                case "style":
-                    return Style.ToString();
-                case "class":
-                    return Class;
-                default:
-                    return null;
-            }
-        }
+
         public override CSSStyleDeclaration Style
         {
             get
             {
                 if (_Style == null)
                 {
-                    _Style = new CSSStyleDeclaration();
+                    _Style = new CSSStyleDeclaration(() =>
+                    {
+                        return GetAttribute("style",String.Empty);
+                    },
+                    (style) =>
+                    {
+                        SetAttribute("style", style);
+                    });
+                    if (_Attributes != null)
+                    {
+                        Attributes.StyleChanged = _Style.ClearCache;
+                    }
                 }
                 return _Style;
             }
         }
+
         protected DomAttributes _Attributes = null;
         public override DomAttributes Attributes
         {
@@ -1478,36 +1487,41 @@ namespace Jtc.CsQuery
             {
                 if (_Attributes == null)
                 {
-                    _Attributes = new DomAttributes();
+                    _Attributes = new DomAttributes(this);
+                    if (_Style != null)
+                    {
+                        _Attributes.StyleChanged = _Style.ClearCache;
+                    }
                 }
                 return _Attributes;
             }
         }
         protected CSSStyleDeclaration _Style = null;
-        public override string Class
+        public override string ClassName
         {
             get
             {
-                string cls = String.Empty;
-                foreach (var val in _Classes)
-                {
-                    cls += (cls == String.Empty ? String.Empty : " ") + val;
-                }
-                return cls;
+                return GetAttribute("class",String.Empty);
+            }
+            set
+            {
+                SetAttribute("class", value);
             }
         }
-
+        /// <summary>
+        /// The NodeName for the element, in LOWER CASE.
+        /// </summary>
         public override string NodeName
         {
             get
             {
-                return _Tag;
+                return _NodeName;
             }
             set
             {
                 if (String.IsNullOrEmpty(NodeName))
                 {
-                    _Tag = value.ToLower();
+                    _NodeName = value.ToLower();
                 }
                 else
                 {
@@ -1515,7 +1529,7 @@ namespace Jtc.CsQuery
                 }
                 
             }
-        } protected string _Tag = null;
+        } protected string _NodeName = null;
         public override string ID
         {
             get
@@ -1524,25 +1538,47 @@ namespace Jtc.CsQuery
             }
             set
             {
-                string id = _Attributes["id"];
+                string id = Attributes["id"];
                 if (!String.IsNullOrEmpty(id))
                 {
                     RemoveFromIndex(IndexKey("#" + id));
                 }
-                _Attributes["id"] = value;
+                Attributes["id"] = value;
                 AddToIndex(IndexKey("#" + value));
             }
         }
-
-        public string this[string name]
+        public override string Value
         {
             get
             {
-                return GetAttribute(name);
+                if (NodeName == "input")
+                {
+                    return Attributes["value"];
+                }
+                else
+                {
+                    return null;
+                }
             }
             set
             {
-                SetAttribute(name, value);
+                SetAttribute("value", value);
+            }
+        }
+        /// <summary>
+        /// Returns the value of the named attribute
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public string this[string attribute]
+        {
+            get
+            {
+                return GetAttribute(attribute);
+            }
+            set
+            {
+                SetAttribute(attribute, value);
             }
         }
         /// <summary>
@@ -1673,40 +1709,42 @@ namespace Jtc.CsQuery
             
             StringBuilder sb = new StringBuilder();
             sb.Append("<" + NodeName);
-            if (_Classes.Count > 0)
-            {
-                //if (_Classes.Count == 1 && DocType != DocType.XHTML)
-                //{
-                //    sb.Append(" class=" + Class);
-                //}
-                //else
-               // {
-                    sb.Append(" class=\"" + Class + "\"");
-                //}
-            }
+            //if (!String.IsNullOrEmpty(ClassName))
+            //{
+            //    //if (_Classes.Count == 1 && DocType != DocType.XHTML)
+            //    //{
+            //    //    sb.Append(" class=" + Class);
+            //    //}
+            //    //else
+            //   // {
+            //        sb.Append(" class=\"" + ClassName + "\"");
+            //    //}
+            //}
             if (Style.Count > 0)
             {
                 sb.Append(" style=\"" + Style.ToString() +"\"");
             }
 
-            foreach (var kvp in _Attributes)
+            if (_Attributes != null)
             {
-                string val = kvp.Value;
-                if (!String.IsNullOrEmpty(val))
+                foreach (var kvp in _Attributes)
                 {
-                    //if (DocType== DocType.XHTML || val.IndexOfAny(needsQuoting) >=0) {
+                    string val = kvp.Value;
+                    if (!String.IsNullOrEmpty(val))
+                    {
+                        //if (DocType== DocType.XHTML || val.IndexOfAny(needsQuoting) >=0) {
                         string quoteChar = val.IndexOf("\"") >= 0 ? "'" : "\"";
                         sb.Append(" " + kvp.Key + "=" + quoteChar + val + quoteChar);
-                    //} else {
-                    //    sb.Append(" " + kvp.Key + "=" + val);
-                   // }
-                }
-                else
-                {
-                    sb.Append(" " + kvp.Key);
+                        //} else {
+                        //    sb.Append(" " + kvp.Key + "=" + val);
+                        // }
+                    }
+                    else
+                    {
+                        sb.Append(" " + kvp.Key);
+                    }
                 }
             }
-
             if (InnerHtmlAllowed)
             {
                 sb.Append(String.Format(">{0}</" + NodeName + ">",

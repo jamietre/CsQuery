@@ -134,7 +134,7 @@ namespace Jtc.CsQuery
                             case "contains":
                                 StartNewSelector();
                                 Current.SelectorType |= SelectorType.Contains;
-                                Current.TraversalType = TraversalType.Descendent;
+                                Current.TraversalType = TraversalType.Filter;
                                 scanner.Expect('(');
                                 scanner.AllowQuoting();
                                 Current.Criteria= scanner.Seek(")");
@@ -177,6 +177,7 @@ namespace Jtc.CsQuery
                                 FinishSelector();
                                 break;
                             case "has":
+                            //case "not":
                                 Current.TraversalType = TraversalType.Descendent;
                                 Current.SelectorType |= SelectorType.SubSelector;
                                 scanner.Expect('(');
@@ -186,6 +187,7 @@ namespace Jtc.CsQuery
                                 CsQuerySelectors subSelectors = new CsQuerySelectors(criteria);
                                 Current.SubSelectors.Add(subSelectors);
                                 break;
+
                             default:
                                 throw new Exception("Unknown selector :\""+key+"\"");
 
@@ -461,6 +463,7 @@ namespace Jtc.CsQuery
         {
             Dom = root;
             IEnumerable<IDomObject> lastResult = null;
+            HashSet<IDomObject> output = new HashSet<IDomObject>();
             IEnumerable<IDomObject> selectionSource = selectWithin;
             
 
@@ -481,6 +484,11 @@ namespace Jtc.CsQuery
                             break;
                         case CombinatorType.Root:
                             selectionSource= selectWithin;
+                            if (lastResult != null)
+                            {
+                                output.AddRange(lastResult);
+                                lastResult = null;
+                            }
                             break;
                         case CombinatorType.Chained:
                             selectionSource = lastResult;
@@ -500,7 +508,7 @@ namespace Jtc.CsQuery
                 //}
 
                 HashSet<IDomObject> tempResult = null;
-                IEnumerable<IDomObject> interimResult = lastResult;
+                IEnumerable<IDomObject> interimResult = null;
 
                 string key = String.Empty;
                 if (type.HasFlag(SelectorType.Tag))
@@ -590,10 +598,10 @@ namespace Jtc.CsQuery
                 // TODO - GetMatch should work if passed with no selectors (returning nothing), now it returns eveyrthing
                 if ((type & ~SelectorType.SubSelector) != 0)
                 {
-                    
-                    IEnumerable<IDomObject> finalSelectWithin = interimResult ?? lastResult ?? selectionSource;
+                    IEnumerable<IDomObject> finalSelectWithin = interimResult
+                        ?? (selector.CombinatorType == CombinatorType.Chained ? lastResult : null)
+                        ?? selectionSource;
                         
-                    
                     // if there are no temporary results (b/c there was no indexed selector) then use the whole set
                     interimResult = GetMatch(root.Elements, finalSelectWithin, selector);
                     
@@ -602,7 +610,12 @@ namespace Jtc.CsQuery
 
                 if (type.HasFlag(SelectorType.SubSelector))
                 {
-                    IEnumerable<IDomObject> subSelectWithin = interimResult ?? lastResult ?? selectionSource;
+                    IEnumerable<IDomObject> subSelectWithin = interimResult
+                        ?? (selector.CombinatorType == CombinatorType.Chained ? lastResult : null)
+                        ?? selectionSource;
+
+
+                    //IEnumerable<IDomObject> subSelectWithin = interimResult ?? lastResult ?? selectionSource;
                     // subselects are a filter. start a new interim result.
                     HashSet<IDomObject> filteredResults = new HashSet<IDomObject>();
 
@@ -632,16 +645,22 @@ namespace Jtc.CsQuery
                 {
                     tempResult.AddRange(interimResult);
                 }
-                lastResult = tempResult.IsNullOrEmpty() ? null : tempResult;
+                lastResult = tempResult;
             }
 
-            if (lastResult.IsNullOrEmpty())
+
+            if (lastResult != null)
+            {
+                output.AddRange(lastResult);
+            }
+
+            if (output.IsNullOrEmpty())
             {
                 yield break;
             }
             else
             {
-                foreach (IDomObject item in ReorderSelection(root, lastResult))
+                foreach (IDomObject item in ReorderSelection(root, output))
                 {
                     yield return item;
                 }
@@ -992,14 +1011,14 @@ namespace Jtc.CsQuery
         {
             foreach (IDomObject e in obj.ChildNodes)
             {
-                if (e is DomText)
+                if (e.NodeType==NodeType.TEXT_NODE)
                 {
-                    if (((IDomText)e).Text.IndexOf(text) > 0)
+                    if (((IDomText)e).Text.IndexOf(text) >= 0)
                     {
                         return true;
                     }
                 }
-                else
+                else if (e.NodeType==NodeType.ELEMENT_NODE)
                 {
                     if (ContainsText((DomElement)e, text))
                     {
