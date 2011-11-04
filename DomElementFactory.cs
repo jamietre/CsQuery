@@ -14,18 +14,7 @@ namespace Jtc.CsQuery
             
         }
 
-        protected string BaseHtml
-        {
-            set
-            {
-                _BaseHtml = value;
-                _EndPos = -1;
-            }
-            get
-            {
-                return _BaseHtml;
-            }
-        } protected string _BaseHtml = null;
+        protected string BaseHtml;
         protected int EndPos
         {
             get
@@ -37,6 +26,12 @@ namespace Jtc.CsQuery
                 return _EndPos;
             }
         } protected int _EndPos = -1;
+        protected void SetBaseHtml(string baseHtml)
+        {
+            _EndPos = -1;
+            BaseHtml = baseHtml;
+
+        }
         /// <summary>
         /// No literals allowed
         /// </summary>
@@ -56,7 +51,7 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public IDomElement CreateElement(string html)
         {
-            BaseHtml = html;
+            SetBaseHtml(html);
             return (IDomElement)Parse(false).First();
         }
         /// <summary>
@@ -68,27 +63,25 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public IEnumerable<IDomObject> CreateObjects(string html)
         {
+            Owner = null;
+            return CreateObjectsImpl(html, true);
+        }
+        public IEnumerable<IDomObject> CreateObjects(string html, CsQuery csq)
+        {
+            Owner = csq;
             return CreateObjectsImpl(html, true);
         }
         protected IEnumerable<IDomObject> CreateObjectsImpl(string html, bool allowLiterals)
         {
-            BaseHtml = html ?? String.Empty;
+
+            SetBaseHtml(html ?? String.Empty);
             return Parse(allowLiterals);
         }
         protected class IterationData
         {
             public IterationData Parent;
-            public IDomObject Object
-            {
-                get
-                {
-                    return _Object;
-                }
-                set
-                {
-                    _Object = value;
-                }
-            } protected IDomObject _Object;
+            public IDomObject Object;
+          
             public IDomElement Element
             {
                 get
@@ -132,7 +125,14 @@ namespace Jtc.CsQuery
                 Reset();
             }
         }
-      
+
+        protected CsQuery Owner;
+        /// <summary>
+        /// When CsQuery is provided, an initial indexing context can be used
+        /// </summary>
+        /// <param name="csq"></param>
+        /// <param name="allowLiterals"></param>
+        /// <returns></returns>
         protected IEnumerable<IDomObject> Parse(bool allowLiterals)
         {
             int pos=0;
@@ -156,15 +156,16 @@ namespace Jtc.CsQuery
                         char c = BaseHtml[current.Pos];
                         switch (current.Step)
                         {
-                                // special case for textareas
+                                // special case for textareas & scripts (things which can't have HTML children)
                             case -1:
                                 if (c == '<')
                                 {
                                     // read ahead to see if a close tag
                                     int endPos = BaseHtml.IndexOf('>',current.Pos);
                                     if (endPos>0) {
-                                        string tag = BaseHtml.SubstringBetween(current.Pos+1,endPos);
-                                        if (tag.ToLower().Trim()=="/textarea") {
+                                        string tag = BaseHtml.SubstringBetween(current.Pos+1,endPos).ToLower();
+                                        if (tag.Substring(1)==current.Parent.Element.NodeName)
+                                        {
                                             current.Step=1;
                                             current.ReadTextOnly = false;
                                             break;
@@ -198,9 +199,12 @@ namespace Jtc.CsQuery
                                 }
 
                                 int tagStartPos = current.Pos;
-                                string newTag = GetTagOpener(current);
+                                string newTag;
+                                
+                                newTag = GetTagOpener(current);
+                                
                                 string newTagLower = newTag.ToLower();
-
+                                
                                 // when Element exists, it's because a previous iteration created it: it's our parent
                                 string parentTag = String.Empty;
                                 if (current.Parent != null)
@@ -289,18 +293,18 @@ namespace Jtc.CsQuery
                                 {
                                     if (newTagLower.StartsWith("!doctype"))
                                     {
-                                        specialElement = new DomDocumentType();
+                                        specialElement = new DomDocumentType(Owner);
                                         current.Object = specialElement;
                                     }
                                     else if (newTagLower.StartsWith("![cdata["))
                                     {
-                                        specialElement = new DomCData();
+                                        specialElement = new DomCData(Owner);
                                         current.Object = specialElement;
                                         current.Pos = tagStartPos + 9;
                                     }
                                     else 
                                     {
-                                        specialElement = new DomComment();
+                                        specialElement = new DomComment(Owner);
                                         current.Object = specialElement;
                                         if (newTagLower.StartsWith("!--"))
                                         {
@@ -313,9 +317,9 @@ namespace Jtc.CsQuery
                                 }
                                 else
                                 {
-                                    current.Object = new DomElement();
-                                    current.Element.NodeName = newTag;
-                                    if (newTagLower == "textarea")
+                                    current.Object = new DomElement(newTag,Owner);
+                                    
+                                    if (!current.Element.InnerHtmlAllowed && current.Element.InnerTextAllowed)
                                     {
                                         current.ReadTextOnly = true;
                                     }
@@ -430,14 +434,14 @@ namespace Jtc.CsQuery
             IDomObject textObj = null;
             DomText lit;
             if (current.Invalid) {
-                lit = new DomInvalidElement(text);
+                lit = new DomInvalidElement(Owner);
             } else {
-                lit = new DomText(text);
+                lit = new DomText(Owner);
             }
+            lit.Text = text;
             if (!current.AllowLiterals)
             {
-                IDomElement wrapper = new DomElement();
-                wrapper.NodeName = "span";
+                IDomElement wrapper = new DomElement("span",Owner);
                 wrapper.AppendChild(lit);
                 textObj = wrapper;
             }
@@ -477,7 +481,7 @@ namespace Jtc.CsQuery
                     }
                     else
                     {
-                        inner = current.Object.InnerHtmlAllowed;
+                        inner = current.Object.InnerHtmlAllowed || current.Object.InnerTextAllowed;
                     }
                     finished = true;
                     current.HtmlStart = current.Pos + 1;
@@ -668,6 +672,7 @@ namespace Jtc.CsQuery
                 return String.Empty;
             }
         }
+       
         protected string GetTagOpener(IterationData current)
         {
             bool finished = false;

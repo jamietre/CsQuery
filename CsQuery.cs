@@ -194,6 +194,7 @@ namespace Jtc.CsQuery
         {
             return new CsQuery(html);
         }
+        
         public static CsQuery Create(string html, string attributes)
         {
             return new CsQuery(html, attributes);
@@ -222,7 +223,7 @@ namespace Jtc.CsQuery
         public static CsQuery Create(IDomObject element)
         {
             CsQuery csq = new CsQuery();
-            csq.Load(Objects.Enumerate(element));
+            csq.Load(Objects.ToEnumerable(element));
             return csq;
         }
         /// <summary>
@@ -464,11 +465,11 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public CsQuery  Text(string value)
+        public CsQuery Text(string value)
         {
             foreach (IDomElement obj in Elements)
             {
-                if (obj.InnerHtmlAllowed)
+                if (obj.InnerTextAllowed)
                 {
                     obj.ChildNodes.Clear();
                     DomText text = new DomText(value);
@@ -630,7 +631,7 @@ namespace Jtc.CsQuery
         }
         public CsQuery Append(IDomObject element)
         {
-            return Append(Objects.Enumerate(element));
+            return Append(Objects.ToEnumerable(element));
         }
         public CsQuery Append(IEnumerable<IDomObject> elements)
         {
@@ -720,9 +721,10 @@ namespace Jtc.CsQuery
                 } else if (name=="value" &&
                     (el.NodeName =="input" || el.NodeName=="select" || el.NodeName=="option")) {
                     return Val();
-                } else if (el.NodeName =="textarea") {
+                } else if (name=="value" && el.NodeName =="textarea") {
                     return el.InnerText;
-                } 
+                }
+
             }
             return null;
         }
@@ -831,15 +833,25 @@ namespace Jtc.CsQuery
             return Before(csq);
 
         }
+        /// <summary>
+        /// Insert content, specified by the parameter, before each element in the set of matched elements.
+        /// </summary>
         public CsQuery Before(CsQuery selection)
         {
             foreach (IDomObject element in this)
             {
                 int index = GetElementIndex(element);
-                foreach (IDomObject obj in selection)
+                if (index >= 0)
                 {
-                    element.ParentNode.ChildNodes.Insert(index,obj);
-                    index++;
+                    foreach (IDomObject obj in selection)
+                    {
+                        element.ParentNode.ChildNodes.Insert(index, obj);
+                        index++;
+                    }
+                }
+                else
+                {
+                    throw new Exception("The element is unbound and has no parent, Before doesn't work.");
                 }
             }
             return this;
@@ -854,14 +866,7 @@ namespace Jtc.CsQuery
         }
         public CsQuery Children(string selector)
         {
-            if (!String.IsNullOrEmpty(selector))
-            {
-                return new CsQuery(_FilterElements(SelectionChildren(), selector), this);
-            }
-            else
-            {
-                return new CsQuery(SelectionChildren(), this);
-            }
+            return FilterIfSelector(SelectionChildren(), selector);
         }
         /// <summary>
         /// Return all children of all selected elements
@@ -906,7 +911,7 @@ namespace Jtc.CsQuery
         }
         public CsQuery Closest(IDomObject element)
         {
-            return Closest(Objects.Enumerate(element));
+            return Closest(Objects.ToEnumerable(element));
         }
         public CsQuery Closest(IEnumerable<IDomObject> elements)
         {
@@ -920,7 +925,7 @@ namespace Jtc.CsQuery
                 selectionSet = new HashSet<IDomObject>();
                 selectionSet.AddRange(elements);
             }
-            CsQuery csq =  this.Empty();
+            CsQuery csq =  this.New();
 
             foreach (var el in Selection)
             {
@@ -1014,19 +1019,8 @@ namespace Jtc.CsQuery
                 return ((IDomElement)this[0]).Style[style];
             }
         }
-        /// <summary>
-        /// Returns value at named data store for the first element in the jQuery collection, as set by data(name, value).
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public object getData<T>(string key) {
-            string json = getData(key);
-            return json.FromJSON<T>();
-        }
-        public string getData(string key) {
-            return this.First()[0].GetAttribute("data-"+key);
-        }
+
+
         /// <summary>
         /// Store arbitrary data associated with the specified element. Returns the value that was set.
         /// </summary>
@@ -1055,6 +1049,20 @@ namespace Jtc.CsQuery
         public object Data(string element)
         {
             return CsQuery.ParseJSON(First().Attr("data-" + element));
+        }
+        public T Data<T>(string key)
+        {
+            string data = First().Attr("data-" + key);
+            return CsQuery.ParseJSON<T>(data);
+        }
+        /// <summary>
+        /// Returns data as a string, with no attempt to decode it
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public string DataRaw(string key)
+        {
+            return First().Attr("data-" + key);
         }
         /// <summary>
         /// Iterate over each matched element.
@@ -1102,19 +1110,20 @@ namespace Jtc.CsQuery
             }
             else
             {
-                return Empty();
+                return New();
             }
         }
         /// <summary>
         /// Returns a new empty CsQuery object bound to this domain
         /// </summary>
         /// <returns></returns>
-        protected CsQuery Empty()
+        public CsQuery New()
         {
             CsQuery empty = new CsQuery();
             empty.DomOwner = this;
             return empty;
         }
+        
         /// <summary>
         /// Get the descendants of each element in the current set of matched elements, filtered by a selector, jQuery object, or element.
         /// </summary>
@@ -1153,7 +1162,7 @@ namespace Jtc.CsQuery
         }
         public CsQuery Filter(Func<IDomObject, bool> function)
         {
-            CsQuery result = Empty();
+            CsQuery result = New();
             foreach (IDomObject obj in Selection)
             {
                 if (function(obj)) {
@@ -1164,7 +1173,7 @@ namespace Jtc.CsQuery
         }
         public CsQuery Filter(Func<IDomObject, int, bool> function)
         {
-            CsQuery result = Empty();
+            CsQuery result = New();
             int index = 0;
             foreach (IDomObject obj in Selection)
             {
@@ -1327,14 +1336,13 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery Next(string selector)
         {
-            if (String.IsNullOrEmpty(selector))
-            {
-                return new CsQuery(AdjacentElements(true), this);
-            }
-            else
-            {
-                return new CsQuery(_FilterElements(AdjacentElements(true), selector), this);
-            }
+            return FilterIfSelector(AdjacentElements(true),selector);
+        }
+        protected CsQuery FilterIfSelector(IEnumerable<IDomObject> list, string selector)
+        {
+            return String.IsNullOrEmpty(selector) ?
+                new CsQuery(list, selector) :
+                new CsQuery(_FilterElements(list, selector), this);
         }
         /// <summary>
         /// if true, then next elements are returned, otherwise, previous
@@ -1402,7 +1410,7 @@ namespace Jtc.CsQuery
                     list.Add((IDomElement)obj.ParentNode);
                 }
             }
-            return new CsQuery(_FilterElements(list, selector), this);
+            return FilterIfSelector(list, selector);
         }
         /// <summary>
         /// Get the immediately preceding sibling of each element in the set of matched elements, optionally filtered by a selector.
@@ -1491,16 +1499,8 @@ namespace Jtc.CsQuery
 
         public CsQuery Prev(string selector)
         {
-            if (String.IsNullOrEmpty(selector))
-            {
-                return new CsQuery(AdjacentElements(false), this);
-            }
-            else
-            {
-                return new CsQuery(_FilterElements(AdjacentElements(false), selector), this);
-            }
-        }
-   
+            return FilterIfSelector(AdjacentElements(false), selector);
+        }   
 
         /// <summary>
         /// Remove all selected elements from the DOM
@@ -1514,6 +1514,20 @@ namespace Jtc.CsQuery
                 e.Remove();
             }
             return this;
+        }
+        /// <summary>
+        /// Conditionally includes a selection. This is the equivalent of calling Remove() only when "include" is false
+        /// (extension of jQuery API)
+        /// </summary>
+        /// <returns></returns>
+        public CsQuery IncludeWhen(bool include)
+        {
+            if (!include)
+            {
+                Remove();
+            }
+            return this;
+
         }
         /// <summary>
         /// Remove all elements matching the selector from the DOM
@@ -1593,7 +1607,7 @@ namespace Jtc.CsQuery
         public CsQuery ReplaceWith(string selector)
         {
             CsQuery newContent = new CsQuery(selector, this);
-            return Before(selector).Remove();
+            return Before(newContent).Remove();
         }
         public CsQuery ReplaceWith(CsQuery selection)
         {
@@ -1606,6 +1620,15 @@ namespace Jtc.CsQuery
                 e.RemoveStyle("display");
             }
             return this;
+        }
+        /// <summary>
+        /// Get the current value of the first element in the set of matched elements, and try to convert to the specified type
+        /// </summary>
+        /// <returns></returns>
+        public T Val<T>()
+        {
+            string val = Val();
+            return Objects.Convert<T>(val);
         }
         /// <summary>
         /// Get the current value of the first element in the set of matched elements.
@@ -1885,7 +1908,7 @@ namespace Jtc.CsQuery
         }
         public static object Extend(bool deep, object target, params object[] sources)
         {
-            return Utility.Objects.Extend(null,deep,target, sources);
+            return Objects.Extend(null,deep,target, sources);
         }
         
         /// <summary>
@@ -1918,60 +1941,107 @@ namespace Jtc.CsQuery
         {
             return Utility.JSON.ParseJSON(objectToDeserialize);
         }
+        public static object ParseJSON(string objectToDeserialize, Type type)
+        {
+            return Utility.JSON.ParseJSON(objectToDeserialize,type);
+        }
+
         /// <summary>
         /// Convert a dictionary to an expando object. Use to get another expando object from a sub-object of an expando object,
         /// e.g. as returned from JSON data
         /// </summary>
         /// <param name="?"></param>
         /// <returns></returns>
-        public static ExpandoObject ToExpando(object obj)
+        public static JsObject ToExpando(object obj)
         {
-            ExpandoObject result;
+            JsObject result;
 
 
             if (obj is IDictionary<string, object>)
             {
-                result = Objects.Dict2Expando((IDictionary<string, object>)obj);
+                result = Objects.Dict2Dynamic<JsObject>((IDictionary<string, object>)obj);
             }
             else
             {
-                throw new Exception("This is not tested at all.");
-                //return obj.ToExpando();
+                //throw new Exception("This is not tested at all.");
+                return obj.ToExpando();
             }
             return result;
         }
+        public static T ToDynamic<T>(object obj) where T: IDynamicMetaObjectProvider, new()
+        {
+            if (obj is IDictionary<string, object>)
+            {
+                return Objects.Dict2Dynamic<T>((IDictionary<string,object>)obj);
+            }
+            else
+            {
+                return obj.ToExpando<T>();
+                //throw new Exception("Not implemented.");
+            }
+        }
+        public static IEnumerable<T> Enumerate<T>(object obj)
+        {
+            return Enumerate<T>(obj, new Type[] { typeof(ScriptIgnoreAttribute) });
+        }
         /// <summary>
-        /// Enumerate the properties of an object. Indexed properties are ignored, and enumerable objects are not enumerated.
+        /// Enumerate the properties of an object, casting to type T
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static IEnumerable<KeyValuePair<string,object>> Enumerate(object obj) {
-            IDictionary<string,object> source;
+        public static IEnumerable<T> Enumerate<T>(object obj, IEnumerable<Type> ignoreAttributes)
+        {
+            HashSet<Type> IgnoreList = new HashSet<Type>();
+            if (ignoreAttributes!=null) {
+                IgnoreList.AddRange(ignoreAttributes);
+            }
 
-            if (obj is IDictionary<string,object>) {
-                source = (IDictionary<string,object>)obj;
-            } else {
-                source = obj.ToExpando();
+            IDictionary<string, object> source;
+
+            if (obj is IDictionary<string, object>)
+            {
+                source = (IDictionary<string, object>)obj;
             }
-            foreach (KeyValuePair<string,object> kvp in source) {
-                
-                yield return new KeyValuePair<string,object>(kvp.Key, 
-                     kvp.Value is IDictionary<string,object> ? 
-                        ToExpando((IDictionary<string,object>)kvp.Value) :
-                        kvp.Value);
+            else
+            {
+                source = obj.ToExpando<JsObject>(false, ignoreAttributes);
             }
+            foreach (KeyValuePair<string, object> kvp in source)
+            {
+                if (typeof(T)==typeof(KeyValuePair<string,object>)) {
+                yield return (T)(object)(new KeyValuePair<string, object>(kvp.Key,
+                     kvp.Value is IDictionary<string, object> ?
+                        ToExpando((IDictionary<string, object>)kvp.Value) :
+                        kvp.Value));
+
+                } else {
+                    yield return Objects.Convert<T>(kvp.Value);
+                }
+            }
+
         }
+
+
+
 #endregion
         
         protected int GetElementIndex(IDomObject element) {
             int count = 0;
-            foreach (IDomObject e in element.ParentNode.ChildNodes)
+            IDomContainer parent = element.ParentNode;
+            if (parent == null)
             {
-                if (ReferenceEquals(e, element))
+                count=-1;
+            }
+            else
+            {
+                foreach (IDomObject e in parent.ChildNodes)
                 {
-                    break;
+                    if (ReferenceEquals(e, element))
+                    {
+                        break;
+                    }
+                    count++;
                 }
-                count++;
             }
             return count;
         }

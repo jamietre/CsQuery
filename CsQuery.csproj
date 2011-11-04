@@ -25,6 +25,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -48,23 +49,33 @@
   <ItemGroup>
     <Compile Include="CsQuery.cs" />
     <Compile Include="CsQuerySelector.cs" />
-    <Compile Include="DomAttributes.cs" />
-    <Compile Include="DomElementStyle.cs" />
+    <Compile Include="Dom\DomAttributes.cs" />
+    <Compile Include="Dom\DomCData.cs" />
+    <Compile Include="Dom\DomComment.cs" />
+    <Compile Include="Dom\DomContainer.cs" />
+    <Compile Include="Dom\DomDocumentType.cs" />
+    <Compile Include="Dom\DomElementStyle.cs" />
+    <Compile Include="Dom\DomInvalidElement.cs" />
+    <Compile Include="Dom\DomObject.cs" />
+    <Compile Include="Dom\DomRoot.cs" />
+    <Compile Include="Dom\DomData.cs" />
+    <Compile Include="Dom\DomText.cs" />
     <Compile Include="ExtensionMethods.Internal.cs" />
     <Compile Include="Server\WebContent.cs" />
+    <Compile Include="Utility\JsObject.cs" />
     <Compile Include="Utility\LazyObject.cs" />
     <Compile Include="NodeList.cs" />
     <Compile Include="RangeSortedDictionary.cs" />
     <Compile Include="Server\CsQuery.Server.cs" />
     <Compile Include="Server\CsQueryHttpContext.cs" />
     <Compile Include="CsQuerySelectors.cs" />
-    <Compile Include="DomElement.cs" />
+    <Compile Include="Dom\DomElement.cs" />
     <Compile Include="DomElementFactory.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringScanner.cs" />
     <Compile Include="Support.cs" />
-    <Compile Include="Utility\Objects.cs" />
+    <Compile Include="Objects.cs" />
     <Compile Include="Utility\JSON.cs" />
     <Compile Include="Utility\HtmlDom.cs" />
   </ItemGroup>

@@ -606,28 +606,28 @@ namespace Jtc.CsQuery.ExtensionMethods
         /// <param name="e"></param>
         /// <param name="listView"></param>
         /// <returns></returns>
-        public static long CurrentKey(this ListViewCommandEventArgs e, object listView)
+        public static int CurrentKey(this ListViewCommandEventArgs e, object listView)
         {
             return CurrentKey(e.Item, (ListView)listView, 0);
         }
-        public static long CurrentKey(this ListViewCommandEventArgs e, object listView, int keyIndex)
+        public static int CurrentKey(this ListViewCommandEventArgs e, object listView, int keyIndex)
         {
             return CurrentKey(e.Item, (ListView)listView, keyIndex);
         }
-        public static long CurrentKey(this ListViewItemEventArgs e, object listView)
+        public static int CurrentKey(this ListViewItemEventArgs e, object listView)
         {
             return CurrentKey(e.Item, (ListView)listView, 0);
         }
-        public static long CurrentKey(this ListViewItemEventArgs e, object listView, int keyIndex)
+        public static int CurrentKey(this ListViewItemEventArgs e, object listView, int keyIndex)
         {
             return CurrentKey(e.Item, (ListView)listView, keyIndex);
         }
-        private static long CurrentKey(ListViewItem item, ListView listView, int keyIndex)
+        private static int CurrentKey(ListViewItem item, ListView listView, int keyIndex)
         {
-            long itemKey = 0;
+            int itemKey = 0;
             if (item.DataItemIndex >= 0)
             {
-                itemKey = (long)((ListView)listView).DataKeys[item.DataItemIndex][keyIndex];
+                itemKey = (int)((ListView)listView).DataKeys[item.DataItemIndex][keyIndex];
             }
             return itemKey;
         }
@@ -691,32 +691,8 @@ namespace Jtc.CsQuery.ExtensionMethods
             }
             return false;
         }
-        public static string Join(this IEnumerable<string> list)
-        {
-            return Join(list, ",");
-        }
-        private static IEnumerable<string> toStringList(IEnumerable source) {
-             foreach (var item in source) {
-                yield return item.ToString();
-             }
-        }
-        public static string Join(this IEnumerable list) {
-            return Join(toStringList(list),",");
-        }
-        /// <summary>
-        /// Combine elements of a list into a single string, separated by separator
-        /// </summary>
-        /// <param name="list"></param>
-        /// <returns></returns>
-        public static string Join(this IEnumerable<string> list, string separator)
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (string item in list)
-            {
-                sb.Append(sb.Length == 0 ? item : separator + item);
-            }
-            return sb.ToString();
-        }
+
+
         public static string IfNullOrEmpty(this string value, string alternate)
         {
             return value.IsNullOrEmpty() ? alternate : value;

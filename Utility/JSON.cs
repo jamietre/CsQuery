@@ -24,13 +24,35 @@ namespace Jtc.CsQuery.Utility
         /// </summary>
         private class JsonSerializer
         {
+            public bool FormatOutput
+            { get; set; }
+            protected int Indent = 0;
+
             StringBuilder sb = new StringBuilder();
             private void valueToJSON(object value)
             {
                 if (value.IsImmutable())
                 {
                     sb.Append(Serializer.Serialize(value));
-                } 
+                }
+                else if (IsKeyValueDictionary(value))
+                {
+                    sb.Append("{");
+                    bool first = true;
+                    foreach (dynamic item in (IEnumerable)value)
+                    {
+                        if (first)
+                        {
+                            first = false;
+                        }
+                        else
+                        {
+                            sb.Append(",");
+                        }
+                        sb.Append(item.Key + ":" + JSON.ToJSON(item.Value));
+                    }
+                    sb.Append("}");
+                }
                 else if (value is IEnumerable)
                 {
                     sb.Append("[");
@@ -40,7 +62,9 @@ namespace Jtc.CsQuery.Utility
                         if (first)
                         {
                             first = false;
-                        } else {
+                        }
+                        else
+                        {
                             sb.Append(",");
                         }
                         if (obj.IsImmutable())
@@ -59,13 +83,20 @@ namespace Jtc.CsQuery.Utility
                     throw new Exception("Serializer error: valueToJson called for an object");
                 }
             }
+            protected bool IsKeyValueDictionary(object value)
+            {
+                Type type = value.GetType();
+                return type.IsGenericType &&
+                    typeof(Dictionary<,>).IsAssignableFrom(type.GetGenericTypeDefinition());
+            }
             public string Serialize(object value)
             {
                 SerializeImpl(value);
                 return sb.ToString();
             }
             public void SerializeImpl(object value) {
-                if ((value is IEnumerable && !value.IsExpando()) || value.IsImmutable())
+                //if ((value is IEnumerable && !value.IsExpando()) || value.IsImmutable())
+                if (!value.IsExtendableType())
                 {
                     valueToJSON(value);
                 }
@@ -73,7 +104,7 @@ namespace Jtc.CsQuery.Utility
                 {
                     sb.Append("{");
                     bool first = true;
-                    foreach (KeyValuePair<string,object> kvp in CsQuery.Enumerate(value)) {
+                    foreach (KeyValuePair<string,object> kvp in CsQuery.Enumerate<KeyValuePair<string,object>>(value,new Type[] {typeof(ScriptIgnoreAttribute)})) {
                         if (first)
                         {
                             first = false; 
@@ -101,6 +132,13 @@ namespace Jtc.CsQuery.Utility
             return serializer.Serialize(objectToSerialize);
 
         }
+        //public static string ToJSONFormatted(object objectToSerialize)
+        //{
+        //    JsonSerializer serializer = new JsonSerializer();
+        //    serializer.FormatOutput = true;
+        //    return serializer.Serialize(objectToSerialize);
+
+        //}
         /// <summary>
         ///  Serialize a value type
         /// </summary>
@@ -115,11 +153,33 @@ namespace Jtc.CsQuery.Utility
         /// <returns></returns>
         public static T ParseJSON<T>(string objectToDeserialize)
         {
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            return (T)serializer.Deserialize(objectToDeserialize, typeof(T));
+            // TODO: Don't use Javascript Serializer. Even if we are not converting to ExpandoObject, we would like better
+            // control over the deserialization process to fix dates. This code only works for date values, not members.
+            // JavaScriptSerializer serializer = new JavaScriptSerializer();
+
+            return (T)ParseJSON(objectToDeserialize, typeof(T));
+        }
+        public static object ParseJSON(string objectToDeserialize, Type type)
+        {
+            if (typeof(IDynamicMetaObjectProvider).IsAssignableFrom(type))
+            {
+                return ParseJSONObject(objectToDeserialize);
+            }
+            if (objectToDeserialize == "null" || objectToDeserialize == "undefined")
+            {
+                return null;
+            }
+            object output = Serializer.Deserialize(objectToDeserialize, type);
+            if (type == typeof(DateTime) || (type == typeof(DateTime?) && output != null))
+            {
+                DateTime dtVal = (DateTime)(object)output;
+
+                output = DateTime.SpecifyKind(dtVal, DateTimeKind.Utc).ToLocalTime();
+            }
+            return output;
         }
         /// <summary>
-        /// Parse JSON into an expando object
+        /// Parse JSON into an JsObject (dynamic) object
         /// </summary>
         /// <param name="objectToDeserialize"></param>
         /// <returns></returns>
@@ -156,19 +216,17 @@ namespace Jtc.CsQuery.Utility
 
             }
         }
-
-        private static ExpandoObject ParseJSONObject(string objectToDeserialize)
+        /// <summary>
+        /// Deserialize javscript, then transform to an ExpandObject
+        /// </summary>
+        /// <param name="objectToDeserialize"></param>
+        /// <returns></returns>
+        private static JsObject ParseJSONObject(string objectToDeserialize)
         {
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            Dictionary<string, object> dict = (Dictionary<string, object>)serializer.Deserialize(objectToDeserialize, typeof(Dictionary<string, object>));
-            //ExpandoObject output = new ExpandoObject();
-            //foreach (var kvp in dict)
-            //{
+            //JavaScriptSerializer serializer = new JavaScriptSerializer();
+            Dictionary<string, object> dict = (Dictionary<string, object>)Serializer.Deserialize(objectToDeserialize, typeof(Dictionary<string, object>));
 
-
-            //}
-            return (ExpandoObject)CsQuery.Extend(true, null, dict);
-            //return Dict2Epando(dict);
+            return Objects.Dict2Dynamic<JsObject>(dict,true);
         }
 
     }

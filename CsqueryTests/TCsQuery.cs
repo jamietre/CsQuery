@@ -25,6 +25,7 @@ namespace CsqueryTests
             IDomElement el = document.GetElementById("reputation_link");
 
         }
+
         [Test]
         public void Find()
         {

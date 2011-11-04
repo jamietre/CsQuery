@@ -10,45 +10,59 @@ using System.Web.Script.Serialization;
 using System.Dynamic;
 using System.Text;
 using System.Reflection;
-using System.ComponentModel;
 
 using Jtc.CsQuery.ExtensionMethods;
 using Jtc.CsQuery.Utility;
 
 namespace Jtc.CsQuery
 {
-    //TODO: need to write a better json parsing method that converts [{Key: 'x', Value: 'y'}] to ExpandoObject
+
+
     public static class ExtensionMethods_Public
     {
-
+        /// <summary>
+        /// Returns true if the string appears to be JSON.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
         public static bool IsJson(this string text)
         {
             return text.StartsWith("{") && !text.StartsWith("{{");
         }
+        /// <summary>
+        /// Returns true if the object is a primitive numeric type, e.g. exluding string & char
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static bool IsNumericType(this object obj)
+        {
+
+            Type t = Objects.GetUnderlyingType(obj.GetType());
+            return t.IsPrimitive && !(t == typeof(string) || t == typeof(char));
+        
+
+        }
+        /// <summary>
+        /// Returns true when a value is "truthy" using similar logic as Javascript
+        ///   null = false
+        ///   empty string = false BUT zero string = true
+        ///   zero numeric = false
+        ///   false boolean values = false
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public static bool IsTruthy(this object obj)
         {
-            if (obj == null) return false;
-            if (obj is string)
-            {
-                return !String.IsNullOrEmpty((string)obj);
-            }
-            if (obj is bool)
-            {
-                return (bool)obj;
-            }
-            if (obj is double || obj is float || obj is long || obj is int)
-            {
-                return System.Convert.ToDouble(obj) != 0;
-            }
-            return true;
+            return Objects.IsTruthy(obj);
         }
-        public static object Clone(this object obj)
+        public static object CloneObject(this object obj)
         {
-            return obj.Clone(false);
+            return obj.CloneObject(false);
         }
-        public static object Clone(this object obj, bool deep)
+        public static object CloneObject(this object obj, bool deep)
         {
-            if (obj.IsImmutable()) {
+            if (obj.IsImmutable())
+            {
                 return obj;
             }
             else if (obj is IEnumerable)
@@ -72,7 +86,7 @@ namespace Jtc.CsQuery
         {
             return obj.CloneList(false);
         }
-        public static IEnumerable CloneList(this IEnumerable obj,bool deep)
+        public static IEnumerable CloneList(this IEnumerable obj, bool deep)
         {
             IEnumerable newList;
             // TODO - check for existence of a "clone" method
@@ -82,11 +96,11 @@ namespace Jtc.CsQuery
             //} 
             if (obj.IsExpando())
             {
-                newList = new ExpandoObject();
+                newList = new JsObject();
                 var newListDict = (IDictionary<string, object>)newList;
-                foreach (var kvp in ((IDictionary<string,object>)obj))
+                foreach (var kvp in ((IDictionary<string, object>)obj))
                 {
-                    newListDict.Add(kvp.Key, deep ? kvp.Value.Clone(true): kvp.Value);
+                    newListDict.Add(kvp.Key, deep ? kvp.Value.CloneObject(true) : kvp.Value);
                 }
             }
             else
@@ -94,7 +108,7 @@ namespace Jtc.CsQuery
                 newList = new List<object>();
                 foreach (var item in obj)
                 {
-                    ((List<object>)newList).Add(deep ? item.Clone(true): item);
+                    ((List<object>)newList).Add(deep ? item.CloneObject(true) : item);
                 }
             }
             return newList;
@@ -104,9 +118,13 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        public static ExpandoObject ToExpando(this object source)
+        public static JsObject ToExpando(this object source)
         {
             return source.ToExpando(false);
+        }
+        public static T ToExpando<T>(this object source) where T : IDynamicMetaObjectProvider, new()
+        {
+            return source.ToExpando<T>(false);
         }
         /// <summary>
         /// Converts a regular object to an expando object, or returns the source object if it is already an expando object.
@@ -114,43 +132,76 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        public static ExpandoObject ToExpando(this object source, bool deep)
+        public static JsObject ToExpando(this object source, bool deep)
+        {
+            return ToExpando<JsObject>(source, deep);
+        }
+        public static T ToExpando<T>(this object source, bool deep) where T : IDynamicMetaObjectProvider, new()
+        {
+            return ToExpando<T>(source, deep, new Type[] { });
+        }
+        public static T ToExpando<T>(this object source, bool deep, IEnumerable<Type> ignoreAttributes) where T : IDynamicMetaObjectProvider, new()
         {
             if (source.IsExpando() && !deep)
             {
-                return (ExpandoObject)source;
+                return Objects.Dict2Dynamic<T>((IDictionary<string, object>)source);
             }
             else
             {
-                return ToNewExpando(source, deep);
+                return ToNewExpando<T>(source, deep, ignoreAttributes);
             }
         }
-        private static ExpandoObject ToNewExpando(object source, bool deep)
+        private static T ToNewExpando<T>(object source, bool deep,IEnumerable<Type> ignoreAttributes) where T: IDynamicMetaObjectProvider, new()
         {
+            if (source == null)
+            {
+                return default(T);
+            }
+            HashSet<Type> IgnoreList = new HashSet<Type>(ignoreAttributes);
+
             if (source is string && ((string)source).IsJson())
             {
                 source = Utility.JSON.ParseJSON((string)source);
             }
-            else if (source is ExpandoObject)
+            else if (source.IsExpando())
             {
-                return (ExpandoObject)source.Clone(deep);
+                return (T)source.CloneObject(deep);
             }
             else if (!source.IsExtendableType())
             {
                 throw new Exception("Conversion to ExpandObject must be from a JSON string, an object, or an ExpandoObject");
             }
 
-            ExpandoObject target = new ExpandoObject();
-            IDictionary<string, object> targetDict = target;
+            T target = new T();
+            IDictionary<string, object> targetDict = ( IDictionary<string, object>)target;
 
             IEnumerable<MemberInfo> members = source.GetType().GetMembers();
             foreach (var member in members)
             {
-                string name = member.Name;
-                object value = null;
-                if (member is PropertyInfo && ((PropertyInfo)member).GetIndexParameters().Length==0)
+
+                foreach (object attrObj in member.GetCustomAttributes(false))
                 {
-                    value = ((PropertyInfo)member).GetGetMethod().Invoke(source, null);
+                    Attribute attr = (Attribute)attrObj;
+                    if (IgnoreList.Contains(attr.GetType())) {
+                        goto NextAttribute;
+                    }
+                }
+                string name = member.Name;
+
+
+                object value = null;
+                bool skip = false;
+                if (member is PropertyInfo && ((PropertyInfo)member).GetIndexParameters().Length == 0)
+                {
+                    // wrap this because we are testing every single property - if it doesn't work we don't want to use it
+                    try
+                    {
+                        value = ((PropertyInfo)member).GetGetMethod().Invoke(source, null);
+                    }
+                    catch
+                    {
+                        skip = true;
+                    }
 
                 }
                 else if (member is FieldInfo)
@@ -161,7 +212,11 @@ namespace Jtc.CsQuery
                 {
                     continue;
                 }
-                targetDict[name] = deep ? value.Clone(true) : value;
+                if (!skip)
+                {
+                    targetDict[name] = deep ? value.CloneObject(true) : value;
+                }
+            NextAttribute: { }
             }
             return target;
         }
@@ -172,15 +227,7 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public static string ToJSON(this object objectToSerialize)
         {
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            if (objectToSerialize is ExpandoObject)
-            {
-                return Flatten((ExpandoObject)objectToSerialize);
-            }
-            else
-            {
-                return (serializer.Serialize(objectToSerialize));
-            }
+            return JSON.ToJSON(objectToSerialize);
         }
         /// <summary>
         /// Deserialize the JSON string to a typed object
@@ -188,10 +235,9 @@ namespace Jtc.CsQuery
         /// <typeparam name="T"></typeparam>
         /// <param name="objectToDeserialize"></param>
         /// <returns></returns>
-        public static T FromJSON<T>(this string objectToDeserialize)
+        public static T ParseJSON<T>(this string objectToDeserialize)
         {
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            return (T)serializer.Deserialize(objectToDeserialize, typeof(T));
+            return JSON.ParseJSON<T>(objectToDeserialize);
         }
         /// <summary>
         /// Deserialize the JSON string to an ExpandoObject or value type
@@ -199,29 +245,11 @@ namespace Jtc.CsQuery
         /// <typeparam name="T"></typeparam>
         /// <param name="objectToDeserialize"></param>
         /// <returns></returns>
-        public static object FromJSON(this string text)
+        public static object ParseJSON(this string text)
         {
-            return Utility.JSON.ParseJSON(text);
+            return JSON.ParseJSON(text);
         }
-        public static string Flatten(this ExpandoObject expando)
-        {
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            StringBuilder sb = new StringBuilder();
-            List<string> contents = new List<string>();
-            var d = expando as IDictionary<string, object>;
-            sb.Append("{");
 
-            foreach (KeyValuePair<string, object> kvp in d)
-            {
-                contents.Add(String.Format("\"{0}\": {1}", kvp.Key,
-                   serializer.Serialize(kvp.Value)));
-            }
-            sb.Append(String.Join(",", contents.ToArray()));
-
-            sb.Append("}");
-
-            return sb.ToString();
-        }
         /// <summary>
         /// Convert an expandoobject to a list
         /// </summary>
@@ -230,7 +258,7 @@ namespace Jtc.CsQuery
         public static IEnumerable<KeyValuePair<string, object>> ToKvpList(this ExpandoObject obj)
         {
             var dict = ((IDictionary<string, object>)obj);
-            return dict==null ? Objects.EmptyEnumerable<KeyValuePair<string,object>>() : dict.ToList();
+            return dict == null ? Objects.EmptyEnumerable<KeyValuePair<string, object>>() : dict.ToList();
         }
         public static bool HasProperty(this ExpandoObject obj, string propertyName)
         {
@@ -253,20 +281,23 @@ namespace Jtc.CsQuery
             object val;
             if (dict.TryGetValue(name, out val))
             {
-                return Convert<T>(val);
+                return Objects.Convert<T>(val);
             }
             else
             {
                 return default(T);
             }
         }
-        public static ExpandoObject Get(this ExpandoObject obj, string name)
+        public static JsObject Get(this ExpandoObject obj, string name)
         {
-            IDictionary<string,object> dict= obj;
+            IDictionary<string, object> dict = obj;
             object subProp;
-            if (dict.TryGetValue(name,out subProp)) {
+            if (dict.TryGetValue(name, out subProp))
+            {
                 return CsQuery.ToExpando(subProp);
-            } else {
+            }
+            else
+            {
                 return null;
             }
 
@@ -279,6 +310,9 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public static bool IsExtendableType(this object obj)
         {
+            //return obj.IsExpando() || (!obj.IsImmutable() && !(obj is IEnumerable));
+            // Want to allow enumerable types since we can treat them as objects. Exclude arrays.
+            // This is tricky. How do we know if something should be treated as an object or enumerated? Do both somehow?
             return obj.IsExpando() || (!obj.IsImmutable() && !(obj is IEnumerable));
         }
         /// <summary>
@@ -299,7 +333,7 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public static bool IsExpando(this object obj)
         {
-            return (obj is IDictionary<string, object>);
+            return (obj is IDictionary<string, object>) ;
         }
         /// <summary>
         /// Returns true for expando objects with no properties
@@ -308,270 +342,9 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public static bool IsEmptyExpando(this object obj)
         {
-            return obj.IsExpando() && ((IDictionary<string,object>)obj).Count==0;
+            return obj.IsExpando() && ((IDictionary<string, object>)obj).Count == 0;
         }
-
-        public static T Convert<T>(object value)
-        {
-            T output;
-            if (!TryConvert<T>(value, out output))
-            {
-                throw new Exception("Unable to convert to type " + typeof(T).ToString());
-            }
-            return output;
-        }
-        public static object Convert(object value, Type type)
-        {
-            object output;
-            if (!TryConvert(value, out output, type, DefaultValue(type)))
-            {
-                throw new Exception("Unable to convert to type " + type.ToString());
-            }
-            return output;
-        }
-        public static T Convert<T>(object value, T defaultValue)
-        {
-            T output;
-            if (!TryConvert<T>(value, out output))
-            {
-                output = defaultValue;
-            }
-            return output;
-        }
-        public static bool TryConvert<T>(object value, out T typedValue)
-        {
-            object interimValue;
-            bool result = TryConvert(value, out interimValue, typeof(T), default(T));
-            if (result)
-            {
-                typedValue = (T)interimValue;
-            }
-            else
-            {
-                typedValue = default(T);
-            }
-            return result;
-        }
-
-        public static bool TryConvert(object value, out object typedValue, Type type, object defaultValue)
-        {
-
-            object output = defaultValue;
-            bool success = false;
-            Type realType;
-            string stringVal = value == null ? String.Empty : value.ToString().ToLower().Trim();
-            if (type == typeof(string))
-            {
-                typedValue = value == null ? null : value.ToString();
-                return true;
-            }
-            else if (IsNullableType(type))
-            {
-                if (stringVal == String.Empty)
-                {
-                    typedValue = null;
-                    return true;
-                }
-                realType = GetUnderlyingType(type);
-            }
-            else
-            {
-                if (stringVal == String.Empty)
-                {
-                    typedValue = DefaultValue(type);
-                    return false;
-                }
-                realType = type;
-            }
-
-
-            if (realType == value.GetType())
-            {
-                output = value;
-                success = true;
-            }
-            else if (realType == typeof(bool))
-            {
-                switch (stringVal)
-                {
-                    case "on":
-                    case "yes":
-                    case "true":
-                    case "enabled":
-                    case "active":
-                    case "1":
-                        output = true;
-                        success = true;
-                        break;
-                    case "off":
-                    case "no":
-                    case "false":
-                    case "disabled":
-                    case "0":
-                        output = false;
-                        success = true;
-                        break;
-                }
-            }
-            else if (realType.IsEnum)
-            {
-                output = Enum.Parse(realType, stringVal);
-                success = true;
-            }
-            else if (realType == typeof(int)
-                || realType == typeof(long)
-                || realType == typeof(float)
-                || realType == typeof(double)
-                || realType == typeof(decimal))
-            {
-                object val;
-
-                if (TryParseNumber(stringVal, out val, realType))
-                {
-                    output = val;
-                    success = true;
-                }
-            }
-            else if (realType == typeof(DateTime))
-            {
-                DateTime val;
-                if (DateTime.TryParse(stringVal, out val))
-                {
-                    output = val;
-                    success = true;
-                }
-            }
-            else if (realType == typeof(string))
-            {
-                output = value;
-            }
-            else
-            {
-                throw new Exception("Don't know how to convert type " + type.UnderlyingSystemType.ToString());
-            }
-            if (output != null && output.GetType() != realType)
-            {
-                typedValue = System.Convert.ChangeType(output, realType);
-            }
-            else
-            {
-                typedValue = output;
-            }
-            return success;
-        }
-
-        /// <summary>
-        /// Returns an Object with the specified Type and whose value is equivalent to the specified object.
-        /// </summary>
-        /// <param name="value">An Object that implements the IConvertible interface.</param>
-        /// <param name="conversionType">The Type to which value is to be converted.</param>
-        /// <returns>An object whose Type is conversionType (or conversionType's underlying type if conversionType
-        /// is Nullable&lt;&gt;) and whose value is equivalent to value. -or- a null reference, if value is a null
-        /// reference and conversionType is not a value type.</returns>
-        /// <remarks>
-        /// This method exists as a workaround to System.Convert.ChangeType(Object, Type) which does not handle
-        /// nullables as of version 2.0 (2.0.50727.42) of the .NET Framework. The idea is that this method will
-        /// be deleted once Convert.ChangeType is updated in a future version of the .NET Framework to handle
-        /// nullable types, so we want this to behave as closely to Convert.ChangeType as possible.
-        /// This method was written by Peter Johnson at:
-        /// http://aspalliance.com/author.aspx?uId=1026.
-        /// </remarks>
-        public static object ChangeType(object value, Type conversionType)
-        {
-            // Note: This if block was taken from Convert.ChangeType as is, and is needed here since we're
-            // checking properties on conversionType below.
-            if (conversionType == null)
-            {
-                throw new ArgumentNullException("conversionType");
-            } // end if
-
-            // If it's not a nullable type, just pass through the parameters to Convert.ChangeType
-
-            if (conversionType.IsGenericType &&
-              conversionType.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
-            {
-                // It's a nullable type, so instead of calling Convert.ChangeType directly which would throw a
-                // InvalidCastException (per http://weblogs.asp.net/pjohnson/archive/2006/02/07/437631.aspx),
-                // determine what the underlying type is
-                // If it's null, it won't convert to the underlying type, but that's fine since nulls don't really
-                // have a type--so just return null
-                // Note: We only do this check if we're converting to a nullable type, since doing it outside
-                // would diverge from Convert.ChangeType's behavior, which throws an InvalidCastException if
-                // value is null and conversionType is a value type.
-                if (value == null)
-                {
-                    return null;
-                } // end if
-
-                // It's a nullable type, and not null, so that means it can be converted to its underlying type,
-                // so overwrite the passed-in conversion type with this underlying type
-                NullableConverter nullableConverter = new NullableConverter(conversionType);
-                conversionType = nullableConverter.UnderlyingType;
-            } // end if
-
-            // Now that we've guaranteed conversionType is something Convert.ChangeType can handle (i.e. not a
-            // nullable type), pass the call on to Convert.ChangeType
-            return System.Convert.ChangeType(value, conversionType);
-        }
-        public static bool TryParseNumber(string value, out object number, Type T)
-        {
-            double val;
-            number = 0;
-            if (double.TryParse(value, out val))
-            {
-                if (T == typeof(int))
-                {
-                    number = System.Convert.ToInt32(Math.Round(val));
-                }
-                else if (T == typeof(long))
-                {
-                    number = System.Convert.ToInt64(Math.Round(val));
-                }
-                else if (T == typeof(double))
-                {
-                    number = System.Convert.ToDouble(val);
-                }
-                else if (T == typeof(decimal))
-                {
-                    number = System.Convert.ToDecimal(val);
-                }
-                else if (T == typeof(float))
-                {
-                    number = System.Convert.ToSingle(val);
-                }
-                else
-                {
-                    throw new Exception("Unhandled type for TryParseNumber: " + T.GetType().ToString());
-                }
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        public static bool IsNullableType(Type type)
-        {
-            return type == typeof(string) ||
-                (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
-        }
-        public static object DefaultValue(Type type)
-        {
-            return type.IsValueType ? Activator.CreateInstance(type) : null;
-        }
-        public static Type GetUnderlyingType(Type type)
-        {
-
-            if (type != typeof(string) && IsNullableType(type))
-            {
-                return Nullable.GetUnderlyingType(type);
-            }
-            else
-            {
-                return type;
-            }
-
-        }
-
+       
     }
+    
 }

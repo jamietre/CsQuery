@@ -25,6 +25,13 @@ namespace CsqueryTests
             csq = CsQuery.Create(html);
         }
         [Test]
+        public void InnerParsingRules()
+        {
+            CsQuery res = csq.Select("script");
+            // bug found 10/31/11
+            Assert.AreEqual(0, res.Children().Length, "Script cannot have children");
+        }
+        [Test]
         public void BasicDomCreation()
         {
             string tags = String.Empty;
@@ -32,7 +39,7 @@ namespace CsqueryTests
             {
                 tags += (tags == "" ? "" : ",") + e.NodeName;
             });
-            Assert.AreEqual(11, csq.Length, "Found correct number of elements in the DOM");
+            Assert.AreEqual(12, csq.Length, "Found correct number of elements in the DOM");
         }
         [Test]
         public void InputCheckbox()
@@ -134,6 +141,7 @@ namespace CsqueryTests
 
             var res = csq.Select("div:contains('Product')");
 
+            
             Assert.AreEqual(2, res.Length, "Contains: found " + GetChildTags(res));
 
 

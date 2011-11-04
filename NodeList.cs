@@ -12,13 +12,24 @@ namespace Jtc.CsQuery
             Owner = owner;
         }
         protected  IDomContainer Owner;
-        protected List<IDomObject> InnerList = new List<IDomObject>();
+        protected List<IDomObject> InnerList
+        {
+            get
+            {
+                if (_InnerList == null)
+                {
+                    _InnerList = new List<IDomObject>();
+                }
+                return _InnerList;
+            }
+        }
+        protected List<IDomObject> _InnerList = null;
 
         protected void PrepareElement(IDomObject element)
         {
-            if (!Owner.InnerHtmlAllowed)
+            if (!Owner.InnerHtmlAllowed && !Owner.InnerTextAllowed)
             {
-                throw new Exception("Cannot add children to this element type. Inner HTML is not allowed.");
+                throw new Exception("Cannot add children to this element type. InnerHTMLAllowed: " + Owner.InnerHtmlAllowed + " InnerTextAllowed: " + Owner.InnerTextAllowed );
             }
             // Must always remove from the DOM. It doesn't matter if it's the same DOM or not. An element can't be part of two DOMs - that would require a clone.
             // If it is the same DOM, it would remain a child of the old parent as well as the new one if we didn't remove first.
@@ -36,7 +47,7 @@ namespace Jtc.CsQuery
 
         public int IndexOf(IDomObject item)
         {
-            return InnerList.IndexOf(item);
+            return _InnerList == null ? -1 : InnerList.IndexOf(item);
         }
         /// <summary>
         /// Adds a child element at a specific index
@@ -55,7 +66,7 @@ namespace Jtc.CsQuery
             throw new NotImplementedException();
         }
 
-        public IDomObject  this[int index]
+        public IDomObject this[int index]
         {
             get
             {
@@ -106,15 +117,18 @@ namespace Jtc.CsQuery
         /// </summary>
         public void Clear()
         {
-            for (int i=InnerList.Count-1;i>=0;i--)
+            if (_InnerList != null)
             {
-                Remove(InnerList[i]);
+                for (int i = InnerList.Count - 1; i >= 0; i--)
+                {
+                    Remove(InnerList[i]);
+                }
             }
         }
 
         public bool Contains(IDomObject item)
         {
-            return InnerList.Contains(item);
+            return _InnerList==null ? false : InnerList.Contains(item);
         }
 
         public void CopyTo(IDomObject[] array, int arrayIndex)
@@ -124,7 +138,7 @@ namespace Jtc.CsQuery
 
         public int Count
         {
-            get { return InnerList.Count; }
+            get { return _InnerList==null ? 0 : InnerList.Count; }
         }
 
         public int Length
@@ -144,7 +158,7 @@ namespace Jtc.CsQuery
         /// <param name="element"></param>
         public bool Remove(IDomObject item)
         {
-            if (InnerList.Remove(item))
+            if (_InnerList != null && InnerList.Remove(item))
             {
                 item.RemoveFromIndex();
 

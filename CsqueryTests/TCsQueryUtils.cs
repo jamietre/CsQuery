@@ -43,13 +43,29 @@ namespace CsqueryTests
 
             string json = CsQuery.ToJSON(tc3);
             Assert.AreEqual(expected, json, "CsQuery.ToJson works");
-
-            
         }
+
         protected class TestExpando
         {
             public string Property1 {get;set;}
             public string Field1;
+        }
+        [Test]
+        public void TestJsObject()
+        {
+            dynamic obj = new JsObject();
+            obj.val1 = "hello";
+            obj.val2 = new JsObject();
+            obj.val2.subprop1 = 99;
+            obj.val2.subprop2 = "yo";
+
+            Assert.AreEqual(null, obj.val3, "Can test missing property, and it is null");
+            Assert.AreEqual("yo", obj.val2.subprop2, "Subproperty exists");
+            string json = CsQuery.ToJSON(obj);
+
+            Assert.AreEqual("{\"val1\":\"hello\",\"val2\":{\"subprop1\":99,\"subprop2\":\"yo\"}}", CsQuery.ToJSON(obj));
+
+
         }
         [Test]
         public void Extend()
@@ -91,18 +107,21 @@ namespace CsqueryTests
         [Test]
         public void Extend2()
         {
-            dynamic test = "{ prop1: 'val1', prop2: 'val2',prop3: 'original'}".FromJSON();
-            dynamic test2 = "{ prop1: 'from_enum1'}".FromJSON();
-            dynamic test3 = "{ prop2: 'from_enum2'}".FromJSON();
-            var enumer = new List<ExpandoObject>();
-            enumer.Add(test2);
-            enumer.Add(test3);
+            dynamic test = "{ prop1: 'val1', prop2: 'val2',prop3: 'original'}".ParseJSON();
+            dynamic test2 = "{ prop1: 'from_enum1'}".ParseJSON();
+            dynamic test3 = "{ prop2: 'from_enum2'}".ParseJSON();
+            // will not work -- regular enumerables treated like objects
+            //var enumer = new List<IDynamicMetaObjectProvider>();
+            var enumer = new object[2];
+            enumer[0]= test2;
+            enumer[1] =test3;
             var merged = CsQuery.Extend(null, test, enumer);
 
-            Assert.AreEqual("{prop1: 'from_enum1', prop2: 'from_enum2', prop3: 'original'}".FromJSON(), merged,"Merged with an enumerable parameter");
+            Assert.AreEqual("{prop1: 'from_enum1', prop2: 'from_enum2', prop3: 'original'}".ParseJSON(), merged, "Merged with an enumerable parameter");
 
-            Assert.AreNotEqual("{prop1: 'from_enum1', prop2: 'from_enum2'}".FromJSON(), merged,"Sanity check");
+            Assert.AreNotEqual("{prop1: 'from_enum1', prop2: 'from_enum2'}".ParseJSON(), merged, "Sanity check");
 
+            // TODO: Test copying from an object with properties that return errors
         }
         [Test]
         public void Styles()

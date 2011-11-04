@@ -39,6 +39,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\bin\Debug\Jtc.CsQuery.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="nunit.framework, Version=2.5.10.11092, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Program Files\NUnit 2.5.10\bin\net-2.0\framework\nunit.framework.dll</HintPath>
@@ -55,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attribute.cs" />
+    <Compile Include="CsqObjects.cs" />
     <Compile Include="Core.cs" />
     <Compile Include="CsQueryTest.cs" />
     <Compile Include="ExtensionMethods.cs" />
@@ -68,11 +70,27 @@
     <Compile Include="WebIO.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\HTML Standard.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\jquery-unit-index.htm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\TestHtml.htm" />
-    <Content Include="Resources\TestHtml2.htm" />
+    <Content Include="Resources\TestHtml.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\TestHtml2.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\wiki-cheese.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\NUnitExtensions\NUnitExtensions.csproj">
+      <Project>{27B2516C-6B8C-4AAD-ADBE-E5E6AA9893F3}</Project>
+      <Name>NUnitExtensions</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
