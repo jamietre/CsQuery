@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.IO;
+using System.Diagnostics;
 using Jtc.CsQuery.ExtensionMethods;
 
 namespace Jtc.CsQuery
@@ -24,19 +25,36 @@ namespace Jtc.CsQuery
             }
             else
             {
+                string filePath;
                 if (String.IsNullOrEmpty(RootPath))
                 {
                     string file = "\\" + fileName.AfterLast("\\");
-                    string callingAssPath = Assembly.GetCallingAssembly().Location;
-                    RootPath = fileName.CommonStart(callingAssPath);
-                    if (RootPath == String.Empty)
-                    {
-                        RootPath = callingAssPath.BeforeLast("\\");
-                    }
+                    string callingAssPath = GetFirstExternalAssembly().Location;
+                    filePath = callingAssPath.FindPathTo(fileName);
                 }
-                return File.ReadAllText(RootPath + "\\" + fileName);
+                else
+                {
+                    filePath = RootPath + "\\" + fileName;
+                }
+                return File.ReadAllText(filePath); 
 
             }
+        }
+        public static Assembly GetFirstExternalAssembly()
+        {
+            Assembly me = Assembly.GetExecutingAssembly();
+
+            StackTrace st = new StackTrace(false);
+            foreach (StackFrame frame in st.GetFrames())
+            {
+                MethodBase m = frame.GetMethod();
+                if (m != null && m.DeclaringType != null &&
+                    m.DeclaringType.Assembly != me)
+                {
+                    return m.DeclaringType.Assembly;
+                }
+            }
+            throw new Exception("Never found an external assembly.");
         }
         /// <summary>
         ///  Gets a resource from the calling assembly

@@ -7,6 +7,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Reflection;
+using System.IO;
 using System.Web.Script.Serialization;
 using Jtc.CsQuery.ExtensionMethods;
 using Jtc.CsQuery.Utility;
@@ -34,6 +35,7 @@ namespace Jtc.CsQuery
         {
             get
             {
+                
                 if (DomOwner != null)
                 {
                     return DomOwner.ExtensionCache;
@@ -71,11 +73,19 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public void Load(string html)
         {
+            Load((html ?? "").ToCharArray());
+        }
+        public void Load(char[] html)
+        {
             _Dom = new DomRoot();
-            _Dom.Owner = this;
+            _Dom.SetOwner(this);
+            _Dom.SetOriginalString(html);
             ClearSelections();
-            Dom.ChildNodes.AddRange(ElementFactory.CreateObjects(html));
-            AddSelectionRange(Dom.ChildNodes);
+            if (html != null)
+            {
+                Dom.ChildNodes.AddRange(ElementFactory.CreateObjects(html,this));
+                AddSelectionRange(Dom.ChildNodes);
+            }
         }
         /// <summary>
         /// Creates a new DOM. This will DESTROY any existing DOM. This is not the same as Select.
@@ -85,7 +95,7 @@ namespace Jtc.CsQuery
         protected void Load(IEnumerable<IDomObject> elements)
         {
             _Dom = new DomRoot();
-            _Dom.Owner = this;
+            _Dom.SetOwner(this);
             ClearSelections();
             Dom.ChildNodes.AddRange(elements);
             AddSelectionRange(Dom.ChildNodes);
@@ -106,6 +116,10 @@ namespace Jtc.CsQuery
             
         }
         public CsQuery(string selector)
+        {
+            Load(selector);
+        }
+        public CsQuery(char[] selector)
         {
             Load(selector);
         }
@@ -194,7 +208,42 @@ namespace Jtc.CsQuery
         {
             return new CsQuery(html);
         }
-        
+        public static CsQuery CreateFromFile(string path)
+        {
+  
+            FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
+            int bufSize = 32768;
+            long len = fileStream.Length;
+            char[] data = new char[len];
+            long index = 0;
+            int charsRead = -1;
+            using (StreamReader streamReader = new StreamReader(fileStream))
+            {
+
+                while (charsRead > 0)
+                {
+                    char[] fileContents = new char[bufSize];
+                    charsRead = streamReader.Read(data, 0, bufSize);
+
+                    if (index + bufSize >= len)
+                    {
+                        int pos=0;
+                        for (long i = index; i < len; i++)
+                        {
+                            data[i] = fileContents[pos++];
+                            charsRead = 0;
+                        }
+                    }
+                    else
+                    {
+
+                        fileContents.CopyTo(data, index);
+                        index += bufSize;
+                    }
+                }
+            }
+            return new CsQuery(data);
+        }
         public static CsQuery Create(string html, string attributes)
         {
             return new CsQuery(html, attributes);
@@ -262,7 +311,7 @@ namespace Jtc.CsQuery
                     else
                     {
                         _Dom = new DomRoot();
-                        _Dom.Owner =this;
+                        _Dom.SetOwner(this);
                     }
                 }
                 return _Dom;
@@ -344,7 +393,24 @@ namespace Jtc.CsQuery
                 }
             }
         }
+        /// <summary>
+        /// The first IDomElement (e.g. not text/special nodes) in the selection set, or null if none
+        /// </summary>
+        public IDomElement FirstElement()
+        {
 
+            using (IEnumerator<IDomElement> enumer = Elements.GetEnumerator())
+            {
+                if (enumer.MoveNext())
+                {
+                    return enumer.Current;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
         public int Length
         {
             get
@@ -619,6 +685,20 @@ namespace Jtc.CsQuery
             return this;
         }
         /// <summary>
+        /// Determine whether any of the matched elements are assigned the given class.
+        /// </summary>
+        /// <param name="className"></param>
+        /// <returns></returns>
+        public bool HasClass(string className)
+        {
+            
+            IDomElement el = FirstElement();
+
+            return el==null ? false :
+                el.HasClass(className);
+
+        }
+        /// <summary>
         /// Insert content, specified by the parameter, to the end of each element in the set of matched elements.
         /// TODO: Add overloads with multiple values
         /// </summary>
@@ -705,30 +785,43 @@ namespace Jtc.CsQuery
             {
                 string value;
                 var el = this[0];
-                if (el.TryGetAttribute(name, out value))
-                {
-                    if (HtmlDom.BooleanAttributes.Contains(name))
-                    {
-                        // Pre-1.6 and 1.6.1+ compatibility: always return the name of the attribute if it exists for
-                        // boolean attributes
-                        return name;
-                    }
-                    else
-                    {
+                switch(name) { 
+                    case "clase":
+                        return el.ClassName;
+                    case "style":
+                        string st=  el.Style.ToString();
+                        return st == "" ? null : st;
+                    default:
+                        if (el.TryGetAttribute(name, out value))
+                        {
+                            if (HtmlDom.BooleanAttributes.Contains(name))
+                            {
+                                // Pre-1.6 and 1.6.1+ compatibility: always return the name of the attribute if it exists for
+                                // boolean attributes
+                                return name;
+                            }
+                            else
+                            {
      
-                        return value; 
-                    }
-                } else if (name=="value" &&
-                    (el.NodeName =="input" || el.NodeName=="select" || el.NodeName=="option")) {
-                    return Val();
-                } else if (name=="value" && el.NodeName =="textarea") {
-                    return el.InnerText;
+                                return value; 
+                            }
+                        } else if (name=="value" &&
+                            (el.NodeName =="input" || el.NodeName=="select" || el.NodeName=="option")) {
+                            return Val();
+                        } else if (name=="value" && el.NodeName =="textarea") {
+                            return el.InnerText;
+                        }
+                        break;
                 }
-
+                
             }
             return null;
         }
-
+        /// <summary>
+        /// Sets the attributes of the selected elements from an object of key/value pairs
+        /// </summary>
+        /// <param name="attributes"></param>
+        /// <returns></returns>
         public CsQuery AttrSet(object attributes) 
         {
             
@@ -818,7 +911,18 @@ namespace Jtc.CsQuery
         {
             foreach (DomElement e in Elements)
             {
-                e.RemoveAttribute(name);
+                switch (name)
+                {
+                    case "class":
+                        e.ClassName = "";
+                        break;
+                    case "style":
+                        e.Style.Clear();
+                        break;
+                    default:
+                        e.RemoveAttribute(name);
+                        break;
+                }
             }
             return this;
         }
@@ -857,6 +961,44 @@ namespace Jtc.CsQuery
             return this;
         }
         /// <summary>
+        /// Remove the parents of the set of matched elements from the DOM, leaving the matched elements in their place.
+        /// </summary>
+        /// <returns></returns>
+        public CsQuery Unwrap()
+        {
+            foreach (IDomObject obj in Selection)
+            {
+                int startIndex = obj.Index;
+                while (obj.ChildNodes.Count>0) {
+                    obj.ParentNode.ChildNodes.Insert(startIndex++,obj.ChildNodes[0]);
+                }
+            }
+            return this;
+        }
+        //public CsQuery Wrap(string wrappingSelector)
+        //{
+        //    return Wrap(Select(wrappingSelector));
+        //}
+        //public CsQuery Wrap(CsQuery wrappingElement)
+        //{
+        //    // get innermost structure
+        //    IDomObject 
+        //    foreach (IDomObject wrapee in Selection)
+        //    {
+        //        foreach (IDomObject wrapper in wrappingElement)
+        //        {
+        //            if (wrappingElement is IDomContainer)
+        //            {
+        //                int index = wrapee.Index;
+        //                wrapee.ParentNode.ChildNodes.Insert(wrapee.Index,
+
+        //            }
+
+        //        }
+
+        //    }
+        //}
+        /// <summary>
         /// Get the children of each element in the set of matched elements, optionally filtered by a selector.
         /// </summary>
         /// <returns></returns>
@@ -876,7 +1018,7 @@ namespace Jtc.CsQuery
         {
             foreach (IDomObject obj in Elements)
             {
-                foreach (IDomObject child in obj.Elements)
+                foreach (IDomObject child in obj.ChildElements)
                 {
                     yield return child;
                 }
@@ -1190,7 +1332,7 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="selector"></param>
         /// <returns></returns>
-        public CsQuery Select(string selector)
+       public CsQuery Select(string selector)
        {
            CsQuerySelectors selectors = new CsQuerySelectors(selector);
            CsQuery csq;
@@ -1251,6 +1393,34 @@ namespace Jtc.CsQuery
                 e.Style["display"]= "none";
             });
         }
+        /// <summary>
+        /// Display or hide the matched elements.
+        /// </summary>
+        /// <returns></returns>
+        public CsQuery Toggle()
+        {
+            return this.Each((IDomElement e) =>
+            {
+                string displ = e.Style["display"];
+                bool isVisible = displ == null || displ != "none";
+                e.Style["display"] = isVisible ? "none" : null;
+            });
+        }
+        public CsQuery Toggle(bool isVisible)
+        {
+            return this.Each((IDomElement e) =>
+            {
+                if (isVisible)
+                {
+                    e.RemoveStyle("display");
+                }
+                else
+                {
+                    e.Style["display"] = "none";
+                }
+            });
+        }
+
 
         public int Index()
         {
@@ -1356,7 +1526,7 @@ namespace Jtc.CsQuery
                 // Extraordinarily inefficient way to get next. TODO: make structure a linked list
 
                 IDomElement last = null;
-                var children = obj.ParentNode.Elements.GetEnumerator();
+                var children = obj.ParentNode.ChildElements.GetEnumerator();
                 //children.Reset();
                 bool found = false;
                 while (children.MoveNext())
@@ -1556,6 +1726,13 @@ namespace Jtc.CsQuery
             }
             return this;
         }
+        public CsQuery RemoveClass()
+        {
+            return this.Each((IDomElement e) =>
+            {
+                e.ClassName = null;
+            });
+        }
         /// <summary>
         /// Remove a previously-stored piece of data.
         /// </summary>
@@ -1621,6 +1798,24 @@ namespace Jtc.CsQuery
             }
             return this;
         }
+        // Not used yet, will be for visible selector
+        // Also not correct
+        //protected bool IsVisible()
+        //{
+        //    bool parentHidden = false;
+        //    IDomObject el = e.ParentNode;
+        //    while (el != null)
+        //    {
+        //        string st = el.Style["display"];
+        //        if (st == "none")
+        //        {
+        //            parentHidden = true;
+        //            break;
+        //        }
+        //        el = el.ParentNode;
+        //    }
+        //    return parentHidden;
+        //}
         /// <summary>
         /// Get the current value of the first element in the set of matched elements, and try to convert to the specified type
         /// </summary>
@@ -1731,7 +1926,7 @@ namespace Jtc.CsQuery
                     case "select":
                         if (first) {
                             var multiple = e.HasAttribute("multiple");
-                            SetOptionSelected(e.Elements, value, multiple);
+                            SetOptionSelected(e.ChildElements, value, multiple);
                         }
                         break;
                     default:
@@ -1813,7 +2008,7 @@ namespace Jtc.CsQuery
                         }
                         break;
                     case "optgroup":
-                        SetOptionSelected(e.Elements, values, multiple);
+                        SetOptionSelected(e.ChildElements, values, multiple);
                         break;
                 }
                 if (attribute != String.Empty && !setOne && values.Contains(e["value"])) {

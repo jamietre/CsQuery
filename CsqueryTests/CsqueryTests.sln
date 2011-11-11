@@ -7,11 +7,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsQuery", "..\CsQuery.cspro
 EndProject
 Global
 	GlobalSection(SourceCodeControl) = preSolution
-		SccNumberOfProjects = 1
+		SccNumberOfProjects = 2
 		SccProjectUniqueName0 = ..\\CsQuery.csproj
 		SccProjectName0 = \u0022$/ProjectsDotNet4.0/CsQuery.root/CsQuery\u0022,\u0020VGNAAAAA
 		SccLocalPath0 = ..
 		SccProvider0 = MSSCCI:Microsoft\u0020Visual\u0020SourceSafe
+		SccProjectUniqueName1 = CsqueryTests.csproj
+		SccProjectName1 = \u0022$/ProjectsDotNet4.0/NUnitRunner.root/NUnitRunner/CsQuery/CsqueryTests\u0022,\u0020ZLNAAAAA
+		SccLocalPath1 = .
+		SccProvider1 = MSSCCI:Microsoft\u0020Visual\u0020SourceSafe
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

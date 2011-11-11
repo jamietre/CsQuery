@@ -15,6 +15,9 @@ namespace Jtc.CsQuery
     {
         string GetNextChildID();
         IEnumerable<IDomObject> CloneChildren();
+
+        void AddToIndex();
+        void RemoveFromIndex();
     }
 
     /// <summary>
@@ -31,6 +34,60 @@ namespace Jtc.CsQuery
         {
             ChildNodes.AddRange(elements);
         }
+
+        
+        /// <summary>
+        /// Erase stored path information. This must be done whenever a node is added to a new DOM.
+        /// </summary>
+        protected void ResetPath()
+        {
+            //_Path = null;
+            _PathID = null;
+            //// Also must clear values of child nodes
+            // REMOVED - it should be possible to just not store full path info, and leave child
+
+            //if (HasChildren)
+            //{
+            //    foreach (DomObject node in ChildNodes)
+            //    {
+            //        node.ResetPath();
+            //    }
+            //}
+        }
+        public virtual void AddToIndex()
+        {
+            throw new Exception("This type of element, " + this.GetType().ToString() + ", cannot be indexed.");
+        }
+        public virtual void RemoveFromIndex()
+        {
+            throw new Exception("This type of element, " + this.GetType().ToString() + ", cannot be indexed.");
+        }
+
+ 
+        //protected IEnumerable<string> IndexKeys()
+        //{
+        //    DomElement e = this as DomElement;
+        //    if (e == null)
+        //    {
+        //        yield break;
+        //    }
+        //    if (!Complete)
+        //    {
+        //        throw new Exception("This element is incomplete and cannot be added to a DOM.");
+        //    }
+        //    // Add just the element to the index no matter what so we have an ordered representation of the dom traversal
+        //    yield return IndexKey(String.Empty);
+        //    yield return IndexKey(e.nodeNameID.ToString());
+        //    if (!String.IsNullOrEmpty(e.ID))
+        //    {
+        //        yield return IndexKey("#" + e.ID);
+        //    }
+        //    foreach (string cls in e.Classes)
+        //    {
+        //        yield return IndexKey("." + cls);
+        //    }
+        //    //todo -add attributes?
+        //}
 
         public abstract IEnumerable<IDomObject> CloneChildren();
         /// <summary>
@@ -96,7 +153,7 @@ namespace Jtc.CsQuery
         /// <summary>
         /// Returns all elements
         /// </summary>
-        public override IEnumerable<IDomElement> Elements
+        public override IEnumerable<IDomElement> ChildElements
         {
             get
             {

@@ -14,7 +14,7 @@ namespace Jtc.CsQuery
             
         }
 
-        protected string BaseHtml;
+        protected char[] BaseHtml;
         protected int EndPos
         {
             get
@@ -26,7 +26,7 @@ namespace Jtc.CsQuery
                 return _EndPos;
             }
         } protected int _EndPos = -1;
-        protected void SetBaseHtml(string baseHtml)
+        protected void SetBaseHtml(char[] baseHtml)
         {
             _EndPos = -1;
             BaseHtml = baseHtml;
@@ -39,7 +39,7 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public IEnumerable<IDomElement> CreateElements(string html)
         {
-            foreach (IDomObject obj in CreateObjectsImpl(html, false))
+            foreach (IDomObject obj in CreateObjectsImpl(html.ToCharArray(), false))
             {
                 yield return (IDomElement)obj;
             }
@@ -51,7 +51,7 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public IDomElement CreateElement(string html)
         {
-            SetBaseHtml(html);
+            SetBaseHtml(html.ToCharArray());
             return (IDomElement)Parse(false).First();
         }
         /// <summary>
@@ -64,17 +64,27 @@ namespace Jtc.CsQuery
         public IEnumerable<IDomObject> CreateObjects(string html)
         {
             Owner = null;
+            return CreateObjectsImpl(html.ToCharArray(), true);
+        }
+        public IEnumerable<IDomObject> CreateObjects(char[] html)
+        {
+            Owner = null;
             return CreateObjectsImpl(html, true);
         }
         public IEnumerable<IDomObject> CreateObjects(string html, CsQuery csq)
         {
             Owner = csq;
+            return CreateObjectsImpl(html.ToCharArray(), true);
+        }
+        public IEnumerable<IDomObject> CreateObjects(char[] html, CsQuery csq)
+        {
+            Owner = csq;
             return CreateObjectsImpl(html, true);
         }
-        protected IEnumerable<IDomObject> CreateObjectsImpl(string html, bool allowLiterals)
+        protected IEnumerable<IDomObject> CreateObjectsImpl(char[] html, bool allowLiterals)
         {
 
-            SetBaseHtml(html ?? String.Empty);
+            SetBaseHtml(html);
             return Parse(allowLiterals);
         }
         protected class IterationData
@@ -127,6 +137,7 @@ namespace Jtc.CsQuery
         }
 
         protected CsQuery Owner;
+        protected bool isBound;
         /// <summary>
         /// When CsQuery is provided, an initial indexing context can be used
         /// </summary>
@@ -135,6 +146,8 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         protected IEnumerable<IDomObject> Parse(bool allowLiterals)
         {
+            isBound = Owner != null;
+            
             int pos=0;
             Stack<IterationData> stack = new Stack<IterationData>();
 
@@ -161,7 +174,7 @@ namespace Jtc.CsQuery
                                 if (c == '<')
                                 {
                                     // read ahead to see if a close tag
-                                    int endPos = BaseHtml.IndexOf('>',current.Pos);
+                                    int endPos =  Array.IndexOf<char>(BaseHtml,'>',current.Pos);
                                     if (endPos>0) {
                                         string tag = BaseHtml.SubstringBetween(current.Pos+1,endPos).ToLower();
                                         if (tag.Substring(1)==current.Parent.Element.NodeName)
@@ -293,18 +306,18 @@ namespace Jtc.CsQuery
                                 {
                                     if (newTagLower.StartsWith("!doctype"))
                                     {
-                                        specialElement = new DomDocumentType(Owner);
+                                        specialElement = new DomDocumentType();
                                         current.Object = specialElement;
                                     }
                                     else if (newTagLower.StartsWith("![cdata["))
                                     {
-                                        specialElement = new DomCData(Owner);
+                                        specialElement = new DomCData();
                                         current.Object = specialElement;
                                         current.Pos = tagStartPos + 9;
                                     }
                                     else 
                                     {
-                                        specialElement = new DomComment(Owner);
+                                        specialElement = new DomComment();
                                         current.Object = specialElement;
                                         if (newTagLower.StartsWith("!--"))
                                         {
@@ -317,7 +330,7 @@ namespace Jtc.CsQuery
                                 }
                                 else
                                 {
-                                    current.Object = new DomElement(newTag,Owner);
+                                    current.Object = new DomElement(newTag);
                                     
                                     if (!current.Element.InnerHtmlAllowed && current.Element.InnerTextAllowed)
                                     {
@@ -331,12 +344,12 @@ namespace Jtc.CsQuery
                                 if (current.Object is IDomSpecialElement)
                                 {
                                     string endTag = (current.Object is IDomComment && ((IDomComment)current.Object).IsQuoted) ? "-->" : ">";
-                                        
-                                    int tagEndPos = BaseHtml.IndexOf(endTag, current.Pos);
+
+                                    int tagEndPos = BaseHtml.Seek(endTag, current.Pos);
                                     if (tagEndPos <0)
                                     {
                                         // if a tag is unclosed entirely, then just find a new line.
-                                        tagEndPos = BaseHtml.IndexOf(System.Environment.NewLine, current.Pos);
+                                        tagEndPos = BaseHtml.Seek(System.Environment.NewLine, current.Pos);
                                     }
                                     if (tagEndPos < 0)
                                     {
@@ -430,18 +443,28 @@ namespace Jtc.CsQuery
         protected IDomObject GetLiteral(IterationData current)
         {
             // There's plain text -return it as a literal.
-            string text = BaseHtml.SubstringBetween(current.HtmlStart, current.Pos);
+            
             IDomObject textObj = null;
             DomText lit;
             if (current.Invalid) {
-                lit = new DomInvalidElement(Owner);
+                lit = new DomInvalidElement();
             } else {
-                lit = new DomText(Owner);
+                lit = new DomText();
             }
-            lit.Text = text;
+            //lit.Text = text;
+            if (isBound)
+            {
+                lit.SetTextIndex(Owner.Dom.AddOriginalString(current.HtmlStart, current.Pos - current.HtmlStart));
+            }
+            else
+            {
+                string text = BaseHtml.SubstringBetween(current.HtmlStart, current.Pos);
+                lit.Text = text;
+            }
+             
             if (!current.AllowLiterals)
             {
-                IDomElement wrapper = new DomElement("span",Owner);
+                IDomElement wrapper = new DomElement("span");
                 wrapper.AppendChild(lit);
                 textObj = wrapper;
             }
@@ -654,7 +677,7 @@ namespace Jtc.CsQuery
         }
         protected string GetOpenText(IterationData current)
         {
-            int pos = BaseHtml.IndexOf('<', current.Pos);
+            int pos = Array.IndexOf<char>(BaseHtml,'<', current.Pos);
             if (pos > current.Pos)
             {
                 int startPos = current.Pos;

@@ -27,10 +27,10 @@ namespace Jtc.CsQuery
 
         protected void PrepareElement(IDomObject element)
         {
-            if (!Owner.InnerHtmlAllowed && !Owner.InnerTextAllowed)
-            {
-                throw new Exception("Cannot add children to this element type. InnerHTMLAllowed: " + Owner.InnerHtmlAllowed + " InnerTextAllowed: " + Owner.InnerTextAllowed );
-            }
+ 
+            // If this element does not have chilren, ChildNodes will return null and an
+            // exception will result - so don't bother checking to improve perofrmance.
+            
             // Must always remove from the DOM. It doesn't matter if it's the same DOM or not. An element can't be part of two DOMs - that would require a clone.
             // If it is the same DOM, it would remain a child of the old parent as well as the new one if we didn't remove first.
             if (element.ParentNode != null)
@@ -39,7 +39,7 @@ namespace Jtc.CsQuery
             }
 
             // Set owner recursively
-            element.Owner = Owner.Owner;
+            //element.Owner = Owner.Owner;
             element.ParentNode = Owner;
         }
 
@@ -58,7 +58,11 @@ namespace Jtc.CsQuery
         {
             PrepareElement(item);
             InnerList.Insert(index, item);
-            item.AddToIndex();
+            IDomElement el = item as IDomElement;
+            if (el != null)
+            {
+                el.AddToIndex();
+            }
         }
 
         public void RemoveAt(int index)
@@ -100,7 +104,9 @@ namespace Jtc.CsQuery
             PrepareElement(item);
           
             InnerList.Add(item);
-            item.AddToIndex();
+            if (item.NodeType==NodeType.ELEMENT_NODE) {
+                ((IDomElement)item).AddToIndex();
+            }
         }
         public void AddRange(IEnumerable<IDomObject> elements)
         {
@@ -160,10 +166,12 @@ namespace Jtc.CsQuery
         {
             if (_InnerList != null && InnerList.Remove(item))
             {
-                item.RemoveFromIndex();
-
+                if (item.NodeType == NodeType.ELEMENT_NODE)
+                {
+                    ((IDomElement)item).RemoveFromIndex();
+                }
                 item.ParentNode = null;
-                item.Owner = null;
+                //item.Owner = null;
                 return true;
             }
             return false;

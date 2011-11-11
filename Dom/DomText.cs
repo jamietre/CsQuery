@@ -32,12 +32,22 @@ namespace Jtc.CsQuery
             Initialize();
             Text = text;
         }
-        public DomText(CsQuery owner)
+        /// <summary>
+        /// Create a text node from an original DOM load (refernces the intial character array)
+        /// </summary>
+        /// <param name="domTextIndex"></param>
+        public DomText(int domTextIndex)
             : base()
         {
-            _Owner = owner;
             Initialize();
+            textIndex = domTextIndex;
         }
+        //public DomText(CsQuery owner)
+        //    : base()
+        //{
+        //    _Owner = owner;
+        //    Initialize();
+        //}
         protected void Initialize()
         {
             Text = String.Empty;
@@ -46,38 +56,29 @@ namespace Jtc.CsQuery
         {
             get { return NodeType.TEXT_NODE; }
         }
+        protected int textIndex=-1;
+        // for use during initial construction from char array
+        public void SetTextIndex(int index)
+        {
+            textIndex = index;
+        }
         public string Text
         {
             get
             {
-                return TextID == -1 ? "" :
-                    TextID == -2 ? unboundText :
-                    Dom.TextContent[TextID];
+                return textIndex >= 0 ? 
+                    (stringRef != null ? stringRef : Dom).GetString(textIndex) 
+                        : unboundText;
             }
             set
             {
-                if (Dom != null)
-                {
-                    if (TextID >= 0)
-                    {
-                        Dom.TextContent[TextID] = value;
-                    }
-                    else
-                    {
-                        Dom.TextContent.Add(value);
-                        TextID = Dom.TextContent.Count - 1;
-                    }
-                    
-                }
-                else
-                {
-                    unboundText = value;
-                    TextID = -2;
-                }
+                unboundText = value;
+                textIndex = -1;
             }
         }
+        DomRoot stringRef = null;
         string unboundText;
-        protected int TextID=-1;
+        //protected int TextID=-1;
         
         public override string NodeValue
         {
@@ -97,9 +98,12 @@ namespace Jtc.CsQuery
         public override DomText Clone()
         {
             DomText domText = base.Clone();
-            domText.Text = Text;
+            domText.textIndex = textIndex;
+            domText.unboundText = unboundText;
+            domText.stringRef = stringRef != null? stringRef: Dom;
             return domText;
         }
+
 
         public override bool InnerHtmlAllowed
         {
@@ -113,7 +117,7 @@ namespace Jtc.CsQuery
         {
             get { 
                 //return !String.IsNullOrEmpty(Text); 
-                return TextID != -1;
+                return textIndex >=0;
             }
         }
         public override string ToString()

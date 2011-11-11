@@ -26,22 +26,18 @@ namespace Jtc.CsQuery
 
         IDomContainer ParentNode { get; set; }
         NodeType NodeType { get; }
-        string PathID { get; }
-        string Path { get; }
-        CsQuery Owner { get; set; }
+
+        CsQuery Owner { get; }
         CsQuery Csq();
         DomRoot Dom { get; }
         string Render();
-        void AddToIndex();
-        void RemoveFromIndex();
+        void Render(StringBuilder sb);
+
         void Remove();
         IDomObject Clone();
-        bool InnerHtmlAllowed { get; }
-        bool InnerTextAllowed { get; }
+        
         string InnerHtml { get; set; }
         string InnerText { get; set; }
-        bool Complete { get; }
-        int DescendantCount();
 
         //? These are really only part of IDomContainer. However, to avoid awful typecasting all the time, they are part of the interface
         // for objects.
@@ -54,7 +50,7 @@ namespace Jtc.CsQuery
 
         string NodeName { get; set; }
         string NodeValue { get; set; }
-        IEnumerable<IDomElement> Elements { get; }
+        IEnumerable<IDomElement> ChildElements { get; }
         NodeList ChildNodes { get; }
         IDomObject FirstChild { get; }
         IDomObject LastChild { get; }
@@ -72,7 +68,19 @@ namespace Jtc.CsQuery
         bool Selected { get; }
         bool Checked { get; set; }
         bool ReadOnly { get; set; }
+
+        // Nonstandard elements
+        bool InnerHtmlAllowed { get; }
+        bool InnerTextAllowed { get; }
+        bool Complete { get; }
+        int DescendantCount();
+
+        int Index { get; }
+        string PathID { get; }
+        string Path { get; }
     }
+
+
 
     public interface IDomSpecialElement : IDomObject
     {
@@ -94,34 +102,13 @@ namespace Jtc.CsQuery
         }
         public abstract bool HasChildren
         { get; }
-        // Unique ID assigned when added to a dom
-        public string PathID
-        {
-            get
-            {
-                if (_PathID == null)
-                {
+        
+        
+      
 
-                    _PathID = (ParentNode == null ? String.Empty : ParentNode.GetNextChildID());
-                }
-                return _PathID;
-            }
+        //protected string _Path = null;
 
-        } protected string _PathID = null;
-        public string Path
-        {
-            get
-            {
-                if (_Path != null)
-                {
-                    return _Path;
-                }
-                return (ParentNode == null ? String.Empty : ParentNode.Path + "/") + PathID;
-            }
-        }
-        protected string _Path = null;
-
-        public IDomContainer ParentNode
+        public virtual IDomContainer ParentNode
         {
             get
             {
@@ -129,27 +116,12 @@ namespace Jtc.CsQuery
             }
             set
             {
-                ResetPath();
                 _Parent = value;
             }
         }
-        /// <summary>
-        /// Erase stored path information. This must be done whenever a node is added to a new DOM.
-        /// </summary>
-        protected void ResetPath()
-        {
-            _Path = null;
-            _PathID = null;
-            // Also must clear values of child nodes
-            if (HasChildren)
-            {
-                foreach (DomObject node in ChildNodes)
-                {
-                    node.ResetPath();
-                }
-            }
-        }
         protected IDomContainer _Parent = null;
+
+        //internal abstract IDomObject CloneInternal();
     }
 
 
@@ -163,10 +135,10 @@ namespace Jtc.CsQuery
         {
 
         }
-        public DomObject(CsQuery owner)
-        {
-            _Owner = owner;
-        }
+        //public DomObject(CsQuery owner)
+        //{
+        //    _Owner = owner;
+        //}
         /// <summary>
         /// Wraps the element in a CsQuery object
         /// </summary>
@@ -178,10 +150,51 @@ namespace Jtc.CsQuery
 
         public virtual T Clone()
         {
+            
             T clone = new T();
+            //if (NodeType != NodeType.DOCUMENT_NODE)
+            //{
+            //    DomRoot cloneRoot = new DomDetached(Owner.Dom);
+            //    clone.ParentNode = cloneRoot;
+            //}
+            
             return clone;
         }
+        //internal override IDomObject CloneInternal()
+        //{
+        //    return new T();
+        //}
+        /// <summary>
+        /// Unique ID assigned when added to a dom. This is not the full path but just the ID at this level. The full
+        /// path is never stored with each node to prevent having to regenerate if node trees are moved. 
+        /// </summary>
+        public string PathID
+        {
+            get
+            {
+                if (_PathID == null)
+                {
 
+                    _PathID = (ParentNode == null ? String.Empty : ParentNode.GetNextChildID());
+                }
+                return _PathID;
+            }
+
+        } protected string _PathID = null;
+        /// <summary>
+        /// The full path to this node. This is calculated by requesting the parent path and adding its own ID.
+        /// </summary>
+        public string Path
+        {
+            get
+            {
+                //if (_Path != null)
+                //{
+                //     return _Path;
+                //}
+                return (ParentNode == null ? String.Empty : ParentNode.Path + "/") + PathID;
+            }
+        }
         public abstract bool InnerHtmlAllowed { get; }
         public virtual bool InnerTextAllowed
         {
@@ -191,25 +204,25 @@ namespace Jtc.CsQuery
         {
             get
             {
-                return _Owner;
+                return ParentNode==null ? null : ParentNode.Owner;
             }
-            set
-            {
-                _Owner = value;
-                var container = this as IDomContainer;
-                if (container != null)
-                {
-                    if (container.HasChildren)
-                    {
-                        foreach (IDomObject obj in container.ChildNodes)
-                        {
-                            obj.Owner = value;
-                        }
-                    }
-                }
-            }
+            //set
+            //{
+            //    _Owner = value;
+            //    var container = this as IDomContainer;
+            //    if (container != null)
+            //    {
+            //        if (container.HasChildren)
+            //        {
+            //            foreach (IDomObject obj in container.ChildNodes)
+            //            {
+            //                obj.Owner = value;
+            //            }
+            //        }
+            //    }
+            //}
         }
-        protected CsQuery _Owner = null;
+        //protected CsQuery _Owner = null;
         public virtual DomRoot Dom
         {
             get
@@ -234,6 +247,25 @@ namespace Jtc.CsQuery
             set
             {
                 throw new Exception("Cannot set ID for this node type.");
+            }
+        }
+        /// <summary>
+        /// The element's absolute index among its siblings
+        /// </summary>
+        /// <returns></returns>
+        public int Index
+        {
+            get
+            {
+                if (ParentNode == null)
+                {
+                    return -1;
+                }
+                else
+                {
+                    return ParentNode.ChildNodes.IndexOf(this);
+                }
+
             }
         }
         public virtual string Value
@@ -275,6 +307,10 @@ namespace Jtc.CsQuery
             {
                 throw new Exception("Style is not applicable to this node type.");
             }
+            protected set
+            {
+                throw new Exception("Style is not applicable to this node type.");
+            }
         }
         public virtual string NodeName
         {
@@ -287,6 +323,8 @@ namespace Jtc.CsQuery
                 throw new Exception("You can't change the node name.");
             }
         }
+        protected short nodeNameID = -1;
+
         public virtual string NodeValue
         {
             get
@@ -326,33 +364,14 @@ namespace Jtc.CsQuery
         public abstract NodeType NodeType { get; }
         public abstract bool Complete { get; }
         public abstract string Render();
+        public virtual void Render(StringBuilder sb)
+        {
+            sb.Append(Render());
+        }
 
         protected int IDCount = 0;
 
-        protected IEnumerable<string> IndexKeys()
-        {
-            DomElement e = this as DomElement;
-            if (e == null)
-            {
-                yield break;
-            }
-            if (!Complete)
-            {
-                throw new Exception("This element is incomplete and cannot be added to a DOM.");
-            }
-            // Add just the element to the index no matter what so we have an ordered representation of the dom traversal
-            yield return IndexKey(String.Empty);
-            yield return IndexKey(e.NodeName);
-            if (!String.IsNullOrEmpty(e.ID))
-            {
-                yield return IndexKey("#" + e.ID);
-            }
-            foreach (string cls in e.Classes)
-            {
-                yield return IndexKey("." + cls);
-            }
-            //todo -add attributes?
-        }
+      
         protected int UniqueID = 0;
         /// <summary>
         /// Remove this element from the DOM
@@ -365,83 +384,14 @@ namespace Jtc.CsQuery
             }
             ParentNode.ChildNodes.Remove(this);
         }
-        public void AddToIndex()
-        {
-            if (Dom != null && this is IDomElement)
-            {
-                // Fix the path when it's added to the index.
-                // This is a little confusing. Would rather that we can't access it until it's added to a DOM.
-
-                _Path = Path;
-                foreach (string key in IndexKeys())
-                {
-                    AddToIndex(key);
-                }
-                var container = this as IDomContainer;
-                if (container != null && container.HasChildren)
-                {
-                    foreach (IDomObject child in container.ChildNodes)
-                    {
-                        // Move root in case this is coming from an unmapped or alternate DOM
-                        child.Owner = Owner;
-                        child.AddToIndex();
-                    }
-                }
-            }
-        }
-        public void RemoveFromIndex()
-        {
-            if (Dom == null)
-            {
-                return;
-            }
-            var element = this as IDomElement;
-            if (element != null)
-            {
-                var container = this as IDomContainer;
-                if (container != null)
-                {
-                    foreach (DomElement child in container.Elements)
-                    {
-                        child.RemoveFromIndex();
-                    }
-                }
-                foreach (string key in IndexKeys())
-                {
-                    RemoveFromIndex(key);
-                }
-            }
-        }
-        /// <summary>
-        /// Remove only a single index, not the entire object
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="key"></param>
-        public void RemoveFromIndex(string key)
-        {
-            if (Dom != null)
-            {
-                Dom.SelectorXref.Remove(key);
-            }
-        }
-        public void AddToIndex(string key)
-        {
-            if (Dom != null)
-            {
-                Dom.SelectorXref.Add(key, this as DomElement);
-            }
-        }
-        protected string IndexKey(string key)
-        {
-            return key + ">" + Path;
-        }
+       
 
         public virtual int DescendantCount()
         {
             return 0;
         }
 
-        public virtual IEnumerable<IDomElement> Elements
+        public virtual IEnumerable<IDomElement> ChildElements
         {
             get
             {

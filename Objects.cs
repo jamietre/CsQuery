@@ -171,10 +171,13 @@ namespace Jtc.CsQuery
         public static T Dict2Dynamic<T>(IDictionary<string, object> obj, bool convertDates) where T : IDynamicMetaObjectProvider, new()
         {
             T returnObj = new T();
-            IDictionary<string, object> dict = (IDictionary<string, object>)returnObj;
-            foreach (KeyValuePair<string, object> kvp in obj)
+            if (obj != null)
             {
-                dict[kvp.Key] = ConvertDeserializedValue<T>(kvp.Value,convertDates);
+                IDictionary<string, object> dict = (IDictionary<string, object>)returnObj;
+                foreach (KeyValuePair<string, object> kvp in obj)
+                {
+                    dict[kvp.Key] = ConvertDeserializedValue<T>(kvp.Value, convertDates);
+                }
             }
             return returnObj;
         }

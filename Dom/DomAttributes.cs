@@ -12,7 +12,8 @@ namespace Jtc.CsQuery
         {
             Owner = owner;
         }
-        public Action StyleChanged = null;
+        public Action<string> SetStyle = null;
+        public Action<string> SetClass = null;
 
         protected IDomElement Owner;
         //protected Dictionary<string, string> Attributes = new Dictionary<string, string>();
@@ -79,9 +80,9 @@ namespace Jtc.CsQuery
             string value;
             //name = name.ToLower();
             //if (Attributes.TryGetValue(name, out value))
-            if (tokenID == DomData.ClassAttrID)
+            if (tokenID == DomData.ClassAttrID || tokenID == DomData.StyleNodeId)
             {
-                throw new Exception("You cannot access class as an attribute, use className");
+                throw new Exception("You cannot access class or style as attributes, use className & Style");
             }
             if (Attributes.TryGetValue(tokenID, out value))
             {
@@ -110,14 +111,11 @@ namespace Jtc.CsQuery
             switch (tokenId)
             {
                 case DomData.StyleNodeId:
-                    Attributes[tokenId] = value.CleanUp();
-                    if (StyleChanged != null)
-                    {
-                        StyleChanged();
-                    }
+                    SetStyle(value.CleanUp());
                     break;
                 case DomData.ClassAttrID:
-                    throw new Exception("You cannot assign class as an attribute, use className");
+                    SetClass(value.CleanUp());
+                    break;
                 case DomData.ValueNodeId:
                     Attributes[tokenId] = value.CleanUp();
                     break;

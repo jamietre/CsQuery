@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jtc.CsQuery.ExtensionMethods;
 
 namespace Jtc.CsQuery
 {
@@ -17,6 +18,7 @@ namespace Jtc.CsQuery
         DocType DocType { get; set; }
         DomRenderingOptions DomRenderingOptions { get; set; }
         IDomElement GetElementById(string id);
+        void SetOwner(CsQuery owner);
     }
 
 
@@ -34,6 +36,53 @@ namespace Jtc.CsQuery
         {
 
         }
+
+        private char[] OriginalString;
+        private List<Tuple<int,int>> OriginalStrings = new List<Tuple<int,int>>();
+        private List<string> Strings;
+
+        public int AddString(string text) {
+            if (Strings==null) {
+                Strings = new List<string>();
+            }
+            Strings.Add(text);
+            return OriginalStrings.Count + Strings.Count-1;
+        }
+        public virtual string GetString(int index)
+        {
+            if (index < OriginalStrings.Count)
+            {
+                var range = OriginalStrings[index];
+                return OriginalString.Substring(range.Item1, range.Item2);
+            }
+            else
+            {
+                return Strings[OriginalStrings.Count-index];
+            }
+        }
+
+        public override CsQuery Owner
+        {
+            get
+            {
+                return _Owner;
+            }
+        }
+
+        public void SetOriginalString(char[] originalString)
+        {
+            OriginalString = originalString;
+        }
+        public int AddOriginalString(int start, int length)
+        {
+            OriginalStrings.Add(new Tuple<int,int>(start,length));
+            return OriginalStrings.Count - 1;
+        }
+        public void SetOwner(CsQuery owner)
+        {
+            _Owner = owner;
+        }
+        protected CsQuery _Owner = null;
         /// <summary>
         /// This is NOT INDEXED and should only be used for testing
         /// </summary>
@@ -41,7 +90,7 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public IDomElement GetElementById(string id)
         {
-            return GetElementById(Elements, id);
+            return GetElementById(ChildElements, id);
         }
         protected IDomElement GetElementById(IEnumerable<IDomElement> elements, string id)
         {
@@ -53,7 +102,7 @@ namespace Jtc.CsQuery
                 }
                 if (el.ChildNodes.Count > 0)
                 {
-                    var childEl = GetElementById(el.Elements, id);
+                    var childEl = GetElementById(el.ChildElements, id);
                     if (childEl != null)
                     {
                         return childEl;
@@ -65,7 +114,7 @@ namespace Jtc.CsQuery
 
 
         // Store for all text node content (to avoid overhead of allocation when cloning large numbers of objects)
-        public List<string> TextContent = new List<string>();
+        //public List<string> TextContent = new List<string>();
 
         public DomRenderingOptions DomRenderingOptions
         {
@@ -159,9 +208,12 @@ namespace Jtc.CsQuery
         public override DomRoot Clone()
         {
             DomRoot clone = base.Clone();
-            clone.TextContent = new List<string>(TextContent);
+            clone.OriginalString = OriginalString;
+            clone.OriginalStrings = OriginalStrings;
+
             return clone;
         }
+
         public override IEnumerable<IDomObject> CloneChildren()
         {
             if (HasChildren)

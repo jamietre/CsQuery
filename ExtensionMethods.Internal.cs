@@ -10,6 +10,7 @@ using System.Web.Script.Serialization;
 using System.Dynamic;
 using System.Text;
 using System.Reflection;
+using System.Diagnostics;
 using Jtc.CsQuery;
 
 namespace Jtc.CsQuery.ExtensionMethods
@@ -511,7 +512,61 @@ namespace Jtc.CsQuery.ExtensionMethods
         {
             return (text.Substring(startIndex, endIndex - startIndex));
         }
+        public static string SubstringBetween(this char[] text, int startIndex, int endIndex)
+        {
+            int len = endIndex - startIndex + 1;
+            string result="";
+            for (int i = startIndex; i < endIndex; i++)
+            {
+                result += text[i];
+            }
+            return result;
+        }
+        public static string Substring(this char[] text, int startIndex, int length)
+        {
+            
+            string result = "";
+            for (int i = startIndex; i <startIndex+ length; i++)
+            {
+                result += text[i];
+            }
+            return result;
+        }
+        public static int Seek(this char[] text, string seek)
+        {
+            return Seek(text, seek, 0);
+        }
+        public static int Seek(this char[] text, string seek, int startIndex)
+        {
+            int nextPos =startIndex;
 
+            char firstChar = seek[0];
+            while (nextPos >= 0)
+            {
+                nextPos = Array.IndexOf<char>(text, firstChar, nextPos);
+                if (nextPos > 0)
+                {
+                    bool match = true;
+                    for (int i = 0; i < seek.Length; i++)
+                    {
+                        if (text[nextPos + i] != seek[i])
+                        {
+                            match = false;
+                            break;
+                        }
+                    }
+                    if (match)
+                    {
+                        return nextPos;
+                    }
+                    else
+                    {
+                        nextPos++;
+                    }
+                }  
+            }
+            return -1;
+        }
 
         public static string RemoveWhitespace(this string text)
         {
@@ -541,22 +596,47 @@ namespace Jtc.CsQuery.ExtensionMethods
         /// <param name="text"></param>
         /// <param name="match"></param>
         /// <returns></returns>
-        public static string CommonStart(this string text, string match)
-        {
-            int pos = 0;
-            if (string.IsNullOrEmpty(text) || String.IsNullOrEmpty(match)) {
-                return String.Empty;
-            }
-            while (pos<text.Length && pos<match.Length)
-            {
-                if (text.Substring(0, pos+1) != match.Substring(0, pos+1))
-                {
-                    break;
-                }
-                pos++;
-            }
-            return text.Substring(0, pos);
+        //public static string CommonStart(this string text, string match)
+        //{
+        //    int pos = 0;
+        //    if (string.IsNullOrEmpty(text) || String.IsNullOrEmpty(match)) {
+        //        return String.Empty;
+        //    }
+        //    while (pos<text.Length && pos<match.Length)
+        //    {
+        //        if (text.Substring(0, pos+1) != match.Substring(0, pos+1))
+        //        {
+        //            break;
+        //        }
+        //        pos++;
+        //    }
+        //    return text.Substring(0, pos);
 
+        //}
+
+        /// <summary>
+        /// Given a relative path, locates a file in the parent heirarchy by matching parts of the path
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="match"></param>
+        /// <returns></returns>
+        public static string FindPathTo(this string currentRootedPath, string find)
+        {
+            List<string> rootedPath = new List<string>(currentRootedPath.ToLower().Split('\\'));
+            List<string> findPath =  new List<string>(find.ToLower().Split('\\'));
+
+            int start = rootedPath.IndexOf(findPath[0]);
+            if (start<0) {
+                return "";
+            } else {
+                int i=0;
+                while (rootedPath[++start] == findPath[++i])
+                    ;
+
+                return string.Join("\\",rootedPath.GetRange(0,start)) + "\\" 
+                    + string.Join("\\",findPath.GetRange(i,findPath.Count-i));
+
+            }
         }
         /// <summary>
         /// Returns the string after the end of the first occurrence of "find"
@@ -677,6 +757,39 @@ namespace Jtc.CsQuery.ExtensionMethods
         public static string CleanUp(this string value)
         {
             return (value ?? String.Empty).Trim();
+        }
+        private static char[] stringSep = new char[] {' '};
+        public static IEnumerable<string> SplitClean(this string text)
+        {
+            return SplitClean(text, stringSep);
+        }
+        public static IEnumerable<string> SplitClean(this string text, char separator)
+        {
+            char[] sep = new char[1];
+            sep[0]=separator;
+            return SplitClean(text, sep);
+        }
+        /// <summary>
+        /// Splits a list, removes empty entries; trims; removes dups
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> SplitClean(this string text, char[] separator)
+        {
+            
+            string[] list = (text ?? "").Split(separator, StringSplitOptions.RemoveEmptyEntries);
+            if (list.Length>0) {
+                HashSet<string> UniqueList = new HashSet<string>();
+                for (int i = 0; i < list.Length; i++)
+                {
+                    if (UniqueList.Add(list[i]))
+                    {
+                        yield return list[i].Trim();
+                    }
+                }
+            }
+            yield break;
         }
         public static bool IsKeyValuePair(this object obj)
         {

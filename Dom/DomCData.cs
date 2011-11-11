@@ -19,10 +19,10 @@ namespace Jtc.CsQuery
         {
 
         }
-        public DomCData(CsQuery owner): base(owner)
-        {
+        //public DomCData(CsQuery owner): base(owner)
+        //{
             
-        }
+        //}
         public override string NodeValue
         {
             get
@@ -84,9 +84,14 @@ namespace Jtc.CsQuery
         public override DomCData Clone()
         {
             DomCData clone = base.Clone();
-            clone.NonAttributeData =NonAttributeData;
+            clone.NonAttributeData = NonAttributeData;
             return clone;
         }
+        //internal override IDomObject CloneInternal()
+        //{
+        //    return DoClone((DomCData)base.CloneInternal());
+
+        //}
 
         #endregion
     }

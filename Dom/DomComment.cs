@@ -15,11 +15,11 @@ namespace Jtc.CsQuery
             : base()
         {
         }
-        public DomComment(CsQuery owner)
-            : base(owner)
-        {
+        //public DomComment(CsQuery owner)
+        //    : base(owner)
+        //{
 
-        }
+        //}
         public DomComment(string text)
         {
             Text = text;
@@ -93,8 +93,9 @@ namespace Jtc.CsQuery
         public override DomComment Clone()
         {
             DomComment clone = base.Clone();
-            clone.NonAttributeData =NonAttributeData;
+            clone.NonAttributeData = NonAttributeData;
             return clone;
+
         }
 
         #endregion

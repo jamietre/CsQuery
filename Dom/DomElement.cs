@@ -7,6 +7,7 @@ using Jtc.CsQuery.ExtensionMethods;
 
 namespace Jtc.CsQuery
 {
+
     /// <summary>
     /// A visual element
     /// </summary>
@@ -19,10 +20,12 @@ namespace Jtc.CsQuery
         bool RemoveClass(string className);
         void AddStyle(string styleString);
         bool RemoveStyle(string name);
+        bool IsBlock { get; }
 
         string this[string attribute] { get; set; }
 
-        string ElementHtml { get; }
+        string ElementHtml();
+
     }
   
     /// <summary>
@@ -30,8 +33,7 @@ namespace Jtc.CsQuery
     /// </summary>
     public class DomElement : DomContainer<DomElement>, IDomElement
     {
-        private static char[] needsQuoting = new char[] { ' ', '\'', '"' };
-        private static char[] splitSep = new char[] { ' ' };
+        //private const string needsQuoting = " '\"";
         
         protected DomAttributes _Attributes = null;
         protected CSSStyleDeclaration _Style = null;
@@ -46,14 +48,112 @@ namespace Jtc.CsQuery
             NodeName = tag;
         }
 
-        public DomElement(string tag,CsQuery owner)
-        {
-            NodeName = tag;
-            _Owner = owner;
-        }
+        //public DomElement(string tag,CsQuery owner)
+        //{
+        //    NodeName = tag;
+        //    _Owner = owner;
+        //}
         public override NodeType NodeType
         {
             get { return NodeType.ELEMENT_NODE; }
+        }
+      
+        public override IDomContainer ParentNode
+        {
+            get
+            {
+                return base.ParentNode;
+            }
+            set
+            {
+                base.ParentNode = value;
+                ResetPath();
+            }
+        }
+
+
+        public override void AddToIndex()
+        {
+            if (Dom != null)
+            {
+
+                foreach (string key in IndexKeys())
+                {
+                    Dom.SelectorXref.Add(key, this);
+                }
+
+                if (_ChildNodes != null)
+                {
+                    foreach (IDomElement child in ChildElements)
+                    {
+                        child.AddToIndex();
+                    }
+                }
+            }
+        }
+        public override void RemoveFromIndex()
+        {
+            if (Dom == null)
+            {
+                return;
+            }
+            if (_ChildNodes != null)
+            {
+                foreach (IDomElement child in ChildElements)
+                {
+                    child.RemoveFromIndex();
+                }
+            }
+            foreach (string key in IndexKeys())
+            {
+                Dom.SelectorXref.Remove(key);
+            }
+        }
+        protected string IndexKey(string key)
+        {
+            return key + ">" + Path;
+        }
+        protected IEnumerable<string> IndexKeys()
+        {
+            //if (!Complete)
+            //{
+            //    throw new Exception("This element is incomplete and cannot be added to a DOM.");
+            //}
+            // Add just the element to the index no matter what so we have an ordered representation of the dom traversal
+            yield return IndexKey(String.Empty);
+            yield return IndexKey(NodeName);
+            string id = ID;
+            if (!String.IsNullOrEmpty(id))
+            {
+                yield return IndexKey("#" + id);
+            }
+            if (_Classes != null)
+            {
+                foreach (string cls in Classes)
+                {
+                    yield return IndexKey("." + cls);
+                }
+            }
+            //todo -add attributes?
+        }
+        /// <summary>
+        /// Remove only a single index, not the entire object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="key"></param>
+        protected void RemoveFromIndex(string key)
+        {
+            if (Dom != null)
+            {
+                Dom.SelectorXref.Remove(key);
+            }
+        }
+        protected void AddToIndex(string key)
+        {
+            if (Dom != null)
+            {
+                Dom.SelectorXref.Add(key, this);
+            }
         }
         /// <summary>
         /// Creates a deep clone of this
@@ -64,6 +164,7 @@ namespace Jtc.CsQuery
             return CloneImpl(base.Clone());
 
         }
+
 
         protected DomElement CloneImpl(DomElement e)
         {
@@ -77,6 +178,10 @@ namespace Jtc.CsQuery
             {
                 e._Classes = new List<short>(_Classes);
             }
+            if (_Style != null)
+            {
+                e.Style = Style.Clone();
+            }
             // will not create ChildNotes list object unless results are returned (don't use AddRange)
             foreach (IDomObject child in CloneChildren())
             {
@@ -87,7 +192,7 @@ namespace Jtc.CsQuery
         }
         public override IEnumerable<IDomObject> CloneChildren()
         {
-            if (HasChildren)
+            if (_ChildNodes!=null)
             {
                 foreach (IDomObject obj in ChildNodes)
                 {
@@ -101,12 +206,7 @@ namespace Jtc.CsQuery
         {
             get
             {
-                //foreach (string cls in ClassName
-                //    .Split(splitSep, StringSplitOptions.RemoveEmptyEntries))
-                //{
-                //    yield return cls;
-                //}
-                if (HasClasses)
+                if (_Classes !=  null)
                 {
                     foreach (short clsid in _Classes)
                     {
@@ -127,37 +227,40 @@ namespace Jtc.CsQuery
 
         public bool HasClass(string name)
         {
-            //return (GetAttribute("class",String.Empty) + " ").IndexOf(name + " ") >= 0;
             return HasClasses 
                 && _Classes.Contains(DomData.TokenID(name,false));
         }
         public bool AddClass(string name)
         {
-            if (!HasClass(name))
+            bool result=false;
+            foreach (string cls in name.SplitClean())
             {
-                //SetAttribute("class", ClassName.ListAdd(name," "));
-                if (_Classes == null)
+                if (!HasClass(cls))
                 {
-                    _Classes = new List<short>();
+                    if (_Classes == null)
+                    {
+                        _Classes = new List<short>();
+                    }
+                    _Classes.Add(DomData.TokenID(cls, false));
+                    AddToIndex(IndexKey("." + cls));
+                    result = true;
                 }
-                _Classes.Add(DomData.TokenID(name,false));
-                AddToIndex(IndexKey("."+name));
-                return true;
             }
-            else
-            {
-                return false;
-            }
+            return result;
         }
         public bool RemoveClass(string name)
         {
-            if (HasClass(name))
+            bool result = false;
+            foreach (string cls in name.SplitClean())
             {
-                //SetAttribute("class", ClassName.ListRemove(name, " "));
-                _Classes.Remove(DomData.TokenID(name,false));
-                RemoveFromIndex(IndexKey("." + name));
+                if (HasClass(cls))
+                {
+                    _Classes.Remove(DomData.TokenID(cls, false));
+                    RemoveFromIndex(IndexKey("." + cls));
+                    result = true;
+                }
             }
-            return false;
+            return result;
         }
 
         /// <summary>
@@ -313,25 +416,38 @@ namespace Jtc.CsQuery
             {
                 if (_Style == null)
                 {
-                    _Style = new CSSStyleDeclaration(getStyle,setStyle);
-                    if (_Attributes != null)
-                    {
-                        Attributes.StyleChanged = _Style.ClearCache;
+                    _Style = new CSSStyleDeclaration();
+                    if (_Attributes != null) {
+                        setAttributesCallbacks();
                     }
                 }
                 return _Style;
+            }
+            protected set
+            {
+                _Style = value;
+                if (_Attributes != null)
+                {
+                    setAttributesCallbacks();
+                }
             }
         }
         // hooks for CSSStyleDeclaration
         protected string getStyle()
         {
-            return GetAttribute(DomData.StyleNodeId, String.Empty);
+            return _Style == null ?
+                null :
+                Style.ToString(); 
         }
         protected void setStyle(string style)
         {
-            SetAttribute(DomData.StyleNodeId,style);
+            Style.SetStyles(style, false);
         }
-
+        protected void setAttributesCallbacks()
+        {
+            _Attributes.SetStyle = setStyle;
+            _Attributes.SetClass = setClassName;
+        }
         
         public override DomAttributes Attributes
         {
@@ -340,16 +456,14 @@ namespace Jtc.CsQuery
                 if (_Attributes == null)
                 {
                     _Attributes = new DomAttributes(this);
-                    if (_Style != null)
-                    {
-                        _Attributes.StyleChanged = _Style.ClearCache;
-                    }
+                    setAttributesCallbacks();
                 }
                 return _Attributes;
             }
             protected set
             {
                 _Attributes = value;
+                setAttributesCallbacks();
             }
         }
 
@@ -357,7 +471,6 @@ namespace Jtc.CsQuery
         {
             get
             {
-                //return GetAttribute("class",String.Empty);
                 if (HasClasses)
                 {
                     string className = "";
@@ -374,15 +487,24 @@ namespace Jtc.CsQuery
             }
             set
             {
-                //SetAttribute("class", value);
-                _Classes = new List<short>();
-                string[] classes = (value ?? "").Split(splitSep, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var cls in classes)
-                {
-                    AddClass(cls);
+                setClassName(value);   
+            }
+        }
+        protected void setClassName(string className)
+        {
+            {
+                if (string.IsNullOrEmpty(className)) {
+                    _Classes=null;
+                } else {
+                    _Classes = new List<short>();
+                    foreach (var cls in className.SplitClean(' '))
+                    {
+                        AddClass(cls);
+                    }
                 }
             }
         }
+        
         /// <summary>
         /// The NodeName for the element, in LOWER CASE.
         /// </summary>
@@ -394,10 +516,8 @@ namespace Jtc.CsQuery
             }
             set
             {
-                //if (String.IsNullOrEmpty(NodeName))
                 if (nodeNameID<0) 
                 {
-                    //_NodeName = value.ToLower();
                     nodeNameID = DomData.TokenID(value);
                 }
                 else
@@ -407,7 +527,7 @@ namespace Jtc.CsQuery
                 
             }
         } 
-        protected short nodeNameID=-1;
+        
 
         public override string ID
         {
@@ -426,6 +546,7 @@ namespace Jtc.CsQuery
                 AddToIndex(IndexKey("#" + value));
             }
         }
+
         public override string Value
         {
             get
@@ -457,7 +578,7 @@ namespace Jtc.CsQuery
             }
         }
         /// <summary>
-        /// Returns text of the inner HTMl. When setting, any children will be removed.
+        /// Returns text of the inner HTML. When setting, any children will be removed.
         /// </summary>
         public override string InnerHtml
         {
@@ -472,7 +593,7 @@ namespace Jtc.CsQuery
                     StringBuilder sb = new StringBuilder();
                     foreach (IDomObject elm in ChildNodes)
                     {
-                        sb.Append(elm.Render());
+                        elm.Render(sb);
                     }
                     return sb.ToString();
                 }
@@ -498,9 +619,9 @@ namespace Jtc.CsQuery
                     StringBuilder sb = new StringBuilder();
                     foreach (IDomObject elm in ChildNodes)
                     {
-                        if (elm is IDomText)
+                        if (elm.NodeType == NodeType.TEXT_NODE)
                         {
-                            sb.Append(elm.Render());
+                            elm.Render(sb);
                         }
                     }
                     return sb.ToString();
@@ -550,17 +671,22 @@ namespace Jtc.CsQuery
         /// </summary>
         public override string Render()
         {
-            return GetHtml(true);
+            StringBuilder sb = new StringBuilder();
+            GetHtml(sb,true);
+            return sb.ToString();
+        }
+        public override void Render(StringBuilder sb)
+        {
+            GetHtml(sb, true);
         }
         /// <summary>
         /// Returns the HTML for this element, ignoring children/innerHTML
         /// </summary>
-        public string ElementHtml
+        public string ElementHtml()
         {
-            get
-            {
-                return GetHtml(false);
-            }
+            StringBuilder sb = new StringBuilder();
+            GetHtml(sb, false);
+            return sb.ToString();
         }
         protected DocType DocType
         {
@@ -575,10 +701,8 @@ namespace Jtc.CsQuery
         }
         private DocType _DocType;
         
-        protected string GetHtml(bool includeChildren)
+        protected void GetHtml(StringBuilder sb, bool includeChildren)
         {
-            
-            StringBuilder sb = new StringBuilder();
             sb.Append("<");
             sb.Append(NodeName);
 
@@ -644,12 +768,11 @@ namespace Jtc.CsQuery
                     sb.Append(" >");
                 }
             }
-            return sb.ToString();
         }
         
         public override string ToString()
         {
-            return ElementHtml;
+            return ElementHtml();
         }
 
         /// <summary>
@@ -669,6 +792,13 @@ namespace Jtc.CsQuery
             get
             {
                 return DomData.InnerTextAllowed(nodeNameID);
+            }
+        }
+        public bool IsBlock
+        {
+            get
+            {
+                return DomData.IsBlock(nodeNameID);
             }
         }
         public override bool Complete

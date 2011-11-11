@@ -49,12 +49,13 @@
   <ItemGroup>
     <Compile Include="CsQuery.cs" />
     <Compile Include="CsQuerySelector.cs" />
+    <Compile Include="Dom\DomDetached.cs" />
     <Compile Include="Dom\DomAttributes.cs" />
     <Compile Include="Dom\DomCData.cs" />
     <Compile Include="Dom\DomComment.cs" />
     <Compile Include="Dom\DomContainer.cs" />
     <Compile Include="Dom\DomDocumentType.cs" />
-    <Compile Include="Dom\DomElementStyle.cs" />
+    <Compile Include="Dom\CSSStyleDeclaration.cs" />
     <Compile Include="Dom\DomInvalidElement.cs" />
     <Compile Include="Dom\DomObject.cs" />
     <Compile Include="Dom\DomRoot.cs" />

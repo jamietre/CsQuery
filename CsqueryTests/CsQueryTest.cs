@@ -3,16 +3,55 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jtc.CsQuery;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MSClassInitialize = Microsoft.VisualStudio.TestTools.UnitTesting.ClassInitializeAttribute;
 
 namespace CsqueryTests
 {
+    [TestClass]
     public class CsQueryTest
     {
+        
+        public CsQueryTest()
+        {
+            Init();
+        }
+        //[TestInitialize]
+        //public void TestInit()
+        //{
+        //    if (Dom == null)
+        //    {
+        //        Init();
+        //    }
+        //}
+        ~CsQueryTest() {
+            TearDown();
+        }
+        public virtual void TearDown()
+        {
+
+        }
+        public virtual void Init()
+        {
+            
+        }
         protected CsQuery jQuery()
         {
-            return jQuery(null);
+            return jQuery((string)null);
         }
-        protected CsQuery jQuery(object parm)
+        protected CsQuery jQuery(string parm)
+        {
+            return Dom[parm];
+        }
+        protected CsQuery jQuery(IEnumerable<IDomObject> parm)
+        {
+            return Dom[parm];
+        }
+        protected CsQuery jQuery(IDomObject parm)
+        {
+            return Dom[parm];
+        }
+        protected CsQuery jQueryAny(object parm)
         {
 
             if (parm == null)
@@ -27,7 +66,8 @@ namespace CsqueryTests
             {
                 return Dom.Select((IEnumerable<IDomObject>)parm);
             }
-            else if (typeof(IDomObject).IsAssignableFrom(parm.GetType())) {
+            else if (typeof(IDomObject).IsAssignableFrom(parm.GetType()))
+            {
                 return Dom.Select((IDomObject)parm);
             }
             else
@@ -35,8 +75,8 @@ namespace CsqueryTests
                 throw new Exception("Invalid parameter");
             }
         }
-        protected IDomRoot document;
-        protected CsQuery Dom
+        public IDomRoot document;
+        public CsQuery Dom
         {
             get
             {
@@ -48,8 +88,8 @@ namespace CsqueryTests
                 document = _Dom.Dom;
             }
         }
-        private CsQuery _Dom = null;
-        protected IEnumerable<IDomObject> q(string id1, string id2 = null, string id3 = null, string id4 = null, string id5 = null, string id6 = null, string id7 = null, string id8 = null, string id9 = null)
+        public CsQuery _Dom = null;
+        public IEnumerable<IDomObject> q(string id1, string id2 = null, string id3 = null, string id4 = null, string id5 = null, string id6 = null, string id7 = null, string id8 = null, string id9 = null)
         {
             string[] ids = new string[] { id1, id2, id3, id4, id5, id6, id7, id8, id9 };
             foreach (string id in ids)

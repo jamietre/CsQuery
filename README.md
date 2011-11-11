@@ -1,10 +1,15 @@
 ## CsQuery - C# jQuery Port
 
-0.92
+11/11/11 - 0.95
+
+There have been many changes since the last update. Tests have been organized, substantial performance improvements
+(nearly doubling speed to parse HTML and clone objects), new methods to numerous to list.
+
+Release is imminent.
 
 - Extend can support Enumerable parameters containing objects
 - Added ability to select from other selector results (list of IDomObject)
-- Started in on Traversing test suite, 
+- Started in on Traversing test suite
 
 8/1/2011 - 0.91
 

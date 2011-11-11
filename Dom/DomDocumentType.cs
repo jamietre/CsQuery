@@ -28,11 +28,11 @@ namespace Jtc.CsQuery
         {
 
         }
-        public DomDocumentType(CsQuery owner)
-            : base(owner)
-        {
+        //public DomDocumentType(CsQuery owner)
+        //    : base(owner)
+        //{
 
-        }
+        //}
         public override NodeType NodeType
         {
             get { return NodeType.DOCUMENT_TYPE_NODE; }
@@ -149,6 +149,8 @@ namespace Jtc.CsQuery
             clone.NonAttributeData = NonAttributeData;
             return clone;
         }
+
+
         #endregion
     }
 }

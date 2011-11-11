@@ -131,6 +131,9 @@ namespace Jtc.CsQuery
                                 Current.AttributeName = "disabled";
                                 FinishSelector();
                                 break;
+                           // case "visible":
+                                // this needs to look up the tree, special case
+                            //    break;
                             case "contains":
                                 StartNewSelector();
                                 Current.SelectorType |= SelectorType.Contains;
@@ -603,7 +606,7 @@ namespace Jtc.CsQuery
                         ?? selectionSource;
                         
                     // if there are no temporary results (b/c there was no indexed selector) then use the whole set
-                    interimResult = GetMatch(root.Elements, finalSelectWithin, selector);
+                    interimResult = GetMatch(root.ChildElements, finalSelectWithin, selector);
                     
                 }
                 // there must be a better way to do this! Need to adjust the selector engine logic to be able to return something other than what it's looking it.

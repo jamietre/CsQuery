@@ -20,14 +20,18 @@ namespace Jtc.CsQuery
             : base()
         {
         }
-        public DomInvalidElement(CsQuery owner)
-            : base(owner)
-        {
-        }
+        //public DomInvalidElement(CsQuery owner)
+        //    : base(owner)
+        //{
+        //}
         public DomInvalidElement(string text)
             : base(text)
         {
 
+        }
+        public DomInvalidElement(int domTextIndex)
+            : base(domTextIndex)
+        {
         }
         public override string Render()
         {

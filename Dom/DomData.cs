@@ -109,11 +109,24 @@ namespace Jtc.CsQuery
                 TokenID(tag);
             }
             noInnerHtmlIDLast = (short)(nextID - 1);
+
+            foreach (string el in new string[]
+            {
+                "body","br","address","blockquote","center","div","dir","form","frameset","h1","h2","h3","h4","h5","h6","hr",
+                "isindex","li","noframes","noscript","object","ol","p","pre","table","tr","textarea","ul",
+                // html5 additions
+                "article","aside","button","canvas","caption","col","colgroup","dd","dl","dt","embed","fieldset","figcaption",
+                "figure","footer","header","hgroup","object","progress","section","tbody","thead","tfoot","video"
+            })
+            {
+                BlockElements.Add(TokenID(el));
+            }
         }
 
         private static short noInnerHtmlIDFirst;
         private static short noInnerHtmlIDLast;
-        
+
+        private static HashSet<short> BlockElements = new HashSet<short>();
 
 
         const int maxSize = 1000;
@@ -141,12 +154,16 @@ namespace Jtc.CsQuery
         {
             return nodeId == 7 || nodeId == 8 || !NoInnerHtmlAllowed(nodeId );
         }
-        
+        public static bool IsBlock(short nodeId)
+        {
+            return BlockElements.Contains(nodeId);
+
+        }
         public static short TokenID(string tokenName, bool toLower = true)
         {
             short id;
             if (toLower) {
-                tokenName = tokenName.ToLower();
+           tokenName = tokenName.ToLower();
             }
 
             if (!TokenIDs.TryGetValue(tokenName, out id))
@@ -167,5 +184,6 @@ namespace Jtc.CsQuery
         {
             return id < 0 ? "" : Tokens[id];
         }
+
     }
 }
