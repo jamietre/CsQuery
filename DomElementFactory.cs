@@ -454,7 +454,7 @@ namespace Jtc.CsQuery
             //lit.Text = text;
             if (isBound)
             {
-                lit.SetTextIndex(Owner.Dom.AddOriginalString(current.HtmlStart, current.Pos - current.HtmlStart));
+                lit.SetTextIndex(Owner.Dom,Owner.Dom.AddOriginalString(current.HtmlStart, current.Pos - current.HtmlStart));
             }
             else
             {

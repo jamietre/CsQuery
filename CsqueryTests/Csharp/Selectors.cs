@@ -7,7 +7,7 @@ using System.Reflection;
 using Jtc.CsQuery;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
-using Assert = Drintl.Testing.Assert;
+using Assert = NUnit.Framework.Assert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 
@@ -100,7 +100,19 @@ namespace CsqueryTests.Csharp
             var res = jQuery("textarea");
             Assert.AreEqual("Test textarea <div><span></div>",res.Text(),"Textare did not parse inner HTML");
         }
-       
+
+        [Test, TestMethod]
+        public void Unwrap()
+        {
+            Init();
+            int count = jQuery("#hlinks-user").Find("span").Length;
+            var unwrapItem = jQuery("span[title='2 silver badges']");
+            unwrapItem.Unwrap();
+
+            Assert.AreEqual(count - 1, jQuery("#hlinks-user").Find("span").Length, "There's one less span now");
+            Assert.IsTrue(jQuery(".badge2").Parent()[0] == jQuery("#hlinks-user")[0], "It's moved up");
+
+        }
         protected string WriteDOMObkect(IDomElement obj)
         {
             string result = "";

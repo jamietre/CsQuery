@@ -29,10 +29,10 @@ namespace Jtc.CsQuery
         {
 
         }
-        public DomInvalidElement(int domTextIndex)
-            : base(domTextIndex)
-        {
-        }
+        //public DomInvalidElement(int domTextIndex)
+        //    : base(domTextIndex)
+        //{
+        //}
         public override string Render()
         {
             if (Dom != null &&

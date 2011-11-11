@@ -49,7 +49,6 @@
   <ItemGroup>
     <Compile Include="CsQuery.cs" />
     <Compile Include="CsQuerySelector.cs" />
-    <Compile Include="Dom\DomDetached.cs" />
     <Compile Include="Dom\DomAttributes.cs" />
     <Compile Include="Dom\DomCData.cs" />
     <Compile Include="Dom\DomComment.cs" />

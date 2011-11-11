@@ -8,7 +8,7 @@ using Jtc.CsQuery.ExtensionMethods;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using System.Web;
-using Assert = Drintl.Testing.Assert;
+using Assert = NUnit.Framework.Assert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 

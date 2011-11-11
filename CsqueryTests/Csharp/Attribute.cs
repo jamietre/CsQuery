@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using Jtc.CsQuery;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
-using Assert = Drintl.Testing.Assert;
+using Assert = NUnit.Framework.Assert;
 using CollectionAssert = NUnit.Framework.CollectionAssert;
 using StringAssert = NUnit.Framework.StringAssert;
 //using Description = Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute;

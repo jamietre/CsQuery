@@ -7,7 +7,7 @@ using Jtc.CsQuery;
 using System.Dynamic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
-using Assert = Drintl.Testing.Assert;
+using Assert = NUnit.Framework.Assert;
 using Description = Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute;
 using MsTestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using TestContext = NUnit.Framework.TestContext;

@@ -972,6 +972,7 @@ namespace Jtc.CsQuery
                 while (obj.ChildNodes.Count>0) {
                     obj.ParentNode.ChildNodes.Insert(startIndex++,obj.ChildNodes[0]);
                 }
+                obj.Remove();
             }
             return this;
         }
