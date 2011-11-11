@@ -2098,6 +2098,54 @@ namespace Jtc.CsQuery
             //return !selectors.Select(Dom, Selection).IsNullOrEmpty();
         }
 
+        #region nonstandard (extension) methods
+        /// <summary>
+        /// Removes one of two selectors/objects based on the value of the first parameter. The remaining one is
+        /// explicitly shown. True keeps the first, false keeps the 2nd.
+        /// </summary>
+        /// <param name="?"></param>
+        /// <returns></returns>
+        public CsQuery KeepOne(bool which, string trueContent, string falseContent)
+        {
+            return KeepOne(which ? 0 : 1,trueContent,falseContent);
+        }
+        public CsQuery KeepOne(bool which, CsQuery trueContent, CsQuery falseContent)
+        {
+            return KeepOne(which ? 0 : 1, trueContent, falseContent);
+        }
+        /// <summary>
+        /// Removes one of two selectors/objects based on the value of the first parameter. The remaining one is
+        /// explicitly shown. True keeps the first, false keeps the 2nd. Which is zero-based.
+        /// </summary>
+        /// <param name="?"></param>
+        /// <returns></returns>
+        public CsQuery KeepOne(int which, params string[] content)
+        {
+            CsQuery[] arr = new CsQuery[content.Length];
+            for (int i = 0; i < content.Length; i++)
+            {
+                arr[i] = Select(content[i]);
+            }
+            return KeepOne(which,arr);
+        }
+        public CsQuery KeepOne(int which, params CsQuery[] content)
+        {
+            for (int i = 0; i < content.Length; i++)
+            {
+                if (i == which)
+                {
+                    content[i].Show();
+                }
+                else
+                {
+                    content[i].Remove();
+                }
+            }
+            return this;
+        }
+        #endregion
+
+        #region static methods
         public static object Extend(object target, params object[] sources)
         {
             return CsQuery.Extend(false, target, sources);
@@ -2216,11 +2264,12 @@ namespace Jtc.CsQuery
             }
 
         }
+        #endregion
 
 
 
-#endregion
         
+
         protected int GetElementIndex(IDomObject element) {
             int count = 0;
             IDomContainer parent = element.ParentNode;
@@ -2241,6 +2290,7 @@ namespace Jtc.CsQuery
             }
             return count;
         }
+        #endregion
         #region IEnumerable<IDomElement> Members
 
         public IEnumerator<IDomObject> GetEnumerator()

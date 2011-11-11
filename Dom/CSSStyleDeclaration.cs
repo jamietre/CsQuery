@@ -53,7 +53,6 @@ namespace Jtc.CsQuery
          
         }
         
-        protected string _Style = String.Empty;
         protected Dictionary<string, string> _Styles=null;
         
         protected Dictionary<string, string> Styles
@@ -116,7 +115,7 @@ namespace Jtc.CsQuery
             string style = String.Empty;
             foreach (var kvp in Styles)
             {
-                style += kvp.Key + ": " + kvp.Value + ";";
+                style += kvp.Key + ":" + kvp.Value + ";";
             }
             return style;
         }
