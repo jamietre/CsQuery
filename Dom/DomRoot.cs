@@ -16,10 +16,10 @@ namespace Jtc.CsQuery
     public interface IDomRoot : IDomContainer
     {
         //RangeSortedDictionary<IDomObject> SelectorXref { get; }
-        void AddToIndex(string key, IDomElement element);
-        void AddToIndex(IDomElement element);
+        void AddToIndex(string key, IDomObject element);
+        void AddToIndex(IDomObject element);
         void RemoveFromIndex(string key);
-        void RemoveFromIndex(IDomElement element);
+        void RemoveFromIndex(IDomObject element);
         IEnumerable<IDomObject> QueryIndex(string subKey, int depth, bool includeDescendants);
         IEnumerable<IDomObject> QueryIndex(string subKey);
         
@@ -57,28 +57,8 @@ namespace Jtc.CsQuery
         }
 
         
-        public void AddToIndex(IDomElement element)
+        public void AddToIndex(IDomObject element)
         {
-            AddToIndexImpl(element, element.IsDisconnected,true);
-        }
-        /// <summary>
-        /// Pass "disconnected" info for all children to improve performance. When calling recursively,
-        /// never reindex children -- their relative positions will not change.
-        /// </summary>
-        /// <param name="element"></param>
-        /// <param name="isDisconnected"></param>
-        /// <param name="reIndex"></param>
-        protected void AddToIndexImpl(IDomElement element, bool isDisconnected, bool reIndex)
-        {
-            if (isDisconnected)
-            {
-                RemoveFromIndex(element);
-                if (reIndex)
-                {
-                    element.Reindex();
-                }
-            }
-            DomRoot document = (DomRoot)Document;
             foreach (string key in element.IndexKeys())
             {
                 AddToIndex(key, element);
@@ -88,16 +68,16 @@ namespace Jtc.CsQuery
             {
                 foreach (DomElement child in element.ChildElements)
                 {
-                    AddToIndexImpl(child,isDisconnected,false);
+                    AddToIndex(child);
                 }
             }
-
         }
-        public void AddToIndex(string key, IDomElement element)
+
+        public void AddToIndex(string key, IDomObject element)
         {
             SelectorXref.Add(key, element);
         }
-        public void RemoveFromIndex(IDomElement element)
+        public void RemoveFromIndex(IDomObject element)
         {
             if (element.HasChildren)
             {
@@ -325,14 +305,15 @@ namespace Jtc.CsQuery
         }
         private bool _settingDocType = false;
         protected DocType _DocType = 0;
-        public RangeSortedDictionary<IDomElement> SelectorXref {
+        public RangeSortedDictionary<IDomObject> SelectorXref
+        {
             get
             {
                 return _SelectorXref.Value;
             }
         }
-        protected Lazy<RangeSortedDictionary<IDomElement>> _SelectorXref = 
-            new Lazy<RangeSortedDictionary<IDomElement>>();
+        protected Lazy<RangeSortedDictionary<IDomObject>> _SelectorXref =
+            new Lazy<RangeSortedDictionary<IDomObject>>();
 
         public override bool InnerHtmlAllowed
         {

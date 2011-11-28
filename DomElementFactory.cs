@@ -468,7 +468,7 @@ namespace Jtc.CsQuery
             else
             {
                 string text = BaseHtml.SubstringBetween(current.HtmlStart, current.Pos);
-                lit.InnerText = text;
+                lit.NodeValue = text;
             }
              
             if (!current.AllowLiterals)

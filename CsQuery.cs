@@ -120,9 +120,9 @@ namespace Jtc.CsQuery
         }
         public IDomObject Get(int index)
         {
-            int effectiveIndex = index < 0 ? _Selection.Count+index-1 : index;
+            int effectiveIndex = index < 0 ? Selection.Count+index-1 : index;
 
-            if (effectiveIndex >= 0 && effectiveIndex < _Selection.Count)
+            if (effectiveIndex >= 0 && effectiveIndex < Selection.Count)
             {
                 return Selection.ElementAt(effectiveIndex);
             }
@@ -232,7 +232,9 @@ namespace Jtc.CsQuery
                 if (obj.InnerTextAllowed)
                 {
                     obj.ChildNodes.Clear();
-                    DomText text = new DomText(value);
+                    // Element types that cannot have HTML contents should not have the value encoded.
+                    string textValue = obj.InnerHtmlAllowed ? System.Web.HttpUtility.HtmlEncode(value) : value;
+                    DomText text = new DomText(textValue);
                     obj.ChildNodes.Add(text);
                 }
             }
@@ -263,7 +265,7 @@ namespace Jtc.CsQuery
                 lastElement = obj;
                 if (obj.NodeType == NodeType.TEXT_NODE)
                 {
-                    sb.Append(obj.InnerText);
+                    sb.Append(obj.NodeValue);
                 }
                 else
                 {

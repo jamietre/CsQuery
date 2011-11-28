@@ -994,7 +994,7 @@ namespace Jtc.CsQuery
             {
                 if (e.NodeType==NodeType.TEXT_NODE)
                 {
-                    if (((IDomText)e).InnerText.IndexOf(text) >= 0)
+                    if (((IDomText)e).NodeValue.IndexOf(text) >= 0)
                     {
                         return true;
                     }

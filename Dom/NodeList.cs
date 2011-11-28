@@ -25,30 +25,50 @@ namespace Jtc.CsQuery
         }
         protected List<IDomObject> _InnerList = null;
 
-        protected void MoveElement(IDomObject element)
+        protected void RemoveParent(IDomObject element)
         {
- 
-            // If this element does not have children, ChildNodes will return null and an
-            // exception will result - so don't bother checking to improve perofrmance.
-            
-            // Must always remove from the DOM. It doesn't matter if it's the same DOM or not. An element can't be part of two DOMs - that would require a clone.
-            // If it is the same DOM, it would remain a child of the old parent as well as the new one if we didn't remove first.
             if (element.ParentNode != null)
             {
-                element.ParentNode.RemoveChild(element);
+                if (!element.IsDisconnected)
+                {
+                    element.Document.RemoveFromIndex(element);
+                }
+                ((DomObject)element).ParentNode = null;
             }
-            DomObject el = (DomObject)element;
-            if (!(element is IDomRoot)) {
-                el.ParentNode = Owner;
-            }
+            
 
         }
-
+        protected void AddParent(IDomObject element, int index)
+        {
+            DomObject item = (DomObject)element;
+            item.ParentNode = Owner;
+            item.Index = index;
+            if (element.NodeType == NodeType.ELEMENT_NODE && !element.IsDisconnected)
+            {
+                element.Document.AddToIndex(element);
+            }
+        }
         #region IList<T> Members
 
         public int IndexOf(IDomObject item)
         {
             return _InnerList == null ? -1 : InnerList.IndexOf(item);
+        }
+        /// <summary>
+        /// Add a child to this element 
+        /// </summary>
+        /// <param name="element"></param>
+        public void Add(IDomObject item)
+        {
+            //element.ParentNode.ChildNodes.InnerList.RemoveAt(element.Index);
+            if (item.ParentNode != null)
+            {
+                item.Remove();
+            }
+            //emoveParent(item);
+            InnerList.Add(item);
+            AddParent(item, InnerList.Count - 1);
+
         }
         /// <summary>
         /// Adds a child element at a specific index
@@ -57,9 +77,15 @@ namespace Jtc.CsQuery
         /// <param name="element"></param>
         public void Insert(int index, IDomObject item)
         {
-            MoveElement(item);
+            //RemoveParent(item);
+            if (item.ParentNode != null)
+            {
+                item.Remove();
+            }
             InnerList.Insert(index, item);
-            Reindex(index);
+            // This must come BEFORE AddParent - otherwise the index entry will be present already at this position 
+            Reindex(index + 1); 
+            AddParent(item, index);
         }
         /// <summary>
         /// Remove an item from this list and update index.
@@ -67,60 +93,50 @@ namespace Jtc.CsQuery
         /// <param name="index"></param>
         public void RemoveAt(int index)
         {
-            
-            if (InnerList[index].NodeType == NodeType.ELEMENT_NODE)
+            IDomObject item = InnerList[index];
+            InnerList.RemoveAt(index);
+            RemoveParent(item);
+            Reindex(index);
+        }
+
+        /// <summary>
+        /// Remove an element from this element's children
+        /// </summary>
+        /// <param name="element"></param>
+        public bool Remove(IDomObject item)
+        {
+            if (item.ParentNode != this.Owner)
             {
-                DomElement item = InnerList[index] as DomElement;
-
-                if (!item.IsDisconnected)
-                {
-                    item.Document.RemoveFromIndex(item);
-
-                }
-                item.ParentNode = null;
+                return false;
             }
             else
             {
-                ((DomObject)InnerList[index]).ParentNode=null;
+                RemoveAt(item.Index);
+                return true;
             }
-            InnerList.RemoveAt(index);
-            Reindex(index);
         }
-                        
-        
-        //Reindex all documents > index (used after inserting)
+        //Reindex all documents > index (used after inserting, when relative index among siblings changes)
         protected void Reindex(int index)
         {
-            if (InnerList.Count - 1 >= index)
+            if (index < InnerList.Count)
             {
-                bool disconnected = InnerList[index].IsDisconnected;
+                bool isDisconnected = Owner.IsDisconnected;
+                //bool oldIsDisconnected = InnerList[index].IsDisconnected;
+
                 for (int i = index; i < InnerList.Count; i++)
                 {
-                    if (InnerList[i].NodeType == NodeType.ELEMENT_NODE)
-                    {
-                        var el = (DomElement)InnerList[i];
-                        if (!disconnected)
-                        {
-                            el.Document.RemoveFromIndex(el);
-                        }
-                    }
-                }
-                for (int i = index; i < InnerList.Count; i++)
-                {
-                    if (InnerList[i].NodeType == NodeType.ELEMENT_NODE)
+                    if (!isDisconnected && InnerList[i].NodeType == NodeType.ELEMENT_NODE)
                     {
                         var el = (DomElement)InnerList[i];
 
                         // This would get assigned anyway but this is much faster since we already know the index
-                        el._Index = i;
-                        if (!disconnected)
-                        {
-                            el.Document.AddToIndex(el);
-                        }
+                        Owner.Document.RemoveFromIndex(el);
+                        el.Index = i;
+                        Owner.Document.AddToIndex(el);
                     }
                     else
                     {
-                        ((DomObject)InnerList[i])._Index = i;
+                        ((DomObject)InnerList[i]).Index = i;
                     }
                 }
             }
@@ -149,22 +165,7 @@ namespace Jtc.CsQuery
         #endregion
 
         #region ICollection<IDomObject> Members
-               /// <summary>
-        /// Add a child to this element 
-        /// </summary>
-        /// <param name="element"></param>
-        public void Add(IDomObject item)
-        {
-            MoveElement(item);
-          
-            InnerList.Add(item);
-            ((DomObject)item)._Index = InnerList.Count-1;
-            if (item.NodeType == NodeType.ELEMENT_NODE && !item.IsDisconnected)
-            {
-                IDomElement el = (IDomElement)item;
-                el.Document.AddToIndex(el);
-            }
-        }
+
         public void AddRange(IEnumerable<IDomObject> elements)
         {
             // because elements will be removed from their parent while adding, we need to copy the
@@ -215,19 +216,7 @@ namespace Jtc.CsQuery
                 return false;
             }
         }
-        /// <summary>
-        /// Remove an element from this element's children
-        /// </summary>
-        /// <param name="element"></param>
-        public bool Remove(IDomObject item)
-        {
-            if (item.ParentNode != this.Owner) {
-                return false;
-            } else {
-                RemoveAt(item.Index);
-                return true;
-            }
-        }
+
 
         #endregion
 

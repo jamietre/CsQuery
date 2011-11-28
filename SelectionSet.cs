@@ -40,7 +40,11 @@ namespace Jtc.CsQuery
 
                 if (dirty || _sortedList==null)
                 {
-                    _sortedList = innerList.OrderBy(item => item.Path);
+                    //TODO - right now we copy the list to the target when first accessed in order to ensure its integrity
+                    // should the path of an item change (e.g. b/c it's removed from the DOM). Ideally we would not
+                    // require this, so the list is only enumerated when needed, but I can't think how to accomplish this easily
+                    _sortedList = new List<T>(innerList.OrderBy(item => item.Path));
+                    dirty = false;
                 }
                 return _sortedList;
             }
@@ -50,7 +54,7 @@ namespace Jtc.CsQuery
         protected bool dirty = false;
         protected void Touch()
         {
-            dirty = true ;
+            dirty = true;
         }
         /// <summary>
         /// When true, elements are returned in DOM order. Otherwise, they are returned in the order added.

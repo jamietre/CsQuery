@@ -27,7 +27,7 @@ namespace CsqueryTests.CSharp
         {
             string html = Support.GetFile("CsQueryTests\\Resources\\TestHtml2.htm");
             csq = CsQuery.Create(html);
-            RangeSortedDictionary<IDomElement> test = ((DomRoot)csq.Document).SelectorXref;
+            RangeSortedDictionary<IDomObject> test = ((DomRoot)csq.Document).SelectorXref;
             foreach (var item in test)
             {
                 ;

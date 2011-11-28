@@ -10,7 +10,7 @@ namespace Jtc.CsQuery
     public partial class CsQuery
     {
         // Used to manage extension methods by keeping a reference within the base CsQuery to whatever object it creates.
-        internal Dictionary<string, object> ExtensionCache
+        internal static Dictionary<string, object> ExtensionCache
         {
             get
             {

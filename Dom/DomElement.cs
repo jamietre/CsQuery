@@ -26,7 +26,6 @@ namespace Jtc.CsQuery
 
         string ElementHtml();
 
-        IEnumerable<string> IndexKeys();
         void Reindex();
     }
   
@@ -99,7 +98,7 @@ namespace Jtc.CsQuery
         {
             return key + ">" + path;
         }
-        public IEnumerable<string> IndexKeys()
+        public override IEnumerable<string> IndexKeys()
         {
             //if (!Complete)
             //{
@@ -614,7 +613,16 @@ namespace Jtc.CsQuery
                     StringBuilder sb = new StringBuilder();
                     foreach (IDomObject elm in ChildNodes)
                     {
-                        elm.Render(sb);
+                        // For node types that cannot have inner HTML, these should all be text nodes and 
+                        // we want to return the literal text
+                        if (!InnerHtmlAllowed && elm.NodeType == NodeType.TEXT_NODE)
+                        {
+                            sb.Append(elm.NodeValue);
+                        }
+                        else
+                        {
+                            elm.Render(sb);
+                        }
                     }
                     return sb.ToString();
                 }
@@ -653,7 +661,7 @@ namespace Jtc.CsQuery
 
                 ChildNodes.Clear();
 
-                DomText text = new DomText(value);
+                DomText text = new DomText(System.Web.HttpUtility.HtmlEncode(value));
                 ChildNodes.Add(text);
             }
         }

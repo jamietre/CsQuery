@@ -46,7 +46,11 @@ namespace Jtc.CsQuery
             // is moved to another dom, it will break
             stringRef = dom;
         }
-        protected string RawText
+
+        IDomRoot stringRef = null;
+        string unboundText;
+        
+        public override string NodeValue
         {
             get
             {
@@ -56,49 +60,15 @@ namespace Jtc.CsQuery
             }
             set
             {
-                unboundText =value;
+               unboundText =value;
                 textIndex = -1;
             }
         }
-        IDomRoot stringRef = null;
-        string unboundText;
-        public override string InnerText
-        {
-            get
-            {
-                return HttpUtility.HtmlDecode(RawText);
-            }
-            set
-            {
-                RawText = HttpUtility.HtmlEncode(value);
-            }
-        }
-        public override string NodeValue
-        {
-            get
-            {
-                return InnerText;
-            }
-            set
-            {
-                InnerText = value;
-            }
-        }
+        
 
-        public override string InnerHTML
-        {
-            get
-            {
-                return RawText;
-            }
-            set
-            {
-                RawText = value;
-            }
-        }
         public override string Render()
         {
-            return InnerHTML;
+            return NodeValue;
         }
         public override DomText Clone()
         {
@@ -108,7 +78,6 @@ namespace Jtc.CsQuery
             domText.stringRef = stringRef;
             return domText;
         }
-
 
         public override bool InnerHtmlAllowed
         {

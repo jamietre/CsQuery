@@ -84,6 +84,7 @@ namespace Jtc.CsQuery
         string PathID { get; }
         string Path { get; }
         bool IsDisconnected { get; }
+        IEnumerable<string> IndexKeys();
         //int Ordinal { get; }
     }
 
@@ -109,8 +110,11 @@ namespace Jtc.CsQuery
         }
         public abstract bool HasChildren
         { get; }
-        
-        
+
+        public virtual IEnumerable<string> IndexKeys()
+        {
+            return Objects.EmptyEnumerable<string>();
+        }
       
 
         //protected string _Path = null;
@@ -138,7 +142,7 @@ namespace Jtc.CsQuery
                 return Document == null;
             }
         }
-        public abstract int Index { get; }
+        public abstract int Index { get; internal set; }
         
         /// <summary>
         /// Unique ID assigned when added to a dom. This is not the full path but just the ID at this level. The full
@@ -247,6 +251,11 @@ namespace Jtc.CsQuery
                 }
                 return _Index;
             }
+            internal set
+            {
+                _Index = value;
+                _PathID = null;
+            }
         }
 
         /// <summary>
@@ -351,7 +360,7 @@ namespace Jtc.CsQuery
         {
             get
             {
-                return String.Empty;
+                throw new Exception("Accessing InnerHtml is not valid for this element type.");
             }
             set
             {
@@ -362,7 +371,7 @@ namespace Jtc.CsQuery
         {
             get
             {
-                return String.Empty;
+                throw new Exception("Accessing InnerText is not valid for this element type.");
             }
             set
             {

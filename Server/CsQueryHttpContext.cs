@@ -15,7 +15,7 @@ namespace Jtc.CsQuery.Server
     public class CsQueryHttpContext
     {
         public bool AspNet { get; set; }
-        protected CsQuery Owner = null;
+        public CsQuery Owner = null;
         protected HttpContext Context
         {
             get
