@@ -1,5 +1,279 @@
 ## CsQuery - C# jQuery Port
 
+
+(c) 2011 James Treworgy
+MIT License
+
+Requires: .NET 4.0 Framework
+
+
+FEATURES:
+
+- Fast, non-recursive, tokenizing, forgiving HTML parser
+- Object model mostly replicates browser DOM
+- Validate CSS if desired
+- It's just like jQuery
+
+SHORTCOMINGS:
+
+- Subset of jQuery API, though at this point most DOM manipulation and selection methods have been implemented. 
+- Doesn't validate HTML (on the list)
+
+**Object Model**
+
+CsQuery parses an HTML string into an object represetation of a DOM. There are objects that replicate most browser DOM objects:
+
+    IDomObject            any element in the DOM (all interfaces inherit this)
+
+    IDomRoot              a DOM, the equivalent of "document"
+        IDomFragment      a disconnected element or collection of elements. Generally, this is something
+ 	                         you created that doesn't have a "body" tag.
+    IDomElement           an Element node (something with a tag name)
+    IDomText              a Text node
+    IDomComment           a Comment node
+    IDomCData             a CDATA node
+    IDomDocumentType      a DOCTYPE node
+    
+There are other interfaces & objects:
+
+    IDomContainer         any node type that can contain other nodes
+    IDomInvalidElement    Data that could not be parsed (e.g. broken HTML that couldn't be handled). 
+                              It is mostly treated as text.	                   
+	IDomSpecialElement    any element that contains its information in the tag itself (comments, doctype, cdata)
+    
+    DomAttributes         An object to manage attributes for Element nodes
+    NodeList              An object to manage collections of nodes (children)
+    CSSStyleDeclaration   An object to manage styles
+
+To create & manipulate a construct created of these elements, you use the static constructor methods of the
+CsQuery object. You can build things directly from nodes, too, but usually you start with HTML. Most CsQuery
+methods return a CsQuery object, which is also IEnumerable<IDomObject> exposing the current selection.
+
+    // Create a DOM from a string of HTML
+    var myDom = CsQuery.Create("<html><head></head><body><div>Hello world!</div></body></html>");
+    var myDom = CsQuery.Create("<span>Hello world!</span>");
+    
+    // From a file
+    var myDom = CsQuery.CreateFromFile(filePath);
+    
+    // From a web site
+    var myDom = CsQuery.Server().CreateFromUrl(url);
+    
+    // from some elements
+    List<IDomElement> elList = new List<IDomElement>();
+    ...
+    var myDom = CsQuery.Create(elList);
+
+You can create new objects from an existing context like jQuery. Use "new" for this. 
+
+    var newObj = new CsQuery("div",myDom);
+    var newObj = new CsQuery("div",elList);
+
+"New" methods create an object from an existing context (if possible). Static methods create a new DOM.
+
+
+The default method is "Select." Use this as you would use the default $(..) method in jQuery:
+
+    var allDivs = myDom.Select("div");
+
+You can also use the indexer, which is synonymous with Select:
+
+    var allDivs = myDom["div"];
+    var webLinks = myDom["span > a[href*='www']"];
+    
+"Select" is different from "Find." Find is the same as the jQuery verison: it searches only the children.
+
+    var html = "<div><div></div></div>";
+    var myDom = CsQuery.Create(html);
+    myDom.Select("div").Length == 2   // true
+    myDom.Find("div").Length == 1     // true
+    
+    ReferenceEquals(myDom.Find("div")[0], myDom.Select("div").Eq(1)[0]);   // true
+    
+Everything is chainable like jQuery:
+
+    var someStuff = myDom.Select("span").Clone().Append("<div />").Css("border-width","1px");
+
+You can create new elements as you would in Javascript:
+
+    var div = myDom.Document.CreateElement('div');
+
+The jQuery "do everything" syntax works for creating elements too. 
+
+	var div = myDom.Select("<div />");
+    var div = myDom["<div />"];
+
+There's a special object type called JsObject that is like and ExpandoObject. This lets you use CsQuery.Extend to 
+do all kinds of crazy stuff. Extend can also accept regular objects and return JsObjects. The main difference
+between JsObject and ExpandoObject is that it returns null when accessing missing properties.
+
+    dynamic css = CsQuery.ParseJSON("{ 'width': '12px', 'height': '20px', 'checked': false }");
+    CsQuery.Extend(css,"{'display':'block'});
+    myDom["div"].Css(css);
+    
+    dynamic extended = CsQuery.Extend(null,SomeRegularObject,new { newProp: "This property was added"});
+    string value = extended.newProp;
+
+There are some unique properties and methods to CsQuery instances:
+
+    Elements            only the Element node results of the current selection set (excludes text, comment, cdata, etc.)
+    Selection           The selection set (same as enumerating the object directly).
+    Selectors           current selectors applied to create the Elements
+    Render()            Render the HTML text for the entire DOM
+    RenderSelection()   Render the HTML for all selected elements in sequence
+
+**Methods**
+
+Most DOM manipulation and selection methods have been implemented. I will try to create a list of NOT implemented
+methods soon as this is nearly complete.
+
+    Add
+	AddClass
+	AndSelf
+    Append
+    AppendTo
+    Attr
+    AttrSet*
+    AttrReplace
+    Before
+    Children
+    Clone
+    Closest
+    Contents
+    Css
+    CssSet*
+    Data
+    Each (uses delegates - can pass a function delegate or anonymous function)
+    Eq
+    Extend
+    Filter
+    Find
+    First
+    FirstElement*
+    Get
+    Has
+    Height
+    Hide
+    Html
+    Index
+    InsertAfter
+    InsertBefore    
+    Is
+    Last
+    Length
+    Map
+    Next
+    Not
+    Parent
+    Parents
+    Prev
+    Prop
+    Remove
+    RemoveAttr
+	RemoveClass
+	RemoveData
+    ReplaceWith
+    Show
+    Siblings
+    Text
+    Toggle
+    ToggleClass
+    Unwrap
+    Val
+    Width
+    Wrap
+    
+
+**Each**
+
+Each accepts a Func<int,IDomObject>.
+
+    d.Find('div').Each((int index,IDomObject e) => {
+        if (index==1) {
+           d.Remove(e);
+        }
+    });
+
+**Everything Else**
+
+Matches jQuery syntax
+
+
+**Selectors**
+
+I've implemented most CSS3 selectors. There are some exceptions. This list is not complete right now.
+
+    tagname
+    .class
+    #id
+     
+    [attr]            attribute exists
+    [attr="value"]    attribute equals
+    [attr^="value"]   attribute starts with
+    [attr*="value"]   attribute contains
+    [attr~="value"]   attribute contains word
+    [attr!="value"]   attribute not equal (nor does not exist)
+    [attr$="value"]   attribute ends with
+    
+    :checked          checked
+    :contains         
+    :disabled
+    :enabled
+    :selected
+	    
+	:eq(n)            nth matching result
+    :gt(n)
+	:lt(n)
+	:even
+    :odd
+    :first
+	:last
+	
+    :file
+    :button           type="button" or <button>
+    :checkbox         type="checkbox"    
+	
+
+    selectorA, selectorB 	cumulative selector
+    selectorA selectorB		descendant selector
+    selecotrA > selectorB	child selector
+
+
+
+
+**Special/Nonstandard Methods:**
+    
+    Select(selector)
+    
+Because there's no notion of a global DOM in a C# app, the DOM is part of a CsQuery object. Each
+object that gets created as a result of a selection refers to the root object which was created
+from an HTML string or elements. Therefore the "Select" method is the equivalent of $('selector').
+
+    CssGet
+    
+Same as Css( name ) to get a style. This signature is used to assign Css from a JSON object in
+this implementation (as this is the more useful/more common usage).
+
+**Other Methods**
+
+    SelectionHtml()
+
+Returns the full HTML for each element in the selection, separated by commas.
+
+    SelectionElements()
+
+Returns the markup for each element in the selection excluding inner HTML and children.
+
+   Render()
+
+Render the entire DOM as a string.
+
+**Change Log**
+
+11/28/11 - 0.96
+
+More methods. Some changes to the DOM model.
+
 11/11/11 - 0.95
 
 There have been many changes since the last update. Tests have been organized, substantial performance improvements
@@ -81,224 +355,3 @@ TODO
 Rendering attributes without quotes (when setting doctype to HTML4) seems to break things - must not be handling some condition properly
    * This needs to be an option, not a function of doctype
 
-(c) 2011 James Treworgy
-MIT License
-
-Requires: .NET 4.0 Framework
-
-
-FEATURES:
-
-- Fast, non-recursive, forgiving HTML parser
-- Extensible with simple plugin model (see Server folder) 
-- Included plugin to handle form postback values (e.g. update DOM with values from form posts)
-- It's just like jQuery
-
-SHORTCOMINGS
-
-- Subset of jQuery API
-- DOM model does not exactly match browser DOM API. Am not sure whether the convenience of having
-  a better API outwieighs the lack of portability between client and server - may revisit this.
-- Some nuances of element properties (e.g."checked") may not exactly mimic browser behavior. This isn't consistent across browsers though,
-
-
-**Object Model**
-
-    CsQuery               like $, a jQuery object
-    Selectors             a Selectors object (contains one or more Selector objects, defines a selection set)
-    Selector              a single selector
-
-    CsQuery.Dom           The DOM. This is parsed from the html provided when a CsQuery is created. 
-                          CsQuery objects that are created as a result of methods all reference the .Dom from the uppermost object.
-    CsQuery.Elements      results of the selection
-    CsQuery.Selectors     current selectors applied to create the Elements
-
-	INTERFACES 
-
-    IDomObject            any element in the DOM (all interfaces inherit this)
-	IDomSpecialElement    any element that contains its information in the tag itself (comments, doctype, cdata)
-
-	IDomContainer         Any DOM element that can contain other elements
-
-    IDomRoot              The DOM itself
-	    :IDomContainer
-    IDomElement           A regular DOM element
-	    :IDomContainer
-	IDomText              A text node
-	   :IDomSpecialElement
-	IDomInvalidElement    A text node that looks like an HTML closing tag, but is mismatched (treated like text)
-	   :IDomText
-	IDomComment           A comment
-	   :IDomSpecialElement
-	IDomCData             A CDATA node
-	   :IDomSpecialElement
-	IDomDocumentType      A doctype node
-	   :IDomSpecialElement
-
-	ABSTRACT CLASSES
-
-	DomContainer<T>:  DomObject<T>
-	DomObject<T>: IDomObject
-
-	OBJECTS
-
-	DomRoot: DomContainer, IDomRoot
-	DomDocumentType: DomContainer, IDomRoot
-	DomElement: DomContainer, IDomElement
-	DomText: IDomText
-	DomInvalidElement: IDomInvalidElement
-	DomComment: IDomComment
-	DomCData: IDomCData
-	DomDocumentType: IDomDocumentType
-
-
-**Create DOM**
-
-    var d = CsQuery.Create(html);
-	var d = CsQuery.CreateFromElement(IDomObject e);
-	var d = CsQuery.CreateFromElement(IEnumerable<IDomObject> e);
-
-**Create a new jQuery from existing one**
-
-    var d = new CsQuery("div",d);  <= First parm is a selector, second is an existing CsQuery object. Internally, this method is
-                                       used for many methods to create the return object. Like jQuery, CsQuery returns a new object
-                                       for most methods, except for methods designed to affect the DOM like "remove" and "append."
-
-	var d = new CsQuery(IDomObject e, CsQuery context);
-	var d = new CsQuery(IEnumerable<IDomObject> e, CsQuery context);
-	
-	var d = new CsQuery(CsQuery context)  <= Copies exactly
-
-**Selecting**
-
-A CsQuery object is representative of a specific DOM. Unlike a web browser, you can have any number of DOMs - each CsQuery is bound to the dom from which it
-was created using one of the static methods.
-
-The Select method creates a selection in that object. If subselection methods are used before a Select, then the top-level elements of the DOM are returned
-as the selection. 
-
-    var d = CsQuery.Select("selector"); <= this is the equivalent of $('selector');
-
-This would return matches *within the children* of the top level matches. Assuming your DOM was created from a fully formed HTML document, this would be 
-the children of the <html> element.
-    
-	var d = CsQuery.Find("body");  <= return just the body
-	var d = CsQuery.Find("html");  <= returns nothing - html is a top-level element
-
-	var d = CsQuery.Select("html") <= returns the DOM (except for any text nodes that may exist outside the <html> tag
-	var d = CsQuery.Select("body") <= same result as .Find("body")
-
-**Render DOM**
-
-    string html = d.Render();
-
-**Inspect HTML**
-
-    d.Find('div')[0].html   <= [0] returns a DomElement object (just like a dom element in javascript). 
-                               html renders its html. InnerHtml renders its inner html (just like javascript)
-
-**Each**
-
-    d.Find('div').Each((index,e) => {
-        if (index==1) {
-           d.Remove(e);
-        }
-    });
-
-**Everything Else**
-
-Matches jQuery syntax
-
-
-**Implemented selectors so far**
-
-    tagname
-    .class
-    #id
-     
-    [attr]            attribute exists
-    [attr="value"]    attribute equals
-    [attr^="value"]   attribute starts with
-    [attr*="value"]   attribute contains
-    [attr~="value"]   attribute contains word
-    [attr!="value"]   attribute not equal (nor does not exist)
-    [attr$="value"]   attribute ends with
-    
-    :checked          checked
-    :contains         
-    :disabled
-    :enabled
-    :selected
-	    
-	:eq(n)            nth matching result
-    :gt(n)
-	:lt(n)
-	:even
-    :odd
-    :first
-	:last
-	
-    :file
-    :button           type="button" or <button>
-    :checkbox         type="checkbox"    
-	
-
-    selectorA, selectorB 	cumulative selector
-    selectorA selectorB		descendant selector
-    selecotrA > selectorB	child selector
-
-
-**Implemented methods so far:**
-
-    jQuery (create new jQuery object from existing object, HTML, or DOM element(s))
-
-    Add
-	AddClass
-    Append
-    Attr
-    Before
-    Children
-    Clone
-    Css
-    Each (uses delegates - can pass a function delegate or anonymous function)
-    Eq
-    Find
-    First
-    Hide
-    InsertAfter
-    Is
-    Next
-    Parent
-    Prev
-    Remove
-	RemoveClass
-    ReplaceWith
-    Show
-    Val
-
-**Special/Nonstandard Methods:**
-    
-    Select(selector)
-    
-Because there's no notion of a global DOM in a C# app, the DOM is part of a CsQuery object. Each
-object that gets created as a result of a selection refers to the root object which was created
-from an HTML string or elements. Therefore the "Select" method is the equivalent of $('selector').
-
-    CssGet
-    
-Same as Css( name ) to get a style. This signature is used to assign Css from a JSON object in
-this implementation (as this is the more useful/more common usage).
-
-**Other Methods**
-
-    SelectionHtml()
-
-Returns the full HTML for each element in the selection, separated by commas.
-
-    SelectionElements()
-
-Returns the markup for each element in the selection excluding inner HTML and children.
-
-   Render()
-
-Render the entire DOM as a string.
