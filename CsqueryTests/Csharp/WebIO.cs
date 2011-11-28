@@ -15,14 +15,14 @@ namespace CsqueryTests.Csharp
     [TestFixture, TestClass, Description("CsQuery Tests (Not from Jquery test suite)")]
     public class WebIO : CsQueryTest
     {
-        [Test]
+        [Test,TestMethod]
         public void GetHtml()
         {
-            Dom = new CsQuery();
-            //Dom.Server().CreateFromUrl("http://www.outsharked.com");
+            Dom = CsQuery.Create();
+            Dom.Server().CreateFromUrl("http://www.outsharked.com");
 
 
-           // Assert.IsTrue(Dom.Dom != null, "Dom was created");
+            Assert.IsTrue(Dom.Document != null, "Dom was created");
         }
     }
 }

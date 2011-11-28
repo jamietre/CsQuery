@@ -20,10 +20,6 @@ namespace Jtc.CsQuery
             : base()
         {
         }
-        //public DomInvalidElement(CsQuery owner)
-        //    : base(owner)
-        //{
-        //}
         public DomInvalidElement(string text)
             : base(text)
         {
@@ -35,8 +31,8 @@ namespace Jtc.CsQuery
         //}
         public override string Render()
         {
-            if (Dom != null &&
-                Dom.DomRenderingOptions.HasFlag(DomRenderingOptions.RemoveMismatchedCloseTags))
+            if (Document != null &&
+                Document.DomRenderingOptions.HasFlag(DomRenderingOptions.RemoveMismatchedCloseTags))
             {
                 return String.Empty;
             }

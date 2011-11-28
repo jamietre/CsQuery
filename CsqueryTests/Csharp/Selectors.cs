@@ -17,18 +17,28 @@ namespace CsqueryTests.Csharp
     [TestFixture, TestClass,Description("CsQuery Tests (Not from Jquery test suite)")]
     public class Selectors: CsQueryTest
     {
-
-        [SetUp]
-        public override void Init()
+        
+        public override void FixtureSetUp()
         {
             string html = Support.GetFile("CsQueryTests\\Resources\\TestHtml.htm");
             Dom = CsQuery.Create(html);
         }
-        [Test,TestMethod]
-        public void GetElementById()
+        protected string WriteDOMObject(IDomElement obj)
         {
-            IDomElement el = document.GetElementById("reputation_link");
-
+            string result = "";
+            foreach (var kvp in obj.Attributes)
+            {
+                if (kvp.Value != null)
+                {
+                    result += kvp.Key + "=" + kvp.Value + ",";
+                }
+                else
+                {
+                    result += kvp.Value + ",";
+                }
+            }
+            result += "InnerHtml=" + obj.InnerHTML;
+            return result;
         }
 
         [Test,TestMethod]
@@ -50,7 +60,7 @@ namespace CsqueryTests.Csharp
         public void AttributeEqualsSelector()
         {
             CsQuery res = Dom.Find("span[name=badge_span_bronze]");
-            Assert.AreEqual("13",res[0].InnerHtml, "InnerHtml of element id=badge_span_bronze did not match");
+            Assert.AreEqual("13",res[0].InnerHTML, "InnerHtml of element id=badge_span_bronze did not match");
 
         }
         [Test,TestMethod]
@@ -90,7 +100,7 @@ namespace CsqueryTests.Csharp
                 string inner = "";
                 Dom.Find("#reputation_link").Find("span").Each((IDomElement e) =>
                 {
-                    inner = e.InnerHtml;
+                    inner = e.InnerHTML;
                 });
                 Assert.AreEqual("3,215", inner, "Found '" + inner + "' in span inside #reputation_link");
         }
@@ -98,37 +108,25 @@ namespace CsqueryTests.Csharp
         public void TextArea()
         {
             var res = jQuery("textarea");
-            Assert.AreEqual("Test textarea <div><span></div>",res.Text(),"Textare did not parse inner HTML");
+            Assert.AreEqual("Test textarea <div><span></div>",res.Text(),"Textarea did not parse inner HTML");
         }
 
         [Test, TestMethod]
-        public void Unwrap()
+        public void Siblings()
         {
-            Init();
-            int count = jQuery("#hlinks-user").Find("span").Length;
-            var unwrapItem = jQuery("span[title='2 silver badges']");
-            unwrapItem.Unwrap();
+            var res = jQuery("span[title='13 bronze badges']");
+            var childCount = res.Parent().Children().Length;
+            Assert.AreEqual(childCount-1, res.Siblings().Length, "Sibling count correct");
 
-            Assert.AreEqual(count - 1, jQuery("#hlinks-user").Find("span").Length, "There's one less span now");
-            Assert.IsTrue(jQuery(".badge2").Parent()[0] == jQuery("#hlinks-user")[0], "It's moved up");
+            res= res.Add(jQuery("span[title='2 silver badges']"));
+            Assert.AreEqual(2, res.Length, "Result set has 2 members");
+            Assert.AreEqual(res[0].ParentNode ,res[1].ParentNode, "The two members are in fact siblings");
+            Assert.AreEqual(childCount, res.Siblings().Length, "Siblings includes both members of the set when more than one sibling included");
 
+            List<IDomObject> correctList = new List<IDomObject>(jQuery("#hlinks-user").Children());
+             
+            Assert.AreEqual(correctList,new List<IDomObject>(res.Siblings()),"The child list is identical to the sibling list");
         }
-        protected string WriteDOMObkect(IDomElement obj)
-        {
-            string result = "";
-            foreach (var kvp in obj.Attributes)
-            {
-                if (kvp.Value != null)
-                {
-                    result += kvp.Key + "=" + kvp.Value + ",";
-                }
-                else
-                {
-                    result += kvp.Value + ",";
-                }
-            }
-            result += "InnerHtml=" + obj.InnerHtml;
-            return result;
-        }
+
     }
 }

@@ -98,6 +98,7 @@ namespace Jtc.CsQuery
                         switch (key)
                         {
                             case "checkbox":
+                            case "radio":
                             case "button":
                             case "file":
                             case "text":
@@ -171,7 +172,7 @@ namespace Jtc.CsQuery
                                 break;
                             case "first":
                                 StartNewPositionSelector();
-                                Current.PositionType = PositionType.Odd;
+                                Current.PositionType = PositionType.First;
                                 FinishSelector();
                                 break;
                             case "last":
@@ -316,6 +317,7 @@ namespace Jtc.CsQuery
             StartNewSelector();
             Current.SelectorType = SelectorType.Position;
             Current.TraversalType = TraversalType.Filter;
+            Current.CombinatorType = CombinatorType.Chained;
 
         }
         protected void StartNewSelector()
@@ -444,14 +446,14 @@ namespace Jtc.CsQuery
                 return Selectors[index];
             }
         }
-
-        public IEnumerable<IDomObject> Select(DomRoot root)
+        protected IDomRoot Document { get; set; }
+        public IEnumerable<IDomObject> Select(IDomRoot root)
         {
+
             return Select(root, null);
         }
-        DomRoot Dom;
 
-        public IEnumerable<IDomObject> Is(DomRoot root, IDomObject element)
+        public IEnumerable<IDomObject> Is(IDomRoot root, IDomObject element)
         {
             List<IDomObject> list = new List<IDomObject>();
             list.Add(element);
@@ -462,9 +464,9 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        public IEnumerable<IDomObject> Select(DomRoot root, IEnumerable<IDomObject> selectWithin)
+        public IEnumerable<IDomObject> Select(IDomRoot root, IEnumerable<IDomObject> selectWithin)
         {
-            Dom = root;
+            Document = root;
             IEnumerable<IDomObject> lastResult = null;
             HashSet<IDomObject> output = new HashSet<IDomObject>();
             IEnumerable<IDomObject> selectionSource = selectWithin;
@@ -559,7 +561,7 @@ namespace Jtc.CsQuery
                         //} else {
                         //    lastResult = root.SelectorXref.GetRange(key + ">",depth,descendants);
                         //}
-                        interimResult = root.SelectorXref.GetRange(key + ">", depth, descendants);
+                        interimResult = root.QueryIndex(key + ">", depth, descendants);
                     }
                     else
                     {
@@ -575,7 +577,7 @@ namespace Jtc.CsQuery
                         interimResult = new HashSet<IDomObject>();
                         foreach (IDomObject obj in selectionSource)
                         {
-                            ((HashSet<IDomObject>)interimResult).AddRange(root.SelectorXref.GetRange(key + ">" + obj.Path,depth,descendants));
+                            ((HashSet<IDomObject>)interimResult).AddRange(root.QueryIndex(key + ">" + obj.Path,depth,descendants));
                         }
                     }
                 }
@@ -589,7 +591,7 @@ namespace Jtc.CsQuery
                     foreach (IDomObject obj in selectionSource)
                     {
                         key = ">"+obj.Path;
-                        HashSet<IDomObject> srcKeys = new HashSet<IDomObject>(root.SelectorXref.GetRange(key));
+                        HashSet<IDomObject> srcKeys = new HashSet<IDomObject>(root.QueryIndex(key));
                         foreach (IDomObject match in selector.SelectElements)
                         {
                             if (srcKeys.Contains(match)) {
@@ -663,38 +665,14 @@ namespace Jtc.CsQuery
             }
             else
             {
-                foreach (IDomObject item in ReorderSelection(root, output))
+                foreach (IDomObject item in output.OrderBy(item => item.Path))
                 {
                     yield return item;
                 }
             }
             //}
         }
-        /// <summary>
-        /// Because selectors may not always return the items in DOM order (e.g. "OR" queries or chained full-dom selectors) fix that now. If elements in this
-        /// selection aren't part of the dom, just return them (they are going to be added).
-        /// </summary>
-        /// <param name="elements"></param>
-        protected IEnumerable<IDomObject> ReorderSelection(DomRoot root, IEnumerable<IDomObject> elements)
-        {
-            SortedSet<string> ordered = new SortedSet<string>(StringComparer.Ordinal);
-            foreach (var e in elements)
-            {
-                if (ReferenceEquals(e.Dom, root))
-                {
-                    ordered.Add(e.Path);
-                }
-                else
-                {
-                    yield return e;
-                }
-            }
-            foreach (var key in ordered)
-            {
-                yield return root.SelectorXref[">"+key];
-            }
 
-        }
         protected class MatchElement
         {
             public MatchElement(IDomObject element)
@@ -730,7 +708,7 @@ namespace Jtc.CsQuery
 
             if (selector.SelectorType == SelectorType.HTML)
             {
-                DomElementFactory factory = new DomElementFactory();
+                DomElementFactory factory = new DomElementFactory(Document);
 
                 foreach (var obj in factory.CreateElements(selector.Html))
                 {
@@ -1016,7 +994,7 @@ namespace Jtc.CsQuery
             {
                 if (e.NodeType==NodeType.TEXT_NODE)
                 {
-                    if (((IDomText)e).Text.IndexOf(text) >= 0)
+                    if (((IDomText)e).InnerText.IndexOf(text) >= 0)
                     {
                         return true;
                     }

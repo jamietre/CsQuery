@@ -14,24 +14,17 @@ namespace CsqueryTests
         
         public CsQueryTest()
         {
-            Init();
+            FixtureSetUp();
         }
-        //[TestInitialize]
-        //public void TestInit()
-        //{
-        //    if (Dom == null)
-        //    {
-        //        Init();
-        //    }
-        //}
+
         ~CsQueryTest() {
-            TearDown();
+            FixtureTearDown();
         }
-        public virtual void TearDown()
+        public virtual void FixtureTearDown()
         {
 
         }
-        public virtual void Init()
+        public virtual void FixtureSetUp()
         {
             
         }
@@ -42,6 +35,10 @@ namespace CsqueryTests
         protected CsQuery jQuery(string parm)
         {
             return Dom[parm];
+        }
+        protected CsQuery jQuery(string parm, CsQuery context)
+        {
+            return Dom.Select(parm, context);
         }
         protected CsQuery jQuery(IEnumerable<IDomObject> parm)
         {
@@ -85,7 +82,7 @@ namespace CsqueryTests
             set
             {
                 _Dom = value;
-                document = _Dom.Dom;
+                document = _Dom.Document;
             }
         }
         public CsQuery _Dom = null;

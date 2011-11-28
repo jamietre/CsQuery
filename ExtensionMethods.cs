@@ -29,19 +29,7 @@ namespace Jtc.CsQuery
         {
             return text.StartsWith("{") && !text.StartsWith("{{");
         }
-        /// <summary>
-        /// Returns true if the object is a primitive numeric type, e.g. exluding string & char
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public static bool IsNumericType(this object obj)
-        {
 
-            Type t = Objects.GetUnderlyingType(obj.GetType());
-            return t.IsPrimitive && !(t == typeof(string) || t == typeof(char));
-        
-
-        }
         /// <summary>
         /// Returns true when a value is "truthy" using similar logic as Javascript
         ///   null = false

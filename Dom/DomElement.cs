@@ -26,6 +26,8 @@ namespace Jtc.CsQuery
 
         string ElementHtml();
 
+        IEnumerable<string> IndexKeys();
+        void Reindex();
     }
   
     /// <summary>
@@ -41,13 +43,19 @@ namespace Jtc.CsQuery
 
         public DomElement()
         {
-        }
 
+        }
         public DomElement(string tag)
+            : base()
         {
             NodeName = tag;
         }
-
+       
+        public void Reindex()
+        {
+            _PathID = null;
+            _Index = -1;
+        }
         //public DomElement(string tag,CsQuery owner)
         //{
         //    NodeName = tag;
@@ -58,103 +66,105 @@ namespace Jtc.CsQuery
             get { return NodeType.ELEMENT_NODE; }
         }
       
+        /// <summary>
+        /// Assigning parent node should not be done e
+        /// </summary>
         public override IDomContainer ParentNode
         {
             get
             {
                 return base.ParentNode;
             }
-            set
+            internal set
             {
                 base.ParentNode = value;
-                ResetPath();
             }
         }
-
-
-        public override void AddToIndex()
+        public override string PathID
         {
-            if (Dom != null)
+            get
             {
-
-                foreach (string key in IndexKeys())
+                if (_PathID == null)
                 {
-                    Dom.SelectorXref.Add(key, this);
+                    _PathID = PathEncode(Index);
                 }
-
-                if (_ChildNodes != null)
-                {
-                    foreach (IDomElement child in ChildElements)
-                    {
-                        child.AddToIndex();
-                    }
-                }
-            }
-        }
-        public override void RemoveFromIndex()
-        {
-            if (Dom == null)
-            {
-                return;
-            }
-            if (_ChildNodes != null)
-            {
-                foreach (IDomElement child in ChildElements)
-                {
-                    child.RemoveFromIndex();
-                }
-            }
-            foreach (string key in IndexKeys())
-            {
-                Dom.SelectorXref.Remove(key);
+                return _PathID;
             }
         }
         protected string IndexKey(string key)
         {
-            return key + ">" + Path;
+            return IndexKey(key, Path);
         }
-        protected IEnumerable<string> IndexKeys()
+        protected string IndexKey(string key, string path)
+        {
+            return key + ">" + path;
+        }
+        public IEnumerable<string> IndexKeys()
         {
             //if (!Complete)
             //{
             //    throw new Exception("This element is incomplete and cannot be added to a DOM.");
             //}
-            // Add just the element to the index no matter what so we have an ordered representation of the dom traversal
-            yield return IndexKey(String.Empty);
-            yield return IndexKey(NodeName);
+            // Add just the element to the index no matter what so we can query on subsets
+            string path = Path;
+            yield return IndexKey(String.Empty, path);
+            yield return IndexKey(NodeName, path);
             string id = ID;
             if (!String.IsNullOrEmpty(id))
             {
-                yield return IndexKey("#" + id);
+                yield return IndexKey("#" + id, path);
             }
-            if (_Classes != null)
+
+            foreach (string cls in Classes)
             {
-                foreach (string cls in Classes)
-                {
-                    yield return IndexKey("." + cls);
-                }
+                yield return IndexKey("." + cls, path);
             }
+
             //todo -add attributes?
         }
-        /// <summary>
-        /// Remove only a single index, not the entire object
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="key"></param>
-        protected void RemoveFromIndex(string key)
-        {
-            if (Dom != null)
-            {
-                Dom.SelectorXref.Remove(key);
-            }
-        }
-        protected void AddToIndex(string key)
-        {
-            if (Dom != null)
-            {
-                Dom.SelectorXref.Add(key, this);
-            }
-        }
+        //internal void AddToIndex()
+        //{
+        //    //if (Document != null)
+        //    //{
+        //    DomRoot document = (DomRoot)Document;
+        //        foreach (string key in IndexKeys())
+        //        {
+        //            document.SelectorXref.Add(key, this);
+        //        }
+
+        //        if (_ChildNodes != null)
+        //        {
+        //            foreach (DomElement child in ChildElements)
+        //            {
+        //                child.AddToIndex();
+        //            }
+        //        }
+
+        //    //}
+           
+        //}
+        //internal void RemoveFromIndex()
+        //{
+        //    //if (Document != null)
+        //    //{
+        //        if (_ChildNodes != null)
+        //        {
+        //            foreach (DomElement child in ChildElements)
+        //            {
+        //                child.RemoveFromIndex();
+        //            }
+        //        }
+
+        //        foreach (string key in IndexKeys())
+        //        {
+        //            Document.SelectorXref.Remove(key);
+        //        }
+        //        _PathID = null;
+        //        _Index = -1;
+        //    //}
+        //}
+
+
         /// <summary>
         /// Creates a deep clone of this
         /// </summary>
@@ -242,7 +252,11 @@ namespace Jtc.CsQuery
                         _Classes = new List<short>();
                     }
                     _Classes.Add(DomData.TokenID(cls, false));
-                    AddToIndex(IndexKey("." + cls));
+                    if (!IsDisconnected)
+                    {
+                        Document.AddToIndex(IndexKey("." + cls), this);
+                    }
+                    
                     result = true;
                 }
             }
@@ -256,7 +270,11 @@ namespace Jtc.CsQuery
                 if (HasClass(cls))
                 {
                     _Classes.Remove(DomData.TokenID(cls, false));
-                    RemoveFromIndex(IndexKey("." + cls));
+                    if (!IsDisconnected)
+                    {
+                        Document.RemoveFromIndex(IndexKey("." + cls));
+                    }
+
                     result = true;
                 }
             }
@@ -538,12 +556,15 @@ namespace Jtc.CsQuery
             set
             {
                 string id = Attributes[DomData.IDNodeId];
-                if (!String.IsNullOrEmpty(id))
+                if (!String.IsNullOrEmpty(id) && !IsDisconnected)
                 {
-                    RemoveFromIndex(IndexKey("#" + id));
+                        Document.RemoveFromIndex(IndexKey("#" + id));
                 }
                 Attributes[DomData.IDNodeId] = value;
-                AddToIndex(IndexKey("#" + value));
+                if (!IsDisconnected)
+                {
+                    Document.AddToIndex(IndexKey("#" + value), this);
+                }
             }
         }
 
@@ -580,7 +601,7 @@ namespace Jtc.CsQuery
         /// <summary>
         /// Returns text of the inner HTML. When setting, any children will be removed.
         /// </summary>
-        public override string InnerHtml
+        public override string InnerHTML
         {
             get
             {
@@ -603,7 +624,7 @@ namespace Jtc.CsQuery
                 ChildNodes.Clear();
              
                 CsQuery csq = CsQuery.Create(value);
-                ChildNodes.AddRange(csq.Dom.ChildNodes);
+                ChildNodes.AddRange(csq.Document.ChildNodes);
             }
         }
         public override string InnerText
@@ -692,9 +713,9 @@ namespace Jtc.CsQuery
         {
             get
             {
-                if (_DocType == 0)
+                if (_DocType == 0 && !IsDisconnected)
                 {
-                    _DocType = Dom.DocType;
+                    _DocType = Document.DocType;
                 }
                 return _DocType;
             }
@@ -749,7 +770,7 @@ namespace Jtc.CsQuery
             {
                 sb.Append(">");
                 sb.Append(includeChildren ?
-                    InnerHtml :
+                    InnerHTML :
                     (HasChildren ? 
                         "..." : 
                         String.Empty));

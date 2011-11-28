@@ -12,7 +12,7 @@ namespace Jtc.CsQuery
 
     public interface IDomText : IDomObject
     {
-        string Text { get; set; }
+        
     }
 
 
@@ -23,70 +23,82 @@ namespace Jtc.CsQuery
     {
         public DomText()
         {
-            //Initialize();
+
         }
 
-        public DomText(string text)
+        public DomText(string nodeValue)
             : base()
         {
-            //Initialize();
-            Text = text;
+            NodeValue = nodeValue;
         }
 
-        //public DomText(CsQuery owner)
-        //    : base()
-        //{
-        //    _Owner = owner;
-        //    Initialize();
-        //}
-        //protected void Initialize()
-        //{
-        //    Text = String.Empty;
-        //}
+
         public override NodeType NodeType
         {
             get { return NodeType.TEXT_NODE; }
         }
         private int textIndex=-1;
         // for use during initial construction from char array
-        public void SetTextIndex(DomRoot dom, int index)
+        public void SetTextIndex(IDomRoot dom, int index)
         {
             textIndex = index;
             // create a hard reference to the DOM from which we are mapping our string data. Otherwise if this
             // is moved to another dom, it will break
             stringRef = dom;
         }
-        public string Text
+        protected string RawText
         {
             get
             {
-                return textIndex >= 0 ? 
-                    stringRef.GetString(textIndex) 
+                return textIndex >= 0 ?
+                    stringRef.GetTokenizedString(textIndex)
                         : unboundText;
             }
             set
             {
-                unboundText = value;
+                unboundText =value;
                 textIndex = -1;
             }
         }
-        DomRoot stringRef = null;
+        IDomRoot stringRef = null;
         string unboundText;
-        
+        public override string InnerText
+        {
+            get
+            {
+                return HttpUtility.HtmlDecode(RawText);
+            }
+            set
+            {
+                RawText = HttpUtility.HtmlEncode(value);
+            }
+        }
         public override string NodeValue
         {
             get
             {
-                return Text;
+                return InnerText;
             }
             set
             {
-                Text = value;
+                InnerText = value;
+            }
+        }
+
+        public override string InnerHTML
+        {
+            get
+            {
+                return RawText;
+            }
+            set
+            {
+                RawText = value;
             }
         }
         public override string Render()
         {
-            return Text;
+            return InnerHTML;
         }
         public override DomText Clone()
         {
@@ -115,18 +127,8 @@ namespace Jtc.CsQuery
         }
         public override string ToString()
         {
-            return Text;
+            return NodeValue;
         }
-        public override string InnerText
-        {
-            get
-            {
-                return HttpUtility.HtmlDecode(Text);
-            }
-            set
-            {
-                Text = HttpUtility.HtmlEncode(value);
-            }
-        }
+
     }
 }

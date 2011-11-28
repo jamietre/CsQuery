@@ -19,10 +19,11 @@ namespace Jtc.CsQuery
         {
 
         }
-        //public DomCData(CsQuery owner): base(owner)
-        //{
-            
-        //}
+        public DomCData(string value)
+            : base()
+        {
+            NodeValue = value;
+        }
         public override string NodeValue
         {
             get

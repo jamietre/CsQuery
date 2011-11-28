@@ -13,11 +13,7 @@ namespace Jtc.CsQuery
     /// </summary>
     public interface IDomContainer : IDomObject
     {
-        string GetNextChildID();
         IEnumerable<IDomObject> CloneChildren();
-
-        void AddToIndex();
-        void RemoveFromIndex();
     }
 
     /// <summary>
@@ -29,41 +25,19 @@ namespace Jtc.CsQuery
         {
 
         }
-
-        public DomContainer(IEnumerable<IDomObject> elements)
+        public DomContainer(IEnumerable<IDomObject> elements): base()
         {
             ChildNodes.AddRange(elements);
         }
 
-        
-        /// <summary>
-        /// Erase stored path information. This must be done whenever a node is added to a new DOM.
-        /// </summary>
-        protected void ResetPath()
+        public override IDomRoot Document
         {
-            //_Path = null;
-            _PathID = null;
-            //// Also must clear values of child nodes
-            // REMOVED - it should be possible to just not store full path info, and leave child
+            get
+            {
+                return base.Document;
+            }
 
-            //if (HasChildren)
-            //{
-            //    foreach (DomObject node in ChildNodes)
-            //    {
-            //        node.ResetPath();
-            //    }
-            //}
         }
-        public virtual void AddToIndex()
-        {
-            throw new Exception("This type of element, " + this.GetType().ToString() + ", cannot be indexed.");
-        }
-        public virtual void RemoveFromIndex()
-        {
-            throw new Exception("This type of element, " + this.GetType().ToString() + ", cannot be indexed.");
-        }
-
- 
         //protected IEnumerable<string> IndexKeys()
         //{
         //    DomElement e = this as DomElement;
@@ -113,7 +87,7 @@ namespace Jtc.CsQuery
                 return _ChildNodes != null && ChildNodes.Count > 0;
             }
         }
-
+        
         public override IDomObject FirstChild
         {
             get
@@ -192,31 +166,9 @@ namespace Jtc.CsQuery
             return (sb.ToString());
         }
 
-        /// <summary>
-        /// This is used to assign sequential IDs to children. Since they are requested by the children the method needs to be maintained in the parent.
-        /// </summary>
-        public string GetNextChildID()
-        {
-            return Base62Code(++IDCount);
-        }
         // Just didn't use the / and the +. A three character ID will permit over 250,000 possible children at each level
         // so that should be plenty
-        private static char[] chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".ToArray();
-        protected string Base62Code(int number)
-        {
-            int ks_len = chars.Length;
-            string sc_result = "";
-            int num_to_encode = number;
-            int i = 0;
-            do
-            {
-                i++;
-                sc_result = chars[(num_to_encode % ks_len)] + sc_result;
-                num_to_encode = ((num_to_encode - (num_to_encode % ks_len)) / ks_len);
-            }
-            while (num_to_encode != 0);
-            return sc_result.PadLeft(3, '0');
-        }
+        
 
         public override int DescendantCount()
         {

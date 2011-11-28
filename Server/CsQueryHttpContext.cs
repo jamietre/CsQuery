@@ -6,6 +6,7 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.IO;
+using System.Threading;
 using Jtc.CsQuery.ExtensionMethods;
 using System.Web.Script.Serialization;
 
@@ -14,7 +15,7 @@ namespace Jtc.CsQuery.Server
     public class CsQueryHttpContext
     {
         public bool AspNet { get; set; }
-        protected CsQuery Owner=null;
+        protected CsQuery Owner = null;
         protected HttpContext Context
         {
             get
@@ -26,7 +27,7 @@ namespace Jtc.CsQuery.Server
                 _Context = value;
             }
         } protected HttpContext _Context = null;
-        public  SimpleDictionary<string> PostData
+        public SimpleDictionary<string> PostData
         {
             get
             {
@@ -50,14 +51,14 @@ namespace Jtc.CsQuery.Server
                 return _GetData;
             }
         } protected SimpleDictionary<string> _GetData = null;
-        public CsQueryHttpContext(CsQuery owner,HttpContext context)
+        public CsQueryHttpContext(CsQuery owner, HttpContext context)
         {
             Context = context;
             Owner = owner;
-            
+
         }
-        
-        
+
+
         protected void ParseContext()
         {
             //Context.Request.Form 
@@ -70,8 +71,10 @@ namespace Jtc.CsQuery.Server
             foreach (DomElement e in Owner.Select("[name], textarea"))
             {
                 string value;
-                if (PostData.TryGetValue(e["name"],out value)) {
-                    switch(e.NodeName) {
+                if (PostData.TryGetValue(e["name"], out value))
+                {
+                    switch (e.NodeName)
+                    {
                         case "textarea":
                             e.InnerText = value;
                             break;
@@ -103,7 +106,7 @@ namespace Jtc.CsQuery.Server
             {
                 if (_Writer == null)
                 {
-                   _sb = new StringBuilder();
+                    _sb = new StringBuilder();
                     _sw = new StringWriter(_sb);
 
                     _Writer = new HtmlTextWriter(_sw);
@@ -116,11 +119,20 @@ namespace Jtc.CsQuery.Server
 
         public void CreateFromUrl(string url)
         {
-            WebData con = new WebData();
+            CsqWebRequest con = new CsqWebRequest();
             con.Get(url);
             Owner.Load(con.Html);
         }
-        
+        /// <summary>
+        /// Queue an asynchronous request for data from a URL
+        /// </summary>
+        /// <param name="url"></param>
+        public static void QueueAsyncRequest(string url)
+        {
+            CsqWebRequest req = new CsqWebRequest();
+            req.Url = url;
+
+        }
         public void CreateFromWriter()
         {
 
@@ -134,11 +146,11 @@ namespace Jtc.CsQuery.Server
             if (mgr != null && mgr.IsInAsyncPostBack)
             {
                 _AsyncPostbackData = new List<AsyncPostbackData>();
-                string input =_sb.ToString();
+                string input = _sb.ToString();
                 int inputLength = input.Length;
-                string id=String.Empty;
-                string type=String.Empty;
-                int length=0;
+                string id = String.Empty;
+                string type = String.Empty;
+                int length = 0;
 
                 int pos = 0;
                 int step = 1;
@@ -170,7 +182,7 @@ namespace Jtc.CsQuery.Server
                     else
                     {
                         AsyncPostbackData postData = new AsyncPostbackData();
-                        postData.Create(length, type, id, input.Substring(pos,length));
+                        postData.Create(length, type, id, input.Substring(pos, length));
                         pos += length + 1;
                         step = 1;
                         _AsyncPostbackData.Add(postData);
@@ -202,7 +214,7 @@ namespace Jtc.CsQuery.Server
         /// <param name="page">The current System.Web.UI.Page</param>
         /// <param name="renderMethod">The delegate to the base render method</param>
         /// <param name="writer">The HtmlTextWriter to output the final stream (the parameter passed to the Render method)</param>
-        public void CreateFromRender(Page page,Action<HtmlTextWriter> renderMethod, HtmlTextWriter writer)
+        public void CreateFromRender(Page page, Action<HtmlTextWriter> renderMethod, HtmlTextWriter writer)
         {
             RealWriter = writer;
             CurrentPage = page;
@@ -223,7 +235,8 @@ namespace Jtc.CsQuery.Server
 
         public bool IsAsync
         {
-            get {
+            get
+            {
                 return _AsyncPostbackData != null;
             }
         }
@@ -260,62 +273,7 @@ namespace Jtc.CsQuery.Server
                 RealWriter.Write(content);
             }
         }
-        
-        
-        //protected static string[] SplitQuotedString(string stringToSplit, char token)
-        //{
-        //    int count = 0;
-        //    List<string> valueList = new List<string>();
-        //    StringBuilder sb = new StringBuilder();
-        //    bool inQuotes = false;
-        //    char closeQuoteChar = '"';
 
-        //    foreach (Char character in stringToSplit)
-        //    {
-        //        if (character == '\\')
-        //        {
-        //            continue;
-        //        }
-        //        if (!inQuotes) {
-        //            switch(character) {
-        //                case '"':
-        //                case '\'':
-        //                case '(':
-        //                    inQuotes = !inQuotes;
-        //                    closeQuoteChar = character == '(' ? ')': character;
-        //                    break;
-        //            }
-        //        }
-        //        else if (character == closeQuoteChar)
-        //        {
-        //            inQuotes = false;
-        //        }
-
-        //        if (!inQuotes && character == token)
-        //        {
-        //            // check if in 1st position, if so, double-check by trying to parse it. If its not an int then continue on as if nothing happened.
-        //            // Since this data is HTML is could be messy - this is not a perfect algorithm but it should be rare for it to fail with typical markup
-        //            if (count>0 && count % 4==0)
-        //            {
-        //                int val;
-        //                if (!int.TryParse(sb.ToString(),out val)) {
-        //                    valueList[valueList.Count - 1] += token + sb.ToString();
-        //                    continue;
-        //                }
-        //            }
-        //            count++;
-        //            valueList.Add(sb.ToString());
-        //            sb = new StringBuilder();
-        //        }
-        //        else
-        //            sb.Append(character);
-        //    }
-
-        //    if (sb.Length > 0)
-        //        valueList.Add(sb.ToString());
-
-        //    return valueList.ToArray();
-        //}
         internal static string JsonStringDef(string target, object data)
         {
             JavaScriptSerializer serializer = new JavaScriptSerializer();
@@ -323,137 +281,13 @@ namespace Jtc.CsQuery.Server
                 serializer.Serialize(data) +
                 "');" + System.Environment.NewLine;
         }
-
+        protected List<ManualResetEvent> AsyncEvents
+        {
+            get
+            {
+                return _AsyncEvents.Value;
+            }
+        }
+        private Lazy<List<ManualResetEvent>> _AsyncEvents = new Lazy<List<ManualResetEvent>>();
     }
-    public class AsyncPostbackData
-    {
-        /// <summary>
-        /// Write JSON data to a global variable
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="data"></param>
-
-        protected StringBuilder UserOutput
-        {
-            get
-            {
-                if (_UserOutput == null)
-                {
-                    _UserOutput = new StringBuilder();
-                }
-                return _UserOutput;
-            }
-        } protected StringBuilder _UserOutput = null;
-        public void WriteJson(string target, object data)
-        {
-            UserOutput.Append(CsQueryHttpContext.JsonStringDef(target, data));
-
-        }
-        public void Create(int length, string type, string id, string content)
-        {
-            Content = content;
-            ID = id;
-            Length = length;
-            DataType = type;
-        }
-        public string Render()
-        {
-            string content = _Dom != null ? Dom.Render() : Content;
-            if (_UserOutput != null)
-            {
-                content += "<script type=\"text/javascript\">" + System.Environment.NewLine+ UserOutput.ToString() + "</script>";
-            }
-            
-            return content.Length.ToString() + "|" + DataType + "|" + ID + "|" + content + "|";
-
-        }
-        public string Content;
-        public CsQuery Dom
-        {
-            get
-            {
-                if (_Dom == null)
-                {
-                    _Dom = CsQuery.Create(Content);
-                }
-                return _Dom;
-            }
-        }
-        protected CsQuery _Dom = null;
-        public string ID
-        {
-            get
-            {
-                return _ID;
-            }
-            protected set {
-                _ID = value;
-            }
-        }
-        protected string _ID;
-        protected int Length;
-        public string DataType
-        {
-            get
-            {
-                return _DataType;
-            }
-            protected set
-            {
-                _DataType = value;
-            }
-        }
-        protected string _DataType;
-
-    }
-    public class SimpleDictionary<T> where T: class
-    {
-        public SimpleDictionary(NameValueCollection dataSource)
-        {
-            DataSource = dataSource;
-
-        }
-        protected NameValueCollection DataSource;
-        protected Dictionary<string,T> InnerDict
-        {
-            get
-            {
-                if (_InnerDict == null)
-                {
-                    _InnerDict = new Dictionary<string, T>();
-                }
-                return _InnerDict;
-            }
-        } protected Dictionary<string,T> _InnerDict = new Dictionary<string,T>();
-        public bool TryGetValue(string key, out T value)
-        {
-            T storedValue;
-            if (InnerDict.TryGetValue(key, out storedValue)) {
-                value = storedValue;
-                return true;
-            } else {
-                string sourceValue = DataSource[key];
-                if (sourceValue!=null) {
-                    _InnerDict.Add(key,sourceValue as T);
-                    value = sourceValue as T;
-                    return true;
-                }
-            }
-            value= default(T);
-            return false;
-        }
-        public T GetValueOrDefault(string key)
-        {
-            return GetValueOrDefault(key, default(T));
-        }
-        public T GetValueOrDefault(string key, T defaultValue) {
-            T value;
-            if (TryGetValue(key,out value)) {
-                return value;
-            } else {
-                return defaultValue;
-            }
-        }
-    }
-
 }

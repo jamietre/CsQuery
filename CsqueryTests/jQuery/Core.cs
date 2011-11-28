@@ -19,7 +19,7 @@ namespace CsqueryTests.jQuery
     {
 
         [SetUp]
-        public override void Init()
+        public override void FixtureSetUp()
         {
             Dom = CsQuery.Create(Support.GetFile("csquerytests\\resources\\jquery-unit-index.htm"));
             
@@ -31,11 +31,11 @@ namespace CsqueryTests.jQuery
        public void Constructor()
        {
         Assert.AreEqual(0,(new CsQuery()).Length, "new CsQuery() === CsQuery([])" );
-        Assert.AreEqual(0, (new CsQuery((string)null)).Length, "new CsQuery(null) === CsQuery([])");
-        Assert.AreEqual(0, (new CsQuery(new List<IDomElement>())).Length, "new CsQuery(IEnumerable<IDomElement> {}) === CsQuery([])");
-        Assert.AreEqual(0, (new CsQuery("")).Length, "new CsQuery(\"\") === CsQuery([])");
+        Assert.AreEqual(0, (CsQuery.Create((string)null)).Length, "new CsQuery(null) === CsQuery([])");
+        Assert.AreEqual(0, (CsQuery.Create(new List<IDomElement>())).Length, "new CsQuery(IEnumerable<IDomElement> {}) === CsQuery([])");
+        Assert.AreEqual(0, (CsQuery.Create("")).Length, "new CsQuery(\"\") === CsQuery([])");
         // Note - unlike jQuery, we want to pass on all HTML unchanged if reasonable. So any constructor selector will return a DOM from a string.
-        Assert.AreEqual(1, (new CsQuery("#")).Length, "new CsQuery(\"#\") === CsQuery([])");
+        Assert.AreEqual(1, (CsQuery.Create("#")).Length, "new CsQuery(\"#\") === CsQuery([])");
         
         // var obj = jQuery("div");
         // is the selector property officially supported? the doc page is missing.
@@ -383,7 +383,7 @@ namespace CsqueryTests.jQuery
             Assert.IsTrue(!(result.arr is Array), "Cloned object heve to be an plain object" );
 
 
-            dynamic  empty = new ExpandoObject();
+            dynamic empty = new JsObject();
             dynamic optionsWithLength = CsQuery.ParseJSON("{ 'foo': { 'length': -1 } }");
             CsQuery.Extend(true, empty, optionsWithLength);
             Assert.AreEqual( empty.foo, optionsWithLength.foo, "The length property must copy correctly" );
@@ -391,26 +391,28 @@ namespace CsqueryTests.jQuery
 
             //? not really relevant
 
-            //    empty = {};
-            //    var optionsWithDate = { foo: { date: new Date } };
-            //    jQuery.extend(true, empty, optionsWithDate);
-            //    same( empty.foo, optionsWithDate.foo, "Dates copy correctly" );
+            empty = new JsObject();
+            dynamic optionsWithDate = new JsObject();
+            optionsWithDate.foo = new JsObject();
+            optionsWithDate.foo.date = new DateTime();
+            CsQuery.Extend(true, empty, optionsWithDate);
+            Assert.AreEqual(empty.foo, optionsWithDate.foo, "Dates copy correctly" );
 
-            //    var myKlass = function() {};
-            //    var customObject = new myKlass();
-            //    var optionsWithCustomObject = { foo: { date: customObject } };
-            //    empty = {};
-            //    jQuery.extend(true, empty, optionsWithCustomObject);
-            //    ok( empty.foo && empty.foo.date === customObject, "Custom objects copy correctly (no methods)" );
 
-            //    // Makes the class a little more realistic
-            //    myKlass.prototype = { someMethod: function(){} };
-            //    empty = {};
-            //    jQuery.extend(true, empty, optionsWithCustomObject);
-            //    ok( empty.foo && empty.foo.date === customObject, "Custom objects copy correctly" );
+            var customObject = DateTime.Now;
+            dynamic optionsWithCustomObject = new { foo= new { date= customObject } };
 
-            //    var ret = jQuery.extend(true, { foo: 4 }, { foo: new Number(5) } );
-            //    ok( ret.foo == 5, "Wrapped numbers copy correctly" );
+            empty = CsQuery.Extend(true,null, optionsWithCustomObject);
+            Assert.IsTrue( empty.foo !=null && empty.foo.date == customObject, "Custom objects copy correctly (no methods)" );
+
+            //// Makes the class a little more realistic
+            //myKlass.prototype = { someMethod: function(){} };
+            //empty = {};
+            //jQuery.extend(true, empty, optionsWithCustomObject);
+            //ok( empty.foo && empty.foo.date === customObject, "Custom objects copy correctly" );
+
+            dynamic ret = CsQuery.Extend(true, CsQuery.ParseJSON("{'foo': 4 }"), new { foo=5 } );
+            Assert.IsTrue( ret.foo == 5, "Wrapped numbers copy correctly" );
 
             nullUndef = CsQuery.Extend(null, options,"{ 'xnumber2': null }");
             Assert.IsTrue( nullUndef.xnumber2 == null, "Check to make sure null values are copied");
@@ -433,7 +435,7 @@ namespace CsqueryTests.jQuery
 
             // These next checks don't really apply as they are specific to javascript nuances, but can't hurt
 
-            dynamic ret = CsQuery.Extend(true, CsQuery.ParseJSON(" { 'foo': [] }"), CsQuery.ParseJSON("{ 'foo': [0] }")); // 1907
+            ret = CsQuery.Extend(true, CsQuery.ParseJSON(" { 'foo': [] }"), CsQuery.ParseJSON("{ 'foo': [0] }")); // 1907
             // arrays are returned as List<object> when casting to expando object
             Assert.AreEqual(1,ret.foo.Count, "Check to make sure a value with coersion 'false' copies over when necessary to fix #1907" );
 
@@ -470,7 +472,8 @@ namespace CsqueryTests.jQuery
         }
 
         /*
-         * The Each implementation only applies to the jQuery selections. No sense in duplication of regular c# language constructs.
+         * The Each implementation only applies to the jQuery selections. 
+         * No sense in duplication of regular c# language constructs. Don't test this use.
          */
 
         //test("jQuery.each(Object,Function)", function() {
@@ -560,7 +563,7 @@ namespace CsqueryTests.jQuery
         //});
 
         /*
-         * Not implemented - C# extension methods more useful
+         * See Objects.*
          */
  
         //test("jQuery.isEmptyObject", function(){

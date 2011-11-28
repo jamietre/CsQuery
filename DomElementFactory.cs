@@ -9,11 +9,11 @@ namespace Jtc.CsQuery
 {
     public class DomElementFactory
     {
-        public DomElementFactory()
+        public DomElementFactory(IDomRoot document)
         {
-            
+            Document = document;
         }
-
+        public IDomRoot Document { get; set; }
         protected char[] BaseHtml;
         protected int EndPos
         {
@@ -63,24 +63,34 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public IEnumerable<IDomObject> CreateObjects(string html)
         {
-            Owner = null;
+            isBound = false;
             return CreateObjectsImpl(html.ToCharArray(), true);
         }
         public IEnumerable<IDomObject> CreateObjects(char[] html)
         {
-            Owner = null;
+            isBound = false;
             return CreateObjectsImpl(html, true);
         }
-        public IEnumerable<IDomObject> CreateObjects(string html, CsQuery csq)
+        public IEnumerable<IDomObject> CreateObjects()
         {
-            Owner = csq;
-            return CreateObjectsImpl(html.ToCharArray(), true);
+            if (Document == null)
+            {
+                throw new Exception("This method requires Document be set");
+            }
+            isBound = true;
+
+            return CreateObjectsImpl(Document.SourceHtml,true);
         }
-        public IEnumerable<IDomObject> CreateObjects(char[] html, CsQuery csq)
-        {
-            Owner = csq;
-            return CreateObjectsImpl(html, true);
-        }
+        //public IEnumerable<IDomObject> CreateObjects(string html, IDomRoot document)
+        //{
+        //    Document = document;
+        //    return CreateObjectsImpl(html.ToCharArray(), true);
+        //}
+        //public IEnumerable<IDomObject> CreateObjects(char[] html, IDomRoot document)
+        //{
+        //    Document = document;
+        //    return CreateObjectsImpl(html, true);
+        //}
         protected IEnumerable<IDomObject> CreateObjectsImpl(char[] html, bool allowLiterals)
         {
 
@@ -136,7 +146,7 @@ namespace Jtc.CsQuery
             }
         }
 
-        protected CsQuery Owner;
+        //protected CsQuery Owner;
         protected bool isBound;
         /// <summary>
         /// When CsQuery is provided, an initial indexing context can be used
@@ -146,8 +156,7 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         protected IEnumerable<IDomObject> Parse(bool allowLiterals)
         {
-            isBound = Owner != null;
-            
+    
             int pos=0;
             Stack<IterationData> stack = new Stack<IterationData>();
 
@@ -454,12 +463,12 @@ namespace Jtc.CsQuery
             //lit.Text = text;
             if (isBound)
             {
-                lit.SetTextIndex(Owner.Dom,Owner.Dom.AddOriginalString(current.HtmlStart, current.Pos - current.HtmlStart));
+                lit.SetTextIndex(Document, Document.TokenizeString(current.HtmlStart, current.Pos - current.HtmlStart));
             }
             else
             {
                 string text = BaseHtml.SubstringBetween(current.HtmlStart, current.Pos);
-                lit.Text = text;
+                lit.InnerText = text;
             }
              
             if (!current.AllowLiterals)

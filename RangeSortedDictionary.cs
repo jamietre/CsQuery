@@ -31,6 +31,7 @@ namespace Jtc.CsQuery
         {
             Keys = new SortedSet<string>(StringComparer.Ordinal);
         }
+        //protected SortedSet<string> Keys;
         protected SortedSet<string> Keys;
         protected Dictionary<string,TValue> Index = new Dictionary<string,TValue>();
         public IEnumerable<string> GetRangeKeys(string subkey)
@@ -119,7 +120,10 @@ namespace Jtc.CsQuery
                 Index.Remove(key);
                 return true;
             }
-            return false;
+            else
+            {
+                return false;
+            }
         }
 
         public bool TryGetValue(string key, out TValue value)
@@ -129,7 +133,9 @@ namespace Jtc.CsQuery
 
         public ICollection<TValue> Values
         {
-            get { throw new NotImplementedException(); }
+            get {
+                return Values;
+            }
         }
 
         public TValue this[string key]

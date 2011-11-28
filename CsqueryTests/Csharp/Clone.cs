@@ -19,7 +19,7 @@ namespace CsqueryTests.Csharp
     {
         const string testFile="CsQueryTests\\Resources\\TestHtml.htm";
         [SetUp]
-        public override void Init()
+        public override void FixtureSetUp()
         {
             string html = Support.GetFile(testFile);
             Dom = CsQuery.Create(html);
@@ -47,7 +47,7 @@ namespace CsqueryTests.Csharp
         [Test, TestMethod]
         public void ChangingClones()
         {
-            Init();
+            FixtureSetUp();
             var hlinks = Dom.Select("#hlinks-user");
             var cloneRoot = Dom["#test-show"].Append(hlinks.Clone());
             
@@ -60,14 +60,14 @@ namespace CsqueryTests.Csharp
 
             profileLink.Append("<h2>A Header</h2><div class=\"newstuff\"><span>I'm new</span></div>");
             Assert.AreEqual(2, profileLink.Children().Length, "Added to my clone");
-            Assert.AreEqual("ChangedMyName A Header I'm new", profileLink.Text(), "Text was obtained correctly from the clone");
+            Assert.AreEqual("ChangedMyNameA HeaderI'm new", profileLink.Text(), "Text was obtained correctly from the clone");
             Assert.AreEqual("jamietre", hlinks.Find(".profile-link").Text(), "Original still had the correct text");
 
         }
         [Test, TestMethod]
         public void InsertingContent()
         {
-            Init();
+            FixtureSetUp();
             // The total # of ele
             var totalCount = Dom["*"].Length;
 

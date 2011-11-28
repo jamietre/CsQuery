@@ -49,6 +49,11 @@
   <ItemGroup>
     <Compile Include="CsQuery.cs" />
     <Compile Include="CsQuerySelector.cs" />
+    <Compile Include="CsQuery_Constructors.cs" />
+    <Compile Include="CsQuery_Csharp.cs" />
+    <Compile Include="CsQuery_StaticMethods.cs" />
+    <Compile Include="CsQuery_Internal.cs" />
+    <Compile Include="Dom\DomFragment.cs" />
     <Compile Include="Dom\DomAttributes.cs" />
     <Compile Include="Dom\DomCData.cs" />
     <Compile Include="Dom\DomComment.cs" />
@@ -61,10 +66,18 @@
     <Compile Include="Dom\DomData.cs" />
     <Compile Include="Dom\DomText.cs" />
     <Compile Include="ExtensionMethods.Internal.cs" />
-    <Compile Include="Server\WebContent.cs" />
+    <Compile Include="Server\AsyncPostbackData.cs" />
+    <Compile Include="Server\IAsyncRequestQueue.cs" />
+    <Compile Include="Server\ICsqWebRequest.cs" />
+    <Compile Include="Server\IWebRequestInfo.cs" />
+    <Compile Include="Server\CsqWebRequest.cs" />
+    <Compile Include="Server\AsyncWebRequest.cs" />
+    <Compile Include="Server\SimpleDictionary.cs" />
+    <Compile Include="Server\WebRequestState.cs" />
+    <Compile Include="SelectionSet.cs" />
     <Compile Include="Utility\JsObject.cs" />
     <Compile Include="Utility\LazyObject.cs" />
-    <Compile Include="NodeList.cs" />
+    <Compile Include="Dom\NodeList.cs" />
     <Compile Include="RangeSortedDictionary.cs" />
     <Compile Include="Server\CsQuery.Server.cs" />
     <Compile Include="Server\CsQueryHttpContext.cs" />

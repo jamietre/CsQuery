@@ -17,26 +17,27 @@ namespace Jtc.CsQuery
         COMMENT_NODE = 8,
         DOCUMENT_NODE = 9,
         DOCUMENT_TYPE_NODE = 10,
-        //DOCUMENT_FRAGMENT_NODE = 11,
+        DOCUMENT_FRAGMENT_NODE = 11,
         //NOTATION_NODE  =12
     }
 
     public interface IDomObject
     {
 
-        IDomContainer ParentNode { get; set; }
+        IDomContainer ParentNode { get; }
         NodeType NodeType { get; }
 
-        CsQuery Owner { get; }
+        //CsQuery Owner { get; }
+        
         CsQuery Csq();
-        DomRoot Dom { get; }
+        IDomRoot Document { get; }
         string Render();
         void Render(StringBuilder sb);
 
         void Remove();
         IDomObject Clone();
         
-        string InnerHtml { get; set; }
+        string InnerHTML { get; set; }
         string InnerText { get; set; }
 
         //? These are really only part of IDomContainer. However, to avoid awful typecasting all the time, they are part of the interface
@@ -54,6 +55,10 @@ namespace Jtc.CsQuery
         NodeList ChildNodes { get; }
         IDomObject FirstChild { get; }
         IDomObject LastChild { get; }
+        IDomObject NextSibling { get; }
+        IDomObject PreviousSibling { get; }
+        IDomElement NextElementSibling { get; }
+        IDomElement PreviousElementSibling { get; }
         void AppendChild(IDomObject element);
         void RemoveChild(IDomObject element);
 
@@ -78,6 +83,8 @@ namespace Jtc.CsQuery
         int Index { get; }
         string PathID { get; }
         string Path { get; }
+        bool IsDisconnected { get; }
+        //int Ordinal { get; }
     }
 
 
@@ -92,7 +99,7 @@ namespace Jtc.CsQuery
     /// </summary>
     public abstract class DomObject
     {
-
+        public abstract NodeType NodeType { get; }
         public virtual NodeList ChildNodes
         {
             get
@@ -112,16 +119,75 @@ namespace Jtc.CsQuery
         {
             get
             {
-                return _Parent;
+                return _ParentNode;
             }
-            set
+            internal set
             {
-                _Parent = value;
+                _ParentNode = value;
             }
         }
-        protected IDomContainer _Parent = null;
+        private IDomContainer _ParentNode = null;
 
-        //internal abstract IDomObject CloneInternal();
+        /// <summary>
+        /// The element is not associated with an IDomRoot
+        /// </summary>
+        public bool IsDisconnected
+        {
+            get
+            {
+                return Document == null;
+            }
+        }
+        public abstract int Index { get; }
+        
+        /// <summary>
+        /// Unique ID assigned when added to a dom. This is not the full path but just the ID at this level. The full
+        /// path is never stored with each node to prevent having to regenerate if node trees are moved. 
+        /// </summary>
+        public virtual string PathID
+        {
+            get
+            {
+                // Don't actually store paths with non-element nodes as they aren't indexed and don't have children.
+                // Fast read access is less important than not having to reset them when moved.
+                return PathEncode(Index);
+            }
+        } 
+        protected string _PathID = null;
+
+
+        public virtual IDomRoot Document
+        {
+            get
+            {
+                return ParentNode == null ? null : ParentNode.Document;
+            }
+        }
+        protected IDomRoot _Document;
+        internal int _Index = -1;
+
+        private static char[] chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".ToArray();
+        protected string PathEncode(int number)
+        {
+            return number.ToString().PadLeft(3, '0');
+        }
+        
+        protected string Base62Code(int number)
+        {
+            int ks_len = chars.Length;
+            string sc_result = "";
+            int num_to_encode = number;
+            int i = 0;
+            do
+            {
+                i++;
+                sc_result = chars[(num_to_encode % ks_len)] + sc_result;
+                num_to_encode = ((num_to_encode - (num_to_encode % ks_len)) / ks_len);
+            }
+            while (num_to_encode != 0);
+            return sc_result.PadLeft(3, '0');
+        }
+        
     }
 
 
@@ -135,6 +201,7 @@ namespace Jtc.CsQuery
         {
 
         }
+        
         //public DomObject(CsQuery owner)
         //{
         //    _Owner = owner;
@@ -160,83 +227,45 @@ namespace Jtc.CsQuery
             
             return clone;
         }
-        //internal override IDomObject CloneInternal()
-        //{
-        //    return new T();
-        //}
         /// <summary>
-        /// Unique ID assigned when added to a dom. This is not the full path but just the ID at this level. The full
-        /// path is never stored with each node to prevent having to regenerate if node trees are moved. 
+        /// The element's absolute index among its siblings
         /// </summary>
-        public string PathID
+        /// <returns></returns>
+        public override int Index
         {
             get
             {
-                if (_PathID == null)
-                {
-
-                    _PathID = (ParentNode == null ? String.Empty : ParentNode.GetNextChildID());
+                if (_Index<0) {
+                    if (ParentNode != null)
+                    {
+                        _Index = ParentNode.ChildNodes.IndexOf(this);
+                    }
+                    else
+                    {
+                        _Index = 0;
+                    }
                 }
-                return _PathID;
+                return _Index;
             }
+        }
 
-        } protected string _PathID = null;
         /// <summary>
         /// The full path to this node. This is calculated by requesting the parent path and adding its own ID.
         /// </summary>
-        public string Path
+        public virtual string Path
         {
             get
             {
-                //if (_Path != null)
-                //{
-                //     return _Path;
-                //}
-                return (ParentNode == null ? String.Empty : ParentNode.Path + "/") + PathID;
+                return ParentNode==null ? "_" + PathID : ParentNode.Path + "/" + PathID;            
             }
         }
+
         public abstract bool InnerHtmlAllowed { get; }
         public virtual bool InnerTextAllowed
         {
             get { return InnerHtmlAllowed; }
         }
-        public virtual CsQuery Owner
-        {
-            get
-            {
-                return ParentNode==null ? null : ParentNode.Owner;
-            }
-            //set
-            //{
-            //    _Owner = value;
-            //    var container = this as IDomContainer;
-            //    if (container != null)
-            //    {
-            //        if (container.HasChildren)
-            //        {
-            //            foreach (IDomObject obj in container.ChildNodes)
-            //            {
-            //                obj.Owner = value;
-            //            }
-            //        }
-            //    }
-            //}
-        }
-        //protected CsQuery _Owner = null;
-        public virtual DomRoot Dom
-        {
-            get
-            {
-                if (Owner != null)
-                {
-                    return Owner.Dom;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
+
 
         public virtual string ID
         {
@@ -249,25 +278,7 @@ namespace Jtc.CsQuery
                 throw new Exception("Cannot set ID for this node type.");
             }
         }
-        /// <summary>
-        /// The element's absolute index among its siblings
-        /// </summary>
-        /// <returns></returns>
-        public int Index
-        {
-            get
-            {
-                if (ParentNode == null)
-                {
-                    return -1;
-                }
-                else
-                {
-                    return ParentNode.ChildNodes.IndexOf(this);
-                }
-
-            }
-        }
+       
         public virtual string Value
         {
             get
@@ -336,7 +347,7 @@ namespace Jtc.CsQuery
                 throw new Exception("You can't set NodeValue for this node type.");
             }
         }
-        public virtual string InnerHtml
+        public virtual string InnerHTML
         {
             get
             {
@@ -361,7 +372,7 @@ namespace Jtc.CsQuery
         // Owner can be null (this is an unbound element)
         // if so create an arbitrary one.
 
-        public abstract NodeType NodeType { get; }
+        
         public abstract bool Complete { get; }
         public abstract string Render();
         public virtual void Render(StringBuilder sb)
@@ -384,7 +395,6 @@ namespace Jtc.CsQuery
             }
             ParentNode.ChildNodes.Remove(this);
         }
-       
 
         public virtual int DescendantCount()
         {
@@ -483,10 +493,61 @@ namespace Jtc.CsQuery
             }
         }
 
+        public IDomObject NextSibling
+        {
+            get
+            {
+                return ParentNode!= null && ParentNode.ChildNodes.Count-1 > Index ?
+                    ParentNode.ChildNodes[Index + 1] :
+                    null;
+            }
+        }
+        public IDomObject PreviousSibling
+        {
+            get
+            {
+                return ParentNode != null && Index>0 ?
+                    ParentNode.ChildNodes[Index - 1] :
+                    null;
+            }
+        }
+        public IDomElement NextElementSibling
+        {
+            get
+            {
+                int curIndex = Index;
+                var elements = ParentNode.ChildNodes;
+                while (++curIndex < elements.Count)
+                {
+                    if (elements[curIndex].NodeType == NodeType.ELEMENT_NODE)
+                    {
+                        return (IDomElement)elements[curIndex];
+                    }
+                }
+                return null;
+            }
+        }
+        public IDomElement PreviousElementSibling
+        {
+            get
+            {
+                int curIndex = Index;
+                var elements = ParentNode.ChildNodes;
+                while (--curIndex >=0)
+                {
+                    if (elements[curIndex].NodeType == NodeType.ELEMENT_NODE)
+                    {
+                        return (IDomElement)elements[curIndex];
+                    }
+                }
+                return null;
+            }
+        }
         IDomObject IDomObject.Clone()
         {
             return Clone();
         }
+
     }
     
 }

@@ -27,6 +27,21 @@ namespace CsqueryTests.CSharp
         {
             string html = Support.GetFile("CsQueryTests\\Resources\\TestHtml2.htm");
             csq = CsQuery.Create(html);
+            RangeSortedDictionary<IDomElement> test = ((DomRoot)csq.Document).SelectorXref;
+            foreach (var item in test)
+            {
+                ;
+            }
+        }
+        [TestInitialize, SetUp]
+        public void TestSetUp()
+        {
+            Initialize();
+        }
+        [Test, TestMethod]
+        public void UnWrap()
+        {
+
         }
         [Test,TestMethod]
         public void InnerParsingRules()
@@ -62,7 +77,7 @@ namespace CsqueryTests.CSharp
 
             var res = csq.Select("li").Each((IDomElement e) =>
             {
-                ids += (ids == "" ? "" : ",") + "'" + e.InnerHtml.Trim() + "'";
+                ids += (ids == "" ? "" : ",") + "'" + e.InnerHTML.Trim() + "'";
             });
             Assert.AreEqual(3, res.Length, "Find('li')");
 
@@ -107,12 +122,12 @@ namespace CsqueryTests.CSharp
         {
             csq.Select("#last_div").Html("<span>Test</span>");
             var res = csq.Select("#last_div");
-            Assert.AreEqual(res[0].InnerHtml, "<span>Test</span>", "Replace inner HTML");
+            Assert.AreEqual(res[0].InnerHTML, "<span>Test</span>", "Replace inner HTML");
 
             res.Append("<p>This is some more content</p>");
             res = csq.Select("#last_div");
             Assert.AreEqual(2, res[0].ChildNodes.Count(), "Test results of appending content (verify node length)");
-            Assert.AreEqual("<span>Test</span><p>This is some more content</p>", res[0].InnerHtml, "Test results of appending content (verify actual content)");
+            Assert.AreEqual("<span>Test</span><p>This is some more content</p>", res[0].InnerHTML, "Test results of appending content (verify actual content)");
 
             res = csq.Select("#last_div").Children();
 
@@ -131,9 +146,9 @@ namespace CsqueryTests.CSharp
             });
 
 
-            Assert.AreEqual("Test--Iteration 1", res[0].InnerHtml,
+            Assert.AreEqual("Test--Iteration 1", res[0].InnerHTML,
                 "Modifying contents during a delegate in Append (index 00");
-            Assert.AreEqual("This is some more content <b>Iteration 2</b>", res[1].InnerHtml,
+            Assert.AreEqual("This is some more content <b>Iteration 2</b>", res[1].InnerHTML,
                 "Modifying contents during a delegate in Append (index 1)");
         }
 
@@ -184,9 +199,11 @@ namespace CsqueryTests.CSharp
         {
             //SetTestInfo("CsQuery.DomObject","Parse");
 
-            DomElementFactory factory = new DomElementFactory();
+            
             string html = " <b>Iteration 2</b>";
-            DomRoot container = new DomRoot(factory.CreateObjects(html));
+            DomRoot container = new DomRoot();
+            DomElementFactory factory = new DomElementFactory(container);
+            //factory.CreateObjects(html);
             //AddTestResult("Simple create", container.Html==html, container.Html);
 
 
@@ -194,13 +211,14 @@ namespace CsqueryTests.CSharp
 
 
             IDomElement obj = factory.CreateElement(html);
-            string reParsed = WriteDOMObkect(obj);
+            string reParsed = WriteDOMObject(obj);
             string result = "tag=" + obj.NodeName + ", " + reParsed;
 
             ///AddTestResult("SimpleParseTest", html== reParsed , result);
 
         }
-        protected string WriteDOMObkect(IDomElement obj)
+
+        protected string WriteDOMObject(IDomElement obj)
         {
             string result = "";
             foreach (var kvp in obj.Attributes)
@@ -214,13 +232,9 @@ namespace CsqueryTests.CSharp
                     result += kvp.Value + ",";
                 }
             }
-            result += "InnerHtml=" + obj.InnerHtml;
+            result += "InnerHtml=" + obj.InnerHTML;
             return result;
         }
-        //public override void RunAll()
-        //{
-        //    Test_CsQuery();
-        //    Test_CSQuery_Dom();
-        //}
+        
     }
 }

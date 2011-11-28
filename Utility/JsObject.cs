@@ -213,10 +213,19 @@ namespace Jtc.CsQuery
             return InnerProperties.Keys;
         }
 
-        public override bool TryBinaryOperation(BinaryOperationBinder binder, object arg, out object result)
-        {
-            throw new Exception("Not supported.");
-        }
+        //public override bool TryBinaryOperation(BinaryOperationBinder binder, object arg, out object result)
+        //{
+        //    if (binder.Operation == System.Linq.Expressions.ExpressionType.Equal)
+        //    {
+        //        JsObject compare = arg.ToExpando();
+        //        return this.Equals(arg);
+        //    }
+        //    else
+        //    {
+        //        return base.TryBinaryOperation(binder, arg, out result);
+        //    }
+            
+        //}
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
             return InnerProperties.GetEnumerator();

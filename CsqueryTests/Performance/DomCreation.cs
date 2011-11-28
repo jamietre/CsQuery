@@ -15,7 +15,7 @@ using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 namespace CsqueryTests.Performance
 {
     [TestClass]
-    public class DomCreation: CsQueryTest
+    public class _DomCreationPerformance: CsQueryTest
     {
         
         [TestMethod,Test]

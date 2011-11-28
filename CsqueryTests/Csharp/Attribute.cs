@@ -20,7 +20,7 @@ namespace CsqueryTests.Csharp
         Func<object,object> bareObj = (input) => {return input; };
 
         [SetUp]
-        public override void Init()
+        public override void FixtureSetUp()
         {
             ResetDom();
         }

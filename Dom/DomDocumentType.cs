@@ -28,11 +28,11 @@ namespace Jtc.CsQuery
         {
 
         }
-        //public DomDocumentType(CsQuery owner)
-        //    : base(owner)
-        //{
-
-        //}
+        public DomDocumentType(DocType docType)
+            : base()
+        {
+            DocType = docType;
+        }
         public override NodeType NodeType
         {
             get { return NodeType.DOCUMENT_TYPE_NODE; }
@@ -53,7 +53,7 @@ namespace Jtc.CsQuery
             set
             {
                 _DocType = value;
-                Dom.DocType = value;
+                Document.DocType = value;
             }
         }
         protected DocType _DocType = 0;

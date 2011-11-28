@@ -34,7 +34,7 @@ namespace Jtc.CsQuery
             {
                 return (bool)obj;
             }
-            if (obj.IsNumericType())
+            if (Objects.IsNumericType(obj))
             {
                 // obj is IConvertible if IsNumericType already
                 return System.Convert.ToDouble(obj) != 0.0;
@@ -44,6 +44,16 @@ namespace Jtc.CsQuery
                 return false;
             }
             return true;
+        }
+        /// <summary>
+        /// Returns true if the object is a primitive numeric type, e.g. exluding string & char
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static bool IsNumericType(object obj)
+        {
+            Type t = Objects.GetUnderlyingType(obj.GetType());
+            return t.IsPrimitive && !(t == typeof(string) || t == typeof(char) || t==typeof(bool));
         }
         public static string Join(this Array list)
         {
@@ -88,7 +98,10 @@ namespace Jtc.CsQuery
         public static IEnumerable<T> ToEnumerable<T>(T obj) 
         {
             List<T> list = new List<T>();
-            list.Add(obj);
+            if (obj != null)
+            {
+                list.Add(obj);
+            }
             return list;
         }
         public static IEnumerable<T> EmptyEnumerable<T>()
@@ -257,16 +270,38 @@ namespace Jtc.CsQuery
                     object value;
                     foreach (var member in members)
                     {
+                       
                         // 2nd condition skips index properties
-                        if (member is PropertyInfo && ((PropertyInfo)member).GetIndexParameters().Length==0)
-                        {
+                        if (member is PropertyInfo) {
+                            PropertyInfo propInfo = (PropertyInfo)member;
+                            if (!propInfo.CanRead || propInfo.GetIndexParameters().Length > 0)
+                            {
+                                continue;
+                            }
                             value = ((PropertyInfo)member).GetGetMethod().Invoke(source, null);
                         }
                         else if (member is FieldInfo)
                         {
-                            value = ((FieldInfo)member).GetValue(source);
+                            FieldInfo fieldInfo = (FieldInfo)member;
+                            if (!fieldInfo.IsPublic || fieldInfo.IsStatic)
+                            {
+                                continue;
+                            }
+                            value = fieldInfo.GetValue(source);
                         }
-                        else
+                        //else if (member is MethodInfo)
+                        //{
+                        //    // Attempt to identify anonymous types which are implemented as methods with no parameters and 
+                        //    // names starting with "get_". This is not really ideal, but I don't know a better way to identify
+                        //    // them, and I think it's also reasonably safe to invoke any methods named with "get_" anyway.
+                        //    MethodInfo methodInfo = (MethodInfo)member;
+                        //    if (methodInfo.IsStatic || !methodInfo.IsPublic || methodInfo.IsAbstract || methodInfo.IsConstructor ||
+                        //        !(methodInfo.Name.StartsWith("get_")) || methodInfo.GetParameters().Length>0) {
+                        //        continue;
+                        //    }
+                        //    value = methodInfo.Invoke(source,null);
+                        //} 
+                        else 
                         {
                             //It's a method or something we don't know how to handle. Skip it.
                             continue;
@@ -614,7 +649,7 @@ namespace Jtc.CsQuery
             }
             else
             {
-                // It's a regular object
+                // It's a regular object. It cannot be extended, but set any same-named properties.
                 IEnumerable<MemberInfo> members = target.GetType().GetMembers();
 
                 foreach (var member in members)
@@ -623,12 +658,22 @@ namespace Jtc.CsQuery
                     {
                         if (member is PropertyInfo)
                         {
-                            ((PropertyInfo)member).GetSetMethod().Invoke(value, null);
+                            PropertyInfo propInfo = (PropertyInfo)member;
+                            if (!propInfo.CanWrite)
+                            {
+                                continue;
+                            }
+                            propInfo.GetSetMethod().Invoke(value, null);
 
                         }
                         else if (member is FieldInfo)
                         {
-                            ((FieldInfo)member).SetValue(target, value);
+                            FieldInfo fieldInfo = (FieldInfo)member;
+                            if (fieldInfo.IsStatic || !fieldInfo.IsPublic || fieldInfo.IsLiteral || fieldInfo.IsInitOnly)
+                            {
+                                continue;
+                            }
+                            fieldInfo.SetValue(target, value);
                         }
                         else
                         {

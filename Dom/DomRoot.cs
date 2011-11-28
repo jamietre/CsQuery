@@ -15,10 +15,25 @@ namespace Jtc.CsQuery
 
     public interface IDomRoot : IDomContainer
     {
+        //RangeSortedDictionary<IDomObject> SelectorXref { get; }
+        void AddToIndex(string key, IDomElement element);
+        void AddToIndex(IDomElement element);
+        void RemoveFromIndex(string key);
+        void RemoveFromIndex(IDomElement element);
+        IEnumerable<IDomObject> QueryIndex(string subKey, int depth, bool includeDescendants);
+        IEnumerable<IDomObject> QueryIndex(string subKey);
+        
         DocType DocType { get; set; }
         DomRenderingOptions DomRenderingOptions { get; set; }
         IDomElement GetElementById(string id);
-        void SetOwner(CsQuery owner);
+        IDomElement CreateElement(string nodeName);
+        IDomText CreateTextNode(string text);
+        IDomComment CreateComment(string comment);
+        IEnumerable<IDomElement> GetElementsByTagName(string tagName);
+       // void SetOwner(CsQuery owner);
+        int TokenizeString(int startIndex, int length);
+        string GetTokenizedString(int index);
+        char[] SourceHtml { get; }
     }
 
 
@@ -27,17 +42,111 @@ namespace Jtc.CsQuery
     /// </summary>
     public class DomRoot : DomContainer<DomRoot>, IDomRoot
     {
+
         public DomRoot()
             : base()
         {
         }
-        public DomRoot(IEnumerable<IDomObject> elements)
-            : base(elements)
+        public DomRoot(IEnumerable<IDomObject> elements): base()
         {
-
+            ChildNodes.AddRange(elements);
+        }
+        public DomRoot(char[] html)
+        {
+            SourceHtml = html;
         }
 
-        private char[] OriginalString;
+        
+        public void AddToIndex(IDomElement element)
+        {
+            AddToIndexImpl(element, element.IsDisconnected,true);
+        }
+        /// <summary>
+        /// Pass "disconnected" info for all children to improve performance. When calling recursively,
+        /// never reindex children -- their relative positions will not change.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="isDisconnected"></param>
+        /// <param name="reIndex"></param>
+        protected void AddToIndexImpl(IDomElement element, bool isDisconnected, bool reIndex)
+        {
+            if (isDisconnected)
+            {
+                RemoveFromIndex(element);
+                if (reIndex)
+                {
+                    element.Reindex();
+                }
+            }
+            DomRoot document = (DomRoot)Document;
+            foreach (string key in element.IndexKeys())
+            {
+                AddToIndex(key, element);
+            }
+
+            if (element.HasChildren)
+            {
+                foreach (DomElement child in element.ChildElements)
+                {
+                    AddToIndexImpl(child,isDisconnected,false);
+                }
+            }
+
+        }
+        public void AddToIndex(string key, IDomElement element)
+        {
+            SelectorXref.Add(key, element);
+        }
+        public void RemoveFromIndex(IDomElement element)
+        {
+            if (element.HasChildren)
+            {
+                foreach (IDomElement child in element.ChildElements)
+                {
+                    RemoveFromIndex(child);
+                }
+            }
+
+            foreach (string key in element.IndexKeys())
+            {
+                RemoveFromIndex(key);
+            }
+        }
+        public void RemoveFromIndex(string key)
+        {
+            SelectorXref.Remove(key);
+        }
+        public IEnumerable<IDomObject> QueryIndex(string subKey, int depth, bool includeDescendants)
+        {
+            return SelectorXref.GetRange(subKey, depth, includeDescendants);
+        }
+        public IEnumerable<IDomObject> QueryIndex(string subKey)
+        {
+            return SelectorXref.GetRange(subKey);
+        }
+        public override IDomContainer ParentNode
+        {
+            get
+            {
+                return null;
+            }
+            internal set
+            {
+                throw new Exception("Cannot set parent for a DOM root node.");
+            }
+        }
+        public override string Path
+        {
+            get
+            {
+                return "";
+            }
+        }
+        public  char[] SourceHtml
+        {
+            get;
+            protected set;
+        }
         private List<Tuple<int,int>> OriginalStrings = new List<Tuple<int,int>>();
         private List<string> Strings;
 
@@ -48,40 +157,31 @@ namespace Jtc.CsQuery
             Strings.Add(text);
             return OriginalStrings.Count + Strings.Count-1;
         }
-        public virtual string GetString(int index)
+        public virtual string GetTokenizedString(int index)
         {
             if (index < OriginalStrings.Count)
             {
                 var range = OriginalStrings[index];
-                return OriginalString.Substring(range.Item1, range.Item2);
+                return SourceHtml.Substring(range.Item1, range.Item2);
             }
             else
             {
                 return Strings[OriginalStrings.Count-index];
             }
         }
-
-        public override CsQuery Owner
-        {
-            get
-            {
-                return _Owner;
-            }
-        }
-
-        public void SetOriginalString(char[] originalString)
-        {
-            OriginalString = originalString;
-        }
-        public int AddOriginalString(int start, int length)
+        //internal void SetOriginalString(char[] originalString)
+        //{
+        //    SourceHtml = originalString;
+        //}
+        public int TokenizeString(int start, int length)
         {
             OriginalStrings.Add(new Tuple<int,int>(start,length));
             return OriginalStrings.Count - 1;
         }
-        public void SetOwner(CsQuery owner)
-        {
-            _Owner = owner;
-        }
+        //public void SetOwner(CsQuery owner)
+        //{
+        //    _Owner = owner;
+        //}
         protected CsQuery _Owner = null;
         /// <summary>
         /// This is NOT INDEXED and should only be used for testing
@@ -90,28 +190,59 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public IDomElement GetElementById(string id)
         {
-            return GetElementById(ChildElements, id);
+            CsQuerySelectors selectors = new CsQuerySelectors("#" + id);
+            return (IDomElement)selectors.Select(Document).FirstOrDefault();
         }
-        protected IDomElement GetElementById(IEnumerable<IDomElement> elements, string id)
+        //protected I(DomElement GetElementById(IEnumerable<IDomElement> elements, string id)
+        //{
+
+
+        //    //foreach (IDomElement el in elements)
+        //    //{
+        //    //    if (el.ID == id)
+        //    //    {
+        //    //        return el;
+        //    //    }
+        //    //    if (el.ChildNodes.Count > 0)
+        //    //    {
+        //    //        var childEl = GetElementById(el.ChildElements, id);
+        //    //        if (childEl != null)
+        //    //        {
+        //    //            return childEl;
+        //    //        }
+        //    //    }
+        //    //}
+        //   // return null;
+        //}
+        public IEnumerable<IDomElement> GetElementsByTagName(string tagName)
         {
-            foreach (IDomElement el in elements)
+            CsQuerySelectors selectors = new CsQuerySelectors(tagName);
+            return OnlyElements(selectors.Select(Document));
+         
+        }
+        protected IEnumerable<IDomElement> OnlyElements(IEnumerable<IDomObject> objectList)
+        {
+            foreach (IDomObject obj in objectList)
             {
-                if (el.ID == id)
+                if (obj.NodeType == NodeType.ELEMENT_NODE)
                 {
-                    return el;
-                }
-                if (el.ChildNodes.Count > 0)
-                {
-                    var childEl = GetElementById(el.ChildElements, id);
-                    if (childEl != null)
-                    {
-                        return childEl;
-                    }
+                    yield return (IDomElement)obj;
                 }
             }
-            return null;
+            yield break;
+        }
+        public IDomElement CreateElement(string nodeName) {
+            return new DomElement(nodeName);
         }
 
+        public IDomText CreateTextNode(string text)
+        {
+            return new DomText(text);
+        }
+        public IDomComment CreateComment(string comment)
+        {
+            return new DomComment(comment);
+        }
 
         // Store for all text node content (to avoid overhead of allocation when cloning large numbers of objects)
         //public List<string> TextContent = new List<string>();
@@ -129,7 +260,7 @@ namespace Jtc.CsQuery
         }
 
         protected DomRenderingOptions _DomRenderingOptions = 0;
-        public override DomRoot Dom
+        public override IDomRoot Document
         {
             get
             {
@@ -138,13 +269,15 @@ namespace Jtc.CsQuery
         }
         public override NodeType NodeType
         {
-            get { return NodeType.DOCUMENT_NODE; }
+            get { return GetElementById("html")==null 
+                ? NodeType.DOCUMENT_FRAGMENT_NODE :
+                  NodeType.DOCUMENT_NODE; }
         }
         public DomDocumentType DocTypeNode
         {
             get
             {
-                foreach (IDomObject obj in Dom.ChildNodes)
+                foreach (IDomObject obj in Document.ChildNodes)
                 {
                     if (obj.NodeType == NodeType.DOCUMENT_TYPE_NODE)
                     {
@@ -192,7 +325,15 @@ namespace Jtc.CsQuery
         }
         private bool _settingDocType = false;
         protected DocType _DocType = 0;
-        public RangeSortedDictionary<DomElement> SelectorXref = new RangeSortedDictionary<DomElement>();
+        public RangeSortedDictionary<IDomElement> SelectorXref {
+            get
+            {
+                return _SelectorXref.Value;
+            }
+        }
+        protected Lazy<RangeSortedDictionary<IDomElement>> _SelectorXref = 
+            new Lazy<RangeSortedDictionary<IDomElement>>();
+
         public override bool InnerHtmlAllowed
         {
             get { return true; }
@@ -208,7 +349,7 @@ namespace Jtc.CsQuery
         public override DomRoot Clone()
         {
             DomRoot clone = base.Clone();
-            clone.OriginalString = OriginalString;
+            clone.SourceHtml = SourceHtml;
             clone.OriginalStrings = OriginalStrings;
 
             return clone;

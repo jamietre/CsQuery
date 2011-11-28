@@ -15,13 +15,10 @@ namespace Jtc.CsQuery
             : base()
         {
         }
-        //public DomComment(CsQuery owner)
-        //    : base(owner)
-        //{
 
-        //}
-        public DomComment(string text)
+        public DomComment(string text): base()
         {
+            //ParentNode = document;
             Text = text;
         }
         public override NodeType NodeType
@@ -39,8 +36,8 @@ namespace Jtc.CsQuery
         }
         public override string Render()
         {
-            if (Dom != null
-                && Dom.DomRenderingOptions.HasFlag(DomRenderingOptions.RemoveComments))
+            if (Document != null
+                && Document.DomRenderingOptions.HasFlag(DomRenderingOptions.RemoveComments))
             {
                 return String.Empty;
             }

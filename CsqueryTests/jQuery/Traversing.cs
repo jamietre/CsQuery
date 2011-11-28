@@ -15,7 +15,7 @@ namespace CsqueryTests.jQuery
     public class Traversing: CsQueryTest 
     {
         [SetUp]
-        public override void Init()
+        public override void FixtureSetUp()
         {
 
             Dom = CsQuery.Create(Support.GetFile("csquerytests\\resources\\jquery-unit-index.htm"));
@@ -125,44 +125,49 @@ namespace CsqueryTests.jQuery
         [Test,TestMethod]
         public void Index()
         {
-            // DIFFERENT: The original test was for "2" which means it excluded text nodes. I don't think that makes a lot of sense when returning the sibling index.
-            Assert.AreEqual(jQuery("#text2").Index(), 5, "Returns the index of a child amongst its siblings");
+            Assert.AreEqual(jQuery("#text2").Index(), 2, "Returns the index of a child amongst its siblings");
         }
         [Test,TestMethod]
         public void Index_object_string_undefined()
         {
 
         }
-//test("index(Object|String|undefined)", function() {
-//    expect(16);
+        [Test, TestMethod]
+        public void IndexStringSelector()
+        {
 
-//    var elements = jQuery([window, document]),
-//        inputElements = jQuery("#radio1,#radio2,#check1,#check2");
+            // switched out Window with Body, no concept of Window here
+            var window = jQuery("body");
+            var elements = jQuery(document).Add(window);
 
-//    // Passing a node
-//    Assert.AreEqual(elements.index(window), 0, "Check for index of elements" );
-//    Assert.AreEqual(elements.index(document), 1, "Check for index of elements" );
-//    Assert.AreEqual(inputElements.index(document.getElementById("radio1")), 0, "Check for index of elements" );
-//    Assert.AreEqual(inputElements.index(document.getElementById("radio2")), 1, "Check for index of elements" );
-//    Assert.AreEqual(inputElements.index(document.getElementById("check1")), 2, "Check for index of elements" );
-//    Assert.AreEqual(inputElements.index(document.getElementById("check2")), 3, "Check for index of elements" );
-//    Assert.AreEqual(inputElements.index(window), -1, "Check for not found index" );
-//    Assert.AreEqual(inputElements.index(document), -1, "Check for not found index" );
+            var inputElements = jQuery("#radio1,#radio2,#check1,#check2");
 
-//    // Passing a jQuery object
-//    // enabled since [5500]
-//    Assert.AreEqual(elements.index( elements ), 0, "Pass in a jQuery object" );
-//    Assert.AreEqual(elements.index( elements.eq(1) ), 1, "Pass in a jQuery object" );
-//    Assert.AreEqual(jQuery("#form :radio").index( jQuery("#radio2") ), 1, "Pass in a jQuery object" );
+            // Passing a node
+            Assert.AreEqual(elements.Index(window), 1, "Check for index of elements" );
+            Assert.AreEqual(elements.Index(Dom.Document),0, "Check for index of elements" );
+            Assert.AreEqual(inputElements.Index(document.GetElementById("radio1")), 0, "Check for index of elements" );
+            Assert.AreEqual(inputElements.Index(document.GetElementById("radio2")), 1, "Check for index of elements" );
+            Assert.AreEqual(inputElements.Index(document.GetElementById("check1")), 2, "Check for index of elements" );
+            Assert.AreEqual(inputElements.Index(document.GetElementById("check2")), 3, "Check for index of elements" );
+            Assert.AreEqual(inputElements.Index(window), -1, "Check for not found index" );
+            Assert.AreEqual(inputElements.Index(Dom.Document), -1, "Check for not found index" );
 
-//    // Passing a selector or nothing
-//    // enabled since [6330]
-//    Assert.AreEqual(jQuery("#text2").index(), 2, "Check for index amongst siblings" );
-//    Assert.AreEqual(jQuery("#form").children().eq(4).index(), 4, "Check for index amongst siblings" );
-//    Assert.AreEqual(jQuery("#radio2").index("#form :radio") , 1, "Check for index within a selector" );
-//    Assert.AreEqual(jQuery("#form :radio").index( jQuery("#radio2") ), 1, "Check for index within a selector" );
-//    Assert.AreEqual(jQuery("#radio2").index("#form :text") , -1, "Check for index not found within a selector" );
-//});
+            // Passing a jQuery object
+            // enabled since [5500]
+            Assert.AreEqual(elements.Index( elements ), 0, "Pass in a jQuery object" );
+            Assert.AreEqual(elements.Index( elements.Eq(1) ), 1, "Pass in a jQuery object" );
+            Assert.AreEqual(jQuery("#form :radio").Index( jQuery("#radio2") ), 1, "Pass in a jQuery object" );
+
+            // Passing a selector or nothing
+            // enabled since [6330]
+            Assert.AreEqual(jQuery("#text2").Index(), 2, "Check for index amongst siblings" );
+            Assert.AreEqual(jQuery("#form").Children().Eq(4).Index(), 4, "Check for index amongst siblings" );
+
+            Assert.AreEqual(jQuery("#radio2").Index("#form :radio") , 1, "Check for index within a selector" );
+            Assert.AreEqual(jQuery("#form :radio").Index( jQuery("#radio2") ), 1, "Check for index within a selector" );
+            Assert.AreEqual(jQuery("#radio2").Index("#form :text") , -1, "Check for index not found within a selector" );
+            
+        }
 
         [Test,TestMethod]
         public void Filter_Selector()
@@ -202,27 +207,24 @@ namespace CsqueryTests.jQuery
                 .Get(), q("sndp", "first"), "filter(Function) using arg" );
         }
 
-    
-//test("filter(Element)", function() {
-//    expect(1);
+        [Test, TestMethod]
+        public void FilterElement()
+        {
+            var element = document.GetElementById("text1");
+            Assert.AreEqual(jQuery("#form input").Filter(element).Get(), q("text1"), "filter(Element)");
+        }
 
-//    var element = document.getElementById("text1");
-//    Assert.AreEqual(jQuery("#form input").filter(element).Get(), q("text1"), "filter(Element)" );
-//});
+        [Test, TestMethod]
+        public void FilterElementList()
+        {
 
-//test("filter(Array)", function() {
-//    expect(1);
+            var elements = new List<IDomElement>();
+            elements.Add(document.GetElementById("text1"));
+            elements.Add(document.GetElementById("text2"));
 
-//    var elements = [ document.getElementById("text1") ];
-//    Assert.AreEqual(jQuery("#form input").filter(elements).Get(), q("text1"), "filter(Element)" );
-//});
+            Assert.AreEqual(jQuery("#form input").Filter(elements).Get(), q("text1","text2"), "filter(Element)" );
+        }
 
-//test("filter(jQuery)", function() {
-//    expect(1);
-
-//    var elements = jQuery("#text1");
-//    Assert.AreEqual(jQuery("#form input").filter(elements).Get(), q("text1"), "filter(Element)" );
-//})
         [Test,TestMethod]
         public void Closest()
         {
@@ -277,7 +279,7 @@ namespace CsqueryTests.jQuery
             Assert.IsTrue( jchild.Closest( jparent[0] ).Is("#nothiddendiv"), "closest( jQuery('#nothiddendiv') ) :: node" );
             Assert.IsTrue( jchild.Closest( jchild ).Is("#nothiddendivchild"), "child is included" );
             Assert.IsTrue( jchild.Closest( jchild[0] ).Is("#nothiddendivchild"), "child is included  :: node" );
-            Assert.AreEqual(jchild.Closest( new DomElement("div") ).Length, 0, "created element is not related" );
+            Assert.AreEqual(jchild.Closest( document.CreateElement("div") ).Length, 0, "created element is not related" );
             Assert.AreEqual(jchild.Closest( jmain ).Length, 0, "Main not a parent of child" );
             Assert.AreEqual(jchild.Closest( jmain[0] ).Length, 0, "Main not a parent of child :: node" );
             Assert.IsTrue( jchild.Closest( jbody.Add(jparent) ).Is("#nothiddendiv"), "Closest ancestor retrieved." );
@@ -298,119 +300,120 @@ namespace CsqueryTests.jQuery
             Assert.AreEqual(jQuery("#ap *").Not("#mark, code").Get(), q("google", "groups", "anchor1"), "not('ID, tag selector')");
 
             var all = jQuery("p").Get();
-            Assert.AreEqual(jQuery("p").Not(null).Get(),      all, "not(null) should have no effect");
-            Assert.AreEqual(jQuery("p").Not(null).Get(), all, "not(undefined) should have no effect");
+            Assert.AreEqual(jQuery("p").Not((string)null).Get(),      all, "not(null) should have no effect");
+            Assert.AreEqual(jQuery("p").Not((string)null).Get(), all, "not(undefined) should have no effect");
             //Assert.AreEqual(jQuery("p").Not(0).Get(),         all, "not(0) should have no effect");
             Assert.AreEqual(jQuery("p").Not("").Get(),        all, "not('') should have no effect");
         }
 
-//test("not(Selector|undefined)", function() {
-//    expect(11);
+        [Test, TestMethod]
+        public void NotElement()
+        {
+            var selects = jQuery("#form select");
+            Assert.AreEqual(selects.Not(selects[1]).Get(), q("select1", "select3", "select4", "select5"), "filter out DOM element");
 
-//});
+        }
 
-//test("not(Element)", function() {
-//    expect(1);
-
-//    var selects = jQuery("#form select");
-//    Assert.AreEqual(selects.not( selects[1] ).Get(), q("select1", "select3", "select4", "select5"), "filter out DOM element");
-//});
 
 //test("not(Function)", function() {
 //    Assert.AreEqual(jQuery("#qunit-fixture p").not(function() { return jQuery("a", this).Length }).Get(), q("sndp", "first"), "not(Function)" );
 //});
 
-//test("not(Array)", function() {
-//    expect(2);
-
-//    Assert.AreEqual(jQuery("#qunit-fixture > p#ap > a").not(document.getElementById("google")).Length, 2, "not(DOMElement)" );
-//    Assert.AreEqual(jQuery("p").not(document.getElementsByTagName("p")).Length, 0, "not(Array-like DOM collection)" );
-//});
-
+        [Test, TestMethod]
+        public void NotArray()
+        {
+            Assert.AreEqual(jQuery("#qunit-fixture > p#ap > a").Not(document.GetElementById("google")).Length, 2, "not(DOMElement)");
+            Assert.AreEqual(jQuery("p").Not(document.GetElementsByTagName("p")).Length, 0, "not(Array-like DOM collection)");
+        }
+        
 //test("not(jQuery)", function() {
 //    expect(1);
 
 //    Assert.AreEqual(jQuery("p").not(jQuery("#ap, #sndp, .result")).Get(), q("firstp", "en", "sap", "first"), "not(jQuery)" );
 //});
+        [Test, TestMethod]
+        public void HasElement()
+        {
+            
+            var obj = jQuery("#qunit-fixture").Has(jQuery("#sndp")[0]);
+            Assert.AreEqual(obj.Get(), q("qunit-fixture"), "Keeps elements that have the element as a descendant" );
 
-//test("has(Element)", function() {
-//    expect(2);
+            var multipleParent = jQuery("#qunit-fixture, #header").Has(jQuery("#sndp")[0]);
+            Assert.AreEqual(obj.Get(), q("qunit-fixture"), "Does not include elements that do not have the element as a descendant" );
+        }
+        [Test, TestMethod]
+        public void HasSelector()
+        {
+            var obj = jQuery("#qunit-fixture").Has("#sndp");
+            Assert.AreEqual(obj.Get(), q("qunit-fixture"), "Keeps elements that have any element matching the selector as a descendant");
 
-//    var obj = jQuery("#qunit-fixture").has(jQuery("#sndp")[0]);
-//    Assert.AreEqual(obj.Get(), q("qunit-fixture"), "Keeps elements that have the element as a descendant" );
+            var multipleParent = jQuery("#qunit-fixture, #header").Has("#sndp");
+            Assert.AreEqual(obj.Get(), q("qunit-fixture"), "Does not include elements that do not have the element as a descendant");
 
-//    var multipleParent = jQuery("#qunit-fixture, #header").has(jQuery("#sndp")[0]);
-//    Assert.AreEqual(obj.Get(), q("qunit-fixture"), "Does not include elements that do not have the element as a descendant" );
-//});
+            var multipleHas = jQuery("#qunit-fixture").Has("#sndp, #first");
+            Assert.AreEqual(multipleHas.Get(), q("qunit-fixture"), "Only adds elements once");
+        }
 
-//test("has(Selector)", function() {
-//    expect(3);
+        [Test, TestMethod]
+        public void HasArrayish()
+        {
+            var simple = jQuery("#qunit-fixture").Has(jQuery("#sndp"));
+            Assert.AreEqual(simple.Get(), q("qunit-fixture"), "Keeps elements that have any element in the jQuery list as a descendant");
 
-//    var obj = jQuery("#qunit-fixture").has("#sndp");
-//    Assert.AreEqual(obj.Get(), q("qunit-fixture"), "Keeps elements that have any element matching the selector as a descendant" );
+            var multipleParent = jQuery("#qunit-fixture, #header").Has(jQuery("#sndp"));
+            Assert.AreEqual(multipleParent.Get(), q("qunit-fixture"), "Does not include elements that do not have an element in the jQuery list as a descendant");
 
-//    var multipleParent = jQuery("#qunit-fixture, #header").has("#sndp");
-//    Assert.AreEqual(obj.Get(), q("qunit-fixture"), "Does not include elements that do not have the element as a descendant" );
+            var multipleHas = jQuery("#qunit-fixture").Has(jQuery("#sndp, #first"));
+            Assert.AreEqual(simple.Get(), q("qunit-fixture"), "Only adds elements once");
+        }
 
-//    var multipleHas = jQuery("#qunit-fixture").has("#sndp, #first");
-//    Assert.AreEqual(multipleHas.Get(), q("qunit-fixture"), "Only adds elements once" );
-//});
+        [Test, TestMethod]
+        public void AndSelf()
+        {
+            Assert.AreEqual(jQuery("#en").Siblings().AndSelf().Get(), q("sndp", "en", "sap"), "Check for siblings and self");
+            Assert.AreEqual(jQuery("#foo").Children().AndSelf().Get(), q("foo", "sndp", "en", "sap"), "Check for children and self");
+            Assert.AreEqual(jQuery("#sndp, #en").Parent().AndSelf().Get(), q("foo", "sndp", "en"), "Check for parent and self");
+            Assert.AreEqual(jQuery("#groups").Parents("p, div").AndSelf().Get(), q("qunit-fixture", "ap", "groups"), "Check for parents and self");
 
-//test("has(Arrayish)", function() {
-//    expect(3);
+        }
+        [Test, TestMethod]
+        public void Siblings()
+        {
+            Assert.AreEqual(jQuery("#en").Siblings().Get(), q("sndp", "sap"), "Check for siblings");
+            //Assert.AreEqual(jQuery("#sndp").Siblings(":has(code)").Get(), q("sap"), "Check for filtered siblings (has code child element)");
+            //Assert.AreEqual(jQuery("#sndp").Siblings(":has(a)").Get(), q("en", "sap"), "Check for filtered siblings (has anchor child element)");
+            Assert.AreEqual(jQuery("#foo").Siblings("form, b").Get(), q("form", "floatTest", "lengthtest", "name-tests", "testForm"), "Check for multiple filters");
+            var set = q("sndp", "en", "sap");
+            Assert.AreEqual(jQuery("#en, #sndp").Siblings().Get(), set, "Check for unique results from siblings");
+        }
+        [Test, TestMethod]
+        public void Children()
+        {
+            Assert.AreEqual(jQuery("#foo").Children().Get(), q("sndp", "en", "sap"), "Check for children");
+            Assert.AreEqual(jQuery("#foo").Children(":has(code)").Get(), q("sndp", "sap"), "Check for filtered children");
+            Assert.AreEqual(jQuery("#foo").Children("#en, #sap").Get(), q("en", "sap"), "Check for multiple filters");
 
-//    var simple = jQuery("#qunit-fixture").has(jQuery("#sndp"));
-//    Assert.AreEqual(simple.Get(), q("qunit-fixture"), "Keeps elements that have any element in the jQuery list as a descendant" );
+        }
+        [Test, TestMethod]
+        public void Parent()
+        {
+            Assert.AreEqual(jQuery("#groups").Parent()[0].ID, "ap", "Simple parent check");
+            Assert.AreEqual(jQuery("#groups").Parent("p")[0].ID , "ap", "Filtered parent check");
+            Assert.AreEqual(jQuery("#groups").Parent("div").Length, 0, "Filtered parent check, no match");
+            Assert.AreEqual(jQuery("#groups").Parent("div, p")[0].ID, "ap", "Check for multiple filters");
+            Assert.AreEqual(jQuery("#en, #sndp").Parent().Get(), q("foo"), "Check for unique results from parent");
+            
+        }
+        [Test, TestMethod]
+        public void Parents()
+        {
+            Assert.AreEqual(jQuery("#groups").Parents()[0].ID, "ap", "Simple parents check" );
+            Assert.AreEqual(jQuery("#groups").Parents("p")[0].ID, "ap", "Filtered parents check" );
+            Assert.AreEqual(jQuery("#groups").Parents("div")[0].ID, "qunit-fixture", "Filtered parents check2" );
+            Assert.AreEqual(jQuery("#groups").Parents("p, div").Get(), q("ap", "qunit-fixture"), "Check for multiple filters" );
+            Assert.AreEqual(jQuery("#en, #sndp").Parents().Get(), q("foo", "qunit-fixture", "dl", "body", "html"), "Check for unique results from parents" );
 
-//    var multipleParent = jQuery("#qunit-fixture, #header").has(jQuery("#sndp"));
-//    Assert.AreEqual(multipleParent.Get(), q("qunit-fixture"), "Does not include elements that do not have an element in the jQuery list as a descendant" );
-
-//    var multipleHas = jQuery("#qunit-fixture").has(jQuery("#sndp, #first"));
-//    Assert.AreEqual(simple.Get(), q("qunit-fixture"), "Only adds elements once" );
-//});
-
-//test("andSelf()", function() {
-//    expect(4);
-//    Assert.AreEqual(jQuery("#en").siblings().andSelf().Get(), q("sndp", "en", "sap"), "Check for siblings and self" );
-//    Assert.AreEqual(jQuery("#foo").children().andSelf().Get(), q("foo", "sndp", "en", "sap"), "Check for children and self" );
-//    Assert.AreEqual(jQuery("#sndp, #en").parent().andSelf().Get(), q("foo","sndp","en"), "Check for parent and self" );
-//    Assert.AreEqual(jQuery("#groups").parents("p, div").andSelf().Get(), q("qunit-fixture", "ap", "groups"), "Check for parents and self" );
-//});
-
-//test("siblings([String])", function() {
-//    expect(5);
-//    Assert.AreEqual(jQuery("#en").siblings().Get(), q("sndp", "sap"), "Check for siblings" );
-//    Assert.AreEqual(jQuery("#sndp").siblings(":has(code)").Get(), q("sap"), "Check for filtered siblings (has code child element)" );
-//    Assert.AreEqual(jQuery("#sndp").siblings(":has(a)").Get(), q("en", "sap"), "Check for filtered siblings (has anchor child element)" );
-//    Assert.AreEqual(jQuery("#foo").siblings("form, b").Get(), q("form", "floatTest", "lengthtest", "name-tests", "testForm"), "Check for multiple filters" );
-//    var set = q("sndp", "en", "sap");
-//    Assert.AreEqual(jQuery("#en, #sndp").siblings().Get(), set, "Check for unique results from siblings" );
-//});
-
-//test("children([String])", function() {
-//    expect(3);
-//    Assert.AreEqual(jQuery("#foo").children().Get(), q("sndp", "en", "sap"), "Check for children" );
-//    Assert.AreEqual(jQuery("#foo").children(":has(code)").Get(), q("sndp", "sap"), "Check for filtered children" );
-//    Assert.AreEqual(jQuery("#foo").children("#en, #sap").Get(), q("en", "sap"), "Check for multiple filters" );
-//});
-
-//test("parent([String])", function() {
-//    expect(5);
-//    Assert.AreEqual(jQuery("#groups").parent()[0].id, "ap", "Simple parent check" );
-//    Assert.AreEqual(jQuery("#groups").parent("p")[0].id, "ap", "Filtered parent check" );
-//    Assert.AreEqual(jQuery("#groups").parent("div").Length, 0, "Filtered parent check, no match" );
-//    Assert.AreEqual(jQuery("#groups").parent("div, p")[0].id, "ap", "Check for multiple filters" );
-//    Assert.AreEqual(jQuery("#en, #sndp").parent().Get(), q("foo"), "Check for unique results from parent" );
-//});
-
-//test("parents([String])", function() {
-//    expect(5);
-//    Assert.AreEqual(jQuery("#groups").parents()[0].id, "ap", "Simple parents check" );
-//    Assert.AreEqual(jQuery("#groups").parents("p")[0].id, "ap", "Filtered parents check" );
-//    Assert.AreEqual(jQuery("#groups").parents("div")[0].id, "qunit-fixture", "Filtered parents check2" );
-//    Assert.AreEqual(jQuery("#groups").parents("p, div").Get(), q("ap", "qunit-fixture"), "Check for multiple filters" );
-//    Assert.AreEqual(jQuery("#en, #sndp").parents().Get(), q("foo", "qunit-fixture", "dl", "body", "html"), "Check for unique results from parents" );
-//});
+        }
 
 //test("parentsUntil([String])", function() {
 //    expect(9);
@@ -427,22 +430,24 @@ namespace CsqueryTests.jQuery
 //    Assert.AreEqual(jQuery("#groups").parentsUntil("#html", "span").Length, 0, "Filtered parentsUntil check, no match" );
 //    Assert.AreEqual(jQuery("#groups, #ap").parentsUntil("#html", "p,div,dl").Get(), parents.slice( 0, 3 ).Get(), "Multi-source, multiple-filtered parentsUntil check" );
 //});
+        [Test, TestMethod]
+        public void Next()
+        {
+            Assert.AreEqual(jQuery("#ap").Next()[0].ID, "foo", "Simple next check" );
+            Assert.AreEqual(jQuery("#ap").Next("div")[0].ID, "foo", "Filtered next check");
+            Assert.AreEqual(jQuery("#ap").Next("p").Length, 0, "Filtered next check, no match" );
+            Assert.AreEqual(jQuery("#ap").Next("div, p")[0].ID, "foo", "Multiple filters");
+   
+        }
+        [Test, TestMethod]
+        public void Prev()
+        {
+            Assert.AreEqual(jQuery("#foo").Prev()[0].ID, "ap", "Simple prev check");
+            Assert.AreEqual(jQuery("#foo").Prev("p")[0].ID, "ap", "Filtered prev check");
+            Assert.AreEqual(jQuery("#foo").Prev("div").Length, 0, "Filtered prev check, no match");
+            Assert.AreEqual(jQuery("#foo").Prev("p, div")[0].ID, "ap", "Multiple filters");
+        }
 
-//test("next([String])", function() {
-//    expect(4);
-//    Assert.AreEqual(jQuery("#ap").next()[0].id, "foo", "Simple next check" );
-//    Assert.AreEqual(jQuery("#ap").next("div")[0].id, "foo", "Filtered next check" );
-//    Assert.AreEqual(jQuery("#ap").next("p").Length, 0, "Filtered next check, no match" );
-//    Assert.AreEqual(jQuery("#ap").next("div, p")[0].id, "foo", "Multiple filters" );
-//});
-
-//test("prev([String])", function() {
-//    expect(4);
-//    Assert.AreEqual(jQuery("#foo").prev()[0].id, "ap", "Simple prev check" );
-//    Assert.AreEqual(jQuery("#foo").prev("p")[0].id, "ap", "Filtered prev check" );
-//    Assert.AreEqual(jQuery("#foo").prev("div").Length, 0, "Filtered prev check, no match" );
-//    Assert.AreEqual(jQuery("#foo").prev("p, div")[0].id, "ap", "Multiple filters" );
-//});
 
 //test("nextAll([String])", function() {
 //    expect(4);
@@ -502,98 +507,108 @@ namespace CsqueryTests.jQuery
 //    Assert.AreEqual(jQuery("#area1, #hidden1").prevUntil("label", "button,input").Get(), elems.not(":last").Get(), "Multi-source, multiple-filtered prevUntil check" );
 //});
 
-//test("contents()", function() {
-//    expect(12);
-//    Assert.AreEqual(jQuery("#ap").contents().Length, 9, "Check element contents" );
-//    ok( jQuery("#iframe").contents()[0], "Check existance of IFrame document" );
-//    var ibody = jQuery("#loadediframe").contents()[0].body;
-//    ok( ibody, "Check existance of IFrame body" );
+        [Test, TestMethod]
+        public void Contents()
+        {
+           
+            Assert.AreEqual(jQuery("#ap").Contents().Length, 9, "Check element contents" );
+            Assert.IsTrue( jQuery("#iframe").Length>0, "Check existence of IFrame document" );
+            var ibody = jQuery("#loadediframe").Contents().Find("body");
+            Assert.IsTrue( ibody.Length>0, "Check existance of IFrame body" );
+            var csq = new CsQuery("span", ibody);
+            Assert.AreEqual(csq.Text(), "span text", "Find span in IFrame and check its text" );
 
-//    Assert.AreEqual(jQuery("span", ibody).Text(), "span text", "Find span in IFrame and check its text" );
+            jQuery(ibody).Append("<div>init text</div>");
+            csq = new CsQuery("div", ibody);
+            Assert.AreEqual(csq.Length, 2, "Check the original div and the new div are in IFrame" );
+            csq = new CsQuery("div:last", ibody);
+            Assert.AreEqual(csq.Text(), "init text", "Add text to div in IFrame" );
 
-//    jQuery(ibody).append("<div>init text</div>");
-//    Assert.AreEqual(jQuery("div", ibody).Length, 2, "Check the original div and the new div are in IFrame" );
+             csq = new CsQuery("div:last", ibody);
+            csq.Text("div text");
+            Assert.AreEqual(new CsQuery("div:last", ibody).Text(), "div text", "Add text to div in IFrame" );
 
-//    Assert.AreEqual(jQuery("div:last", ibody).Text(), "init text", "Add text to div in IFrame" );
+            csq = new CsQuery("div:last", ibody).Remove();
+            Assert.AreEqual(jQuery("div",ibody).Length, 1, "Delete the div and check only one div left in IFrame" );
 
-//    jQuery("div:last", ibody).Text("div text");
-//    Assert.AreEqual(jQuery("div:last", ibody).Text(), "div text", "Add text to div in IFrame" );
+            Assert.AreEqual(jQuery("div",ibody).Text(), "span text", "Make sure the correct div is still left after deletion in IFrame" );
 
-//    jQuery("div:last", ibody).remove();
-//    Assert.AreEqual(jQuery("div", ibody).Length, 1, "Delete the div and check only one div left in IFrame" );
+            csq = new CsQuery("<table/>", ibody);
+            csq.Append("<tr><td>cell</td></tr>").AppendTo(ibody);
+            csq = new CsQuery("table", ibody);
+            csq.Remove();
+            csq = new CsQuery("div", ibody);
+            Assert.AreEqual(csq.Length, 1, "Check for JS error on add and delete of a table in IFrame" );
 
-//    Assert.AreEqual(jQuery("div", ibody).Text(), "span text", "Make sure the correct div is still left after deletion in IFrame" );
+            // using contents will get comments regular, text, and comment nodes
+            var c = jQuery("#nonnodes").Contents().Contents();
+            Assert.AreEqual(c.Length, 1, "Check node,textnode,comment contents is just one" );
+            Assert.AreEqual(c[0].NodeValue, "hi", "Check node,textnode,comment contents is just the one from span" );
+        }
+        [Test, TestMethod]
+        public void Add()
+        {
 
-//    jQuery("<table/>", ibody).append("<tr><td>cell</td></tr>").appendTo(ibody);
-//    jQuery("table", ibody).remove();
-//    Assert.AreEqual(jQuery("div", ibody).Length, 1, "Check for JS error on add and delete of a table in IFrame" );
+            Assert.AreEqual(jQuery("#sndp").Add("#en").Add("#sap").Get(), q("sndp", "en", "sap"), "Check elements from document" );
+            Assert.AreEqual(jQuery("#sndp").Add( jQuery("#en")[0] ).Add( jQuery("#sap") ).Get(), q("sndp", "en", "sap"), "Check elements from document" );
 
-//    // using contents will get comments regular, text, and comment nodes
-//    var c = jQuery("#nonnodes").contents().contents();
-//    Assert.AreEqual(c.Length, 1, "Check node,textnode,comment contents is just one" );
-//    Assert.AreEqual(c[0].nodeValue, "hi", "Check node,textnode,comment contents is just the one from span" );
-//});
+            // We no longer support .Add(form.elements), unfortunately.
+            // There is no way, in browsers, to reliably determine the difference
+            // between form.elements and form - and doing .Add(form) and having it
+            // add the form elements is way to unexpected, so this gets the boot.
+            // ok( jQuery([]).Add(jQuery("#form")[0].elements).Length >= 13, "Check elements from array" );
 
-//test("add(String|Element|Array|undefined)", function() {
-//    expect(16);
-//    Assert.AreEqual(jQuery("#sndp").add("#en").add("#sap").Get(), q("sndp", "en", "sap"), "Check elements from document" );
-//    Assert.AreEqual(jQuery("#sndp").add( jQuery("#en")[0] ).add( jQuery("#sap") ).Get(), q("sndp", "en", "sap"), "Check elements from document" );
+            // For the time being, we're discontinuing support for jQuery(form.elements) since it's ambiguous in IE
+            // use jQuery([]).Add(form.elements) instead.
+            //Assert.AreEqual(jQuery([]).Add(jQuery("#form")[0].elements).Length, jQuery(jQuery("#form")[0].elements).Length, "Array in constructor must equals array in add()" );
 
-//    // We no longer support .add(form.elements), unfortunately.
-//    // There is no way, in browsers, to reliably determine the difference
-//    // between form.elements and form - and doing .add(form) and having it
-//    // add the form elements is way to unexpected, so this gets the boot.
-//    // ok( jQuery([]).add(jQuery("#form")[0].elements).Length >= 13, "Check elements from array" );
+            //TODO: Disconnected nodes are not going to be ordered correctly within a selection set. To maintain order added to
+            // a selection set we need to create some way of tracking order added within the SelectionSet class.
 
-//    // For the time being, we're discontinuing support for jQuery(form.elements) since it's ambiguous in IE
-//    // use jQuery([]).add(form.elements) instead.
-//    //Assert.AreEqual(jQuery([]).add(jQuery("#form")[0].elements).Length, jQuery(jQuery("#form")[0].elements).Length, "Array in constructor must equals array in add()" );
+            var divs = jQuery("<div/>").Add("#sndp");
+            //Assert.IsTrue( (int)divs[0].ParentNode.NodeType ==11, "Make sure the first element is still the disconnected node." );
 
-//    var divs = jQuery("<div/>").add("#sndp");
-//    ok( !divs[0].parentNode, "Make sure the first element is still the disconnected node." );
+            divs = jQuery("<div>test</div>").Add("#sndp");
+            //Assert.AreEqual((int)divs[0].ParentNode.NodeType, 11, "Make sure the first element is still the disconnected node." );
 
-//    divs = jQuery("<div>test</div>").add("#sndp");
-//    Assert.AreEqual(divs[0].parentNode.nodeType, 11, "Make sure the first element is still the disconnected node." );
+            divs = jQuery("#sndp").Add("<div/>");
+            Assert.IsTrue(divs[1].ParentNode==null, "Make sure the first element is still the disconnected node." );
 
-//    divs = jQuery("#sndp").add("<div/>");
-//    ok( !divs[1].parentNode, "Make sure the first element is still the disconnected node." );
+            var tmp = jQuery("<div/>");
 
-//    var tmp = jQuery("<div/>");
+            var x = CsQuery.Create().Add(jQuery("<p id='x1'>xxx</p>").AppendTo(tmp)).Add(jQuery("<p id='x2'>xxx</p>").AppendTo(tmp));
+            Assert.AreEqual(x[0].ID, "x1", "Check on-the-fly element1" );
+            Assert.AreEqual(x[1].ID, "x2", "Check on-the-fly element2" );
 
-//    var x = jQuery([]).add(jQuery("<p id='x1'>xxx</p>").appendTo(tmp)).add(jQuery("<p id='x2'>xxx</p>").appendTo(tmp));
-//    Assert.AreEqual(x[0].id, "x1", "Check on-the-fly element1" );
-//    Assert.AreEqual(x[1].id, "x2", "Check on-the-fly element2" );
+             x = CsQuery.Create().Add(jQuery("<p id='x1'>xxx</p>").AppendTo(tmp)[0]).Add(jQuery("<p id='x2'>xxx</p>").AppendTo(tmp)[0]);
+            Assert.AreEqual(x[0].ID, "x1", "Check on-the-fly element1" );
+            Assert.AreEqual(x[1].ID, "x2", "Check on-the-fly element2" );
 
-//    var x = jQuery([]).add(jQuery("<p id='x1'>xxx</p>").appendTo(tmp)[0]).add(jQuery("<p id='x2'>xxx</p>").appendTo(tmp)[0]);
-//    Assert.AreEqual(x[0].id, "x1", "Check on-the-fly element1" );
-//    Assert.AreEqual(x[1].id, "x2", "Check on-the-fly element2" );
+             x = CsQuery.Create().Add(jQuery("<p id='x1'>xxx</p>")).Add(jQuery("<p id='x2'>xxx</p>"));
+            Assert.AreEqual(x[0].ID, "x1", "Check on-the-fly element1" );
+            Assert.AreEqual(x[1].ID, "x2", "Check on-the-fly element2" );
 
-//    var x = jQuery([]).add(jQuery("<p id='x1'>xxx</p>")).add(jQuery("<p id='x2'>xxx</p>"));
-//    Assert.AreEqual(x[0].id, "x1", "Check on-the-fly element1" );
-//    Assert.AreEqual(x[1].id, "x2", "Check on-the-fly element2" );
+             x = CsQuery.Create().Add("<p id='x1'>xxx</p>").Add("<p id='x2'>xxx</p>");
+            Assert.AreEqual(x[0].ID, "x1", "Check on-the-fly element1" );
+            Assert.AreEqual(x[1].ID, "x2", "Check on-the-fly element2" );
 
-//    var x = jQuery([]).add("<p id='x1'>xxx</p>").add("<p id='x2'>xxx</p>");
-//    Assert.AreEqual(x[0].id, "x1", "Check on-the-fly element1" );
-//    Assert.AreEqual(x[1].id, "x2", "Check on-the-fly element2" );
+            IDomElement notDefined = null;
+            Assert.AreEqual(CsQuery.Create().Add(notDefined).Length, 0, "Check that undefined adds nothing");
 
-//    var notDefined;
-//    Assert.AreEqual(jQuery([]).add(notDefined).Length, 0, "Check that undefined adds nothing" );
-
-//    Assert.AreEqual(jQuery([]).add( document.getElementById("form") ).Length, 1, "Add a form" );
-//    Assert.AreEqual(jQuery([]).add( document.getElementById("select1") ).Length, 1, "Add a select" );
-//});
-
+            Assert.AreEqual(CsQuery.Create().Add( document.GetElementById("form") ).Length, 1, "Add a form" );
+            Assert.AreEqual(CsQuery.Create().Add( document.GetElementById("select1") ).Length, 1, "Add a select" );
+        }
 //test("add(String, Context)", function() {
 //    expect(6);
 	
-//    deepEqual( jQuery( "#firstp" ).add( "#ap" ).Get(), q( "firstp", "ap" ), "Add selector to selector " );
-//    deepEqual( jQuery( document.getElementById("firstp") ).add( "#ap" ).Get(), q( "firstp", "ap" ), "Add gEBId to selector" );
-//    deepEqual( jQuery( document.getElementById("firstp") ).add( document.getElementById("ap") ).Get(), q( "firstp", "ap" ), "Add gEBId to gEBId" );
+//    deepEqual( jQuery( "#firstp" ).Add( "#ap" ).Get(), q( "firstp", "ap" ), "Add selector to selector " );
+//    deepEqual( jQuery( document.getElementById("firstp") ).Add( "#ap" ).Get(), q( "firstp", "ap" ), "Add gEBId to selector" );
+//    deepEqual( jQuery( document.getElementById("firstp") ).Add( document.getElementById("ap") ).Get(), q( "firstp", "ap" ), "Add gEBId to gEBId" );
 
 //    var ctx = document.getElementById("firstp");
-//    deepEqual( jQuery( "#firstp" ).add( "#ap", ctx ).Get(), q( "firstp" ), "Add selector to selector " );
-//    deepEqual( jQuery( document.getElementById("firstp") ).add( "#ap", ctx ).Get(), q( "firstp" ), "Add gEBId to selector, not in context" );
-//    deepEqual( jQuery( document.getElementById("firstp") ).add( "#ap", document.getElementsByTagName("body")[0] ).Get(), q( "firstp", "ap" ), "Add gEBId to selector, in context" );
+//    deepEqual( jQuery( "#firstp" ).Add( "#ap", ctx ).Get(), q( "firstp" ), "Add selector to selector " );
+//    deepEqual( jQuery( document.getElementById("firstp") ).Add( "#ap", ctx ).Get(), q( "firstp" ), "Add gEBId to selector, not in context" );
+//    deepEqual( jQuery( document.getElementById("firstp") ).Add( "#ap", document.getElementsByTagName("body")[0] ).Get(), q( "firstp", "ap" ), "Add gEBId to selector, in context" );
 
     }
 }
