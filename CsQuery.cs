@@ -406,12 +406,16 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        public CsQuery Append(string content)
+        public CsQuery Append(params string[] content)
         {
             IDomFragment fragment = new DomFragment();
             DomElementFactory factory = new DomElementFactory(fragment);
-            IEnumerable<IDomObject> els = factory.CreateObjects(content);
-            return Append(els);
+            foreach (var item in content)
+            {
+                IEnumerable<IDomObject> els = factory.CreateObjects(item);
+                Append(els);
+            }
+            return this;
         }
         public CsQuery Append(IDomObject element)
         {
@@ -820,7 +824,7 @@ namespace Jtc.CsQuery
         {
             CsQuery csq = new CsQuery();
             
-            foreach (IDomObject elm in Elements)
+            foreach (IDomObject elm in Selection)
             {
                 IDomObject clone = elm.Clone();
                 csq.Document.AppendChild(clone);
@@ -1153,7 +1157,14 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery Last()
         {
-            return Eq(_Selection.Count - 1);
+            if (Selection.Count == 0)
+            {
+                return New();
+            }
+            else
+            {
+                return Eq(Selection.Count - 1);
+            }
         }
         /// <summary>
         /// Hide the matched elements.

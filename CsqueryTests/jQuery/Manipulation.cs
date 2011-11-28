@@ -41,7 +41,7 @@ namespace CsqueryTests.jQuery
             // Check serialization of text values
             var textNode = document.CreateTextNode("foo");
 
-            Assert.AreEqual("foo", jQuery(textNode).Text(), "Text node was retreived from .text().");
+            Assert.AreEqual("foo", jQuery(textNode).Text(), "Text node was retreived from .Text().");
             Assert.AreNotEqual("", jQuery(Dom.Document).Text(), "Retrieving text for the document retrieves all text (#10724).");
         }
 
@@ -56,11 +56,11 @@ namespace CsqueryTests.jQuery
             // using contents will get comments regular, text, and comment nodes
             var j = jQuery("#nonnodes").Contents();
             j.Text((string)valueObj("hi!"));
-            Assert.AreEqual( jQuery(j[0]).Text(), "hi!", "Check node,textnode,comment with text()" );
-            Assert.AreEqual( j[1].NodeValue, " there ", "Check node,textnode,comment with text()" );
+            Assert.AreEqual( jQuery(j[0]).Text(), "hi!", "Check node,textnode,comment with Text()" );
+            Assert.AreEqual( j[1].NodeValue, " there ", "Check node,textnode,comment with Text()" );
 
             // Blackberry 4.6 doesn't maintain comments in the DOM
-            Assert.AreEqual( jQuery("#nonnodes")[0].ChildNodes.Length < 3 ? 8 :(int)j[2].NodeType, 8, "Check node,textnode,comment with text()" );
+            Assert.AreEqual( jQuery("#nonnodes")[0].ChildNodes.Length < 3 ? 8 :(int)j[2].NodeType, 8, "Check node,textnode,comment with Text()" );
         }
         [TestMethod, Test]
         public void TestTextString()
@@ -82,7 +82,7 @@ namespace CsqueryTests.jQuery
 //        return "foobar";
 //    });
 
-//    Assert.AreEqual( jQuery("#sap").text(), "foobar", "Check for merged text of more then one element." );
+//    Assert.AreEqual( jQuery("#sap").Text(), "foobar", "Check for merged text of more then one element." );
 
 //    Assert.AreEqual(;
 //});
@@ -153,7 +153,7 @@ namespace CsqueryTests.jQuery
         j = jQuery("<span/>").Wrap(result);
         Assert.AreEqual( j[0].ParentNode.NodeName.ToLower(), "div", "Wrapping works." );
 
-//        j.parent().trigger("click");
+//        j.Parent().trigger("click");
    
      
         //jQuery("#check1").click(function() {
@@ -208,25 +208,26 @@ namespace CsqueryTests.jQuery
     }
 
 
-//var testWrapAll = function(val) {
-//    expect(8);
-//    var prev = jQuery("#firstp")[0].previousSibling;
-//    var p = jQuery("#firstp,#first")[0].parentNode;
+//    protected void TestWrapAll(Func<string,string> val)
+//    {
+//        var prev = jQuery("#firstp")[0].PreviousSibling;
+//        var p = jQuery("#firstp,#first")[0].ParentNode;
 
-//    var result = jQuery("#firstp,#first").wrapAll(val( "<div class='red'><div class='tmp'></div></div>" ));
-//    Assert.AreEqual( result.parent().Length, 1, "Check for wrapping of on-the-fly html" );
-//    Assert.IsTrue( jQuery("#first").parent().parent().Is(".red"), "Check if wrapper has class 'red'" );
-//    Assert.IsTrue( jQuery("#firstp").parent().parent().Is(".red"), "Check if wrapper has class 'red'" );
-//    Assert.AreEqual( jQuery("#first").parent().parent()[0].previousSibling, prev, "Correct Previous Sibling" );
-//    Assert.AreEqual( jQuery("#first").parent().parent()[0].parentNode, p, "Correct Parent" );
+//        var result = jQuery("#firstp,#first").WrapAll(val( "<div class='red'><div class='tmp'></div></div>" ));
+//        Assert.AreEqual( result.Parent().Length, 1, "Check for wrapping of on-the-fly html" );
+//        Assert.IsTrue( jQuery("#first").Parent().Parent().Is(".red"), "Check if wrapper has class 'red'" );
+//        Assert.IsTrue( jQuery("#firstp").Parent().Parent().Is(".red"), "Check if wrapper has class 'red'" );
+//        Assert.AreEqual( jQuery("#first").Parent().Parent()[0].PreviousSibling, prev, "Correct Previous Sibling" );
+//        Assert.AreEqual( jQuery("#first").Parent().Parent()[0].ParentNode, p, "Correct Parent" );
 
-//    Assert.AreEqual(;
-//    var prev = jQuery("#firstp")[0].previousSibling;
-//    var p = jQuery("#first")[0].parentNode;
-//    var result = jQuery("#firstp,#first").wrapAll(val( document.getElementById("empty") ));
-//    Assert.AreEqual( jQuery("#first").parent()[0], jQuery("#firstp").parent()[0], "Same Parent" );
-//    Assert.AreEqual( jQuery("#first").parent()[0].previousSibling, prev, "Correct Previous Sibling" );
-//    Assert.AreEqual( jQuery("#first").parent()[0].parentNode, p, "Correct Parent" );
+            
+//        prev = jQuery("#firstp")[0].PreviousSibling;
+//        p = jQuery("#first")[0].parentNode;
+//        result = jQuery("#firstp,#first").wrapAll(val( document.GetElementById("empty") ));
+//        Assert.AreEqual( jQuery("#first").Parent()[0], jQuery("#firstp").Parent()[0], "Same Parent" );
+//        Assert.AreEqual( jQuery("#first").Parent()[0].previousSibling, prev, "Correct Previous Sibling" );
+//        Assert.AreEqual( jQuery("#first").Parent()[0].parentNode, p, "Correct Parent" );
+
 //}
 
 //test("wrapAll(String|Element)", function() {
@@ -235,30 +236,30 @@ namespace CsqueryTests.jQuery
 
 //var testWrapInner = function(val) {
 //    expect(11);
-//    var num = jQuery("#first").children().Length;
+//    var num = jQuery("#first").Children().Length;
 //    var result = jQuery("#first").wrapInner(val("<div class='red'><div id='tmp'></div></div>"));
-//    Assert.AreEqual( jQuery("#first").children().Length, 1, "Only one child" );
-//    Assert.IsTrue( jQuery("#first").children().Is(".red"), "Verify Right Element" );
-//    Assert.AreEqual( jQuery("#first").children().children().children().Length, num, "Verify Elements Intact" );
+//    Assert.AreEqual( jQuery("#first").Children().Length, 1, "Only one child" );
+//    Assert.IsTrue( jQuery("#first").Children().Is(".red"), "Verify Right Element" );
+//    Assert.AreEqual( jQuery("#first").Children().Children().Children().Length, num, "Verify Elements Intact" );
 
 //    Assert.AreEqual(;
-//    var num = jQuery("#first").html("foo<div>test</div><div>test2</div>").children().Length;
+//    var num = jQuery("#first").html("foo<div>test</div><div>test2</div>").Children().Length;
 //    var result = jQuery("#first").wrapInner(val("<div class='red'><div id='tmp'></div></div>"));
-//    Assert.AreEqual( jQuery("#first").children().Length, 1, "Only one child" );
-//    Assert.IsTrue( jQuery("#first").children().Is(".red"), "Verify Right Element" );
-//    Assert.AreEqual( jQuery("#first").children().children().children().Length, num, "Verify Elements Intact" );
+//    Assert.AreEqual( jQuery("#first").Children().Length, 1, "Only one child" );
+//    Assert.IsTrue( jQuery("#first").Children().Is(".red"), "Verify Right Element" );
+//    Assert.AreEqual( jQuery("#first").Children().Children().Children().Length, num, "Verify Elements Intact" );
 
 //    Assert.AreEqual(;
-//    var num = jQuery("#first").children().Length;
-//    var result = jQuery("#first").wrapInner(val(document.getElementById("empty")));
-//    Assert.AreEqual( jQuery("#first").children().Length, 1, "Only one child" );
-//    Assert.IsTrue( jQuery("#first").children().Is("#empty"), "Verify Right Element" );
-//    Assert.AreEqual( jQuery("#first").children().children().Length, num, "Verify Elements Intact" );
+//    var num = jQuery("#first").Children().Length;
+//    var result = jQuery("#first").wrapInner(val(document.GetElementById("empty")));
+//    Assert.AreEqual( jQuery("#first").Children().Length, 1, "Only one child" );
+//    Assert.IsTrue( jQuery("#first").Children().Is("#empty"), "Verify Right Element" );
+//    Assert.AreEqual( jQuery("#first").Children().Children().Length, num, "Verify Elements Intact" );
 
 //    var div = jQuery("<div/>");
 //    div.wrapInner(val("<span></span>"));
-//    Assert.AreEqual(div.children().Length, 1, "The contents were wrapped.");
-//    Assert.AreEqual(div.children()[0].nodeName.toLowerCase(), "span", "A span was inserted.");
+//    Assert.AreEqual(div.Children().Length, 1, "The contents were wrapped.");
+//    Assert.AreEqual(div.Children()[0].nodeName.toLowerCase(), "span", "A span was inserted.");
 //}
 
 //test("wrapInner(String|Element)", function() {
@@ -269,187 +270,195 @@ namespace CsqueryTests.jQuery
 //    testWrapInner(functionReturningObj)
 //});
 
-//test("unwrap()", function() {
-//    expect(9);
+        [Test, TestMethod]
+        public void Unwrap()
+        {
+            jQuery("body").Append("  <div id='unwrap' style='display: none;'> <div id='unwrap1'> <span class='unwrap'>a</span> <span class='unwrap'>b</span> </div> <div id='unwrap2'> <span class='unwrap'>c</span> <span class='unwrap'>d</span> </div> <div id='unwrap3'> <b><span class='unwrap unwrap3'>e</span></b> <b><span class='unwrap unwrap3'>f</span></b> </div> </div>");
 
-//    jQuery("body").append("  <div id='unwrap' style='display: none;'> <div id='unwrap1'> <span class='unwrap'>a</span> <span class='unwrap'>b</span> </div> <div id='unwrap2'> <span class='unwrap'>c</span> <span class='unwrap'>d</span> </div> <div id='unwrap3'> <b><span class='unwrap unwrap3'>e</span></b> <b><span class='unwrap unwrap3'>f</span></b> </div> </div>");
+            var abcd = jQuery("#unwrap1 > span, #unwrap2 > span").Get();
+            var abcdef = jQuery("#unwrap span").Get();
 
-//    var abcd = jQuery("#unwrap1 > span, #unwrap2 > span").get(),
-//        abcdef = jQuery("#unwrap span").get();
+            Assert.AreEqual(jQuery("#unwrap1 span").Add("#unwrap2 span:first").Unwrap().Length, 3, "make #unwrap1 and #unwrap2 go away");
+            Assert.AreEqual(jQuery("#unwrap > span").Get(), abcd, "all four spans should still exist");
 
-//    Assert.AreEqual( jQuery("#unwrap1 span").add("#unwrap2 span:first").unwrap().Length, 3, "make #unwrap1 and #unwrap2 go away" );
-//    deepAssert.AreEqual( jQuery("#unwrap > span").get(), abcd, "all four spans should still exist" );
+            Assert.AreEqual(jQuery("#unwrap3 span").Unwrap().Get(), jQuery("#unwrap3 > span").Get(), "make all b in #unwrap3 go away");
 
-//    deepAssert.AreEqual( jQuery("#unwrap3 span").unwrap().get(), jQuery("#unwrap3 > span").get(), "make all b in #unwrap3 go away" );
+            Assert.AreEqual(jQuery("#unwrap3 span").Unwrap().Get(), jQuery("#unwrap > span.unwrap3").Get(), "make #unwrap3 go away");
+            Assert.AreEqual(jQuery("#unwrap").Children().Get(), abcdef, "#unwrap only contains 6 child spans");
 
-//    deepAssert.AreEqual( jQuery("#unwrap3 span").unwrap().get(), jQuery("#unwrap > span.unwrap3").get(), "make #unwrap3 go away" );
+            Assert.AreEqual(jQuery("#unwrap > span").Unwrap().Get(), jQuery("body > span.unwrap").Get(), "make the 6 spans become children of body");
 
-//    deepAssert.AreEqual( jQuery("#unwrap").children().get(), abcdef, "#unwrap only contains 6 child spans" );
+            Assert.AreEqual(jQuery("body > span.unwrap").Unwrap().Get(), jQuery("body > span.unwrap").Get(), "can't unwrap children of body");
+            Assert.AreEqual(jQuery("body > span.unwrap").Unwrap().Get(), abcdef, "can't unwrap children of body");
 
-//    deepAssert.AreEqual( jQuery("#unwrap > span").unwrap().get(), jQuery("body > span.unwrap").get(), "make the 6 spans become children of body" );
+            Assert.AreEqual(jQuery("body > span.unwrap").Get(), abcdef, "body contains 6 .unwrap child spans");
+        }
+        
+        protected void Append(Func<string, string> valueObj)
+        {
+            var defaultText = "Try them out:";
+            var result = jQuery("#first").Append(valueObj("<b>buga</b>"));
+            Assert.AreEqual( result.Text(), defaultText + "buga", "Check if text appending works" );
+            //TODO: implement last-child
+            jQuery("#select3").Append(valueObj("<option value='appendTest'>Append Test</option>"));
+            //Assert.AreEqual( jQuery("#select3").Append(valueObj("<option value='appendTest'>Append Test</option>"))
+            //    .Find("option:last-child")
+            //    .Attr("value"), "appendTest", "Appending html options to select element");
 
-//    deepAssert.AreEqual( jQuery("body > span.unwrap").unwrap().get(), jQuery("body > span.unwrap").get(), "can't unwrap children of body" );
-//    deepAssert.AreEqual( jQuery("body > span.unwrap").unwrap().get(), abcdef, "can't unwrap children of body" );
+            ResetQunit();
+            var expected = "This link has class=\"blog\": Simon Willison's WeblogTry them out:";
+            jQuery("#sap").Append(document.GetElementById("first"));
+            Assert.AreEqual( jQuery("#sap").Text(), expected, "Check for appending of element" );
 
-//    deepAssert.AreEqual( jQuery("body > span.unwrap").get(), abcdef, "body contains 6 .unwrap child spans" );
+            
+            expected = "This link has class=\"blog\": Simon Willison's WeblogTry them out:Yahoo";
+            jQuery("#sap").Append(Objects.ToEnumerable(document.GetElementById("first"), document.GetElementById("yahoo")));
+            Assert.AreEqual( jQuery("#sap").Text(), expected, "Check for appending of array of elements" );
 
-//    jQuery("body > span.unwrap").remove();
-//});
+            ResetQunit();
+            expected = "This link has class=\"blog\": Simon Willison's WeblogYahooTry them out:";
+            jQuery("#sap").Append(jQuery("#yahoo, #first"));
+            Assert.AreEqual( jQuery("#sap").Text(), expected, "Check for appending of jQuery object" );
 
-//var testAppend = function(valueObj) {
-//    expect(41);
-//    var defaultText = "Try them out:"
-//    var result = jQuery("#first").append(valueObj("<b>buga</b>"));
-//    Assert.AreEqual( result.text(), defaultText + "buga", "Check if text appending works" );
-//    Assert.AreEqual( jQuery("#select3").append(valueObj("<option value='appendTest'>Append Test</option>")).find("option:last-child").attr("value"), "appendTest", "Appending html options to select element");
+            
+            jQuery("#sap").Append("5");
+            Assert.IsTrue( jQuery("#sap")[0].InnerHTML.IndexOf("5")>0, "Check for appending a number" );
 
-//    Assert.AreEqual(;
-//    var expected = "This link has class=\"blog\": Simon Willison's WeblogTry them out:";
-//    jQuery("#sap").append(valueObj(document.getElementById("first")));
-//    Assert.AreEqual( jQuery("#sap").text(), expected, "Check for appending of element" );
+            
+            jQuery("#sap").Append(valueObj( " text with spaces " ));
+            Assert.IsTrue( jQuery("#sap")[0].InnerHTML.IndexOf(" text with spaces ")>0, "Check for appending text with spaces" );
 
-//    Assert.AreEqual(;
-//    expected = "This link has class=\"blog\": Simon Willison's WeblogTry them out:Yahoo";
-//    jQuery("#sap").append(valueObj([document.getElementById("first"), document.getElementById("yahoo")]));
-//    Assert.AreEqual( jQuery("#sap").text(), expected, "Check for appending of array of elements" );
+            ResetQunit();
+            var old = jQuery("#sap").Children().Length;
+            Assert.IsTrue( jQuery("#sap").Append(Objects.EmptyEnumerable<IDomObject>()).Children().Length ==old, "Check for appending an empty array." );
+            Assert.IsTrue(jQuery("#sap").Append(valueObj("")).Children().Length == old, "Check for appending an empty string.");
+            Assert.IsTrue(jQuery("#sap").Append(document.GetElementsByTagName("foo")).Children().Length == old, "Check for appending an empty nodelist.");
 
-//    Assert.AreEqual(;
-//    expected = "This link has class=\"blog\": Simon Willison's WeblogYahooTry them out:";
-//    jQuery("#sap").append(valueObj(jQuery("#yahoo, #first")));
-//    Assert.AreEqual( jQuery("#sap").text(), expected, "Check for appending of jQuery object" );
+            
+            jQuery("form").Append(valueObj("<input name='radiotest' type='radio' checked='checked' />"));
+            jQuery("form input[name=radiotest]").Each((int i, IDomElement e)=>{
+                Assert.IsTrue( jQuery(e).Is(":checked"), "Append checked radio");
+            }).Remove();
 
-//    Assert.AreEqual(;
-//    jQuery("#sap").append(valueObj( 5 ));
-//    Assert.IsTrue( jQuery("#sap")[0].innerHTML.match( /5$/ ), "Check for appending a number" );
+            
+            jQuery("form").Append(valueObj("<input name='radiotest' type='radio' checked    =   'checked' />"));
+            jQuery("form input[name=radiotest]").Each((int i, IDomElement e)=>{
+                Assert.IsTrue( jQuery(e).Is(":checked"), "Append alternately formated checked radio");
+            }).Remove();
 
-//    Assert.AreEqual(;
-//    jQuery("#sap").append(valueObj( " text with spaces " ));
-//    Assert.IsTrue( jQuery("#sap")[0].innerHTML.match(/ text with spaces $/), "Check for appending text with spaces" );
+            
+            jQuery("form").Append(valueObj("<input name='radiotest' type='radio' checked />"));
+            jQuery("form input[name=radiotest]").Each((int i, IDomElement e)=>{
+                Assert.IsTrue( jQuery(e).Is(":checked"), "Append HTML5-formated checked radio");
+            }).Remove();
 
-//    Assert.AreEqual(;
-//    Assert.IsTrue( jQuery("#sap").append(valueObj( [] )), "Check for appending an empty array." );
-//    Assert.IsTrue( jQuery("#sap").append(valueObj( "" )), "Check for appending an empty string." );
-//    Assert.IsTrue( jQuery("#sap").append(valueObj( document.getElementsByTagName("foo") )), "Check for appending an empty nodelist." );
+            
+            jQuery("#sap").Append(document.GetElementById("form"));
+            Assert.AreEqual( jQuery("#sap>form").Length, 1, "Check for appending a form" ); // Bug #910
 
-//    Assert.AreEqual(;
-//    jQuery("form").append(valueObj("<input name='radiotest' type='radio' checked='checked' />"));
-//    jQuery("form input[name=radiotest]").each(function(){
-//        Assert.IsTrue( jQuery(this).Is(":checked"), "Append checked radio");
-//    }).remove();
+            
+            //var pass = true;
+            //try {
+            //    var body = jQuery("#iframe body")[0].contentWindow.document.body;
 
-//    Assert.AreEqual(;
-//    jQuery("form").append(valueObj("<input name='radiotest' type='radio' checked    =   'checked' />"));
-//    jQuery("form input[name=radiotest]").each(function(){
-//        Assert.IsTrue( jQuery(this).Is(":checked"), "Append alternately formated checked radio");
-//    }).remove();
+            //    pass = false;
+            //    jQuery( body ).Append(valueObj( "<div>test</div>" ));
+            //    pass = true;
+            //} 
+            //catch() 
+            //{}
 
-//    Assert.AreEqual(;
-//    jQuery("form").append(valueObj("<input name='radiotest' type='radio' checked />"));
-//    jQuery("form input[name=radiotest]").each(function(){
-//        Assert.IsTrue( jQuery(this).Is(":checked"), "Append HTML5-formated checked radio");
-//    }).remove();
+            //Assert.IsTrue( pass, "Test for appending a DOM node to the contents of an IFrame" );
 
-//    Assert.AreEqual(;
-//    jQuery("#sap").append(valueObj( document.getElementById("form") ));
-//    Assert.AreEqual( jQuery("#sap>form").size(), 1, "Check for appending a form" ); // Bug #910
+            //jQuery("<fieldset/>").AppendTo("#form").Append(valueObj( "<legend id='legend'>test</legend>" ));
+            //t( "Append legend", "#legend", ["legend"] );
 
-//    Assert.AreEqual(;
-//    var pass = true;
-//    try {
-//        var body = jQuery("#iframe")[0].contentWindow.document.body;
+            
+            jQuery("#select1").Append(valueObj( "<OPTION>Test</OPTION>" ));
+            Assert.AreEqual( jQuery("#select1 option:last").Text(), "Test", "Appending &lt;OPTION&gt; (all caps)" );
 
-//        pass = false;
-//        jQuery( body ).append(valueObj( "<div>test</div>" ));
-//        pass = true;
-//    } catch(e) {}
+            jQuery("#table").Append(valueObj( "<colgroup></colgroup>" ));
+            Assert.IsTrue( jQuery("#table colgroup").Length>0, "Append colgroup" );
 
-//    Assert.IsTrue( pass, "Test for appending a DOM node to the contents of an IFrame" );
+            jQuery("#table colgroup").Append(valueObj( "<col/>" ));
+            Assert.IsTrue( jQuery("#table colgroup col").Length>0, "Append col" );
 
-//    Assert.AreEqual(;
-//    jQuery("<fieldset/>").appendTo("#form").append(valueObj( "<legend id='legend'>test</legend>" ));
-//    t( "Append legend", "#legend", ["legend"] );
+   
+            jQuery("#table").Append(valueObj( "<caption></caption>" ));
+            Assert.IsTrue( jQuery("#table caption").Length>0, "Append caption" );
 
-//    Assert.AreEqual(;
-//    jQuery("#select1").append(valueObj( "<OPTION>Test</OPTION>" ));
-//    Assert.AreEqual( jQuery("#select1 option:last").text(), "Test", "Appending &lt;OPTION&gt; (all caps)" );
+            jQuery("form:last")
+                .Append(valueObj( "<select id='appendSelect1'></select>" ))
+                .Append(valueObj( "<select id='appendSelect2'><option>Test</option></select>" ));
 
-//    jQuery("#table").append(valueObj( "<colgroup></colgroup>" ));
-//    Assert.IsTrue( jQuery("#table colgroup").Length, "Append colgroup" );
+            //t( "Append Select", "#appendSelect1, #appendSelect2", ["appendSelect1", "appendSelect2"] );
 
-//    jQuery("#table colgroup").append(valueObj( "<col/>" ));
-//    Assert.IsTrue( jQuery("#table colgroup col").Length, "Append col" );
+            Assert.AreEqual( "Two nodes", jQuery("<div />").Append("Two", " nodes").Text(), "Appending two text nodes (#4011)" );
 
-//    Assert.AreEqual(;
-//    jQuery("#table").append(valueObj( "<caption></caption>" ));
-//    Assert.IsTrue( jQuery("#table caption").Length, "Append caption" );
+            // using contents will get comments regular, text, and comment nodes
+            var j = jQuery("#nonnodes").Contents();
+            var d = jQuery("<div/>").AppendTo("#nonnodes").Append(j);
+            Assert.AreEqual( jQuery("#nonnodes").Length, 1, "Check node,textnode,comment append moved leaving just the div" );
+            Assert.IsTrue( d.Contents().Length >= 2, "Check node,textnode,comment append works" );
+            d.Contents().AppendTo("#nonnodes");
+            d.Remove();
+            Assert.IsTrue( jQuery("#nonnodes").Contents().Length >= 2, "Check node,textnode,comment append cleanup worked" );
 
-//    Assert.AreEqual(;
-//    jQuery("form:last")
-//        .append(valueObj( "<select id='appendSelect1'></select>" ))
-//        .append(valueObj( "<select id='appendSelect2'><option>Test</option></select>" ));
+            var input = jQuery("<input />").AttrSet(CsQuery.ParseJSON("{ type: 'checkbox', checked: true }")).AppendTo("#testForm");
+            Assert.AreEqual( input[0].Checked, true, "A checked checkbox that is appended stays checked" );
 
-//    t( "Append Select", "#appendSelect1, #appendSelect2", ["appendSelect1", "appendSelect2"] );
+            //TODO don't understand this test
+            var radios = jQuery("input:radio[name='R1']");
+            var radioNot = jQuery("<input type='radio' name='R1' checked='checked'/>").InsertAfter( radios );
+            var radio = radios.Eq(1);
 
-//    Assert.AreEqual( "Two nodes", jQuery("<div />").append("Two", " nodes").text(), "Appending two text nodes (#4011)" );
+            radioNot[0].Checked = false;
+            radios.Parent().Wrap("<div></div>");
+            //Assert.AreEqual( radio[0].Checked, true, "Reappending radios uphold which radio is checked" );
+            //Assert.AreEqual( radioNot[0].Checked, false, "Reappending radios uphold not being checked" );
+            
 
-//    // using contents will get comments regular, text, and comment nodes
-//    var j = jQuery("#nonnodes").contents();
-//    var d = jQuery("<div/>").appendTo("#nonnodes").append(j);
-//    Assert.AreEqual( jQuery("#nonnodes").Length, 1, "Check node,textnode,comment append moved leaving just the div" );
-//    Assert.IsTrue( d.contents().Length >= 2, "Check node,textnode,comment append works" );
-//    d.contents().appendTo("#nonnodes");
-//    d.remove();
-//    Assert.IsTrue( jQuery("#nonnodes").contents().Length >= 2, "Check node,textnode,comment append cleanup worked" );
+            var prev = jQuery("#sap").Children().Length;
 
-//    Assert.AreEqual(;
-//    var $input = jQuery("<input />").attr({ "type": "checkbox", "checked": true }).appendTo('#testForm');
-//    Assert.AreEqual( $input[0].checked, true, "A checked checkbox that is appended stays checked" );
+            jQuery("#sap").Append(
+                "<span></span>",
+                "<span></span>",
+                "<span></span>"
+            );
 
-//    Assert.AreEqual(;
-//    var $radios = jQuery("input:radio[name='R1']"),
-//        $radioNot = jQuery("<input type='radio' name='R1' checked='checked'/>").insertAfter( $radios ),
-//        $radio = $radios.eq(1).click();
-//    $radioNot[0].checked = false;
-//    $radios.parent().Wrap("<div></div>");
-//    Assert.AreEqual( $radio[0].checked, true, "Reappending radios uphold which radio is checked" );
-//    Assert.AreEqual( $radioNot[0].checked, false, "Reappending radios uphold not being checked" );
-//    Assert.AreEqual(;
+            Assert.AreEqual( jQuery("#sap").Children().Length, prev + 3, "Make sure that multiple arguments works." );
 
-//    var prev = jQuery("#sap").children().Length;
+        }
+        [Test, TestMethod]
+        public void TestAppend()
+        {
+            Append(bareObj);
+        }
 
-//    jQuery("#sap").append(
-//        "<span></span>",
-//        "<span></span>",
-//        "<span></span>"
-//    );
 
-//    Assert.AreEqual( jQuery("#sap").children().Length, prev + 3, "Make sure that multiple arguments works." );
-//    Assert.AreEqual(;
-//}
-
-//test("append(String|Element|Array&lt;Element&gt;|jQuery)", function() {
+//test("Append(String|Element|Array&lt;Element&gt;|jQuery)", function() {
 //    testAppend(bareObj);
 //});
 
-//test("append(Function)", function() {
+//test("Append(Function)", function() {
 //    testAppend(functionReturningObj);
 //});
 
-//test("append(Function) with incoming value", function() {
+//test("Append(Function) with incoming value", function() {
 //    expect(12);
 
 //    var defaultText = "Try them out:", old = jQuery("#first").html();
 
-//    var result = jQuery("#first").append(function(i, val){
+//    var result = jQuery("#first").Append(function(i, val){
 //        Assert.AreEqual( val, old, "Make sure the incoming value is correct." );
 //        return "<b>buga</b>";
 //    });
-//    Assert.AreEqual( result.text(), defaultText + "buga", "Check if text appending works" );
+//    Assert.AreEqual( result.Text(), defaultText + "buga", "Check if text appending works" );
 
 //    var select = jQuery("#select3");
 //    old = select.html();
 
-//    Assert.AreEqual( select.append(function(i, val){
+//    Assert.AreEqual( select.Append(function(i, val){
 //        Assert.AreEqual( val, old, "Make sure the incoming value is correct." );
 //        return "<option value='appendTest'>Append Test</option>";
 //    }).find("option:last-child").attr("value"), "appendTest", "Appending html options to select element");
@@ -458,36 +467,36 @@ namespace CsqueryTests.jQuery
 //    var expected = "This link has class=\"blog\": Simon Willison's WeblogTry them out:";
 //    old = jQuery("#sap").html();
 
-//    jQuery("#sap").append(function(i, val){
+//    jQuery("#sap").Append(function(i, val){
 //        Assert.AreEqual( val, old, "Make sure the incoming value is correct." );
-//        return document.getElementById("first");
+//        return document.GetElementById("first");
 //    });
-//    Assert.AreEqual( jQuery("#sap").text(), expected, "Check for appending of element" );
+//    Assert.AreEqual( jQuery("#sap").Text(), expected, "Check for appending of element" );
 
 //    Assert.AreEqual(;
 //    expected = "This link has class=\"blog\": Simon Willison's WeblogTry them out:Yahoo";
 //    old = jQuery("#sap").html();
 
-//    jQuery("#sap").append(function(i, val){
+//    jQuery("#sap").Append(function(i, val){
 //        Assert.AreEqual( val, old, "Make sure the incoming value is correct." );
-//        return [document.getElementById("first"), document.getElementById("yahoo")];
+//        return [document.GetElementById("first"), document.GetElementById("yahoo")];
 //    });
-//    Assert.AreEqual( jQuery("#sap").text(), expected, "Check for appending of array of elements" );
+//    Assert.AreEqual( jQuery("#sap").Text(), expected, "Check for appending of array of elements" );
 
 //    Assert.AreEqual(;
 //    expected = "This link has class=\"blog\": Simon Willison's WeblogYahooTry them out:";
 //    old = jQuery("#sap").html();
 
-//    jQuery("#sap").append(function(i, val){
+//    jQuery("#sap").Append(function(i, val){
 //        Assert.AreEqual( val, old, "Make sure the incoming value is correct." );
 //        return jQuery("#yahoo, #first");
 //    });
-//    Assert.AreEqual( jQuery("#sap").text(), expected, "Check for appending of jQuery object" );
+//    Assert.AreEqual( jQuery("#sap").Text(), expected, "Check for appending of jQuery object" );
 
 //    Assert.AreEqual(;
 //    old = jQuery("#sap").html();
 
-//    jQuery("#sap").append(function(i, val){
+//    jQuery("#sap").Append(function(i, val){
 //        Assert.AreEqual( val, old, "Make sure the incoming value is correct." );
 //        return 5;
 //    });
@@ -523,7 +532,7 @@ namespace CsqueryTests.jQuery
 //        Assert.IsTrue(true, "Append second element events work");
 //    });
 
-//    jQuery("#listWithTabIndex li").append(element)
+//    jQuery("#listWithTabIndex li").Append(element)
 //        .find("a.test6997").eq(1).click();
 
 //    element = jQuery("<li class='test6997'></li>").click(function () {
@@ -538,7 +547,7 @@ namespace CsqueryTests.jQuery
 //test("append HTML5 sectioning elements (Bug #6485)", function () {
 //    expect(2);
 
-//    jQuery("#qunit-fixture").append("<article style='font-size:10px'><section><aside>HTML5 elements</aside></section></article>");
+//    jQuery("#qunit-fixture").Append("<article style='font-size:10px'><section><aside>HTML5 elements</aside></section></article>");
 
 //    var article = jQuery("article"),
 //    aside = jQuery("aside");
@@ -550,8 +559,8 @@ namespace CsqueryTests.jQuery
 //test("HTML5 Elements inherit styles from style rules (Bug #10501)", function () {
 //    expect(1);
 
-//    jQuery("#qunit-fixture").append("<article id='article'></article>");
-//    jQuery("#article").append("<section>This section should have a pink background.</section>");
+//    jQuery("#qunit-fixture").Append("<article id='article'></article>");
+//    jQuery("#article").Append("<section>This section should have a pink background.</section>");
 
 //    // In IE, the missing background color will claim its value is "transparent"
 //    notAssert.AreEqual( jQuery("section").css("background-color"), "transparent", "HTML5 elements inherit styles");
@@ -564,7 +573,7 @@ namespace CsqueryTests.jQuery
 
 //    var clone = jQuery("article").clone();
 
-//    jQuery("#qunit-fixture").append( clone );
+//    jQuery("#qunit-fixture").Append( clone );
 
 //    Assert.AreEqual( jQuery("aside").Length, 2, "clone()ing HTML5 elems does not collapse them" );
 //});
@@ -573,11 +582,11 @@ namespace CsqueryTests.jQuery
 //    expect(2);
 
 //    jQuery("#qunit-fixture").html("<article><section><aside>HTML5 elements</aside></section></article>");
-//    Assert.AreEqual( jQuery("#qunit-fixture").children().children().Length, 1, "Make sure HTML5 article elements can hold children. innerHTML shortcut path" );
-//    Assert.AreEqual( jQuery("#qunit-fixture").children().children().children().Length, 1, "Make sure nested HTML5 elements can hold children." );
+//    Assert.AreEqual( jQuery("#qunit-fixture").Children().Children().Length, 1, "Make sure HTML5 article elements can hold children. innerHTML shortcut path" );
+//    Assert.AreEqual( jQuery("#qunit-fixture").Children().Children().Children().Length, 1, "Make sure nested HTML5 elements can hold children." );
 //});
 
-//test("append(xml)", function() {
+//test("Append(xml)", function() {
 //    expect( 1 );
 
 //    function createXMLDoc() {
@@ -607,7 +616,7 @@ namespace CsqueryTests.jQuery
 //        xml1 = xmlDoc.createElement("head"),
 //        xml2 = xmlDoc.createElement("test");
 
-//    Assert.IsTrue( jQuery( xml1 ).append( xml2 ), "Append an xml element to another without raising an exception." );
+//    Assert.IsTrue( jQuery( xml1 ).Append( xml2 ), "Append an xml element to another without raising an exception." );
 
 //});
 
@@ -616,27 +625,27 @@ namespace CsqueryTests.jQuery
 
 //    var defaultText = "Try them out:"
 //    jQuery("<b>buga</b>").appendTo("#first");
-//    Assert.AreEqual( jQuery("#first").text(), defaultText + "buga", "Check if text appending works" );
-//    Assert.AreEqual( jQuery("<option value='appendTest'>Append Test</option>").appendTo("#select3").parent().find("option:last-child").attr("value"), "appendTest", "Appending html options to select element");
+//    Assert.AreEqual( jQuery("#first").Text(), defaultText + "buga", "Check if text appending works" );
+//    Assert.AreEqual( jQuery("<option value='appendTest'>Append Test</option>").appendTo("#select3").Parent().find("option:last-child").attr("value"), "appendTest", "Appending html options to select element");
 
 //    Assert.AreEqual(;
-//    var l = jQuery("#first").children().Length + 2;
+//    var l = jQuery("#first").Children().Length + 2;
 //    jQuery("<strong>test</strong>");
 //    jQuery("<strong>test</strong>");
 //    jQuery([ jQuery("<strong>test</strong>")[0], jQuery("<strong>test</strong>")[0] ])
 //        .appendTo("#first");
-//    Assert.AreEqual( jQuery("#first").children().Length, l, "Make sure the elements were inserted." );
-//    Assert.AreEqual( jQuery("#first").children().last()[0].nodeName.toLowerCase(), "strong", "Verify the last element." );
+//    Assert.AreEqual( jQuery("#first").Children().Length, l, "Make sure the elements were inserted." );
+//    Assert.AreEqual( jQuery("#first").Children().last()[0].nodeName.toLowerCase(), "strong", "Verify the last element." );
 
 //    Assert.AreEqual(;
 //    var expected = "This link has class=\"blog\": Simon Willison's WeblogTry them out:";
-//    jQuery(document.getElementById("first")).appendTo("#sap");
-//    Assert.AreEqual( jQuery("#sap").text(), expected, "Check for appending of element" );
+//    jQuery(document.GetElementById("first")).appendTo("#sap");
+//    Assert.AreEqual( jQuery("#sap").Text(), expected, "Check for appending of element" );
 
 //    Assert.AreEqual(;
 //    expected = "This link has class=\"blog\": Simon Willison's WeblogTry them out:Yahoo";
-//    jQuery([document.getElementById("first"), document.getElementById("yahoo")]).appendTo("#sap");
-//    Assert.AreEqual( jQuery("#sap").text(), expected, "Check for appending of array of elements" );
+//    jQuery([document.GetElementById("first"), document.GetElementById("yahoo")]).appendTo("#sap");
+//    Assert.AreEqual( jQuery("#sap").Text(), expected, "Check for appending of array of elements" );
 
 //    Assert.AreEqual(;
 //    Assert.IsTrue( jQuery(document.createElement("script")).appendTo("body").Length, "Make sure a disconnected script can be appended." );
@@ -644,7 +653,7 @@ namespace CsqueryTests.jQuery
 //    Assert.AreEqual(;
 //    expected = "This link has class=\"blog\": Simon Willison's WeblogYahooTry them out:";
 //    jQuery("#yahoo, #first").appendTo("#sap");
-//    Assert.AreEqual( jQuery("#sap").text(), expected, "Check for appending of jQuery object" );
+//    Assert.AreEqual( jQuery("#sap").Text(), expected, "Check for appending of jQuery object" );
 
 //    Assert.AreEqual(;
 //    jQuery("#select1").appendTo("#foo");
@@ -674,7 +683,7 @@ namespace CsqueryTests.jQuery
 //    div = jQuery("<div/>");
 //    jQuery("<span>a</span><b>b</b>").filter("span").appendTo( div );
 
-//    Assert.AreEqual( div.children().Length, 1, "Make sure the right number of children were inserted." );
+//    Assert.AreEqual( div.Children().Length, 1, "Make sure the right number of children were inserted." );
 
 //    div = jQuery("#moretests div");
 
@@ -696,23 +705,23 @@ namespace CsqueryTests.jQuery
 //    expect(5);
 //    var defaultText = "Try them out:"
 //    var result = jQuery("#first").prepend(val( "<b>buga</b>" ));
-//    Assert.AreEqual( result.text(), "buga" + defaultText, "Check if text prepending works" );
+//    Assert.AreEqual( result.Text(), "buga" + defaultText, "Check if text prepending works" );
 //    Assert.AreEqual( jQuery("#select3").prepend(val( "<option value='prependTest'>Prepend Test</option>" )).find("option:first-child").attr("value"), "prependTest", "Prepending html options to select element");
 
 //    Assert.AreEqual(;
 //    var expected = "Try them out:This link has class=\"blog\": Simon Willison's Weblog";
-//    jQuery("#sap").prepend(val( document.getElementById("first") ));
-//    Assert.AreEqual( jQuery("#sap").text(), expected, "Check for prepending of element" );
+//    jQuery("#sap").prepend(val( document.GetElementById("first") ));
+//    Assert.AreEqual( jQuery("#sap").Text(), expected, "Check for prepending of element" );
 
 //    Assert.AreEqual(;
 //    expected = "Try them out:YahooThis link has class=\"blog\": Simon Willison's Weblog";
-//    jQuery("#sap").prepend(val( [document.getElementById("first"), document.getElementById("yahoo")] ));
-//    Assert.AreEqual( jQuery("#sap").text(), expected, "Check for prepending of array of elements" );
+//    jQuery("#sap").prepend(val( [document.GetElementById("first"), document.GetElementById("yahoo")] ));
+//    Assert.AreEqual( jQuery("#sap").Text(), expected, "Check for prepending of array of elements" );
 
 //    Assert.AreEqual(;
 //    expected = "YahooTry them out:This link has class=\"blog\": Simon Willison's Weblog";
 //    jQuery("#sap").prepend(val( jQuery("#yahoo, #first") ));
-//    Assert.AreEqual( jQuery("#sap").text(), expected, "Check for prepending of jQuery object" );
+//    Assert.AreEqual( jQuery("#sap").Text(), expected, "Check for prepending of jQuery object" );
 //};
 
 //test("prepend(String|Element|Array&lt;Element&gt;|jQuery)", function() {
@@ -731,7 +740,7 @@ namespace CsqueryTests.jQuery
 //        Assert.AreEqual( val, old, "Make sure the incoming value is correct." );
 //        return "<b>buga</b>";
 //    });
-//    Assert.AreEqual( result.text(), "buga" + defaultText, "Check if text prepending works" );
+//    Assert.AreEqual( result.Text(), "buga" + defaultText, "Check if text prepending works" );
 
 //    old = jQuery("#select3").html();
 
@@ -746,10 +755,10 @@ namespace CsqueryTests.jQuery
 
 //    jQuery("#sap").prepend(function(i, val) {
 //        Assert.AreEqual( val, old, "Make sure the incoming value is correct." );
-//        return document.getElementById("first");
+//        return document.GetElementById("first");
 //    });
 
-//    Assert.AreEqual( jQuery("#sap").text(), expected, "Check for prepending of element" );
+//    Assert.AreEqual( jQuery("#sap").Text(), expected, "Check for prepending of element" );
 
 //    Assert.AreEqual(;
 //    expected = "Try them out:YahooThis link has class=\"blog\": Simon Willison's Weblog";
@@ -757,10 +766,10 @@ namespace CsqueryTests.jQuery
 
 //    jQuery("#sap").prepend(function(i, val) {
 //        Assert.AreEqual( val, old, "Make sure the incoming value is correct." );
-//        return [document.getElementById("first"), document.getElementById("yahoo")];
+//        return [document.GetElementById("first"), document.GetElementById("yahoo")];
 //    });
 
-//    Assert.AreEqual( jQuery("#sap").text(), expected, "Check for prepending of array of elements" );
+//    Assert.AreEqual( jQuery("#sap").Text(), expected, "Check for prepending of array of elements" );
 
 //    Assert.AreEqual(;
 //    expected = "YahooTry them out:This link has class=\"blog\": Simon Willison's Weblog";
@@ -771,30 +780,30 @@ namespace CsqueryTests.jQuery
 //        return jQuery("#yahoo, #first");
 //    });
 
-//    Assert.AreEqual( jQuery("#sap").text(), expected, "Check for prepending of jQuery object" );
+//    Assert.AreEqual( jQuery("#sap").Text(), expected, "Check for prepending of jQuery object" );
 //});
 
 //test("prependTo(String|Element|Array&lt;Element&gt;|jQuery)", function() {
 //    expect(6);
 //    var defaultText = "Try them out:"
 //    jQuery("<b>buga</b>").prependTo("#first");
-//    Assert.AreEqual( jQuery("#first").text(), "buga" + defaultText, "Check if text prepending works" );
-//    Assert.AreEqual( jQuery("<option value='prependTest'>Prepend Test</option>").prependTo("#select3").parent().find("option:first-child").attr("value"), "prependTest", "Prepending html options to select element");
+//    Assert.AreEqual( jQuery("#first").Text(), "buga" + defaultText, "Check if text prepending works" );
+//    Assert.AreEqual( jQuery("<option value='prependTest'>Prepend Test</option>").prependTo("#select3").Parent().find("option:first-child").attr("value"), "prependTest", "Prepending html options to select element");
 
 //    Assert.AreEqual(;
 //    var expected = "Try them out:This link has class=\"blog\": Simon Willison's Weblog";
-//    jQuery(document.getElementById("first")).prependTo("#sap");
-//    Assert.AreEqual( jQuery("#sap").text(), expected, "Check for prepending of element" );
+//    jQuery(document.GetElementById("first")).prependTo("#sap");
+//    Assert.AreEqual( jQuery("#sap").Text(), expected, "Check for prepending of element" );
 
 //    Assert.AreEqual(;
 //    expected = "Try them out:YahooThis link has class=\"blog\": Simon Willison's Weblog";
-//    jQuery([document.getElementById("first"), document.getElementById("yahoo")]).prependTo("#sap");
-//    Assert.AreEqual( jQuery("#sap").text(), expected, "Check for prepending of array of elements" );
+//    jQuery([document.GetElementById("first"), document.GetElementById("yahoo")]).prependTo("#sap");
+//    Assert.AreEqual( jQuery("#sap").Text(), expected, "Check for prepending of array of elements" );
 
 //    Assert.AreEqual(;
 //    expected = "YahooTry them out:This link has class=\"blog\": Simon Willison's Weblog";
 //    jQuery("#yahoo, #first").prependTo("#sap");
-//    Assert.AreEqual( jQuery("#sap").text(), expected, "Check for prepending of jQuery object" );
+//    Assert.AreEqual( jQuery("#sap").Text(), expected, "Check for prepending of jQuery object" );
 
 //    Assert.AreEqual(;
 //    jQuery("<select id='prependSelect1'></select>").prependTo("form:last");
@@ -807,22 +816,22 @@ namespace CsqueryTests.jQuery
 //    expect(6);
 //    var expected = "This is a normal link: bugaYahoo";
 //    jQuery("#yahoo").before(val( "<b>buga</b>" ));
-//    Assert.AreEqual( jQuery("#en").text(), expected, "Insert String before" );
+//    Assert.AreEqual( jQuery("#en").Text(), expected, "Insert String before" );
 
 //    Assert.AreEqual(;
 //    expected = "This is a normal link: Try them out:Yahoo";
-//    jQuery("#yahoo").before(val( document.getElementById("first") ));
-//    Assert.AreEqual( jQuery("#en").text(), expected, "Insert element before" );
+//    jQuery("#yahoo").before(val( document.GetElementById("first") ));
+//    Assert.AreEqual( jQuery("#en").Text(), expected, "Insert element before" );
 
 //    Assert.AreEqual(;
 //    expected = "This is a normal link: Try them out:diveintomarkYahoo";
-//    jQuery("#yahoo").before(val( [document.getElementById("first"), document.getElementById("mark")] ));
-//    Assert.AreEqual( jQuery("#en").text(), expected, "Insert array of elements before" );
+//    jQuery("#yahoo").before(val( [document.GetElementById("first"), document.GetElementById("mark")] ));
+//    Assert.AreEqual( jQuery("#en").Text(), expected, "Insert array of elements before" );
 
 //    Assert.AreEqual(;
 //    expected = "This is a normal link: diveintomarkTry them out:Yahoo";
 //    jQuery("#yahoo").before(val( jQuery("#mark, #first") ));
-//    Assert.AreEqual( jQuery("#en").text(), expected, "Insert jQuery before" );
+//    Assert.AreEqual( jQuery("#en").Text(), expected, "Insert jQuery before" );
 
 //    var set = jQuery("<div/>").before("<span>test</span>");
 //    Assert.AreEqual( set[0].nodeName.toLowerCase(), "span", "Insert the element before the disconnected node." );
@@ -842,51 +851,51 @@ namespace CsqueryTests.jQuery
 
 //    var res = jQuery( "#notInTheDocument" ).before( "(" ).after( ")" );
 //    Assert.AreEqual( res.Length, 2, "didn't choke on empty object" );
-//    Assert.AreEqual( res.wrapAll("<div/>").parent().text(), "()", "correctly appended text" );
+//    Assert.AreEqual( res.wrapAll("<div/>").Parent().Text(), "()", "correctly appended text" );
 //});
 
 //test("insertBefore(String|Element|Array&lt;Element&gt;|jQuery)", function() {
 //    expect(4);
 //    var expected = "This is a normal link: bugaYahoo";
 //    jQuery("<b>buga</b>").insertBefore("#yahoo");
-//    Assert.AreEqual( jQuery("#en").text(), expected, "Insert String before" );
+//    Assert.AreEqual( jQuery("#en").Text(), expected, "Insert String before" );
 
 //    Assert.AreEqual(;
 //    expected = "This is a normal link: Try them out:Yahoo";
-//    jQuery(document.getElementById("first")).insertBefore("#yahoo");
-//    Assert.AreEqual( jQuery("#en").text(), expected, "Insert element before" );
+//    jQuery(document.GetElementById("first")).insertBefore("#yahoo");
+//    Assert.AreEqual( jQuery("#en").Text(), expected, "Insert element before" );
 
 //    Assert.AreEqual(;
 //    expected = "This is a normal link: Try them out:diveintomarkYahoo";
-//    jQuery([document.getElementById("first"), document.getElementById("mark")]).insertBefore("#yahoo");
-//    Assert.AreEqual( jQuery("#en").text(), expected, "Insert array of elements before" );
+//    jQuery([document.GetElementById("first"), document.GetElementById("mark")]).insertBefore("#yahoo");
+//    Assert.AreEqual( jQuery("#en").Text(), expected, "Insert array of elements before" );
 
 //    Assert.AreEqual(;
 //    expected = "This is a normal link: diveintomarkTry them out:Yahoo";
 //    jQuery("#mark, #first").insertBefore("#yahoo");
-//    Assert.AreEqual( jQuery("#en").text(), expected, "Insert jQuery before" );
+//    Assert.AreEqual( jQuery("#en").Text(), expected, "Insert jQuery before" );
 //});
 
 //var testAfter = function(val) {
 //    expect(6);
 //    var expected = "This is a normal link: Yahoobuga";
 //    jQuery("#yahoo").after(val( "<b>buga</b>" ));
-//    Assert.AreEqual( jQuery("#en").text(), expected, "Insert String after" );
+//    Assert.AreEqual( jQuery("#en").Text(), expected, "Insert String after" );
 
 //    Assert.AreEqual(;
 //    expected = "This is a normal link: YahooTry them out:";
-//    jQuery("#yahoo").after(val( document.getElementById("first") ));
-//    Assert.AreEqual( jQuery("#en").text(), expected, "Insert element after" );
+//    jQuery("#yahoo").after(val( document.GetElementById("first") ));
+//    Assert.AreEqual( jQuery("#en").Text(), expected, "Insert element after" );
 
 //    Assert.AreEqual(;
 //    expected = "This is a normal link: YahooTry them out:diveintomark";
-//    jQuery("#yahoo").after(val( [document.getElementById("first"), document.getElementById("mark")] ));
-//    Assert.AreEqual( jQuery("#en").text(), expected, "Insert array of elements after" );
+//    jQuery("#yahoo").after(val( [document.GetElementById("first"), document.GetElementById("mark")] ));
+//    Assert.AreEqual( jQuery("#en").Text(), expected, "Insert array of elements after" );
 
 //    Assert.AreEqual(;
 //    expected = "This is a normal link: YahoodiveintomarkTry them out:";
 //    jQuery("#yahoo").after(val( jQuery("#mark, #first") ));
-//    Assert.AreEqual( jQuery("#en").text(), expected, "Insert jQuery after" );
+//    Assert.AreEqual( jQuery("#en").Text(), expected, "Insert jQuery after" );
 
 //    var set = jQuery("<div/>").after("<span>test</span>");
 //    Assert.AreEqual( set[1].nodeName.toLowerCase(), "span", "Insert the element after the disconnected node." );
@@ -905,22 +914,22 @@ namespace CsqueryTests.jQuery
 //    expect(4);
 //    var expected = "This is a normal link: Yahoobuga";
 //    jQuery("<b>buga</b>").insertAfter("#yahoo");
-//    Assert.AreEqual( jQuery("#en").text(), expected, "Insert String after" );
+//    Assert.AreEqual( jQuery("#en").Text(), expected, "Insert String after" );
 
 //    Assert.AreEqual(;
 //    expected = "This is a normal link: YahooTry them out:";
-//    jQuery(document.getElementById("first")).insertAfter("#yahoo");
-//    Assert.AreEqual( jQuery("#en").text(), expected, "Insert element after" );
+//    jQuery(document.GetElementById("first")).insertAfter("#yahoo");
+//    Assert.AreEqual( jQuery("#en").Text(), expected, "Insert element after" );
 
 //    Assert.AreEqual(;
 //    expected = "This is a normal link: YahooTry them out:diveintomark";
-//    jQuery([document.getElementById("first"), document.getElementById("mark")]).insertAfter("#yahoo");
-//    Assert.AreEqual( jQuery("#en").text(), expected, "Insert array of elements after" );
+//    jQuery([document.GetElementById("first"), document.GetElementById("mark")]).insertAfter("#yahoo");
+//    Assert.AreEqual( jQuery("#en").Text(), expected, "Insert array of elements after" );
 
 //    Assert.AreEqual(;
 //    expected = "This is a normal link: YahoodiveintomarkTry them out:";
 //    jQuery("#mark, #first").insertAfter("#yahoo");
-//    Assert.AreEqual( jQuery("#en").text(), expected, "Insert jQuery after" );
+//    Assert.AreEqual( jQuery("#en").Text(), expected, "Insert jQuery after" );
 //});
 
 //var testReplaceWith = function(val) {
@@ -930,18 +939,18 @@ namespace CsqueryTests.jQuery
 //    Assert.IsTrue( !jQuery("#yahoo")[0], "Verify that original element is gone, after string" );
 
 //    Assert.AreEqual(;
-//    jQuery("#yahoo").replaceWith(val( document.getElementById("first") ));
+//    jQuery("#yahoo").replaceWith(val( document.GetElementById("first") ));
 //    Assert.IsTrue( jQuery("#first")[0], "Replace element with element" );
 //    Assert.IsTrue( !jQuery("#yahoo")[0], "Verify that original element is gone, after element" );
 
 //    Assert.AreEqual(;
-//    jQuery("#qunit-fixture").append("<div id='bar'><div id='baz'</div></div>");
+//    jQuery("#qunit-fixture").Append("<div id='bar'><div id='baz'</div></div>");
 //    jQuery("#baz").replaceWith("Baz");
-//    Assert.AreEqual( jQuery("#bar").text(),"Baz", "Replace element with text" );
+//    Assert.AreEqual( jQuery("#bar").Text(),"Baz", "Replace element with text" );
 //    Assert.IsTrue( !jQuery("#baz")[0], "Verify that original element is gone, after element" );
 
 //    Assert.AreEqual(;
-//    jQuery("#yahoo").replaceWith(val( [document.getElementById("first"), document.getElementById("mark")] ));
+//    jQuery("#yahoo").replaceWith(val( [document.GetElementById("first"), document.GetElementById("mark")] ));
 //    Assert.IsTrue( jQuery("#first")[0], "Replace element with array of elements" );
 //    Assert.IsTrue( jQuery("#mark")[0], "Replace element with array of elements" );
 //    Assert.IsTrue( !jQuery("#yahoo")[0], "Verify that original element is gone, after array of elements" );
@@ -955,7 +964,7 @@ namespace CsqueryTests.jQuery
 //    Assert.AreEqual(;
 //    var tmp = jQuery("<div/>").appendTo("body").click(function(){ Assert.IsTrue(true, "Newly bound click run." ); });
 //    var y = jQuery("<div/>").appendTo("body").click(function(){ Assert.IsTrue(true, "Previously bound click run." ); });
-//    var child = y.append("<b>test</b>").find("b").click(function(){ Assert.IsTrue(true, "Child bound click run." ); return false; });
+//    var child = y.Append("<b>test</b>").find("b").click(function(){ Assert.IsTrue(true, "Child bound click run." ); return false; });
 
 //    y.replaceWith( tmp );
 
@@ -970,7 +979,7 @@ namespace CsqueryTests.jQuery
 //    Assert.AreEqual(;
 
 //    y = jQuery("<div/>").appendTo("body").click(function(){ Assert.IsTrue(true, "Previously bound click run." ); });
-//    var child2 = y.append("<u>test</u>").find("u").click(function(){ Assert.IsTrue(true, "Child 2 bound click run." ); return false; });
+//    var child2 = y.Append("<u>test</u>").find("u").click(function(){ Assert.IsTrue(true, "Child 2 bound click run." ); return false; });
 
 //    y.replaceWith( child2 );
 
@@ -998,7 +1007,7 @@ namespace CsqueryTests.jQuery
 
 //    Assert.AreEqual(;
 
-//    jQuery("#qunit-fixture").append("<div id='replaceWith'></div>");
+//    jQuery("#qunit-fixture").Append("<div id='replaceWith'></div>");
 //    Assert.AreEqual( jQuery("#qunit-fixture").find("div[id=replaceWith]").Length, 1, "Make sure only one div exists." );
 
 //    jQuery("#replaceWith").replaceWith( val("<div id='replaceWith'></div>") );
@@ -1043,12 +1052,12 @@ namespace CsqueryTests.jQuery
 //    Assert.IsTrue( !jQuery("#yahoo")[0], "Verify that original element is gone, after string" );
 
 //    Assert.AreEqual(;
-//    jQuery(document.getElementById("first")).replaceAll("#yahoo");
+//    jQuery(document.GetElementById("first")).replaceAll("#yahoo");
 //    Assert.IsTrue( jQuery("#first")[0], "Replace element with element" );
 //    Assert.IsTrue( !jQuery("#yahoo")[0], "Verify that original element is gone, after element" );
 
 //    Assert.AreEqual(;
-//    jQuery([document.getElementById("first"), document.getElementById("mark")]).replaceAll("#yahoo");
+//    jQuery([document.GetElementById("first"), document.GetElementById("mark")]).replaceAll("#yahoo");
 //    Assert.IsTrue( jQuery("#first")[0], "Replace element with array of elements" );
 //    Assert.IsTrue( jQuery("#mark")[0], "Replace element with array of elements" );
 //    Assert.IsTrue( !jQuery("#yahoo")[0], "Verify that original element is gone, after array of elements" );
@@ -1077,7 +1086,7 @@ namespace CsqueryTests.jQuery
 
 //    jQuery("<select class='test8070'></select><select class='test8070'></select>").appendTo("#qunit-fixture");
 //    var selects = jQuery(".test8070");
-//    selects.append("<OPTION>1</OPTION><OPTION>2</OPTION>");
+//    selects.Append("<OPTION>1</OPTION><OPTION>2</OPTION>");
 
 //    Assert.AreEqual( selects[0].childNodes.Length, 2, "First select got two nodes" );
 //    Assert.AreEqual( selects[1].childNodes.Length, 2, "Second select got two nodes" );
@@ -1087,10 +1096,10 @@ namespace CsqueryTests.jQuery
 
 //test("clone()", function() {
 //    expect(39);
-//    Assert.AreEqual( "This is a normal link: Yahoo", jQuery("#en").text(), "Assert text for #en" );
+//    Assert.AreEqual( "This is a normal link: Yahoo", jQuery("#en").Text(), "Assert text for #en" );
 //    var clone = jQuery("#yahoo").clone();
-//    Assert.AreEqual( "Try them out:Yahoo", jQuery("#first").append(clone).text(), "Check for clone" );
-//    Assert.AreEqual( "This is a normal link: Yahoo", jQuery("#en").text(), "Reassert text for #en" );
+//    Assert.AreEqual( "Try them out:Yahoo", jQuery("#first").Append(clone).Text(), "Check for clone" );
+//    Assert.AreEqual( "This is a normal link: Yahoo", jQuery("#en").Text(), "Reassert text for #en" );
 
 //    var cloneTags = [
 //        "<table/>", "<tr/>", "<td/>", "<div/>",
@@ -1128,7 +1137,7 @@ namespace CsqueryTests.jQuery
 //    // manually clean up detached elements
 //    div.remove();
 
-//    div = jQuery("<div/>").append([ document.createElement("table"), document.createElement("table") ]);
+//    div = jQuery("<div/>").Append([ document.createElement("table"), document.createElement("table") ]);
 //    div.find("table").click(function(){
 //        Assert.IsTrue( true, "Bound event still exists." );
 //    });
@@ -1196,9 +1205,9 @@ namespace CsqueryTests.jQuery
 //    div.appendChild( document.createTextNode("test") );
 //    form.appendChild( div );
 
-//    Assert.AreEqual( jQuery(form).clone().children().Length, 1, "Make sure we just get the form back." );
+//    Assert.AreEqual( jQuery(form).clone().Children().Length, 1, "Make sure we just get the form back." );
 
-//    Assert.AreEqual( jQuery("body").clone().children()[0].id, "qunit-header", "Make sure cloning body works" );
+//    Assert.AreEqual( jQuery("body").clone().Children()[0].id, "qunit-header", "Make sure cloning body works" );
 //});
 
 //test("clone(form element) (Bug #3879, #6655)", function() {
@@ -1243,8 +1252,8 @@ namespace CsqueryTests.jQuery
 //        var cloneTab = jQuery("tab", root).eq(0);
 //        origTab.text("origval");
 //        cloneTab.text("cloneval");
-//        Assert.AreEqual(origTab.text(), "origval", "Check original XML node was correctly set");
-//        Assert.AreEqual(cloneTab.text(), "cloneval", "Check cloned XML node was correctly set");
+//        Assert.AreEqual(origTab.Text(), "origval", "Check original XML node was correctly set");
+//        Assert.AreEqual(cloneTab.Text(), "cloneval", "Check cloned XML node was correctly set");
 //        start();
 //    });
 //});
@@ -1265,8 +1274,8 @@ namespace CsqueryTests.jQuery
 
 //    div = jQuery("<div/>").html( valueObj("<div id='parent_1'><div id='child_1'/></div><div id='parent_2'/>") );
 
-//    Assert.AreEqual( div.children().Length, 2, "Make sure two child nodes exist." );
-//    Assert.AreEqual( div.children().children().Length, 1, "Make sure that a grandchild exists." );
+//    Assert.AreEqual( div.Children().Length, 2, "Make sure two child nodes exist." );
+//    Assert.AreEqual( div.Children().Children().Length, 1, "Make sure that a grandchild exists." );
 
 //    var space = jQuery("<div/>").html(valueObj("&#160;"))[0].innerHTML;
 //    Assert.IsTrue( /^\xA0$|^&nbsp;$/.test( space ), "Make sure entities are passed through correctly." );
@@ -1274,8 +1283,8 @@ namespace CsqueryTests.jQuery
 
 //    jQuery("#qunit-fixture").html(valueObj("<style>.foobar{color:green;}</style>"));
 
-//    Assert.AreEqual( jQuery("#qunit-fixture").children().Length, 1, "Make sure there is a child element." );
-//    Assert.AreEqual( jQuery("#qunit-fixture").children()[0].nodeName.toUpperCase(), "STYLE", "And that a style element was inserted." );
+//    Assert.AreEqual( jQuery("#qunit-fixture").Children().Length, 1, "Make sure there is a child element." );
+//    Assert.AreEqual( jQuery("#qunit-fixture").Children()[0].nodeName.toUpperCase(), "STYLE", "And that a style element was inserted." );
 
 //    Assert.AreEqual(;
 //    // using contents will get comments regular, text, and comment nodes
@@ -1337,7 +1346,7 @@ namespace CsqueryTests.jQuery
 //    Assert.AreEqual(;
 
 //    jQuery("#qunit-fixture").html(function(){
-//        return jQuery(this).text();
+//        return jQuery(this).Text();
 //    });
 
 //    Assert.IsTrue( !/</.test( jQuery("#qunit-fixture").html() ), "Replace html with text." );
@@ -1415,19 +1424,19 @@ namespace CsqueryTests.jQuery
 //    var first = jQuery("#ap").children(":first");
 //    first.data("foo", "bar");
 
-//    jQuery("#ap").children()[method]();
-//    Assert.IsTrue( jQuery("#ap").text().Length > 10, "Check text is not removed" );
-//    Assert.AreEqual( jQuery("#ap").children().Length, 0, "Check remove" );
+//    jQuery("#ap").Children()[method]();
+//    Assert.IsTrue( jQuery("#ap").Text().Length > 10, "Check text is not removed" );
+//    Assert.AreEqual( jQuery("#ap").Children().Length, 0, "Check remove" );
 
 //    Assert.AreEqual( first.data("foo"), method == "remove" ? null : "bar" );
 
 //    Assert.AreEqual(;
-//    jQuery("#ap").children()[method]("a");
-//    Assert.IsTrue( jQuery("#ap").text().Length > 10, "Check text is not removed" );
-//    Assert.AreEqual( jQuery("#ap").children().Length, 1, "Check filtered remove" );
+//    jQuery("#ap").Children()[method]("a");
+//    Assert.IsTrue( jQuery("#ap").Text().Length > 10, "Check text is not removed" );
+//    Assert.AreEqual( jQuery("#ap").Children().Length, 1, "Check filtered remove" );
 
-//    jQuery("#ap").children()[method]("a, code");
-//    Assert.AreEqual( jQuery("#ap").children().Length, 0, "Check multi-filtered remove" );
+//    jQuery("#ap").Children()[method]("a, code");
+//    Assert.AreEqual( jQuery("#ap").Children().Length, 0, "Check multi-filtered remove" );
 
 //    // using contents will get comments regular, text, and comment nodes
 //    // Handle the case where no comment is in the document
@@ -1462,8 +1471,8 @@ namespace CsqueryTests.jQuery
 
 //test("empty()", function() {
 //    expect(3);
-//    Assert.AreEqual( jQuery("#ap").children().empty().text().Length, 0, "Check text is removed" );
-//    Assert.AreEqual( jQuery("#ap").children().Length, 4, "Check elements are not removed" );
+//    Assert.AreEqual( jQuery("#ap").Children().empty().Text().Length, 0, "Check text is removed" );
+//    Assert.AreEqual( jQuery("#ap").Children().Length, 4, "Check elements are not removed" );
 
 //    // using contents will get comments regular, text, and comment nodes
 //    var j = jQuery("#nonnodes").contents();
@@ -1486,11 +1495,11 @@ namespace CsqueryTests.jQuery
 //    div.trigger("click");
 
 //    pos = "Inner";
-//    div.children().trigger("click");
+//    div.Children().trigger("click");
 
 //    type = "empty";
 //    div = getDiv();
-//    child = div.children();
+//    child = div.Children();
 
 //    // Should trigger 2 remove event
 //    div.empty();
@@ -1509,7 +1518,7 @@ namespace CsqueryTests.jQuery
 //    type = "html";
 
 //    div = getDiv();
-//    child = div.children();
+//    child = div.Children();
 
 //    // Should trigger 2 remove event
 //    div.html("<div></div>");
@@ -1557,11 +1566,11 @@ namespace CsqueryTests.jQuery
 
 //    for ( var i=0; i < bad.Length; i++ ) {
 //        try {
-//            $f.append( bad[i] );
+//            $f.Append( bad[i] );
 //        }
 //        catch(e) {}
 //    }
-//    Assert.AreEqual($f.text(), bad.join(""), "Cached strings that match Object properties");
+//    Assert.AreEqual($f.Text(), bad.join(""), "Cached strings that match Object properties");
 //    $f.remove();
 //});
 
@@ -1655,12 +1664,12 @@ namespace CsqueryTests.jQuery
 //    $clone.unbind( "click" );
 
 //    // Add a child node with text to the original
-//    $section.append( "<p>Hello</p>" );
+//    $section.Append( "<p>Hello</p>" );
 
 //    // Third clone (will have child node and text)
 //    $clone = $section.clone( true );
 
-//    Assert.AreEqual( $clone.find("p").text(), "Hello", "Assert text in child of clone" );
+//    Assert.AreEqual( $clone.find("p").Text(), "Hello", "Assert text in child of clone" );
 
 //    // Trigger an event from the third clone
 //    $clone.trigger( "click" );

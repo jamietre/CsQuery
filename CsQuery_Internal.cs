@@ -349,9 +349,7 @@ namespace Jtc.CsQuery
                     }
                     else
                     {
-                        e.Clone();
-                        IDomObject clone = e.Clone();
-                        InsertAtOffset(clone, offset);
+                        Clone().InsertAtOffset(e, offset);
                     }
                 }
             }

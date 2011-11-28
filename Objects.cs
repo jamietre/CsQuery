@@ -104,6 +104,13 @@ namespace Jtc.CsQuery
             }
             return list;
         }
+
+        public static IEnumerable<T> ToEnumerable<T>(params T[] obj)
+        {
+            return obj;
+        }
+
+
         public static IEnumerable<T> EmptyEnumerable<T>()
         {
             yield break;
