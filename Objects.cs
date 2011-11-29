@@ -24,6 +24,42 @@ namespace Jtc.CsQuery
             string text = obj as string;
             return text != null && text.StartsWith("{") && !text.StartsWith("{{");
         }
+        public static string AttributeEncode(string text)
+        {
+            char quoteChar;
+            return AttributeEncode(text, out quoteChar);
+        }
+        /// <summary>
+        /// Htmlencode a string, except for double-quotes, so it can be enclosed in single-quotes
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static string AttributeEncode(string text, out char quoteChar)
+        {
+            bool hasQuotes = text.IndexOf("\"") >= 0;
+            bool hasSingleQuotes = text.IndexOf("'") >= 0;
+            string result = text;
+            if (hasQuotes || hasSingleQuotes)
+            {
+                result = System.Web.HttpUtility.HtmlAttributeEncode(result);
+                //un-encode quotes or single-quotes when possible. When writing the attribute it will use the right one
+                if (hasQuotes)
+                {
+                    result = result.Replace("&quot;", "\"");
+                    quoteChar = '\'';
+                }
+                else
+                {
+                    result = result.Replace("&#39;", "'");
+                    quoteChar = '\"';
+                }
+            }
+            else
+            {
+                quoteChar = '"';
+            }
+            return result;
+        }
         /// <summary>
         /// Returns true when a value is "truthy" using similar logic as Javascript
         ///   null = false

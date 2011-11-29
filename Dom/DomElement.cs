@@ -755,12 +755,14 @@ namespace Jtc.CsQuery
                     if (!String.IsNullOrEmpty(kvp.Value))
                     {
                         //if (DocType== DocType.XHTML || val.IndexOfAny(needsQuoting) >=0) {
-                        char quoteChar = kvp.Value.IndexOf("\"") >= 0 ? '\'' : '"';
+                        char quoteChar;
+                        string attrText = Objects.AttributeEncode(kvp.Value, out quoteChar);
+                        
                         sb.Append(" ");
                         sb.Append(kvp.Key);
                         sb.Append("=");
                         sb.Append(quoteChar);
-                        sb.Append(kvp.Value);
+                        sb.Append(attrText);
                         sb.Append(quoteChar);
 
                         //} else {

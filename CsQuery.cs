@@ -994,11 +994,11 @@ namespace Jtc.CsQuery
         /// <param name="key"></param>
         /// <param name="jsonData"></param>
         /// <returns></returns>
-        public CsQuery Data(string key,string jsonData)
+        public CsQuery Data(string key,string data)
         {
             this.Each((IDomElement e) =>
             {
-                e.SetAttribute("data-" + key, jsonData);
+                e.SetAttribute("data-" + key, data);
             });
             return this;
         }
