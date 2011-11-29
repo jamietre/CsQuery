@@ -180,6 +180,16 @@ namespace Jtc.CsQuery
                                 Current.PositionType = PositionType.Last;
                                 FinishSelector();
                                 break;
+                            case "last-child":
+                                StartNewPositionSelector();
+                                Current.PositionType = PositionType.LastChild;
+                                FinishSelector();
+                                break;
+                            case "first-child":
+                                StartNewPositionSelector();
+                                Current.PositionType = PositionType.FirstChild;
+                                FinishSelector();
+                                break;
                             case "has":
                             //case "not":
                                 Current.TraversalType = TraversalType.Descendent;
@@ -344,83 +354,7 @@ namespace Jtc.CsQuery
             
 
         }
-        protected string ParseFunction(ref string sel)
-        {
-            int subPos = sel.IndexOfAny(new char[] { '(' });
-            if (subPos < 0)
-            {
-                throw new Exception("Bad 'contains' selector.");
-            }
-            subPos++;
-            int pos = subPos;
-            int startPos=-1;
-            int endPos = -1;
-            int step = 0;
-            bool finished = false;
-            bool quoted=false;
-
-            char quoteChar = ' ';
-            while (pos < sel.Length && !finished)
-            {
-                char current = sel[pos];
-                switch (step)
-                {
-                    case 0:
-                        if (current == ' ')
-                        {
-                            pos++;
-                        } else {
-                            step=1;
-                        }
-                        break;
-                    case 1:
-                        if (current == '\'' || current == '"')
-                        {
-                            quoteChar = current;
-                            quoted=true;
-                            startPos = pos + 1;
-                            step = 2;
-                        }
-                        else
-                        {
-                            startPos = current;
-                            step = 3;
-                        }
-                        pos++;
-                        break;
-                    case 2:
-                        if (quoted && current==quoteChar)
-                        {
-                            endPos = pos;
-                            pos++;
-                            step = 3;
-                        } 
-                        pos++;
-                        break;
-                    case 3:
-                        if (current == ')')
-                        {
-                            finished = true;
-                        }
-                        else
-                        {
-                            pos++;
-                        }
-                        break;
-                }
-            }
-
-            string result = sel.SubstringBetween(startPos,endPos);
-            if (sel.Length > pos)
-            {
-                sel = sel.Substring(pos + 1);
-            }
-            else
-            {
-                sel = String.Empty;
-            }
-            return result;
-        }
+        
         public int Count
         {
             get
@@ -470,7 +404,9 @@ namespace Jtc.CsQuery
             IEnumerable<IDomObject> lastResult = null;
             HashSet<IDomObject> output = new HashSet<IDomObject>();
             IEnumerable<IDomObject> selectionSource = selectWithin;
-            
+            // This is a bit of a hack, but ensures that fragments get selected manually. We need a way to have a separate index still bound to the 
+            // main DOM ideally so fragments can have indexes
+            bool useIndex = selectWithin.IsNullOrEmpty() || !selectWithin.First().IsDisconnected;
 
             for (int selIndex = 0; selIndex < Selectors.Count; selIndex++)
             {
@@ -502,36 +438,29 @@ namespace Jtc.CsQuery
                         // default (chained): leave lastresult alone
                     }
                 }
-                //if (selector.TraversalType == TraversalType.Child) {
-                //    var newSource = new HashSet<IDomObject>();
-                //    foreach (IDomObject el in selectionSource) {
-                //        if (el is IDomContainer) {
-                //            newSource.AddRange(((IDomContainer)el).Elements);
-                //        }
-                //    }
-                //    selectionSource=newSource;
-                //}
 
                 HashSet<IDomObject> tempResult = null;
                 IEnumerable<IDomObject> interimResult = null;
 
                 string key = String.Empty;
-                if (type.HasFlag(SelectorType.Tag))
+                if (useIndex)
                 {
-                    key = selector.Tag;
-                    type &= ~SelectorType.Tag;
+                    if (type.HasFlag(SelectorType.Tag))
+                    {
+                        key = selector.Tag;
+                        type &= ~SelectorType.Tag;
+                    }
+                    else if (type.HasFlag(SelectorType.ID))
+                    {
+                        key = "#" + selector.ID;
+                        type &= ~SelectorType.ID;
+                    }
+                    else if (type.HasFlag(SelectorType.Class))
+                    {
+                        key = "." + selector.Class;
+                        type &= ~SelectorType.Class;
+                    }
                 }
-                else if (type.HasFlag(SelectorType.ID))
-                {
-                    key = "#" + selector.ID;
-                    type &= ~SelectorType.ID;
-                }
-                else if (type.HasFlag(SelectorType.Class))
-                {
-                    key = "." + selector.Class;
-                    type &= ~SelectorType.Class;
-                }
-
                 // If we can use an indexed selector, do it here
                 if (key != String.Empty)
                 {
@@ -556,24 +485,10 @@ namespace Jtc.CsQuery
 
                     if (selectionSource == null)
                     {
-                        //if (tempResult != null) {
-                        //    tempResult.AddRange(root.SelectorXref.GetRange(key + ">",depth,descendants));
-                        //} else {
-                        //    lastResult = root.SelectorXref.GetRange(key + ">",depth,descendants);
-                        //}
                         interimResult = root.QueryIndex(key + ">", depth, descendants);
                     }
                     else
                     {
-                        //if (tempResult == null)
-                        //{
-                        //    tempResult = new HashSet<IDomObject>();
-                        //}
-
-                        //if (selector.CombinatorType == CombinatorType.Cumulative)
-                        //{
-                        //    tempResult.AddRange(lastResult);
-                        //}
                         interimResult = new HashSet<IDomObject>();
                         foreach (IDomObject obj in selectionSource)
                         {
@@ -670,7 +585,90 @@ namespace Jtc.CsQuery
                     yield return item;
                 }
             }
-            //}
+        }
+        /// <summary>
+        /// Parse out the contents of a function 
+        /// </summary>
+        /// <param name="sel"></param>
+        /// <returns></returns>
+        protected string ParseFunction(ref string sel)
+        {
+            int subPos = sel.IndexOfAny(new char[] { '(' });
+            if (subPos < 0)
+            {
+                throw new Exception("Bad 'contains' selector.");
+            }
+            subPos++;
+            int pos = subPos;
+            int startPos = -1;
+            int endPos = -1;
+            int step = 0;
+            bool finished = false;
+            bool quoted = false;
+
+            char quoteChar = ' ';
+            while (pos < sel.Length && !finished)
+            {
+                char current = sel[pos];
+                switch (step)
+                {
+                    case 0:
+                        if (current == ' ')
+                        {
+                            pos++;
+                        }
+                        else
+                        {
+                            step = 1;
+                        }
+                        break;
+                    case 1:
+                        if (current == '\'' || current == '"')
+                        {
+                            quoteChar = current;
+                            quoted = true;
+                            startPos = pos + 1;
+                            step = 2;
+                        }
+                        else
+                        {
+                            startPos = current;
+                            step = 3;
+                        }
+                        pos++;
+                        break;
+                    case 2:
+                        if (quoted && current == quoteChar)
+                        {
+                            endPos = pos;
+                            pos++;
+                            step = 3;
+                        }
+                        pos++;
+                        break;
+                    case 3:
+                        if (current == ')')
+                        {
+                            finished = true;
+                        }
+                        else
+                        {
+                            pos++;
+                        }
+                        break;
+                }
+            }
+
+            string result = sel.SubstringBetween(startPos, endPos);
+            if (sel.Length > pos)
+            {
+                sel = sel.Substring(pos + 1);
+            }
+            else
+            {
+                sel = String.Empty;
+            }
+            return result;
         }
 
         protected class MatchElement
@@ -884,11 +882,37 @@ namespace Jtc.CsQuery
 
             switch (selector.PositionType)
             {
+                case PositionType.FirstChild:
+                    foreach (var obj in list)
+                    {
+                        if (obj.PreviousElementSibling == null)
+                        {
+                            yield return obj;
+                        }
+                    }
+                    break;
+                case PositionType.LastChild:
+                    foreach (var obj in list)
+                    {
+                        if (obj.NextElementSibling == null)
+                        {
+                            yield return obj;
+                        }
+                    }
+                    break;
                 case PositionType.First:
-                    yield return list.First();
+                    IDomObject first = list.FirstOrDefault();
+                    if (first!=null) 
+                    {
+                        yield return first;
+                    }
                     break;
                 case PositionType.Last:
-                    yield return list.Last();
+                    IDomObject last = list.LastOrDefault();
+                    if (last!=null)
+                    {
+                        yield return last;
+                    }
                     break;
                 case PositionType.Odd:
                 case PositionType.Even:

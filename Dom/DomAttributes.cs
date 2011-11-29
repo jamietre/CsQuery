@@ -80,7 +80,7 @@ namespace Jtc.CsQuery
             string value;
             //name = name.ToLower();
             //if (Attributes.TryGetValue(name, out value))
-            if (tokenID == DomData.ClassAttrID || tokenID == DomData.StyleNodeId)
+            if (tokenID == DomData.ClassAttrId || tokenID == DomData.StyleAttrId)
             {
                 throw new Exception("You cannot access class or style as attributes, use className & Style");
             }
@@ -110,13 +110,13 @@ namespace Jtc.CsQuery
         {
             switch (tokenId)
             {
-                case DomData.StyleNodeId:
+                case DomData.StyleAttrId:
                     SetStyle(value.CleanUp());
                     break;
-                case DomData.ClassAttrID:
+                case DomData.ClassAttrId:
                     SetClass(value.CleanUp());
                     break;
-                case DomData.ValueNodeId:
+                case DomData.ValueAttrId:
                     Attributes[tokenId] = value.CleanUp();
                     break;
                 default:

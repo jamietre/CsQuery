@@ -26,6 +26,30 @@ namespace Jtc.CsQuery
         /// <param name="context"></param>
         public CsQuery(string selector, CsQuery context)
         {
+            Create(selector, context);
+        }
+        /// <summary>
+        /// Create a new CsQuery object from HTML, and assign CSS from a JSON string, within a context
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <param name="context"></param>
+        public CsQuery(string selector, string cssJson, CsQuery context)
+        {
+            Create(selector, context);
+            AttrSet(cssJson);
+        }
+        /// <summary>
+        /// Create a new CsQuery object from HTML, and assign CSS, within a context
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <param name="context"></param>
+        public CsQuery(string selector, IDictionary<string,object> css, CsQuery context)
+        {
+            Create(selector, context);
+            Attr(css);
+        }
+        protected void Create(string selector, CsQuery context)
+        {
             // when creating a new CsQuery from another, leave Dom blank - it will be populated automatically with the
             // contents of the selector.
             CsQueryParent = context;

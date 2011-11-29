@@ -20,15 +20,7 @@ namespace Jtc.CsQuery
 
     public static class ExtensionMethods_Public
     {
-        /// <summary>
-        /// Returns true if the string appears to be JSON.
-        /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        public static bool IsJson(this string text)
-        {
-            return text.StartsWith("{") && !text.StartsWith("{{");
-        }
+
 
         /// <summary>
         /// Returns true when a value is "truthy" using similar logic as Javascript
@@ -147,7 +139,7 @@ namespace Jtc.CsQuery
             }
             HashSet<Type> IgnoreList = new HashSet<Type>(ignoreAttributes);
 
-            if (source is string && ((string)source).IsJson())
+            if (source is string && Objects.IsJson(source))
             {
                 source = Utility.JSON.ParseJSON((string)source);
             }

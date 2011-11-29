@@ -179,7 +179,7 @@ namespace Jtc.CsQuery.Utility
             return output;
         }
         /// <summary>
-        /// Parse JSON into an JsObject (dynamic) object
+        /// Parse JSON into a JsObject (dynamic) object, or single typed value
         /// </summary>
         /// <param name="objectToDeserialize"></param>
         /// <returns></returns>

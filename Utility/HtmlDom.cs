@@ -67,12 +67,7 @@ namespace Jtc.CsQuery.Utility
             }
         }
             
-        public  static HashSet<string> BooleanAttributes = new HashSet<string>(new string[] {
-            "autobuffer", "autofocus", "autoplay", "async", "checked", "compact", "controls", "declare", "defaultmuted", "defaultselected",
-            "defer", "disabled", "draggable", "formNoValidate", "hidden", "indeterminate", "ismap", "itemscope","loop", "multiple",
-            "muted", "nohref", "noresize", "noshade", "nowrap", "novalidate", "open", "pubdate", "readonly", "required", "reversed",
-            "scoped", "seamless", "selected", "spellcheck", "truespeed"," visible"
-        });
+
 
     }
 }

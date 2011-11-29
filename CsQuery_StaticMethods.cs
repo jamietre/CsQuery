@@ -35,12 +35,17 @@ namespace Jtc.CsQuery
             return csq;
         }
 
-        public static CsQuery Create(string selector, string css)
+        public static CsQuery Create(string selector, string jsonCss)
         {
             CsQuery csq = CsQuery.Create(selector);
-            csq.AttrSet(css);
-            return csq;
+            return csq.AttrSet(jsonCss);
         }
+        public static CsQuery Create(string selector, IDictionary<string,object> css)
+        {
+            CsQuery csq = CsQuery.Create(selector);
+            return csq.Attr(css);
+        }
+
         public static CsQuery CreateFromFile(string path)
         {
 
@@ -150,7 +155,8 @@ namespace Jtc.CsQuery
             return Utility.JSON.ParseJSON<T>(objectToDeserialize);
         }
         /// <summary>
-        /// Parse JSON into an expando object
+        /// Parse JSON into an expando object, or a primitive type if possible, or just return
+        /// itself if no parsing can be done.
         /// </summary>
         /// <param name="objectToDeserialize"></param>
         /// <returns></returns>

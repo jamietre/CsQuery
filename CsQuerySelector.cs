@@ -51,9 +51,11 @@ namespace Jtc.CsQuery
         Odd = 3,
         First = 4,
         Last = 5,
-        IndexEquals = 6,
-        IndexLessThan = 7,
-        IndexGreaterThan = 8
+        FirstChild = 6,
+        LastChild = 7,
+        IndexEquals = 8,
+        IndexLessThan = 9,
+        IndexGreaterThan = 10
     }
     
     public class CsQuerySelector

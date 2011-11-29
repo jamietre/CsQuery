@@ -92,6 +92,10 @@ namespace Jtc.CsQuery
             Document.DomRenderingOptions = renderingOptions;
             return Render();
         }
+
+
+        #endregion
+        #region nonstandard DOM manipulation methods
         /// <summary>
         /// Returns a new empty CsQuery object bound to this domain
         /// </summary>
@@ -102,26 +106,41 @@ namespace Jtc.CsQuery
             csq.CsQueryParent = this;
             return csq;
         }
+        /// <summary>
+        /// The first IDomElement (e.g. not text/special nodes) in the selection set, or null if none
+        /// </summary>
+        public IDomElement FirstElement()
+        {
 
-        #endregion
-        #region nonstandard (extension) methods
+            using (IEnumerator<IDomElement> enumer = Elements.GetEnumerator())
+            {
+                if (enumer.MoveNext())
+                {
+                    return enumer.Current;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
         /// <summary>
         /// Removes one of two selectors/objects based on the value of the first parameter. The remaining one is
         /// explicitly shown. True keeps the first, false keeps the 2nd.
         /// </summary>
         /// <param name="?"></param>
         /// <returns></returns>
-        public CsQuery KeepOne(bool which, string trueContent, string falseContent)
+        public CsQuery KeepOne(bool which, string trueSelector, string falseSelector)
         {
-            return KeepOne(which ? 0 : 1, trueContent, falseContent);
+            return KeepOne(which ? 0 : 1, trueSelector, falseSelector);
         }
         public CsQuery KeepOne(bool which, CsQuery trueContent, CsQuery falseContent)
         {
             return KeepOne(which ? 0 : 1, trueContent, falseContent);
         }
         /// <summary>
-        /// Removes one of two selectors/objects based on the value of the first parameter. The remaining one is
-        /// explicitly shown. True keeps the first, false keeps the 2nd. Which is zero-based.
+        /// Removes all but one of a list selectors/objects based on the value of the first parameter. The remaining one is
+        /// explicitly shown. The value of which is zero-based.
         /// </summary>
         /// <param name="?"></param>
         /// <returns></returns>

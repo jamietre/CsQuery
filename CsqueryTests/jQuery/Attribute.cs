@@ -406,7 +406,8 @@ namespace CsqueryTests.jQuery
             Assert.IsTrue(thrown, "Exception thrown when trying to change type property");
             Assert.AreEqual("button", button.Attr("type"), "Verify that you can't change the type of a button element");
 
-            var jradio = CsQuery.Create("<input>", "{ 'value': 'sup', 'type': 'radio' }").AppendTo("#testForm");
+            var jradio = new CsQuery("<input>", "{ 'value': 'sup', 'type': 'radio' }",Dom);
+            jradio = jradio.AppendTo("#testForm");
             Assert.AreEqual(jradio.Val(), "sup", "Value is not reset when type is set after value on a radio");
 
             // Setting attributes on svg elements (bug #3116)

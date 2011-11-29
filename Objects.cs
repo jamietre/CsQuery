@@ -15,6 +15,16 @@ namespace Jtc.CsQuery
     public static class Objects
     {
         /// <summary>
+        /// Returns true if the string appears to be JSON.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static bool IsJson(object obj)
+        {
+            string text = obj as string;
+            return text != null && text.StartsWith("{") && !text.StartsWith("{{");
+        }
+        /// <summary>
         /// Returns true when a value is "truthy" using similar logic as Javascript
         ///   null = false
         ///   empty string = false BUT zero string = true
@@ -217,7 +227,7 @@ namespace Jtc.CsQuery
             while (inputs.Count>0)
             {
                 object src = inputs.Dequeue();
-                if (src is string && ((string)src).IsJson())
+                if (src is string && Objects.IsJson(src))
                 {
                     src= CsQuery.ParseJSON((string)src);
                 }

@@ -327,7 +327,7 @@ namespace Jtc.CsQuery
         }
         protected void SetAttribute(short tokenId, string value)
         {
-            if (tokenId == DomData.ClassAttrID)
+            if (tokenId == DomData.ClassAttrId)
             {
                 ClassName = value;
             }
@@ -355,7 +355,7 @@ namespace Jtc.CsQuery
                 return false;
             }
             short tokenId = DomData.TokenID(name);
-            if (tokenId == DomData.ClassAttrID)
+            if (tokenId == DomData.ClassAttrId)
             {
                 _Classes = null;
                 return true;
@@ -387,7 +387,7 @@ namespace Jtc.CsQuery
         protected string GetAttribute(short tokenId, string defaultValue)
         {
             string value = null;
-            if (tokenId == DomData.ClassAttrID)
+            if (tokenId == DomData.ClassAttrId)
             {
                 return ClassName;
             }
@@ -407,7 +407,7 @@ namespace Jtc.CsQuery
             //value = GetNonDictionaryAttribute(name);
             //bool result = (GetNonDictionaryAttribute(name) != null) 
             //     || Attributes.TryGetValue(name.ToLower(), out  value);
-            if (tokenId == DomData.ClassAttrID)
+            if (tokenId == DomData.ClassAttrId)
             {
                 value= ClassName;
                 return true;
@@ -550,16 +550,16 @@ namespace Jtc.CsQuery
         {
             get
             {
-                return GetAttribute(DomData.IDNodeId,String.Empty);
+                return GetAttribute(DomData.IDAttrId,String.Empty);
             }
             set
             {
-                string id = Attributes[DomData.IDNodeId];
+                string id = Attributes[DomData.IDAttrId];
                 if (!String.IsNullOrEmpty(id) && !IsDisconnected)
                 {
                         Document.RemoveFromIndex(IndexKey("#" + id));
                 }
-                Attributes[DomData.IDNodeId] = value;
+                Attributes[DomData.IDAttrId] = value;
                 if (!IsDisconnected)
                 {
                     Document.AddToIndex(IndexKey("#" + value), this);
@@ -572,13 +572,13 @@ namespace Jtc.CsQuery
             get
             {
                 return DomData.InputNodeId == nodeNameID &&
-                    HasAttribute(DomData.ValueNodeId) ? 
-                    Attributes[DomData.ValueNodeId] :
+                    HasAttribute(DomData.ValueAttrId) ? 
+                    Attributes[DomData.ValueAttrId] :
                     null;
             }
             set
             {
-                SetAttribute(DomData.ValueNodeId, value);
+                SetAttribute(DomData.ValueAttrId, value);
             }
         }
         /// <summary>

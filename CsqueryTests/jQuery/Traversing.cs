@@ -513,6 +513,16 @@ namespace CsqueryTests.jQuery
            
             Assert.AreEqual(jQuery("#ap").Contents().Length, 9, "Check element contents" );
             Assert.IsTrue( jQuery("#iframe").Length>0, "Check existence of IFrame document" );
+
+            jQuery("#loadediframe").Append(@"<html>
+      <head>
+        <title>iframe</title>
+      </head>
+      <body>
+        <div><span>span text</span></div>
+      </body>
+    </html>");
+            
             var ibody = jQuery("#loadediframe").Contents().Find("body");
             Assert.IsTrue( ibody.Length>0, "Check existance of IFrame body" );
             var csq = new CsQuery("span", ibody);

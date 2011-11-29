@@ -64,6 +64,7 @@ namespace Jtc.CsQuery
             get;
             set;
         }
+        
         public IEnumerator<T> GetEnumerator()
         {
             return sortedList.GetEnumerator();
