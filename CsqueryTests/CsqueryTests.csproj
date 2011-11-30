@@ -58,10 +58,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Csharp\Clone.cs" />
+    <Compile Include="Csharp\Objects.cs" />
     <Compile Include="Csharp\MovingElements.cs" />
     <Compile Include="jQuery\Attribute.cs" />
     <Compile Include="Csharp\Attribute.cs" />
-    <Compile Include="Csharp\CsqObjects.cs" />
+    <Compile Include="Csharp\JsObject.cs" />
     <Compile Include="jQuery\Core.cs" />
     <Compile Include="CsQueryTest.cs" />
     <Compile Include="ExtensionMethods.cs" />

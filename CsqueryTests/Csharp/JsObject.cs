@@ -16,7 +16,7 @@ namespace CsqueryTests.Csharp
 {
 
     [TestFixture, TestClass, Description("CsQuery Tests (Not from Jquery test suite)")]
-    public class CsqObjects : CsQueryTest
+    public class JsObject_ : CsQueryTest
     {
         private static IDictionary<string, object> testDict = null;
 
@@ -47,8 +47,6 @@ namespace CsqueryTests.Csharp
             TimeSpan diff =(((DateTime)obj.prop3).Subtract((DateTime)back.prop3));
 
             Assert.IsTrue(Math.Abs(diff.Milliseconds)<1000, "Time was the same");
-
-            
         }
         [Test,TestMethod]
         public void JsObject()
