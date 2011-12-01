@@ -1,4 +1,12 @@
 ## CsQuery - C# jQuery Port
+11/30/11 - 0.99
+
+THIS IS OUT OF DATE!
+
+Everything has been implemented except for End, WrapInner & OffsetParent. Almost all the original jQuery tests cover it.
+
+Will update docs shortly.
+
 
 11/11/11 - 0.95
 
