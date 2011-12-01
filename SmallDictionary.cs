@@ -14,6 +14,10 @@ namespace Jtc.CsQuery
     /// <typeparam name="TValue"></typeparam>
     public class SmallDictionary<TKey,TValue>: IDictionary<TKey,TValue>
     {
+        // Note - it may be faster to not use lazy creation in our context. The users of this dictionary should
+        // already use lazy creation for the object itself, so this would just be another redundant check.
+        // TODO set up some good test/comparison cases
+
         //private List<KeyValuePair<TKey,TValue>> InnerList {
         //    get {
         //        if (_InnerList==null) {
