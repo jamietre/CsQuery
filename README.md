@@ -22,7 +22,7 @@ consumption. Selectors on the test dom now run in less than 10 milliseconds.
 
 4) Added the HTML Agility Pack DLL to the test project and set up a really simple comparison. HAP still 
 loads the DOM into its object model faster (about 35%). There is no comparison on selectors.
-SQuery is hundreds of times faster. It would be nice to get the DOM creation time down further, but 
+CsQuery is hundreds of times faster. It would be nice to get the DOM creation time down further, but 
 this is a pretty small sacrifice to index the entire thing. There aren't a lot of obvious places for
 further improvement, though. Currently it tokenizes everything in the index, uses lazy object
 creation where it makes sense, uses a lightweight dictionary for class, style & attribute storage
