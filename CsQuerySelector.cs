@@ -131,7 +131,24 @@ namespace Jtc.CsQuery
         public string AttributeValue = null;
         public string Class = null;
         public string ID = null;
+        public bool NoIndex = false;
+
         public IEnumerable<IDomObject> SelectElements;
-        public List<CsQuerySelectors> SubSelectors = new List<CsQuerySelectors>();
+        /// <summary>
+        /// A list of subselectors. The results of this are used as criteria for a primary selector, e.g. has or not.
+        /// </summary>
+        public List<CsQuerySelectors> SubSelectors 
+        {
+            get {
+                if (_SubSelectors == null)
+                {
+                    _SubSelectors = new List<CsQuerySelectors>();
+                }
+                return _SubSelectors;
+            }
+        }
+        protected List<CsQuerySelectors> _SubSelectors= null;
+                                                         
+                                                     
     }
 }

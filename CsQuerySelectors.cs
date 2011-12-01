@@ -406,6 +406,11 @@ namespace Jtc.CsQuery
             return Select(document, Objects.Enumerate(context));
         }
         /// <summary>
+        /// The current selection list being acted on
+        /// </summary>
+        protected List<CsQuerySelector> ActiveSelectors;
+        protected int activeSelectorId;
+        /// <summary>
         /// Select from DOM using index. First non-class/tag/id selector will result in this being passed off to GetMatches
         /// </summary>
         /// <param name="document"></param>
@@ -420,14 +425,17 @@ namespace Jtc.CsQuery
             // main DOM ideally so fragments can have indexes
             bool useIndex = context.IsNullOrEmpty() || !context.First().IsDisconnected;
 
-            for (int selIndex = 0; selIndex < Selectors.Count; selIndex++)
+            // Copy the list because it may change during the process
+            ActiveSelectors = new List<CsQuerySelector>(Selectors);
+
+            for (activeSelectorId = 0; activeSelectorId < ActiveSelectors.Count; activeSelectorId++)
             {
-                var selector = Selectors[selIndex];
+                var selector = ActiveSelectors[activeSelectorId];
                 SelectorType type = selector.SelectorType;
 
                 // Determine what kind of combining method we will use with previous selection results
 
-                if (selIndex != 0)
+                if (activeSelectorId != 0)
                 {
                     switch (selector.CombinatorType)
                     {
@@ -454,12 +462,33 @@ namespace Jtc.CsQuery
                 HashSet<IDomObject> tempResult = null;
                 IEnumerable<IDomObject> interimResult = null;
 
-                string key = String.Empty;
-                if (useIndex)
+                string key = "";
+                if (useIndex && !selector.NoIndex)
                 {
-                    if (type.HasFlag(SelectorType.Tag))
+                    // id is not indexed as an attribute
+                    if (selector.AttributeName == "id")
                     {
-                        key = selector.Tag;
+                        selector.SelectorType &= ~SelectorType.Attribute;
+                        selector.SelectorType |= SelectorType.ID;
+                        type = selector.SelectorType;
+                        selector.ID = selector.AttributeValue;
+                        selector.AttributeName = null;
+                        selector.AttributeValue = null;
+                    }
+#if DEBUG_PATH
+
+                    if (type.HasFlag(SelectorType.Attribute))
+                    {
+                        key = "!" + selector.AttributeName;
+                        type &= ~SelectorType.Attribute;
+                        if (selector.AttributeValue != null)
+                        {
+                            InsertAttributeValueSelector(selector);
+                        }
+                    } 
+                    else if (type.HasFlag(SelectorType.Tag))
+                    {
+                        key = "+"+selector.Tag;
                         type &= ~SelectorType.Tag;
                     }
                     else if (type.HasFlag(SelectorType.ID))
@@ -472,6 +501,32 @@ namespace Jtc.CsQuery
                         key = "." + selector.Class;
                         type &= ~SelectorType.Class;
                     }
+
+#else
+                    if (type.HasFlag(SelectorType.Attribute))
+                    {
+                        key = "!" + (char)DomData.TokenID(selector.AttributeName);
+                        type &= ~SelectorType.Attribute;
+                        if (selector.AttributeValue != null)
+                        {
+                            InsertAttributeValueSelector(selector);
+                        }
+                    } else  if (type.HasFlag(SelectorType.Tag))
+                    {
+                        key = "+"+(char)DomData.TokenID(selector.Tag,true);
+                        type &= ~SelectorType.Tag;
+                    }
+                    else if (type.HasFlag(SelectorType.ID))
+                    {
+                        key = "#"+(char)DomData.TokenID(selector.ID);
+                        type &= ~SelectorType.ID;
+                    }
+                    else if (type.HasFlag(SelectorType.Class))
+                    {
+                        key = "." + (char)DomData.TokenID(selector.Class);
+                        type &= ~SelectorType.Class;
+                    }
+#endif
                 }
                 // If we can use an indexed selector, do it here
                 if (key != String.Empty)
@@ -494,17 +549,18 @@ namespace Jtc.CsQuery
                             break;
                     }
 
-
                     if (selectionSource == null)
                     {
-                        interimResult = document.QueryIndex(key + ">", depth, descendants);
+                        interimResult = document.QueryIndex(key + DomData.indexSeparator, depth, descendants);
                     }
                     else
                     {
                         interimResult = new HashSet<IDomObject>();
                         foreach (IDomObject obj in selectionSource)
                         {
-                            ((HashSet<IDomObject>)interimResult).AddRange(document.QueryIndex(key + ">" + obj.Path,depth,descendants));
+                            ((HashSet<IDomObject>)interimResult)
+                                .AddRange(document.QueryIndex(key + DomData.indexSeparator + obj.Path, 
+                                    depth, descendants));
                         }
                     }
                 }
@@ -517,7 +573,7 @@ namespace Jtc.CsQuery
 
                     foreach (IDomObject obj in selectionSource)
                     {
-                        key = ">"+obj.Path;
+                        key = DomData.indexSeparator + obj.Path;
                         HashSet<IDomObject> srcKeys = new HashSet<IDomObject>(document.QueryIndex(key));
                         foreach (IDomObject match in selector.SelectElements)
                         {
@@ -592,10 +648,35 @@ namespace Jtc.CsQuery
             }
             else
             {
-                foreach (IDomObject item in output.OrderBy(item => item.Path))
+                foreach (IDomObject item in output.OrderBy(item => item.Path,StringComparer.Ordinal))
                 {
                     yield return item;
                 }
+            }
+            ActiveSelectors.Clear();
+        }
+        /// <summary>
+        /// Adds a new selector for just the attribute value. Used to chain with the indexed attribute exists selector.
+        /// </summary>
+        /// <param name="selector"></param>
+        protected void InsertAttributeValueSelector(CsQuerySelector fromSelector)
+        {
+            CsQuerySelector newSel = new CsQuerySelector();
+            newSel.TraversalType = TraversalType.Filter;
+            newSel.SelectorType = SelectorType.Attribute;
+            newSel.AttributeName = fromSelector.AttributeName;
+            newSel.AttributeValue = fromSelector.AttributeValue;
+            newSel.AttributeSelectorType = fromSelector.AttributeSelectorType;
+            newSel.CombinatorType = CombinatorType.Chained;
+            newSel.NoIndex = true;
+            int insertAt = activeSelectorId + 1;
+            if (insertAt >= ActiveSelectors.Count)
+            {
+                ActiveSelectors.Add(newSel);
+            }
+            else
+            {
+                ActiveSelectors.Insert(insertAt, newSel);
             }
         }
         /// <summary>
@@ -700,7 +781,7 @@ namespace Jtc.CsQuery
             }
             public IDomObject Object { get; set; }
             public int Depth { get; set; }
-            public DomElement Element { get { return (DomElement)Object; } }
+            public IDomElement Element { get { return (IDomElement)Object; } }
         }
 
         public IEnumerable<IDomObject> GetMatch(IEnumerable<IDomObject> baseList, IEnumerable<IDomObject> list, CsQuerySelector selector)
@@ -757,13 +838,13 @@ namespace Jtc.CsQuery
                         // Add children to stack (in reverse order, so they are processed in the correct order when popped)
 
                         if (selector.TraversalType != TraversalType.Filter &&
-                            current.Object is DomElement)
+                            current.Object is IDomElement)
                         {
-                            DomElement elm = current.Element;
+                            IDomElement elm = current.Element;
                             for (int j = elm.ChildNodes.Count - 1; j >= 0; j--)
                             {
                                 IDomObject obj = elm[j];
-                                if (obj is DomElement && uniqueElements.Add((DomElement)obj))
+                                if (obj is IDomElement && uniqueElements.Add((IDomElement)obj))
                                 {
                                     stack.Push(new MatchElement(obj, current.Depth + 1));
                                 }
@@ -811,10 +892,10 @@ namespace Jtc.CsQuery
             {
                 return true;
             }
-            if (!(obj is DomElement)) { 
+            if (!(obj is IDomElement)) { 
                 return false;
             }
-            DomElement elm = (DomElement)obj;
+            IDomElement elm = (IDomElement)obj;
 
             if (selector.SelectorType.HasFlag(SelectorType.Tag) &&
                 !String.Equals(elm.NodeName, selector.Tag, StringComparison.CurrentCultureIgnoreCase))
@@ -1024,7 +1105,7 @@ namespace Jtc.CsQuery
             HashSet<string> words = new HashSet<string>(word.Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
             return words.Contains(text);
         }
-        protected bool ContainsText(DomElement obj, string text)
+        protected bool ContainsText(IDomElement obj, string text)
         {
             foreach (IDomObject e in obj.ChildNodes)
             {
@@ -1037,7 +1118,7 @@ namespace Jtc.CsQuery
                 }
                 else if (e.NodeType==NodeType.ELEMENT_NODE)
                 {
-                    if (ContainsText((DomElement)e, text))
+                    if (ContainsText((IDomElement)e, text))
                     {
                         return true;
                     }

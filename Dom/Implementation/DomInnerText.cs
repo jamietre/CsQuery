@@ -4,18 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Web;
 
-namespace Jtc.CsQuery
+namespace Jtc.CsQuery.Implementation
 {
-    /// <summary>
-    /// Special element for the text contents of SCRIPT & TEXTAREA objects
-    /// </summary>
-
-    public interface IDomInnerText : IDomText
-    {
-        
-    }
-
-
+   
     /// <summary>
     /// Used for literal text (not part of a tag)
     /// </summary>

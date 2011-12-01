@@ -68,7 +68,7 @@ namespace Jtc.CsQuery.Server
         /// </summary>
         public CsQuery RestorePost()
         {
-            foreach (DomElement e in Owner.Select("[name], textarea"))
+            foreach (IDomElement e in Owner.Select("[name], textarea"))
             {
                 string value;
                 if (PostData.TryGetValue(e["name"], out value))

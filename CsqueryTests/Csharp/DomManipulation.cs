@@ -9,6 +9,7 @@ using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
+using Jtc.CsQuery.Implementation;
 
 namespace CsqueryTests.CSharp
 {
@@ -27,11 +28,11 @@ namespace CsqueryTests.CSharp
         {
             string html = Support.GetFile("CsQueryTests\\Resources\\TestHtml2.htm");
             csq = CsQuery.Create(html);
-            RangeSortedDictionary<IDomObject> test = ((DomRoot)csq.Document).SelectorXref;
-            foreach (var item in test)
-            {
-                ;
-            }
+            //RangeSortedDictionary<IDomObject> test = ((IDomRoot)csq.Document).SelectorXref;
+            //foreach (var item in test)
+            //{
+            //    ;
+            //}
         }
         [TestInitialize, SetUp]
         public void TestSetUp()
@@ -201,7 +202,7 @@ namespace CsqueryTests.CSharp
 
             
             string html = " <b>Iteration 2</b>";
-            DomRoot container = new DomRoot();
+            IDomRoot container = new DomRoot();
             DomElementFactory factory = new DomElementFactory(container);
             //factory.CreateObjects(html);
             //AddTestResult("Simple create", container.Html==html, container.Html);

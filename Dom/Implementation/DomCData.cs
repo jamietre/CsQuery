@@ -3,14 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery
+namespace Jtc.CsQuery.Implementation
 {
-    public interface IDomCData : IDomSpecialElement
-    {
-
-    }
-
-
 
     public class DomCData : DomObject<DomCData>, IDomCData
     {
@@ -84,17 +78,18 @@ namespace Jtc.CsQuery
         }
         public override DomCData Clone()
         {
-            DomCData clone = base.Clone();
+            DomCData clone = new DomCData();
             clone.NonAttributeData = NonAttributeData;
             return clone;
         }
-        //internal override IDomObject CloneInternal()
-        //{
-        //    return DoClone((DomCData)base.CloneInternal());
 
-        //}
 
         #endregion
+
+       
+        
+
+      
     }
     
 }

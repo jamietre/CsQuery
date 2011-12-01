@@ -4,41 +4,8 @@ using System.Linq;
 using System.Text;
 using Jtc.CsQuery.ExtensionMethods;
 
-namespace Jtc.CsQuery
+namespace Jtc.CsQuery.Implementation
 {
-    [Flags]
-    public enum DomRenderingOptions
-    {
-        RemoveMismatchedCloseTags = 1,
-        RemoveComments = 2,
-        QuoteAllAttributes=4,
-        ValidateCss=8
-    }
-
-    public interface IDomRoot : IDomContainer
-    {
-        //RangeSortedDictionary<IDomObject> SelectorXref { get; }
-        void AddToIndex(string key, IDomObject element);
-        void AddToIndex(IDomObject element);
-        void RemoveFromIndex(string key);
-        void RemoveFromIndex(IDomObject element);
-        IEnumerable<IDomObject> QueryIndex(string subKey, int depth, bool includeDescendants);
-        IEnumerable<IDomObject> QueryIndex(string subKey);
-        
-        DocType DocType { get; set; }
-        DomRenderingOptions DomRenderingOptions { get; set; }
-        IDomElement GetElementById(string id);
-        IDomElement CreateElement(string nodeName);
-        IDomText CreateTextNode(string text);
-        IDomComment CreateComment(string comment);
-        IDomElement GetElementByTagName(string tagName);
-        List<IDomElement> GetElementsByTagName(string tagName);
-       // void SetOwner(CsQuery owner);
-        int TokenizeString(int startIndex, int length);
-        string GetTokenizedString(int index);
-        char[] SourceHtml { get; }
-    }
-
 
     /// <summary>
     /// Special node type to represent the DOM.
@@ -59,8 +26,8 @@ namespace Jtc.CsQuery
             SourceHtml = html;
         }
 
-        
-        public void AddToIndex(IDomObject element)
+
+        public void AddToIndex(IDomIndexedNode element)
         {
             foreach (string key in element.IndexKeys())
             {
@@ -69,24 +36,27 @@ namespace Jtc.CsQuery
 
             if (element.HasChildren)
             {
-                foreach (DomElement child in element.ChildElements)
+                foreach (DomElement child in ((IDomContainer)element).ChildElements)
                 {
                     AddToIndex(child);
                 }
             }
         }
 
-        public void AddToIndex(string key, IDomObject element)
+        public void AddToIndex(string key, IDomIndexedNode element)
         {
-            SelectorXref.Add(key, element);
+            SelectorXref.Add(key, element.IndexReference);
         }
-        public void RemoveFromIndex(IDomObject element)
+        public void RemoveFromIndex(IDomIndexedNode element)
         {
             if (element.HasChildren)
             {
-                foreach (IDomElement child in element.ChildElements)
+                foreach (IDomElement child in ((IDomContainer)element).ChildElements)
                 {
-                    RemoveFromIndex(child);
+                    if (child.IsIndexed)
+                    {
+                        RemoveFromIndex(child);
+                    }
                 }
             }
 
@@ -138,25 +108,13 @@ namespace Jtc.CsQuery
             protected set;
         }
         private List<Tuple<int,int>> OriginalStrings = new List<Tuple<int,int>>();
-        //private List<string> Strings;
 
-        //public int AddString(string text) {
-        //    if (Strings==null) {
-        //        Strings = new List<string>();
-        //    }
-        //    Strings.Add(text);
-        //    return OriginalStrings.Count + Strings.Count-1;
-        //}
         public virtual string GetTokenizedString(int index)
         {
-
             var range = OriginalStrings[index];
             return SourceHtml.Substring(range.Item1, range.Item2);
         }
-        //internal void SetOriginalString(char[] originalString)
-        //{
-        //    SourceHtml = originalString;
-        //}
+
         public int TokenizeString(int start, int length)
         {
             OriginalStrings.Add(new Tuple<int,int>(start,length));
@@ -308,7 +266,7 @@ namespace Jtc.CsQuery
         }
         public override DomRoot Clone()
         {
-            DomRoot clone = base.Clone();
+            DomRoot clone = new DomRoot();
             clone.SourceHtml = SourceHtml;
             clone.OriginalStrings = OriginalStrings;
 

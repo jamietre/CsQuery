@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jtc.CsQuery.ExtensionMethods;
+using Jtc.CsQuery.Implementation;
 
 namespace Jtc.CsQuery
 {
@@ -100,6 +102,7 @@ namespace Jtc.CsQuery
                 if (first)
                 {
                     Document = el.Document;
+                    first = false;
                 }
                 Selection.Add(el);
             }

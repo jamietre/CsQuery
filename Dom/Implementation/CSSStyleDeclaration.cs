@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -8,86 +10,75 @@ using Jtc.CsQuery.Utility;
 using Jtc.CsQuery.ExtensionMethods;
 using System.Xml;
 
-namespace Jtc.CsQuery
+namespace Jtc.CsQuery.Implementation
 {
-
-
-    public enum CssStyleType
-    {
-        Unit = 1,
-        Option = 2,
-        UnitOption=3,
-        Composite = 4,
-        Color = 5,
-        Font = 6,
-        Url=7,
-        String=8
-    }
-    public interface ICssStyle
-    {
-        string Name { get; set; }
-        CssStyleType Type { get; set; }
-        string Format { get; set; }
-        HashSet<string> Options { get; set; }
-        string Description { get; set; }
-        
-    }
-    public class CssStyle : ICssStyle
-    {
-        public string Name { get; set; }
-        public CssStyleType Type { get; set; }
-        public string Format { get; set; }
-        public string Description { get; set; }
-        public HashSet<string> Options { get; set; }
-
-    }
-    public interface ICSSStyleDeclaration
-    {
-        bool HasStyle(string styleName);
-    }
-
+     
     public class CSSStyleDeclaration : IDictionary<string, string>, IEnumerable<KeyValuePair<string, string>>, ICSSStyleDeclaration
     {
-        public CSSStyleDeclaration()
-        {
-         
-        }
-        
-        protected Dictionary<string, string> _Styles=null;
-        
-        protected Dictionary<string, string> Styles
+
+        /// <summary>
+        /// Warning: Do not attempt to access this value directly to determine whether or not there are styles, since it also
+        /// depends on QuickSetStyles. Use HasStyles method instead.
+        /// </summary>
+        private IDictionary<ushort, string> _Styles;
+
+        protected IDictionary<ushort, string> Styles
         {
             get
             {
                 if (_Styles == null)
                 {
-                    _Styles = new Dictionary<string, string>();
+                    _Styles = new SmallDictionary<ushort, string>();
+                    if (QuickSetValue != null)
+                    {
+                        AddStyle(QuickSetValue, false);
+                        QuickSetValue = null;
+                    }
                 }
                 return _Styles;
             }
         }
+        /// <summary>
+        /// For fast DOM creation - since styles are not indexed or validated.
+        /// If they are ever accessed by style name, they will be parsed on demand.
+        /// </summary>
+        protected string QuickSetValue;
+
         public CSSStyleDeclaration Clone()
         {
             CSSStyleDeclaration clone = new CSSStyleDeclaration();
-            foreach (KeyValuePair<string, string> kvp in Styles)
+
+            if (QuickSetValue != null)
             {
-                clone.Add(kvp.Key, kvp.Value);
+                clone.QuickSetValue = QuickSetValue;
+            }
+            else
+            {
+                foreach (KeyValuePair<ushort, string> kvp in Styles)
+                {
+                    clone.Styles.Add(kvp);
+                }
             }
             return clone;
-
         }
         /// <summary>
-        /// Sets all the styles from a single CSS style sttrin
+        /// Sets all the styles from a single CSS style string. This method is also used during DOM creation.
         /// </summary>
         /// <param name="styles"></param>
         /// <param name="strict"></param>
         public void SetStyles(string styles, bool strict)
         {
+            _Styles = null;
 
-            Styles.Clear();
-            AddStyle(styles, strict);
+            if (!strict)
+            {
+                QuickSetValue = styles;
+            }
+            else
+            {
+                AddStyle(styles, strict);
+            }
         }
-
         public void AddStyle(string styles, bool strict)
         {
             foreach (string style in styles.SplitClean(';'))
@@ -110,38 +101,35 @@ namespace Jtc.CsQuery
                 }
             }
         }
+        protected bool HasStyles
+        {
+            get
+            {
+                return QuickSetValue != null || (_Styles != null && Styles.Count > 0);
+            }
+        }
         public override string ToString()
         {
             string style = String.Empty;
-            foreach (var kvp in Styles)
+            if (HasStyles)
             {
-                style += kvp.Key + ":" + kvp.Value + ";";
+                foreach (var kvp in Styles)
+                {
+                    style += DomData.TokenName(kvp.Key) + ":" + kvp.Value + ";";
+                }
             }
             return style;
         }
-        //public void ClearCache()
-        //{
-        //    Styles.Clear();
-        //    //Cached = false;
-        //}
+
         public bool Remove(string name)
         {
-            return Styles.Remove(name);
+            return Styles.Remove(DomData.TokenID(name,true));
         }
         public void Add(string name, string value)
         {
             this[name] = value;
         }
-        //public CSSStyleDeclaration Clone()
-        //{
-        //    CSSStyleDeclaration clone = new CSSStyleDeclaration();
-        //    clone.Styles = new Dictionary<string, string>();
-        //    foreach (var kvp in Styles)
-        //    {
-        //        clone.Styles[kvp.Key] = kvp.Value;
-        //    }
-        //    return clone;
-        //}
+
         public string this[string name]
         {
             get
@@ -167,12 +155,12 @@ namespace Jtc.CsQuery
         /// <param name="value"></param>
         public void SetRaw(string name, string value)
         {
-            Styles[name.ToLower()] = value;
+            Styles[DomData.TokenID(name,true)] = value;
         }
         protected string Get(string name)
         {
             string value;
-            if (Styles.TryGetValue(name.ToLower(), out value))
+            if (Styles.TryGetValue(DomData.TokenID(name, true), out value))
             {
                 return value;
             }
@@ -189,7 +177,7 @@ namespace Jtc.CsQuery
                 Remove(name);
                 return;
             }
-            //string parsedVal;
+            
             value = value.Trim().Replace(";", String.Empty);
             name = name.Trim();
             CssStyle style = null;
@@ -233,7 +221,7 @@ namespace Jtc.CsQuery
                         break;
                 }
             }
-            Styles[name] = value;
+            SetRaw(name, value);
         }
 
         protected string OptionList(CssStyle style)
@@ -248,7 +236,11 @@ namespace Jtc.CsQuery
                             
         }
 
-        HashSet<char> numberChars = new HashSet<char>("-+0123456789.,");
+        /// <summary>
+        /// Cleans/validates a CSS units string, or throws an error if not possible
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         protected string ValidateUnitString(string value)
         {
             int pos = 0;
@@ -264,7 +256,7 @@ namespace Jtc.CsQuery
             while (pos < len)
             {
                 cur = value[pos];
-                if (!numberChars.Contains(cur)) break;
+                if (!DomData.NumberChars.Contains(cur)) break;
                 outVal.Append(cur);
                 pos++;
             }
@@ -277,7 +269,7 @@ namespace Jtc.CsQuery
             if (remainder != String.Empty)
             {
 
-                if (Units.Contains(remainder))
+                if (DomData.Units.Contains(remainder))
                 {
                     type = remainder;
                 }
@@ -294,36 +286,51 @@ namespace Jtc.CsQuery
             outVal.Append(type);
             return outVal.ToString();
         }
-        protected List<string> Units = new List<string>(new string[] { "%", "in", "cm", "mm", "em", "ex", "pt", "pc", "px" });
+        
 
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
         {
-            return Styles.GetEnumerator();
+            return stylesEnumerable().GetEnumerator();
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        protected IEnumerable<KeyValuePair<string, string>> stylesEnumerable()
+        {
+            foreach (var kvp in Styles)
+            {
+                yield return new KeyValuePair<string,string>(DomData.TokenName(kvp.Key),kvp.Value);
+
+            }
+            yield break;
+        }
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
-
         
         bool IDictionary<string,string>.ContainsKey(string key)
         {
-            return Styles.ContainsKey(key);
+            return Styles.ContainsKey(DomData.TokenID(key,true));
         }
         public bool HasStyle(string styleName)
         {
-            return Styles.ContainsKey(styleName);
+            return Styles.ContainsKey(DomData.TokenID(styleName, true));
         }
 
         public ICollection<string> Keys
         {
-            get { return Styles.Keys; }
+            get {
+                List<string> keys = new List<string>();
+                foreach (var kvp in Styles)
+                {
+                    keys.Add(DomData.TokenName(kvp.Key));
+                }
+                return keys;
+            }
         }
 
         public bool TryGetValue(string key, out string value)
         {
-            return Styles.TryGetValue(key, out value);
+            return Styles.TryGetValue(DomData.TokenID(key,true), out value);
         }
 
         public ICollection<string> Values
@@ -334,22 +341,16 @@ namespace Jtc.CsQuery
 
         public void Clear()
         {
-            Styles.Clear();
+            if (_Styles != null)
+            {
+                Styles.Clear();
+            }
+            QuickSetValue=null;
         }
-
-        //public void CopyTo(KeyValuePair<string, string>[] array, int arrayIndex)
-        //{
-        //    array = new KeyValuePair<string, string>[Styles.Count];
-        //    int index = 0;
-        //    foreach (var kvp in Styles)
-        //    {
-        //        array[index++] = kvp;
-        //    }
-        //}
 
         public int Count
         {
-            get { return Styles.Count; }
+            get { return !HasStyles ? 0 : Styles.Count; }
         }
 
         public bool IsReadOnly
@@ -365,7 +366,7 @@ namespace Jtc.CsQuery
         
         bool ICollection<KeyValuePair<string, string>>.Contains(KeyValuePair<string, string> item)
         {
-            return  Styles.ContainsKey(item.Key) && Styles[item.Key]== item.Value;
+            return Styles.Contains(new KeyValuePair<ushort, string>(DomData.TokenID(item.Key), item.Value));
         }
 
         void ICollection<KeyValuePair<string, string>>.CopyTo(KeyValuePair<string, string>[] array, int arrayIndex)
@@ -374,20 +375,14 @@ namespace Jtc.CsQuery
             int index = 0;
             foreach (var kvp in Styles)
             {
-                array[index++] = kvp;
+                array[index++] = new KeyValuePair<string,string>(DomData.TokenName(kvp.Key),kvp.Value);
             }
         }
 
         bool ICollection<KeyValuePair<string, string>>.Remove(KeyValuePair<string, string> item)
         {
-            if (Styles.ContainsKey(item.Key) && Styles[item.Key] == item.Value)
-            {
-                return Remove(item.Key);
-            }
-            else
-            {
-                return false;
-            }
+            var kvp=new KeyValuePair<ushort,string>(DomData.TokenID(item.Key),item.Value);
+            return Styles.Remove(kvp);
         }
 
         IEnumerator<KeyValuePair<string, string>> IEnumerable<KeyValuePair<string, string>>.GetEnumerator()

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.IO;
+using Jtc.CsQuery.Implementation;
 
 namespace Jtc.CsQuery.Utility
 {

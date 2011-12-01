@@ -2,19 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jtc.CsQuery.ExtensionMethods;
 
-namespace Jtc.CsQuery
+namespace Jtc.CsQuery.Implementation
 {
-    /// <summary>
-    /// Interface for objects that can contain other objects. Note that to allow some consistency with how DOM
-    /// objects are used in the browser DOM, many methods are part of the base IDomObject interface so that they
-    /// can be used (and return null/missing data) on elements to which they don't apply. So in actuality the only 
-    /// unique methods are nonstandard ones.
-    /// </summary>
-    public interface IDomContainer : IDomObject
-    {
-        IEnumerable<IDomObject> CloneChildren();
-    }
+    
 
     /// <summary>
     /// Base class for Dom object that contain other elements
@@ -35,7 +27,7 @@ namespace Jtc.CsQuery
         /// <summary>
         /// Returns all children (including inner HTML as objects);
         /// </summary>
-        public override NodeList ChildNodes
+        public override INodeList ChildNodes
         {
             get
             {
@@ -46,7 +38,7 @@ namespace Jtc.CsQuery
                 return _ChildNodes;
             }
         }
-        protected NodeList _ChildNodes = null;
+        protected NodeList _ChildNodes;
         // Avoids creating children object when testing
         public override bool HasChildren
         {
@@ -175,6 +167,10 @@ namespace Jtc.CsQuery
                 }
             }
             return count;
+        }
+        IDomObject IDomObject.Clone()
+        {
+            return Clone();
         }
     }
 

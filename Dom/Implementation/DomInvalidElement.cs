@@ -3,17 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery
+namespace Jtc.CsQuery.Implementation
 {
-
-    /// <summary>
-    /// Sn element that will be rendered as text because it was determined to be a mismatched tag
-    /// </summary>
-    public interface IDomInvalidElement : IDomText
-    {
-
-    }
-
     public class DomInvalidElement : DomText, IDomInvalidElement
     {
         public DomInvalidElement()

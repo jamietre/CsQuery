@@ -76,7 +76,13 @@ namespace Jtc.CsQuery
                 {
                     if (key.Length > len)
                     {
-                        curDepth = key.Substring(len).OccurrencesOf('/');
+                        {
+#if DEBUG_PATH
+                            curDepth = (key.Length - len) / DomData.pathIdLength;
+#else
+                            curDepth = key.Length - len;
+#endif
+                        }
                     }
                     if (curDepth == depth || (descendants && curDepth >= depth))
                     {

@@ -11,6 +11,7 @@ using System.IO;
 using System.Web.Script.Serialization;
 using Jtc.CsQuery.ExtensionMethods;
 using Jtc.CsQuery.Utility;
+using Jtc.CsQuery.Implementation;
 
 namespace Jtc.CsQuery
 {
@@ -479,7 +480,7 @@ namespace Jtc.CsQuery
         public CsQuery Append(Func<int, string, IEnumerable<IDomElement>> func)
         {
             int index = 0;
-            foreach (DomElement obj in Elements)
+            foreach (IDomElement obj in Elements)
             {
                 IEnumerable<IDomElement> val = func(index, obj.InnerHTML);
                 obj.Csq().Append(val);
@@ -612,7 +613,7 @@ namespace Jtc.CsQuery
                 val = GetValueString(value);
             }
 
-            foreach (DomElement e in Elements)
+            foreach (IDomElement e in Elements)
             {
                 if ((e.NodeName == "input" || e.NodeName == "button") && name == "type"
                     && !e.IsDisconnected)
@@ -700,7 +701,7 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery RemoveAttr(string name)
         {
-            foreach (DomElement e in Elements)
+            foreach (IDomElement e in Elements)
             {
                 switch (name)
                 {
@@ -744,8 +745,7 @@ namespace Jtc.CsQuery
         /// </summary>
         public CsQuery Before(IEnumerable<IDomObject> selection)
         {
-            var source = new CsQuery(selection, this);
-            source.InsertBefore(Selection);
+            EnsureCsQuery(selection).InsertAtOffset(Selection, 0);
             return this;
         }
         /// <summary>
@@ -763,9 +763,9 @@ namespace Jtc.CsQuery
         }
         public CsQuery After(IEnumerable<IDomObject> selection)
         {
-            var source = new CsQuery(selection,this);
-            source.InsertAfter(Selection);
+            EnsureCsQuery(selection).InsertAtOffset(Selection, 1);
             return this;
+            
         }
 
         /// <summary>
@@ -791,6 +791,7 @@ namespace Jtc.CsQuery
                 csq.ReplaceWith(csq.Contents());
 
             }
+            //Order = SelectionSetOrder.Ascending;
             return this;
         }
         public CsQuery Wrap(string wrappingSelector)
@@ -1153,7 +1154,7 @@ namespace Jtc.CsQuery
             }
             if (index >= 0 && index < Length)
             {
-                return new CsQuery(this[index], this);
+                return new CsQuery(Selection[index], this);
             }
             else
             {
@@ -1546,6 +1547,16 @@ namespace Jtc.CsQuery
             }
         }
         /// <summary>
+        /// Reduce the set of matched elements to a subset beginning with the index provided
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public CsQuery Slice(int start)
+        {
+            return Slice(start, Selection.Count);
+        }
+        /// <summary>
         /// Reduce the set of matched elements to a subset specified by a range of indices.
         /// </summary>
         /// <param name="start"></param>
@@ -1553,16 +1564,28 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery Slice(int start, int end)
         {
-            CsQuery output= New();
-            int index=0;
-            var selEnumerator = Selection.GetEnumerator();
-            while (index<end && selEnumerator.MoveNext()) {
-                if (index >= start && index < end)
-                {
-                    output.Selection.Add(selEnumerator.Current);
-                }
-                index++;
+            if (start < 0)
+            {
+                start = Selection.Count + start;
+                if (start < 0) { start = 0; }
             }
+            if (end < 0)
+            {
+                end = Selection.Count + end;
+                if (end < 0) { end = 0; }
+            }
+            if (end >= Selection.Count)
+            {
+                end = Selection.Count - 1;
+            }
+
+            CsQuery output= New();
+            
+            for (int i = start; i < end; i++)
+            {
+                output.Selection.Add(Selection[i]);
+            }
+            
             return output;
         }
 
@@ -1689,18 +1712,19 @@ namespace Jtc.CsQuery
                 Filter(selector).Selection :
                 Selection;
             
-            int index=0;
-            while (index < list.Count && list.Count >= 0)
+            // We need to copy first because selection can change
+            List<IDomObject> removeList = new List<IDomObject>(list);
+            List<bool> disconnected = list.Select(item => item.IsDisconnected).ToList();
+
+            for (int index=0;index<list.Count;index++) 
             {
-                var el = list[index];
-                if (el.IsDisconnected)
+                var el = removeList[index];
+                if (disconnected[index])
                 {
                     list.Remove(el);
                 }
-                else
-                {
+                if (el.ParentNode!=null) {
                     el.Remove();
-                    index++;
                 }
             }
             return this;
@@ -1793,10 +1817,18 @@ namespace Jtc.CsQuery
             if (Length > 0)
             {
                 // Before allows adding of new content to an empty selector. To ensure consistency with jQuery
-                // implentation, do not do this if called on an empty selector.
+                // implentation, do not do this if called on an empty selector. 
+
+                // The logic here is tricky because we can do a replace on disconnected selection sets. This has to
+                // track what was orignally scheduled for removal in case the set changes in "Before" b/c it's disconnected.
 
                 CsQuery newContent = EnsureCsQuery(mergeContent(content));
-                return Before(newContent).Remove();
+                CsQuery replacing = new CsQuery(this);
+                
+                Before(newContent);
+                Selection.ExceptWith(replacing);
+                replacing.Remove();                
+                return this;
             }
             else
             {

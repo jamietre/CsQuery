@@ -4,18 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Web;
 
-namespace Jtc.CsQuery
+namespace Jtc.CsQuery.Implementation
 {
-    /// <summary>
-    /// Defines an interface for elements whose defintion (not innerhtml) contain non-tag or attribute formed data
-    /// </summary>
-
-    public interface IDomText : IDomObject
-    {
-        
-    }
-
-
     /// <summary>
     /// Used for literal text (not part of a tag)
     /// </summary>
@@ -83,7 +73,7 @@ namespace Jtc.CsQuery
         }
         public override DomText Clone()
         {
-            DomText domText = base.Clone();
+            DomText domText = new DomText();
             domText.textIndex = textIndex;
             domText.unboundText = unboundText;
             domText.stringRef = stringRef;

@@ -4,16 +4,8 @@ using System.Linq;
 using System.Text;
 using Jtc.CsQuery.ExtensionMethods;
 
-namespace Jtc.CsQuery
+namespace Jtc.CsQuery.Implementation
 {
-
-
-    public interface IDomFragment : IDomRoot
-    {
-
-    }
-
-
     /// <summary>
     /// Special node type to represent the DOM.
     /// </summary>

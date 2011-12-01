@@ -5,41 +5,21 @@ using System.Text;
 using System.Diagnostics;
 using Jtc.CsQuery.ExtensionMethods;
 
-namespace Jtc.CsQuery
+namespace Jtc.CsQuery.Implementation
 {
 
-    /// <summary>
-    /// A visual element
-    /// </summary>
-    public interface IDomElement : IDomContainer
-    {
-        IEnumerable<string> Classes { get; }
-
-        bool HasClass(string className);
-        bool AddClass(string className);
-        bool RemoveClass(string className);
-        void AddStyle(string styleString);
-        bool RemoveStyle(string name);
-        bool IsBlock { get; }
-
-        string this[string attribute] { get; set; }
-
-        string ElementHtml();
-
-        void Reindex();
-    }
-  
     /// <summary>
     /// HTML elements
     /// </summary>
     public class DomElement : DomContainer<DomElement>, IDomElement
     {
-        //private const string needsQuoting = " '\"";
-        
-        protected DomAttributes _Attributes = null;
-        protected CSSStyleDeclaration _Style = null;
-        protected List<short> _Classes = null;
+        #region private fields
+        protected DomAttributes _Attributes;
+        protected CSSStyleDeclaration _Style;
+        protected List<ushort> _Classes;
+        #endregion
 
+        #region constructors
         public DomElement()
         {
 
@@ -49,25 +29,53 @@ namespace Jtc.CsQuery
         {
             NodeName = tag;
         }
-       
-        public void Reindex()
+        #endregion
+        #region public properties
+        public override CSSStyleDeclaration Style
         {
-            _PathID = null;
-            _Index = -1;
+            get
+            {
+                if (_Style == null)
+                {
+                    _Style = new CSSStyleDeclaration();
+                    //if (_Attributes != null) {
+                    //    setAttributesCallbacks();
+                    //}
+                }
+                return _Style;
+            }
+            protected set
+            {
+                _Style = value;
+            }
         }
-        //public DomElement(string tag,CsQuery owner)
-        //{
-        //    NodeName = tag;
-        //    _Owner = owner;
-        //}
+        public override DomAttributes Attributes
+        {
+            get
+            {
+                if (_Attributes == null)
+                {
+                    _Attributes = new DomAttributes(this);
+                }
+                return _Attributes;
+            }
+            protected set
+            {
+                _Attributes = value;
+            }
+        }
+
         public override NodeType NodeType
         {
             get { return NodeType.ELEMENT_NODE; }
         }
-      
-        /// <summary>
-        /// Assigning parent node should not be done e
-        /// </summary>
+        public override bool IsIndexed
+        {
+            get
+            {
+                return true;
+            }
+        }
         public override IDomContainer ParentNode
         {
             get
@@ -79,6 +87,66 @@ namespace Jtc.CsQuery
                 base.ParentNode = value;
             }
         }
+
+        public override bool HasAttributes
+        {
+            get
+            {
+                return _Attributes != null && _Attributes.HasAttributes;
+            }
+        }
+
+        public override bool HasStyles
+        {
+            get
+            {
+                return _Style != null && _Style.Count > 0;
+            }
+        }
+
+        public override bool HasClasses
+        {
+            get
+            {
+                return _Classes != null && _Classes.Count > 0;
+            }
+        }
+
+        public IDomObject IndexReference
+        {
+            get
+            {
+                return this;
+            }
+        }
+
+
+        /// <summary>
+        /// Returns the value of the named attribute
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public string this[string attribute]
+        {
+            get
+            {
+                return GetAttribute(attribute);
+            }
+            set
+            {
+                SetAttribute(attribute, value);
+            }
+        }
+        #endregion
+        #region public methods
+        public void Reindex()
+        {
+            _PathID = null;
+            _Index = 0;
+        }
+       
+
+
         public override string PathID
         {
             get
@@ -90,115 +158,83 @@ namespace Jtc.CsQuery
                 return _PathID;
             }
         }
-        protected string IndexKey(string key)
+        internal string IndexKey(string prefix, ushort keyTokenId)
         {
-            return IndexKey(key, Path);
+            return IndexKey(prefix, keyTokenId, Path);
         }
-        protected string IndexKey(string key, string path)
+        internal string IndexKey(string prefix, string key)
         {
-            return key + ">" + path;
+            return IndexKey(prefix, key, Path);
         }
-        public override IEnumerable<string> IndexKeys()
+        internal string IndexKey(string prefix, string key, string path)
         {
-            //if (!Complete)
-            //{
-            //    throw new Exception("This element is incomplete and cannot be added to a DOM.");
-            //}
-            // Add just the element to the index no matter what so we can query on subsets
+#if DEBUG_PATH
+            return prefix + key + DomData.indexSeparator + path;
+#else
+            return IndexKey(prefix,DomData.TokenID(key),path);
+#endif
+        }
+        internal string IndexKey(string prefix, ushort keyTokenId, string path)
+        {
+#if DEBUG_PATH
+            return prefix + DomData.TokenName(keyTokenId) + DomData.indexSeparator + path;
+#else
+            return prefix +(char)keyTokenId + DomData.indexSeparator +path;
+#endif
+        }
+
+        public IEnumerable<string> IndexKeys()
+        {
             string path = Path;
-            yield return IndexKey(String.Empty, path);
-            yield return IndexKey(NodeName, path);
+            yield return ""+DomData.indexSeparator+path;
+            yield return IndexKey("+",nodeNameID, path);
             string id = ID;
             if (!String.IsNullOrEmpty(id))
             {
-                yield return IndexKey("#" + id, path);
+                yield return IndexKey("#" ,DomData.TokenID(id), path);
             }
-
-            foreach (string cls in Classes)
+            if (HasClasses)
             {
-                yield return IndexKey("." + cls, path);
+                foreach (ushort clsId in _Classes)
+                {
+                    yield return IndexKey(".", clsId, path);
+                }
             }
-
-            //todo -add attributes?
+            if (HasAttributes)
+            {
+                foreach (ushort attrId in Attributes.GetAttributeIds())
+                {
+                    yield return IndexKey("!", attrId, path);
+                }
+            }
         }
-        //internal void AddToIndex()
-        //{
-        //    //if (Document != null)
-        //    //{
-        //    DomRoot document = (DomRoot)Document;
-        //        foreach (string key in IndexKeys())
-        //        {
-        //            document.SelectorXref.Add(key, this);
-        //        }
-
-        //        if (_ChildNodes != null)
-        //        {
-        //            foreach (DomElement child in ChildElements)
-        //            {
-        //                child.AddToIndex();
-        //            }
-        //        }
-
-        //    //}
-           
-        //}
-        //internal void RemoveFromIndex()
-        //{
-        //    //if (Document != null)
-        //    //{
-        //        if (_ChildNodes != null)
-        //        {
-        //            foreach (DomElement child in ChildElements)
-        //            {
-        //                child.RemoveFromIndex();
-        //            }
-        //        }
-
-        //        foreach (string key in IndexKeys())
-        //        {
-        //            Document.SelectorXref.Remove(key);
-        //        }
-        //        _PathID = null;
-        //        _Index = -1;
-        //    //}
-        //}
-
-
-        /// <summary>
-        /// Creates a deep clone of this
-        /// </summary>
-        /// <returns></returns>
+       
         public override DomElement Clone()
         {
-            return CloneImpl(base.Clone());
+            var clone = new DomElement();
+            clone.nodeNameID = nodeNameID;
 
-        }
-
-
-        protected DomElement CloneImpl(DomElement e)
-        {
-            e.nodeNameID = nodeNameID;
-
-            if (_Attributes != null)
+            if (HasAttributes)
             {
-                e.Attributes = Attributes.Clone(this);
+                clone.Attributes = Attributes.Clone(this);
             }
-            if (_Classes != null)
+            if (HasClasses)
             {
-                e._Classes = new List<short>(_Classes);
+                clone._Classes = new List<ushort>(_Classes);
             }
-            if (_Style != null)
+            if (HasStyles)
             {
-                e.Style = Style.Clone();
+                clone.Style = Style.Clone();
             }
-            // will not create ChildNotes list object unless results are returned (don't use AddRange)
+            // will not create ChildNodes lazy object unless results are returned (this is why we don't use AddRange)
             foreach (IDomObject child in CloneChildren())
             {
-                e.ChildNodes.Add(child);
+                clone.ChildNodes.Add(child);
             }
 
-            return e;
+            return clone;
         }
+
         public override IEnumerable<IDomObject> CloneChildren()
         {
             if (_ChildNodes!=null)
@@ -211,33 +247,16 @@ namespace Jtc.CsQuery
             yield break;
         }
 
-        public IEnumerable<string> Classes
+        public bool HasStyle(string name)
         {
-            get
-            {
-                if (_Classes !=  null)
-                {
-                    foreach (short clsid in _Classes)
-                    {
-                        yield return DomData.TokenName(clsid);
-                    }
-                }
-                yield break;
-            }
+            return HasStyles &&
+                Style.HasStyle(name);
         }
-        protected bool HasClasses
-        {
-            get
-            {
-                return _Classes != null && _Classes.Count > 0;
-            }
-        }
-
 
         public bool HasClass(string name)
         {
             return HasClasses 
-                && _Classes.Contains(DomData.TokenID(name,false));
+                && _Classes.Contains(DomData.TokenID(name));
         }
         public bool AddClass(string name)
         {
@@ -248,12 +267,13 @@ namespace Jtc.CsQuery
                 {
                     if (_Classes == null)
                     {
-                        _Classes = new List<short>();
+                        _Classes = new List<ushort>();
                     }
-                    _Classes.Add(DomData.TokenID(cls, false));
+                    ushort tokenId = DomData.TokenID(cls);
+                    _Classes.Add(tokenId);
                     if (!IsDisconnected)
                     {
-                        Document.AddToIndex(IndexKey("." + cls), this);
+                        Document.AddToIndex(IndexKey(".",tokenId), this);
                     }
                     
                     result = true;
@@ -268,10 +288,11 @@ namespace Jtc.CsQuery
             {
                 if (HasClass(cls))
                 {
-                    _Classes.Remove(DomData.TokenID(cls, false));
+                    ushort tokenId = DomData.TokenID(cls);
+                    _Classes.Remove(tokenId);
                     if (!IsDisconnected)
                     {
-                        Document.RemoveFromIndex(IndexKey("." + cls));
+                        Document.RemoveFromIndex(IndexKey(".",tokenId));
                     }
 
                     result = true;
@@ -296,7 +317,7 @@ namespace Jtc.CsQuery
         {
             return _Style != null ? Style.Remove(name) : false;
         }
-        protected bool HasAttribute(short nodeId)
+        protected bool HasAttribute(ushort nodeId)
         {
             string value;
             return _Attributes != null 
@@ -316,16 +337,12 @@ namespace Jtc.CsQuery
         {
             Style.SetStyles(styles, strict);
         }
-        /// <summary>
-        /// Set the value of an attribute to "value." 
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
+
         public override void SetAttribute(string name, string value)
         {
-            SetAttribute(DomData.TokenID(name), value);
+            Attributes[name] = value;
         }
-        protected void SetAttribute(short tokenId, string value)
+        protected void SetAttribute(ushort tokenId, string value)
         {
             if (tokenId == DomData.ClassAttrId)
             {
@@ -344,7 +361,7 @@ namespace Jtc.CsQuery
         {
             SetAttribute(name, String.Empty);
         }
-        public void SetAttribute(short tokenId)
+        public void SetAttribute(ushort tokenId)
         {
             SetAttribute(tokenId, String.Empty);
         }
@@ -354,7 +371,7 @@ namespace Jtc.CsQuery
             {
                 return false;
             }
-            short tokenId = DomData.TokenID(name);
+            ushort tokenId = DomData.TokenID(name,true);
             if (tokenId == DomData.ClassAttrId)
             {
                 _Classes = null;
@@ -382,9 +399,9 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public override string GetAttribute(string name, string defaultValue)
         {
-            return GetAttribute(DomData.TokenID(name),defaultValue);
+            return GetAttribute(DomData.TokenID(name,true),defaultValue);
         }
-        protected string GetAttribute(short tokenId, string defaultValue)
+        protected string GetAttribute(ushort tokenId, string defaultValue)
         {
             string value = null;
             if (tokenId == DomData.ClassAttrId)
@@ -402,7 +419,7 @@ namespace Jtc.CsQuery
                 return defaultValue;
             }
         }
-        public bool TryGetAttribute(short tokenId, out string value)
+        public bool TryGetAttribute(ushort tokenId, out string value)
         {
             //value = GetNonDictionaryAttribute(name);
             //bool result = (GetNonDictionaryAttribute(name) != null) 
@@ -424,63 +441,18 @@ namespace Jtc.CsQuery
         }
         public override bool TryGetAttribute(string name, out string value)
         {
-            return TryGetAttribute(DomData.TokenID(name), out value);
+            return TryGetAttribute(DomData.TokenID(name,true), out value);
         }
 
-        public override CSSStyleDeclaration Style
+       
+        public IEnumerable<string> Classes
         {
             get
             {
-                if (_Style == null)
+                foreach (var id in _Classes)
                 {
-                    _Style = new CSSStyleDeclaration();
-                    if (_Attributes != null) {
-                        setAttributesCallbacks();
-                    }
+                    yield return DomData.TokenName(id);
                 }
-                return _Style;
-            }
-            protected set
-            {
-                _Style = value;
-                if (_Attributes != null)
-                {
-                    setAttributesCallbacks();
-                }
-            }
-        }
-        // hooks for CSSStyleDeclaration
-        protected string getStyle()
-        {
-            return _Style == null ?
-                null :
-                Style.ToString(); 
-        }
-        protected void setStyle(string style)
-        {
-            Style.SetStyles(style, false);
-        }
-        protected void setAttributesCallbacks()
-        {
-            _Attributes.SetStyle = setStyle;
-            _Attributes.SetClass = setClassName;
-        }
-        
-        public override DomAttributes Attributes
-        {
-            get
-            {
-                if (_Attributes == null)
-                {
-                    _Attributes = new DomAttributes(this);
-                    setAttributesCallbacks();
-                }
-                return _Attributes;
-            }
-            protected set
-            {
-                _Attributes = value;
-                setAttributesCallbacks();
             }
         }
 
@@ -491,7 +463,7 @@ namespace Jtc.CsQuery
                 if (HasClasses)
                 {
                     string className = "";
-                    foreach (short clsId in _Classes)
+                    foreach (ushort clsId in _Classes)
                     {
                         className += (className == "" ? "" : " ") + DomData.TokenName(clsId);
                     }
@@ -513,7 +485,7 @@ namespace Jtc.CsQuery
                 if (string.IsNullOrEmpty(className)) {
                     _Classes=null;
                 } else {
-                    _Classes = new List<short>();
+                    _Classes = new List<ushort>();
                     foreach (var cls in className.SplitClean(' '))
                     {
                         AddClass(cls);
@@ -533,15 +505,14 @@ namespace Jtc.CsQuery
             }
             set
             {
-                if (nodeNameID<0) 
+                if (nodeNameID<1) 
                 {
-                    nodeNameID = DomData.TokenID(value);
+                    nodeNameID = DomData.TokenID(value,true);
                 }
                 else
                 {
                     throw new Exception("You can't change the tag of an element once it has been created.");
                 }
-                
             }
         }
         public override string DefaultValue
@@ -583,15 +554,14 @@ namespace Jtc.CsQuery
             }
             set
             {
-                string id = Attributes[DomData.IDAttrId];
-                if (!String.IsNullOrEmpty(id) && !IsDisconnected)
+                if (Attributes.ContainsKey(DomData.IDAttrId) && !IsDisconnected)
                 {
-                        Document.RemoveFromIndex(IndexKey("#" + id));
+                        Document.RemoveFromIndex(IndexKey("#",Attributes[DomData.IDAttrId]));
                 }
-                Attributes[DomData.IDAttrId] = value;
+                Attributes.SetRaw(DomData.IDAttrId,value);
                 if (!IsDisconnected)
                 {
-                    Document.AddToIndex(IndexKey("#" + value), this);
+                    Document.AddToIndex(IndexKey("#",value), this);
                 }
             }
         }
@@ -610,22 +580,8 @@ namespace Jtc.CsQuery
                 SetAttribute(DomData.ValueAttrId, value);
             }
         }
-        /// <summary>
-        /// Returns the value of the named attribute
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public string this[string attribute]
-        {
-            get
-            {
-                return GetAttribute(attribute);
-            }
-            set
-            {
-                SetAttribute(attribute, value);
-            }
-        }
+        #endregion
+        
 
         /// <summary>
         /// Returns text of the inner HTML. When setting, any children will be removed.

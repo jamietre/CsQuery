@@ -131,7 +131,7 @@ namespace CsqueryTests.Csharp
         public void Styles()
         {
             var styleDefs = HtmlDom.StyleDefs;
-            CssStyle style = styleDefs["padding-left"];
+            ICssStyle style = styleDefs["padding-left"];
             Assert.AreEqual(CssStyleType.Unit | CssStyleType.Option ,style.Type,  "Padding style is correct type");
             
             style = styleDefs["word-wrap"];

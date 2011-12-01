@@ -44,6 +44,10 @@ namespace Jtc.CsQuery
                 {
                     Document = value.Document;
                 }
+                else
+                {
+                    Document = null;
+                }
             }
         }
         protected void Clear()
@@ -336,7 +340,8 @@ namespace Jtc.CsQuery
             }
             return depth;
         }
-        
+
+
         /// <summary>
         /// Insert every element in the selection at or after the index of each target (adding offset to the index).
         /// If there is more than one target, the a clone is made of the selection for the 2nd and later targets.

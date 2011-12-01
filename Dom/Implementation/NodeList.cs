@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery
+namespace Jtc.CsQuery.Implementation
 {
-    public class NodeList: IList<IDomObject>, ICollection<IDomObject>, IEnumerable<IDomObject> 
+    public class NodeList: INodeList
     {
         public NodeList(IDomContainer owner)
         {
@@ -29,9 +29,9 @@ namespace Jtc.CsQuery
         {
             if (element.ParentNode != null)
             {
-                if (!element.IsDisconnected)
+                if (!element.IsDisconnected && element is IDomIndexedNode)
                 {
-                    element.Document.RemoveFromIndex(element);
+                    element.Document.RemoveFromIndex((IDomIndexedNode)element);
                 }
                 ((DomObject)element).ParentNode = null;
             }
@@ -43,9 +43,9 @@ namespace Jtc.CsQuery
             DomObject item = (DomObject)element;
             item.ParentNode = Owner;
             item.Index = index;
-            if (element.NodeType == NodeType.ELEMENT_NODE && !element.IsDisconnected)
+            if (element is IDomIndexedNode && !element.IsDisconnected)
             {
-                element.Document.AddToIndex(element);
+                element.Document.AddToIndex((IDomIndexedNode)element);
             }
         }
         #region IList<T> Members
@@ -68,7 +68,6 @@ namespace Jtc.CsQuery
             //emoveParent(item);
             InnerList.Add(item);
             AddParent(item, InnerList.Count - 1);
-
         }
         /// <summary>
         /// Adds a child element at a specific index

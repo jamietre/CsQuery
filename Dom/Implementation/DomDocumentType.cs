@@ -3,19 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery
+namespace Jtc.CsQuery.Implementation
 {
-    public enum DocType
-    {
-        HTML5 = 1,
-        HTML4 = 2,
-        XHTML = 3,
-        Unknown = 4
-    }
-
-    public interface IDomDocumentType : IDomSpecialElement
-    {
-    }
 
     /// <summary>
     /// A special type for the DOCTYPE node
@@ -53,7 +42,6 @@ namespace Jtc.CsQuery
             set
             {
                 _DocType = value;
-                Document.DocType = value;
             }
         }
         protected DocType _DocType = 0;
@@ -114,10 +102,7 @@ namespace Jtc.CsQuery
             }
         }
 
-        public override bool Complete
-        {
-            get { return true; }
-        }
+
         public override bool InnerHtmlAllowed
         {
             get { return false; }
@@ -126,10 +111,7 @@ namespace Jtc.CsQuery
         {
             get { return false; }
         }
-        public override string ToString()
-        {
-            return Render();
-        }
+
         #region IDomSpecialElement Members
 
         public string Text
@@ -145,8 +127,9 @@ namespace Jtc.CsQuery
         }
         public override DomDocumentType Clone()
         {
-            DomDocumentType clone = base.Clone();
+            DomDocumentType clone = new DomDocumentType();
             clone.NonAttributeData = NonAttributeData;
+            clone.DocType = DocType;
             return clone;
         }
 

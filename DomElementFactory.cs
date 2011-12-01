@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Jtc.CsQuery.ExtensionMethods;
 using System.Diagnostics;
+using Jtc.CsQuery.Implementation;
 
 namespace Jtc.CsQuery
 {
@@ -421,6 +422,7 @@ namespace Jtc.CsQuery
                         }
                     }
                     // Catchall for unclosed tags -- if there's an "unfinished" carrier here, it's because  top-level tag was unclosed.
+                    // THis will wrap up any straggling text and close any open tags after it.
                     if (!current.Finished)
                     {
                         if (current.Pos > current.HtmlStart)
@@ -444,17 +446,6 @@ namespace Jtc.CsQuery
                        
                     }
                 }
-                /// Check for any straggling text - typically the case for non-dom-bound data.
-                //if (!current.Finished && current.Pos > current.HtmlStart)
-                //{
-                //    IDomObject literal = GetLiteral(current);
-                //    if (literal != null)
-                //    {
-                //        yield return literal;
-                //    }
-                //}
-
-                //yield return current.Element;
                 pos = current.Pos;
             }
 
@@ -469,7 +460,7 @@ namespace Jtc.CsQuery
         {
             // There's plain text -return it as a literal.
             
-            IDomObject textObj = null;
+            IDomObject textObj;
             DomText lit;
             if (current.Invalid) {
                 lit = new DomInvalidElement();
@@ -481,7 +472,7 @@ namespace Jtc.CsQuery
             } else {
                 lit = new DomText();
             }
-            //lit.Text = text;
+            
             if (isBound)
             {
                 lit.SetTextIndex(Document, Document.TokenizeString(current.HtmlStart, current.Pos - current.HtmlStart));
@@ -489,7 +480,6 @@ namespace Jtc.CsQuery
             else
             {
                 string text = BaseHtml.SubstringBetween(current.HtmlStart, current.Pos);
-                // Only decode when it's being actually assigned (as by a client). 
                 lit.NodeValue = Objects.HtmlDecode(text);
             }
              
@@ -557,7 +547,7 @@ namespace Jtc.CsQuery
             bool finished = false;
             int step = 0;
             int nameStart = 0;
-            string name = String.Empty;
+            string name=null;
             char c;
             while (!finished && current.Pos <= EndPos)
             {
@@ -592,7 +582,7 @@ namespace Jtc.CsQuery
                         break;
                 }
             }
-            return name;
+            return name ?? "";
         }
         /// <summary>
         /// Start: Position inside a tag opening construct

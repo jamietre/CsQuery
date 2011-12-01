@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery
+namespace Jtc.CsQuery.Implementation
 {
-    public interface IDomComment : IDomSpecialElement
-    {
-        bool IsQuoted { get; set; }
-    }
+    
     public class DomComment : DomObject<DomComment>, IDomComment
     {
         public DomComment()
@@ -89,12 +86,13 @@ namespace Jtc.CsQuery
         }
         public override DomComment Clone()
         {
-            DomComment clone = base.Clone();
+            DomComment clone = new DomComment();
             clone.NonAttributeData = NonAttributeData;
+            clone.IsQuoted = IsQuoted;
             return clone;
-
         }
-
+    
+        
         #endregion
     }
 }

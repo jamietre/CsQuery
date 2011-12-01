@@ -46,7 +46,7 @@ namespace CsqueryTests.Csharp
         {
             int spanCount = 0;
             CsQuery res = Dom.Find("span");
-            foreach (DomElement obj in res)
+            foreach (IDomElement obj in res)
             {
                 spanCount++;
             }
@@ -73,9 +73,9 @@ namespace CsqueryTests.Csharp
         [Test,TestMethod]
         public void CheckboxSelector()
         {
-            List<DomElement> foundDetails = new List<DomElement>();
+            List<IDomElement> foundDetails = new List<IDomElement>();
             CsQuery res = Dom.Find("input:checkbox");
-            foreach (DomElement obj in res)
+            foreach (IDomElement obj in res)
             {
                 foundDetails.Add(obj);
             }
