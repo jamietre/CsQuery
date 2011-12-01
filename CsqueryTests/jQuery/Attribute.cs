@@ -462,12 +462,14 @@ namespace CsqueryTests.jQuery
             Assert.AreEqual(jQuery("#divWithNoTabIndex").Attr("tabindex"), null, "not natively tabbable, no tabindex set");
 
             // anchor with href
-            // TODO? Apparently 0 should be returned for this? Changeed to null
-            // Assert.AreEqual(jQuery("#linkWithNoTabIndex").Attr("tabindex"), "0", "anchor with href, no tabindex set");
+            // TODO? Apparently 0 should be returned for tabindex property? Why? Changed to test for null instead
+            //Assert.AreEqual(jQuery("#linkWithNoTabIndex").Attr("tabindex"), "0", "anchor with href, no tabindex set");
+            Assert.AreEqual(jQuery("#linkWithNoTabIndex").Attr("tabindex"), null, "anchor with href, no tabindex set");
             Assert.AreEqual(jQuery("#linkWithTabIndex").Attr("tabindex"), "2", "anchor with href, tabindex set to 2");
             Assert.AreEqual(jQuery("#linkWithNegativeTabIndex").Attr("tabindex"), "-1", "anchor with href, tabindex set to -1");
 
             // anchor without href
+           // Assert.AreEqual(jQuery("#linkWithNoHrefWithNoTabIndex").Attr("tabindex"), "0", "anchor without href, no tabindex set");
             Assert.AreEqual(jQuery("#linkWithNoHrefWithNoTabIndex").Attr("tabindex"), null, "anchor without href, no tabindex set");
             Assert.AreEqual(jQuery("#linkWithNoHrefWithTabIndex").Attr("tabindex"), "1", "anchor without href, tabindex set to 2");
             Assert.AreEqual(jQuery("#linkWithNoHrefWithNegativeTabIndex").Attr("tabindex"), "-1", "anchor without href, no tabindex set");
@@ -539,7 +541,7 @@ namespace CsqueryTests.jQuery
             Assert.AreEqual(document.GetElementById("text1").ReadOnly, true, "Check setting readOnly property with 'readonly'");
             //Assert.AreEqual(jQuery("#label-for").Prop("for"), "action", "Check retrieving htmlFor" );
             jQuery("#text1").Prop("class", "test");
-            Assert.AreEqual(document.GetElementById("text1").ClassName, "test", "Check setting className with 'class'");
+            Assert.AreEqual(document.GetElementById("text1").ClassName, "test", "Check setting ClassName with 'class'");
 
             // Using ATTR  instead: we don't retrieve props
             Assert.AreEqual(jQuery("#text1").AttrInt("maxlength"), 30, "Check retriieving maxLength");
@@ -599,27 +601,28 @@ namespace CsqueryTests.jQuery
             //});
             //jQuery( document ).removeProp("nonexisting");
         }
+        [Test,TestMethod]
+        public void RemoveProp()
+        {
+            //var attributeNode = document.CreateAttribute("irrelevant");
+            //var commentNode = document.CreateComment("some comment");
+            //var textNode = document.CreateTextNode("some text");
 
-        ////test("removeProp(String)", function() {
-        ////    expect(6);
-        ////    var attributeNode = document.createAttribute("irrelevant"),
-        ////        commentNode = document.createComment("some comment"),
-        ////        textNode = document.createTextNode("some text"),
-        ////        obj = {};
+            Assert.AreEqual( jQuery( "#firstp" ).Prop( "nonexisting", "foo" ).RemoveProp( "nonexisting" )[0].GetAttribute("nonexisting"), null, "removeprop works correctly on DOM element nodes" );
 
-        ////    strictEqual( jQuery( "#firstp" ).Prop( "nonexisting", "foo" ).removeProp( "nonexisting" )[0].nonexisting, undefined, "removeprop works correctly on DOM element nodes" );
+            // this is not relevant in C#
+            //Dom.Each(Objects.ToEnumerable<IDomObject>(document, obj), ( i, ele )=> {
+            //    var _ele = jQuery( ele );
+            //    _ele.Prop( "nonexisting", "foo" ).RemoveProp( "nonexisting" );
+            //    Assert.ReferenceEquals( _ele["nonexisting"], null, "removeProp works correctly on non DOM element nodes (bug #7500)." );
+            //});
 
-        ////    jQuery.each( [document, obj], function( i, ele ) {
-        ////        var $ele = jQuery( ele );
-        ////        $ele.prop( "nonexisting", "foo" ).removeProp( "nonexisting" );
-        ////        strictEqual( ele.nonexisting, undefined, "removeProp works correctly on non DOM element nodes (bug #7500)." );
-        ////    });
-        ////    jQuery.each( [commentNode, textNode, attributeNode], function( i, ele ) {
-        ////        var $ele = jQuery( ele );
-        ////        $ele.prop( "nonexisting", "foo" ).removeProp( "nonexisting" );
-        ////        strictEqual( ele.nonexisting, undefined, "removeProp works correctly on non DOM element nodes (bug #7500)." );
-        ////    });
-        ////});
+            //jQuery.each( [commentNode, textNode, attributeNode], function( i, ele ) {
+            //    var $ele = jQuery( ele );
+            //    $ele.prop( "nonexisting", "foo" ).removeProp( "nonexisting" );
+            //    strictEqual( ele.nonexisting, undefined, "removeProp works correctly on non DOM element nodes (bug #7500)." );
+            //});
+        }
 
         [Test, TestMethod]
         public void Val()
@@ -865,7 +868,7 @@ namespace CsqueryTests.jQuery
             // using contents will get regular, text, and comment nodes
             var j = jQuery("#nonnodes").Contents();
             j.AddClass((string)valueObj("asdf"));
-            Assert.DoesNotThrow(() => { j.AddClass("asdf"); }, "Check node,textnode,comment for addClass");
+            Assert.DoesNotThrow(() => { j.AddClass("asdf"); }, "Check node,textnode,comment for AddClass");
 
             div = jQuery("<div/>");
 
@@ -926,21 +929,21 @@ namespace CsqueryTests.jQuery
 
             // Make sure that a null value doesn't cause problems
             divs.Eq(0).AddClass("test").RemoveClass((string)valueObj(null));
-            Assert.IsTrue(divs.Eq(0).Is(".test"), "Null value passed to removeClass");
+            Assert.IsTrue(divs.Eq(0).Is(".test"), "Null value passed to RemoveClass");
 
             divs.Eq(0).AddClass("test").RemoveClass((string)valueObj(""));
-            Assert.IsTrue(divs.Eq(0).Is(".test"), "Empty string passed to removeClass");
+            Assert.IsTrue(divs.Eq(0).Is(".test"), "Empty string passed to RemoveClass");
 
             // using contents will get regular, text, and comment nodes
             var j = jQuery("#nonnodes").Contents();
             j.RemoveClass((string)valueObj("asdf"));
-            Assert.IsTrue(!j.HasClass("asdf"), "Check node,textnode,comment for removeClass");
+            Assert.IsTrue(!j.HasClass("asdf"), "Check node,textnode,comment for RemoveClass");
 
             var div = document.CreateElement("div");
             div.ClassName = " test foo ";
 
             jQuery(div).RemoveClass((string)valueObj("foo"));
-            Assert.AreEqual(div.ClassName, "test", "Make sure remaining className is trimmed.");
+            Assert.AreEqual(div.ClassName, "test", "Make sure remaining ClassName is trimmed.");
 
             div.ClassName = " test ";
 
@@ -958,21 +961,21 @@ namespace CsqueryTests.jQuery
         //    TestRemoveClass(functionReturningObj);
         //}
 
-        ////test("removeClass(Function) with incoming value", function() {
+        ////test("RemoveClass(Function) with incoming value", function() {
         ////    expect(45);
 
-        ////    var $divs = jQuery("div").addClass("test"), old = $divs.map(function(){
+        ////    var $divs = jQuery("div").AddClass("test"), old = $divs.map(function(){
         ////        return jQuery(this).Attr("class");
         ////    });
 
-        ////    $divs.removeClass(function(i, val) {
+        ////    $divs.RemoveClass(function(i, val) {
         ////        if ( this.id !== "_firebugConsole" ) {
         ////            equals( val, old[i], "Make sure the incoming value is correct." );
         ////            return "test";
         ////        }
         ////    });
 
-        ////   Assert.IsTrue( !$divs.is(".test"), "Remove Class" );
+        ////   Assert.IsTrue( !$divs.Is(".test"), "Remove Class" );
 
         ////    QUnit.reset();
         ////});
@@ -1005,12 +1008,12 @@ namespace CsqueryTests.jQuery
 
             // // ToggleClass storage
             // e.ToggleClass(true);
-            //Assert.IsTrue( e[0].className === "", "Assert class is empty (data was empty)" );
+            //Assert.IsTrue( e[0].ClassName === "", "Assert class is empty (data was empty)" );
             // e.ToggleClass("testD testE");
             //Assert.IsTrue( e.Is(".testD.testE"), "Assert class present" );
             // e.ToggleClass();
             //Assert.IsTrue( !e.Is(".testD.testE"), "Assert class not present" );
-            //Assert.IsTrue( jQuery._data(e[0], "__className__") === "testD testE", "Assert data was stored" );
+            //Assert.IsTrue( jQuery._data(e[0], "__ClassName__") === "testD testE", "Assert data was stored" );
             // e.ToggleClass();
             //Assert.IsTrue( e.Is(".testD.testE"), "Assert class present (restored from data)" );
             // e.ToggleClass(false);
@@ -1024,7 +1027,7 @@ namespace CsqueryTests.jQuery
 
             // Cleanup
             e.RemoveClass("testD");
-            //jQuery.removeData(e[0], "__className__", true);
+            //jQuery.removeData(e[0], "__ClassName__", true);
         }
         [Test, TestMethod]
         public void ToggleClass()
@@ -1037,13 +1040,13 @@ namespace CsqueryTests.jQuery
         ////    expect(14);
 
         ////    var e = jQuery("#firstp"), old = e.Attr("class") || "";
-        ////   Assert.IsTrue( !e.is(".test"), "Assert class not present" );
+        ////   Assert.IsTrue( !e.Is(".test"), "Assert class not present" );
 
         ////    e.toggleClass(function(i, val) {
         ////        equals( val, old, "Make sure the incoming value is correct." );
         ////        return "test";
         ////    });
-        ////   Assert.IsTrue( e.is(".test"), "Assert class present" );
+        ////   Assert.IsTrue( e.Is(".test"), "Assert class present" );
 
         ////    old = e.Attr("class");
 
@@ -1051,7 +1054,7 @@ namespace CsqueryTests.jQuery
         ////        equals( val, old, "Make sure the incoming value is correct." );
         ////        return "test";
         ////    });
-        ////   Assert.IsTrue( !e.is(".test"), "Assert class not present" );
+        ////   Assert.IsTrue( !e.Is(".test"), "Assert class not present" );
 
         ////    old = e.Attr("class");
 
@@ -1061,7 +1064,7 @@ namespace CsqueryTests.jQuery
         ////        equals( state, false, "Make sure that the state is passed in." );
         ////        return "test";
         ////    }, false );
-        ////   Assert.IsTrue( !e.is(".test"), "Assert class not present" );
+        ////   Assert.IsTrue( !e.Is(".test"), "Assert class not present" );
 
         ////    old = e.Attr("class");
 
@@ -1070,7 +1073,7 @@ namespace CsqueryTests.jQuery
         ////        equals( state, true, "Make sure that the state is passed in." );
         ////        return "test";
         ////    }, true );
-        ////   Assert.IsTrue( e.is(".test"), "Assert class present" );
+        ////   Assert.IsTrue( e.Is(".test"), "Assert class present" );
 
         ////    old = e.Attr("class");
 
@@ -1079,53 +1082,50 @@ namespace CsqueryTests.jQuery
         ////        equals( state, false, "Make sure that the state is passed in." );
         ////        return "test";
         ////    }, false );
-        ////   Assert.IsTrue( !e.is(".test"), "Assert class not present" );
+        ////   Assert.IsTrue( !e.Is(".test"), "Assert class not present" );
 
         ////    // Cleanup
-        ////    e.removeClass("test");
-        ////    jQuery.removeData(e[0], "__className__", true);
+        ////    e.RemoveClass("test");
+        ////    jQuery.removeData(e[0], "__ClassName__", true);
         ////});
+        [Test,TestMethod]
+        public void AddClassRemoveClassHasClass() {
+            var jq = jQuery("<p>Hi</p>");
+            var x = jq[0];
 
-        ////test("addClass, removeClass, hasClass", function() {
-        ////    expect(17);
+            jq.AddClass("hi");
+            Assert.AreEqual(x.ClassName, "hi", "Check single added class" );
 
-        ////    var jq = jQuery("<p>Hi</p>"), x = jq[0];
+            jq.AddClass("foo bar");
+            Assert.AreEqual(x.ClassName, "hi foo bar", "Check more added classes" );
 
-        ////    jq.addClass("hi");
-        //Assert.AreEqual(x.className, "hi", "Check single added class" );
+            jq.RemoveClass();
+            Assert.AreEqual(x.ClassName, "", "Remove all classes" );
 
-        ////    jq.addClass("foo bar");
-        //Assert.AreEqual(x.className, "hi foo bar", "Check more added classes" );
+            jq.AddClass("hi foo bar");
+            jq.RemoveClass("foo");
+            Assert.AreEqual(x.ClassName, "hi bar", "Check removal of one class" );
 
-        ////    jq.removeClass();
-        //Assert.AreEqual(x.className, "", "Remove all classes" );
+            Assert.IsTrue( jq.HasClass("hi"), "Check has1" );
+            Assert.IsTrue( jq.HasClass("bar"), "Check has2" );
 
-        ////    jq.addClass("hi foo bar");
-        ////    jq.removeClass("foo");
-        //Assert.AreEqual(x.className, "hi bar", "Check removal of one class" );
+            jq = jQuery("<p class='class1\nclass2\tcla.ss3\n\rclass4'></p>");
+            Assert.IsTrue( jq.HasClass("class1"), "Check HasClass with line feed" );
+            Assert.IsTrue( jq.Is(".class1"), "Check is with line feed" );
+            Assert.IsTrue( jq.HasClass("class2"), "Check HasClass with tab" );
+            Assert.IsTrue( jq.Is(".class2"), "Check is with tab" );
+            Assert.IsTrue( jq.HasClass("cla.ss3"), "Check HasClass with dot" );
+            Assert.IsTrue( jq.HasClass("class4"), "Check HasClass with carriage return" );
+            Assert.IsTrue( jq.Is(".class4"), "Check is with carriage return" );
 
-        ////   Assert.IsTrue( jq.hasClass("hi"), "Check has1" );
-        ////   Assert.IsTrue( jq.hasClass("bar"), "Check has2" );
-
-        ////    var jq = jQuery("<p class='class1\nclass2\tcla.ss3\n\rclass4'></p>");
-        ////   Assert.IsTrue( jq.hasClass("class1"), "Check hasClass with line feed" );
-        ////   Assert.IsTrue( jq.is(".class1"), "Check is with line feed" );
-        ////   Assert.IsTrue( jq.hasClass("class2"), "Check hasClass with tab" );
-        ////   Assert.IsTrue( jq.is(".class2"), "Check is with tab" );
-        ////   Assert.IsTrue( jq.hasClass("cla.ss3"), "Check hasClass with dot" );
-        ////   Assert.IsTrue( jq.hasClass("class4"), "Check hasClass with carriage return" );
-        ////   Assert.IsTrue( jq.is(".class4"), "Check is with carriage return" );
-
-        ////    jq.removeClass("class2");
-        ////   Assert.IsTrue( jq.hasClass("class2")==false, "Check the class has been properly removed" );
-        ////    jq.removeClass("cla");
-        ////   Assert.IsTrue( jq.hasClass("cla.ss3"), "Check the dotted class has not been removed" );
-        ////    jq.removeClass("cla.ss3");
-        ////   Assert.IsTrue( jq.hasClass("cla.ss3")==false, "Check the dotted class has been removed" );
-        ////    jq.removeClass("class4");
-        ////   Assert.IsTrue( jq.hasClass("class4")==false, "Check the class has been properly removed" );
-        ////});
-        //}
-        
+            jq.RemoveClass("class2");
+            Assert.IsTrue( jq.HasClass("class2")==false, "Check the class has been properly removed" );
+            jq.RemoveClass("cla");
+            Assert.IsTrue( jq.HasClass("cla.ss3"), "Check the dotted class has not been removed" );
+            jq.RemoveClass("cla.ss3");
+            Assert.IsTrue( jq.HasClass("cla.ss3")==false, "Check the dotted class has been removed" );
+            jq.RemoveClass("class4");
+            Assert.IsTrue( jq.HasClass("class4")==false, "Check the class has been properly removed" );
+        }
     }
 }

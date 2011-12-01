@@ -316,7 +316,7 @@ namespace CsqueryTests.jQuery
 
 
 //test("not(Function)", function() {
-//    Assert.AreEqual(jQuery("#qunit-fixture p").not(function() { return jQuery("a", this).Length }).Get(), q("sndp", "first"), "not(Function)" );
+//    Assert.AreEqual(jQuery("#qunit-fixture p").Not(function() { return jQuery("a", this).Length }).Get(), q("sndp", "first"), "not(Function)" );
 //});
 
         [Test, TestMethod]
@@ -329,7 +329,7 @@ namespace CsqueryTests.jQuery
 //test("not(jQuery)", function() {
 //    expect(1);
 
-//    Assert.AreEqual(jQuery("p").not(jQuery("#ap, #sndp, .result")).Get(), q("firstp", "en", "sap", "first"), "not(jQuery)" );
+//    Assert.AreEqual(jQuery("p").Not(jQuery("#ap, #sndp, .result")).Get(), q("firstp", "en", "sap", "first"), "not(jQuery)" );
 //});
         [Test, TestMethod]
         public void HasElement()
@@ -414,22 +414,22 @@ namespace CsqueryTests.jQuery
             Assert.AreEqual(jQuery("#en, #sndp").Parents().Get(), q("foo", "qunit-fixture", "dl", "body", "html"), "Check for unique results from parents" );
 
         }
+        [Test, TestMethod]
+        public void ParentsUntil()
+        {
+            var parents = jQuery("#groups").Parents();
+            Assert.AreEqual(jQuery("#groups").ParentsUntil().Get(), parents.Get(), "parentsUntil with no selector (nextAll)" );
+            Assert.AreEqual(jQuery("#groups").ParentsUntil(".foo").Get(), parents.Get(), "parentsUntil with invalid selector (nextAll)" );
+            Assert.AreEqual(jQuery("#groups").ParentsUntil("#html").Get(), parents.Not(":last").Get(), "Simple parentsUntil check" );
+            Assert.AreEqual(jQuery("#groups").ParentsUntil("#ap").Length, 0, "Simple parentsUntil check" );
+            Assert.AreEqual(jQuery("#groups").ParentsUntil("#html, #body").Get(), parents.Slice( 0, 3 ).Get(), "Less simple parentsUntil check" );
+            Assert.AreEqual(jQuery("#groups").ParentsUntil("#html", "div").Get(), jQuery("#qunit-fixture").Get(), "Filtered parentsUntil check" );
+            Assert.AreEqual(jQuery("#groups").ParentsUntil("#html", "p,div,dl").Get(), parents.Slice( 0, 3 ).Get(), "Multiple-filtered parentsUntil check" );
+            Assert.AreEqual(jQuery("#groups").ParentsUntil("#html", "span").Length, 0, "Filtered parentsUntil check, no match" );
+            Assert.AreEqual(jQuery("#groups, #ap").ParentsUntil("#html", "p,div,dl").Get(), parents.Slice( 0, 3 ).Get(), "Multi-source, multiple-filtered parentsUntil check" );
+        
+        }
 
-//test("parentsUntil([String])", function() {
-//    expect(9);
-
-//    var parents = jQuery("#groups").parents();
-
-//    Assert.AreEqual(jQuery("#groups").parentsUntil().Get(), parents.Get(), "parentsUntil with no selector (nextAll)" );
-//    Assert.AreEqual(jQuery("#groups").parentsUntil(".foo").Get(), parents.Get(), "parentsUntil with invalid selector (nextAll)" );
-//    Assert.AreEqual(jQuery("#groups").parentsUntil("#html").Get(), parents.not(":last").Get(), "Simple parentsUntil check" );
-//    Assert.AreEqual(jQuery("#groups").parentsUntil("#ap").Length, 0, "Simple parentsUntil check" );
-//    Assert.AreEqual(jQuery("#groups").parentsUntil("#html, #body").Get(), parents.slice( 0, 3 ).Get(), "Less simple parentsUntil check" );
-//    Assert.AreEqual(jQuery("#groups").parentsUntil("#html", "div").Get(), jQuery("#qunit-fixture").Get(), "Filtered parentsUntil check" );
-//    Assert.AreEqual(jQuery("#groups").parentsUntil("#html", "p,div,dl").Get(), parents.slice( 0, 3 ).Get(), "Multiple-filtered parentsUntil check" );
-//    Assert.AreEqual(jQuery("#groups").parentsUntil("#html", "span").Length, 0, "Filtered parentsUntil check, no match" );
-//    Assert.AreEqual(jQuery("#groups, #ap").parentsUntil("#html", "p,div,dl").Get(), parents.slice( 0, 3 ).Get(), "Multi-source, multiple-filtered parentsUntil check" );
-//});
         [Test, TestMethod]
         public void Next()
         {
@@ -447,65 +447,66 @@ namespace CsqueryTests.jQuery
             Assert.AreEqual(jQuery("#foo").Prev("div").Length, 0, "Filtered prev check, no match");
             Assert.AreEqual(jQuery("#foo").Prev("p, div")[0].ID, "ap", "Multiple filters");
         }
+        [Test, TestMethod]
+        public void NextAll()
+        {
+            var elems = jQuery("#form").Children();
 
+            Assert.AreEqual(jQuery("#label-for").NextAll().Get(), elems.Not(":first").Get(), "Simple nextAll check");
+            Assert.AreEqual(jQuery("#label-for").NextAll("input").Get(), elems.Not(":first").Filter("input").Get(), "Filtered nextAll check");
+            Assert.AreEqual(jQuery("#label-for").NextAll("input,select").Get(), elems.Not(":first").Filter("input,select").Get(), "Multiple-filtered nextAll check");
+            Assert.AreEqual(jQuery("#label-for, #hidden1").NextAll("input,select").Get(), elems.Not(":first").Filter("input,select").Get(), "Multi-source, multiple-filtered nextAll check");
 
-//test("nextAll([String])", function() {
-//    expect(4);
+        }
+        [Test, TestMethod]
+        public void PrevAll()
+        {
+            var elems = jQuery(jQuery("#form").Children().Slice(0, 12).Get().Reverse());
 
-//    var elems = jQuery("#form").children();
+            Assert.AreEqual(jQuery("#area1").PrevAll().Get(), elems.Get(), "Simple prevAll check");
+            Assert.AreEqual(jQuery("#area1").PrevAll("input").Get(), elems.Filter("input").Get(), "Filtered prevAll check");
+            Assert.AreEqual(jQuery("#area1").PrevAll("input,select").Get(), elems.Filter("input,select").Get(), "Multiple-filtered prevAll check");
+            Assert.AreEqual(jQuery("#area1, #hidden1").PrevAll("input,select").Get(), elems.Filter("input,select").Get(), "Multi-source, multiple-filtered prevAll check");
 
-//    Assert.AreEqual(jQuery("#label-for").nextAll().Get(), elems.not(":first").Get(), "Simple nextAll check" );
-//    Assert.AreEqual(jQuery("#label-for").nextAll("input").Get(), elems.not(":first").filter("input").Get(), "Filtered nextAll check" );
-//    Assert.AreEqual(jQuery("#label-for").nextAll("input,select").Get(), elems.not(":first").filter("input,select").Get(), "Multiple-filtered nextAll check" );
-//    Assert.AreEqual(jQuery("#label-for, #hidden1").nextAll("input,select").Get(), elems.not(":first").filter("input,select").Get(), "Multi-source, multiple-filtered nextAll check" );
-//});
+        }
+        [Test, TestMethod]
+        public void NextUntil()
+        {
 
-//test("prevAll([String])", function() {
-//    expect(4);
+            var elems = jQuery("#form").Children().Slice(2, 12);
 
-//    var elems = jQuery( jQuery("#form").children().slice(0, 12).Get().reverse() );
+            Assert.AreEqual(jQuery("#text1").NextUntil().Get(), jQuery("#text1").NextAll().Get(), "NextUntil with no selector (nextAll)");
+            Assert.AreEqual(jQuery("#text1").NextUntil(".foo").Get(), jQuery("#text1").NextAll().Get(), "NextUntil with invalid selector (nextAll)");
+            Assert.AreEqual(jQuery("#text1").NextUntil("#area1").Get(), elems.Get(), "Simple NextUntil check");
+            Assert.AreEqual(jQuery("#text1").NextUntil("#text2").Length, 0, "Simple NextUntil check");
+            Assert.AreEqual(jQuery("#text1").NextUntil("#area1, #radio1").Get(), jQuery("#text1").Next().Get(), "Less simple NextUntil check");
+            Assert.AreEqual(jQuery("#text1").NextUntil("#area1", "input").Get(), elems.Not("button").Get(), "Filtered NextUntil check");
+            Assert.AreEqual(jQuery("#text1").NextUntil("#area1", "button").Get(), elems.Not("input").Get(), "Filtered NextUntil check");
+            Assert.AreEqual(jQuery("#text1").NextUntil("#area1", "button,input").Get(), elems.Get(), "Multiple-filtered NextUntil check");
+            Assert.AreEqual(jQuery("#text1").NextUntil("#area1", "div").Length, 0, "Filtered NextUntil check, no match");
+            Assert.AreEqual(jQuery("#text1, #hidden1").NextUntil("#area1", "button,input").Get(), elems.Get(), "Multi-source, multiple-filtered NextUntil check");
 
-//    Assert.AreEqual(jQuery("#area1").prevAll().Get(), elems.Get(), "Simple prevAll check" );
-//    Assert.AreEqual(jQuery("#area1").prevAll("input").Get(), elems.filter("input").Get(), "Filtered prevAll check" );
-//    Assert.AreEqual(jQuery("#area1").prevAll("input,select").Get(), elems.filter("input,select").Get(), "Multiple-filtered prevAll check" );
-//    Assert.AreEqual(jQuery("#area1, #hidden1").prevAll("input,select").Get(), elems.filter("input,select").Get(), "Multi-source, multiple-filtered prevAll check" );
-//});
+            Assert.AreEqual(jQuery("#text1").NextUntil("[class=foo]").Get(), jQuery("#text1").NextAll().Get(), "Non-element nodes must be skipped, since they have no attributes");
 
-//test("nextUntil([String])", function() {
-//    expect(11);
+        }
+       
+        [Test, TestMethod]
+        public void PrevUntil()
+        {
+            var elems = jQuery("#area1").PrevAll();
 
-//    var elems = jQuery("#form").children().slice( 2, 12 );
+            Assert.AreEqual(jQuery("#area1").PrevUntil().Get(), elems.Get(), "prevUntil with no selector (prevAll)");
+            Assert.AreEqual(jQuery("#area1").PrevUntil(".foo").Get(), elems.Get(), "prevUntil with invalid selector (prevAll)");
+            Assert.AreEqual(jQuery("#area1").PrevUntil("label").Get(), elems.Not(":last").Get(), "Simple prevUntil check");
+            Assert.AreEqual(jQuery("#area1").PrevUntil("#button").Length, 0, "Simple prevUntil check");
+            Assert.AreEqual(jQuery("#area1").PrevUntil("label, #search").Get(), jQuery("#area1").Prev().Get(), "Less simple prevUntil check");
+            Assert.AreEqual(jQuery("#area1").PrevUntil("label", "input").Get(), elems.Not(":last").Not("button").Get(), "Filtered prevUntil check");
+            Assert.AreEqual(jQuery("#area1").PrevUntil("label", "button").Get(), elems.Not(":last").Not("input").Get(), "Filtered prevUntil check");
+            Assert.AreEqual(jQuery("#area1").PrevUntil("label", "button,input").Get(), elems.Not(":last").Get(), "Multiple-filtered prevUntil check");
+            Assert.AreEqual(jQuery("#area1").PrevUntil("label", "div").Length, 0, "Filtered prevUntil check, no match");
+            Assert.AreEqual(jQuery("#area1, #hidden1").PrevUntil("label", "button,input").Get(), elems.Not(":last").Get(), "Multi-source, multiple-filtered prevUntil check");
 
-//    Assert.AreEqual(jQuery("#text1").nextUntil().Get(), jQuery("#text1").nextAll().Get(), "nextUntil with no selector (nextAll)" );
-//    Assert.AreEqual(jQuery("#text1").nextUntil(".foo").Get(), jQuery("#text1").nextAll().Get(), "nextUntil with invalid selector (nextAll)" );
-//    Assert.AreEqual(jQuery("#text1").nextUntil("#area1").Get(), elems.Get(), "Simple nextUntil check" );
-//    Assert.AreEqual(jQuery("#text1").nextUntil("#text2").Length, 0, "Simple nextUntil check" );
-//    Assert.AreEqual(jQuery("#text1").nextUntil("#area1, #radio1").Get(), jQuery("#text1").next().Get(), "Less simple nextUntil check" );
-//    Assert.AreEqual(jQuery("#text1").nextUntil("#area1", "input").Get(), elems.not("button").Get(), "Filtered nextUntil check" );
-//    Assert.AreEqual(jQuery("#text1").nextUntil("#area1", "button").Get(), elems.not("input").Get(), "Filtered nextUntil check" );
-//    Assert.AreEqual(jQuery("#text1").nextUntil("#area1", "button,input").Get(), elems.Get(), "Multiple-filtered nextUntil check" );
-//    Assert.AreEqual(jQuery("#text1").nextUntil("#area1", "div").Length, 0, "Filtered nextUntil check, no match" );
-//    Assert.AreEqual(jQuery("#text1, #hidden1").nextUntil("#area1", "button,input").Get(), elems.Get(), "Multi-source, multiple-filtered nextUntil check" );
-
-//    Assert.AreEqual(jQuery("#text1").nextUntil("[class=foo]").Get(), jQuery("#text1").nextAll().Get(), "Non-element nodes must be skipped, since they have no attributes" );
-//});
-
-//test("prevUntil([String])", function() {
-//    expect(10);
-
-//    var elems = jQuery("#area1").prevAll();
-
-//    Assert.AreEqual(jQuery("#area1").prevUntil().Get(), elems.Get(), "prevUntil with no selector (prevAll)" );
-//    Assert.AreEqual(jQuery("#area1").prevUntil(".foo").Get(), elems.Get(), "prevUntil with invalid selector (prevAll)" );
-//    Assert.AreEqual(jQuery("#area1").prevUntil("label").Get(), elems.not(":last").Get(), "Simple prevUntil check" );
-//    Assert.AreEqual(jQuery("#area1").prevUntil("#button").Length, 0, "Simple prevUntil check" );
-//    Assert.AreEqual(jQuery("#area1").prevUntil("label, #search").Get(), jQuery("#area1").prev().Get(), "Less simple prevUntil check" );
-//    Assert.AreEqual(jQuery("#area1").prevUntil("label", "input").Get(), elems.not(":last").not("button").Get(), "Filtered prevUntil check" );
-//    Assert.AreEqual(jQuery("#area1").prevUntil("label", "button").Get(), elems.not(":last").not("input").Get(), "Filtered prevUntil check" );
-//    Assert.AreEqual(jQuery("#area1").prevUntil("label", "button,input").Get(), elems.not(":last").Get(), "Multiple-filtered prevUntil check" );
-//    Assert.AreEqual(jQuery("#area1").prevUntil("label", "div").Length, 0, "Filtered prevUntil check, no match" );
-//    Assert.AreEqual(jQuery("#area1, #hidden1").prevUntil("label", "button,input").Get(), elems.not(":last").Get(), "Multi-source, multiple-filtered prevUntil check" );
-//});
+        }
 
         [Test, TestMethod]
         public void Contents()
@@ -515,13 +516,13 @@ namespace CsqueryTests.jQuery
             Assert.IsTrue( jQuery("#iframe").Length>0, "Check existence of IFrame document" );
 
             jQuery("#loadediframe").Append(@"<html>
-      <head>
-        <title>iframe</title>
-      </head>
-      <body>
-        <div><span>span text</span></div>
-      </body>
-    </html>");
+              <head>
+                <title>iframe</title>
+              </head>
+              <body>
+                <div><span>span text</span></div>
+              </body>
+            </html>");
             
             var ibody = jQuery("#loadediframe").Contents().Find("body");
             Assert.IsTrue( ibody.Length>0, "Check existance of IFrame body" );
@@ -572,14 +573,17 @@ namespace CsqueryTests.jQuery
             // use jQuery([]).Add(form.elements) instead.
             //Assert.AreEqual(jQuery([]).Add(jQuery("#form")[0].elements).Length, jQuery(jQuery("#form")[0].elements).Length, "Array in constructor must equals array in add()" );
 
-            //TODO: Disconnected nodes are not going to be ordered correctly within a selection set. To maintain order added to
-            // a selection set we need to create some way of tracking order added within the SelectionSet class.
+            //TODO: It would be nice to have a ParentNode exist & be typed to 11 for disconnected nodes. However this creates some complexity
+            //b/c we still need to keep the nodes conceptually bound to another domain. I think that we may want a special "disconnected" heirarchy
+            //within and IDomRoot. For now just compare to null instead.
 
             var divs = jQuery("<div/>").Add("#sndp");
             //Assert.IsTrue( (int)divs[0].ParentNode.NodeType ==11, "Make sure the first element is still the disconnected node." );
+            Assert.IsTrue(divs[0].ParentNode==null, "Make sure the first element is still the disconnected node.");
 
             divs = jQuery("<div>test</div>").Add("#sndp");
             //Assert.AreEqual((int)divs[0].ParentNode.NodeType, 11, "Make sure the first element is still the disconnected node." );
+            Assert.AreEqual(divs[0].ParentNode,  null, "Make sure the first element is still the disconnected node.");
 
             divs = jQuery("#sndp").Add("<div/>");
             Assert.IsTrue(divs[1].ParentNode==null, "Make sure the first element is still the disconnected node." );
@@ -608,17 +612,19 @@ namespace CsqueryTests.jQuery
             Assert.AreEqual(CsQuery.Create().Add( document.GetElementById("form") ).Length, 1, "Add a form" );
             Assert.AreEqual(CsQuery.Create().Add( document.GetElementById("select1") ).Length, 1, "Add a select" );
         }
-//test("add(String, Context)", function() {
-//    expect(6);
-	
-//    deepEqual( jQuery( "#firstp" ).Add( "#ap" ).Get(), q( "firstp", "ap" ), "Add selector to selector " );
-//    deepEqual( jQuery( document.getElementById("firstp") ).Add( "#ap" ).Get(), q( "firstp", "ap" ), "Add gEBId to selector" );
-//    deepEqual( jQuery( document.getElementById("firstp") ).Add( document.getElementById("ap") ).Get(), q( "firstp", "ap" ), "Add gEBId to gEBId" );
+        [Test, TestMethod]
+        public void AddWithContext()
+        {
+            Assert.AreEqual(jQuery("#firstp").Add("#ap").Get(), q("firstp", "ap"), "Add selector to selector ");
+            Assert.AreEqual(jQuery(document.GetElementById("firstp")).Add("#ap").Get(), q("firstp", "ap"), "Add gEBId to selector");
+            Assert.AreEqual(jQuery(document.GetElementById("firstp")).Add(document.GetElementById("ap")).Get(), q("firstp", "ap"), "Add gEBId to gEBId");
 
-//    var ctx = document.getElementById("firstp");
-//    deepEqual( jQuery( "#firstp" ).Add( "#ap", ctx ).Get(), q( "firstp" ), "Add selector to selector " );
-//    deepEqual( jQuery( document.getElementById("firstp") ).Add( "#ap", ctx ).Get(), q( "firstp" ), "Add gEBId to selector, not in context" );
-//    deepEqual( jQuery( document.getElementById("firstp") ).Add( "#ap", document.getElementsByTagName("body")[0] ).Get(), q( "firstp", "ap" ), "Add gEBId to selector, in context" );
+            var ctx = document.GetElementById("firstp");
+            Assert.AreEqual(jQuery("#firstp").Add("#ap", ctx).Get(), q("firstp"), "Add selector to selector ");
+            Assert.AreEqual(jQuery(document.GetElementById("firstp")).Add("#ap", ctx).Get(), q("firstp"), "Add gEBId to selector, not in context");
+            Assert.AreEqual(jQuery(document.GetElementById("firstp")).Add("#ap", document.GetElementsByTagName("body")[0]).Get(), q("firstp", "ap"), "Add gEBId to selector, in context");
+
+        }
 
     }
 }

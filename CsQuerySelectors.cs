@@ -9,8 +9,6 @@ namespace Jtc.CsQuery
 {
     public class CsQuerySelectors : IEnumerable<CsQuerySelector>
     { 
-        protected int CurrentPos = 0;
-
         public string Selector
         {
             get
@@ -306,6 +304,18 @@ namespace Jtc.CsQuery
                         Current.SelectorType = SelectorType.Tag;
                         scanner.Prev();
                         Current.Tag = scanner.Seek();
+                        // When nothing was retrieved and it's the start of a selector, treat as text. Otherwise ignore the rest
+                        // Quit either way
+                        if (Current.Tag == "")
+                        {
+                            if (scanner.Pos == 0)
+                            {
+                                Current.Html = sel;
+                                Current.SelectorType = SelectorType.HTML;
+                                //Current.AllowHtmlTextNodes = true;
+                            }
+                            scanner.End();
+                        }
                         break;
                 }
             }
@@ -381,32 +391,34 @@ namespace Jtc.CsQuery
             }
         }
         protected IDomRoot Document { get; set; }
-        public IEnumerable<IDomObject> Select(IDomRoot root)
-        {
-
-            return Select(root, null);
-        }
-
         public IEnumerable<IDomObject> Is(IDomRoot root, IDomObject element)
         {
             List<IDomObject> list = new List<IDomObject>();
             list.Add(element);
             return Select(root, list);
         }
+        public IEnumerable<IDomObject> Select(IDomRoot document)
+        {
+            return Select(document, (IEnumerable<IDomObject>)null);
+        }
+        public IEnumerable<IDomObject> Select(IDomRoot document, IDomObject context)
+        {
+            return Select(document, Objects.Enumerate(context));
+        }
         /// <summary>
         /// Select from DOM using index. First non-class/tag/id selector will result in this being passed off to GetMatches
         /// </summary>
-        /// <param name="root"></param>
+        /// <param name="document"></param>
         /// <returns></returns>
-        public IEnumerable<IDomObject> Select(IDomRoot root, IEnumerable<IDomObject> selectWithin)
+        public IEnumerable<IDomObject> Select(IDomRoot document, IEnumerable<IDomObject> context)
         {
-            Document = root;
+            Document = document;
             IEnumerable<IDomObject> lastResult = null;
             HashSet<IDomObject> output = new HashSet<IDomObject>();
-            IEnumerable<IDomObject> selectionSource = selectWithin;
+            IEnumerable<IDomObject> selectionSource = context;
             // This is a bit of a hack, but ensures that fragments get selected manually. We need a way to have a separate index still bound to the 
             // main DOM ideally so fragments can have indexes
-            bool useIndex = selectWithin.IsNullOrEmpty() || !selectWithin.First().IsDisconnected;
+            bool useIndex = context.IsNullOrEmpty() || !context.First().IsDisconnected;
 
             for (int selIndex = 0; selIndex < Selectors.Count; selIndex++)
             {
@@ -424,7 +436,7 @@ namespace Jtc.CsQuery
                             //selectionSource = lastChained;
                             break;
                         case CombinatorType.Root:
-                            selectionSource= selectWithin;
+                            selectionSource = context;
                             if (lastResult != null)
                             {
                                 output.AddRange(lastResult);
@@ -485,14 +497,14 @@ namespace Jtc.CsQuery
 
                     if (selectionSource == null)
                     {
-                        interimResult = root.QueryIndex(key + ">", depth, descendants);
+                        interimResult = document.QueryIndex(key + ">", depth, descendants);
                     }
                     else
                     {
                         interimResult = new HashSet<IDomObject>();
                         foreach (IDomObject obj in selectionSource)
                         {
-                            ((HashSet<IDomObject>)interimResult).AddRange(root.QueryIndex(key + ">" + obj.Path,depth,descendants));
+                            ((HashSet<IDomObject>)interimResult).AddRange(document.QueryIndex(key + ">" + obj.Path,depth,descendants));
                         }
                     }
                 }
@@ -506,7 +518,7 @@ namespace Jtc.CsQuery
                     foreach (IDomObject obj in selectionSource)
                     {
                         key = ">"+obj.Path;
-                        HashSet<IDomObject> srcKeys = new HashSet<IDomObject>(root.QueryIndex(key));
+                        HashSet<IDomObject> srcKeys = new HashSet<IDomObject>(document.QueryIndex(key));
                         foreach (IDomObject match in selector.SelectElements)
                         {
                             if (srcKeys.Contains(match)) {
@@ -523,7 +535,7 @@ namespace Jtc.CsQuery
                         ?? selectionSource;
                         
                     // if there are no temporary results (b/c there was no indexed selector) then use the whole set
-                    interimResult = GetMatch(root.ChildElements, finalSelectWithin, selector);
+                    interimResult = GetMatch(document.ChildElements, finalSelectWithin, selector);
                     
                 }
                 // there must be a better way to do this! Need to adjust the selector engine logic to be able to return something other than what it's looking it.
@@ -547,7 +559,7 @@ namespace Jtc.CsQuery
                             List<IDomObject> listOfOne = new List<IDomObject>();
                             listOfOne.Add(obj);
 
-                            match &= !sub.Select(root, listOfOne).IsNullOrEmpty();
+                            match &= !sub.Select(document, listOfOne).IsNullOrEmpty();
                         }
                         if (match) 
                         {
@@ -708,7 +720,7 @@ namespace Jtc.CsQuery
             {
                 DomElementFactory factory = new DomElementFactory(Document);
 
-                foreach (var obj in factory.CreateElements(selector.Html))
+                foreach (var obj in factory.CreateObjects(selector.Html))
                 {
                     yield return obj;
                 }

@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Csharp\Clone.cs" />
+    <Compile Include="Csharp\DomElementFactory.cs" />
     <Compile Include="Csharp\Objects.cs" />
     <Compile Include="Csharp\MovingElements.cs" />
     <Compile Include="jQuery\Attribute.cs" />

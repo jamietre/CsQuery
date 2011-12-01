@@ -33,7 +33,7 @@ namespace Jtc.CsQuery
         IDomRoot Document { get; }
         string Render();
         void Render(StringBuilder sb);
-
+        void Render(StringBuilder sb, DomRenderingOptions options);
         void Remove();
         IDomObject Clone();
         
@@ -50,7 +50,9 @@ namespace Jtc.CsQuery
         string Value { get; set; }
 
         string NodeName { get; set; }
+        string TagName { get; }
         string NodeValue { get; set; }
+        string DefaultValue { get; set; }
         IEnumerable<IDomElement> ChildElements { get; }
         NodeList ChildNodes { get; }
         IDomObject FirstChild { get; }
@@ -61,6 +63,8 @@ namespace Jtc.CsQuery
         IDomElement PreviousElementSibling { get; }
         void AppendChild(IDomObject element);
         void RemoveChild(IDomObject element);
+        void InsertBefore(IDomObject newNode, IDomObject referenceNode);
+        void InsertAfter(IDomObject newNode, IDomObject referenceNode);
 
         void SetAttribute(string name);
         void SetAttribute(string name, string value);
@@ -79,6 +83,7 @@ namespace Jtc.CsQuery
         bool InnerTextAllowed { get; }
         bool Complete { get; }
         int DescendantCount();
+        int Depth {get;}
 
         int Index { get; }
         string PathID { get; }
@@ -159,11 +164,21 @@ namespace Jtc.CsQuery
         } 
         protected string _PathID = null;
 
-
+        public virtual int Depth
+        {
+            get
+            {
+                return ParentNode.Depth + 1;
+            }
+        }
         public virtual IDomRoot Document
         {
             get
             {
+                //if (ParentNode != null && ParentNode.Document == ParentNode)
+                //{
+                //    throw new Exception("Recursion detected.");
+                //}
                 return ParentNode == null ? null : ParentNode.Document;
             }
         }
@@ -257,7 +272,16 @@ namespace Jtc.CsQuery
                 _PathID = null;
             }
         }
-
+        public virtual string DefaultValue 
+        {
+            get {
+                return null;
+            }
+        
+            set {
+                throw new Exception("DefaultValue is not valid for this node type");
+            }
+        }
         /// <summary>
         /// The full path to this node. This is calculated by requesting the parent path and adding its own ID.
         /// </summary>
@@ -343,6 +367,13 @@ namespace Jtc.CsQuery
                 throw new Exception("You can't change the node name.");
             }
         }
+        public virtual string TagName
+        {
+            get
+            {
+                return NodeName;
+            }
+        }
         protected short nodeNameID = -1;
 
         public virtual string NodeValue
@@ -385,6 +416,10 @@ namespace Jtc.CsQuery
         public abstract bool Complete { get; }
         public abstract string Render();
         public virtual void Render(StringBuilder sb)
+        {
+            sb.Append(Render());
+        }
+        public virtual void Render(StringBuilder sb, DomRenderingOptions options)
         {
             sb.Append(Render());
         }
@@ -434,7 +469,14 @@ namespace Jtc.CsQuery
         {
             throw new Exception("This type of element does not have children.");
         }
-
+        public virtual void InsertBefore(IDomObject newNode, IDomObject referenceNode)
+        {
+            throw new Exception("This type of element does not have children.");
+        }
+        public virtual void InsertAfter(IDomObject newNode, IDomObject referenceNode)
+        {
+            throw new Exception("This type of element does not have children.");
+        }
 
         public virtual void SetAttribute(string name)
         {

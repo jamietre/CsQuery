@@ -543,9 +543,38 @@ namespace Jtc.CsQuery
                 }
                 
             }
-        } 
-        
-
+        }
+        public override string DefaultValue
+        {
+            get
+            {
+                return hasDefaultValue() ?
+                    (NodeName=="textarea" ? InnerText : Attributes["value"]) :
+                    base.DefaultValue;
+            }
+            set
+            {
+                if (!hasDefaultValue())
+                {
+                    base.DefaultValue = value;
+                }
+                else
+                {
+                    if (NodeName == "textarea")
+                    {
+                        InnerText = value;
+                    }
+                    else
+                    {
+                        Attributes["value"] = value;
+                    }
+                }
+            }
+        }
+        protected bool hasDefaultValue()
+        {
+            return NodeName == "input" || NodeName=="textarea";
+        }
         public override string ID
         {
             get
@@ -597,6 +626,7 @@ namespace Jtc.CsQuery
                 SetAttribute(attribute, value);
             }
         }
+
         /// <summary>
         /// Returns text of the inner HTML. When setting, any children will be removed.
         /// </summary>
@@ -611,19 +641,7 @@ namespace Jtc.CsQuery
                 else
                 {
                     StringBuilder sb = new StringBuilder();
-                    foreach (IDomObject elm in ChildNodes)
-                    {
-                        // For node types that cannot have inner HTML, these should all be text nodes and 
-                        // we want to return the literal text
-                        if (!InnerHtmlAllowed && elm.NodeType == NodeType.TEXT_NODE)
-                        {
-                            sb.Append(elm.NodeValue);
-                        }
-                        else
-                        {
-                            elm.Render(sb);
-                        }
-                    }
+                    base.Render(sb,Document==null ? CsQuery.DefaultDomRenderingOptions : Document.DomRenderingOptions);
                     return sb.ToString();
                 }
             }
@@ -661,7 +679,7 @@ namespace Jtc.CsQuery
 
                 ChildNodes.Clear();
 
-                DomText text = new DomText(System.Web.HttpUtility.HtmlEncode(value));
+                DomText text = new DomText(value);
                 ChildNodes.Add(text);
             }
         }
@@ -698,15 +716,9 @@ namespace Jtc.CsQuery
         /// <summary>
         /// Returns the completel HTML for this element and its children
         /// </summary>
-        public override string Render()
-        {
-            StringBuilder sb = new StringBuilder();
-            GetHtml(sb,true);
-            return sb.ToString();
-        }
-        public override void Render(StringBuilder sb)
-        {
-            GetHtml(sb, true);
+
+        public override void Render(StringBuilder sb,DomRenderingOptions options) {
+            GetHtml(options,sb, true);
         }
         /// <summary>
         /// Returns the HTML for this element, ignoring children/innerHTML
@@ -714,23 +726,11 @@ namespace Jtc.CsQuery
         public string ElementHtml()
         {
             StringBuilder sb = new StringBuilder();
-            GetHtml(sb, false);
+            GetHtml(Document==null ? CsQuery.DefaultDomRenderingOptions:Document.DomRenderingOptions,sb, false);
             return sb.ToString();
         }
-        protected DocType DocType
-        {
-            get
-            {
-                if (_DocType == 0 && !IsDisconnected)
-                {
-                    _DocType = Document.DocType;
-                }
-                return _DocType;
-            }
-        }
-        private DocType _DocType;
-        
-        protected void GetHtml(StringBuilder sb, bool includeChildren)
+
+        protected void GetHtml(DomRenderingOptions options, StringBuilder sb, bool includeChildren)
         {
             sb.Append("<");
             sb.Append(NodeName);
@@ -750,28 +750,28 @@ namespace Jtc.CsQuery
 
             if (_Attributes != null)
             {
+                bool quoteAll = options.HasFlag(DomRenderingOptions.QuoteAllAttributes);
+                bool first = false;
                 foreach (var kvp in _Attributes)
                 {
+                    if (!first)
+                    {
+                        sb.Append(" ");
+                    }
                     if (!String.IsNullOrEmpty(kvp.Value))
                     {
-                        //if (DocType== DocType.XHTML || val.IndexOfAny(needsQuoting) >=0) {
-                        char quoteChar;
-                        string attrText = Objects.AttributeEncode(kvp.Value, out quoteChar);
-                        
-                        sb.Append(" ");
+                        string quoteChar;
+                        string attrText = Objects.AttributeEncode(kvp.Value, 
+                            quoteAll, 
+                            out quoteChar);
                         sb.Append(kvp.Key);
                         sb.Append("=");
                         sb.Append(quoteChar);
                         sb.Append(attrText);
                         sb.Append(quoteChar);
-
-                        //} else {
-                        //    sb.Append(" " + kvp.Key + "=" + val);
-                        // }
                     }
                     else
                     {
-                        sb.Append(" ");
                         sb.Append(kvp.Key);
                     }
                 }
@@ -779,25 +779,31 @@ namespace Jtc.CsQuery
             if (InnerHtmlAllowed || InnerTextAllowed )
             {
                 sb.Append(">");
-                sb.Append(includeChildren ?
-                    InnerHTML :
-                    (HasChildren ? 
-                        "..." : 
-                        String.Empty));
+                if (includeChildren)
+                {
+                    base.Render(sb, options);
+                }
+                else
+                {
+                    sb.Append(HasChildren ?
+                            "..." :
+                            String.Empty);
+                }
                 sb.Append("</");
                 sb.Append(NodeName);
                 sb.Append(">");
             }
             else
             {
-                if (DocType == DocType.XHTML)
-                {
+                //TODO: make "DomRenderingOptions" a class
+                //if (options.DocType == DocType.XHTML)
+                //{
                     sb.Append(" />");
-                }
-                else
-                {
-                    sb.Append(" >");
-                }
+                //}
+                //else
+                //{
+                //    sb.Append(">");
+                //}
             }
         }
         

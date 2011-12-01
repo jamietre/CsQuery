@@ -30,7 +30,10 @@ namespace Jtc.CsQuery
         {
             _EndPos = -1;
             BaseHtml = baseHtml;
-
+        }
+        protected void SetBaseHtml(string baseHtml)
+        {
+            SetBaseHtml(baseHtml.ToCharArray());
         }
         /// <summary>
         /// No literals allowed
@@ -51,12 +54,11 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public IDomElement CreateElement(string html)
         {
-            SetBaseHtml(html.ToCharArray());
+            SetBaseHtml(html);
             return (IDomElement)Parse(false).First();
         }
         /// <summary>
-        /// Returns a list of elements created by parsing the string. If allowLiterals is false, any literal text that is not
-        /// inside a tag will be wrapped in span tags.
+        /// Returns a list of unbound elements created by parsing the string. Even if Document is set, this will not return bound elements.
         /// </summary>
         /// <param name="html"></param>
         /// <param name="allowLiterals"></param>
@@ -64,13 +66,23 @@ namespace Jtc.CsQuery
         public IEnumerable<IDomObject> CreateObjects(string html)
         {
             isBound = false;
-            return CreateObjectsImpl(html.ToCharArray(), true);
+            return CreateObjectsImpl(html, true);
         }
+        /// <summary>
+        /// Returns a list of unbound elements created by parsing the string. Even if Document is set, this will not return bound elements.
+        /// </summary>
+        /// <param name="html"></param>
+        /// <param name="allowLiterals"></param>
+        /// <returns></returns>
         public IEnumerable<IDomObject> CreateObjects(char[] html)
         {
             isBound = false;
             return CreateObjectsImpl(html, true);
         }
+        /// <summary>
+        /// Returns a list of elements from the bound Document
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<IDomObject> CreateObjects()
         {
             if (Document == null)
@@ -81,16 +93,12 @@ namespace Jtc.CsQuery
 
             return CreateObjectsImpl(Document.SourceHtml,true);
         }
-        //public IEnumerable<IDomObject> CreateObjects(string html, IDomRoot document)
-        //{
-        //    Document = document;
-        //    return CreateObjectsImpl(html.ToCharArray(), true);
-        //}
-        //public IEnumerable<IDomObject> CreateObjects(char[] html, IDomRoot document)
-        //{
-        //    Document = document;
-        //    return CreateObjectsImpl(html, true);
-        //}
+
+        protected IEnumerable<IDomObject> CreateObjectsImpl(string html, bool allowLiterals)
+        {
+            SetBaseHtml(html);
+            return Parse(allowLiterals);
+        }
         protected IEnumerable<IDomObject> CreateObjectsImpl(char[] html, bool allowLiterals)
         {
 
@@ -189,7 +197,6 @@ namespace Jtc.CsQuery
                                         if (tag.Substring(1)==current.Parent.Element.NodeName)
                                         {
                                             current.Step=1;
-                                            current.ReadTextOnly = false;
                                             break;
                                         }
                                     }
@@ -307,7 +314,6 @@ namespace Jtc.CsQuery
                                     }
                                 }
                                 // seems to be a new tag. Parse it
-
                                 
                                 IDomSpecialElement specialElement = null;
                                 
@@ -347,9 +353,8 @@ namespace Jtc.CsQuery
                                     }
                                 }
                                 
-                                // Check for informational tag types
+                                // Handle non-element/text types -- they have data inside the tag construct
                                 
-                               // Debug.Assert(newTag != "p");
                                 if (current.Object is IDomSpecialElement)
                                 {
                                     string endTag = (current.Object is IDomComment && ((IDomComment)current.Object).IsQuoted) ? "-->" : ">";
@@ -404,7 +409,6 @@ namespace Jtc.CsQuery
 
 
                                 stack.Push(current);
-                                //Debug.Assert(current.Object == null);
 
                                 IterationData subItem = new IterationData();
                                 subItem.Parent = current;
@@ -419,10 +423,17 @@ namespace Jtc.CsQuery
                     // Catchall for unclosed tags -- if there's an "unfinished" carrier here, it's because  top-level tag was unclosed.
                     if (!current.Finished)
                     {
+                        if (current.Pos > current.HtmlStart)
+                        {
+                            IDomObject literal = GetLiteral(current);
+                            if (literal != null)
+                            {
+                                yield return literal;
+                            }
+                        }
 
                         if (current.Parent != null)
                         {
-                            
                             if (current.Parent.Parent == null)
                             {
                                 yield return current.Parent.Element;
@@ -434,21 +445,26 @@ namespace Jtc.CsQuery
                     }
                 }
                 /// Check for any straggling text - typically the case for non-dom-bound data.
-                if (!current.Finished && current.Pos > current.HtmlStart)
-                {
-                    IDomObject literal = GetLiteral(current);
-                    if (literal != null)
-                    {
-                        yield return literal;
-                    }
-                }
+                //if (!current.Finished && current.Pos > current.HtmlStart)
+                //{
+                //    IDomObject literal = GetLiteral(current);
+                //    if (literal != null)
+                //    {
+                //        yield return literal;
+                //    }
+                //}
 
                 //yield return current.Element;
                 pos = current.Pos;
             }
 
         }
-
+        /// <summary>
+        /// Returns a literal object for the text between HtmlStart (the last position of the end of a tag) and the current position.
+        /// If !AllowLiterals then it's wrapped in a span.
+        /// </summary>
+        /// <param name="current"></param>
+        /// <returns></returns>
         protected IDomObject GetLiteral(IterationData current)
         {
             // There's plain text -return it as a literal.
@@ -457,6 +473,11 @@ namespace Jtc.CsQuery
             DomText lit;
             if (current.Invalid) {
                 lit = new DomInvalidElement();
+            }
+            else if (current.ReadTextOnly)
+            {
+                current.ReadTextOnly = false;
+                lit = new DomInnerText();
             } else {
                 lit = new DomText();
             }
@@ -468,7 +489,8 @@ namespace Jtc.CsQuery
             else
             {
                 string text = BaseHtml.SubstringBetween(current.HtmlStart, current.Pos);
-                lit.NodeValue = text;
+                // Only decode when it's being actually assigned (as by a client). 
+                lit.NodeValue = Objects.HtmlDecode(text);
             }
              
             if (!current.AllowLiterals)
@@ -495,9 +517,11 @@ namespace Jtc.CsQuery
             }
         }
         /// <summary>
-        /// Move pointer to the first character after the end of this tag. Returns True if there are children.
+        /// Move pointer to the first character after the closing caret of this tag. 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// Returns True if there are children
+        /// </returns>
         protected bool MoveOutsideTag(IterationData current)
         {
             bool finished = false;
@@ -522,7 +546,12 @@ namespace Jtc.CsQuery
             }
             return inner;
         }
-
+        /// <summary>
+        /// Start: Expects the position to be after an opening caret for a close tag, and returns the tag name.
+        /// End: Position after closing caret
+        /// </summary>
+        /// <param name="current"></param>
+        /// <returns></returns>
         protected string GetCloseTag(IterationData current)
         {
             bool finished = false;
@@ -565,6 +594,15 @@ namespace Jtc.CsQuery
             }
             return name;
         }
+        /// <summary>
+        /// Start: Position inside a tag opening construct
+        /// End: position after last character of tag construct {x=["|']y["|]]} or just {x}) and adds attribute if successful
+        ///      position ON closing caret of tag opener if failed
+        /// </summary>
+        /// <param name="current"></param>
+        /// <returns>
+        /// Returns true if an attribute was added, false if no more attributes were found
+        /// </returns>
         protected bool GetTagAttribute(IterationData current)
         {
             bool finished = false;

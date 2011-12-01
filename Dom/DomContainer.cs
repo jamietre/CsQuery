@@ -30,38 +30,6 @@ namespace Jtc.CsQuery
             ChildNodes.AddRange(elements);
         }
 
-        public override IDomRoot Document
-        {
-            get
-            {
-                return base.Document;
-            }
-
-        }
-        //protected IEnumerable<string> IndexKeys()
-        //{
-        //    DomElement e = this as DomElement;
-        //    if (e == null)
-        //    {
-        //        yield break;
-        //    }
-        //    if (!Complete)
-        //    {
-        //        throw new Exception("This element is incomplete and cannot be added to a DOM.");
-        //    }
-        //    // Add just the element to the index no matter what so we have an ordered representation of the dom traversal
-        //    yield return IndexKey(String.Empty);
-        //    yield return IndexKey(e.nodeNameID.ToString());
-        //    if (!String.IsNullOrEmpty(e.ID))
-        //    {
-        //        yield return IndexKey("#" + e.ID);
-        //    }
-        //    foreach (string cls in e.Classes)
-        //    {
-        //        yield return IndexKey("." + cls);
-        //    }
-        //    //todo -add attributes?
-        //}
 
         public abstract IEnumerable<IDomObject> CloneChildren();
         /// <summary>
@@ -124,6 +92,22 @@ namespace Jtc.CsQuery
         {
             ChildNodes.Remove(item);
         }
+        public override void InsertBefore(IDomObject newNode, IDomObject referenceNode)
+        {
+            if (referenceNode.ParentNode != this)
+            {
+                throw new Exception("The reference node is not a child of this node");
+            }
+            ChildNodes.Insert(referenceNode.Index, newNode);
+        }
+        public override void InsertAfter(IDomObject newNode, IDomObject referenceNode)
+        {
+            if (referenceNode.ParentNode != this)
+            {
+                throw new Exception("The reference node is not a child of this node");
+            }
+            ChildNodes.Insert(referenceNode.Index + 1, newNode);
+        }
         /// <summary>
         /// Returns all elements
         /// </summary>
@@ -156,14 +140,24 @@ namespace Jtc.CsQuery
         public override string Render()
         {
             StringBuilder sb = new StringBuilder();
+            Render(sb);
+            return sb.ToString();
+        }
+        public override void Render(StringBuilder sb)
+        {
+            Render(sb, Document==null ? 
+                CsQuery.DefaultDomRenderingOptions :
+                Document.DomRenderingOptions);
+        }
+        public override void Render(StringBuilder sb, DomRenderingOptions options)
+        {
             if (HasChildren)
             {
                 foreach (IDomObject e in ChildNodes)
                 {
-                    sb.Append(e.Render());
+                    e.Render(sb, options);
                 }
             }
-            return (sb.ToString());
         }
 
         // Just didn't use the / and the +. A three character ID will permit over 250,000 possible children at each level

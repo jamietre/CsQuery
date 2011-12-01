@@ -82,7 +82,14 @@ namespace Jtc.CsQuery
             {
                 item.Remove();
             }
-            InnerList.Insert(index, item);
+            if (index == InnerList.Count)
+            {
+                InnerList.Add(item);
+            }
+            else
+            {
+                InnerList.Insert(index, item);
+            }
             // This must come BEFORE AddParent - otherwise the index entry will be present already at this position 
             Reindex(index + 1); 
             AddParent(item, index);

@@ -18,7 +18,7 @@ namespace Jtc.CsQuery
             {
                 if (_Document == null)
                 {
-                    _Document = new DomRoot();   
+                    CreateNewDom();
                 }
                 return _Document;
             }
@@ -105,6 +105,39 @@ namespace Jtc.CsQuery
             CsQuery csq = new CsQuery();
             csq.CsQueryParent = this;
             return csq;
+        }
+        /// <summary>
+        /// Returns a new empty CsQuery object bound to this domain, whose results are returned in the specified order
+        /// </summary>
+        /// <returns></returns>
+        public CsQuery New(SelectionSetOrder order)
+        {
+            CsQuery csq = new CsQuery();
+            csq.CsQueryParent = this;
+            csq.Order = order;
+            return csq;
+        }
+        /// <summary>
+        /// Return a CsQuery object wrapping the enumerable passed, or the object itself if 
+        /// already a CsQuery obect. Unlike CsQuery(context), this will not create a new CsQuery object from 
+        /// an existing one.
+        /// </summary>
+        /// <param name="elements"></param>
+        /// <returns></returns>
+        public CsQuery EnsureCsQuery(IEnumerable<IDomObject> elements)
+        {
+            return elements is CsQuery ? (CsQuery)elements : new CsQuery(elements);
+        }
+        public SelectionSetOrder Order
+        {
+            get
+            {
+                return Selection.Order;
+            }
+            set
+            {
+                Selection.Order = value;
+            }
         }
         /// <summary>
         /// The first IDomElement (e.g. not text/special nodes) in the selection set, or null if none

@@ -79,7 +79,7 @@ namespace Jtc.CsQuery
             }
         }
         public string Html = null;
-
+        //public bool AllowHtmlTextNodes { get; set; }
 
         /// <summary>
         /// Selection tag name

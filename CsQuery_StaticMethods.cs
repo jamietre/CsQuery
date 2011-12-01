@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,18 @@ namespace Jtc.CsQuery
 {
     public partial class CsQuery
     {
+        #region defaults
+        /// <summary>
+        /// Rendering option flags
+        /// </summary>
+        public static DomRenderingOptions DefaultDomRenderingOptions = DomRenderingOptions.QuoteAllAttributes;
+
+        /// <summary>
+        /// The default rendering type. This mostly controls the header and how tags are closed. UNIMPLEMENTED right now.
+        /// </summary>
+        public static DocType DefaultDocType = DocType.HTML5;
+
+        #endregion 
         #region Create methods - returns a new DOM
         public static CsQuery Create()
         {
@@ -107,11 +120,19 @@ namespace Jtc.CsQuery
         public static CsQuery Create(IDomObject element)
         {
             CsQuery csq = new CsQuery();
-            csq.Load(Objects.ToEnumerable(element));
+            csq.Load(Objects.Enumerate(element));
             return csq;
         }
         #endregion
-        
+
+        public static void Each<T>(IEnumerable<T> list, Action<T> func)
+        {
+            foreach (var obj in list)
+            {
+                func(obj);
+            }
+        }
+
         public static IEnumerable<T> Map<T>(IEnumerable<IDomObject> elements, Func<IDomObject, T> function)
         {
             foreach (var element in elements)

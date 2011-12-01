@@ -23,6 +23,15 @@ namespace Jtc.CsQuery
         public static short SelectedAttrId;
         public static short ReadonlyAttrId;
         public static short CheckedAttrId;
+        
+        // HTML spec for whitespace
+        // U+0020 SPACE, U+0009 CHARACTER TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and U+000D CARRIAGE RETURN (CR).
+        public static char[] Whitespace = new char[] { '\x0020', '\x0009', '\x000A', '\x000C', '\x000D' };
+        // U+0022 QUOTATION MARK characters ("), U+0027 APOSTROPHE characters ('), U+003D EQUALS SIGN characters (=), 
+        // U+003C LESS-THAN SIGN characters (<), U+003E GREATER-THAN SIGN characters (>), or U+0060 GRAVE ACCENT characters (`),
+        // and must not be the empty string.}
+        public static char[] MustBeQuoted = new char[] { '\x0022', '\x0027', '\x003D', '\x003C', '\x003E', '\x0060' };
+        public static char[] MustBeQuotedAll;
 
         private static short noInnerHtmlIDFirst;
         private static short noInnerHtmlIDLast;
@@ -33,7 +42,10 @@ namespace Jtc.CsQuery
 
         static DomData()
         {
-            
+            MustBeQuotedAll = new char[Whitespace.Length + MustBeQuoted.Length];
+            MustBeQuoted.CopyTo(MustBeQuotedAll, 0);
+            Whitespace.CopyTo(MustBeQuotedAll, MustBeQuoted.Length);
+
             HashSet<string> noInnerHtmlAllowed = new HashSet<string>(new string[]{
             "base","basefont","frame","link","meta","area","col","hr","param","script","textarea",
                 "img","input","br", "!doctype","!--"

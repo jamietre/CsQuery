@@ -20,8 +20,30 @@ namespace Jtc.CsQuery
 
     public static class ExtensionMethods_Public
     {
+        public static String RegexReplace(this String input, string pattern, string replacements)
+        {
+            return input.RegexReplace(Objects.Enumerate(pattern), Objects.Enumerate(replacements));
+        }
+        public static String RegexReplace(this String input, IEnumerable<string> patterns, IEnumerable<string> replacements)
+        {
+            List<string> patternList = new List<string>(patterns);
+            List<string> replacementList = new List<string>(replacements);
+            if (replacementList.Count != patternList.Count)
+            {
+                throw new ArgumentException("Mismatched pattern and replacement lists.");
+            }
 
+            for (var i = 0; i < patternList.Count; i++)
+            {
+                input = Regex.Replace(input, patternList[i], replacementList[i]);
+            }
 
+            return input;
+        }
+        public static bool RegexTest(this String input, string pattern)
+        {
+            return Regex.IsMatch(input, pattern);
+        }
         /// <summary>
         /// Returns true when a value is "truthy" using similar logic as Javascript
         ///   null = false
@@ -143,7 +165,8 @@ namespace Jtc.CsQuery
             {
                 source = Utility.JSON.ParseJSON((string)source);
             }
-            else if (source.IsExpando())
+
+            if (source.IsExpando())
             {
                 return (T)source.CloneObject(deep);
             }

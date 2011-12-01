@@ -96,7 +96,20 @@ namespace CsqueryTests
                     yield return el;
                 }
             }
-
+        }
+        public void t(string testName, string selector, IEnumerable<string> ids)
+        {
+            var csq = jQuery(selector);
+            List<string> idList = new  List<string>(ids);
+            int index=0;
+            bool success=true;
+            foreach (var item in csq) {
+                if (item.ID!=idList[index++]) {
+                    success=false;
+                    break;
+                }
+            }
+            Assert.IsTrue(success,testName);
         }
     }
 }

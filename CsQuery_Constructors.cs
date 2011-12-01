@@ -130,7 +130,7 @@ namespace Jtc.CsQuery
         {
             Clear();
 
-            Document = new DomRoot(html);
+            CreateNewDom(html);
             DomElementFactory factory = new DomElementFactory(Document);
             if (html != null)
             {
@@ -150,10 +150,23 @@ namespace Jtc.CsQuery
         protected void Load(IEnumerable<IDomObject> elements)
         {
             Clear();
-            Document = new DomRoot();
+            CreateNewDom();
             ClearSelections();
             Document.ChildNodes.AddRange(elements);
             AddSelectionRange(Document.ChildNodes);
+        }
+        protected void CreateNewDom(char[] html=null)
+        {
+            if (html!=null)
+            {
+                Document = new DomRoot(html);
+            }
+            else
+            {
+                Document = new DomRoot();
+            }
+            Document.DomRenderingOptions = CsQuery.DefaultDomRenderingOptions;
+            Document.DocType = CsQuery.DefaultDocType;
         }
     }
 }

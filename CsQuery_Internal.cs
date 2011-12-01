@@ -24,17 +24,6 @@ namespace Jtc.CsQuery
         } 
         protected static Dictionary<string, object> _ExtensionCache = null;
 
-        //protected DomElementFactory ElementFactory
-        //{
-        //    get
-        //    {
-        //        if (_ElementFactory == null || !ReferenceEquals(_ElementFactory.Document,Document))
-        //        {
-        //            _ElementFactory = new DomElementFactory(Document);
-        //        }
-        //        return (_ElementFactory);
-        //    }
-        //} private DomElementFactory _ElementFactory = null;
 
         /// <summary>
         /// The object from which this CsQuery was created
@@ -75,6 +64,7 @@ namespace Jtc.CsQuery
                 if (_Selection == null)
                 {
                     _Selection = new SelectionSet<IDomObject>();
+                    _Selection.Order = SelectionSetOrder.OrderAdded;
                 }
                 return _Selection;
             }
@@ -88,28 +78,13 @@ namespace Jtc.CsQuery
         {
             get
             {
-                foreach (IDomObject obj in Selection)
-                {
-                    if (obj.NodeType==NodeType.ELEMENT_NODE)
-                    {
-                        yield return (IDomElement)obj;
-                    }
-                }
+                return onlyElements(Selection);
             }
         }
 
         #region Internal Support Functions
 
-        /// <summary>
-        /// Return a CsQuery object wrapping the enumerable passed, or the object itself if 
-        /// already a CsQuery obect
-        /// </summary>
-        /// <param name="elements"></param>
-        /// <returns></returns>
-        protected CsQuery EnsureInWrapper(IEnumerable<IDomObject> elements)
-        {
-            return elements is CsQuery ? (CsQuery)elements : new CsQuery(elements);
-        }
+
         /// <summary>
         /// Return the relative position of an element among its Element siblings (non-element nodes excluded)
         /// </summary>
@@ -190,40 +165,107 @@ namespace Jtc.CsQuery
                 }
             }
         }
-
-        protected CsQuery FilterIfSelector(IEnumerable<IDomObject> list, string selector)
+        protected CsQuery ForEach(IEnumerable<IDomObject> source, Func<IDomObject, IDomObject> del)
         {
-
+            CsQuery output = New();
+            foreach (var item in Selection)
+            {
+                output.Selection.Add(del(item));
+            }
+            return output;
+        }
+        protected CsQuery ForEachMany(IEnumerable<IDomObject> source, Func<IDomObject, IEnumerable<IDomObject>> del)
+        {
+            CsQuery output = New();
+            foreach (var item in Selection)
+            {
+                output.Selection.AddRange(del(item));
+            }
+            return output;
+        }
+        /// <summary>
+        /// Runs a set of selectors and returns the combined result as a single enumerable
+        /// </summary>
+        /// <param name="selectors"></param>
+        /// <returns></returns>
+        protected IEnumerable<IDomObject> mergeSelections(IEnumerable<string> selectors)
+        {
+            SelectionSet<IDomObject> allContent = new SelectionSet<IDomObject>();
+            Each(selectors, item => allContent.AddRange(Select(item)));
+            return allContent;
+        }
+        /// <summary>
+        /// Runs a set of HTML creation selectors and returns result as a single enumerable
+        /// </summary>
+        /// <param name="selectors"></param>
+        /// <returns></returns>
+        protected IEnumerable<IDomObject> mergeContent(IEnumerable<string> content)
+        {
+            List<IDomObject> allContent = new List<IDomObject>();
+            foreach (var item in content)
+            {
+                allContent.AddRange(CsQuery.Create(item));
+            }
+            return allContent;
+        }
+        protected CsQuery filterIfSelector(string selector, IEnumerable<IDomObject> list)
+        {
+            return filterIfSelector(selector, list,SelectionSetOrder.OrderAdded);
+        }
+        protected CsQuery filterIfSelector(string selector,IEnumerable<IDomObject> list, SelectionSetOrder order)
+        {
+            CsQuery output;
             if (String.IsNullOrEmpty(selector))
             {
-                return new CsQuery(list, this);
+                output= new CsQuery(list, this);
             }
             else
             {
-                return new CsQuery(_FilterElements(list, selector), this);
+                output= new CsQuery(filterElements(list, selector), this);
+            }
+            output.Order = order;
+            return output;
+        }
+        protected IEnumerable<IDomElement> onlyElements(IEnumerable<IDomObject> objects)
+        {
+            foreach (var item in objects)
+            {
+                IDomElement el = item as IDomElement;
+                if (el!=null) {
+                    yield return el;
+                }
             }
         }
-        
-        /// <summary>
-        /// Return selection from within an element list
-        /// </summary>
-        /// <param name="?"></param>
-        /// <param name="selector"></param>
-        protected IEnumerable<IDomObject> _FilterElements(IEnumerable<IDomObject> elements, string selector)
+        protected IEnumerable<IDomObject> filterElements(IEnumerable<IDomObject> elements, string selector)
         {
-            if (selector.IsNullOrEmpty())
+            return filterElementsIgnoreNull(elements, selector ?? "");
+        }
+        //<summary>
+        // Filter an element list using another selector. A null selector results in no filtering.
+        //</summary>
+        //<param name="?"></param>
+        //<param name="selector"></param>
+        protected IEnumerable<IDomObject> filterElementsIgnoreNull(IEnumerable<IDomObject> elements, string selector)
+        {
+            if (selector=="")
             {
                 return Objects.EmptyEnumerable<IDomObject>();
+            }
+            else if (selector == null)
+            {
+                return elements;
             }
             else
             {
                 CsQuerySelectors selectors = new CsQuerySelectors(selector);
                 if (selectors.Count > 0)
                 {
-                    selectors[0].TraversalType = TraversalType.Filter;
+                    selectors.Do(item=>item.TraversalType = TraversalType.Filter);
                 }
-                return selectors.Select(Document, elements);
-
+                // this is kind of unfortunate but is required to keep the order correct. Probably a more efficient
+                // way to do it but works fine for now
+                
+                return elements.Intersect(selectors.Select(Document, elements));
             }
         }
         /// <summary>
@@ -294,47 +336,7 @@ namespace Jtc.CsQuery
             }
             return depth;
         }
-        /// <summary>
-        /// if true, then next elements are returned, otherwise, previous
-        /// </summary>
-        /// <param name="next"></param>
-        /// <returns></returns>
-        protected IEnumerable<IDomObject> AdjacentElements(bool getNext)
-        {
-            foreach (IDomElement obj in Elements)
-            {
-                // Extraordinarily inefficient way to get next. TODO: make structure a linked list
-
-                IDomElement last = null;
-                var children = obj.ParentNode.ChildElements.GetEnumerator();
-                //children.Reset();
-                bool found = false;
-                while (children.MoveNext())
-                {
-
-                    if (found && children.Current.NodeType == NodeType.ELEMENT_NODE)
-                    {
-                        yield return (IDomElement)children.Current;
-                        break;
-                    }
-                    if (ReferenceEquals(children.Current, obj))
-                    {
-                        if (!getNext)
-                        {
-                            yield return last;
-                            break;
-                        }
-                        else
-                        {
-                            found = true;
-                        }
-                    }
-                    last = (IDomElement)children.Current;
-                }
-
-            }
-            yield break;
-        }
+        
         /// <summary>
         /// Insert every element in the selection at or after the index of each target (adding offset to the index).
         /// If there is more than one target, the a clone is made of the selection for the 2nd and later targets.
@@ -344,19 +346,47 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         protected CsQuery InsertAtOffset(IEnumerable<IDomObject> target, int offset)
         {
+            SelectionSet<IDomObject> sel = target as SelectionSet<IDomObject>;
+            bool isCsQuery = sel != null;
+
             bool isFirst = true;
-            foreach (IDomObject e in target)
+
+            // Copy the target list: it could change otherwise
+            List<IDomObject> targets = new List<IDomObject>(target);
+
+            if (isCsQuery && sel.Count == 0)
             {
-                if (e is IDomElement)
+                // If appending items to an empty selection, just add them to the selection set
+                sel.AddRange(Selection);
+            }
+            else
+            {
+                foreach (var el in targets)
                 {
-                    if (isFirst)
+                    if (el.IsDisconnected)
                     {
-                        InsertAtOffset(e, offset);
-                        isFirst = false;
+                        // Disconnected items are added to the selection set (if that's the target)
+                        if (!isCsQuery)
+                        {
+                            throw new Exception("You can't add elements to a disconnected element list, it must be in a selection set");
+                        }
+                        int index = sel.IndexOf(el);
+                        foreach (var item in Selection)
+                        {
+                            sel.Insert(index + offset, item);
+                        }
                     }
                     else
                     {
-                        Clone().InsertAtOffset(e, offset);
+                        if (isFirst)
+                        {
+                            InsertAtOffset(el, offset);
+                            isFirst = false;
+                        }
+                        else
+                        {
+                            Clone().InsertAtOffset(el, offset);
+                        }
                     }
                 }
             }

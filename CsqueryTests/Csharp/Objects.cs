@@ -18,8 +18,6 @@ namespace CsqueryTests.Csharp
     [TestFixture, TestClass, Description("CsQuery Tests (Not from Jquery test suite)")]
     public class Objects_ : CsQueryTest
     {
-        private static IDictionary<string, object> testDict = null;
-
         [TestFixtureSetUp,ClassInitialize]
         public static void Setup(TestContext context) {
 
@@ -33,23 +31,24 @@ namespace CsqueryTests.Csharp
             string both = "{\"someprop\": 1, \"someprop2\", \"o'brien\"}";
             string neither= "plain old text";
 
-            char quoteChar;
-            string result = Objects.AttributeEncode(onlyQuotes, out quoteChar);
+            string quoteChar;
+
+            string result = Objects.AttributeEncode(onlyQuotes,true,out quoteChar);
             Assert.AreEqual(onlyQuotes,result, "With only quotes, nothing changed");
-            Assert.AreEqual('\'', quoteChar, "Quote char was an apostrophe with only quotes");
+            Assert.AreEqual("'", quoteChar, "Quote char was an apostrophe with only quotes");
 
-            result = Objects.AttributeEncode(onlyApos, out quoteChar);
+            result = Objects.AttributeEncode(onlyApos, true,out quoteChar);
             Assert.AreEqual(onlyApos, result, "With only apostrophes, nothing changed");
-            Assert.AreEqual('"', quoteChar, "Quote char was a quote with only apos");
+            Assert.AreEqual("\"", quoteChar, "Quote char was a quote with only apos");
 
-            result = Objects.AttributeEncode(both, out quoteChar);
+            result = Objects.AttributeEncode(both,true, out quoteChar);
             string expected = "{\"someprop\": 1, \"someprop2\", \"o&#39;brien\"}";
             Assert.AreEqual(expected, result, "With both, only apostrophes changed");
-            Assert.AreEqual('\'', quoteChar, "Quote char was an apos with both");
+            Assert.AreEqual("'", quoteChar, "Quote char was an apos with both");
 
-            result = Objects.AttributeEncode(neither, out quoteChar);
+            result = Objects.AttributeEncode(neither, true, out quoteChar);
             Assert.AreEqual(neither, result, "With neither, nothing changeed");
-            Assert.AreEqual('"', quoteChar, "Quote char was a quote with both");
+            Assert.AreEqual("\"", quoteChar, "Quote char was a quote with both");
 
 
         }

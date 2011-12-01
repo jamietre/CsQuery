@@ -32,12 +32,19 @@ namespace Jtc.CsQuery
             NodeValue = nodeValue;
         }
 
+        public override string NodeName
+        {
+            get
+            {
+                return "#text";
+            }
+        }
 
         public override NodeType NodeType
         {
             get { return NodeType.TEXT_NODE; }
         }
-        private int textIndex=-1;
+        protected int textIndex=-1;
         // for use during initial construction from char array
         public void SetTextIndex(IDomRoot dom, int index)
         {
@@ -47,15 +54,15 @@ namespace Jtc.CsQuery
             stringRef = dom;
         }
 
-        IDomRoot stringRef = null;
-        string unboundText;
+        protected IDomRoot stringRef = null;
+        protected string unboundText=null;
         
         public override string NodeValue
         {
             get
             {
                 return textIndex >= 0 ?
-                    stringRef.GetTokenizedString(textIndex)
+                    Objects.HtmlDecode(stringRef.GetTokenizedString(textIndex))
                         : unboundText;
             }
             set
@@ -68,7 +75,11 @@ namespace Jtc.CsQuery
 
         public override string Render()
         {
-            return NodeValue;
+            return Objects.HtmlEncode(NodeValue);
+        }
+        public override void Render(StringBuilder sb)
+        {
+            sb.Append(Render());
         }
         public override DomText Clone()
         {

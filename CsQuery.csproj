@@ -53,6 +53,7 @@
     <Compile Include="CsQuery_Csharp.cs" />
     <Compile Include="CsQuery_StaticMethods.cs" />
     <Compile Include="CsQuery_Internal.cs" />
+    <Compile Include="Dom\DomInnerText.cs" />
     <Compile Include="Dom\DomFragment.cs" />
     <Compile Include="Dom\DomAttributes.cs" />
     <Compile Include="Dom\DomCData.cs" />

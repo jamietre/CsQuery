@@ -24,40 +24,80 @@ namespace Jtc.CsQuery
             string text = obj as string;
             return text != null && text.StartsWith("{") && !text.StartsWith("{{");
         }
+        /// <summary>
+        /// Perform only required HTML encoding
+        /// </summary>
+        /// <param name="html"></param>
+        /// <returns></returns>
+        public static string HtmlEncode(string html)
+        {
+            return System.Web.HttpUtility.HtmlEncode(html);
+//            System.Web.HttpUtility.HtmlEncode
+//           return char..
+//            "&lt;" represents the < sign.
+//"&gt;" represents the > sign.
+//"&amp;" represents the & sign.
+//"&quot; represents the " mark.
+    
+        }
+        public static string HtmlDecode(string html)
+        {
+            return System.Web.HttpUtility.HtmlDecode(html);
+        }
+
+        /// <summary>
+        /// Encode text as part of an attribute
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
         public static string AttributeEncode(string text)
         {
-            char quoteChar;
-            return AttributeEncode(text, out quoteChar);
+            string quoteChar;
+            string attribute = AttributeEncode(text, 
+                CsQuery.DefaultDomRenderingOptions.HasFlag(DomRenderingOptions.QuoteAllAttributes),
+                out quoteChar);
+            return quoteChar + attribute + quoteChar;
         }
         /// <summary>
         /// Htmlencode a string, except for double-quotes, so it can be enclosed in single-quotes
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        public static string AttributeEncode(string text, out char quoteChar)
+        public static string AttributeEncode(string text, bool alwaysQuote, out string quoteChar)
         {
             bool hasQuotes = text.IndexOf("\"") >= 0;
             bool hasSingleQuotes = text.IndexOf("'") >= 0;
             string result = text;
             if (hasQuotes || hasSingleQuotes)
             {
-                result = System.Web.HttpUtility.HtmlAttributeEncode(result);
+
                 //un-encode quotes or single-quotes when possible. When writing the attribute it will use the right one
-                if (hasQuotes)
+                if (hasQuotes && hasSingleQuotes)
                 {
-                    result = result.Replace("&quot;", "\"");
-                    quoteChar = '\'';
+                    result = result.Replace("'", "&#39;");
+                    quoteChar = "\'";
+                }
+                else if (hasQuotes)
+                {
+                    quoteChar = "'";
                 }
                 else
                 {
-                    result = result.Replace("&#39;", "'");
-                    quoteChar = '\"';
+                    quoteChar = "\"";
                 }
             }
             else
             {
-                quoteChar = '"';
+                if (alwaysQuote)
+                {
+                    quoteChar = "\"";
+                }
+                else
+                {
+                    quoteChar = result.IndexOfAny(DomData.MustBeQuotedAll) >= 0 ? "\"" : "";
+                }
             }
+
             return result;
         }
         /// <summary>
@@ -141,17 +181,18 @@ namespace Jtc.CsQuery
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static IEnumerable<T> ToEnumerable<T>(T obj) 
+        public static IEnumerable<T> Enumerate<T>(T obj) 
         {
-            List<T> list = new List<T>();
+            //List<T> list = new List<T>();
             if (obj != null)
             {
-                list.Add(obj);
+                yield return obj;
+                //list.Add(obj);
             }
-            return list;
+            //return list;
         }
 
-        public static IEnumerable<T> ToEnumerable<T>(params T[] obj)
+        public static IEnumerable<T> Enumerate<T>(params T[] obj)
         {
             return obj;
         }

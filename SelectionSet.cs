@@ -6,15 +6,21 @@ using System.Text;
 
 namespace Jtc.CsQuery
 {
+    public enum SelectionSetOrder
+    {
+        OrderAdded=1,
+        Ascending=2,
+        Descending=3
+    }
     /// <summary>
     /// A list of DOM elements, ordered by appearance in the DOM
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class SelectionSet<T>: ISet<T>, ICollection<T>,IEnumerable<T>, IEnumerable where T: IDomObject
+    public class SelectionSet<T>: ISet<T>, IList<T>, ICollection<T>,IEnumerable<T>, IEnumerable where T: IDomObject
     {
         public SelectionSet()
         {
-            IsSorted = true;
+            Order = SelectionSetOrder.OrderAdded;
         }
         protected HashSet<T> innerList
         {
@@ -23,19 +29,24 @@ namespace Jtc.CsQuery
                 if (_innerList == null)
                 {
                     _innerList = new HashSet<T>();
+                    _innerListOrdered = new List<T>();
                 }
                 return _innerList;
             }
         }
         private HashSet<T> _innerList = null;
+        private List<T> _innerListOrdered= null;
         
         protected IEnumerable<T> sortedList
         {
             get
             {
-                if (!IsSorted)
+                if (_innerListOrdered==null) {
+                    return Objects.EmptyEnumerable<T>();
+                }
+                if (Order == SelectionSetOrder.OrderAdded)
                 {
-                    return innerList;
+                    return _innerListOrdered;
                 }
 
                 if (dirty || _sortedList==null)
@@ -43,10 +54,29 @@ namespace Jtc.CsQuery
                     //TODO - right now we copy the list to the target when first accessed in order to ensure its integrity
                     // should the path of an item change (e.g. b/c it's removed from the DOM). Ideally we would not
                     // require this, so the list is only enumerated when needed, but I can't think how to accomplish this easily
-                    _sortedList = new List<T>(innerList.OrderBy(item => item.Path));
+                    var comparer = new listOrderComparer(Order);
+                    _sortedList = new List<T>(_innerListOrdered.OrderBy(item => item,comparer));
                     dirty = false;
                 }
                 return _sortedList;
+            }
+        }
+        private class listOrderComparer : IComparer<IDomObject>
+        {
+            public listOrderComparer(SelectionSetOrder order)
+            {
+                if (order != SelectionSetOrder.Ascending && order != SelectionSetOrder.Descending)
+                {
+                    throw new Exception("This comparer can only be used to sort.");
+                }
+                Order = order;
+            }
+            protected SelectionSetOrder Order;
+            public int Compare(IDomObject x, IDomObject y)
+            {
+                return Order == SelectionSetOrder.Ascending ?
+                    String.CompareOrdinal(x.Path,y.Path) :
+                    String.CompareOrdinal(y.Path,x.Path);
             }
         }
         protected IEnumerable<T> _sortedList = null;
@@ -56,15 +86,12 @@ namespace Jtc.CsQuery
         {
             dirty = true;
         }
+
         /// <summary>
-        /// When true, elements are returned in DOM order. Otherwise, they are returned in the order added.
+        /// The order in which elements in the set are returned
         /// </summary>
-        public bool IsSorted
-        {
-            get;
-            set;
-        }
-        
+        public SelectionSetOrder Order {get;set;}
+
         public IEnumerator<T> GetEnumerator()
         {
             return sortedList.GetEnumerator();
@@ -82,6 +109,7 @@ namespace Jtc.CsQuery
             bool result = innerList.Add(item);
             if (result)
             {
+                _innerListOrdered.Add(item);
                 Touch();
             }
             return result;
@@ -97,6 +125,7 @@ namespace Jtc.CsQuery
             if (_innerList!=null)
             {
                 innerList.Clear();
+                _innerListOrdered.Clear();
                 Touch();
             }
         }
@@ -134,22 +163,41 @@ namespace Jtc.CsQuery
                 result = innerList.Remove(item);
                 if (result)
                 {
+                    _innerListOrdered.Remove(item);
                     Touch();
                 }
             }
             return result;
         }
-
-
+        /// <summary>
+        /// Use after set operations
+        /// </summary>
+        private void SynchronizeOrderedListAfterRemove()
+        {
+            int index = 0;
+            while (index < _innerListOrdered.Count)
+            {
+                if (!_innerList.Contains(_innerListOrdered[index]))
+                {
+                    _innerListOrdered.RemoveAt(index);
+                }
+                else
+                {
+                    index++;
+                }
+            }
+        }
         public void ExceptWith(IEnumerable<T> other)
         {
             innerList.ExceptWith(other);
+            SynchronizeOrderedListAfterRemove();
             Touch();
         }
 
         public void IntersectWith(IEnumerable<T> other)
         {
             innerList.IntersectWith(other);
+            SynchronizeOrderedListAfterRemove();
             Touch();
         }
 
@@ -186,13 +234,59 @@ namespace Jtc.CsQuery
         public void SymmetricExceptWith(IEnumerable<T> other)
         {
             innerList.SymmetricExceptWith(other);
+            SynchronizeOrderedListAfterRemove();
             Touch();
         }
 
         public void UnionWith(IEnumerable<T> other)
         {
-            innerList.UnionWith(other);
+            // This is just adding things since this list maintains uniqueness
+            foreach (T item in other)
+            {
+                Add(item);
+            }
+        }
+
+        public int IndexOf(T item)
+        {
+            return _innerListOrdered.IndexOf(item);
+        }
+
+        public void Insert(int index, T item)
+        {
+            if (innerList.Add(item))
+            {
+                _innerListOrdered.Insert(index, item);
+                Touch();
+            }
+        }
+
+        public void RemoveAt(int index)
+        {
+            if (index >= Count || Count==0)
+            {
+                throw new Exception("Index out of range");
+            }
+            T item = _innerListOrdered[index];
+            innerList.Remove(item);
+            _innerListOrdered.RemoveAt(index);
             Touch();
+        }
+
+        public T this[int index]
+        {
+            get
+            {
+                return _innerListOrdered[index];
+            }
+            set
+            {
+                T item = _innerListOrdered[index];
+                _innerListOrdered[index] = value;
+                innerList.Remove(item);
+                innerList.Add(value);
+                Touch();
+            }
         }
     }
 }

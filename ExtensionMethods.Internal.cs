@@ -758,7 +758,7 @@ namespace Jtc.CsQuery.ExtensionMethods
         {
             return (value ?? String.Empty).Trim();
         }
-        private static char[] stringSep = new char[] {' '};
+        private static char[] stringSep = new char[] {' ','\n','\t', '\r'};
         public static IEnumerable<string> SplitClean(this string text)
         {
             return SplitClean(text, stringSep);

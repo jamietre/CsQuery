@@ -10,7 +10,9 @@ namespace Jtc.CsQuery
     public enum DomRenderingOptions
     {
         RemoveMismatchedCloseTags = 1,
-        RemoveComments = 2
+        RemoveComments = 2,
+        QuoteAllAttributes=4,
+        ValidateCss=8
     }
 
     public interface IDomRoot : IDomContainer
@@ -29,7 +31,8 @@ namespace Jtc.CsQuery
         IDomElement CreateElement(string nodeName);
         IDomText CreateTextNode(string text);
         IDomComment CreateComment(string comment);
-        IEnumerable<IDomElement> GetElementsByTagName(string tagName);
+        IDomElement GetElementByTagName(string tagName);
+        List<IDomElement> GetElementsByTagName(string tagName);
        // void SetOwner(CsQuery owner);
         int TokenizeString(int startIndex, int length);
         string GetTokenizedString(int index);
@@ -122,32 +125,33 @@ namespace Jtc.CsQuery
                 return "";
             }
         }
+        public override int Depth
+        {
+            get
+            {
+                return 0;
+            }
+        }
         public  char[] SourceHtml
         {
             get;
             protected set;
         }
         private List<Tuple<int,int>> OriginalStrings = new List<Tuple<int,int>>();
-        private List<string> Strings;
+        //private List<string> Strings;
 
-        public int AddString(string text) {
-            if (Strings==null) {
-                Strings = new List<string>();
-            }
-            Strings.Add(text);
-            return OriginalStrings.Count + Strings.Count-1;
-        }
+        //public int AddString(string text) {
+        //    if (Strings==null) {
+        //        Strings = new List<string>();
+        //    }
+        //    Strings.Add(text);
+        //    return OriginalStrings.Count + Strings.Count-1;
+        //}
         public virtual string GetTokenizedString(int index)
         {
-            if (index < OriginalStrings.Count)
-            {
-                var range = OriginalStrings[index];
-                return SourceHtml.Substring(range.Item1, range.Item2);
-            }
-            else
-            {
-                return Strings[OriginalStrings.Count-index];
-            }
+
+            var range = OriginalStrings[index];
+            return SourceHtml.Substring(range.Item1, range.Item2);
         }
         //internal void SetOriginalString(char[] originalString)
         //{
@@ -158,47 +162,22 @@ namespace Jtc.CsQuery
             OriginalStrings.Add(new Tuple<int,int>(start,length));
             return OriginalStrings.Count - 1;
         }
-        //public void SetOwner(CsQuery owner)
-        //{
-        //    _Owner = owner;
-        //}
+
         protected CsQuery _Owner = null;
-        /// <summary>
-        /// This is NOT INDEXED and should only be used for testing
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+
         public IDomElement GetElementById(string id)
         {
             CsQuerySelectors selectors = new CsQuerySelectors("#" + id);
             return (IDomElement)selectors.Select(Document).FirstOrDefault();
         }
-        //protected I(DomElement GetElementById(IEnumerable<IDomElement> elements, string id)
-        //{
-
-
-        //    //foreach (IDomElement el in elements)
-        //    //{
-        //    //    if (el.ID == id)
-        //    //    {
-        //    //        return el;
-        //    //    }
-        //    //    if (el.ChildNodes.Count > 0)
-        //    //    {
-        //    //        var childEl = GetElementById(el.ChildElements, id);
-        //    //        if (childEl != null)
-        //    //        {
-        //    //            return childEl;
-        //    //        }
-        //    //    }
-        //    //}
-        //   // return null;
-        //}
-        public IEnumerable<IDomElement> GetElementsByTagName(string tagName)
+        public IDomElement GetElementByTagName(string tagName)
+        {
+            return GetElementsByTagName(tagName).FirstOrDefault();
+        }
+        public List<IDomElement> GetElementsByTagName(string tagName)
         {
             CsQuerySelectors selectors = new CsQuerySelectors(tagName);
-            return OnlyElements(selectors.Select(Document));
-         
+            return new List<IDomElement>(OnlyElements(selectors.Select(Document)));
         }
         protected IEnumerable<IDomElement> OnlyElements(IEnumerable<IDomObject> objectList)
         {
@@ -238,8 +217,8 @@ namespace Jtc.CsQuery
                 _DomRenderingOptions = value;
             }
         }
-
         protected DomRenderingOptions _DomRenderingOptions = 0;
+        
         public override IDomRoot Document
         {
             get
