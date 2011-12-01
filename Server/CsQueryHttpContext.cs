@@ -121,8 +121,10 @@ namespace Jtc.CsQuery.Server
         {
             CsqWebRequest con = new CsqWebRequest();
             con.Get(url);
+            con.UserAgent = UserAgent;
             Owner.Load(con.Html);
         }
+        public string UserAgent { get; set; }
         /// <summary>
         /// Queue an asynchronous request for data from a URL
         /// </summary>

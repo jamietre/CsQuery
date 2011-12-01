@@ -130,7 +130,7 @@ namespace Jtc.CsQuery.Server
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url);
 
-            request.UserAgent = "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)";
+            request.UserAgent = UserAgent ?? "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)";
             request.Method = "POST";
             request.ContentType = "application/x-www-form-urlencoded";
             request.ContentLength = data.Length;
@@ -145,6 +145,7 @@ namespace Jtc.CsQuery.Server
             }
             return Html;
         }
+
     }
    
   
