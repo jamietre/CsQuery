@@ -18,17 +18,22 @@ namespace Jtc.CsQuery
         public const char indexSeparator = '>';
 #else
         public static bool Debug = false;
-        public const int pathIdLength = 1;
-        public const char indexSeparator = (char)1;
-#endif
         /// <summary>
         /// Length of each node's path ID, sets a limit on the number of child nodes before a reindex
         /// is required. For most cases, a small number will yield better performance.
         /// </summary>
-
+        public const int pathIdLength = 1;
         /// <summary>
-        /// Hardcode some token IDs to improve performance for frequent lookups
+        /// The character used to separate the unique part of an index entry from its path. When debugging
+        /// it is useful to have a printable character. Otherwise we want something that is guaranteed to be
+        /// a unique stop character.
         /// </summary>
+        public const char indexSeparator = (char)1;
+#endif
+        
+
+        /// Hardcode some token IDs to improve performance of things that are referred to often
+        
         public const ushort StyleAttrId = 2;
         public const ushort ClassAttrId = 3;
         public const ushort ValueAttrId=4;
@@ -43,16 +48,25 @@ namespace Jtc.CsQuery
         
         // HTML spec for whitespace
         // U+0020 SPACE, U+0009 CHARACTER TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and U+000D CARRIAGE RETURN (CR).
+
         public static char[] Whitespace = new char[] { '\x0020', '\x0009', '\x000A', '\x000C', '\x000D' };
+        
         // U+0022 QUOTATION MARK characters ("), U+0027 APOSTROPHE characters ('), U+003D EQUALS SIGN characters (=), 
         // U+003C LESS-THAN SIGN characters (<), U+003E GREATER-THAN SIGN characters (>), or U+0060 GRAVE ACCENT characters (`),
         // and must not be the empty string.}
+        
         public static char[] MustBeQuoted = new char[] { '\x0022', '\x0027', '\x003D', '\x003C', '\x003E', '\x0060' };
         public static char[] MustBeQuotedAll;
 
-        // things that can be in a css number
+        // Things that can be in a CSS number
+
         public static HashSet<char> NumberChars = new HashSet<char>("-+0123456789.,");
+
+        // Things that are allowable unit strings in a CSS style.
+
         public static HashSet<string> Units = new HashSet<string>(new string[] { "%", "in", "cm", "mm", "em", "ex", "pt", "pc", "px" });
+
+        // Boundaries in the token index for certain kinds of elements
 
         private static ushort noInnerHtmlIDFirst;
         private static ushort noInnerHtmlIDLast;
@@ -63,7 +77,11 @@ namespace Jtc.CsQuery
 
         static DomData()
         {
-            // For path encoding
+            // For path encoding - when in production mode use a single character value as each token. This lets us avoid doing 
+            // a division for indexing to determine path depth, and is just faster for a lot of reasons. This should be plenty
+            // of tokens: things that are tokenized are tag names style names, class names, attribute names (not values), and ID 
+            // values. You'd be hard pressed to exceed this limit. Famous last words right? 
+
             if (!Debug)
             {
                 baseXXchars = new char[65534];
@@ -139,13 +157,19 @@ namespace Jtc.CsQuery
             blockLast = (ushort)(nextID - 1);
         }
 
+        /// <summary>
+        /// Fields used internally
+        /// </summary>
 
         private static ushort nextID=2;
-
-        private static List<string> Tokens = new List<string>();
-        
+        private static List<string> Tokens = new List<string>();        
         private static Dictionary<string, ushort> TokenIDs;
         private static object locker=new Object();
+
+        /// <summary>
+        /// Public methods 
+        /// </summary>
+        /// 
         public static IEnumerable<string> Keys
         {
             get
