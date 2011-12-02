@@ -141,8 +141,8 @@ namespace Jtc.CsQuery.Implementation
         #region public methods
         public void Reindex()
         {
-            _PathID = null;
-            _Index = 0;
+            PathID = null;
+            Index = 0;
         }
        
 
@@ -188,7 +188,7 @@ namespace Jtc.CsQuery.Implementation
             string path = Path;
             yield return ""+DomData.indexSeparator+path;
             yield return IndexKey("+",nodeNameID, path);
-            string id = ID;
+            string id = Id;
             if (!String.IsNullOrEmpty(id))
             {
                 yield return IndexKey("#" ,DomData.TokenID(id), path);
@@ -546,7 +546,7 @@ namespace Jtc.CsQuery.Implementation
         {
             return NodeName == "input" || NodeName=="textarea";
         }
-        public override string ID
+        public override string Id
         {
             get
             {

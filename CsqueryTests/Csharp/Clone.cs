@@ -67,8 +67,7 @@ namespace CsqueryTests.Csharp
         [Test, TestMethod]
         public void InsertingContent()
         {
-            FixtureSetUp();
-            // The total # of ele
+
             var totalCount = Dom["*"].Length;
 
             string newHtml = Support.GetFile(testFile);
@@ -88,8 +87,32 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual("3,215", Dom[".reputation-score"].Last().Text(), "Text didn't get mangled on multiple moves (bug 11/11/11)");
 
 
+            
         }
 
+        [Test, TestMethod]
+        public void CloningRules()
+        {
+            FixtureSetUp();
+            var dom = Dom["#hlinks-user"];
+            Assert.AreEqual(1, dom.Length, "Sanity check");
+            var hlinks = dom.Clone();
+            Assert.AreEqual("hlinks-user",dom[0].Id,"Cloned element retains ID");
 
+            var badges = Dom["span[title*='badges']"];
+            Assert.AreEqual(2, badges.Length, "Sanity check");
+            hlinks.AddClass("followme");
+            badges.Append(hlinks);
+            
+            var newBadges = badges[".followme"];
+            Assert.AreEqual(newBadges.Length, 2, "Appended my clone to two elements");
+            Assert.AreEqual(newBadges.ParentsUntil("#hlinks-user"), badges, "Found my new parents");
+
+            Assert.AreEqual(0, newBadges.Filter("#hlinks-user").Length, "Clones lost their ID when inserted");
+            Assert.AreEqual(1, dom["#hlinks-user"].Length, "There's really just one element with that ID");
+
+
+
+        }
     }
 }

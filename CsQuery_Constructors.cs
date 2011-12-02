@@ -134,7 +134,7 @@ namespace Jtc.CsQuery
             Clear();
 
             CreateNewDom(html);
-            DomElementFactory factory = new DomElementFactory(Document);
+            HtmlParser.DomElementFactory factory = new HtmlParser.DomElementFactory(Document);
             if (html != null)
             {
                 foreach (IDomObject obj in factory.CreateObjects())

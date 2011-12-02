@@ -21,7 +21,7 @@ namespace Jtc.CsQuery
         IDomObject this[int index] { get; }
         IDomObject Clone();
 
-        string ID { get; set; }
+        string Id { get; set; }
         string TagName { get; }
 
         DomAttributes Attributes { get; }

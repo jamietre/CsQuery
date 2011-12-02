@@ -77,7 +77,7 @@ namespace Jtc.CsQuery.Implementation
             }
             set
             {
-                _NonAttributeData = value;
+                _NonAttributeData = value.Trim();
             }
         }
         protected string _NonAttributeData = String.Empty;

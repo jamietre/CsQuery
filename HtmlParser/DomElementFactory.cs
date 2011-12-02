@@ -6,7 +6,7 @@ using Jtc.CsQuery.ExtensionMethods;
 using System.Diagnostics;
 using Jtc.CsQuery.Implementation;
 
-namespace Jtc.CsQuery
+namespace Jtc.CsQuery.HtmlParser
 {
     public class DomElementFactory
     {
@@ -106,54 +106,8 @@ namespace Jtc.CsQuery
             SetBaseHtml(html);
             return Parse(allowLiterals);
         }
-        protected class IterationData
-        {
-            public IterationData Parent;
-            public IDomObject Object;
-          
-            public IDomElement Element
-            {
-                get
-                {
-                    return (IDomElement)Object;
-                }
-            }
-            // when true, the contents will be treated as text until the next close tag
-            public bool ReadTextOnly {
-                get
-                {
-                    return _ReadTextOnly;
-                }
-                set{
-                    _ReadTextOnly = value;
-                    if (value)
-                    {
-                        Step = -1;
-                    }
-                }
-            } protected bool _ReadTextOnly= false;
-            public int Pos;
-            public int Step = 0;
-            public bool Finished;
-            public bool AllowLiterals;
-            public bool Invalid = false;
-            public int HtmlStart = 0;
-            /// <summary>
-            /// Use this to prepare the iterator object to continue finding siblings. It retains the parent.
-            /// </summary>
-            public void Reset()
-            {
-                Step = 0;
-                HtmlStart = Pos;
-                ReadTextOnly = false;
-                Object = null;
-            }
-            public void Reset(int pos)
-            {
-                Pos = pos;
-                Reset();
-            }
-        }
+
+       
 
         //protected CsQuery Owner;
         protected bool isBound;
@@ -187,33 +141,37 @@ namespace Jtc.CsQuery
                         char c = BaseHtml[current.Pos];
                         switch (current.Step)
                         {
-                                // special case for textareas & scripts (things which can't have HTML children)
-                            case -1:
-                                if (c == '<')
+                            case 0:
+                                current.Pos = CharIndexOf(BaseHtml, '<', current.Pos);
+                                if (current.Pos  < 0)
                                 {
-                                    // read ahead to see if a close tag
-                                    int endPos =  Array.IndexOf<char>(BaseHtml,'>',current.Pos);
-                                    if (endPos>0) {
-                                        string tag = BaseHtml.SubstringBetween(current.Pos+1,endPos).ToLower();
-                                        if (tag.Substring(1)==current.Parent.Element.NodeName)
+                                    // done - no new tags found
+                                    current.Pos = EndPos + 1;
+                                }
+                                else {
+                                    // deal with when we're in a literal block (script/textarea)
+                                    if (current.ReadTextOnly)
+                                    {
+                                        int endPos = current.Pos;
+                                        while (endPos >= 0)
                                         {
-                                            current.Step=1;
-                                            break;
+                                            // keep going until we find the closing tag for this element
+                                            int caretPos = CharIndexOf(BaseHtml, '>', endPos + 1);
+                                            if (caretPos > 0)
+                                            {
+                                                string tag = BaseHtml.SubstringBetween(endPos + 1, caretPos).Trim().ToLower();
+                                                if (tag == "/" +current.Parent.Element.NodeName)
+                                                {
+                                                    // this is the end tag -- exit the block
+                                                    current.Pos=endPos;
+                                                    break;
+                                                }
+                                            }
+                                            endPos = CharIndexOf(BaseHtml, '<', endPos + 1);
                                         }
                                     }
-                                }
-                                current.Pos++;
-                                break;
-                            case 0:
-                                if (c == '<')
-                                {
-                                    
-                                    // found a tag-- it could be a close tag, or a new HTML tag
-                                    current.Step = 1;
-                                }
-                                else
-                                {
-                                    current.Pos++;
+                                    // even if we fell through from ReadTextOnly (e.g. was never closed), we should proceeed to finish
+                                    current.Step=1;
                                 }
                                 break;
                             case 1:
@@ -246,12 +204,9 @@ namespace Jtc.CsQuery
                                 {
                                     // It's a tag closer. Make sure it's the right one.
                                     current.Pos = tagStartPos + 1;
-                                    //Debug.Assert(curPos != 1504);
                                     string closeTag = GetCloseTag(current);
-                                   // Debug.Assert(closeTag != "ul");
+
                                     // Ignore empty tags, or closing tags found when no parent is open
-
-
                                     bool isProperClose = closeTag.ToLower() == parentTag;
                                     if (closeTag == String.Empty)
                                     {
@@ -351,6 +306,7 @@ namespace Jtc.CsQuery
                                     if (!current.Element.InnerHtmlAllowed && current.Element.InnerTextAllowed)
                                     {
                                         current.ReadTextOnly = true;
+                                        current.Step = 0;
                                     }
                                 }
                                 
@@ -392,9 +348,6 @@ namespace Jtc.CsQuery
                                 // I think there's a slightly better way to do this, capturing all the yield logic at the end of the
                                 // stack but it works for now.
 
-                                // For some reason I cannot get my head around a way to perform these logical steps with fewer conditional statements
-                                // They must be performed in this order.
-
                                 if (current.Parent != null)
                                 {
                                     current.Parent.Element.AppendChild(current.Object);
@@ -407,7 +360,6 @@ namespace Jtc.CsQuery
                                     current.Reset();
                                     continue;
                                 }
-
 
                                 stack.Push(current);
 
@@ -514,27 +466,22 @@ namespace Jtc.CsQuery
         /// </returns>
         protected bool MoveOutsideTag(IterationData current)
         {
-            bool finished = false;
-            bool inner = false;
-            while (!finished && current.Pos <= EndPos)
+            int endPos = CharIndexOf(BaseHtml, '>', current.Pos);
+
+            current.HtmlStart = current.Pos + 1;
+            if (endPos > 0)
             {
-                char c = BaseHtml[current.Pos];
-                if (c == '>')
-                {
-                    if (BaseHtml[current.Pos - 1] == '/')
-                    {
-                        inner = false;
-                    }
-                    else
-                    {
-                        inner = current.Object.InnerHtmlAllowed || current.Object.InnerTextAllowed;
-                    }
-                    finished = true;
-                    current.HtmlStart = current.Pos + 1;
-                }
-                current.Pos++;
+                current.Pos = endPos + 1;
+                return BaseHtml[endPos - 1] == '/' ? false :
+                    current.Object.InnerHtmlAllowed || current.Object.InnerTextAllowed;
+
             }
-            return inner;
+            else
+            {
+                current.Pos = EndPos + 1;
+                return false;
+            }
+
         }
         /// <summary>
         /// Start: Expects the position to be after an opening caret for a close tag, and returns the tag name.
@@ -656,11 +603,7 @@ namespace Jtc.CsQuery
                     case 3: // find quote start
                         if (c=='\\' || c=='>')
                         {
-                            // early ending tag
                             finished = true;
-                            //step = 4;
-                            //valStart = current.Pos;
-                            //current.Pos++;
                         }
                         else if (c == ' ')
                         {
@@ -714,7 +657,7 @@ namespace Jtc.CsQuery
         }
         protected string GetOpenText(IterationData current)
         {
-            int pos = Array.IndexOf<char>(BaseHtml,'<', current.Pos);
+            int pos = CharIndexOf(BaseHtml, '<', current.Pos);
             if (pos > current.Pos)
             {
                 int startPos = current.Pos;
@@ -732,7 +675,13 @@ namespace Jtc.CsQuery
                 return String.Empty;
             }
         }
-       
+
+        /// <summary>
+        /// Start: the opening caret of a tag
+        /// End: the first stop character (e.g. space after the tag name)
+        /// </summary>
+        /// <param name="current"></param>
+        /// <returns>Tag name</returns>
         protected string GetTagOpener(IterationData current)
         {
             bool finished = false;
@@ -745,6 +694,7 @@ namespace Jtc.CsQuery
                 switch (step)
                 {
                     case 0:
+                                                        
                         if (c == '<')
                         {
                             tagStart = current.Pos + 1;
@@ -753,6 +703,7 @@ namespace Jtc.CsQuery
                         current.Pos++;
                         break;
                     case 1:
+                        // skip whitespace between opening caret and text -- probably not allowed but can't hurt to do this
                         if (c == ' ')
                         {
                             current.Pos++;
@@ -773,28 +724,33 @@ namespace Jtc.CsQuery
                         }
                         break;
                 }
-
             }
             return String.Empty;
         }
+
         const string validNameStartCharacters = "abcdefghijklmnopqrstuvwxyzABCEDFGHIJKLMNOPQRSTUVWXYZ0123456789_:";
         const string validNameCharacters = validNameStartCharacters + ".-";
 
-        protected HashSet<char> validNameStartCharacterSet = new HashSet<char>(validNameStartCharacters.ToArray());
-        protected HashSet<char> validNameCharacterSet = new HashSet<char>(validNameCharacters.ToArray());
+        protected HashSet<char> validNameStartCharacterSet = new HashSet<char>(validNameStartCharacters);
+        protected HashSet<char> validNameCharacterSet = new HashSet<char>(validNameCharacters);
 
         protected bool isTagChar(char c)
         {
             return (c == '<' || c == '>' || c == '/');
         }
-        // Some tags have inner HTML but are often not closed properly. There are two possible situations. A tag may not have a nested instance of itself, and therefore any
-        // recurrence of that tag implies the previous one is closed. Other tag closings are simply optional, but are not repeater tags (e.g. body, html). These should be handled
-        // automatically by the logic that bubbles any closing tag to its parent if it doesn't match the current tag. The exception is <head> which technically does not require
-        // a close, but we would not expect to find another close tag
-        // Complete list of optional closing tags: -</HTML>- </HEAD> -</BODY> -</P> -</DT> -</DD> -</LI> -</OPTION> -</THEAD> </TH> </TBODY> </TR> </TD> </TFOOT> </COLGROUP>
 
-        // body, html don't matter, they will be closed by the document end.
-        // 
+        /* Some tags have inner HTML but are often not closed properly. There are two possible situations. A tag may not 
+           have a nested instance of itself, and therefore any recurrence of that tag implies the previous one is closed. 
+           Other tag closings are simply optional, but are not repeater tags (e.g. body, html). These should be handled
+           automatically by the logic that bubbles any closing tag to its parent if it doesn't match the current tag. The 
+           exception is <head> which technically does not require a close, but we would not expect to find another close tag
+           Complete list of optional closing tags: -</HTML>- </HEAD> -</BODY> -</P> -</DT> -</DD> -</LI> -</OPTION> -</THEAD> 
+           </TH> </TBODY> </TR> </TD> </TFOOT> </COLGROUP>
+
+           body, html will be closed by the document end and are also not required
+          
+        */
+
         protected bool TagHasImplicitClose(string tag, string newTag)
         {
             switch (tag)
@@ -818,6 +774,28 @@ namespace Jtc.CsQuery
                     return false;
 
             }
+        }
+        int pos;
+        int end;
+        protected int CharIndexOf(char[] charArray, char seek, int start)
+        {
+            //return Array.IndexOf<char>(charArray, seek, start);
+
+
+            pos = start - 1;
+            end = charArray.Length;
+            while (++pos < end && charArray[pos] != seek)
+                ;
+            return pos == end ? -1 : pos;
+
+            // This is substantially faster than Array.IndexOf, cut down load time by about 10% on text heavy dom test
+
+            //int pos = start;
+            //int end = charArray.Length;
+            //while (pos < end && charArray[pos++] != seek)
+            //    ;
+            // return pos == end && charArray[end-1] != seek ? -1 : pos-1;
+        
         }
     }
 }

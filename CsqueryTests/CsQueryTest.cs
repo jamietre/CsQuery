@@ -104,7 +104,7 @@ namespace CsqueryTests
             int index=0;
             bool success=true;
             foreach (var item in csq) {
-                if (item.ID!=idList[index++]) {
+                if (item.Id!=idList[index++]) {
                     success=false;
                     break;
                 }

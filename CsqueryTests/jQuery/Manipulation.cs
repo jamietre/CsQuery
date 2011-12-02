@@ -1034,7 +1034,7 @@ namespace CsqueryTests.jQuery
 
             Assert.AreEqual( jQuery(form).Clone().Children().Length, 1, "Make sure we just get the form back." );
 
-            Assert.AreEqual( jQuery("body").Clone().Children()[0].ID, "qunit-header", "Make sure cloning body works" );
+            Assert.AreEqual( jQuery("body").Clone().Children()[0].Id, "qunit-header", "Make sure cloning body works" );
         }
 
 

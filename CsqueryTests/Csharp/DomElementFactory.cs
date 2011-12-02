@@ -4,7 +4,9 @@ using System.Linq;
 using System.Web;
 using System.Text;
 using System.Reflection;
+using System.Diagnostics;
 using Jtc.CsQuery;
+using Jtc.CsQuery.HtmlParser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
@@ -69,7 +71,19 @@ namespace CsqueryTests.Csharp
         }
 
 
+        [Test, TestMethod]
+        public void CopyEntireDom()
+        {
+            string html = Support.GetFile("csquerytests\\resources\\HTML Standard.htm");
 
+            var dom = CsQuery.Create(html);
+            string output = dom.Render();
+            var dom2 = CsQuery.Create(output);
+            string output2 = dom2.Render();
+            Assert.AreEqual(output, output2, "There's no entropy in reparsing a rendered domain.");
+            Debug.Write("HTML5 spec parsing: original was " + html.Length + " bytes. CSQ output was " + output.Length);
+
+        }
         protected CsQuery CreateFromHtml(string html)
         {
             return CsQuery.Create(factory.CreateObjects(html));

@@ -197,7 +197,7 @@ namespace Jtc.CsQuery.Implementation
             switch (tokenId)
             {
                 case DomData.IDAttrId:
-                    Owner.ID = value;
+                    Owner.Id = value;
                     return;
                 case DomData.StyleAttrId:
                     Owner.Style.SetStyles(value, false);

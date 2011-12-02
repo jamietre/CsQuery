@@ -91,7 +91,7 @@ namespace CsqueryTests.jQuery
             Assert.AreEqual(1,elem[0].ChildNodes.Length, "jQuery quick setter text");
             Assert.AreEqual(elem[0].FirstChild.NodeValue, "test", "jQuery quick setter text");
             Assert.AreEqual(elem[0].ClassName, "test2", "jQuery() quick setter class");
-            Assert.AreEqual(elem[0].ID, "test3", "jQuery() quick setter id");
+            Assert.AreEqual(elem[0].Id, "test3", "jQuery() quick setter id");
 
             // Unnecessary
 

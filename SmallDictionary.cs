@@ -119,7 +119,7 @@ namespace Jtc.CsQuery
                         var item = InnerList[i];
                         if (item.Key.Equals(key))
                         {
-                            if (item.Value.Equals(value))
+                            if (item.Equals(newVal))
                             {
                                 return;
                             }
@@ -130,6 +130,7 @@ namespace Jtc.CsQuery
                         }
                     }
                 }
+
                 InnerList.Add(new KeyValuePair<TKey,TValue>(key,value));
             }
         }

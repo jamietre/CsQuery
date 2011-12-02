@@ -51,6 +51,7 @@ namespace Jtc.CsQuery.Implementation
                 _Document = null;
             }
         }
+        // Do not expose this. _ParentNode should only be managed by the ParentNode property.
         private IDomContainer _ParentNode;
 
         /// <summary>
@@ -76,7 +77,12 @@ namespace Jtc.CsQuery.Implementation
                 // Fast read access is less important than not having to reset them when moved.
                 return PathEncode(Index);
             }
+            internal set
+            {
+                _PathID = value;
+            }
         } 
+        // This must be accessd by overriding PathID implemenetation in DomElement
         protected string _PathID;
 
         public virtual int Depth
@@ -86,6 +92,10 @@ namespace Jtc.CsQuery.Implementation
                 return ParentNode.Depth + 1;
             }
         }
+        /// <summary>
+        /// The DOM for this object. This is obtained by looking at its parents value until it finds a non-null
+        /// Document in a parent. The value is cached locally as long as the current value of Parent remains the same.
+        /// </summary>
         public virtual IDomRoot Document
         {
             get
@@ -101,8 +111,7 @@ namespace Jtc.CsQuery.Implementation
                 _Document = value;
             }
         }
-        protected IDomRoot _Document;
-        internal int _Index;
+        private IDomRoot _Document;
 
          protected string PathEncode(int number)
         {
@@ -178,6 +187,8 @@ namespace Jtc.CsQuery.Implementation
                  _PathID = null;
              }
          }
+         private int _Index;
+
          public virtual string DefaultValue
          {
              get
@@ -208,7 +219,7 @@ namespace Jtc.CsQuery.Implementation
          }
 
 
-         public virtual string ID
+         public virtual string Id
          {
              get
              {

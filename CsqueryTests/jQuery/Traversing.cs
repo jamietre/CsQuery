@@ -397,19 +397,19 @@ namespace CsqueryTests.jQuery
         [Test, TestMethod]
         public void Parent()
         {
-            Assert.AreEqual(jQuery("#groups").Parent()[0].ID, "ap", "Simple parent check");
-            Assert.AreEqual(jQuery("#groups").Parent("p")[0].ID , "ap", "Filtered parent check");
+            Assert.AreEqual(jQuery("#groups").Parent()[0].Id, "ap", "Simple parent check");
+            Assert.AreEqual(jQuery("#groups").Parent("p")[0].Id , "ap", "Filtered parent check");
             Assert.AreEqual(jQuery("#groups").Parent("div").Length, 0, "Filtered parent check, no match");
-            Assert.AreEqual(jQuery("#groups").Parent("div, p")[0].ID, "ap", "Check for multiple filters");
+            Assert.AreEqual(jQuery("#groups").Parent("div, p")[0].Id, "ap", "Check for multiple filters");
             Assert.AreEqual(jQuery("#en, #sndp").Parent().Get(), q("foo"), "Check for unique results from parent");
             
         }
         [Test, TestMethod]
         public void Parents()
         {
-            Assert.AreEqual(jQuery("#groups").Parents()[0].ID, "ap", "Simple parents check" );
-            Assert.AreEqual(jQuery("#groups").Parents("p")[0].ID, "ap", "Filtered parents check" );
-            Assert.AreEqual(jQuery("#groups").Parents("div")[0].ID, "qunit-fixture", "Filtered parents check2" );
+            Assert.AreEqual(jQuery("#groups").Parents()[0].Id, "ap", "Simple parents check" );
+            Assert.AreEqual(jQuery("#groups").Parents("p")[0].Id, "ap", "Filtered parents check" );
+            Assert.AreEqual(jQuery("#groups").Parents("div")[0].Id, "qunit-fixture", "Filtered parents check2" );
             Assert.AreEqual(jQuery("#groups").Parents("p, div").Get(), q("ap", "qunit-fixture"), "Check for multiple filters" );
             Assert.AreEqual(jQuery("#en, #sndp").Parents().Get(), q("foo", "qunit-fixture", "dl", "body", "html"), "Check for unique results from parents" );
 
@@ -433,19 +433,19 @@ namespace CsqueryTests.jQuery
         [Test, TestMethod]
         public void Next()
         {
-            Assert.AreEqual(jQuery("#ap").Next()[0].ID, "foo", "Simple next check" );
-            Assert.AreEqual(jQuery("#ap").Next("div")[0].ID, "foo", "Filtered next check");
+            Assert.AreEqual(jQuery("#ap").Next()[0].Id, "foo", "Simple next check" );
+            Assert.AreEqual(jQuery("#ap").Next("div")[0].Id, "foo", "Filtered next check");
             Assert.AreEqual(jQuery("#ap").Next("p").Length, 0, "Filtered next check, no match" );
-            Assert.AreEqual(jQuery("#ap").Next("div, p")[0].ID, "foo", "Multiple filters");
+            Assert.AreEqual(jQuery("#ap").Next("div, p")[0].Id, "foo", "Multiple filters");
    
         }
         [Test, TestMethod]
         public void Prev()
         {
-            Assert.AreEqual(jQuery("#foo").Prev()[0].ID, "ap", "Simple prev check");
-            Assert.AreEqual(jQuery("#foo").Prev("p")[0].ID, "ap", "Filtered prev check");
+            Assert.AreEqual(jQuery("#foo").Prev()[0].Id, "ap", "Simple prev check");
+            Assert.AreEqual(jQuery("#foo").Prev("p")[0].Id, "ap", "Filtered prev check");
             Assert.AreEqual(jQuery("#foo").Prev("div").Length, 0, "Filtered prev check, no match");
-            Assert.AreEqual(jQuery("#foo").Prev("p, div")[0].ID, "ap", "Multiple filters");
+            Assert.AreEqual(jQuery("#foo").Prev("p, div")[0].Id, "ap", "Multiple filters");
         }
         [Test, TestMethod]
         public void NextAll()
@@ -591,20 +591,20 @@ namespace CsqueryTests.jQuery
             var tmp = jQuery("<div/>");
 
             var x = CsQuery.Create().Add(jQuery("<p id='x1'>xxx</p>").AppendTo(tmp)).Add(jQuery("<p id='x2'>xxx</p>").AppendTo(tmp));
-            Assert.AreEqual(x[0].ID, "x1", "Check on-the-fly element1" );
-            Assert.AreEqual(x[1].ID, "x2", "Check on-the-fly element2" );
+            Assert.AreEqual(x[0].Id, "x1", "Check on-the-fly element1" );
+            Assert.AreEqual(x[1].Id, "x2", "Check on-the-fly element2" );
 
              x = CsQuery.Create().Add(jQuery("<p id='x1'>xxx</p>").AppendTo(tmp)[0]).Add(jQuery("<p id='x2'>xxx</p>").AppendTo(tmp)[0]);
-            Assert.AreEqual(x[0].ID, "x1", "Check on-the-fly element1" );
-            Assert.AreEqual(x[1].ID, "x2", "Check on-the-fly element2" );
+            Assert.AreEqual(x[0].Id, "x1", "Check on-the-fly element1" );
+            Assert.AreEqual(x[1].Id, "x2", "Check on-the-fly element2" );
 
              x = CsQuery.Create().Add(jQuery("<p id='x1'>xxx</p>")).Add(jQuery("<p id='x2'>xxx</p>"));
-            Assert.AreEqual(x[0].ID, "x1", "Check on-the-fly element1" );
-            Assert.AreEqual(x[1].ID, "x2", "Check on-the-fly element2" );
+            Assert.AreEqual(x[0].Id, "x1", "Check on-the-fly element1" );
+            Assert.AreEqual(x[1].Id, "x2", "Check on-the-fly element2" );
 
              x = CsQuery.Create().Add("<p id='x1'>xxx</p>").Add("<p id='x2'>xxx</p>");
-            Assert.AreEqual(x[0].ID, "x1", "Check on-the-fly element1" );
-            Assert.AreEqual(x[1].ID, "x2", "Check on-the-fly element2" );
+            Assert.AreEqual(x[0].Id, "x1", "Check on-the-fly element1" );
+            Assert.AreEqual(x[1].Id, "x2", "Check on-the-fly element2" );
 
             IDomElement notDefined = null;
             Assert.AreEqual(CsQuery.Create().Add(notDefined).Length, 0, "Check that undefined adds nothing");

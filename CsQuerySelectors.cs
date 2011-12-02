@@ -799,7 +799,7 @@ namespace Jtc.CsQuery
 
             if (selector.SelectorType == SelectorType.HTML)
             {
-                DomElementFactory factory = new DomElementFactory(Document);
+                HtmlParser.DomElementFactory factory = new HtmlParser.DomElementFactory(Document);
 
                 foreach (var obj in factory.CreateObjects(selector.Html))
                 {
@@ -904,7 +904,7 @@ namespace Jtc.CsQuery
                 return false;
             }
             if (selector.SelectorType.HasFlag(SelectorType.ID) &&
-                selector.ID != elm.ID) 
+                selector.ID != elm.Id) 
             {
                 //match = false; continue;
                 return false;

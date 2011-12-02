@@ -60,12 +60,18 @@ namespace Jtc.CsQuery.Implementation
         /// <param name="element"></param>
         public void Add(IDomObject item)
         {
-            //element.ParentNode.ChildNodes.InnerList.RemoveAt(element.Index);
+ 
             if (item.ParentNode != null)
             {
                 item.Remove();
             }
-            //emoveParent(item);
+            // Ensure ID uniqueness - remove ID if same-named object already exists
+            if (item.Id!=null 
+                && !Owner.IsDisconnected 
+                && Owner.Document.GetElementById(item.Id)!=null) 
+            {
+                item.Id = null;
+            }
             InnerList.Add(item);
             AddParent(item, InnerList.Count - 1);
         }

@@ -9,6 +9,7 @@ using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
+using Jtc.CsQuery.HtmlParser;
 using Jtc.CsQuery.Implementation;
 
 namespace CsqueryTests.CSharp
@@ -67,7 +68,7 @@ namespace CsqueryTests.CSharp
             string ids = String.Empty;
             var res = csq.Select("input:checkbox").Each(delegate(IDomElement e)
             {
-                ids += (ids == "" ? "" : ",") + e.ID;
+                ids += (ids == "" ? "" : ",") + e.Id;
             });
             Assert.AreEqual(4, res.Length, "Test input:checkbox");
         }

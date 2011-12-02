@@ -31,7 +31,7 @@ namespace CsqueryTests.Performance
 
             DateTime start = DateTime.Now;
 
-
+            System.GC.Collect();
             var GC_MemoryStart = System.GC.GetTotalMemory(true);
             html = Support.GetFile("csquerytests\\resources\\HTML Standard.htm");
             for (int i = 0; i < iterationsLoad; i++)
