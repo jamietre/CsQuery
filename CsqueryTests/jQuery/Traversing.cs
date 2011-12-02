@@ -380,8 +380,8 @@ namespace CsqueryTests.jQuery
         public void Siblings()
         {
             Assert.AreEqual(jQuery("#en").Siblings().Get(), q("sndp", "sap"), "Check for siblings");
-            //Assert.AreEqual(jQuery("#sndp").Siblings(":has(code)").Get(), q("sap"), "Check for filtered siblings (has code child element)");
-            //Assert.AreEqual(jQuery("#sndp").Siblings(":has(a)").Get(), q("en", "sap"), "Check for filtered siblings (has anchor child element)");
+            Assert.AreEqual(jQuery("#sndp").Siblings(":has(code)").Get(), q("sap"), "Check for filtered siblings (has code child element)");
+            Assert.AreEqual(jQuery("#sndp").Siblings(":has(a)").Get(), q("en", "sap"), "Check for filtered siblings (has anchor child element)");
             Assert.AreEqual(jQuery("#foo").Siblings("form, b").Get(), q("form", "floatTest", "lengthtest", "name-tests", "testForm"), "Check for multiple filters");
             var set = q("sndp", "en", "sap");
             Assert.AreEqual(jQuery("#en, #sndp").Siblings().Get(), set, "Check for unique results from siblings");

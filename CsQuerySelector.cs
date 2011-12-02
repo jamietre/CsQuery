@@ -17,7 +17,8 @@ namespace Jtc.CsQuery
         Position = 64,
         Elements = 128,
         HTML = 256,
-        SubSelector = 512
+        SubSelectorHas = 512,
+        SubSelectorNot= 1024
     }
     public enum AttributeSelectorType
     {
@@ -53,11 +54,12 @@ namespace Jtc.CsQuery
         Last = 5,
         FirstChild = 6,
         LastChild = 7,
-        IndexEquals = 8,
-        IndexLessThan = 9,
-        IndexGreaterThan = 10
+        NthChild=8,
+        IndexEquals = 9,
+        IndexLessThan = 10,
+        IndexGreaterThan = 11
     }
-    
+
     public class CsQuerySelector
     {
         public CsQuerySelector()
@@ -68,9 +70,48 @@ namespace Jtc.CsQuery
             TraversalType = TraversalType.All;
             PositionType = PositionType.All;
         }
+       
         public SelectorType SelectorType { get; set; }
         public AttributeSelectorType AttributeSelectorType { get; set; }
         public CombinatorType CombinatorType { get; set; }
+        /// <summary>
+        /// Indicates that a position type selector refers to the result list, not the DOM position
+        /// </summary>
+        /// <returns></returns>
+        public bool IsResultListPosition()
+        {
+            if (SelectorType != SelectorType.Position)
+            {
+                return false;
+            }
+            switch (PositionType)
+            {
+                case PositionType.Last:
+                case PositionType.First:
+                case PositionType.IndexEquals:
+                case PositionType.IndexGreaterThan:
+                case PositionType.IndexLessThan:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        public bool IsDomIndexPosition()
+        {
+            if (SelectorType != SelectorType.Position)
+            {
+                return false;
+            }
+            return !IsResultListPosition();
+        }
+        public bool IsOrdinalIndexPosition()
+        {
+            if (SelectorType != SelectorType.Position)
+            {
+                return false;
+            }
+            return PositionType == PositionType.IndexEquals || PositionType == PositionType.IndexGreaterThan || PositionType == PositionType.IndexLessThan;
+        }
         public bool IsComplete
         {
             get
@@ -148,7 +189,70 @@ namespace Jtc.CsQuery
             }
         }
         protected List<CsQuerySelectors> _SubSelectors= null;
-                                                         
-                                                     
+
+
+        public override string ToString()
+        {
+            string output = "";
+            switch (TraversalType)
+            { 
+                case TraversalType.All:
+                    output="";
+                    break;
+                case TraversalType.Child:
+                    output += " > ";
+                    break;
+                case TraversalType.Descendent:
+                    output += " ";
+                    break;
+            }
+            if (SelectorType.HasFlag(SelectorType.Elements))
+            {
+                output += "<ElementList[" + SelectElements.Count() + "]> ";
+            }
+            if (SelectorType.HasFlag(SelectorType.HTML))
+            {
+                output += "<HTML[" + Html.Length + "]> ";
+            }
+            if (SelectorType.HasFlag(SelectorType.Tag))
+            {
+                output += Tag;
+            }
+            if (SelectorType.HasFlag(SelectorType.ID))
+            {
+                output += "#" + ID;
+            }
+            if (SelectorType.HasFlag(SelectorType.Attribute))
+            {
+                output += "[" + AttributeName;
+                if (!String.IsNullOrEmpty(AttributeValue)) {
+                    output += "." + AttributeSelectorType.ToString() + ".'" + AttributeValue + "'";
+                }
+                output += "]";
+            }
+            if (SelectorType.HasFlag(SelectorType.Class))
+            {
+                output += "." + Class;
+            }
+            if (SelectorType.HasFlag(SelectorType.All)) {
+                output += "*";
+            }
+            if (SelectorType.HasFlag(SelectorType.Position)) {
+                output += ":" + PositionType.ToString();
+                if (IsOrdinalIndexPosition())
+                {
+                    output += "(" + PositionIndex + ")";
+                } else if (SubSelectors.Count>0) {
+                    output+= SubSelectors.ToString();
+                }
+            }
+            if (SelectorType.HasFlag(SelectorType.Contains))
+            {
+                output += ":contains(" + Criteria + ")";
+            }
+
+
+            return output;
+        }             
     }
 }

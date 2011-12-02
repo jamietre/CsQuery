@@ -15,7 +15,11 @@ namespace Jtc.CsQuery.Implementation
      
     public class CSSStyleDeclaration : IDictionary<string, string>, IEnumerable<KeyValuePair<string, string>>, ICSSStyleDeclaration
     {
-
+        public CSSStyleDeclaration(IDomElement owner)
+        {
+            Owner = owner;
+        }
+        protected IDomElement Owner;
         /// <summary>
         /// Warning: Do not attempt to access this value directly to determine whether or not there are styles, since it also
         /// depends on QuickSetStyles. Use HasStyles method instead.
@@ -42,11 +46,23 @@ namespace Jtc.CsQuery.Implementation
         /// For fast DOM creation - since styles are not indexed or validated.
         /// If they are ever accessed by style name, they will be parsed on demand.
         /// </summary>
-        protected string QuickSetValue;
-
-        public CSSStyleDeclaration Clone()
+        protected string QuickSetValue
         {
-            CSSStyleDeclaration clone = new CSSStyleDeclaration();
+            get
+            {
+                return _QuickSetValue;
+            }
+            set
+            {
+                bool hadStyles = HasStyles;
+                _QuickSetValue = value;
+                UpdateIndex(hadStyles);
+            }
+        }
+        protected string _QuickSetValue;
+        public CSSStyleDeclaration Clone(IDomElement owner)
+        {
+            CSSStyleDeclaration clone = new CSSStyleDeclaration(owner);
 
             if (QuickSetValue != null)
             {
@@ -79,6 +95,7 @@ namespace Jtc.CsQuery.Implementation
                 AddStyle(styles, strict);
             }
         }
+        
         public void AddStyle(string styles, bool strict)
         {
             foreach (string style in styles.SplitClean(';'))
@@ -106,6 +123,36 @@ namespace Jtc.CsQuery.Implementation
             get
             {
                 return QuickSetValue != null || (_Styles != null && Styles.Count > 0);
+            }
+        }
+        /// <summary>
+        /// Adds, removes, or does nothign to the index depending on whether a change is needed
+        /// </summary>
+        /// <param name="previouslyHadStyles"></param>
+        protected void UpdateIndex(bool previouslyHadStyles)
+        {
+            if (HasStyles && !previouslyHadStyles)
+            {
+                AddToIndex();
+            }
+            else if (previouslyHadStyles && !HasStyles)
+            {
+                RemoveFromIndex();
+            }
+        }
+        protected void AddToIndex()
+        {
+            if (!Owner.IsDisconnected)
+            {
+                Owner.Document.AddToIndex(Owner.Attributes.IndexKey(DomData.StyleAttrId), Owner);
+            }
+        }
+
+        protected void RemoveFromIndex()
+        {
+            if (!Owner.IsDisconnected)
+            {
+                Owner.Document.RemoveFromIndex(Owner.Attributes.IndexKey(DomData.StyleAttrId));
             }
         }
         public override string ToString()
@@ -155,7 +202,9 @@ namespace Jtc.CsQuery.Implementation
         /// <param name="value"></param>
         public void SetRaw(string name, string value)
         {
+            bool hadStyles = HasStyles;
             Styles[DomData.TokenID(name,true)] = value;
+            UpdateIndex(hadStyles);
         }
         protected string Get(string name)
         {

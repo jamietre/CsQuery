@@ -48,6 +48,7 @@ namespace Jtc.CsQuery
                 {
                     Document = null;
                 }
+                ClearSelections();
             }
         }
         protected void Clear()

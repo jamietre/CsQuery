@@ -144,13 +144,13 @@ namespace Jtc.CsQuery
 
         public char Peek()
         {
-            if (Pos < Length - 1)
+            if (Pos < Length - 2)
             {
                 return Text[Pos + 1];
             }
             else
             {
-                throw new Exception("Can't peek when at end of string.");
+                return (char)0;
             }
         }
         /// <summary>

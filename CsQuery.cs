@@ -1171,22 +1171,22 @@ namespace Jtc.CsQuery
         public CsQuery Find(string selector)
         {
             CsQuery csq = New();
-            CsQuerySelectors selectors = new CsQuerySelectors(selector);
-            csq.AddSelectionRange(selectors.Select(Document, Children()));
+            Selectors = new CsQuerySelectors(selector);
+            csq.AddSelectionRange(Selectors.Select(Document, Children()));
             return csq;
         }
         public CsQuery Find(IEnumerable<IDomObject> elements)
         {
             CsQuery csq = New();
-            CsQuerySelectors selectors = new CsQuerySelectors(elements);
-            csq.AddSelectionRange(selectors.Select(Document, Children()));
+            Selectors = new CsQuerySelectors(elements);
+            csq.AddSelectionRange(Selectors.Select(Document, Children()));
             return csq;
         }
         public CsQuery Find(IDomObject element)
         {
             CsQuery csq =New();
-            CsQuerySelectors selectors = new CsQuerySelectors(element);
-            csq.AddSelectionRange(selectors.Select(Document, Children()));
+            Selectors = new CsQuerySelectors(element);
+            csq.AddSelectionRange(Selectors.Select(Document, Children()));
             return csq;
         }
 
@@ -1235,13 +1235,11 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery Select(string selector)
         {
-            CsQuerySelectors selectors = new CsQuerySelectors(selector);
-           
             CsQuery csq = New();
-
+            csq.Selectors = new CsQuerySelectors(selector);
             // If the selector is HTML create it as a new fragment so it can be indexed & traversed upon
             //IDomRoot dom = selectors.IsHtml ? new DomFragment(selector.ToCharArray()) : Document;
-            csq.AddSelectionRange(selectors.Select(Document));
+            csq.AddSelectionRange(csq.Selectors.Select(Document));
             return csq;
         }
 
@@ -1263,13 +1261,17 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery Select(string selector, IDomObject context)
         {
-            CsQuerySelectors selectors = new CsQuerySelectors(selector);
-            return new CsQuery(selectors.Select(Document, context), this);
+            var selectors = new CsQuerySelectors(selector);
+            CsQuery csq = new CsQuery(selectors.Select(Document, context), this);
+            csq.Selectors = selectors;
+            return csq;
         }
         public CsQuery Select(string selector, IEnumerable<IDomObject> context)
         {
-            CsQuerySelectors selectors = new CsQuerySelectors(selector);
-            return new CsQuery(selectors.Select(Document, context), this);
+            var selectors = new CsQuerySelectors(selector);
+            CsQuery csq = new CsQuery(selectors.Select(Document, context), this);
+            csq.Selectors = selectors;
+            return csq;
         }
         /// <summary>
         /// Reduce the set of matched elements to the first in the set.
@@ -2053,23 +2055,16 @@ namespace Jtc.CsQuery
         public bool Is(string selector)
         {
             return Filter(selector).Length > 0;
-            //CsQuerySelectors selectors = new CsQuerySelectors(selector);
-            //return !selectors.Select(Dom,Selection).IsNullOrEmpty();
         }
         public bool Is(IEnumerable<IDomObject> elements)
         {
             HashSet<IDomObject> els = new HashSet<IDomObject>(elements);
             els.IntersectWith(Selection);
             return els.Count > 0;
-            //CsQuerySelectors selectors = new CsQuerySelectors(elements);
-            //return !selectors.Select(Dom, Selection).IsNullOrEmpty();
         }
         public bool Is(IDomObject element)
         {
             return Selection.Contains(element);
-
-            //CsQuerySelectors selectors = new CsQuerySelectors(element);
-            //return !selectors.Select(Dom, Selection).IsNullOrEmpty();
         }
 
       

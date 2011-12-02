@@ -127,6 +127,41 @@ namespace CsqueryTests.Csharp
              
             Assert.AreEqual(correctList,new List<IDomObject>(res.Siblings()),"The child list is identical to the sibling list");
         }
+        [Test, TestMethod]
+        public void PseudoSelectors()
+        {
+            var res = jQuery("body > [id] > :last-child"); // two elements with IDs
+            Assert.AreEqual(q("textarea", "test-show-last"), res, "last-child with child works");
 
+            int count = res["[id]"].Length;
+            int bodyChildIDCount = res["body [id] > :last-child[id]"].Length;
+
+            res = res["#textarea"].Attr("id", null);
+            Assert.AreEqual(res["[id]"].Length + 1, count, "One less ID");
+            Assert.AreEqual(bodyChildIDCount-1, res["body > [id]"].Length, "Setting ID to null removed it from the index too");
+
+            res[0].Id = "";
+            Assert.AreEqual(bodyChildIDCount, res["body [id] > :last-child[id]"].Length, "Setting ID to empty string added it back");
+            res.Attr("id", null);
+            res.Attr("id", "newid");
+            Assert.AreEqual(res["body [id='newid']"][0],res[0], "Further messing with ID and everything is fine");
+
+            var para = jQuery("p:first");
+            para[0].ClassName = "some classes";
+            Assert.AreEqual(jQuery("p[class]")[0],para[0],"Selected by class attribute");
+        }
+        [Test, TestMethod]
+        public void NthChild()
+        {
+            var res = jQuery("body > :nth-child(2)");
+            Assert.AreEqual(jQuery("body").Children().Eq(1)[0], res[0], "nth-child(x) works");
+
+            res = jQuery("body > :nth-child(2n)");
+            Assert.AreEqual(jQuery("body").Children(":odd").Elements,res.Elements,"Simple math nth child workd");
+
+            res = jQuery("body > :nth-child(2n+1)");
+            Assert.AreEqual(jQuery("body").Children(":even").Elements, res.Elements, "Simple math nth child workd");
+
+        }
     }
 }

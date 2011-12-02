@@ -37,10 +37,7 @@ namespace Jtc.CsQuery.Implementation
             {
                 if (_Style == null)
                 {
-                    _Style = new CSSStyleDeclaration();
-                    //if (_Attributes != null) {
-                    //    setAttributesCallbacks();
-                    //}
+                    _Style = new CSSStyleDeclaration(this);
                 }
                 return _Style;
             }
@@ -111,7 +108,27 @@ namespace Jtc.CsQuery.Implementation
                 return _Classes != null && _Classes.Count > 0;
             }
         }
+        /// <summary>
+        /// The index excluding text nodes
+        /// </summary>
+        public int ElementIndex
+        {
+            get
+            {
+                int index = -1;
+                IDomElement el = this;
+                while (el != null)
+                {
+                    el = el.PreviousElementSibling;
+                    index++;
+                }
+                return index;
+            }
+        }
 
+        /// <summary>
+        /// The object to which this index refers
+        /// </summary>
         public IDomObject IndexReference
         {
             get
@@ -215,7 +232,7 @@ namespace Jtc.CsQuery.Implementation
 
             if (HasAttributes)
             {
-                clone.Attributes = Attributes.Clone(this);
+                clone.Attributes = Attributes.Clone(clone);
             }
             if (HasClasses)
             {
@@ -223,7 +240,7 @@ namespace Jtc.CsQuery.Implementation
             }
             if (HasStyles)
             {
-                clone.Style = Style.Clone();
+                clone.Style = Style.Clone(clone);
             }
             // will not create ChildNodes lazy object unless results are returned (this is why we don't use AddRange)
             foreach (IDomObject child in CloneChildren())
@@ -260,6 +277,8 @@ namespace Jtc.CsQuery.Implementation
         public bool AddClass(string name)
         {
             bool result=false;
+            bool addedFirstClass = false;
+
             foreach (string cls in name.SplitClean())
             {
                 if (!HasClass(cls))
@@ -269,6 +288,7 @@ namespace Jtc.CsQuery.Implementation
                         _Classes = new List<ushort>();
                     }
                     ushort tokenId = DomData.TokenID(cls);
+                    addedFirstClass = !HasClasses;
                     _Classes.Add(tokenId);
                     if (!IsDisconnected)
                     {
@@ -276,6 +296,11 @@ namespace Jtc.CsQuery.Implementation
                     }
                     
                     result = true;
+                }
+                if (addedFirstClass && !IsDisconnected)
+                {
+                    // Must index the attributes for search just on attribute too
+                    Document.AddToIndex(Attributes.IndexKey(DomData.ClassAttrId),this);
                 }
             }
             return result;
@@ -292,6 +317,10 @@ namespace Jtc.CsQuery.Implementation
                     if (!IsDisconnected)
                     {
                         Document.RemoveFromIndex(IndexKey(".",tokenId));
+                        if (!HasClasses)
+                        {
+                            Document.RemoveFromIndex(Attributes.IndexKey(DomData.ClassAttrId));
+                        }
                     }
 
                     result = true;
@@ -553,14 +582,26 @@ namespace Jtc.CsQuery.Implementation
             }
             set
             {
+                // ID is stored as an attribute internally so the index is OK for attribute searches
                 if (Attributes.ContainsKey(DomData.IDAttrId) && !IsDisconnected)
                 {
-                        Document.RemoveFromIndex(IndexKey("#",Attributes[DomData.IDAttrId]));
+                    //removeFirst = true;
+                    Document.RemoveFromIndex(IndexKey("#", Attributes[DomData.IDAttrId]));
                 }
                 Attributes.SetRaw(DomData.IDAttrId,value);
                 if (!IsDisconnected)
                 {
-                    Document.AddToIndex(IndexKey("#",value), this);
+                    //if (removeFirst && value== null)
+                    //{
+                    //     Document.RemoveFromIndex(Attributes.IndexKey(DomData.IDAttrId));
+                    //}
+                    if (value != null)
+                    {
+                        Document.AddToIndex(IndexKey("#", value), this);
+
+                        // Must index the attributes for search just on attribute too
+                        //Document.AddToIndex(Attributes.IndexKey(DomData.IDAttrId), this);
+                    }
                 }
             }
         }

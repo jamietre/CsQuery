@@ -91,6 +91,8 @@
     <Compile Include="Dom\IDomNode.cs" />
     <Compile Include="Dom\IDomSpecialElement.cs" />
     <Compile Include="Dom\INodeList.cs" />
+    <Compile Include="Engine\NthChild.cs" />
+    <Compile Include="Engine\CssSelectionEngine.cs" />
     <Compile Include="ExtensionMethods.Internal.cs" />
     <Compile Include="HtmlParser\IterationData.cs" />
     <Compile Include="SmallDictionary.cs" />

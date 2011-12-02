@@ -193,7 +193,6 @@ namespace Jtc.CsQuery.Implementation
         /// <param name="value"></param>
         protected void Set(ushort tokenId, string value)
         {
-            bool addToIndex = false;
             switch (tokenId)
             {
                 case DomData.IDAttrId:
@@ -206,17 +205,11 @@ namespace Jtc.CsQuery.Implementation
                     Owner.ClassName = value;
                     return;
                 case DomData.ValueAttrId:
-                    addToIndex = !Attributes.ContainsKey(tokenId);
                     SetRaw(tokenId,value.CleanUp());
                     break;
                 default:
-                    addToIndex = !Attributes.ContainsKey(tokenId);
                     SetRaw(tokenId,value);
                     break;
-            }
-            if (addToIndex)
-            {
-                AddToIndex(tokenId);
             }
         }
         /// <summary>
@@ -231,7 +224,12 @@ namespace Jtc.CsQuery.Implementation
             }
             else
             {
+                if (!Attributes.ContainsKey(tokenId))
+                {
+                    AddToIndex(tokenId);
+                }
                 Attributes[tokenId] = value;
+
             }
         }
            
@@ -267,7 +265,11 @@ namespace Jtc.CsQuery.Implementation
                 Owner.Document.AddToIndex(IndexKey(attrId), Owner);
             }
         }
-        protected string IndexKey(ushort attrId)
+        public string IndexKey(string attrName)
+        {
+            return IndexKey(DomData.TokenID(attrName));
+        }
+        public string IndexKey(ushort attrId)
         {
 #if DEBUG_PATH
             return "!" + DomData.TokenName(attrId) + DomData.indexSeparator + Owner.Path;

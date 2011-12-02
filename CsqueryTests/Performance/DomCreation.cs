@@ -21,7 +21,7 @@ namespace CsqueryTests.Performance
     public class _DomCreationPerformance: CsQueryTest
     {
         protected int iterationsLoad = 3;
-        protected int iterationsSelect = 100;
+        protected int iterationsSelect = 10;
         protected int iterationsClone = 2;
         
         [TestMethod,Test]
@@ -49,7 +49,7 @@ namespace CsqueryTests.Performance
 
             for (int i = 0; i < iterationsSelect; i++)
             {
-                CsQuery sel = Dom.Select("div span");
+                CsQuery sel = Dom.Select("div:nth-child(2n+1)");
                 divSpan = sel.Length;
             }
             DateTime selected = DateTime.Now;

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 using Jtc.CsQuery.ExtensionMethods;
+using Jtc.CsQuery.Engine;
 
 namespace Jtc.CsQuery
 {
@@ -41,13 +42,20 @@ namespace Jtc.CsQuery
             ((List<IDomObject>)sel.SelectElements).Add(element);
             Selectors.Add(sel);
         }
-        public bool IsHtml
+
+        protected CssSelectionEngine Engine
         {
             get
             {
-                return !String.IsNullOrEmpty(Selector) && Selector[0] == '<';
+                if (_Engine == null)
+                {
+                    _Engine = new CssSelectionEngine();
+                    _Engine.Selectors = this;
+                }
+                return _Engine;
             }
         }
+        protected CssSelectionEngine _Engine;
         protected CsQuerySelector Current
         {
             get
@@ -60,6 +68,24 @@ namespace Jtc.CsQuery
             }
 
         } private CsQuerySelector _Current = null;
+
+        /// <summary>
+        /// Closes the currently active selector, destroying any partial selector composed so far.
+        /// Returns true if a selector was added
+        /// </summary>
+        protected bool SaveCurrent() {
+            bool result = false;
+            if (Current.IsComplete)
+            {
+                Selectors.Add(Current);
+                result = true;
+            }
+            return result;
+        }
+        protected void ClearCurrent()
+        {
+            _Current = null;
+        }
         StringScanner scanner;
         protected void ParseSelector(string selector)
         {
@@ -76,7 +102,7 @@ namespace Jtc.CsQuery
             scanner.StopChars = " >:.=#$|,*()[]^'\"";
             scanner.Next();
             
-            StartNewSelector();
+            StartNewRootSelector();
             
             while (!scanner.AtEnd) {
 
@@ -100,53 +126,46 @@ namespace Jtc.CsQuery
                             case "button":
                             case "file":
                             case "text":
-                                Current.SelectorType |= SelectorType.Attribute;
+                                StartNewSelector(SelectorType.Attribute);
+
+                                //Current.SelectorType |= SelectorType.Attribute;
                                 Current.AttributeSelectorType = AttributeSelectorType.Equals;
                                 Current.AttributeName = "type";
                                 Current.AttributeValue = key;
 
                                 if (key == "button" && !Current.SelectorType.HasFlag(SelectorType.Tag))
                                 {
-                                    StartNewSelector(CombinatorType.Cumulative);
-                                    Current.SelectorType = SelectorType.Tag;
+                                    //StartNewSelector(CombinatorType.Cumulative);
+                                    StartNewSelector(SelectorType.Tag,CombinatorType.Cumulative,Current.TraversalType);
+                                    //Current.SelectorType = SelectorType.Tag;
                                     Current.Tag = "button";
-                                }
-                                else
-                                {
-                                    FinishSelector();
                                 }
                                 break;
                             case "checked":
                             case "selected":
                             case "disabled":
-                                Current.SelectorType |= SelectorType.Attribute;
+                                StartNewSelector(SelectorType.Attribute);
                                 Current.AttributeSelectorType = AttributeSelectorType.Exists;
                                 Current.AttributeName = key;
-                                FinishSelector();
                                 break;
                             case "enabled":
-                                Current.SelectorType |= SelectorType.Attribute;
+                                StartNewSelector(SelectorType.Attribute);
                                 Current.AttributeSelectorType = AttributeSelectorType.NotExists;
                                 Current.AttributeName = "disabled";
-                                FinishSelector();
                                 break;
-                           // case "visible":
-                                // this needs to look up the tree, special case
-                            //    break;
+                            case "visible":
+                                throw new Exception("Not implemented.");
                             case "contains":
-                                StartNewSelector();
-                                Current.SelectorType |= SelectorType.Contains;
-                                Current.TraversalType = TraversalType.Filter;
+                                StartNewSelector(SelectorType.Contains);
                                 scanner.Expect('(');
                                 scanner.AllowQuoting();
                                 Current.Criteria= scanner.Seek(")");
                                 scanner.Next();
-                                FinishSelector();
                                 break;
                             case "eq":
                             case "gt":
                             case "lt":
-                                StartNewPositionSelector();
+                                StartNewSelector(SelectorType.Position);
                                 switch(key) {
                                     case "eq": Current.PositionType=PositionType.IndexEquals; break;
                                     case "lt": Current.PositionType = PositionType.IndexLessThan; break;
@@ -156,42 +175,43 @@ namespace Jtc.CsQuery
                                 scanner.AllowQuoting();
                                 Current.PositionIndex = Convert.ToInt32(scanner.Seek(")"));
                                 scanner.Next();
-                                FinishSelector();
                                 break;
                             case "even":
-                                StartNewPositionSelector();
+                                StartNewSelector(SelectorType.Position);
                                 Current.PositionType = PositionType.Even;
-                                FinishSelector();
                                 break;
                             case "odd":
-                                StartNewPositionSelector();
+                                StartNewSelector(SelectorType.Position);
                                 Current.PositionType = PositionType.Odd;
-                                FinishSelector();
                                 break;
                             case "first":
-                                StartNewPositionSelector();
+                                StartNewSelector(SelectorType.Position);
                                 Current.PositionType = PositionType.First;
-                                FinishSelector();
                                 break;
                             case "last":
-                                StartNewPositionSelector();
+                                StartNewSelector(SelectorType.Position);
                                 Current.PositionType = PositionType.Last;
-                                FinishSelector();
                                 break;
                             case "last-child":
-                                StartNewPositionSelector();
+                                StartNewSelector(SelectorType.Position);
                                 Current.PositionType = PositionType.LastChild;
-                                FinishSelector();
                                 break;
                             case "first-child":
-                                StartNewPositionSelector();
+                                StartNewSelector(SelectorType.Position);
                                 Current.PositionType = PositionType.FirstChild;
-                                FinishSelector();
+                                break;
+                            case "nth-child":
+                                StartNewSelector(SelectorType.Position);
+                                Current.PositionType = PositionType.NthChild;
+                                scanner.Expect('(');
+                                scanner.AllowQuoting();
+                                Current.Criteria =scanner.Seek(")");
+                                scanner.Next();
                                 break;
                             case "has":
-                            //case "not":
+                            case "not":
+                                StartNewSelector(key=="has"?SelectorType.SubSelectorHas: SelectorType.SubSelectorNot);
                                 Current.TraversalType = TraversalType.Descendent;
-                                Current.SelectorType |= SelectorType.SubSelector;
                                 scanner.Expect('(');
                                 scanner.AllowQuoting();
                                 string criteria= scanner.Seek(")");
@@ -201,25 +221,27 @@ namespace Jtc.CsQuery
                                 break;
 
                             default:
-                                throw new Exception("Unknown selector :\""+key+"\"");
+                                throw new Exception("Unknown pseudoselector :\""+key+"\"");
 
                         }
                         break;
                     case '.':
-                        Current.SelectorType = SelectorType.Class;
+                        StartNewSelector(SelectorType.Class);
+                        //Current.SelectorType = SelectorType.Class;
                         Current.Class = scanner.Seek();
-                        StartNewSelector();
+                        //StartNewSelector();
 
                         break;
                     case '#':
-                        Current.SelectorType = SelectorType.ID;
+                        StartNewSelector(SelectorType.ID);
+                        //Current.SelectorType = SelectorType.ID;
                         Current.ID = scanner.Seek();
-                        StartNewSelector();
+                        //StartNewSelector();
                         break;
                     case '[':
-                        
+                        StartNewSelector(SelectorType.Attribute);
                         Current.AttributeName = scanner.Seek();
-                        Current.SelectorType |= SelectorType.Attribute;
+                        //Current.SelectorType |= SelectorType.Attribute;
                         
                         bool finished = false;
                         while (!scanner.AtEnd && !finished)
@@ -261,29 +283,35 @@ namespace Jtc.CsQuery
                             scanner.Next();
                             
                         }
-                        //if (!scanner.AtEnd)
-                        //{
-                        //    scanner.Expect(" ,");
-                        //    scanner.Next();
-                        //}
                         break;
                     case ',':
-                        
-                        StartNewSelector(CombinatorType.Root);
-                        // thre should be a selector closed from the previous line
-                        if (Selectors.Count == 0)
-                        {
-                            scanner.ThrowUnexpectedCharacterException();
-                        }
+                        if (Current.SelectorType != 0) {
+                            SaveCurrent();
+                            if (Selectors.Count==0) {
+                                // , can only be after a complete selector
+                                scanner.ThrowUnexpectedCharacterException();
+                            }
 
+                        }
+                        ClearCurrent();
+                        StartNewRootSelector();
                         scanner.SkipWhitespace();
                         scanner.Next();
-                        
                         break;
                     case '>':
                         //StartNewSelector();
-
-                        Current.TraversalType = TraversalType.Child;
+                        //Current.TraversalType = TraversalType.Child;
+                        if (Current.SelectorType != 0)
+                        {
+                            SaveCurrent();
+                            ClearCurrent();
+                            StartNewSelector(TraversalType.Child);
+                        }
+                        else
+                        {
+                            Current.TraversalType = TraversalType.Child;
+                        }
+                        
                         // This is a wierd thing because if you use the > selector against a set directly, the meaning is "filter" 
                         // whereas if it is used in a combination selector the meaning is "filter for 1st child"
                         Current.ChildDepth = (Current.CombinatorType==CombinatorType.Root ? 0 : 1);
@@ -293,15 +321,16 @@ namespace Jtc.CsQuery
                         break;
                     case ' ':
                         // if a ">" or "," is later found, it will be overridden.
-                        StartNewSelector(CombinatorType.Chained);
-                        Current.TraversalType = TraversalType.Descendent;
+
+                        StartNewSelector(TraversalType.Descendent);
 
                         scanner.SkipWhitespace();
                         scanner.Next();
                         
                         break;
                     default:
-                        Current.SelectorType = SelectorType.Tag;
+                        //Current.SelectorType = SelectorType.Tag;
+                        StartNewSelector(SelectorType.Tag);
                         scanner.Prev();
                         Current.Tag = scanner.Seek();
                         // When nothing was retrieved and it's the start of a selector, treat as text. Otherwise ignore the rest
@@ -320,51 +349,67 @@ namespace Jtc.CsQuery
                 }
             }
             // Close any open selectors
-            StartNewSelector();
+            StartNewRootSelector();
 
         }
-        // Like StartnewSelector, but will force a selector to finish even if not complete 
-        protected void FinishSelector()
+
+        protected void StartNewSelector(SelectorType positionType)
         {
-            if (Current.SelectorType == 0)
-            {
-                Current.SelectorType = SelectorType.All;
-            }
-            StartNewSelector();
+            StartNewSelector(positionType, CombinatorType.Chained, TraversalType.Filter);
         }
-        protected void StartNewPositionSelector() {
-
-            StartNewSelector();
-            Current.SelectorType = SelectorType.Position;
-            Current.TraversalType = TraversalType.Filter;
-            Current.CombinatorType = CombinatorType.Chained;
-
-        }
-        protected void StartNewSelector()
+        protected void StartNewSelector(CombinatorType combinatorType, TraversalType traversalType  )
         {
-            StartNewSelector(0);
-
+            StartNewSelector(0, combinatorType, traversalType);
+        }
+        protected void StartNewSelector(TraversalType traversalType)
+        {
+            StartNewSelector(0,CombinatorType.Chained,traversalType);
         }
         /// <summary>
-        /// Start a new selector. If current one exists and is complete, it is closed first.
+        /// Close the currently active selector. If it's partial (e.g. a descendant/child marker) then merge its into into the 
+        /// new selector created.
         /// </summary>
-        /// <param name="type"></param>
-        protected void StartNewSelector(CombinatorType type)
+        /// <param name="selectorType"></param>
+        /// <param name="combinatorType"></param>
+        /// <param name="traversalType"></param>
+        protected void StartNewSelector(SelectorType selectorType, 
+            CombinatorType combinatorType, 
+            TraversalType traversalType)
         {
-            CombinatorType defaultType = CombinatorType.Root;
-            if (_Current != null && Current.IsComplete)
+            int childDepth = 0;
+            if (_Current != null) 
             {
-                Selectors.Add(Current);
-                _Current = null;
-                defaultType = CombinatorType.Chained;
+//                if (traversalType = TraversalType.Filter) 
+
+                if (!SaveCurrent()) {
+                    // this means " " or ">" was used, capture the traversal type. Skip if it was just a " " before a ">"
+                    traversalType = Current.TraversalType;
+                    combinatorType = Current.CombinatorType;
+                    childDepth = Current.ChildDepth;
+                }
+                ClearCurrent();
             }
-            Current.TraversalType = TraversalType.All;
+            Current.SelectorType = selectorType;
+            Current.TraversalType = traversalType;
             Current.PositionType = PositionType.All;
-            Current.CombinatorType = type==0?defaultType : type;
-            
+            Current.CombinatorType = combinatorType;
+            Current.ChildDepth = childDepth;
+        }
+
+        protected void StartNewRootSelector()
+        {
+            StartNewSelector(0,
+                combinatorType:CombinatorType.Root,
+                traversalType:TraversalType.All);
 
         }
-        
+        public bool IsHtml
+        {
+            get
+            {
+                return !String.IsNullOrEmpty(Selector) && Selector[0] == '<';
+            }
+        }
         public int Count
         {
             get
@@ -390,7 +435,7 @@ namespace Jtc.CsQuery
                 return Selectors[index];
             }
         }
-        protected IDomRoot Document { get; set; }
+
         public IEnumerable<IDomObject> Is(IDomRoot root, IDomObject element)
         {
             List<IDomObject> list = new List<IDomObject>();
@@ -405,727 +450,23 @@ namespace Jtc.CsQuery
         {
             return Select(document, Objects.Enumerate(context));
         }
-        /// <summary>
-        /// The current selection list being acted on
-        /// </summary>
-        protected List<CsQuerySelector> ActiveSelectors;
-        protected int activeSelectorId;
-        /// <summary>
-        /// Select from DOM using index. First non-class/tag/id selector will result in this being passed off to GetMatches
-        /// </summary>
-        /// <param name="document"></param>
-        /// <returns></returns>
         public IEnumerable<IDomObject> Select(IDomRoot document, IEnumerable<IDomObject> context)
         {
-            Document = document;
-            IEnumerable<IDomObject> lastResult = null;
-            HashSet<IDomObject> output = new HashSet<IDomObject>();
-            IEnumerable<IDomObject> selectionSource = context;
-            // This is a bit of a hack, but ensures that fragments get selected manually. We need a way to have a separate index still bound to the 
-            // main DOM ideally so fragments can have indexes
-            bool useIndex = context.IsNullOrEmpty() || !context.First().IsDisconnected;
-
-            // Copy the list because it may change during the process
-            ActiveSelectors = new List<CsQuerySelector>(Selectors);
-
-            for (activeSelectorId = 0; activeSelectorId < ActiveSelectors.Count; activeSelectorId++)
-            {
-                var selector = ActiveSelectors[activeSelectorId];
-                SelectorType type = selector.SelectorType;
-
-                // Determine what kind of combining method we will use with previous selection results
-
-                if (activeSelectorId != 0)
-                {
-                    switch (selector.CombinatorType)
-                    {
-                        case CombinatorType.Cumulative:
-                            //
-                            //selectionSource = lastChained;
-                            break;
-                        case CombinatorType.Root:
-                            selectionSource = context;
-                            if (lastResult != null)
-                            {
-                                output.AddRange(lastResult);
-                                lastResult = null;
-                            }
-                            break;
-                        case CombinatorType.Chained:
-                            selectionSource = lastResult;
-                            lastResult = null;
-                            break;
-                        // default (chained): leave lastresult alone
-                    }
-                }
-
-                HashSet<IDomObject> tempResult = null;
-                IEnumerable<IDomObject> interimResult = null;
-
-                string key = "";
-                if (useIndex && !selector.NoIndex)
-                {
-                    // id is not indexed as an attribute
-                    if (selector.AttributeName == "id")
-                    {
-                        selector.SelectorType &= ~SelectorType.Attribute;
-                        selector.SelectorType |= SelectorType.ID;
-                        type = selector.SelectorType;
-                        selector.ID = selector.AttributeValue;
-                        selector.AttributeName = null;
-                        selector.AttributeValue = null;
-                    }
-#if DEBUG_PATH
-
-                    if (type.HasFlag(SelectorType.Attribute))
-                    {
-                        key = "!" + selector.AttributeName;
-                        type &= ~SelectorType.Attribute;
-                        if (selector.AttributeValue != null)
-                        {
-                            InsertAttributeValueSelector(selector);
-                        }
-                    } 
-                    else if (type.HasFlag(SelectorType.Tag))
-                    {
-                        key = "+"+selector.Tag;
-                        type &= ~SelectorType.Tag;
-                    }
-                    else if (type.HasFlag(SelectorType.ID))
-                    {
-                        key = "#" + selector.ID;
-                        type &= ~SelectorType.ID;
-                    }
-                    else if (type.HasFlag(SelectorType.Class))
-                    {
-                        key = "." + selector.Class;
-                        type &= ~SelectorType.Class;
-                    }
-
-#else
-                    if (type.HasFlag(SelectorType.Attribute))
-                    {
-                        key = "!" + (char)DomData.TokenID(selector.AttributeName);
-                        type &= ~SelectorType.Attribute;
-                        if (selector.AttributeValue != null)
-                        {
-                            InsertAttributeValueSelector(selector);
-                        }
-                    } else  if (type.HasFlag(SelectorType.Tag))
-                    {
-                        key = "+"+(char)DomData.TokenID(selector.Tag,true);
-                        type &= ~SelectorType.Tag;
-                    }
-                    else if (type.HasFlag(SelectorType.ID))
-                    {
-                        key = "#"+(char)DomData.TokenID(selector.ID);
-                        type &= ~SelectorType.ID;
-                    }
-                    else if (type.HasFlag(SelectorType.Class))
-                    {
-                        key = "." + (char)DomData.TokenID(selector.Class);
-                        type &= ~SelectorType.Class;
-                    }
-#endif
-                }
-                // If we can use an indexed selector, do it here
-                if (key != String.Empty)
-                {
-                    int depth=0;
-                    bool descendants=true;
-
-                    switch(selector.TraversalType) {
-                        case TraversalType.Child:
-                            depth=selector.ChildDepth;;
-                            descendants=false;
-                            break;
-                        case TraversalType.Filter:
-                            depth=0;
-                            descendants=false;
-                            break;
-                        case TraversalType.Descendent:
-                            depth=1;
-                            descendants=true;
-                            break;
-                    }
-
-                    if (selectionSource == null)
-                    {
-                        interimResult = document.QueryIndex(key + DomData.indexSeparator, depth, descendants);
-                    }
-                    else
-                    {
-                        interimResult = new HashSet<IDomObject>();
-                        foreach (IDomObject obj in selectionSource)
-                        {
-                            ((HashSet<IDomObject>)interimResult)
-                                .AddRange(document.QueryIndex(key + DomData.indexSeparator + obj.Path, 
-                                    depth, descendants));
-                        }
-                    }
-                }
-                else if (type.HasFlag(SelectorType.Elements))
-                {
-                    type &= ~SelectorType.Elements;
-                    HashSet<IDomObject> source = new HashSet<IDomObject>(selectionSource);
-                    //source.IntersectWith(selectionSource);
-                    interimResult = new HashSet<IDomObject>();
-
-                    foreach (IDomObject obj in selectionSource)
-                    {
-                        key = DomData.indexSeparator + obj.Path;
-                        HashSet<IDomObject> srcKeys = new HashSet<IDomObject>(document.QueryIndex(key));
-                        foreach (IDomObject match in selector.SelectElements)
-                        {
-                            if (srcKeys.Contains(match)) {
-                                 ((HashSet<IDomObject>)interimResult).Add(match);
-                            }
-                        }
-                    }
-                }
-                // TODO - GetMatch should work if passed with no selectors (returning nothing), now it returns eveyrthing
-                if ((type & ~SelectorType.SubSelector) != 0)
-                {
-                    IEnumerable<IDomObject> finalSelectWithin = interimResult
-                        ?? (selector.CombinatorType == CombinatorType.Chained ? lastResult : null)
-                        ?? selectionSource;
-                        
-                    // if there are no temporary results (b/c there was no indexed selector) then use the whole set
-                    interimResult = GetMatch(document.ChildElements, finalSelectWithin, selector);
-                    
-                }
-                // there must be a better way to do this! Need to adjust the selector engine logic to be able to return something other than what it's looking it.
-
-                if (type.HasFlag(SelectorType.SubSelector))
-                {
-                    IEnumerable<IDomObject> subSelectWithin = interimResult
-                        ?? (selector.CombinatorType == CombinatorType.Chained ? lastResult : null)
-                        ?? selectionSource;
-
-
-                    //IEnumerable<IDomObject> subSelectWithin = interimResult ?? lastResult ?? selectionSource;
-                    // subselects are a filter. start a new interim result.
-                    HashSet<IDomObject> filteredResults = new HashSet<IDomObject>();
-
-                    foreach (IDomObject obj in subSelectWithin)
-                    {
-                        bool match = true;
-                        foreach (var sub in selector.SubSelectors)
-                        {
-                            List<IDomObject> listOfOne = new List<IDomObject>();
-                            listOfOne.Add(obj);
-
-                            match &= !sub.Select(document, listOfOne).IsNullOrEmpty();
-                        }
-                        if (match) 
-                        {
-                            filteredResults.Add(obj);
-                        }
-                    }
-                    interimResult = filteredResults;
-                }
-                tempResult = new HashSet<IDomObject>();
-                if (lastResult != null)
-                {
-                    tempResult.AddRange(lastResult);
-                }
-                if (interimResult != null)
-                {
-                    tempResult.AddRange(interimResult);
-                }
-                lastResult = tempResult;
-            }
-
-
-            if (lastResult != null)
-            {
-                output.AddRange(lastResult);
-            }
-
-            if (output.IsNullOrEmpty())
-            {
-                yield break;
-            }
-            else
-            {
-                foreach (IDomObject item in output.OrderBy(item => item.Path,StringComparer.Ordinal))
-                {
-                    yield return item;
-                }
-            }
-            ActiveSelectors.Clear();
+            return Engine.Select(document, context);
         }
-        /// <summary>
-        /// Adds a new selector for just the attribute value. Used to chain with the indexed attribute exists selector.
-        /// </summary>
-        /// <param name="selector"></param>
-        protected void InsertAttributeValueSelector(CsQuerySelector fromSelector)
+        public override string ToString()
         {
-            CsQuerySelector newSel = new CsQuerySelector();
-            newSel.TraversalType = TraversalType.Filter;
-            newSel.SelectorType = SelectorType.Attribute;
-            newSel.AttributeName = fromSelector.AttributeName;
-            newSel.AttributeValue = fromSelector.AttributeValue;
-            newSel.AttributeSelectorType = fromSelector.AttributeSelectorType;
-            newSel.CombinatorType = CombinatorType.Chained;
-            newSel.NoIndex = true;
-            int insertAt = activeSelectorId + 1;
-            if (insertAt >= ActiveSelectors.Count)
+            string output = "";
+            bool first=true;
+            foreach (var selector in this)
             {
-                ActiveSelectors.Add(newSel);
-            }
-            else
-            {
-                ActiveSelectors.Insert(insertAt, newSel);
-            }
-        }
-        /// <summary>
-        /// Parse out the contents of a function 
-        /// </summary>
-        /// <param name="sel"></param>
-        /// <returns></returns>
-        protected string ParseFunction(ref string sel)
-        {
-            int subPos = sel.IndexOfAny(new char[] { '(' });
-            if (subPos < 0)
-            {
-                throw new Exception("Bad 'contains' selector.");
-            }
-            subPos++;
-            int pos = subPos;
-            int startPos = -1;
-            int endPos = -1;
-            int step = 0;
-            bool finished = false;
-            bool quoted = false;
-
-            char quoteChar = ' ';
-            while (pos < sel.Length && !finished)
-            {
-                char current = sel[pos];
-                switch (step)
-                {
-                    case 0:
-                        if (current == ' ')
-                        {
-                            pos++;
-                        }
-                        else
-                        {
-                            step = 1;
-                        }
-                        break;
-                    case 1:
-                        if (current == '\'' || current == '"')
-                        {
-                            quoteChar = current;
-                            quoted = true;
-                            startPos = pos + 1;
-                            step = 2;
-                        }
-                        else
-                        {
-                            startPos = current;
-                            step = 3;
-                        }
-                        pos++;
-                        break;
-                    case 2:
-                        if (quoted && current == quoteChar)
-                        {
-                            endPos = pos;
-                            pos++;
-                            step = 3;
-                        }
-                        pos++;
-                        break;
-                    case 3:
-                        if (current == ')')
-                        {
-                            finished = true;
-                        }
-                        else
-                        {
-                            pos++;
-                        }
-                        break;
+                if (!first && selector.CombinatorType == CombinatorType.Root) {
+                    output+=", ";
                 }
+                output+=selector.ToString();
+                first = false;
             }
-
-            string result = sel.SubstringBetween(startPos, endPos);
-            if (sel.Length > pos)
-            {
-                sel = sel.Substring(pos + 1);
-            }
-            else
-            {
-                sel = String.Empty;
-            }
-            return result;
-        }
-
-        protected class MatchElement
-        {
-            public MatchElement(IDomObject element)
-            {
-                Initialize(element, 0);
-            }
-            public MatchElement(IDomObject element, int depth)
-            {
-                Initialize(element, depth);
-            }
-            protected void Initialize(IDomObject element, int depth)
-            {
-                Object = element;
-                Depth = depth;
-            }
-            public IDomObject Object { get; set; }
-            public int Depth { get; set; }
-            public IDomElement Element { get { return (IDomElement)Object; } }
-        }
-
-        public IEnumerable<IDomObject> GetMatch(IEnumerable<IDomObject> baseList, IEnumerable<IDomObject> list, CsQuerySelector selector)
-        {
-            // Maintain a hashset of every element already searched. Since result sets frequently contain items which are
-            // children of other items in the list, we would end up searching the tree repeatedly
-            HashSet<IDomObject> uniqueElements = null;
-
-            Stack<MatchElement> stack = null;
-            IEnumerable<IDomObject> curList = list ?? baseList;
-            HashSet<IDomObject> temporaryResults = new HashSet<IDomObject>();
-
-            // The unique list has to be reset for each sub-selector
-            uniqueElements = new HashSet<IDomObject>();
-
-            if (selector.SelectorType == SelectorType.HTML)
-            {
-                HtmlParser.DomElementFactory factory = new HtmlParser.DomElementFactory(Document);
-
-                foreach (var obj in factory.CreateObjects(selector.Html))
-                {
-                    yield return obj;
-                }
-                yield break;
-            }
-
-            // Position selectors are simple -- skip out of main matching code if so
-            if (selector.SelectorType == SelectorType.Position)
-            {
-                foreach (var obj in GetPositionMatches(curList, selector))
-                {
-                    yield return obj;
-                }
-                yield break;
-            }
-
-            stack = new Stack<MatchElement>();
-            int depth = 0;
-            foreach (var e in curList)
-            {
-                if (uniqueElements.Add(e))
-                {
-                    stack.Push(new MatchElement(e, depth));
-                    int matchIndex = 0;
-                    while (stack.Count != 0)
-                    {
-                        var current = stack.Pop();
-
-                        if (Matches(selector, current.Object, current.Depth))
-                        {
-                            temporaryResults.Add(current.Object);
-                            matchIndex++;
-                        }
-                        // Add children to stack (in reverse order, so they are processed in the correct order when popped)
-
-                        if (selector.TraversalType != TraversalType.Filter &&
-                            current.Object is IDomElement)
-                        {
-                            IDomElement elm = current.Element;
-                            for (int j = elm.ChildNodes.Count - 1; j >= 0; j--)
-                            {
-                                IDomObject obj = elm[j];
-                                if (obj is IDomElement && uniqueElements.Add((IDomElement)obj))
-                                {
-                                    stack.Push(new MatchElement(obj, current.Depth + 1));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            foreach (var obj in temporaryResults)
-            {
-                yield return obj;
-            }
-            yield break;
-        }
-
-      
-        /// <summary>
-        /// Test obj for a match with selector. matchIndex is the current index for items returned by the selector, and depth is the current
-        /// node depth.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="obj"></param>
-        /// <param name="matchIndex"></param>
-        /// <param name="depth"></param>
-        /// <returns></returns>
-        protected bool Matches(CsQuerySelector selector, IDomObject obj, int depth) 
-        {
-            bool match = true;
-
-            switch (selector.TraversalType)
-            {
-                case TraversalType.Child: 
-                    if (selector.ChildDepth != depth) {
-                        return false;
-                    }
-                    break;
-                case TraversalType.Descendent:
-                    if (depth==0) {
-                        return false;
-                    }
-                    break;
-            }
-            if (selector.SelectorType.HasFlag(SelectorType.All))
-            {
-                return true;
-            }
-            if (!(obj is IDomElement)) { 
-                return false;
-            }
-            IDomElement elm = (IDomElement)obj;
-
-            if (selector.SelectorType.HasFlag(SelectorType.Tag) &&
-                !String.Equals(elm.NodeName, selector.Tag, StringComparison.CurrentCultureIgnoreCase))
-            {
-                //match = false; continue;
-                return false;
-            }
-            if (selector.SelectorType.HasFlag(SelectorType.ID) &&
-                selector.ID != elm.Id) 
-            {
-                //match = false; continue;
-                return false;
-            }
-            if (selector.SelectorType.HasFlag(SelectorType.Attribute))
-            {
-                string value;
-                match = elm.TryGetAttribute(selector.AttributeName, out value);
-                if (!match)
-                {
-                    if (selector.AttributeSelectorType.IsOneOf(AttributeSelectorType.NotExists, AttributeSelectorType.NotEquals))
-                    {
-                        match = true;
-                    }
-                    return match;
-                }
-
-                switch(selector.AttributeSelectorType) {
-                    case AttributeSelectorType.Exists:
-                        break;
-                    case AttributeSelectorType.Equals:
-                        match = selector.AttributeValue == value;
-                        break;
-                    case AttributeSelectorType.StartsWith:
-                        match = value.Length >= selector.AttributeValue.Length &&
-                            value.Substring(0, selector.AttributeValue.Length) == selector.AttributeValue;
-                        break;
-                    case AttributeSelectorType.Contains:
-                        match = value.IndexOf(selector.AttributeValue) >= 0;
-                        break;
-                    case AttributeSelectorType.ContainsWord:
-                        match = ContainsWord(value,selector.AttributeValue);
-                        break;
-                    case AttributeSelectorType.NotEquals:
-                        match = value.IndexOf(selector.AttributeValue) == 0;
-                        break;
-                    case AttributeSelectorType.EndsWith:
-                        int len = selector.AttributeValue.Length;
-                        match = value.Length >= len &&
-                            value.Substring(value.Length - len) == selector.AttributeValue;
-                        break;
-                    default:
-                        throw new Exception("No AttributeSelectorType set");
-                }
-                if (!match)
-                {
-                    return false;
-                }
-            }
-        
-            if (selector.SelectorType.HasFlag(SelectorType.Class) &&
-                !elm.HasClass(selector.Class))
-            {
-                match = false; 
-                return match;
-            }
-            if (selector.SelectorType.HasFlag(SelectorType.Contains) &&
-                !ContainsText(elm, selector.Criteria)) 
-            {
-                match = false; 
-                return match;
-            }
-            match = true;
-            return match;
-        }
-        protected IEnumerable<IDomObject> GetPositionMatches(IEnumerable<IDomObject> list, CsQuerySelector selector) 
-        {
-
-            switch (selector.PositionType)
-            {
-                case PositionType.FirstChild:
-                    foreach (var obj in list)
-                    {
-                        if (obj.PreviousElementSibling == null)
-                        {
-                            yield return obj;
-                        }
-                    }
-                    break;
-                case PositionType.LastChild:
-                    foreach (var obj in list)
-                    {
-                        if (obj.NextElementSibling == null)
-                        {
-                            yield return obj;
-                        }
-                    }
-                    break;
-                case PositionType.First:
-                    IDomObject first = list.FirstOrDefault();
-                    if (first!=null) 
-                    {
-                        yield return first;
-                    }
-                    break;
-                case PositionType.Last:
-                    IDomObject last = list.LastOrDefault();
-                    if (last!=null)
-                    {
-                        yield return last;
-                    }
-                    break;
-                case PositionType.Odd:
-                case PositionType.Even:
-                    foreach (var obj in GetOddEventMatches(list, selector.PositionType))
-                    {
-                        yield return obj;
-                    }
-                    break;
-                case PositionType.IndexEquals:
-                    int critIndex = selector.PositionIndex;
-                    if (critIndex < 0)
-                    {
-                        critIndex = list.Count() + critIndex;
-                    }
-                    bool ok=true;
-                    IEnumerator<IDomObject> enumerator = list.GetEnumerator();
-                    for (int i = 0; i <= critIndex && ok; i++)
-                    {
-                        ok = enumerator.MoveNext();
-                    }
-                    if (ok)
-                    {
-                        yield return enumerator.Current;
-                    }
-                    else
-                    {
-                        yield break;
-                    }
-                    break;
-                case PositionType.IndexGreaterThan:
-                    int index=0;
-                    foreach (IDomObject obj in list)
-                    {
-                        if (index++ > selector.PositionIndex)
-                        {
-                            yield return obj;
-                        }
-                    }
-                    break;
-                case PositionType.IndexLessThan:
-                    int indexLess = 0;
-                    foreach (IDomObject obj in list)
-                    {
-                        if (indexLess++< selector.PositionIndex)
-                        {
-                            yield return obj;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    break;
-            }
-        }
-        protected IEnumerable<IDomObject> GetOddEventMatches(IEnumerable<IDomObject> list, PositionType positionType)
-        {
-            int index=0;
-            foreach (IDomObject obj in list) {
-                index++;
-                switch (positionType)
-                {
-                    case PositionType.Even:
-                        if (index % 2 == 0) {
-                            yield return obj;
-                        }
-                        break;
-                    case PositionType.Odd:
-                        if (index % 2 != 0) {
-                            yield return obj;
-                        }
-                        break;
-                    default:
-                        throw new Exception("Unexpected criteria '" + positionType.ToString() + "'");
-                }
-            }
-        }
-        protected bool MatchesPosition(string criteria, int index)
-        {
-            switch (criteria)
-            {
-                case "even":
-                    return index % 2 == 0;
-                case "odd":
-                    return index % 2 != 0;
-                case "first":
-                    return index==0;
-                case "last":
-                    return true;
-                default:
-                    return Convert.ToInt32(criteria) == index;
-
-            }
-        }
-        protected bool ContainsWord(string text, string word)
-        {
-            HashSet<string> words = new HashSet<string>(word.Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-            return words.Contains(text);
-        }
-        protected bool ContainsText(IDomElement obj, string text)
-        {
-            foreach (IDomObject e in obj.ChildNodes)
-            {
-                if (e.NodeType==NodeType.TEXT_NODE)
-                {
-                    if (((IDomText)e).NodeValue.IndexOf(text) >= 0)
-                    {
-                        return true;
-                    }
-                }
-                else if (e.NodeType==NodeType.ELEMENT_NODE)
-                {
-                    if (ContainsText((IDomElement)e, text))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-
+            return output;
         }
 
         #region IEnumerable<CsQuerySelector> Members

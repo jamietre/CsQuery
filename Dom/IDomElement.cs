@@ -23,6 +23,6 @@ namespace Jtc.CsQuery
         // iterator to access classes. Style and Attributes are enumerable directly.
         IEnumerable<string> Classes { get; }
         string ElementHtml();
-
+        int ElementIndex { get; }
     }
 }
