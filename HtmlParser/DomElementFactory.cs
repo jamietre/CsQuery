@@ -647,7 +647,7 @@ namespace Jtc.CsQuery.HtmlParser
             }
             if (aName != null)
             {
-                current.Element.SetAttribute(aName, aValue);
+                current.Element.SetAttribute(aName, aValue ?? "");
                 return true;
             }
             else

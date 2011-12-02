@@ -19,6 +19,8 @@ namespace Jtc.CsQuery
         IDomRoot Document { get; }
         IDomContainer ParentNode { get; }
         IDomObject this[int index] { get; }
+        string this[string attribute] { get; set; }
+
         IDomObject Clone();
 
         string Id { get; set; }

@@ -24,8 +24,5 @@ namespace Jtc.CsQuery
         IEnumerable<string> Classes { get; }
         string ElementHtml();
 
-        string this[string attribute] { get; set; }
-
-
     }
 }

@@ -119,17 +119,16 @@ namespace Jtc.CsQuery.Implementation
                 return this;
             }
         }
-
-
-        /// <summary>
+               /// <summary>
         /// Returns the value of the named attribute
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public string this[string attribute]
+        public override string this[string attribute]
         {
             get
             {
+
                 return GetAttribute(attribute);
             }
             set
@@ -688,9 +687,18 @@ namespace Jtc.CsQuery.Implementation
 
         protected void GetHtml(DomRenderingOptions options, StringBuilder sb, bool includeChildren)
         {
+            bool quoteAll = options.HasFlag(DomRenderingOptions.QuoteAllAttributes);
+
             sb.Append("<");
             sb.Append(NodeName);
-
+            // put ID first. Must use GetAttribute since the Id property defaults to ""
+            string id = GetAttribute(DomData.IDAttrId,null);
+            
+            if (id != null)
+            {
+                sb.Append(" ");
+                RenderAttribute(sb, "id", id, quoteAll);
+            }
             if (_Style != null && Style.Count > 0)
             {
                 sb.Append(" style=\"");
@@ -706,29 +714,12 @@ namespace Jtc.CsQuery.Implementation
 
             if (_Attributes != null)
             {
-                bool quoteAll = options.HasFlag(DomRenderingOptions.QuoteAllAttributes);
-                bool first = false;
                 foreach (var kvp in _Attributes)
                 {
-                    if (!first)
+                    if (kvp.Key != "id")
                     {
                         sb.Append(" ");
-                    }
-                    if (!String.IsNullOrEmpty(kvp.Value))
-                    {
-                        string quoteChar;
-                        string attrText = Objects.AttributeEncode(kvp.Value, 
-                            quoteAll, 
-                            out quoteChar);
-                        sb.Append(kvp.Key);
-                        sb.Append("=");
-                        sb.Append(quoteChar);
-                        sb.Append(attrText);
-                        sb.Append(quoteChar);
-                    }
-                    else
-                    {
-                        sb.Append(kvp.Key);
+                        RenderAttribute(sb, kvp.Key, kvp.Value, quoteAll);
                     }
                 }
             }
@@ -760,6 +751,31 @@ namespace Jtc.CsQuery.Implementation
                 //{
                 //    sb.Append(">");
                 //}
+            }
+        }
+        /// <summary>
+        /// TODO this really should be in Attributes
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        protected void RenderAttribute(StringBuilder sb, string name, string value, bool quoteAll)
+        {
+            if (!String.IsNullOrEmpty(value))
+            {
+                string quoteChar;
+                string attrText = Objects.AttributeEncode(value,
+                    quoteAll,
+                    out quoteChar);
+                sb.Append(name);
+                sb.Append("=");
+                sb.Append(quoteChar);
+                sb.Append(attrText);
+                sb.Append(quoteChar);
+            }
+            else
+            {
+                sb.Append(name);
             }
         }
         

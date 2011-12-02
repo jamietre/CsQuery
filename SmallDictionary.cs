@@ -111,6 +111,10 @@ namespace Jtc.CsQuery
 	        }
 	        set 
 	        {
+                if (value == null)
+                {
+                    throw new Exception("Attemted to add null value to dictionary");
+                }
                 if (InnerList.Count > 0)
                 {
                     KeyValuePair<TKey,TValue> newVal = new KeyValuePair<TKey,TValue>(key,value);

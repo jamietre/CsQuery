@@ -125,7 +125,22 @@ namespace Jtc.CsQuery.Implementation
                 throw new Exception("This element type does not have children");
             }
         }
-
+        /// <summary>
+        /// Returns the value of the named attribute
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public virtual string this[string attribute]
+        {
+            get
+            {
+                throw new Exception("This element type does not have attributes");
+            }
+            set
+            {
+                throw new Exception("This element type does not have attributes");
+            }
+        }
          public virtual IEnumerable<IDomElement> ChildElements
          {
              get

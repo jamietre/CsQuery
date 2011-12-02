@@ -55,7 +55,7 @@ namespace Jtc.CsQuery
         // U+003C LESS-THAN SIGN characters (<), U+003E GREATER-THAN SIGN characters (>), or U+0060 GRAVE ACCENT characters (`),
         // and must not be the empty string.}
         
-        public static char[] MustBeQuoted = new char[] { '\x0022', '\x0027', '\x003D', '\x003C', '\x003E', '\x0060' };
+        public static char[] MustBeQuoted = new char[] { '/','\x0022', '\x0027', '\x003D', '\x003C', '\x003E', '\x0060' };
         public static char[] MustBeQuotedAll;
 
         // Things that can be in a CSS number

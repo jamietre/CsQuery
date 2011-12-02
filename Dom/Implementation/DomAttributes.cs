@@ -225,7 +225,14 @@ namespace Jtc.CsQuery.Implementation
         /// <param name="tokenId"></param>
         /// <param name="value"></param>
         internal void SetRaw(ushort tokenId, string value ) {
-            Attributes[tokenId]=value;
+            if (value == null)
+            {
+                Unset(tokenId);
+            }
+            else
+            {
+                Attributes[tokenId] = value;
+            }
         }
            
         /// <summary>
@@ -235,7 +242,10 @@ namespace Jtc.CsQuery.Implementation
         /// <returns></returns>
         protected bool Unset(string name)
         {
-            ushort tokenId = DomData.TokenID(name, true);
+            return Unset(DomData.TokenID(name, true));
+        }
+        protected bool Unset(ushort tokenId)
+        {
             bool result = Attributes.Remove(tokenId);
             if (result)
             {
@@ -243,7 +253,6 @@ namespace Jtc.CsQuery.Implementation
             }
             return result;
         }
-
         protected void RemoveFromIndex(ushort attrId)
         {
             if (!Owner.IsDisconnected)
