@@ -112,6 +112,10 @@ namespace Jtc.CsQuery
             }
             return PositionType == PositionType.IndexEquals || PositionType == PositionType.IndexGreaterThan || PositionType == PositionType.IndexLessThan;
         }
+        public bool IsFunction()
+        {
+            return IsOrdinalIndexPosition() || PositionType == PositionType.NthChild;
+        }
         public bool IsComplete
         {
             get

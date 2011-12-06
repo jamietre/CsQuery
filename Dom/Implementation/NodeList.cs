@@ -66,7 +66,7 @@ namespace Jtc.CsQuery.Implementation
                 item.Remove();
             }
             // Ensure ID uniqueness - remove ID if same-named object already exists
-            if (item.Id!=null 
+            if (!String.IsNullOrEmpty(item.Id) 
                 && !Owner.IsDisconnected 
                 && Owner.Document.GetElementById(item.Id)!=null) 
             {

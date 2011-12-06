@@ -38,7 +38,10 @@ namespace Jtc.CsQuery.ExtensionMethods
             }
             return false;
         }
-
+        public static bool IsOneOf(this string match, params string[] values)
+        {
+            return IsOneOf(match,true, values);
+        }
         public static bool IsOneOf(this string match, bool matchCase=true, params string[] values )
         {
            
@@ -314,14 +317,12 @@ namespace Jtc.CsQuery.ExtensionMethods
         public static bool IsNullOrEmpty<T>(this IEnumerable<T> baseList)
         {
             if (baseList == null) return true;
-            bool result = true;
-            // I think this is the most efficient way to verify an empty IEnumerable
+            
             foreach (T t in baseList)
             {
-                result = false;
-                break;
+                return false;
             }
-            return (result);
+            return true;
         }
         public static bool TryGetFirst<T>(this IEnumerable<T> baseList, out T firstElement)
         {

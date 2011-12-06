@@ -49,7 +49,9 @@ namespace CsqueryTests.Performance
 
             for (int i = 0; i < iterationsSelect; i++)
             {
-                CsQuery sel = Dom.Select("div:nth-child(2n+1)");
+                // todo: cache equations once parsed - should speed this up immenseley
+                //CsQuery sel = Dom.Select("div:last-child");
+                CsQuery sel = Dom.Select("div span");
                 divSpan = sel.Length;
             }
             DateTime selected = DateTime.Now;

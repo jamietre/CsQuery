@@ -121,13 +121,7 @@ namespace Jtc.CsQuery.Implementation
                 yield break;
             }
         }
-        public IDomObject this[int index]
-        {
-            get
-            {
-                return ChildNodes[index];
-            }
-        }
+
 
         public override string Render()
         {

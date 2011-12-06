@@ -193,7 +193,7 @@ namespace Jtc.CsQuery.Utility
             {
                 case '{':
                     return Utility.JSON.ParseJSONObject(objectToDeserialize);
-                case '\"':
+                case '"':
                     return Utility.JSON.ParseJSON<string>(objectToDeserialize);
                 default:
                     int integer;

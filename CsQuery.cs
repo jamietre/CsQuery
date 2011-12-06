@@ -161,6 +161,7 @@ namespace Jtc.CsQuery
         {
             CsQuery csq = new CsQuery(Selection);
             csq.Selection.ExceptWith(Select(selector,this));
+            csq.Selectors = Selectors;
             return csq;
         }
         public CsQuery Not(IDomObject element)
@@ -171,6 +172,7 @@ namespace Jtc.CsQuery
         {
             CsQuery csq = new CsQuery(Selection);
             csq.Selection.ExceptWith(elements);
+            csq.Selectors = Selectors;
             return csq;
         }
         /// <summary>

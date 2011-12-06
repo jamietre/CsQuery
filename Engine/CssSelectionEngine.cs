@@ -56,13 +56,15 @@ namespace Jtc.CsQuery.Engine
             for (activeSelectorId = 0; activeSelectorId < ActiveSelectors.Count; activeSelectorId++)
             {
                 var selector = ActiveSelectors[activeSelectorId];
-                SelectorType type = selector.SelectorType;
+                CombinatorType combinatorType = selector.CombinatorType;
+                SelectorType selectorType = selector.SelectorType;
+                TraversalType traversalType = selector.TraversalType;
 
                 // Determine what kind of combining method we will use with previous selection results
 
                 if (activeSelectorId != 0)
                 {
-                    switch (selector.CombinatorType)
+                    switch (combinatorType)
                     {
                         case CombinatorType.Cumulative:
                             //
@@ -119,29 +121,29 @@ namespace Jtc.CsQuery.Engine
                     }
 
 #else
-                    if (type.HasFlag(SelectorType.Attribute))
+                    if (selectorType.HasFlag(SelectorType.Attribute))
                     {
                         key = "!" + (char)DomData.TokenID(selector.AttributeName);
-                        type &= ~SelectorType.Attribute;
+                        selectorType &= ~SelectorType.Attribute;
                         if (selector.AttributeValue != null)
                         {
                             InsertAttributeValueSelector(selector);
                         }
                     }
-                    else if (type.HasFlag(SelectorType.Tag))
+                    else if (selectorType.HasFlag(SelectorType.Tag))
                     {
                         key = "+" + (char)DomData.TokenID(selector.Tag, true);
-                        type &= ~SelectorType.Tag;
+                        selectorType &= ~SelectorType.Tag;
                     }
-                    else if (type.HasFlag(SelectorType.ID))
+                    else if (selectorType.HasFlag(SelectorType.ID))
                     {
                         key = "#" + (char)DomData.TokenID(selector.ID);
-                        type &= ~SelectorType.ID;
+                        selectorType &= ~SelectorType.ID;
                     }
-                    else if (type.HasFlag(SelectorType.Class))
+                    else if (selectorType.HasFlag(SelectorType.Class))
                     {
                         key = "." + (char)DomData.TokenID(selector.Class);
-                        type &= ~SelectorType.Class;
+                        selectorType &= ~SelectorType.Class;
                     }
 #endif
                 }
@@ -151,7 +153,7 @@ namespace Jtc.CsQuery.Engine
                     int depth = 0;
                     bool descendants = true;
 
-                    switch (selector.TraversalType)
+                    switch (traversalType)
                     {
                         case TraversalType.Child:
                             depth = selector.ChildDepth; ;
@@ -182,9 +184,9 @@ namespace Jtc.CsQuery.Engine
                         }
                     }
                 }
-                else if (type.HasFlag(SelectorType.Elements))
+                else if (selectorType.HasFlag(SelectorType.Elements))
                 {
-                    type &= ~SelectorType.Elements;
+                    selectorType &= ~SelectorType.Elements;
                     HashSet<IDomObject> source = new HashSet<IDomObject>(selectionSource);
                     //source.IntersectWith(selectionSource);
                     interimResult = new HashSet<IDomObject>();
@@ -203,10 +205,10 @@ namespace Jtc.CsQuery.Engine
                     }
                 }
                 // TODO - GetMatch should work if passed with no selectors (returning nothing), now it returns eveyrthing
-                if ((type & ~(SelectorType.SubSelectorNot | SelectorType.SubSelectorHas)) != 0)
+                if ((selectorType & ~(SelectorType.SubSelectorNot | SelectorType.SubSelectorHas)) != 0)
                 {
                     IEnumerable<IDomObject> finalSelectWithin = interimResult
-                        ?? (selector.CombinatorType == CombinatorType.Chained ? lastResult : null)
+                        ?? (combinatorType == CombinatorType.Chained ? lastResult : null)
                         ?? selectionSource;
 
                     // if there are no temporary results (b/c there was no indexed selector) then use the whole set
@@ -215,16 +217,14 @@ namespace Jtc.CsQuery.Engine
                 }
                 // there must be a better way to do this! Need to adjust the selector engine logic to be able to return something other than what it's looking it.
 
-                if (type.HasFlag(SelectorType.SubSelectorHas) || type.HasFlag(SelectorType.SubSelectorNot))
+                if (selectorType.HasFlag(SelectorType.SubSelectorHas) || selectorType.HasFlag(SelectorType.SubSelectorNot))
                 {
-                    bool isHasSelector = type.HasFlag(SelectorType.SubSelectorHas);
+                    bool isHasSelector = selectorType.HasFlag(SelectorType.SubSelectorHas);
 
                     IEnumerable<IDomObject> subSelectWithin = interimResult
-                        ?? (selector.CombinatorType == CombinatorType.Chained ? lastResult : null)
+                        ?? (combinatorType == CombinatorType.Chained ? lastResult : null)
                         ?? selectionSource;
 
-
-                    //IEnumerable<IDomObject> subSelectWithin = interimResult ?? lastResult ?? selectionSource;
                     // subselects are a filter. start a new interim result.
                     HashSet<IDomObject> filteredResults = new HashSet<IDomObject>();
 
@@ -387,26 +387,6 @@ namespace Jtc.CsQuery.Engine
             return result;
         }
 
-        protected class MatchElement
-        {
-            public MatchElement(IDomObject element)
-            {
-                Initialize(element, 0);
-            }
-            public MatchElement(IDomObject element, int depth)
-            {
-                Initialize(element, depth);
-            }
-            protected void Initialize(IDomObject element, int depth)
-            {
-                Object = element;
-                Depth = depth;
-            }
-            public IDomObject Object { get; set; }
-            public int Depth { get; set; }
-            public IDomElement Element { get { return (IDomElement)Object; } }
-        }
-
         public IEnumerable<IDomObject> GetMatch(IEnumerable<IDomObject> baseList, IEnumerable<IDomObject> list, CsQuerySelector selector)
         {
             // Maintain a hashset of every element already searched. Since result sets frequently contain items which are
@@ -467,11 +447,27 @@ namespace Jtc.CsQuery.Engine
                     // Don't keep going to children if the target depth is < the depth. Though the match would still fail,
                     // stuff would end up the unique list which we might need to test later if it appears directly in the source list
                     // causing it to be ignored.
+
                     if (selector.TraversalType != TraversalType.Filter &&
                         current.Object is IDomElement &&
                         (selector.TraversalType != TraversalType.Child || selector.ChildDepth > current.Depth))
                     {
+                        SelectorType selectorType = selector.SelectorType;
                         IDomElement elm = current.Element;
+                        if (selector.TraversalType == TraversalType.Child 
+                            && selector.ChildDepth == current.Depth+1
+                            && selector.IsDomIndexPosition()) {
+
+                            temporaryResults.AddRange(GetDomPositionMatches(elm,selector));
+                            selectorType &= ~SelectorType.Position;
+                        }
+                        if (selectorType == 0)
+                        {
+                            continue;
+                        }
+                        
+                        
+
                         for (int j = elm.ChildNodes.Count - 1; j >= 0; j--)
                         {
                             IDomObject obj = elm[j];
@@ -611,6 +607,17 @@ namespace Jtc.CsQuery.Engine
             }
             return true;
         }
+        protected IEnumerable<IDomObject> GetDomPositionMatches(IDomElement elm, CsQuerySelector selector)
+        {
+            if (selector.PositionType == PositionType.NthChild)
+            {
+                return NthChildMatcher.GetMatchingChildren(elm,selector.Criteria);
+            }
+            else
+            {
+                return GetSimpleDomPostionMatches(elm,selector.PositionType);
+            }
+        }
         protected IEnumerable<IDomObject> GetResultPositionMatches(IEnumerable<IDomObject> list, CsQuerySelector selector)
         {
             switch (selector.PositionType)
@@ -676,6 +683,64 @@ namespace Jtc.CsQuery.Engine
                     break;
             }
             yield break;
+        }
+
+        protected IEnumerable<IDomObject> GetSimpleDomPostionMatches(IDomContainer elm, PositionType position)
+        {
+            if (position == PositionType.FirstChild)
+            {
+                IDomObject child = elm.FirstChild;
+                if (child.NodeType != NodeType.ELEMENT_NODE)
+                {
+                    child = child.NextElementSibling;
+                }
+                if (child != null)
+                {
+                    yield return child;
+                }
+            }
+            else if (position == PositionType.LastChild)
+            {
+                IDomObject child = elm.LastChild;
+                if (child.NodeType != NodeType.ELEMENT_NODE)
+                {
+                    child = child.PreviousElementSibling;
+                }
+                if (child != null)
+                {
+                    yield return child;
+                }
+            }
+            else
+            {
+
+                int index = 0;
+
+                foreach (var child in elm.ChildNodes)
+                {
+                    switch (position)
+                    {
+                        case PositionType.Odd:
+                            if (index % 2 != 0)
+                            {
+                                yield return child;
+                            }
+                            break;
+                        case PositionType.Even:
+                            if (index % 2 == 0)
+                            {
+                                yield return child;
+                            }
+                            break;
+                        case PositionType.All:
+                            yield return child;
+                            break;
+                        default:
+                            throw new Exception("Unimplemented position type selector");
+                    }
+                }
+            }
+
         }
 
         protected bool MatchesDOMPosition(IDomElement obj, PositionType position, string criteria)

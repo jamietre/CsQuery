@@ -161,6 +161,9 @@ namespace CsqueryTests.Csharp
 
             res = jQuery("body > :nth-child(2n+1)");
             Assert.AreEqual(jQuery("body").Children(":even").Elements, res.Elements, "Simple math nth child workd");
+            
+            res = jQuery("#hlinks-user > :nth-child(2(n+1))");
+            Assert.AreEqual(jQuery("#hlinks-user").Children(":odd").Not("#profile-triangle").Elements, res.Elements, "Simple math nth child workd");
 
         }
     }

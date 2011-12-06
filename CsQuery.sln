@@ -7,14 +7,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsqueryTests", "CsqueryTest
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F4DD1337-CB52-431F-A4ED-992A0F727A1F}"
 	ProjectSection(SolutionItems) = preProject
-		CsQuery2.vsmdi = CsQuery2.vsmdi
+		CsQuery4.vsmdi = CsQuery4.vsmdi
 		Local.testsettings = Local.testsettings
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = CsQuery2.vsmdi
+		CategoryFile = CsQuery4.vsmdi
 	EndGlobalSection
 	GlobalSection(SourceCodeControl) = preSolution
 		SccNumberOfProjects = 3

@@ -153,6 +153,13 @@ namespace Jtc.CsQuery.Implementation
                 SetAttribute(attribute, value);
             }
         }
+        public override IDomObject this[int index]
+        {
+            get
+            {
+                return ChildNodes[index];
+            }
+        }
         #endregion
         #region public methods
         public void Reindex()

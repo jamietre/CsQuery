@@ -4,6 +4,11 @@ using System.Linq;
 using System.Text;
 using Jtc.CsQuery;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
+using Assert = NUnit.Framework.Assert;
+using CollectionAssert = NUnit.Framework.CollectionAssert;
+using StringAssert = NUnit.Framework.StringAssert;
+using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using MSClassInitialize = Microsoft.VisualStudio.TestTools.UnitTesting.ClassInitializeAttribute;
 
 namespace CsqueryTests
@@ -110,6 +115,11 @@ namespace CsqueryTests
                 }
             }
             Assert.IsTrue(success,testName);
+        }
+
+        protected TestDelegate Del(Action action)
+        {
+            return action.Invoke;
         }
     }
 }
