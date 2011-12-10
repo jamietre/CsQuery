@@ -6,20 +6,24 @@ using Jtc.CsQuery.Utility.EquationParser.Implementation;
 
 namespace Jtc.CsQuery.Utility.EquationParser
 {
-    public interface IEquation: IOperand
+    public interface IEquation : IOperand, IVariableContainer
     {
+        IOrderedDictionary<string, IConvertible> VariableValues { get; }
         void SetVariable(string name, IConvertible value);
-        void SetVariable<T>(string name, T value) where T: IConvertible;
-        IConvertible Calculate();
-        IConvertible Calculate(params IConvertible[] values);
-        bool TryCalculate(out object result);
-        bool TryParse(string text);
-        void Parse(string text);
+        void SetVariable<U>(string name, U value) where U : IConvertible;
+        IConvertible GetValue(params IConvertible[] values);
+        bool TryGetValue(out IConvertible result, params IConvertible[] values);
+        bool TryGetValue(out IConvertible result);
+        new IEquation Clone();
+        IOperand Operand { get; set; }
+        void Compile();
     }
-    public interface IEquation<T>: IOperand<T>, IEquation where T: IConvertible 
+    public interface IEquation<T> : IOperand<T>, IEquation where T : IConvertible
     {
-        new T Calculate();
-        new T Calculate(params IConvertible[] values);
-        bool TryCalculate(out T result);
+        new T GetValue(params IConvertible[] values);
+        bool TryGetValue(out T result);
+        bool TryGetValue(out T result, params IConvertible[] values);
+        new IEquation<T> Clone();
+        IEquation<U> CloneAs<U>() where U : IConvertible;
     }
 }

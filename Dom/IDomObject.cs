@@ -6,10 +6,7 @@ using Jtc.CsQuery.Implementation;
 
 namespace Jtc.CsQuery
 {
-    public interface IDomObject<out T> : IDomObject
-    {
-        new T Clone();
-    }
+
     // Base interface for something that can appear in the DOM
     public interface IDomObject: IDomNode
     {
@@ -21,9 +18,7 @@ namespace Jtc.CsQuery
         IDomObject this[int index] { get; }
         string this[string attribute] { get; set; }
 
-        IDomObject Clone();
-
-        string Id { get; set; }
+         string Id { get; set; }
         string TagName { get; }
 
         DomAttributes Attributes { get; }
@@ -76,6 +71,11 @@ namespace Jtc.CsQuery
 
         // Wrap this node in a CsQuery
         CsQuery Csq();
+        new IDomObject Clone();
+    }
 
+    public interface IDomObject<out T> : IDomObject
+    {
+        new T Clone();
     }
 }

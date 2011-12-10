@@ -27,6 +27,16 @@ namespace Jtc.CsQuery.Implementation
         {
             return Clone();
         }
+
+
+        IDomNode IDomNode.Clone()
+        {
+            return Clone();
+        }
+        object ICloneable.Clone()
+        {
+            return Clone();
+        }
         
     }
     

@@ -5,12 +5,14 @@ using System.Text;
 
 namespace Jtc.CsQuery.Utility.EquationParser
 {
-    public interface IOperator
+    public interface IOperator: ICloneable 
     {
         void Set(string value);
         bool TrySet(string value);
-        Operation Operation { get; }
-        bool IsAssociative { get; }
+        OperationType OperationType { get; }
+        AssociationType AssociationType { get; }
+        bool IsInverted { get; }
+        new IOperator Clone();
+        IOperation GetFunction();
     }
-
 }

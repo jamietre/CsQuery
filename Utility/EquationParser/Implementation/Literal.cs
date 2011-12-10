@@ -6,34 +6,82 @@ using Jtc.CsQuery.Utility;
 
 namespace Jtc.CsQuery.Utility.EquationParser.Implementation
 {
-    public static class Literal
+    public class Literal: Operand, ILiteral
     {
-        public static ILiteral Create(IConvertible value)
-        {
-            if (Utils.IsText(value))
-            {
-                return new Literal<int>(value.ToString());
-            }
-            if (Utils.IsIntegralType(value))
-            {
-                return new Literal<int>(Convert.ToInt32(value));
-            }
-            else
-            {
-                return new Literal<double>(Convert.ToDouble(value));
-            }
-        }
-    }
-
-    public class Literal<T>: Operand<T>, ILiteral<T> where T: IConvertible 
-    {
+        #region constructors
         public Literal(): base()
         {
 
         }
-        public Literal(IConvertible value): base()
+        public Literal(IConvertible value)
+            : base()
         {
-            SetConvert(this,value);
+            Set(value);
+        }
+
+        //public static implicit operator Literal(IConvertible value)
+        //{
+        //    return new Literal(value);
+        //}
+        #endregion
+
+        #region private properties
+        protected IConvertible _Value;
+        #endregion
+     
+        #region public methods
+        public new ILiteral Clone()
+        {
+            return (ILiteral)base.Clone();
+        }
+
+        protected override IOperand GetNewInstance()
+        {
+            return new Literal();
+        }
+        protected override IOperand CopyTo(IOperand operand)
+        {
+            ((Literal)operand).Set(GetValue());
+            return operand;
+        }
+        protected override IConvertible GetValue()
+        {
+            return _Value;
+        }
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
+        #endregion
+
+        #region private methods
+
+        public virtual void Set(IConvertible value)
+        {
+            _Value = value;
+        }
+
+        #endregion
+
+        #region interface members
+        //void ILiteral.Set(IConvertible value)
+        //{
+        //    Set((T)Convert.ChangeType(value, typeof(T)));
+        //}
+        #endregion
+    }
+
+    public class Literal<T>: Literal, ILiteral<T> where T : IConvertible
+    {
+        #region constructors
+        public Literal(): base()
+        {
+
+        }
+        public Literal(IConvertible value)
+            : base()
+        {
+            SetConvert(value);
         }
 
         public static implicit operator Literal<T>(int value)
@@ -48,24 +96,57 @@ namespace Jtc.CsQuery.Utility.EquationParser.Implementation
         {
             return new Literal<T>(value);
         }
-        public override string ToString()
-        {
-            return Value.ToString();
+        #endregion
+
+        #region private properties
+        
+        #endregion
+
+        #region public properties
+        public new T Value {
+            get
+            {
+                return (T)_Value;
+            }
         }
 
+        public new ILiteral<T> Clone()
+        {
+            return (ILiteral<T>)CopyTo(GetNewInstance());
+        }
         public void Set(T value)
         {
-            Value = value;
+            _Value = value;
+        }
+        #endregion
+
+        #region private methods
+        protected override IOperand GetNewInstance()
+        {
+            return new Literal<T>(Value);
         }
 
-        private static void SetConvert(ILiteral literal, IConvertible value)
+        /// <summary>
+        /// This is static so it can be used by the constructors -- sets the value of the strongly typed instance
+        /// </summary>
+        /// <param name="literal"></param>
+        /// <param name="value"></param>
+        private void SetConvert(IConvertible value)
         {
-            literal.Set((T)Convert.ChangeType(value, typeof(T)));
-        }
 
-        void ILiteral.Set(IConvertible value)
-        {
             Set((T)Convert.ChangeType(value, typeof(T)));
         }
+        #endregion
+
+        #region interface members
+        IOperand<T> IOperand<T>.Clone()
+        {
+            return Clone();
+        }
+        void ILiteral.Set(IConvertible value)
+        {
+            Set((T)Convert.ChangeType(value,typeof(T)));
+        }
+        #endregion
     }
 }

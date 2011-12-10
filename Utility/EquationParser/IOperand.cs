@@ -5,18 +5,17 @@ using System.Text;
 
 namespace Jtc.CsQuery.Utility.EquationParser
 {
-    public interface IOperand: IConvertible
+    public interface IOperand : IConvertible, ICloneable
     {
         IConvertible Value { get; }
-        //bool IsNumber { get; }
-        //bool IsFloatingPoint { get; }
         bool IsInteger { get; }
-        //bool IsBoolean { get; }
-        //bool IsText { get; }
+        new IOperand Clone();
     }
-    public interface IOperand<T>: IOperand where T: IConvertible
+    public interface IOperand<T> : IOperand where T : IConvertible
     {
         new T Value { get;}
+        new IOperand<T> Clone();
+        
     }
     
 

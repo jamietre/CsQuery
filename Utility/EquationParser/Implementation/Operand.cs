@@ -5,60 +5,64 @@ using System.Text;
 
 namespace Jtc.CsQuery.Utility.EquationParser.Implementation
 {
-    public abstract class Operand
+    public abstract class Operand: IOperand, ICloneable
     {
-
-        public abstract bool IsInteger { get; }
-        public abstract bool IsNumber { get; }
-        public abstract bool IsFloatingPoint { get; }
-        public abstract bool IsText { get; }
-        public abstract bool IsBoolean { get; }
-        public abstract TypeCode GetTypeCode();
-        public abstract bool ToBoolean(IFormatProvider provider);
-        public abstract byte ToByte(IFormatProvider provider);
-        public abstract char ToChar(IFormatProvider provider);
-        public abstract DateTime ToDateTime(IFormatProvider provider);
-        public abstract decimal ToDecimal(IFormatProvider provider);
-        public abstract double ToDouble(IFormatProvider provider);
-        public abstract short ToInt16(IFormatProvider provider);
-        public abstract int ToInt32(IFormatProvider provider);
-        public abstract long ToInt64(IFormatProvider provider);
-        public abstract sbyte ToSByte(IFormatProvider provider);
-        public abstract float ToSingle(IFormatProvider provider);
-        public abstract string ToString(IFormatProvider provider);
-        public abstract object ToType(Type conversionType, IFormatProvider provider);
-        public abstract ushort ToUInt16(IFormatProvider provider);
-        public abstract uint ToUInt32(IFormatProvider provider);
-        public abstract ulong ToUInt64(IFormatProvider provider);
-
-    }
-
-    public abstract class Operand<T> : Operand, IOperand<T> where T : IConvertible
-    {
-        public Operand()
-        {
-
-            _IsInt = Utils.IsIntegralType<T>();
-            _IsNumber = Utils.IsNumericType<T>();
-            _IsText = typeof(T) == typeof(string) || typeof(T) == typeof(char);
-            _IsBoolean = typeof(T) == typeof(bool);
-        }
-
-        private T _Value;
+        protected int intValue;
+        protected double doubleValue;
         protected bool? _IsNumber;
         protected bool? _IsInt;
         protected bool? _IsText;
         protected bool? _IsBoolean;
 
-        protected int intValue;
-        protected double doubleValue;
+        /// <summary>
+        /// Abstract hooks for cloning. To allow more flexibility in inheriting part of the process
+        /// (e.g. part of the code to copy the instance may be shared, but not instance-making code)
+        /// it's split into two parts.
+        /// </summary>
+        /// <returns></returns>
+        public IOperand Clone()
+        {
+            return CopyTo(GetNewInstance());
+        }
+        protected abstract IOperand GetNewInstance();
+        protected abstract IOperand CopyTo(IOperand operand);
 
+        /// <summary>
+        /// Since it isn't possible to have compile-time type checking for the generic implementation beyond
+        /// IConvertible, allow implementations to define the types that are valid
+        /// </summary>
+        protected virtual bool IsValidType(Type type)
+        {
+            return Utils.IsNumericType(type);
+        }
+        protected virtual bool AllowNullValues(Type type)
+        {
+            return Utils.IsNumericType(type);
+        }
+        //public IOperand<U> CloneAs<U>() where U: IConvertible
+        //{
+        //    return (IOperand<U>)CloneAsImpl<U>();
+        //}
+        //protected abstract IOperand<U> CloneAsImpl<U>() where U : IConvertible;
 
+        object ICloneable.Clone()
+        {
+            return Clone();
+        }
+        public IConvertible Value
+        {
+            get
+            {
+                return GetValue();
+            }
+        }
+
+        protected abstract IConvertible GetValue();
         /// <summary>
         /// Indicates that this operand is either an integral type or contains an integral value. 
         /// That is, non-integral types containing integral values will still report true
         /// </summary>
-        public override bool IsInteger
+        public virtual bool IsInteger
         {
             get
             {
@@ -72,14 +76,14 @@ namespace Jtc.CsQuery.Utility.EquationParser.Implementation
                 }
             }
         }
-        public override bool IsFloatingPoint
+        public bool IsFloatingPoint
         {
             get
             {
                 return IsNumber && !IsInteger;
             }
         }
-        public override bool IsNumber
+        public bool IsNumber
         {
             get
             {
@@ -89,11 +93,11 @@ namespace Jtc.CsQuery.Utility.EquationParser.Implementation
                 }
                 else
                 {
-                    return Utils.IsNumericType<T>();
+                    return Utils.IsNumericType(Value);
                 }
             }
         }
-        public override bool IsText
+        public bool IsText
         {
             get
             {
@@ -107,7 +111,7 @@ namespace Jtc.CsQuery.Utility.EquationParser.Implementation
                 }
             }
         }
-        public override bool IsBoolean
+        public bool IsBoolean
         {
             get
             {
@@ -121,53 +125,20 @@ namespace Jtc.CsQuery.Utility.EquationParser.Implementation
                 }
             }
         }
-        public virtual T Value
-        {
-            get
-            {
-                return _Value;
-            }
-            protected set
-            {
-                _Value = value;
 
-                //doubleValue = Convert.ToDouble(value);
-                //intValue = (int)Math.Floor(doubleValue);
-  
-                if (!IsInteger)
-                {
-                    _IsInt = Utils.IsIntegralValue(value);
-                }
-                //_IsString = null;
-
-            }
-        }
-
-        IConvertible IOperand.Value
-        {
-            get
-            {
-                return Value;
-            }
-        }
-
-        public override string ToString()
-        {
-            return Value.ToString();
-        }
-
-        #region iconvertible members
-        public override TypeCode GetTypeCode()
+        #region interface members
+        
+        public virtual TypeCode GetTypeCode()
         {
             return Value.GetTypeCode();
         }
 
-        public override bool ToBoolean(IFormatProvider provider)
+        public virtual bool ToBoolean(IFormatProvider provider)
         {
             return intValue != 0;
         }
 
-        public override byte ToByte(IFormatProvider provider)
+        public virtual byte ToByte(IFormatProvider provider)
         {
             if (intValue >= 0 || intValue < 255)
             {
@@ -176,7 +147,7 @@ namespace Jtc.CsQuery.Utility.EquationParser.Implementation
             return ConversionException<byte>();
         }
 
-        public override char ToChar(IFormatProvider provider)
+        public virtual char ToChar(IFormatProvider provider)
         {
             if (intValue < 0 || intValue > 65535)
             {
@@ -185,22 +156,22 @@ namespace Jtc.CsQuery.Utility.EquationParser.Implementation
             return ConversionException<char>();
         }
 
-        public override DateTime ToDateTime(IFormatProvider provider)
+        public virtual DateTime ToDateTime(IFormatProvider provider)
         {
             return ConversionException<DateTime>();
         }
 
-        public override decimal ToDecimal(IFormatProvider provider)
+        public virtual decimal ToDecimal(IFormatProvider provider)
         {
             return (decimal)doubleValue;
         }
 
-        public override double ToDouble(IFormatProvider provider)
+        public virtual double ToDouble(IFormatProvider provider)
         {
             return doubleValue;
         }
 
-        public override short ToInt16(IFormatProvider provider)
+        public virtual short ToInt16(IFormatProvider provider)
         {
             if (intValue < Int16.MinValue || intValue > Int16.MaxValue)
             {
@@ -209,54 +180,92 @@ namespace Jtc.CsQuery.Utility.EquationParser.Implementation
             return (Int16)intValue;
         }
 
-        public override int ToInt32(IFormatProvider provider)
+        public virtual int ToInt32(IFormatProvider provider)
         {
-            throw new NotImplementedException();
+            return intValue;
         }
 
-        public override long ToInt64(IFormatProvider provider)
+        public virtual long ToInt64(IFormatProvider provider)
         {
-            throw new NotImplementedException();
+            return (Int64)intValue;
         }
 
-        public override sbyte ToSByte(IFormatProvider provider)
+        public virtual sbyte ToSByte(IFormatProvider provider)
         {
-            throw new NotImplementedException();
+            return (sbyte)Convert.ChangeType(intValue, typeof(sbyte));
         }
 
-        public override float ToSingle(IFormatProvider provider)
+        public virtual float ToSingle(IFormatProvider provider)
         {
-            throw new NotImplementedException();
+            return (float)Convert.ChangeType(doubleValue, typeof(sbyte));
         }
 
-        public override string ToString(IFormatProvider provider)
+        public virtual string ToString(IFormatProvider provider)
         {
-            throw new NotImplementedException();
+            return Value.ToString();
         }
 
-        public override object ToType(Type conversionType, IFormatProvider provider)
+        public virtual object ToType(Type conversionType, IFormatProvider provider)
         {
-            throw new NotImplementedException();
+            return Convert.ChangeType(Value, conversionType);
         }
 
-        public override ushort ToUInt16(IFormatProvider provider)
+        public virtual ushort ToUInt16(IFormatProvider provider)
         {
-            throw new NotImplementedException();
+            return (ushort)Convert.ChangeType(intValue, typeof(ushort));
         }
 
-        public override uint ToUInt32(IFormatProvider provider)
+        public virtual uint ToUInt32(IFormatProvider provider)
         {
-            throw new NotImplementedException();
+            return (uint)Convert.ChangeType(intValue, typeof(uint));
         }
 
-        public override ulong ToUInt64(IFormatProvider provider)
+        public virtual ulong ToUInt64(IFormatProvider provider)
         {
-            throw new NotImplementedException();
+            return (ulong)Convert.ChangeType(intValue, typeof(ulong));
         }
+        #endregion
         protected U ConversionException<U>()
         {
             throw new InvalidCastException("Cannot convert value '" + Value + "' to type " + typeof(U).ToString());
         }
+    }
+
+    public abstract class Operand<T> : Operand, IOperand<T> where T : IConvertible
+    {
+        public Operand()
+        {
+        }
+
+        public new T Value { 
+            get {
+                return (T)GetValue(); 
+            } 
+        }
+
+        public new IOperand<T> Clone()
+        {
+            return (IOperand<T>)Clone();
+        }
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
+
+        #region iconvertible members
+        
+        #endregion
+
+        #region interface members
+        IConvertible IOperand.Value
+        {
+            get
+            {
+                return Value;
+            }
+        }
+
         #endregion
 
     }

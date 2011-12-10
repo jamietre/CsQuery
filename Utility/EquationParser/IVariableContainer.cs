@@ -5,13 +5,8 @@ using System.Text;
 
 namespace Jtc.CsQuery.Utility.EquationParser
 {
-    public enum Operation
+    public interface IVariableContainer
     {
-        Addition=1,
-        Subtraction=2,
-        Multiplication=3,
-        Division=4,
-        Modulus = 5,
-        Power=6
+        IEnumerable<IVariable> Variables {get;}
     }
 }

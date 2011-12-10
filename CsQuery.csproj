@@ -47,6 +47,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HtmlParser\Copy of DomElementFactory.cs" />
+    <Compile Include="Utility\AutoList.cs" />
+    <Compile Include="Utility\EquationParser\Implementation\Functions\Quotient.cs" />
+    <Compile Include="Utility\EquationParser\INativeOperation.cs" />
+    <Compile Include="Utility\EquationParser\IOperator.cs" />
+    <Compile Include="Utility\IOrderedDictionary.cs" />
+    <Compile Include="Utility\OrderedDictionary.cs" />
     <Compile Include="CsQuery.cs" />
     <Compile Include="CsQuerySelector.cs" />
     <Compile Include="CsQuery_Constructors.cs" />
@@ -91,27 +98,31 @@
     <Compile Include="Dom\IDomNode.cs" />
     <Compile Include="Dom\IDomSpecialElement.cs" />
     <Compile Include="Dom\INodeList.cs" />
+    <Compile Include="Utility\EquationParser\enumAssociation.cs" />
     <Compile Include="Utility\EquationParser\IEquationParser.cs" />
     <Compile Include="Utility\EquationParser\IFunction.cs" />
-    <Compile Include="Utility\EquationParser\enumOperation.cs" />
+    <Compile Include="Utility\EquationParser\enumOperationType.cs" />
     <Compile Include="Utility\EquationParser\Equations.cs" />
     <Compile Include="Utility\EquationParser\IClause.cs" />
     <Compile Include="Utility\EquationParser\IEquation.cs" />
     <Compile Include="Utility\EquationParser\ILiteral.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\Clause.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\Function.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Utility\EquationParser\Implementation\Functions\Difference.cs" />
+    <Compile Include="Utility\EquationParser\Implementation\Functions\NativeOperation.cs" />
+    <Compile Include="Utility\EquationParser\Implementation\Operator.cs" />
+    <Compile Include="Utility\EquationParser\Implementation\Functions\Sum.cs" />
+    <Compile Include="Utility\EquationParser\Implementation\Functions\Product.cs" />
+    <Compile Include="Utility\EquationParser\Implementation\Function.cs" />
     <Compile Include="Utility\EquationParser\Implementation\Functions\Abs.cs" />
     <Compile Include="Utility\EquationParser\Implementation\IntegerValue.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\Operator.cs" />
+    <Compile Include="Utility\EquationParser\Implementation\Operator_old.cs" />
     <Compile Include="Utility\EquationParser\Implementation\Literal.cs" />
     <Compile Include="Utility\EquationParser\Implementation\EquationParser.cs" />
     <Compile Include="Utility\EquationParser\Implementation\Types.cs" />
     <Compile Include="Utility\EquationParser\Implementation\Utils.cs" />
     <Compile Include="Utility\EquationParser\Implementation\Variable.cs" />
     <Compile Include="Utility\EquationParser\Implementation\Operand.cs" />
-    <Compile Include="Utility\EquationParser\IOperator.cs" />
+    <Compile Include="Utility\EquationParser\Implementation\VariableReadEventArgs.cs" />
+    <Compile Include="Utility\EquationParser\IOperation.cs" />
     <Compile Include="Utility\EquationParser\IVariable.cs" />
     <Compile Include="Engine\MatchElement.cs" />
     <Compile Include="Engine\NthChild.cs" />
@@ -120,7 +131,7 @@
     <Compile Include="ExtensionMethods.Internal.cs" />
     <Compile Include="Utility\EquationParser\Implementation\Equation.cs" />
     <Compile Include="HtmlParser\IterationData.cs" />
-    <Compile Include="SmallDictionary.cs" />
+    <Compile Include="Utility\SmallDictionary.cs" />
     <Compile Include="Server\AsyncPostbackData.cs" />
     <Compile Include="Server\IAsyncRequestQueue.cs" />
     <Compile Include="Server\ICsqWebRequest.cs" />
@@ -130,11 +141,14 @@
     <Compile Include="Server\SimpleDictionary.cs" />
     <Compile Include="Server\WebRequestState.cs" />
     <Compile Include="SelectionSet.cs" />
+    <Compile Include="Utility\EquationParser\IVariableContainer.cs" />
+    <Compile Include="Utility\StringScanner\enumCharacterType.cs" />
+    <Compile Include="Utility\StringScanner\CharacterData.cs" />
     <Compile Include="Utility\StringScanner\Implementation\CharacterInfo.cs" />
     <Compile Include="Utility\JsObject.cs" />
     <Compile Include="Utility\LazyObject.cs" />
     <Compile Include="Dom\Implementation\NodeList.cs" />
-    <Compile Include="RangeSortedDictionary.cs" />
+    <Compile Include="Utility\RangeSortedDictionary.cs" />
     <Compile Include="Server\CsQuery.Server.cs" />
     <Compile Include="Server\CsQueryHttpContext.cs" />
     <Compile Include="CsQuerySelectors.cs" />
@@ -142,11 +156,13 @@
     <Compile Include="HtmlParser\DomElementFactory.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utility\StringScanner\ExpectPattern.cs" />
+    <Compile Include="Utility\StringScanner\Implementation\ExpectPattern.cs" />
     <Compile Include="Utility\StringScanner\IExpectPattern.cs" />
+    <Compile Include="Utility\StringScanner\Implementation\StringInfo.cs" />
     <Compile Include="Utility\StringScanner\IValueInfo.cs" />
     <Compile Include="Utility\StringScanner\MatchFunctions.cs" />
     <Compile Include="Utility\StringScanner\Patterns\Bounded.cs" />
+    <Compile Include="Utility\StringScanner\Patterns\Number.cs" />
     <Compile Include="Utility\StringScanner\Patterns\OptionallyQuoted.cs" />
     <Compile Include="Utility\StringScanner\Patterns\Quoted.cs" />
     <Compile Include="Utility\StringScanner\Implementation\StringScanner.cs" />

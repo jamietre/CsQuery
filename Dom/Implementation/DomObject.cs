@@ -535,6 +535,19 @@ namespace Jtc.CsQuery.Implementation
          {
              return Render();
          }
+
+        #region interface members
+
+         IDomNode IDomNode.Clone()
+         {
+             return Clone();
+         }
+         object ICloneable.Clone()
+         {
+             return Clone();
+         }
+
+        #endregion
     }
 
 }

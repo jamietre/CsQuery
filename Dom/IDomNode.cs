@@ -5,11 +5,7 @@ using System.Text;
 
 namespace Jtc.CsQuery
 {
-    public interface IDomNode<T> : IDomNode where T : IDomNode
-    {
-        T Clone();
-    }
-    public interface IDomNode
+    public interface IDomNode : ICloneable 
     {
         NodeType NodeType { get; }
 
@@ -28,5 +24,12 @@ namespace Jtc.CsQuery
 
         bool IsIndexed { get; }
         bool IsDisconnected { get; }
+
+        new IDomNode Clone();
     }
+
+    //public interface IDomNode<T> : IDomNode where T : IDomNode
+    //{
+    //    new IDomNode<T> Clone();
+    //}
 }

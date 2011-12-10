@@ -91,8 +91,15 @@ namespace Jtc.CsQuery.Implementation
             clone.IsQuoted = IsQuoted;
             return clone;
         }
-    
-        
+
+        IDomNode IDomNode.Clone()
+        {
+            return Clone();
+        }
+        object ICloneable.Clone()
+        {
+            return Clone();
+        }
         #endregion
     }
 }

@@ -5,8 +5,9 @@ using System.Text;
 
 namespace Jtc.CsQuery.Utility.EquationParser.Implementation
 {
-    public class Operator: IOperator
+    public class Operator : IOperator
     {
+        #region constructors
         public Operator()
         {
 
@@ -15,15 +16,20 @@ namespace Jtc.CsQuery.Utility.EquationParser.Implementation
         {
             Set(op);
         }
+        public Operator(OperationType op)
+        {
+            _OperationType = op;
+        }
         public static implicit operator Operator(string op)
         {
             return new Operator(op);
         }
-        #region protected fields
+        #endregion
+
+        #region private members
         // The order must match the enum
 
-        protected static List<string> _Operators = new List<string>(new string[] 
-            { "+", "-", "*", "/", "%", "^" }
+        protected static List<string> _Operators = new List<string>(new string[] { "+", "-", "*", "/", "%", "^" }
         );
         public static IEnumerable<string> Operators
         {
@@ -34,16 +40,60 @@ namespace Jtc.CsQuery.Utility.EquationParser.Implementation
         }
         protected static HashSet<string> ValidOperators = new HashSet<string>(Operators);
 
-        protected Operation _Operation;
+        protected OperationType _OperationType;
         #endregion
+
         #region public properties
-        public bool IsAssociative { get; protected set; }
-        public Operation Operation
+        public bool IsInverted
         {
-            get { return _Operation; }
+            get
+            {
+                return (OperationType == OperationType.Subtraction
+                    || OperationType == OperationType.Division);
+            }
+        }
+        public AssociationType AssociationType
+        {
+            get
+            {
+                switch (OperationType)
+                {
+                    case OperationType.Addition:
+                    case OperationType.Subtraction:
+                        return AssociationType.Addition;
+                    case OperationType.Multiplication:
+                    case OperationType.Division:
+                        return AssociationType.Multiplicaton;
+                    case OperationType.Power:
+                    case OperationType.Modulus:
+                        return AssociationType.Function;
+                    default:
+                        throw new Exception("Unknown operation type, can't determine association");
+                }
+            }
+        }
+
+        public OperationType OperationType
+        {
+            get { return _OperationType; }
         }
         #endregion
+
         #region public methods
+        public IOperation GetFunction()
+        {
+            switch (OperationType)
+            {
+                case OperationType.Addition:
+                case OperationType.Subtraction:
+                    return new Functions.Sum();
+                case OperationType.Multiplication:
+                case OperationType.Division:
+                    return new Functions.Product();
+                default:
+                    throw new Exception("Not yet supported");
+            }
+        }
         public void Set(string op)
         {
             if (!TrySet(op))
@@ -60,41 +110,45 @@ namespace Jtc.CsQuery.Utility.EquationParser.Implementation
             }
             switch (value)
             {
-                case "+": 
-                    _Operation = Operation.Addition;
-                    IsAssociative = false;
+                case "+":
+                    _OperationType = OperationType.Addition;
                     break;
                 case "-":
-                    _Operation = Operation.Subtraction;
-                    IsAssociative = false;
+                    _OperationType = OperationType.Subtraction;
                     break;
                 case "*":
-                    _Operation = Operation.Multiplication;
-                    IsAssociative = true;
+                    _OperationType = OperationType.Multiplication;
                     break;
                 case "/":
-                    _Operation = Operation.Division;
-                    IsAssociative = true;
+                    _OperationType = OperationType.Division;
                     break;
                 case "^":
-                    _Operation = Operation.Power;
-                    IsAssociative = true;
+                    _OperationType = OperationType.Power;
                     break;
                 case "%":
-                    _Operation = Operation.Modulus;
-                    IsAssociative = true;
+                    _OperationType = OperationType.Modulus;
                     break;
 
             }
             return true;
         }
+
+        public IOperator Clone()
+        {
+            return new Operator(OperationType);
+        }
         public override string ToString()
         {
-            return _Operators[((int)Operation) - 1];
+            return _Operators[((int)OperationType) - 1];
         }
         #endregion
 
-        
-       
+        #region interface members
+
+        object ICloneable.Clone()
+        {
+            return Clone();
+        }
+        #endregion
     }
 }

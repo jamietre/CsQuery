@@ -32,6 +32,7 @@ namespace Jtc.CsQuery.Implementation
                 return base.Render();
             }
         }
+
     }
     
 }

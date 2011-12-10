@@ -6,32 +6,68 @@ using System.Text;
 namespace Jtc.CsQuery.Utility.EquationParser.Implementation.Functions
 {
 
-    public class Abs<T> : Equation<T>, IFunction<T> where T : IConvertible
+    public class Abs: Function
     {
         public Abs()
+            : base("abs")
         {
 
         }
-        public override T Calculate()
-        {
-            if (Variables.Count != 1)
-            {
-                throw new Exception("The ABS function requires exactly one parameter");
-            }
 
-            if (Utils.IsIntegralType<T>())
+        protected override IConvertible GetValue()
+        {
+            IConvertible value = FirstOperand.Value;
+
+            if (Utils.IsIntegralType(value))
             {
-                return (T)Convert.ChangeType(Math.Abs(Convert.ToInt64(VariableValues["0"])), typeof(T));
+                return Math.Abs(Convert.ToInt64(value));
             }
             else
             {
-                return (T)Convert.ChangeType(Math.Abs(Convert.ToDecimal(VariableValues["0"])), typeof(T));
+                return Math.Abs(Convert.ToDecimal(value));
             }
         }
-   
-        public string Name
+       
+        
+        public override int RequiredParmCount
         {
-            get { return "abs"; }
+            get { return 1; }
         }
+
+        public override int MaxParmCount
+        {
+            get { return 1; }
+        }
+
+        public override AssociationType AssociationType
+        {
+            get { return AssociationType.Function; }
+        }
+
+        protected override IOperand GetNewInstance()
+        {
+            return new Abs();
+        }
+
+        //protected override IOperand<U> CloneAsImpl<U>()
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
+
+    //public class Abs<T> : Abs, IFunction<T> where T: IConvertible
+    //{
+
+    //    public new T Value
+    //    {
+    //        get { 
+    //            return (T)GetValue(); 
+    //        }
+    //    }
+
+    //    public new IOperand<T> Clone()
+    //    {
+    //        return new Abs<T>();
+    //    }
+    //}
 }

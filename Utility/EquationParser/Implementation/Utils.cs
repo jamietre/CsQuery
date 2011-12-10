@@ -77,20 +77,46 @@ namespace Jtc.CsQuery.Utility.EquationParser.Implementation
         {
             return type.IsPrimitive && !(type  == typeof(string));
         }
+        public static bool IsNullableType(Type type)
+        {
+            return Objects.IsNullableType(type);
+        }
         public static bool IsText(object value)
         {
             Type t  = value.GetType();
             return t == typeof(string) || t == typeof(char);
         }
-        public static IFunction GetFunction<T>(string functionName) where T: IConvertible
+        public static IFunction GetFunction<T>(string functionName)
         {
+            bool IsTyped = typeof(T) == typeof(IConvertible);
             switch (functionName)
             {
                 case "abs":
-                    return new Functions.Abs<T>();
+                    return new Functions.Abs();
                 default:
                     throw new Exception("Undefined function '" + functionName + "'");
 
+            }
+        }
+        /// <summary>
+        /// If the value is an operand, returns it, otherwise creates the right kind of operand
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static IOperand EnsureOperand(IConvertible value)
+        {
+            if (value is IOperand)
+            {
+                return (IOperand)value;
+            }
+            else if (value is string)
+            {
+                //TODO: parse quotes and return a string liteeral if need be
+                return Equations.CreateVariable((string)value);
+            }
+            else
+            {
+                return Equations.CreateLiteral(value);
             }
         }
     }

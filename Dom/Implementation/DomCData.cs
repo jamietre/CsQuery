@@ -83,7 +83,14 @@ namespace Jtc.CsQuery.Implementation
             return clone;
         }
 
-
+        IDomNode IDomNode.Clone()
+        {
+            return Clone();
+        }
+        object ICloneable.Clone()
+        {
+            return Clone();
+        }
         #endregion
 
        

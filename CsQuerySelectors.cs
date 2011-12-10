@@ -315,24 +315,27 @@ namespace Jtc.CsQuery
                         break;
                     default:
                         
-                        string tag;
+                        string tag="";
                         if (scanner.TryGet(MatchFunctions.HTMLTagName, out tag))
                         {
                             StartNewSelector(SelectorType.Tag);
                             Current.Tag = tag;
                         }
-
-                        // When nothing was retrieved and it's the start of a selector, treat as text. Otherwise ignore the rest
-                        // Quit either way
-                        if (String.IsNullOrEmpty(Current.Tag))
+                        else
                         {
                             if (scanner.Pos == 0)
                             {
                                 Current.Html = sel;
                                 Current.SelectorType = SelectorType.HTML;
+                                scanner.End();
                             }
-                            scanner.End();
+                            else
+                            {
+                                throw new Exception(scanner.LastError);
+                            }
+                            
                         }
+
                         break;
                 }
             }

@@ -3,26 +3,58 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jtc.CsQuery.ExtensionMethods;
+using Jtc.CsQuery.Utility.StringScanner.Implementation;
 
 namespace Jtc.CsQuery.Utility.StringScanner.Patterns
 {
     
     public class Quoted: ExpectPattern
     {
-        //bool matched;
+
+
         char quoteChar;
-        public override bool Expect(ref int index, char current)
+        public override void Initialize(int startIndex, char[] sourceText)
         {
-            base.Expect(ref index,current);
-            if (index==Start) {
+            base.Initialize(startIndex, sourceText);
+        }
+        public override bool Validate()
+        {
+            int index = StartIndex;
+            while (index<Source.Length && Expect(ref index, Source[index]))
+            {
+                ;
+            }
+            EndIndex = index;
+    
+            // should not have passed the end
+            if (EndIndex > Length || EndIndex == StartIndex)
+            {
+                Result = "";
+                return false;
+            }
+            return FinishValidate();
+        }
+        protected virtual bool FinishValidate(){ 
+            //return the substring excluding the quotes
+            Result = GetOuput(StartIndex, EndIndex, true, true);
+            return true;
+        }
+
+        protected virtual bool Expect(ref int index, char current)
+        {
+            info.Target = current;
+            if (index == StartIndex)
+            {
                 quoteChar = current;
                 if (!info.Quote)
                 {
                     return false;
                 }
-            } else {
-                
-                bool isEscaped = Source[index-1]=='\\';
+            }
+            else
+            {
+
+                bool isEscaped = Source[index - 1] == '\\';
                 if (current == quoteChar && !isEscaped)
                 {
                     index++;
@@ -32,20 +64,5 @@ namespace Jtc.CsQuery.Utility.StringScanner.Patterns
             index++;
             return true;
         }
-        public override bool Validate(int endIndex,out string result)
-        {
-            // should not have passed the end
-            if (endIndex > Length || endIndex==Start)
-            {
-                result = "";
-                return false;
-            }
-            //return the substring excluding the quotes
-            result = GetOuput(Start, endIndex, true);
-            result = result.SubstringBetween(1, result.Length - 1);
-            return true;
-        }
-
-       
     }
 }

@@ -7,45 +7,55 @@ namespace Jtc.CsQuery.Utility.StringScanner
 {
     public static class MatchFunctions
     {
-        public static bool Alpha(int index, ICharacterInfo info ) {
-            return info.Alpha;
-        }
-        public static bool Numeric(int index, ICharacterInfo info)
+        public static bool Alpha(int index, char character)
         {
-            return info.NumericExtended;
+            return CharacterData.IsType(character, CharacterType.Alpha); 
         }
-        public static bool Alphanumeric(int index, ICharacterInfo info)
+        public static IExpectPattern Number(bool requireWhitespaceTerminator = false)
         {
-            return info.Alphanumeric;
+            var pattern = new Patterns.Number();
+            pattern.RequireWhitespaceTerminator = requireWhitespaceTerminator;
+            return pattern;
         }
-        public static bool HTMLAttribute(int index, ICharacterInfo info)
+
+
+        public static bool Alphanumeric(int index, char character)
         {
-            if (index == 0)
-            {
-                return info.Alpha;
-            }
-            else
-            {
-                return info.Alphanumeric || "_:.-".Contains(info.Target);
-            }
+            return CharacterData.IsType(character, CharacterType.Alpha | CharacterType.NumberPart);
         }
-        public static bool HTMLTagName(int index, ICharacterInfo info)
+        public static bool HTMLAttribute(int index, char character)
         {
             if (index == 0)
             {
-                return info.Alpha;
+                return CharacterData.IsType(character, CharacterType.Alpha); 
             }
             else
             {
-                return info.Alphanumeric || "_-".Contains(info.Target);
+                return CharacterData.IsType(character,CharacterType.Alpha | CharacterType.Number)
+                    || "_:.-".Contains(character);
+            }
+        }
+        public static bool HTMLTagName(int index, char character)
+        {
+            if (index == 0)
+            {
+                return CharacterData.IsType(character, CharacterType.Alpha);
+            }
+            else
+            {
+                return CharacterData.IsType(character, CharacterType.Alpha)
+                    || character == '_' || character == '-';
             }
         }
 
-        public static IExpectPattern BoundedBy(string boundStart, string boundEnd=null, bool honorInnerQuotes=false)
+        public static IExpectPattern BoundedBy(string boundStart=null, string boundEnd=null, bool honorInnerQuotes=false)
         {
             
             var pattern = new Patterns.Bounded();
-            pattern.BoundStart = boundStart;
+            if (!String.IsNullOrEmpty(boundStart))
+            {
+                pattern.BoundStart = boundStart;
+            }
             if (!String.IsNullOrEmpty(boundEnd))
             {
                 pattern.BoundEnd= boundEnd;
@@ -72,17 +82,18 @@ namespace Jtc.CsQuery.Utility.StringScanner
                 return pattern;
             }
         }
-        public static bool NonWhitespace(int index, ICharacterInfo info)
+        public static bool NonWhitespace(int index, char character)
         {
-            return !info.Whitespace;
+            return !CharacterData.IsType(character, CharacterType.Whitespace); 
         }
-        public static bool QuoteChar(int index, ICharacterInfo info) {
-            return info.Quote;
+        public static bool QuoteChar(int index, char character)
+        {
+            return CharacterData.IsType(character, CharacterType.Quote); 
         }
 
-        public static bool BoundChar(int index, ICharacterInfo info)
+        public static bool BoundChar(int index, char character)
         {
-            return info.Bound;
+            return CharacterData.IsType(character, CharacterType.Enclosing | CharacterType.Quote); 
         }
 
         public static IExpectPattern Quoted
@@ -92,19 +103,29 @@ namespace Jtc.CsQuery.Utility.StringScanner
                 return new Patterns.Quoted();
             }
         }
-        public static bool PseudoSelector(int index, ICharacterInfo info)
+        public static bool PseudoSelector(int index, char character)
         {
-            return index == 0 ? info.Alpha : info.Alpha || info.Target == '-';
+            return index == 0 ? CharacterData.IsType(character, CharacterType.Alpha) :
+               CharacterData.IsType(character, CharacterType.Alpha) || character == '-';
         }
-        public static bool CssClass(int index, ICharacterInfo info)
+        /// <summary>
+        /// Matches a valid CSS class: http://www.w3.org/TR/CSS21/syndata.html#characters
+        /// Does not currently deal with escaping though.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="character"></param>
+        /// <returns></returns>
+        public static bool CssClass(int index, char character)
         {
+            //TODO - doesn't validate hyphen-digit combo.
+
             if (index == 0)
             {
-                return info.Alpha || info.Target == '-' || info.Target == '_';
+                return CharacterData.IsType(character, CharacterType.AlphaISO10646);
             }
             else
             {
-                return info.Alphanumeric || info.Target == '-';
+                return CharacterData.IsType(character, CharacterType.AlphaISO10646 | CharacterType.Number);
             }
         }
         public static IExpectPattern OptionallyQuoted
@@ -114,9 +135,9 @@ namespace Jtc.CsQuery.Utility.StringScanner
                 return new Patterns.OptionallyQuoted();
             }
         }
-        public static bool Operator(int index, ICharacterInfo info)
+        public static bool Operator(int index, char character)
         {
-            return info.Operator;
+            return CharacterData.IsType(character, CharacterType.Operator);
         }
 
     }

@@ -50,9 +50,10 @@ namespace Jtc.CsQuery.Utility.StringScanner
         bool IsOneOf(IEnumerable<string> text);
 
         IStringScanner ToNewScanner();
+        IStringScanner ToNewScanner(string format);
         IStringScanner Expect(string text);
         IStringScanner Expect(IExpectPattern pattern);
-        IStringScanner Expect(Func<int, ICharacterInfo, bool> validate);
+        IStringScanner Expect(Func<int, char, bool> validate);
         IStringScanner ExpectChar(char character);
         IStringScanner ExpectChar(string characters);
         IStringScanner ExpectChar(params char[] characters);
@@ -64,7 +65,7 @@ namespace Jtc.CsQuery.Utility.StringScanner
 
         bool TryGet(IEnumerable<string> stringList, out string result);
         bool TryGet(IExpectPattern pattern, out string result);
-        bool TryGet(Func<int, ICharacterInfo, bool> validate, out string result);
+        bool TryGet(Func<int, char, bool> validate, out string result);
         bool TryGetChar(char character, out string result);
         bool TryGetChar(string characters, out string result);
         bool TryGetChar(IEnumerable<char> characters, out string result);
@@ -75,7 +76,7 @@ namespace Jtc.CsQuery.Utility.StringScanner
         string Get(params string[] values);
         string Get(IEnumerable<string> stringList);
         string Get(IExpectPattern pattern);
-        string Get(Func<int, ICharacterInfo, bool> validate);
+        string Get(Func<int, char, bool> validate);
         string GetNumber();
         string GetAlpha();
         string GetBoundedBy(string start, string end, bool allowQuoting=false);

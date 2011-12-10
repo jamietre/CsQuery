@@ -19,7 +19,9 @@ namespace Jtc.CsQuery.Utility.StringScanner
         /// <param name="index"></param>
         /// <param name="current"></param>
         /// <returns></returns>
-        bool Expect(ref int index,char current);
-        bool Validate(int endIndex, out string result);
+
+        bool Validate();
+        string Result { get; }
+        int EndIndex { get; }
     }
 }

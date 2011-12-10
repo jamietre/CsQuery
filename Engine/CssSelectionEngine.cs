@@ -594,11 +594,14 @@ namespace Jtc.CsQuery.Engine
                 }
             }
             if (selector.SelectorType.HasFlag(SelectorType.Position) &&
+                selector.TraversalType == TraversalType.Filter && 
                 !MatchesDOMPosition(elm, selector.PositionType,
                 selector.PositionType == PositionType.NthChild ? selector.Criteria : null))
             {
                 return false;
             }
+            // remove this so it doesn't get re-run
+            // selector.SelectorType &= ~SelectorType.Position;
 
             if (selector.SelectorType.HasFlag(SelectorType.Contains) &&
                 !ContainsText(elm, selector.Criteria))

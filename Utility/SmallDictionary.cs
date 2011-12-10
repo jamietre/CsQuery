@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery
+namespace Jtc.CsQuery.Utility
 {
     /// <summary>
     /// A lightweight dictionary for small lists. 
@@ -14,19 +14,6 @@ namespace Jtc.CsQuery
     /// <typeparam name="TValue"></typeparam>
     public class SmallDictionary<TKey,TValue>: IDictionary<TKey,TValue>
     {
-        // Note - it may be faster to not use lazy creation in our context. The users of this dictionary should
-        // already use lazy creation for the object itself, so this would just be another redundant check.
-        // TODO set up some good test/comparison cases
-
-        //private List<KeyValuePair<TKey,TValue>> InnerList {
-        //    get {
-        //        if (_InnerList==null) {
-        //            _InnerList = new List<KeyValuePair<TKey,TValue>>();
-        //        }
-        //        return _InnerList;
-        //    }
-        //}
-        //protected List<KeyValuePair<TKey,TValue>> _InnerList;
         protected List<KeyValuePair<TKey, TValue>> InnerList = new List<KeyValuePair<TKey, TValue>>();
 
         public bool ContainsKey(TKey key)
@@ -111,10 +98,6 @@ namespace Jtc.CsQuery
 	        }
 	        set 
 	        {
-                if (value == null)
-                {
-                    throw new Exception("Attemted to add null value to dictionary");
-                }
                 if (InnerList.Count > 0)
                 {
                     KeyValuePair<TKey,TValue> newVal = new KeyValuePair<TKey,TValue>(key,value);
@@ -169,6 +152,8 @@ namespace Jtc.CsQuery
         public void  CopyTo(KeyValuePair<TKey,TValue>[] array, int arrayIndex)
         {
             int index=0;
+            array = new KeyValuePair<TKey, TValue>[Count];
+
             foreach (var kvp in InnerList)
             {
                 array[arrayIndex+index++] = kvp;
@@ -190,6 +175,11 @@ namespace Jtc.CsQuery
         {
             return InnerList.Remove(item);
         }
+        public override string ToString()
+        {
+            return InnerList.ToString();
+        }
+        #region interface members
         public IEnumerator<KeyValuePair<TKey,TValue>> GetEnumerator()
         {
             return InnerList.GetEnumerator();
@@ -199,6 +189,6 @@ namespace Jtc.CsQuery
         {
             return GetEnumerator();
         }
-
+        #endregion
     }
 }

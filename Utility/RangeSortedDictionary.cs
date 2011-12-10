@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Jtc.CsQuery.ExtensionMethods;
 
-namespace Jtc.CsQuery
+namespace Jtc.CsQuery.Utility
 {
     /// <summary>
     /// A sorted dictionary that allows lookup by range.

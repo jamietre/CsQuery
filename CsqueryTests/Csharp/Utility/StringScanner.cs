@@ -141,11 +141,15 @@ namespace CsqueryTests.Csharp
             optQuote.Terminators="]";
 
             string text = inner.Get(optQuote);
-            Assert.AreEqual(text,"this \"is ' a quoted value","Got the right text");
+            Assert.AreEqual("this \"is ' a quoted value",text,"Got the right text");
 
             inner.Text = @"this ""is \' a quoted value";
             text = inner.Get(optQuote);
-            Assert.AreEqual(text, "this \"is \\' a quoted value", "Got the right text without quotes");
+            Assert.AreEqual("this \"is \\' a quoted value",text, "Got the right text without quotes");
+
+            inner.Text = @"""this is \"" a quoted value""";
+            text = inner.Get(optQuote);
+            Assert.AreEqual("this is \" a quoted value", text, "Got the right text with quotes");
 
 
         }

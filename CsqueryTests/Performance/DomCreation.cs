@@ -14,6 +14,7 @@ using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using HtmlAgilityPack;
 using System.Diagnostics;
+using Jtc.CsQuery.Utility.EquationParser;
 
 namespace CsqueryTests.Performance
 {
@@ -47,13 +48,24 @@ namespace CsqueryTests.Performance
 
             int randomLength = Dom.Select("p").Eq(22).RenderSelection().Length;
 
+            var equation = Equations.CreateEquation<int>("2x+2");
+
             for (int i = 0; i < iterationsSelect; i++)
             {
                 // todo: cache equations once parsed - should speed this up immenseley
-                //CsQuery sel = Dom.Select("div:last-child");
-                CsQuery sel = Dom.Select("div span");
-                divSpan = sel.Length;
+                CsQuery sel = Dom.Select("div:nth-child(2n+1)");
+                //CsQuery sel = Dom.Select("div span");
+                
+                // get length to force it to iterate through everything
+                int len = sel.Length;
+
+                //equation.SetVariable("x", 12);
+               // var y = equation.Value;
             }
+
+            CsQuery selFinal = Dom.Select("div span");
+            divSpan = selFinal.Length;
+
             DateTime selected = DateTime.Now;
 
           

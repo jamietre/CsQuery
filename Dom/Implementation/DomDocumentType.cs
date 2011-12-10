@@ -112,7 +112,7 @@ namespace Jtc.CsQuery.Implementation
             get { return false; }
         }
 
-        #region IDomSpecialElement Members
+        #region interface Members
 
         public string Text
         {
@@ -125,12 +125,22 @@ namespace Jtc.CsQuery.Implementation
                 NonAttributeData = value;
             }
         }
+
         public override DomDocumentType Clone()
         {
             DomDocumentType clone = new DomDocumentType();
             clone.NonAttributeData = NonAttributeData;
             clone.DocType = DocType;
             return clone;
+        }
+
+        IDomNode IDomNode.Clone()
+        {
+            return Clone();
+        }
+        object ICloneable.Clone()
+        {
+            return Clone();
         }
 
 

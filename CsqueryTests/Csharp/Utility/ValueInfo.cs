@@ -24,7 +24,7 @@ namespace CsqueryTests.Csharp
         {
             ICharacterInfo charInfo;
 
-            charInfo = CharacterInfo.Create('z');
+            charInfo = CharacterData.CreateCharacterInfo('z');
             Assert.IsTrue(IsOnly(charInfo, "alpha,alphanumeric,lower"), "alpha lower");
 
             charInfo.Target = 'A';
@@ -32,7 +32,7 @@ namespace CsqueryTests.Csharp
 
 
             charInfo.Target = ' ';
-            Assert.IsTrue(IsOnly(charInfo, "whitespace"), "only whitespace");
+            Assert.IsTrue(IsOnly(charInfo, "whitespace,separator"), "only whitespace");
 
             charInfo.Target = '{';
             Assert.IsTrue(IsOnly(charInfo, "bound"), "only bound");
@@ -73,7 +73,7 @@ namespace CsqueryTests.Csharp
         {
             IStringInfo info;
 
-            info = StringInfo.Create("alllower");
+            info = CharacterData.CreateStringInfo("alllower");
             Assert.IsTrue(IsOnly(info, "alpha,alphanumeric,lower,attribute"), "alpha");
 
             info.Target = "Mixed";
@@ -86,7 +86,7 @@ namespace CsqueryTests.Csharp
             Assert.IsTrue(IsOnly(info, "alphanumeric,lower,attribute"), "Alphanumeric,attribute");
 
             info.Target = "    \n";
-            Assert.IsTrue(IsOnly(info, "whitespace"), "only whitespace");
+            Assert.IsTrue(IsOnly(info, "whitespace,separator"), "only separator & whitespace");
 
             info.Target = "([])";
             Assert.IsTrue(IsOnly(info, "bound"), "only bound");
@@ -122,6 +122,9 @@ namespace CsqueryTests.Csharp
             info.Target = "-data-test";
             Assert.IsTrue(IsOnly(info, "lower"), "invalid attribute");
 
+            info.Target = "-data-test,";
+            Assert.IsTrue(IsOnly(info, "lower,separator"), "invalid attribute + separator");
+
         }
 
 
@@ -131,7 +134,7 @@ namespace CsqueryTests.Csharp
 
             foreach (string val in testFor)
             {
-                if (!val.IsOneOf("","attribute","alpha", "alphanumeric", "bound", "lower", "upper", "whitespace", "operator", "parenthesis","numericext","numeric"))
+                if (!val.IsOneOf("","separator","attribute","alpha", "alphanumeric", "bound", "lower", "upper", "whitespace", "operator", "parenthesis","numericext","numeric"))
                 {
                     throw new Exception("Invalid parm passed to IsOnly");
                 }
@@ -147,15 +150,20 @@ namespace CsqueryTests.Csharp
             valid &= testFor.Contains("upper") ? info.Upper : !info.Upper;
             valid &= testFor.Contains("whitespace") ? info.Whitespace : !info.Whitespace;
             valid &= testFor.Contains("operator") ? info.Operator : !info.Operator;
-            valid &= testFor.Contains("parenthesis") ? info.Parenthesis : !info.Parenthesis;
+
+
             if (info is ICharacterInfo)
             {
-                valid &= testFor.Contains("quote") ? ((ICharacterInfo)info).Quote : !((ICharacterInfo)info).Quote;
-                valid &= testFor.Contains("bound") ? ((ICharacterInfo)info).Bound : !((ICharacterInfo)info).Bound;
+                var cInfo = (ICharacterInfo)info;
+                valid &= testFor.Contains("parenthesis") ? cInfo.Parenthesis : !cInfo.Parenthesis;
+                valid &= testFor.Contains("quote") ? cInfo.Quote : !cInfo.Quote;
+                valid &= testFor.Contains("bound") ? cInfo.Bound : !cInfo.Bound;
+                valid &= testFor.Contains("separator") ? cInfo.Separator : !cInfo.Separator;
             }
             if (info is IStringInfo)
             {
-                valid &= testFor.Contains("attribute") ? ((IStringInfo)info).HtmlAttributeName : !((IStringInfo)info).HtmlAttributeName;
+                var sInfo = (IStringInfo)info;
+                valid &= testFor.Contains("attribute") ? sInfo.HtmlAttributeName : !sInfo.HtmlAttributeName;
             }
             
             return valid;

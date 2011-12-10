@@ -5,6 +5,7 @@ using System.Text;
 using Jtc.CsQuery.ExtensionMethods;
 using System.Diagnostics;
 using Jtc.CsQuery.Implementation;
+using Jtc.CsQuery.Utility.StringScanner;
 
 namespace Jtc.CsQuery.HtmlParser
 {
@@ -502,7 +503,7 @@ namespace Jtc.CsQuery.HtmlParser
                 switch (step)
                 {
                     case 0:
-                        if (validNameStartCharacters.Contains(c))
+                        if (CharacterData.IsType(c,CharacterType.HtmlTagNameStart))
                         {
                             nameStart = current.Pos;
                             step = 1;
@@ -510,7 +511,7 @@ namespace Jtc.CsQuery.HtmlParser
                         current.Pos++;
                         break;
                     case 1:
-                        if (!validNameCharacters.Contains(c))
+                        if (!CharacterData.IsType(c, CharacterType.HtmlTagName))
                         {
                             name = BaseHtml.SubstringBetween(nameStart, current.Pos);
                             step = 2;
@@ -557,7 +558,7 @@ namespace Jtc.CsQuery.HtmlParser
                 switch (step)
                 {
                     case 0: // find name
-                        if (validNameStartCharacters.Contains(c))
+                        if (CharacterData.IsType(c, CharacterType.HtmlTagNameStart))
                         {
                             step = 1;
                             nameStart = current.Pos;
@@ -574,7 +575,7 @@ namespace Jtc.CsQuery.HtmlParser
 
                         break;
                     case 1:
-                        if (!validNameCharacterSet.Contains(c))
+                        if (!CharacterData.IsType(c, CharacterType.HtmlTagName))
                         {
                             step = 2;
                             aName = BaseHtml.SubstringBetween(nameStart, current.Pos);
@@ -585,50 +586,48 @@ namespace Jtc.CsQuery.HtmlParser
                         }
                         break;
                     case 2: // find value
-                        if (c == '=')
-                        {
-                            step = 3;
-                            current.Pos++;
-                        }
-                        else if (c != ' ')
-                        {
-                            // anything else means new attribute
-                            finished = true;
-                        }
-                        else
-                        {
-                            current.Pos++;
+                        switch(c) {
+                            case '=':
+                                step = 3;
+                                current.Pos++;
+                                break;
+                            case ' ':
+                                current.Pos++;
+                                break;
+                            default:
+                                // anything else means new attribute
+                                finished = true;                               
+                                break;
                         }
                         break;
                     case 3: // find quote start
-                        if (c=='\\' || c=='>')
-                        {
-                            finished = true;
-                        }
-                        else if (c == ' ')
-                        {
-                            current.Pos++;
-                        }
-                        else
-                        {
-                            if (c == '"' || c == '\'')
-                            {
+                        switch(c) {
+                            case '\\':
+                            case '>':
+                                finished = true;
+                                break;
+                            case ' ':
+                                current.Pos++;
+                                break;
+                            case '"':
+                            case '\'':
                                 isQuoted = true;
                                 valStart = current.Pos+1;
                                 current.Pos++;
                                 quoteChar = c;
-                            } else {
+                                step = 4;
+                                break;
+                            default:
                                 valStart = current.Pos;
-                            }
-                            
-                            step = 4;
+                                step = 4;
+                                break;
+                        }                        
+                        // any non-whitespace is part of the attribute   
                         
-                            // any non-whitespace is part of the attribute   
-                        }
                         break;
                     case 4: // parse the attribute until whitespace or closing quote
                         if ((isQuoted && c == quoteChar) || 
-                            (!isQuoted && (c==' ' || c=='/' || c=='>')))
+                            (!isQuoted && isHtmlTagEnd(c)))
                         {
                             aValue = BaseHtml.SubstringBetween(valStart, current.Pos);
                             if (isQuoted)
@@ -714,7 +713,7 @@ namespace Jtc.CsQuery.HtmlParser
                         }
                         break;
                     case 2:
-                        if (c == '/' || c == ' ' || c == '>')
+                        if (isHtmlTagEnd(c))
                         {
                             return BaseHtml.SubstringBetween(tagStart, current.Pos).Trim();
                         }
@@ -728,15 +727,14 @@ namespace Jtc.CsQuery.HtmlParser
             return String.Empty;
         }
 
-        const string validNameStartCharacters = "abcdefghijklmnopqrstuvwxyzABCEDFGHIJKLMNOPQRSTUVWXYZ0123456789_:";
-        const string validNameCharacters = validNameStartCharacters + ".-";
-
-        protected HashSet<char> validNameStartCharacterSet = new HashSet<char>(validNameStartCharacters);
-        protected HashSet<char> validNameCharacterSet = new HashSet<char>(validNameCharacters);
-
+        protected bool isHtmlTagEnd(char c)
+        {
+            return c == '/' || c == ' ' || c == '>';
+        }
         protected bool isTagChar(char c)
         {
-            return (c == '<' || c == '>' || c == '/');
+           // return CharacterData.IsType(c, CharacterType.HtmlTagAny);
+            return c == '<' || c == '>' || c == '/';
         }
 
         /* Some tags have inner HTML but are often not closed properly. There are two possible situations. A tag may not 

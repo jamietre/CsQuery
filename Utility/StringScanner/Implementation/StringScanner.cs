@@ -112,7 +112,7 @@ namespace Jtc.CsQuery.Utility.StringScanner.Implementation
             {
                 NextNonWhitespace();
             }
-            if (IsQuote(Peek()))
+            if (CharacterData.IsType(Peek(),CharacterType.Whitespace))
             {
                 Next();
                 QuotingActive = true;
@@ -222,6 +222,7 @@ namespace Jtc.CsQuery.Utility.StringScanner.Implementation
             }
         }
         #endregion
+        
         #region public methods
         /// <summary>
         /// Creates a new stringscanner instance from the current match
@@ -234,6 +235,19 @@ namespace Jtc.CsQuery.Utility.StringScanner.Implementation
                 throw new Exception("The last operation was not successful; a new string scanner cannot be created.");
             }
             return Scanner.Create(Match);
+        }
+        /// <summary>
+        /// Creates a new stringscanner instance from the current match, formatted using passed format first.
+        /// </summary>
+        /// <param name="format"></param>
+        /// <returns></returns>
+        public IStringScanner ToNewScanner(string format)
+        {
+            if (!Success)
+            {
+                throw new Exception("The last operation was not successful; a new string scanner cannot be created.");
+            }
+            return Scanner.Create(String.Format(format,Match));
         }
         /// <summary>
         /// returns true of the text starting at the current position matches the passed text
@@ -274,9 +288,9 @@ namespace Jtc.CsQuery.Utility.StringScanner.Implementation
             {
                 return;
             }
-            if (IsWhitespace(NextChar))
+            if (CharacterData.IsType(NextChar,CharacterType.Whitespace))
             {
-                while (!Finished && IsWhitespace(NextChar))
+                while (!Finished && CharacterData.IsType(NextChar,CharacterType.Whitespace))
                 {
                     Next(1);
                 }
@@ -568,7 +582,7 @@ namespace Jtc.CsQuery.Utility.StringScanner.Implementation
         /// <returns></returns>
         public IStringScanner ExpectNumber()
         {
-            return Expect(MatchFunctions.Numeric);
+            return Expect(MatchFunctions.Number());
         }
         public bool TryGetAlpha(out string result)
         {
@@ -620,12 +634,12 @@ namespace Jtc.CsQuery.Utility.StringScanner.Implementation
             ExpectImpl(pattern, true);
             return this;
         }
-        public string Get(Func<int, ICharacterInfo, bool> validate)
+        public string Get(Func<int, char, bool> validate)
         {
             Expect(validate);
             return Match;
         }
-        public bool TryGet(Func<int, ICharacterInfo, bool> validate, out string result)
+        public bool TryGet(Func<int, char, bool> validate, out string result)
         {
             return TryWrapper(() =>
             {
@@ -636,14 +650,14 @@ namespace Jtc.CsQuery.Utility.StringScanner.Implementation
         /// Continue seeking as long as the delegate returns True
         /// </summary>
         /// <param name="del"></param>
-        public IStringScanner Expect(Func<int, ICharacterInfo, bool> validate)
+        public IStringScanner Expect(Func<int, char, bool> validate)
         {
             AssertNotFinished();
             CachePos();
             AutoSkipWhitespace();
             int startPos = Pos;
             int index = 0;
-            while (!Finished && validate(index, Info))
+            while (!Finished && validate(index, NextChar))
             {
                 Pos++;
                 index++;
@@ -695,6 +709,10 @@ namespace Jtc.CsQuery.Utility.StringScanner.Implementation
             boundedBy.HonorInnerQuotes = allowQuoting;
             return Expect(boundedBy);
         }
+        public override string ToString()
+        {
+            return Text;
+        }
 
         /// <summary>
         /// The implementation - if the 2nd parm is false, it is the opposite (seek until the match condition is met)
@@ -710,24 +728,15 @@ namespace Jtc.CsQuery.Utility.StringScanner.Implementation
             int startPos = Pos;
 
             pattern.Initialize(Pos, Chars);
-
-            int newIndex=Pos;
-            while (!Finished && pattern.Expect(ref newIndex, NextChar))
-            {
-                Pos = newIndex;
-            }
-            Pos = newIndex;
-
             // call the function one more time after the end of the string - this determines outcome
-            string result;
-            if (pattern.Validate(Pos,out result))
+            if (pattern.Validate())
             {
-                Match = result;
-                NewPos();
+                Match = pattern.Result;
+                NewPos(pattern.EndIndex);
             }
             else
             {
-
+                Pos = pattern.EndIndex; // for error report to be accurate - will be undone at end
                 ThrowUnexpectedCharacterException();
             }
             return this;
@@ -808,6 +817,7 @@ namespace Jtc.CsQuery.Utility.StringScanner.Implementation
             }
         }
         #endregion
+        
         #region private methods
         /// <summary>
         /// Caches the current position
@@ -870,14 +880,7 @@ namespace Jtc.CsQuery.Utility.StringScanner.Implementation
             }
             return charString;
         }
-        protected bool IsWhitespace(char character)
-        {
-            return character == ' ';
-        }
-        protected bool IsQuote(char character)
-        {
-            return character == '"' || character == '\'';
-        }
+
       
         
         #endregion

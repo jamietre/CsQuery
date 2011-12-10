@@ -1,119 +1,156 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using Jtc.CsQuery.Utility.StringScanner;
+using Jtc.CsQuery.ExtensionMethods;
+using Jtc.CsQuery.Utility.EquationParser.Implementation.Functions;
 
 namespace Jtc.CsQuery.Utility.EquationParser.Implementation
 {
-    
-    public class EquationParser<T>: IEquationParser<T> where T: IConvertible
+
+    public class EquationParser: IEquationParser
     {
         public EquationParser()
         {
-
+            
         }
-
-        public string Error { get; set; }
-
-        public IEnumerable<IVariable> Variables
-        {
-            get
-            {
-                if (_Variables == null)
-                {
-                    return Objects.EmptyEnumerable<IVariable>();
-                }
-                else
-                {
-                    return _Variables;
-                }
-            }
-        }
-        protected List<IVariable> InnerVariables
-        {
-            get
-            {
-                if (_Variables == null)
-                {
-                    _Variables = new List<IVariable>();
-                }
-                return _Variables;
-            }
-        }
-        protected List<IVariable> _Variables;
-        protected string _Text;
-        public IOperand<T> Equation
-        {
-            get;
-            protected set;
-        }
-        IOperand IEquationParser.Equation
-        {
-            get
-            {
-                return Equation;
-            }
-        }
-
-        // used by parser
-        
+        #region private members
+        protected bool IsTyped { get; set; }
+        protected HashSet<IVariable> _UniqueVariables;
         protected int CurPos;
         protected bool ParseEnd;
         protected IStringScanner scanner;
 
-        public bool TryParse(string text)
+        protected HashSet<IVariable> UniqueVariables
+        {
+            get
+            {
+                if (_UniqueVariables == null)
+                {
+                    _UniqueVariables = new HashSet<IVariable>();
+                }
+                return _UniqueVariables;
+            }
+        }
+       
+        #endregion
+
+        #region public properties
+        protected IOperation Clause;
+       
+        /// <summary>
+        /// Error (if any) that occurred while parsing
+        /// </summary>
+        public string Error { get; set; }
+        
+        
+        #endregion
+
+        #region public methods
+
+        public bool TryParse(string text, out IOperand operand)
         {
             try
             {
-                Parse(text);
+                operand = Parse(text);
                 return true;
             }
             catch (Exception e)
             {
+                operand = null;
                 Error = e.Message;
-                Equation = null;
+                Clause = null;
                 return false;
             }
         }
-        public void Parse(string text)
+        public IOperand Parse(string text) 
         {
-
+            return Parse<IConvertible>(text);
+        }
+        public IOperand Parse<T>(string text) where T: IConvertible
+        {
+            IsTyped = typeof(T) != typeof(IConvertible);
             scanner = Scanner.Create(text);
 
-            IOperand opA;
-            IClause<T> clause = new Clause<T>();
-            Equation = clause;
+            Clause = IsTyped ? 
+                new Sum<T>() : 
+                new Sum();
 
             // it could have just one operand
+            IOperand lastOperand = GetOperand<T>();
 
-            opA = GetOperand();
-            clause.OperandA = opA;
+            Clause.AddOperand(lastOperand);
+            IOperation working = Clause;
+            IOperand nextOperand = null;
 
             while (!ParseEnd)
             {
-                IOperand opB;
-                IOperator oper;
-                oper = GetOperator();
-                opB = GetOperand();
+                IOperator op= GetOperation();
+                
+                nextOperand = GetOperand<T>();
+                IOperation newOp;
 
-                clause = clause.Chain(opB, oper);
+                if (op.AssociationType == working.AssociationType)
+                {
+                    // working can only be sum/product
+                    working.AddOperand(nextOperand, op.IsInverted);
+                }
+                else
+                {
+                    switch (op.AssociationType)
+                    {
+                        case AssociationType.Addition:
+                            // always return to the root when adding
+                            if (!ReferenceEquals(working, Clause))
+                            {
+                                working = Clause;
+                            }
+                            working.AddOperand(nextOperand, op.IsInverted);
+                            break;
+                        case AssociationType.Multiplicaton:
+                            //"steal" last operand from Clause, and change working to the new op
+                            newOp = op.GetFunction();
+                            
+                            newOp.AddOperand(lastOperand);
+                            newOp.AddOperand(nextOperand, op.IsInverted);
+                            Clause.ReplaceLastOperand(newOp);
+                            working = newOp;
+                            break;
+                        case AssociationType.Function:
+                            // this includes Pow - anything that operates against
+                            // Similar to Multiplication, but does not change the active chain to the new operation. It can never be added to.
+                            newOp = op.GetFunction();
+                            newOp.AddOperand(nextOperand, op.IsInverted);
+                            Clause.ReplaceLastOperand(newOp);
+                            break;
+                        default:
+                            throw new Exception("Unknown association type.");
+                    }
+                }
+                lastOperand = nextOperand;
+                
             }
             Error = "";
+            
+            return (IOperand)Clause;
         }
+        #endregion
 
-        protected IOperand GetOperand()
+        #region private methods
+        protected IOperand GetOperand<T>() where T: IConvertible
         {
             string text;
             IOperand output;
             scanner.SkipWhitespace();
             if (scanner.Info.NumericExtended)
             {
-                text = scanner.GetNumber();
-                int num;
-                if (Int32.TryParse(text, out num))
+                text = scanner.Get(MatchFunctions.Number());
+                double num;
+                if (Double.TryParse(text, out num))
                 {
-                    output = Literal.Create(num);
+                    output = IsTyped ? new Literal<T>(num) : new Literal(num);
                 }
                 else
                 {
@@ -125,32 +162,35 @@ namespace Jtc.CsQuery.Utility.EquationParser.Implementation
                 text = scanner.GetAlpha();
                 if (scanner.NextCharOrEmpty == "(")
                 {
-                    output = Utils.GetFunction<T>(text);
-                    // TODO -- parse inner () into a parameter list
-                    // Create operands for each (any could be a variable)
+                    IFunction func= Utils.GetFunction<T>(text);
 
-                    // it is a function = create the operand from inner parens
+                    var inner = scanner.ExpectBoundedBy('(', true).ToNewScanner("{0},");
+                    
+                    while (!inner.Finished)
+                    {
+                        string parm = inner.Get(MatchFunctions.BoundedBy(boundEnd: ","));
+                        EquationParser innerParser = new EquationParser();
+
+                        IOperand innerOperand = innerParser.Parse<T>(parm);
+                        func.AddOperand(innerOperand);
+                    }
+                    CacheVariables(func);
+                    output = func;
+                    
                 }
                 else
                 {
-                    IVariable var = GetVariable(text);
+                    IVariable var = GetVariable<T>(text);
                     output = var;
                 }
             }
             else if (scanner.NextChar == '(')
             {
                 string inner = scanner.Get(MatchFunctions.BoundedBy("("));
-                var parser = new EquationParser<T>();
-                parser.Parse(inner);
-                
-                output = parser.Equation;
-                foreach (var newVar in parser.Variables)
-                {
-                    if (!Variables.Any(item => item.Name == newVar.Name))
-                    {
-                        InnerVariables.Add(newVar);
-                    }
-                }
+                var parser = new EquationParser();
+                parser.Parse<T>(inner);
+                output = parser.Clause;
+                CacheVariables(output);
             }
             else
             {
@@ -163,10 +203,11 @@ namespace Jtc.CsQuery.Utility.EquationParser.Implementation
 
         }
 
-        protected IOperator GetOperator()
+        protected IOperator GetOperation()
         {
+
             IOperator output;
-            if (scanner.Info.Alpha || scanner.NextChar=='(')
+            if (scanner.Info.Alpha || scanner.NextChar == '(')
             {
                 output = new Operator("*");
             }
@@ -176,24 +217,33 @@ namespace Jtc.CsQuery.Utility.EquationParser.Implementation
             }
             return output;
         }
-        protected IVariable GetVariable(string name)
+        protected IVariable GetVariable<T>(string name) where T: IConvertible
         {
             IVariable output;
-            output = Variables.FirstOrDefault(item=>item.Name==name);
+            output = UniqueVariables.FirstOrDefault(item => item.Name == name);
+
             if (output==null)
             {
-                var variable = new Variable<T>(name);
-
-                if (!Variables.Any(item=>item.Name==name)) {
-                    InnerVariables.Add(variable);
-                }
-                //variable.OnGetValue += new EventHandler<VariableReadEventArgs<T>>(Variable_OnGetValue);
-                //variables.Add(name, variable);
-                //variableOrder.Add(name);
+                var variable = IsTyped ? new Variable<T>(name) : new Variable(name);
                 output = variable;
+                CacheVariables(output);
             }
 
             return output;
         }
+
+        protected void CacheVariables(IOperand oper)
+        {
+            if (oper is IVariableContainer)
+            {
+                UniqueVariables.AddRange(((IVariableContainer)oper).Variables);
+            }
+        }
+        #endregion
+
+        #region interface members
+
+
+        #endregion
     }
 }

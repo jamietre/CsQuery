@@ -44,5 +44,7 @@ namespace Jtc.CsQuery.Implementation
             // do NOT HtmlEncode unlike DomText
             return NodeValue;
         }
+
+
     }
 }

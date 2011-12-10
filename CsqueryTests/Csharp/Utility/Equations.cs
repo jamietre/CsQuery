@@ -23,8 +23,14 @@ namespace CsqueryTests.Csharp
         [Test,TestMethod]
         public void Basic()
         {
-            Equations.CreateEquation<int>("2+abs(x)");
 
+
+            var eq = Equations.CreateEquation<int>("2+abs(x)");
+            Assert.AreEqual("2+abs(x)", eq.ToString(), "Equation looks like it got parsed");
+            Assert.AreEqual(6, eq.GetValue(3.5));
+
+            var eq2 = Equations.CreateEquation<double>("2+abs(x)");
+            Assert.AreEqual(5.5, eq2.GetValue(3.5));
         }
         
       

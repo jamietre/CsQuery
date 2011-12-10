@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jtc.CsQuery.ExtensionMethods;
 
 namespace Jtc.CsQuery.Utility.StringScanner.Patterns
 {
@@ -10,6 +11,10 @@ namespace Jtc.CsQuery.Utility.StringScanner.Patterns
     /// </summary>
     public class OptionallyQuoted : Quoted
     {
+        public OptionallyQuoted()
+        {
+            Terminators = "])}";
+        }
         bool isQuoted;
 
         public override void Initialize(int startIndex, char[] sourceText)
@@ -26,12 +31,27 @@ namespace Jtc.CsQuery.Utility.StringScanner.Patterns
             set;
         }
 
-        public override bool Expect(ref int index, char current)
+        public override bool Validate()
         {
-            info.Target = current;
-            if (index ==Start && info.Quote) {
-                isQuoted=true;
+            isQuoted = CharacterData.IsType(Source[StartIndex], CharacterType.Quote);
+            return base.Validate();
+        }
+        protected override bool FinishValidate()
+        {
+            if (isQuoted)
+            {
+                return base.FinishValidate();
             }
+            else
+            {
+                Result = GetOuput(StartIndex, EndIndex, false);
+                return true;
+            }
+           
+        }
+        protected override bool Expect(ref int index, char current)
+        {
+
             if (isQuoted)
             {
                 return base.Expect(ref index, current);
@@ -42,6 +62,7 @@ namespace Jtc.CsQuery.Utility.StringScanner.Patterns
                 {
                     if (current == item)
                     {
+                        index+=1;
                         return false;
                     }
                 }
@@ -49,16 +70,6 @@ namespace Jtc.CsQuery.Utility.StringScanner.Patterns
                 return true;
             }
                 
-        }
-        public override bool Validate(int endIndex, out string result)
-        {
-            if (isQuoted)
-            {
-                return base.Validate(endIndex, out result);
-            } else {
-                result = GetOuput(Start, endIndex, false);
-                return true;
-            }
         }
 
     }

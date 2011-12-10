@@ -61,9 +61,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Csharp\Clone.cs" />
-    <Compile Include="Csharp\Expressions.cs" />
+    <Compile Include="Csharp\Utility\Expressions.cs" />
     <Compile Include="Csharp\Rendering.cs" />
-    <Compile Include="Csharp\SmallDictionary.cs" />
+    <Compile Include="Csharp\DictionaryObjects.cs" />
     <Compile Include="Csharp\DomElementFactory.cs" />
     <Compile Include="Csharp\Objects.cs" />
     <Compile Include="Csharp\MovingElements.cs" />

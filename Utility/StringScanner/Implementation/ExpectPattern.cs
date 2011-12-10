@@ -3,46 +3,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery.Utility.StringScanner
+namespace Jtc.CsQuery.Utility.StringScanner.Implementation
 {
     public abstract class ExpectPattern: IExpectPattern 
     {
-        protected ICharacterInfo info = new CharacterInfo();
+        protected ICharacterInfo info = CharacterData.CreateCharacterInfo();
         protected char[] Source;
-        protected int Start;
+        protected int StartIndex;
         protected int Length;
         public virtual void Initialize(int startIndex, char[] sourceText)
         {
             Source = sourceText;
-            Start = startIndex;
+            StartIndex = startIndex;
             Length = Source.Length;
         }
-        /// <summary>
-        /// By default assigns current to info.
-        /// </summary>
-        /// <param name="index"></param>
-        /// <param name="current"></param>
-        /// <returns></returns>
-        public virtual bool Expect(ref int index, char current)
-        {
-            info.Target = current;
-            return true;
-        }
+
         /// <summary>
         /// By default, returns true if the string is not empty
         /// </summary>
         /// <param name="result"></param>
         /// <param name="parsedResult"></param>
         /// <returns></returns>
-        public virtual bool Validate(int endIndex, out string parsedResult)
+        public virtual bool Validate()
         {
-            if (endIndex > Start) {
-                parsedResult = GetOuput(Start, endIndex,false);
+            if (EndIndex > StartIndex)
+            {
+                Result = GetOuput(StartIndex,EndIndex, false);
                 return true;
             } else {
-                parsedResult = "";
+                Result = "";
                 return false;
             }
+        }
+        public virtual int EndIndex
+        {
+            get;
+            protected set;
+        }
+        public virtual string Result
+        {
+            get;
+            protected set;
         }
         protected char[] ExtractSourceSubstring(int startIndex, int endIndex)
         {
@@ -71,6 +72,10 @@ namespace Jtc.CsQuery.Utility.StringScanner
                 return false;
             }
         }
+        protected string GetOuput(int startIndex, int endIndex, bool honorQuotes)
+        {
+            return GetOuput(startIndex, endIndex, honorQuotes, false);
+        }
         /// <summary>
         /// Copy the source to an output string betweem startIndex and endIndex, optionally unescaping part of it
         /// </summary>
@@ -80,13 +85,23 @@ namespace Jtc.CsQuery.Utility.StringScanner
         /// <param name="quotedStartIndex"></param>
         /// <param name="quotedEndIndex"></param>
         /// <returns></returns>
-        protected string GetOuput(int startIndex, int endIndex, bool honorQuotes)
+        protected string GetOuput(int startIndex, int endIndex, bool honorQuotes, bool stripQuotes)
         {
             bool quoted = false;
+
             char quoteChar=(char)0;
             StringBuilder sb = new StringBuilder();
             int index=startIndex;
-            
+            if (endIndex <= index) {
+                return "";
+            }
+            if (stripQuotes && CharacterData.IsType(Source[index], CharacterType.Quote))
+            {
+                quoted = true;
+                quoteChar = Source[index];
+                index++;
+                endIndex--;
+            }
             while (index<endIndex)
             {
                 char current = Source[index];

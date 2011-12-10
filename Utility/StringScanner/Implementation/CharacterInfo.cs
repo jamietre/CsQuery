@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery.Utility.StringScanner
+namespace Jtc.CsQuery.Utility.StringScanner.Implementation
 {
-    
-
     public class CharacterInfo : ICharacterInfo
     {
-        private HashSet<char> whitespace = new HashSet<char>(new char[] { '\x0020', '\x0009', '\x000A', '\x000C', '\x000D' });
-
         public CharacterInfo()
         {
 
@@ -26,33 +23,7 @@ namespace Jtc.CsQuery.Utility.StringScanner
         {
             return new CharacterInfo(character);
         }
-        public static char MatchingBound(char character) {
-            switch(character) {
-                case '"':
-                    return '"';
-                case '\'':
-                    return '\'';
-                case '[':
-                    return ']';
-                case ']':
-                    return '[';
-                case '(':
-                    return ')';
-                case ')':
-                    return '(';
-                case '{':
-                    return '}';
-                case '}':
-                    return '{';
-                case '<':
-                    return '>';
-                case '>':
-                    return '<';
-                default:
-                    return character;
-            }
-
-        }
+       
         public char Target { get; set; }
 
         IConvertible IValueInfo.Target
@@ -66,18 +37,28 @@ namespace Jtc.CsQuery.Utility.StringScanner
                 Target = (char)value;
             }
         }
+        /// <summary>
+        /// Flags indicating the use of this character
+        /// </summary>
+        public CharacterType Type
+        {
+            get
+            {
+                return CharacterData.GetType(Target);
+            }
+        }
         public bool Alpha
         {
             get
             {
-                return "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".Contains(Target);
+                return CharacterData.IsType(Target,CharacterType.Alpha);
             }
         }
         public bool Numeric
         {
             get
             {
-                return "0123456789".Contains(Target);
+                return CharacterData.IsType(Target,CharacterType.Number);
             }
         }
         /// <summary>
@@ -87,215 +68,101 @@ namespace Jtc.CsQuery.Utility.StringScanner
         {
             get
             {
-                return "0123456789.-".Contains(Target);
+                return CharacterData.IsType(Target, CharacterType.NumberPart);
             }
         }
         public bool Lower
         {
             get
             {
-                return "abcdefghijklmnopqrstuvwxyz".Contains(Target);
+                return CharacterData.IsType(Target, CharacterType.Lower);
             }
         }
         public bool Upper
         {
             get
             {
-                return "ABCDEFGHIJKLMNOPQRSTUVWXYZ".Contains(Target);
+                return CharacterData.IsType(Target, CharacterType.Upper);
             }
         }
         public bool Whitespace
         {
             get
             {
-                return whitespace.Contains(Target);
+                return CharacterData.IsType(Target,CharacterType.Whitespace);
             }
         }
         public bool Alphanumeric
         {
             get
             {
-                return Alpha || Numeric;
+                return CharacterData.IsType(Target, CharacterType.Alpha | CharacterType.Number);
             }
         }
+        
         public bool Operator
         {
             get
             {
-                return "!+-*/%<>^=".Contains(Target);
+                return CharacterData.IsType(Target, CharacterType.Operator);
             }
         }
         /// <summary>
-        /// True when ()[]{}<>
+        /// Enclosing, plus double and single quotes
         /// </summary>
         public bool Bound
         {
             get
             {
-                return "()[]{}<>\"'".Contains(Target);
+                return CharacterData.IsType(Target, CharacterType.Enclosing | CharacterType.Quote);
             }
         }
+        /// <summary>
+        /// ()[]{}<>`´“”«»
+        /// </summary>
+        public bool Enclosing
+        {
+            get
+            {
+                return CharacterData.IsType(Target, CharacterType.Enclosing);
+            }
+        }
+
         public bool Quote
         {
             get
             {
-                return Target == '\'' || Target == '"';
+                return CharacterData.IsType(Target, CharacterType.Quote);
             }
         }
         public bool Parenthesis
         {
             get
             {
-                return "()".Contains(Target);
+                return Target == '(' || Target == ')';
             }
         }
-    }
-
-    public class StringInfo : IStringInfo
-    {
-        public StringInfo()
-        {
-
-        }
-        public StringInfo(string text)
-        {
-            Target = text;
-        }
-        public static implicit operator StringInfo(string text)
-        {
-            return new StringInfo(text);
-        }
-        public static StringInfo Create(string text)
-        {
-            return new StringInfo(text);
-        }
-        protected CharacterInfo charInfo = new CharacterInfo();
-        
-        protected bool CheckFor(Func<CharacterInfo,bool> function)
-        {
-            foreach (char current in Target)
-            {
-                charInfo.Target = current;
-                if (!function(charInfo))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-        public string Target { 
-            get;set;
-        }
-        
-        IConvertible IValueInfo.Target
+        public bool Separator
         {
             get
             {
-                return Target;
-            }
-            set
-            {
-                Target = (string)value;
+                return CharacterData.IsType(Target, CharacterType.Separator);
             }
         }
-        protected Func<CharacterInfo,bool> isAlpha = new Func<CharacterInfo, bool>(item => item.Alpha);
-        
-        public bool Alpha
-        {
-            get { return Exists && CheckFor(isAlpha); }
-        }
-
-        private static Func<CharacterInfo, bool> isNumeric = new Func<CharacterInfo, bool>(item => item.Numeric);
-        public bool Numeric
-        {
-            get { return Exists && CheckFor(isNumeric);  }
-        }
-
-        private static Func<CharacterInfo, bool> isNumericExtended = new Func<CharacterInfo, bool>(item => item.NumericExtended);
-        public bool NumericExtended
-        {
-            get { return Exists && CheckFor(isNumericExtended); }
-        }
-
-        private static Func<CharacterInfo, bool> isLower = new Func<CharacterInfo, bool>(item => !item.Alpha || item.Lower);
-        public bool Lower
-        {
-            get { return Exists && HasAlpha && CheckFor(isLower); }
-        }
-
-        private static Func<CharacterInfo, bool> isUpper = new Func<CharacterInfo, bool>(item => !item.Alpha || item.Upper);
-        public bool Upper
-        {
-            get { return Exists && HasAlpha && CheckFor(isUpper); }
-        }
-
-        private static Func<CharacterInfo, bool> isWhitespace = new Func<CharacterInfo, bool>(item => item.Whitespace);
-        public bool Whitespace
-        {
-            get { return Exists && CheckFor(isWhitespace); }
-        }
-
-        private static Func<CharacterInfo, bool> isAlphanumeric = new Func<CharacterInfo, bool>(item => item.Alpha || item.Numeric);
-        public bool Alphanumeric
-        {
-            get { return Exists && CheckFor(isAlphanumeric); }
-        }
-
-        protected Func<CharacterInfo, bool> isOperator = new Func<CharacterInfo, bool>(item => item.Operator);
-        public bool  Operator
-        {
-            get { return Exists && CheckFor(isOperator); }
-        }
-
-        public bool HasAlpha
+        public bool AlphaISO10646
         {
             get
             {
-                foreach (char current in Target)
-                {
-                    charInfo.Target = current;
-                    if (charInfo.Alpha)
-                    {
-                        return true;
-                    }
-                }
-                return false;
+                return CharacterData.IsType(Target,CharacterType.AlphaISO10646);
             }
         }
-        
 
-        protected Func<CharacterInfo, bool> isParenthesis = new Func<CharacterInfo, bool>(item => item.Parenthesis);
-        public bool Parenthesis
+        public override string ToString()
         {
-            get { return Exists && CheckFor(isParenthesis); }
-        }
-
-        protected Func<CharacterInfo, bool> hasAttributeName = new Func<CharacterInfo, bool>(item => item.Parenthesis);
-        public bool HtmlAttributeName
-        {
-            get {
-                if (!Exists) return false;
-                charInfo.Target = Target[0];
-
-                if (!(charInfo.Alpha || charInfo.Target==':' || charInfo.Target=='_')) {
-                    return false;
-                }
-                for (int i=1;i<Target.Length;i++) {
-                    charInfo.Target = Target[i];
-                    if (!charInfo.Alphanumeric && !("_:.-".Contains(charInfo.Target))) {
-                        return false;
-                    }
-                    
-                }
-                return true;
-            }
-        }
-        protected bool Exists{
-        get {
-            return !String.IsNullOrEmpty(Target);
-        }
+            return Target.ToString();
         }
     }
+
 }
 
 
