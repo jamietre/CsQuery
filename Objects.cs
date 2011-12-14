@@ -7,8 +7,8 @@ using System.Dynamic;
 using System.Reflection;
 using System.Web.Script.Serialization;
 using System.ComponentModel;
-
 using Jtc.CsQuery.ExtensionMethods;
+using Jtc.CsQuery.ExtensionMethods.Internal;
 
 namespace Jtc.CsQuery
 {
@@ -24,7 +24,9 @@ namespace Jtc.CsQuery
             string text = obj as string;
             return text != null && text.StartsWith("{") && !text.StartsWith("{{");
         }
-        /// <summary>
+
+
+         // <summary>
         /// Perform only required HTML encoding
         /// </summary>
         /// <param name="html"></param>
@@ -32,12 +34,6 @@ namespace Jtc.CsQuery
         public static string HtmlEncode(string html)
         {
             return System.Web.HttpUtility.HtmlEncode(html);
-//            System.Web.HttpUtility.HtmlEncode
-//           return char..
-//            "&lt;" represents the < sign.
-//"&gt;" represents the > sign.
-//"&amp;" represents the & sign.
-//"&quot; represents the " mark.
     
         }
         public static string HtmlDecode(string html)
@@ -94,7 +90,7 @@ namespace Jtc.CsQuery
                 }
                 else
                 {
-                    quoteChar = result.IndexOfAny(DomData.MustBeQuotedAll) >= 0 ? "\"" : "";
+                    quoteChar = result.IndexOfAny(Utility.DomData.MustBeQuotedAll) >= 0 ? "\"" : "";
                 }
             }
 
@@ -697,6 +693,104 @@ namespace Jtc.CsQuery
 
         }
 
+        
+        #region Object/Expando Manipulation
+
+        /// <summary>
+        /// Converts a regular object to an expando object, or returns the source object if it is already an expando object.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static JsObject ToExpando(this object source)
+        {
+            return ToExpando(source,false);
+        }
+        public static T ToExpando<T>(object source) where T : IDynamicMetaObjectProvider, new()
+        {
+            return ToExpando<T>(source,false);
+        }
+        /// <summary>
+        /// Converts a regular object to an expando object, or returns the source object if it is already an expando object.
+        /// If "deep" is true, child properties are cloned rather than referenced.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static JsObject ToExpando(object source, bool deep)
+        {
+            return ToExpando<JsObject>(source, deep);
+        }
+        public static T ToExpando<T>(object source, bool deep) where T : IDynamicMetaObjectProvider, new()
+        {
+            return ToExpando<T>(source, deep, new Type[] { });
+        }
+        public static T ToExpando<T>(object source, bool deep, IEnumerable<Type> ignoreAttributes) where T : IDynamicMetaObjectProvider, new()
+        {
+            if (source.IsExpando() && !deep)
+            {
+                return Objects.Dict2Dynamic<T>((IDictionary<string, object>)source);
+            }
+            else
+            {
+                return ToNewExpando<T>(source, deep, ignoreAttributes);
+            }
+        }
+
+        public static object CloneObject(object obj)
+        {
+            return CloneObject(obj,false);
+        }
+        public static object CloneObject(object obj, bool deep)
+        {
+            if (obj.IsImmutable())
+            {
+                return obj;
+            }
+            else if (obj is IEnumerable)
+            {
+                // captures expando objects too
+                return ((IEnumerable)obj).CloneList(deep);
+            }
+            else
+            {
+                // TODO - check for existence of a "clone" method
+                // convert regular objects to expando objects
+                return (ToExpando(obj,true));
+            }
+        }
+        
+
+        /// <summary>
+        /// Remove a property from an object, returning a new object.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="property"></param>
+        public static object DeleteProperty(object obj, string property)
+        {
+            if (!obj.IsExpando())
+            {
+                throw new Exception("This object does not have properties.");
+            }
+            ExpandoObject target = (ExpandoObject)CloneObject(obj);
+            DeleteProperty(target,property);
+            return target;
+
+        }
+        public static void DeleteProperty(ExpandoObject obj, string property)
+        {
+            IDictionary<string, object> objDict = (IDictionary<string, object>)obj;
+            objDict.Remove(property);
+        }
+        #endregion
+
+        #region private methods
+        /// <summary>
+        /// Implementation of "Extend" functionality
+        /// </summary>
+        /// <param name="deep"></param>
+        /// <param name="parents"></param>
+        /// <param name="target"></param>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
         private static void AddExtendKVP(bool deep, HashSet<object> parents, object target, string name, object value)
         {
             IDictionary<string, object> targetDict = null;
@@ -733,7 +827,7 @@ namespace Jtc.CsQuery
                 else
                 {
                     // targetDic[name] = deep ? value.Clone(true) : value;
-                    value = value.CloneObject(true);
+                    value = CloneObject(value,true);
                 }
             }
 
@@ -780,25 +874,84 @@ namespace Jtc.CsQuery
 
         }
         /// <summary>
-        /// Remove a property from an object, returning a new object.
+        /// Implementation of object>expando
         /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="property"></param>
-        public static object DeleteProperty(object obj, string property)
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="deep"></param>
+        /// <param name="ignoreAttributes"></param>
+        /// <returns></returns>
+        private static T ToNewExpando<T>(object source, bool deep, IEnumerable<Type> ignoreAttributes) where T : IDynamicMetaObjectProvider, new()
         {
-            if (!obj.IsExpando())
+            if (source == null)
             {
-                throw new Exception("This object does not have properties.");
+                return default(T);
             }
-            ExpandoObject target = (ExpandoObject)obj.CloneObject();
-            DeleteProperty(target,property);
-            return target;
+            HashSet<Type> IgnoreList = new HashSet<Type>(ignoreAttributes);
 
+            if (source is string && Objects.IsJson(source))
+            {
+                source = Utility.JSON.ParseJSON((string)source);
+            }
+
+            if (source.IsExpando())
+            {
+                return (T)Objects.CloneObject(source, deep);
+            }
+            else if (!source.IsExtendableType())
+            {
+                throw new Exception("Conversion to ExpandObject must be from a JSON string, an object, or an ExpandoObject");
+            }
+
+            T target = new T();
+            IDictionary<string, object> targetDict = (IDictionary<string, object>)target;
+
+            IEnumerable<MemberInfo> members = source.GetType().GetMembers();
+            foreach (var member in members)
+            {
+
+                foreach (object attrObj in member.GetCustomAttributes(false))
+                {
+                    Attribute attr = (Attribute)attrObj;
+                    if (IgnoreList.Contains(attr.GetType()))
+                    {
+                        goto NextAttribute;
+                    }
+                }
+                string name = member.Name;
+
+
+                object value = null;
+                bool skip = false;
+                if (member is PropertyInfo && ((PropertyInfo)member).GetIndexParameters().Length == 0)
+                {
+                    // wrap this because we are testing every single property - if it doesn't work we don't want to use it
+                    try
+                    {
+                        value = ((PropertyInfo)member).GetGetMethod().Invoke(source, null);
+                    }
+                    catch
+                    {
+                        skip = true;
+                    }
+
+                }
+                else if (member is FieldInfo)
+                {
+                    value = ((FieldInfo)member).GetValue(source);
+                }
+                else
+                {
+                    continue;
+                }
+                if (!skip)
+                {
+                    targetDict[name] = deep ? Objects.CloneObject(value,true) : value;
+                }
+            NextAttribute: { }
+            }
+            return target;
         }
-        public static void DeleteProperty(ExpandoObject obj, string property)
-        {
-            IDictionary<string, object> objDict = (IDictionary<string, object>)obj;
-            objDict.Remove(property);
-        }
+        #endregion
     }
 }

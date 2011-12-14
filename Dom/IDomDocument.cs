@@ -22,7 +22,8 @@ namespace Jtc.CsQuery
         IDomText CreateTextNode(string text);
         IDomComment CreateComment(string comment);
         IDomElement GetElementByTagName(string tagName);
-        List<IDomElement> GetElementsByTagName(string tagName);
+        IList<IDomElement> QuerySelectorAll(string tagName);
+        IList<IDomElement> GetElementsByTagName(string tagName);
         // void SetOwner(CsQuery owner);
         int TokenizeString(int startIndex, int length);
         string GetTokenizedString(int index);

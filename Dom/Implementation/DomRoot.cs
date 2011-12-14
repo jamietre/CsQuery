@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jtc.CsQuery.ExtensionMethods;
+using Jtc.CsQuery.ExtensionMethods.Internal;
 using Jtc.CsQuery.Utility;
+using Jtc.CsQuery.Engine;
 
 namespace Jtc.CsQuery.Implementation
 {
@@ -126,17 +128,22 @@ namespace Jtc.CsQuery.Implementation
 
         public IDomElement GetElementById(string id)
         {
-            CsQuerySelectors selectors = new CsQuerySelectors("#" + id);
+            SelectorChain selectors = new SelectorChain("#" + id);
             return (IDomElement)selectors.Select(Document).FirstOrDefault();
         }
         public IDomElement GetElementByTagName(string tagName)
         {
             return GetElementsByTagName(tagName).FirstOrDefault();
         }
-        public List<IDomElement> GetElementsByTagName(string tagName)
+        public IList<IDomElement> GetElementsByTagName(string tagName)
         {
-            CsQuerySelectors selectors = new CsQuerySelectors(tagName);
-            return new List<IDomElement>(OnlyElements(selectors.Select(Document)));
+            SelectorChain selectors = new SelectorChain(tagName);
+            return (new List<IDomElement>(OnlyElements(selectors.Select(Document)))).AsReadOnly();
+        }
+        public IList<IDomElement> QuerySelectorAll(string selector)
+        {
+            SelectorChain selectors = new SelectorChain(selector);
+            return (new List<IDomElement>(OnlyElements(selectors.Select(Document)))).AsReadOnly();
         }
         protected IEnumerable<IDomElement> OnlyElements(IEnumerable<IDomObject> objectList)
         {

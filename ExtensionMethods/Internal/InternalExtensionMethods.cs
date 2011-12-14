@@ -10,11 +10,35 @@ using System.Reflection;
 using System.Diagnostics;
 using Jtc.CsQuery;
 
-namespace Jtc.CsQuery.ExtensionMethods
+namespace Jtc.CsQuery.ExtensionMethods.Internal
 {
-    public static class ExtensionMethods_Internal
+    public static class InternalExtensionMethods
     {
-
+        #region object extension methods
+        /// <summary>
+        /// Only value types, strings, and null
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static bool IsImmutable(this object obj)
+        {
+            return obj == null ||
+                obj is string ||
+                (obj is ValueType && !(obj.IsKeyValuePair()));
+        }
+        /// <summary>
+        /// Returns false if this is a value type, null string, or enumerable (but not Extendable)
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static bool IsExtendableType(this object obj)
+        {
+            // Want to allow enumerable types since we can treat them as objects. Exclude arrays.
+            // This is tricky. How do we know if something should be treated as an object or enumerated? Do both somehow?
+            return obj.IsExpando() || (!obj.IsImmutable() && !(obj is IEnumerable));
+        }
+        #endregion
+        #region Enums
         /// <summary>
         /// Returns true if the enum is any of the parameters in question
         /// </summary>
@@ -56,6 +80,9 @@ namespace Jtc.CsQuery.ExtensionMethods
             }
             return false;
         }
+        #endregion
+
+
         public static bool TryParse<T>(this Enum theEnum, string strType, out T result)
         {
             string strTypeFixed = strType.Replace(' ', '_');
@@ -89,13 +116,7 @@ namespace Jtc.CsQuery.ExtensionMethods
             return GetValue(value).ToString();
         }
        
-        public static void AddRange<T>(this ICollection<T> baseList, IEnumerable<T> list)
-        {
-            foreach (T obj in list)
-            {
-                baseList.Add(obj);
-            }
-        }
+
         public static bool IsNullOrEmpty<T>(this ICollection<T> baseList)
         {
             return (baseList == null ||
@@ -165,6 +186,9 @@ namespace Jtc.CsQuery.ExtensionMethods
         /// <returns></returns>
         public static string SubstringBetween(this string text, int startIndex, int endIndex)
         {
+            if (endIndex > text.Length || endIndex <0) {
+                return "";
+            }
             return (text.Substring(startIndex, endIndex - startIndex));
         }
         public static string SubstringBetween(this char[] text, int startIndex, int endIndex)
@@ -324,6 +348,7 @@ namespace Jtc.CsQuery.ExtensionMethods
             }
             return true;
         }
+
         public static bool TryGetFirst<T>(this IEnumerable<T> baseList, out T firstElement)
         {
             if (baseList == null)
@@ -391,20 +416,6 @@ namespace Jtc.CsQuery.ExtensionMethods
             }
             yield break;
         }
-        public static bool IsKeyValuePair(this object obj)
-        {
-            Type valueType = obj.GetType();
-            if (valueType.IsGenericType)
-            {
-                Type baseType = valueType.GetGenericTypeDefinition();
-                if (baseType == typeof(KeyValuePair<,>))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
 
         public static string IfNullOrEmpty(this string value, string alternate)
         {

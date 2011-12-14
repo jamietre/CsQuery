@@ -70,6 +70,8 @@ namespace Jtc.CsQuery.Utility.StringScanner
         bool TryGetChar(string characters, out string result);
         bool TryGetChar(IEnumerable<char> characters, out string result);
         bool TryGetNumber(out string result);
+        bool TryGetNumber<T>(out T result) where T : IConvertible;
+        bool TryGetNumber(out int result);
         bool TryGetAlpha(out string result);
         bool TryGetBoundedBy(string start, string end, bool allowQuoting, out string result);
 

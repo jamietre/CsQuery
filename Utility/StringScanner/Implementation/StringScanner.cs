@@ -4,8 +4,9 @@ using System.Collections.Specialized;
 using System.Collections;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.ExtensionMethods;
 using System.Diagnostics;
+using Jtc.CsQuery.ExtensionMethods;
+using Jtc.CsQuery.ExtensionMethods.Internal;
 
 namespace Jtc.CsQuery.Utility.StringScanner.Implementation
 {
@@ -78,9 +79,9 @@ namespace Jtc.CsQuery.Utility.StringScanner.Implementation
             }
             set
             {
-                _Text = value;
+                _Text = value ?? "";
                 _Chars = null;
-                Length = value.Length;
+                Length = _Text.Length;
                 Reset();
             }
         }
@@ -576,6 +577,39 @@ namespace Jtc.CsQuery.Utility.StringScanner.Implementation
                 ExpectNumber();
             }, out result);
         }
+        public bool TryGetNumber<T>(out T result) where T:IConvertible 
+        {
+            string stringResult;
+            bool gotNumber = TryWrapper(() =>
+            {
+                ExpectNumber();
+            }, out stringResult);
+
+            if (gotNumber)
+            {
+                result = (T)Convert.ChangeType(stringResult, typeof(T));
+                return true;
+            }
+            else
+            {
+                result = default(T);
+                return false;
+            }
+        }
+        public bool TryGetNumber(out int result)
+        {
+            double doubleResult;
+            if (TryGetNumber(out doubleResult))
+            {
+                result = Convert.ToInt32(doubleResult);
+                return true;
+            }
+            else
+            {
+                result = 0;
+                return false;
+            }
+        }
         /// <summary>
         /// Starting with the current character, treats text as a number, seeking until the next character that would terminate a valid number.
         /// </summary>
@@ -779,14 +813,23 @@ namespace Jtc.CsQuery.Utility.StringScanner.Implementation
         {
             ThrowException(message, -1);
         }
-        [DebuggerStepThrough]
+        //[DebuggerStepThrough]
         protected void ThrowException(string message, int errPos)
         {
-
-            int pos = Math.Min(Pos+1,Length-1);
-            RestorePos();
             string error = message;
-            if (errPos >= 0)
+            int pos = -1;
+            if (String.IsNullOrEmpty(Text))
+            {
+                error = " -- the string is empty.";
+            }
+            else
+            {
+                pos = Math.Min(errPos + 1, Length - 1);
+            }
+
+            RestorePos();
+
+            if (pos >= 0)
             {
                 error += " at position " + pos + ": \"";
 

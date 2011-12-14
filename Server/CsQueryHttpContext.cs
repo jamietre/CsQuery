@@ -7,11 +7,16 @@ using System.Web;
 using System.Web.UI;
 using System.IO;
 using System.Threading;
-using Jtc.CsQuery.ExtensionMethods;
 using System.Web.Script.Serialization;
+using Jtc.CsQuery.ExtensionMethods;
+using Jtc.CsQuery.ExtensionMethods.Internal;
 
 namespace Jtc.CsQuery.Server
 {
+    /// <summary>
+    /// Server extension to CsQuery -- adds functionality for dealing with postbacks, and getting data from 
+    /// external sources
+    /// </summary>
     public class CsQueryHttpContext
     {
         public bool AspNet { get; set; }
@@ -58,11 +63,6 @@ namespace Jtc.CsQuery.Server
 
         }
 
-
-        protected void ParseContext()
-        {
-            //Context.Request.Form 
-        }
         /// <summary>
         /// Repopulates all selected elements with their postback data (if any exists)
         /// </summary>

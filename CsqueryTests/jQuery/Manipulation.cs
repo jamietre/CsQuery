@@ -9,6 +9,8 @@ using Description = Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttr
 using MsTestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using TestContext = NUnit.Framework.TestContext;
 using Jtc.CsQuery;
+using Jtc.CsQuery.ExtensionMethods;
+using Jtc.CsQuery.Utility;
 
 namespace CsqueryTests.jQuery
 {

@@ -4,18 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jtc.CsQuery.ExtensionMethods;
+using Jtc.CsQuery.ExtensionMethods.Internal;
 using Jtc.CsQuery.Utility;
 
 namespace Jtc.CsQuery.Implementation
 {
     public class DomAttributes: IDictionary<string, string>, IEnumerable<KeyValuePair<string, string>>
     {
+        #region constructors
         public DomAttributes(IDomElement owner)
         {
             Owner = owner;
         }
-        protected IDomElement Owner;
+        #endregion
 
+        #region private properties
+        protected IDomElement Owner;
         protected IDictionary<ushort, string> _Attributes;
 
         protected IDictionary<ushort, string> Attributes 
@@ -29,6 +33,20 @@ namespace Jtc.CsQuery.Implementation
                  return _Attributes;
              }
         }
+        internal string this[ushort nodeId]
+        {
+            get
+            {
+                return Get(nodeId);
+            }
+            set
+            {
+                Set(nodeId, value);
+            }
+        }
+        
+        #endregion
+
         #region public properties
         public bool HasAttributes
         {
@@ -44,7 +62,9 @@ namespace Jtc.CsQuery.Implementation
         }
 
         #endregion
+        
         #region public methods
+
         public void Clear()
         {
             foreach (var attrId in GetAttributeIds())
@@ -129,20 +149,10 @@ namespace Jtc.CsQuery.Implementation
         }
 
         #endregion
-        #region internal
+ 
+        #region private methods
 
-        internal string this[ushort nodeId]
-        {
-            get
-            {
-                return Get(nodeId);
-            }
-            set
-            {
-                Set(nodeId, value);
-            }
-        }
-        
+       
         protected string Get(string name)
         {
             name = name.CleanUp();
@@ -209,6 +219,21 @@ namespace Jtc.CsQuery.Implementation
                     SetRaw(tokenId,value.CleanUp());
                     break;
                 default:
+                    // Uncheck any other radio buttons
+                    if (tokenId == DomData.CheckedAttrId
+                        && Owner.NodeName == "input" 
+                        && Owner["type"] == "radio" 
+                        && !String.IsNullOrEmpty(Owner["name"])
+                        && value!=null
+                        && Owner.Document != null)
+                    {
+                        var radios = Owner.Document.QuerySelectorAll("input[type='radio'][name='" + Owner["name"] + "']:checked");
+                        foreach (var item in radios)
+                        {
+                            item.Checked = false;
+                        }
+                    }
+
                     SetRaw(tokenId,value);
                     break;
             }
@@ -291,6 +316,7 @@ namespace Jtc.CsQuery.Implementation
         }
 
         #endregion
+        
         #region interface implementation
 
 

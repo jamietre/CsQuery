@@ -7,26 +7,43 @@ using Jtc.CsQuery.ExtensionMethods;
 using Jtc.CsQuery.Utility.EquationParser;
 namespace Jtc.CsQuery.Engine
 {
-    public class CacheInfo
-    {
-        public HashSet<int> MatchingIndices;
-        public int NextIterator;
-        public int MaxIndex;
-    }
+
     /// <summary>
     /// Figure out if an index matches an Nth Child, or return a list of all matching elements from a list.
     /// </summary>
     public class NthChild
     {
-       /// <summary>
-       /// NthChild is expensive but easy to cache. Just save a list of matching element IDs for a given
-       /// equation along with the last index this list represents, update it if needed.
-       /// </summary>
+        #region private properties
+
+        /// <summary>
+        /// A structure to keep information about what has been calculated so far for a given equation string.
+        /// NthChild is expensive so we cache a list of matching element IDs for a given equation along with the 
+        /// last index this list represents and the iteration. The next time it's called we can either reference
+        /// the list of matches so far, or update it only from the point where we stopped last time.
+        /// </summary>
+        protected struct CacheInfo
+        {
+            public HashSet<int> MatchingIndices;
+            public int NextIterator;
+            public int MaxIndex;
+        }
+
         private static ConcurrentDictionary<string, CacheInfo> ParsedEquationCache =
             new ConcurrentDictionary<string, CacheInfo>();
-        protected CacheInfo CacheInfo;
+        
+        protected CacheInfo cacheInfo;
         protected bool cached = false;
-        protected IEquation<int> Formula;
+        protected IEquation<int> formula;
+        
+        protected string _Text;
+        protected bool IsJustNumber;
+        protected int MatchOnlyIndex;
+        #endregion
+
+        #region public properties/methods
+        /// <summary>
+        /// The formula for this nth child selector
+        /// </summary>
         public string Text
         {
             get
@@ -36,30 +53,25 @@ namespace Jtc.CsQuery.Engine
             set
             {
                 _Text = value;
-               CheckForSimpleNumber();
-               if (!IsJustNumber)
-               {
-                   Formula = Equations.CreateEquation<int>(value);
+                CheckForSimpleNumber();
+                if (!IsJustNumber)
+                {
+                    formula = Equations.CreateEquation<int>(value);
 
-                   if (!ParsedEquationCache.TryGetValue(value, out CacheInfo))
-                   {
-                       CacheInfo = new CacheInfo();
-                       CacheInfo.MatchingIndices = new HashSet<int>();
-                       ParsedEquationCache[value] = CacheInfo;
-                   }
-                  
-                   
-               }
+                    if (!ParsedEquationCache.TryGetValue(value, out cacheInfo))
+                    {
+                        cacheInfo = new CacheInfo();
+                        cacheInfo.MatchingIndices = new HashSet<int>();
+                        ParsedEquationCache[value] = cacheInfo;
+                    }
+
+
+                }
             }
         }
-        protected string _Text;
-        protected string parsedFormula;
-        protected bool IsJustNumber;
-        protected int MatchOnlyIndex;
-
-        public bool IndexMatches(int index, string formula)
+        public bool IndexMatches(int index, string formulaText)
         {
-            Text = formula;
+            Text = formulaText;
             if (IsJustNumber)
             {
                 return MatchOnlyIndex-1 == index;
@@ -67,33 +79,14 @@ namespace Jtc.CsQuery.Engine
             else
             {
                 var matchIndex = index += 1; // nthchild is 1 based indices
-                if (index > CacheInfo.MaxIndex)
+                if (index > cacheInfo.MaxIndex)
                 {
                     
                     UpdateCacheInfo( matchIndex);
                 }
-                return CacheInfo.MatchingIndices.Contains(matchIndex);       
+                return cacheInfo.MatchingIndices.Contains(matchIndex);       
             }
                 
-        }
-        protected void UpdateCacheInfo(int lastIndex)
-        {
-            if (CacheInfo.MaxIndex >= lastIndex)
-            {
-                return;
-            }
-
-            int iterator = CacheInfo.NextIterator;
-            int val = -1;
-            while (val < lastIndex && iterator <= lastIndex)
-            {
-                Formula.SetVariable("n", iterator);
-                val = Formula.Value;
-                CacheInfo.MatchingIndices.Add(val);
-                iterator++;
-            }
-            CacheInfo.MaxIndex = lastIndex;
-            CacheInfo.NextIterator = iterator;
         }
         public IEnumerable<IDomObject> GetMatchingChildren(IDomElement obj, string formula)
         {
@@ -128,18 +121,40 @@ namespace Jtc.CsQuery.Engine
             }
             else
             {
-                
+
                 int index = 1;
                 UpdateCacheInfo(obj.ChildNodes.Count);
                 foreach (var child in obj.ChildElements)
-                { 
-                    if (CacheInfo.MatchingIndices.Contains(index))
+                {
+                    if (cacheInfo.MatchingIndices.Contains(index))
                     {
                         yield return child;
                     }
                     index++;
                 }
             }
+        }
+        #endregion
+
+        #region private methods
+        protected void UpdateCacheInfo(int lastIndex)
+        {
+            if (cacheInfo.MaxIndex >= lastIndex)
+            {
+                return;
+            }
+
+            int iterator = cacheInfo.NextIterator;
+            int val = -1;
+            while (val < lastIndex && iterator <= lastIndex)
+            {
+                formula.SetVariable("n", iterator);
+                val = formula.Value;
+                cacheInfo.MatchingIndices.Add(val);
+                iterator++;
+            }
+            cacheInfo.MaxIndex = lastIndex;
+            cacheInfo.NextIterator = iterator;
         }
         protected void CheckForSimpleNumber()
         {
@@ -151,5 +166,6 @@ namespace Jtc.CsQuery.Engine
 
             }
         }
+        #endregion
     }
 }

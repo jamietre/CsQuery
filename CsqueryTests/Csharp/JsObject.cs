@@ -4,13 +4,14 @@ using System.Linq;
 using System.Web;
 using System.Text;
 using System.Dynamic;
-using Jtc.CsQuery;
-using Jtc.CsQuery.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
+using Jtc.CsQuery;
+using Jtc.CsQuery.Utility;
+using Jtc.CsQuery.ExtensionMethods;
 
 namespace CsqueryTests.Csharp
 {

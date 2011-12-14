@@ -3,11 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jtc.CsQuery.ExtensionMethods;
+using Jtc.CsQuery.ExtensionMethods.Internal;
+using Jtc.CsQuery.Utility;
 
 namespace Jtc.CsQuery.Engine
 {
     public class CssSelectionEngine
     {
+        #region private properties
+        private Lazy<NthChild> _NthChildMatcher = new Lazy<NthChild>();
+
+        protected IDomRoot Document;
+        protected List<Selector> ActiveSelectors;
+        protected int activeSelectorId;
+
         protected NthChild NthChildMatcher
         {
             get
@@ -15,18 +24,18 @@ namespace Jtc.CsQuery.Engine
                 return _NthChildMatcher.Value;
             }
         }
-        private Lazy<NthChild> _NthChildMatcher = new Lazy<NthChild>();
+        
+        #endregion
 
-        protected IDomRoot Document { get; set; }
-
+        #region public properties
         /// <summary>
         /// The current selection list being acted on
         /// </summary>
-        protected List<CsQuerySelector> ActiveSelectors;
-        protected int activeSelectorId;
-        
-        public CsQuerySelectors Selectors { get; set; }
-        
+
+        public SelectorChain Selectors { get; set; }
+        #endregion
+
+        #region public methods
         /// <summary>
         /// Select from DOM using index. First non-class/tag/id selector will result in this being passed off to GetMatches
         /// </summary>
@@ -46,12 +55,12 @@ namespace Jtc.CsQuery.Engine
             IEnumerable<IDomObject> lastResult = null;
             HashSet<IDomObject> output = new HashSet<IDomObject>();
             IEnumerable<IDomObject> selectionSource = context;
-            // This is a bit of a hack, but ensures that fragments get selected manually. We need a way to have a separate index still bound to the 
-            // main DOM ideally so fragments can have indexes
+
+            // Disable the index if there is no context (e.g. disconnected elements)
             bool useIndex = context.IsNullOrEmpty() || !context.First().IsDisconnected;
 
             // Copy the list because it may change during the process
-            ActiveSelectors = new List<CsQuerySelector>(Selectors);
+            ActiveSelectors = new List<Selector>(Selectors);
 
             for (activeSelectorId = 0; activeSelectorId < ActiveSelectors.Count; activeSelectorId++)
             {
@@ -67,8 +76,7 @@ namespace Jtc.CsQuery.Engine
                     switch (combinatorType)
                     {
                         case CombinatorType.Cumulative:
-                            //
-                            //selectionSource = lastChained;
+                            // do nothing
                             break;
                         case CombinatorType.Root:
                             selectionSource = context;
@@ -147,7 +155,10 @@ namespace Jtc.CsQuery.Engine
                     }
 #endif
                 }
-                // If we can use an indexed selector, do it here
+
+                // If part of the selector was indexed, key will not be empty. Return initial set from the
+                // index. If any selectors remain after this they will be searched the hard way.
+                
                 if (key != String.Empty)
                 {
                     int depth = 0;
@@ -188,7 +199,6 @@ namespace Jtc.CsQuery.Engine
                 {
                     selectorType &= ~SelectorType.Elements;
                     HashSet<IDomObject> source = new HashSet<IDomObject>(selectionSource);
-                    //source.IntersectWith(selectionSource);
                     interimResult = new HashSet<IDomObject>();
 
                     foreach (IDomObject obj in selectionSource)
@@ -204,20 +214,29 @@ namespace Jtc.CsQuery.Engine
                         }
                     }
                 }
-                // TODO - GetMatch should work if passed with no selectors (returning nothing), now it returns eveyrthing
+                // TODO - GetMatch should work if passed with no selectors (returning nothing), now it returns everything
+                // 12/10/11 - this todo is not verified, much has changed since it was written. TODO confirm this and
+                // fix if needed. If having the conversation with self again, remove comments and forget it. This is
+                // an example of why comments can do more harm than good.
+
                 if ((selectorType & ~(SelectorType.SubSelectorNot | SelectorType.SubSelectorHas)) != 0)
                 {
-                    IEnumerable<IDomObject> finalSelectWithin = interimResult
-                        ?? (combinatorType == CombinatorType.Chained ? lastResult : null)
-                        ?? selectionSource;
+                    IEnumerable<IDomObject> finalSelectWithin = 
+                        interimResult
+                        ?? (combinatorType == CombinatorType.Chained ? lastResult : null) 
+                        ?? selectionSource
+                        ?? document.ChildElements;
 
                     // if there are no temporary results (b/c there was no indexed selector) then use the whole set
-                    interimResult = GetMatch(document.ChildElements, finalSelectWithin, selector);
+                    interimResult = GetMatches(finalSelectWithin, selector);
 
                 }
-                // there must be a better way to do this! Need to adjust the selector engine logic to be able to return something other than what it's looking it.
 
-                if (selectorType.HasFlag(SelectorType.SubSelectorHas) || selectorType.HasFlag(SelectorType.SubSelectorNot))
+                // Deal with subselectors: has() and not() test for the presence of a selector within the children of
+                // an element. This is essentially similar to the manual selection above.
+
+                if (selectorType.HasFlag(SelectorType.SubSelectorHas) 
+                    || selectorType.HasFlag(SelectorType.SubSelectorNot))
                 {
                     bool isHasSelector = selectorType.HasFlag(SelectorType.SubSelectorHas);
 
@@ -226,6 +245,7 @@ namespace Jtc.CsQuery.Engine
                         ?? selectionSource;
 
                     // subselects are a filter. start a new interim result.
+
                     HashSet<IDomObject> filteredResults = new HashSet<IDomObject>();
 
                     foreach (IDomObject obj in subSelectWithin)
@@ -271,6 +291,9 @@ namespace Jtc.CsQuery.Engine
             }
             else
             {
+                // Selectors always return in DOM order. Selections may end up in a different order but
+                // we always sort here.
+
                 foreach (IDomObject item in output.OrderBy(item => item.Path, StringComparer.Ordinal))
                 {
                     yield return item;
@@ -278,123 +301,26 @@ namespace Jtc.CsQuery.Engine
             }
             ActiveSelectors.Clear();
         }
+
+       
+        #endregion
+
+        #region selection matching main code
         /// <summary>
-        /// Adds a new selector for just the attribute value. Used to chain with the indexed attribute exists selector.
+        /// Return all elements matching a selector, within a domain baseList, starting from list.
         /// </summary>
+        /// <param name="baseList"></param>
+        /// <param name="list"></param>
         /// <param name="selector"></param>
-        protected void InsertAttributeValueSelector(CsQuerySelector fromSelector)
-        {
-            CsQuerySelector newSel = new CsQuerySelector();
-            newSel.TraversalType = TraversalType.Filter;
-            newSel.SelectorType = SelectorType.Attribute;
-            newSel.AttributeName = fromSelector.AttributeName;
-            newSel.AttributeValue = fromSelector.AttributeValue;
-            newSel.AttributeSelectorType = fromSelector.AttributeSelectorType;
-            newSel.CombinatorType = CombinatorType.Chained;
-            newSel.NoIndex = true;
-            int insertAt = activeSelectorId + 1;
-            if (insertAt >= ActiveSelectors.Count)
-            {
-                ActiveSelectors.Add(newSel);
-            }
-            else
-            {
-                ActiveSelectors.Insert(insertAt, newSel);
-            }
-        }
-        /// <summary>
-        /// Parse out the contents of a function 
-        /// </summary>
-        /// <param name="sel"></param>
         /// <returns></returns>
-        protected string ParseFunction(ref string sel)
-        {
-            int subPos = sel.IndexOfAny(new char[] { '(' });
-            if (subPos < 0)
-            {
-                throw new Exception("Bad 'contains' selector.");
-            }
-            subPos++;
-            int pos = subPos;
-            int startPos = -1;
-            int endPos = -1;
-            int step = 0;
-            bool finished = false;
-            bool quoted = false;
-
-            char quoteChar = ' ';
-            while (pos < sel.Length && !finished)
-            {
-                char current = sel[pos];
-                switch (step)
-                {
-                    case 0:
-                        if (current == ' ')
-                        {
-                            pos++;
-                        }
-                        else
-                        {
-                            step = 1;
-                        }
-                        break;
-                    case 1:
-                        if (current == '\'' || current == '"')
-                        {
-                            quoteChar = current;
-                            quoted = true;
-                            startPos = pos + 1;
-                            step = 2;
-                        }
-                        else
-                        {
-                            startPos = current;
-                            step = 3;
-                        }
-                        pos++;
-                        break;
-                    case 2:
-                        if (quoted && current == quoteChar)
-                        {
-                            endPos = pos;
-                            pos++;
-                            step = 3;
-                        }
-                        pos++;
-                        break;
-                    case 3:
-                        if (current == ')')
-                        {
-                            finished = true;
-                        }
-                        else
-                        {
-                            pos++;
-                        }
-                        break;
-                }
-            }
-
-            string result = sel.SubstringBetween(startPos, endPos);
-            if (sel.Length > pos)
-            {
-                sel = sel.Substring(pos + 1);
-            }
-            else
-            {
-                sel = String.Empty;
-            }
-            return result;
-        }
-
-        public IEnumerable<IDomObject> GetMatch(IEnumerable<IDomObject> baseList, IEnumerable<IDomObject> list, CsQuerySelector selector)
+        protected IEnumerable<IDomObject> GetMatches(IEnumerable<IDomObject> list, Selector selector)
         {
             // Maintain a hashset of every element already searched. Since result sets frequently contain items which are
             // children of other items in the list, we would end up searching the tree repeatedly
             HashSet<IDomObject> uniqueElements = null;
 
             Stack<MatchElement> stack = null;
-            IEnumerable<IDomObject> curList = list ?? baseList;
+            IEnumerable<IDomObject> curList = list;
             HashSet<IDomObject> temporaryResults = new HashSet<IDomObject>();
 
             // The unique list has to be reset for each sub-selector
@@ -412,7 +338,7 @@ namespace Jtc.CsQuery.Engine
             }
 
             // Result-list position selectors are simple -- skip out of main matching code if so
-            if (selector.SelectorType.HasFlag(SelectorType.Position) && selector.IsResultListPosition())
+            if (selector.SelectorType.HasFlag(SelectorType.Position) && selector.IsResultListPosition)
             {
                 foreach (var obj in GetResultPositionMatches(curList, selector))
                 {
@@ -454,19 +380,17 @@ namespace Jtc.CsQuery.Engine
                     {
                         SelectorType selectorType = selector.SelectorType;
                         IDomElement elm = current.Element;
-                        if (selector.TraversalType == TraversalType.Child 
-                            && selector.ChildDepth == current.Depth+1
-                            && selector.IsDomIndexPosition()) {
-
-                            temporaryResults.AddRange(GetDomPositionMatches(elm,selector));
+                        if (selector.TraversalType == TraversalType.Child
+                            && selector.ChildDepth == current.Depth + 1
+                            && selector.IsDomIndexPosition)
+                        {
+                            temporaryResults.AddRange(GetDomPositionMatches(elm, selector));
                             selectorType &= ~SelectorType.Position;
                         }
                         if (selectorType == 0)
                         {
                             continue;
                         }
-                        
-                        
 
                         for (int j = elm.ChildNodes.Count - 1; j >= 0; j--)
                         {
@@ -476,7 +400,6 @@ namespace Jtc.CsQuery.Engine
                                 continue;
                             }
                             if (obj.NodeType == NodeType.ELEMENT_NODE)
-                            //if (obj is IDomElement)
                             {
                                 stack.Push(new MatchElement(obj, current.Depth + 1));
                             }
@@ -493,17 +416,15 @@ namespace Jtc.CsQuery.Engine
             yield break;
         }
 
-        #region selection matching main code
         /// <summary>
-        /// Test obj for a match with selector. matchIndex is the current index for items returned by the selector, and depth is the current
-        /// node depth.
+        /// Test 
         /// </summary>
         /// <param name="selector"></param>
         /// <param name="obj"></param>
         /// <param name="matchIndex"></param>
         /// <param name="depth"></param>
         /// <returns></returns>
-        protected bool Matches(CsQuerySelector selector, IDomObject obj, int depth)
+        protected bool Matches(Selector selector, IDomObject obj, int depth)
         {
             bool match = true;
 
@@ -593,6 +514,12 @@ namespace Jtc.CsQuery.Engine
                     return false;
                 }
             }
+
+            if (selector.SelectorType.HasFlag(SelectorType.Other))
+            {
+                return IsVisible(elm);
+            }
+
             if (selector.SelectorType.HasFlag(SelectorType.Position) &&
                 selector.TraversalType == TraversalType.Filter && 
                 !MatchesDOMPosition(elm, selector.PositionType,
@@ -610,18 +537,15 @@ namespace Jtc.CsQuery.Engine
             }
             return true;
         }
-        protected IEnumerable<IDomObject> GetDomPositionMatches(IDomElement elm, CsQuerySelector selector)
-        {
-            if (selector.PositionType == PositionType.NthChild)
-            {
-                return NthChildMatcher.GetMatchingChildren(elm,selector.Criteria);
-            }
-            else
-            {
-                return GetSimpleDomPostionMatches(elm,selector.PositionType);
-            }
-        }
-        protected IEnumerable<IDomObject> GetResultPositionMatches(IEnumerable<IDomObject> list, CsQuerySelector selector)
+
+        /// <summary>
+        /// Return all position-type matches. These are selectors that are keyed to the position within the selection
+        /// set itself.
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        protected IEnumerable<IDomObject> GetResultPositionMatches(IEnumerable<IDomObject> list, Selector selector)
         {
             switch (selector.PositionType)
             {
@@ -687,7 +611,29 @@ namespace Jtc.CsQuery.Engine
             }
             yield break;
         }
-
+        /// <summary>
+        /// Determine if an element matches a position-type filter
+        /// </summary>
+        /// <param name="elm"></param>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        protected IEnumerable<IDomObject> GetDomPositionMatches(IDomElement elm, Selector selector)
+        {
+            if (selector.PositionType == PositionType.NthChild)
+            {
+                return NthChildMatcher.GetMatchingChildren(elm,selector.Criteria);
+            }
+            else
+            {
+                return GetSimpleDomPostionMatches(elm,selector.PositionType);
+            }
+        }     
+        /// <summary>
+        /// Return DOM position matches (other than Nth Child)
+        /// </summary>
+        /// <param name="elm"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
         protected IEnumerable<IDomObject> GetSimpleDomPostionMatches(IDomContainer elm, PositionType position)
         {
             if (position == PositionType.FirstChild)
@@ -716,7 +662,6 @@ namespace Jtc.CsQuery.Engine
             }
             else
             {
-
                 int index = 0;
 
                 foreach (var child in elm.ChildNodes)
@@ -745,7 +690,13 @@ namespace Jtc.CsQuery.Engine
             }
 
         }
-
+        /// <summary>
+        /// Return true if an element matches a specific DOM position-type filter
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="position"></param>
+        /// <param name="criteria"></param>
+        /// <returns></returns>
         protected bool MatchesDOMPosition(IDomElement obj, PositionType position, string criteria)
         {
             switch (position)
@@ -766,8 +717,74 @@ namespace Jtc.CsQuery.Engine
                     throw new Exception("Unimplemented position type selector");
             }
         }
+
+        /// <summary>
+        /// Tests visibility by inspecting "display", "height" and "width" css & properties for object & all parents.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        protected bool IsVisible(IDomElement obj)
+        {
+            IDomObject el = obj;
+            while (el != null && el.NodeType == NodeType.ELEMENT_NODE)
+            {
+                if (ElementIsItselfHidden((IDomElement)el))
+                {
+                    return false;
+                }
+                el = el.ParentNode;
+            }
+            return true;
+        }
+        protected bool ElementIsItselfHidden(IDomElement el)
+        {
+            if (el.HasStyles)
+            {
+                if (el.Style["display"] == "none")
+                {
+                    return true;
+                }
+                double? wid = el.Style.NumberPart("width");
+                double? height = el.Style.NumberPart("height");
+                if (wid == 0 || height == 0)
+                {
+                    return true;
+                }
+            }
+            string widthAttr,heightAttr;
+            widthAttr = el.GetAttribute("width");
+            heightAttr = el.GetAttribute("height");
+
+            return widthAttr=="0" || heightAttr=="0"; 
+
+        }
         #endregion
-        #region utility functions
+
+        #region private methods
+        /// <summary>
+        /// Adds a new selector for just the attribute value. Used to chain with the indexed attribute exists selector.
+        /// </summary>
+        /// <param name="selector"></param>
+        protected void InsertAttributeValueSelector(Selector fromSelector)
+        {
+            Selector newSel = new Selector();
+            newSel.TraversalType = TraversalType.Filter;
+            newSel.SelectorType = SelectorType.Attribute;
+            newSel.AttributeName = fromSelector.AttributeName;
+            newSel.AttributeValue = fromSelector.AttributeValue;
+            newSel.AttributeSelectorType = fromSelector.AttributeSelectorType;
+            newSel.CombinatorType = CombinatorType.Chained;
+            newSel.NoIndex = true;
+            int insertAt = activeSelectorId + 1;
+            if (insertAt >= ActiveSelectors.Count)
+            {
+                ActiveSelectors.Add(newSel);
+            }
+            else
+            {
+                ActiveSelectors.Insert(insertAt, newSel);
+            }
+        }
 
         protected bool ContainsWord(string text, string word)
         {

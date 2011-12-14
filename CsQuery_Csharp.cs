@@ -3,12 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Collections;
+using Jtc.CsQuery.Utility;
+using Jtc.CsQuery.Engine;
+using Jtc.CsQuery.ExtensionMethods;
 
 namespace Jtc.CsQuery
 {
+    /// <summary>
+    /// This partial contains properties & methods that are specific to the C# implementation and not part of jQuery
+    /// </summary>
     public partial class CsQuery
     {
-        #region implementation-specific methods
+        #region private properties
+        protected SelectorChain _Selectors = null;
+        protected IDomRoot _Document = null;
+        #endregion
+        
+        #region public properties
+      
         /// <summary>
         /// Represents the full, parsed DOM for an object created with an HTML parameter
         /// </summary>
@@ -27,12 +39,11 @@ namespace Jtc.CsQuery
                 _Document = value;
             }
         } 
-        protected IDomRoot _Document = null;
-
+        
         /// <summary>
         ///  The selector (parsed) used to create this instance
         /// </summary>
-        public CsQuerySelectors Selectors
+        public SelectorChain Selectors
         {
             get
             {
@@ -43,19 +54,41 @@ namespace Jtc.CsQuery
                 _Selectors = value;
             }
         }
-        protected CsQuerySelectors _Selectors = null;
+
+
         /// <summary>
-        /// Renders just the selection set completely.
+        /// The entire selection set as an enumerable, same as enumerting on the object itself (though this may
+        /// allow you to more easily use extension methods)
         /// </summary>
-        /// <returns></returns>
-        public string RenderSelection()
+        public IEnumerable<IDomObject> Selection
         {
-            StringBuilder sb = new StringBuilder();
-            foreach (IDomObject elm in this)
+            get
             {
-                sb.Append(elm.Render());
+                return SelectionSet;
             }
-            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Returns just IDomElements from the selection list.
+        /// </summary>
+        public IEnumerable<IDomElement> Elements
+        {
+            get
+            {
+                return onlyElements(SelectionSet);
+            }
+        }
+
+        public SelectionSetOrder Order
+        {
+            get
+            {
+                return SelectionSet.Order;
+            }
+            set
+            {
+                SelectionSet.Order = value;
+            }
         }
 
         /// <summary>
@@ -79,6 +112,23 @@ namespace Jtc.CsQuery
             return sb.ToString();
         }
 
+        #endregion
+
+        #region public methods
+
+        /// <summary>
+        /// Renders just the selection set completely.
+        /// </summary>
+        /// <returns></returns>
+        public string RenderSelection()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (IDomObject elm in this)
+            {
+                sb.Append(elm.Render());
+            }
+            return sb.ToString();
+        }
         /// <summary>
         /// Renders the DOM to a string
         /// </summary>
@@ -87,15 +137,16 @@ namespace Jtc.CsQuery
         {
             return Document.Render();
         }
+        /// <summary>
+        /// Render the complete DOM with specific options
+        /// </summary>
+        /// <param name="renderingOptions"></param>
+        /// <returns></returns>
         public string Render(DomRenderingOptions renderingOptions)
         {
             Document.DomRenderingOptions = renderingOptions;
             return Render();
         }
-
-
-        #endregion
-        #region nonstandard DOM manipulation methods
         /// <summary>
         /// Returns a new empty CsQuery object bound to this domain
         /// </summary>
@@ -127,17 +178,6 @@ namespace Jtc.CsQuery
         public CsQuery EnsureCsQuery(IEnumerable<IDomObject> elements)
         {
             return elements is CsQuery ? (CsQuery)elements : new CsQuery(elements);
-        }
-        public SelectionSetOrder Order
-        {
-            get
-            {
-                return Selection.Order;
-            }
-            set
-            {
-                Selection.Order = value;
-            }
         }
         /// <summary>
         /// The first IDomElement (e.g. not text/special nodes) in the selection set, or null if none
@@ -214,48 +254,58 @@ namespace Jtc.CsQuery
             }
             return this;
         }
-        /// <summary>
-        /// Returns an attribute value as a nullable integer, or null if not an integer
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public int? AttrInt(string name)
+
+        public CsQuery SetSelected(string groupName, IConvertible value)
         {
-            string value;
-            if (Length > 0 && this[0].TryGetAttribute(name, out value))
+            var group = this.Find("input[name='" + groupName + "'][value='" + value + "']");
+            if (group.Length == 0)
             {
-                int intValue;
-                if (int.TryParse(value, out intValue))
+                group = this.Find("#" + groupName);
+            }
+            if (group.Length > 0)
+            {
+                string nodeName = group[0].NodeName;
+                string type = group[0]["type"];
+                if (nodeName == "option" || 
+                    (nodeName == "input" && (type=="radio" || type=="checkbox")))
                 {
-                    return intValue;
-                }
-                else
-                {
-                    return null;
+                    group.Prop("checked", true);
                 }
             }
-            return null;
+            return this;
         }
-        #endregion
 
+        /// <summary>
+        /// The current selection set will become the DOM. This is destructive.
+        /// </summary>
+        /// <returns></returns>
+        public CsQuery MakeRoot()
+        {
+            Document.ChildNodes.Clear();
+            Document.ChildNodes.AddRange(Elements);
+            return this;
+        }
+        public CsQuery MakeRoot(string selector)
+        {
+            return Select(selector).MakeRoot();
+        }
         public override string ToString()
         {
             return SelectionHtml();
         }
 
-        #region IEnumerable<IDomElement> Members
+        #endregion
+
+        #region interface members
 
         public IEnumerator<IDomObject> GetEnumerator()
         {
-            return Selection.GetEnumerator();
+            return SelectionSet.GetEnumerator();
         }
-        #endregion
-
-        #region IEnumerable Members
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return Selection.GetEnumerator();
+            return SelectionSet.GetEnumerator();
         }
 
         #endregion

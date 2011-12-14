@@ -7,6 +7,7 @@ using System.Dynamic;
 using System.IO;
 using System.Web.Script.Serialization;
 using Jtc.CsQuery.ExtensionMethods;
+using Jtc.CsQuery.Utility;
 
 namespace Jtc.CsQuery
 {
@@ -24,6 +25,7 @@ namespace Jtc.CsQuery
         public static DocType DefaultDocType = DocType.HTML5;
 
         #endregion 
+
         #region Create methods - returns a new DOM
         public static CsQuery Create()
         {
@@ -59,49 +61,12 @@ namespace Jtc.CsQuery
             return csq.Attr(css);
         }
 
-        public static CsQuery CreateFromFile(string path)
-        {
-
-            FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
-            int bufSize = 32768;
-            long len = fileStream.Length;
-            char[] data = new char[len];
-            long index = 0;
-            int charsRead = -1;
-            using (StreamReader streamReader = new StreamReader(fileStream))
-            {
-
-                while (charsRead > 0)
-                {
-                    char[] fileContents = new char[bufSize];
-                    charsRead = streamReader.Read(data, 0, bufSize);
-
-                    if (index + bufSize >= len)
-                    {
-                        int pos = 0;
-                        for (long i = index; i < len; i++)
-                        {
-                            data[i] = fileContents[pos++];
-                            charsRead = 0;
-                        }
-                    }
-                    else
-                    {
-
-                        fileContents.CopyTo(data, index);
-                        index += bufSize;
-                    }
-                }
-            }
-            return CsQuery.Create(data);
-        }
-
         /// <summary>
         /// Creates a new DOM from a file
         /// </summary>
         /// <param name="htmlFile"></param>
         /// <returns></returns>
-        public static CsQuery LoadFile(string htmlFile)
+        public static CsQuery CreateFromFile(string htmlFile)
         {
             return CsQuery.Create(Support.GetFile(htmlFile));
         }
@@ -207,7 +172,6 @@ namespace Jtc.CsQuery
             }
             else
             {
-                //throw new Exception("This is not tested at all.");
                 return obj.ToExpando();
             }
             return result;
@@ -220,8 +184,7 @@ namespace Jtc.CsQuery
             }
             else
             {
-                return obj.ToExpando<T>();
-                //throw new Exception("Not implemented.");
+                return Objects.ToExpando<T>(obj);
             }
         }
         public static IEnumerable<T> Enumerate<T>(object obj)
@@ -249,7 +212,7 @@ namespace Jtc.CsQuery
             }
             else
             {
-                source = obj.ToExpando<JsObject>(false, ignoreAttributes);
+                source = Objects.ToExpando<JsObject>(obj,false, ignoreAttributes);
             }
             foreach (KeyValuePair<string, object> kvp in source)
             {

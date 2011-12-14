@@ -6,7 +6,7 @@ using System.Text;
 namespace Jtc.CsQuery.Engine
 {
      ///<summary>
-     ///Carrier class
+     /// Wrapper class used by the engine to store info on the selector stack.
      ///</summary>
     public class MatchElement
     {

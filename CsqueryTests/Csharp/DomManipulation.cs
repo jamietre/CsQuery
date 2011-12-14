@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Text;
-using Jtc.CsQuery;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
+using Jtc.CsQuery;
 using Jtc.CsQuery.HtmlParser;
 using Jtc.CsQuery.Implementation;
+using Jtc.CsQuery.Utility;
 
 namespace CsqueryTests.CSharp
 {
@@ -184,10 +185,45 @@ namespace CsqueryTests.CSharp
 
             Assert.AreEqual("para",res.Eq(0).Next().Attr("id"), "test next method");
             Assert.AreEqual("para",res.Eq(-1).Prev().Attr("id"),"Test eq with negative parm, and prev");
-
-         
         }
 
+        /// <summary>
+        /// Added 12/15/11 - ensure that appending to a table element attds to a tbody tag (or creates one)
+        /// </summary>
+        [Test, TestMethod]
+        public void AppendToTable()
+        {
+            var csq = CsQuery.Create("<div><table></table></div>").Find("table");
+
+            csq.Append("<tr />");
+
+            Assert.AreEqual("tbody", csq.Select("table :first-child")[0].NodeName, "Adding a span to an empty table created tbody");
+            Assert.AreEqual(2, csq.Select("table *").Length, "Two total elements in the table");
+
+            csq.Append("<b>yo</b>");
+
+            var nodeNames =  csq.Select("table tbody > *").Elements.Select(item => item.NodeName);
+            Assert.AreEqual(Objects.Enumerate("tr","b"),nodeNames, 
+                "Adding another element was within the now-existing tbody");
+
+            Assert.AreEqual(3, csq.Select("table *").Length, "3 total elements in the table");
+
+            // now get rid of the tbody
+            csq.Find("tr").Unwrap();
+
+            Assert.AreEqual(2, csq.Select("table *").Length, "2 total elements in the table after unwrapping (sanity check)");
+
+            csq.Append("<p>Text</p>");
+
+            nodeNames = csq.Select("table > *").Elements.Select(item => item.NodeName);
+            Assert.AreEqual(Objects.Enumerate("tr", "b", "p"),
+               nodeNames,
+               "Adding another element was within the now-existing tbody");
+            Assert.AreEqual(0, csq.Find("tbody").Length, "No tbody after another append.");
+        }
+
+
+        #region private methods
         protected string GetChildTags(CsQuery csq)
         {
             string tags = "";
@@ -197,29 +233,6 @@ namespace CsqueryTests.CSharp
             });
             return tags;
         }
-        public void Test_CSQuery_Dom()
-        {
-            //SetTestInfo("CsQuery.DomObject","Parse");
-
-            
-            string html = " <b>Iteration 2</b>";
-            IDomRoot container = new DomRoot();
-            DomElementFactory factory = new DomElementFactory(container);
-            //factory.CreateObjects(html);
-            //AddTestResult("Simple create", container.Html==html, container.Html);
-
-
-            html = "<div><input type=\"checkbox\" checked=\"checked\" customtag /><br /><span>more inner text</span></div>";
-
-
-            IDomElement obj = factory.CreateElement(html);
-            string reParsed = WriteDOMObject(obj);
-            string result = "tag=" + obj.NodeName + ", " + reParsed;
-
-            ///AddTestResult("SimpleParseTest", html== reParsed , result);
-
-        }
-
         protected string WriteDOMObject(IDomElement obj)
         {
             string result = "";
@@ -237,6 +250,6 @@ namespace CsqueryTests.CSharp
             result += "InnerHtml=" + obj.InnerHTML;
             return result;
         }
-        
+        #endregion
     }
 }

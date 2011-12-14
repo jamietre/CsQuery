@@ -37,7 +37,9 @@ namespace Jtc.CsQuery
         void InsertAfter(IDomObject newNode, IDomObject referenceNode);
 
         IDomObject FirstChild { get; }
+        IDomElement FirstElementChild { get; }
         IDomObject LastChild { get; }
+        IDomElement LastElementChild { get; }
         IDomObject NextSibling { get; }
         IDomObject PreviousSibling { get; }
         IDomElement NextElementSibling { get; }

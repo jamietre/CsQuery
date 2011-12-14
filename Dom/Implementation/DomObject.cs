@@ -48,7 +48,7 @@ namespace Jtc.CsQuery.Implementation
             {
                 _ParentNode = value;
                 // de-cache _Document
-                _Document = null;
+                Document = null;
             }
         }
         // Do not expose this. _ParentNode should only be managed by the ParentNode property.
@@ -106,9 +106,17 @@ namespace Jtc.CsQuery.Implementation
                 }
                 return _Document;
             }
-            protected set
+            internal set
             {
                 _Document = value;
+                if (value == null && HasChildren)
+                {
+                    foreach (var item in ChildElements)
+                    {
+                        ((DomObject)item).Document = null;
+                    }
+
+                }
             }
         }
         private IDomRoot _Document;
@@ -116,7 +124,7 @@ namespace Jtc.CsQuery.Implementation
          protected string PathEncode(int number)
         {
             // return number.ToString().PadLeft(pathIdLength, '0');
-            return DomData.BaseXXEncode(number);
+            return Utility.DomData.BaseXXEncode(number);
         }
          
         public virtual IDomObject this[int index]
@@ -360,6 +368,14 @@ namespace Jtc.CsQuery.Implementation
              get { return null; }
          }
          public virtual IDomObject LastChild
+         {
+             get { return null; }
+         }
+         public virtual IDomElement FirstElementChild
+         {
+             get { return null; }
+         }
+         public virtual IDomElement LastElementChild
          {
              get { return null; }
          }

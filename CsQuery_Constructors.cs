@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Jtc.CsQuery.ExtensionMethods;
 using Jtc.CsQuery.Implementation;
+using Jtc.CsQuery.Engine;
 
 namespace Jtc.CsQuery
 {
@@ -58,7 +59,7 @@ namespace Jtc.CsQuery
 
             if (!String.IsNullOrEmpty(selector))
             {
-                Selectors = new CsQuerySelectors(selector);
+                Selectors = new SelectorChain(selector);
                 AddSelectionRange(Selectors.Select(Document, context.Children()));
             }
         }
@@ -104,7 +105,7 @@ namespace Jtc.CsQuery
                     Document = el.Document;
                     first = false;
                 }
-                Selection.Add(el);
+                SelectionSet.Add(el);
             }
             
         }

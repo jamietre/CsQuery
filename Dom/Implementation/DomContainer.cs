@@ -62,6 +62,25 @@ namespace Jtc.CsQuery.Implementation
                 }
             }
         }
+        public override IDomElement FirstElementChild
+        {
+            get
+            {
+                if (HasChildren)
+                {
+                    int index=0;
+                    while (index < ChildNodes.Count && ChildNodes[index].NodeType != NodeType.ELEMENT_NODE)
+                    {
+                        index++;
+                    }
+                    if (index < ChildNodes.Count)
+                    {
+                        return (IDomElement)ChildNodes[index];
+                    }
+                }
+                return null;
+            }
+        }
         public override IDomObject LastChild
         {
             get
@@ -74,6 +93,25 @@ namespace Jtc.CsQuery.Implementation
                 {
                     return null;
                 }
+            }
+        }
+        public override IDomElement LastElementChild
+        {
+            get
+            {
+                if (HasChildren)
+                {
+                    int index = ChildNodes.Count-1;
+                    while (index >=0 && ChildNodes[index].NodeType != NodeType.ELEMENT_NODE)
+                    {
+                        index--;
+                    }
+                    if (index >=0)
+                    {
+                        return (IDomElement)ChildNodes[index];
+                    }
+                }
+                return null;
             }
         }
         public override void AppendChild(IDomObject item)

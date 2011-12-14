@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Jtc.CsQuery;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using CollectionAssert = NUnit.Framework.CollectionAssert;
 using StringAssert = NUnit.Framework.StringAssert;
-//using Description = Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
+using Jtc.CsQuery;
+using Jtc.CsQuery.Utility;
 
 namespace CsqueryTests.Csharp
 {
@@ -36,15 +36,15 @@ namespace CsqueryTests.Csharp
 
             Assert.AreEqual("none", jQuery("#hidden-div").Css("display"), "Container is hidden");
             jQuery("#hidden-span").Show();
-            Assert.AreEqual(null, jQuery("#hidden-span").Css("display"), "Span has no display attribute after Show");
+            Assert.AreEqual("inline", jQuery("#hidden-span").Css("display"), "Span has default display attribute after Show");
             jQuery("#hidden-span").Hide();
             Assert.AreEqual("none", jQuery("#hidden-span").Css("display"), "Span has display=none attribute after Show");
             jQuery("#hidden-span").Toggle();
-            Assert.AreEqual(null, jQuery("#hidden-span").Css("display"), "Span has no display attribute after Toggle");
+            Assert.AreEqual("inline", jQuery("#hidden-span").Css("display"), "Span has default display attribute after Toggle");
             jQuery("#hidden-span").Toggle();
             Assert.AreEqual("none", jQuery("#hidden-span").Css("display"), "Span has display=none attribute after 2nd Toggle");
             jQuery("#hidden-span").Toggle(true);
-            Assert.AreEqual(null, jQuery("#hidden-span").Css("display"), "Span has no display attribute after Toggle(true)");
+            Assert.AreEqual("inline", jQuery("#hidden-span").Css("display"), "Span has default display attribute after Toggle(true)");
             jQuery("#hidden-span").Toggle(false);
             Assert.AreEqual("none", jQuery("#hidden-span").Css("display"), "Span has display=none attribute after Toggle(false)");
         }

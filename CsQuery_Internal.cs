@@ -3,12 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Jtc.CsQuery.Utility;
 using Jtc.CsQuery.ExtensionMethods;
+using Jtc.CsQuery.ExtensionMethods.Internal;
+using Jtc.CsQuery.Engine;
 
 namespace Jtc.CsQuery
 {
     public partial class CsQuery
     {
+        #region private properties
+        protected CsQuery _CsQueryParent;
+        protected SelectionSet<IDomObject> _Selection = null;
+
+        protected static Dictionary<string, object> _ExtensionCache = null;
         // Used to manage extension methods by keeping a reference within the base CsQuery to whatever object it creates.
         internal static Dictionary<string, object> ExtensionCache
         {
@@ -21,9 +29,7 @@ namespace Jtc.CsQuery
                 
                 return _ExtensionCache;
             }
-        } 
-        protected static Dictionary<string, object> _ExtensionCache = null;
-
+        }
 
         /// <summary>
         /// The object from which this CsQuery was created
@@ -32,7 +38,7 @@ namespace Jtc.CsQuery
         {
             get
             {
-               
+
                 {
                     return _CsQueryParent;
                 }
@@ -51,18 +57,11 @@ namespace Jtc.CsQuery
                 ClearSelections();
             }
         }
-        protected void Clear()
-        {
-            CsQueryParent = null;
-            Document = null;
-            ClearSelections();
-        }
-        protected CsQuery _CsQueryParent;
 
         /// <summary>
         /// The current selection set including all node types. 
         /// </summary>
-        protected SelectionSet<IDomObject> Selection
+        protected SelectionSet<IDomObject> SelectionSet
         {
             get
             {
@@ -74,22 +73,117 @@ namespace Jtc.CsQuery
                 return _Selection;
             }
         }
-        protected SelectionSet<IDomObject> _Selection = null;
 
+        #endregion
+
+        #region private methods
         /// <summary>
-        /// Returns just IDomElements from the selection list.
+        /// Clear the entire object
         /// </summary>
-        public IEnumerable<IDomElement> Elements
+        protected void Clear()
         {
-            get
+            CsQueryParent = null;
+            Document = null;
+            ClearSelections();
+        }
+        /// <summary>
+        /// Clears the current selection set
+        /// </summary>
+        protected void ClearSelections()
+        {
+            SelectionSet.Clear();
+        }
+        /// <summary>
+        /// Map a CSV or enumerable object to a hashset
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        protected HashSet<string> MapMultipleValues(object value)
+        {
+            var values = new HashSet<string>();
+            if (value is string)
             {
-                return onlyElements(Selection);
+                values.AddRange(value.ToString().Split(','));
+
+            }
+            if (value is IEnumerable)
+            {
+                foreach (object obj in (IEnumerable)value)
+                {
+                    values.Add(obj.ToString());
+                }
+            }
+
+            if (values.Count == 0)
+            {
+                if (value != null)
+                {
+                    values.Add(value.ToString());
+                }
+            }
+            return values;
+
+        }
+        /// <summary>
+        /// Helper function for option groups to set multiple options when passed a CSV of values.
+        /// </summary>
+        /// <param name="elements"></param>
+        /// <param name="value"></param>
+        /// 
+        protected void SetOptionSelected(IEnumerable<IDomElement> elements, object value, bool multiple)
+        {
+            HashSet<string> values = MapMultipleValues(value);
+            SetOptionSelected(elements, values, multiple);
+        }
+        protected void SetOptionSelected(IEnumerable<IDomElement> elements, HashSet<string> values, bool multiple)
+        {
+            bool setOne = false;
+            string attribute;
+
+            foreach (IDomElement e in elements)
+            {
+                attribute = String.Empty;
+                switch (e.NodeName)
+                {
+                    case "option":
+                        attribute = "selected";
+                        break;
+                    case "input":
+                        switch (e["type"])
+                        {
+                            case "checkbox":
+                                attribute = "checked";
+                                break;
+                        }
+                        break;
+                    case "optgroup":
+                        SetOptionSelected(e.ChildElements, values, multiple);
+                        break;
+                }
+                if (attribute != String.Empty && !setOne && values.Contains(e["value"]))
+                {
+                    e.SetAttribute(attribute);
+                    if (!multiple)
+                    {
+                        setOne = true;
+                    }
+                }
+                else
+                {
+                    e.RemoveAttribute(attribute);
+                }
+
             }
         }
-
-        #region Internal Support Functions
-
-
+        protected string GetValueString(object value)
+        {
+            return value == null ? null :
+                (value is string ? (string)value :
+                    (value is IEnumerable ?
+                        ((IEnumerable)value).Join() : value.ToString()
+                    )
+                );
+        }
         /// <summary>
         /// Return the relative position of an element among its Element siblings (non-element nodes excluded)
         /// </summary>
@@ -126,7 +220,7 @@ namespace Jtc.CsQuery
             //{
             //    throw new Exception("Cannot add unbound elements or elements bound to another DOM directly to a selection set.");
             //}
-            return Selection.Add(element);
+            return SelectionSet.Add(element);
         }
         /// <summary>
         /// Adds each element to the current selection set. Returns true if any elements were added.
@@ -142,13 +236,6 @@ namespace Jtc.CsQuery
                 AddSelection(elm);
             }
             return result;
-        }
-        /// <summary>
-        /// Clears the current selection set
-        /// </summary>
-        protected void ClearSelections()
-        {
-            Selection.Clear();
         }
         /// <summary>
         /// Helper function for Attr & Prop
@@ -173,18 +260,18 @@ namespace Jtc.CsQuery
         protected CsQuery ForEach(IEnumerable<IDomObject> source, Func<IDomObject, IDomObject> del)
         {
             CsQuery output = New();
-            foreach (var item in Selection)
+            foreach (var item in SelectionSet)
             {
-                output.Selection.Add(del(item));
+                output.SelectionSet.Add(del(item));
             }
             return output;
         }
         protected CsQuery ForEachMany(IEnumerable<IDomObject> source, Func<IDomObject, IEnumerable<IDomObject>> del)
         {
             CsQuery output = New();
-            foreach (var item in Selection)
+            foreach (var item in SelectionSet)
             {
-                output.Selection.AddRange(del(item));
+                output.SelectionSet.AddRange(del(item));
             }
             return output;
         }
@@ -262,7 +349,7 @@ namespace Jtc.CsQuery
             }
             else
             {
-                CsQuerySelectors selectors = new CsQuerySelectors(selector);
+                SelectorChain selectors = new SelectorChain(selector);
                 if (selectors.Count > 0)
                 {
                     selectors.Do(item=>item.TraversalType = TraversalType.Filter);
@@ -363,7 +450,7 @@ namespace Jtc.CsQuery
             if (isCsQuery && sel.Count == 0)
             {
                 // If appending items to an empty selection, just add them to the selection set
-                sel.AddRange(Selection);
+                sel.AddRange(SelectionSet);
             }
             else
             {
@@ -377,7 +464,7 @@ namespace Jtc.CsQuery
                             throw new Exception("You can't add elements to a disconnected element list, it must be in a selection set");
                         }
                         int index = sel.IndexOf(el);
-                        foreach (var item in Selection)
+                        foreach (var item in SelectionSet)
                         {
                             sel.Insert(index + offset, item);
                         }
@@ -398,93 +485,46 @@ namespace Jtc.CsQuery
             }
             return this;
         }
-        #endregion
-        protected HashSet<string> MapMultipleValues(object value)
-        {
-            var values = new HashSet<string>();
-            if (value is string)
-            {
-                values.AddRange(value.ToString().Split(','));
-
-            }
-            if (value is IEnumerable)
-            {
-                foreach (object obj in (IEnumerable)value)
-                {
-                    values.Add(obj.ToString());
-                }
-            }
-
-            if (values.Count == 0)
-            {
-                if (value != null)
-                {
-                    values.Add(value.ToString());
-                }
-            }
-            return values;
-
-        }
         /// <summary>
-        /// Helper function for option groups. I am sure these can be simplified
+        /// Deals with tbody as the target of appends
         /// </summary>
-        /// <param name="elements"></param>
-        /// <param name="value"></param>
-        /// 
-        protected void SetOptionSelected(IEnumerable<IDomElement> elements, object value, bool multiple)
+        /// <param name="apparentTarget"></param>
+        /// <returns></returns>
+        protected IDomElement getTrueTarget(IDomElement target)
         {
-            HashSet<string> values = MapMultipleValues(value);
-            SetOptionSelected(elements, values, multiple);
-        }
-        protected void SetOptionSelected(IEnumerable<IDomElement> elements, HashSet<string> values, bool multiple)
-        {
-            bool setOne = false;
-            string attribute;
-
-            foreach (IDomElement e in elements)
+            //Special handling for tables: make sure we add to the TBODY
+            IDomElement element = target;
+            if (target.NodeName == "table")
             {
-                attribute = String.Empty;
-                switch (e.NodeName)
+                bool addBody = false;
+                if (target.HasChildren)
                 {
-                    case "option":
-                        attribute = "selected";
-                        break;
-                    case "input":
-                        switch (e["type"])
-                        {
-                            case "checkbox":
-                            case "radio":
-                                attribute = "checked";
-                                break;
-                        }
-                        break;
-                    case "optgroup":
-                        SetOptionSelected(e.ChildElements, values, multiple);
-                        break;
-                }
-                if (attribute != String.Empty && !setOne && values.Contains(e["value"]))
-                {
-                    e.SetAttribute(attribute);
-                    if (!multiple)
-                    {
-                        setOne = true;
+                    IDomElement body = target.ChildElements.FirstOrDefault(item => item.NodeName == "tbody");
+                    if (body != null) {
+                        element = body;
                     }
+                    else if (target.FirstElementChild == null)
+                    {
+                        // Add a body if there are no elements in this table yet
+                        addBody = true;
+                    }
+                    // default = leave it alone, they've already added elements. don't worry whether it's valid or not, 
+                    // assume they know what they're doing.
                 }
                 else
                 {
-                    e.RemoveAttribute(attribute);
+                    addBody = true;
                 }
-
+                if (addBody)
+                {
+                    element = Document.CreateElement("tbody");
+                    target.AppendChild(element);
+                }
             }
+            return element;
         }
-        protected string GetValueString(object value)
-        {
-            return value == null ? null :
-                (value is string ? (string)value :
-                    (value is IEnumerable ?
-                        ((IEnumerable)value).Join() : value.ToString()
-                    )
-                );
-        }
+        #endregion
+        
+        
     }
 }

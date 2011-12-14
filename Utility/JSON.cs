@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Web.Script.Serialization;
 using System.Dynamic;
+using Jtc.CsQuery.ExtensionMethods.Internal;
 
 namespace Jtc.CsQuery.Utility
 {

@@ -29,10 +29,10 @@
       enum="normal break-word" />
     <cssmd:property-def _locID="opacity" _locAttrData="description,syntax" type="length"
         description="Opacity"
-              syntax="a unit | inherit" />
+              syntax="a number | inherit" />
     <cssmd:property-def _locID="zoom" _locAttrData="description,syntax" type="length"
             description="Maginification of current element"
-              syntax="a unit | inherit" />
+              syntax="a number | inherit" />
     <cssmd:property-def _locID="filter" _locAttrData="description,syntax" type="composite"
         description="MS Internet Explorer filter"
               syntax="filter_name(parameters) | inherit" />

@@ -10,23 +10,27 @@ namespace Jtc.CsQuery.Utility
     /// Damn you, you lazy object! Get a job!
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class LazyObject<T> where T : new()
+    public class LazyObjectFrom<T>
     {
         protected Action<object> OnCreate = null;
-        protected T _Object = default(T);
-        public LazyObject()
-        {
+        protected Func<T> GetNewObject = null;
 
-        }
+        protected T _Object = default(T);
+
         /// <summary>
-        /// When a delegate onCreate is provided, it will be called with the new object instance after creation.
+        /// The object will be obtained from getNewObject delegate
         /// </summary>
-        /// <param name="onCreate"></param>
-        public LazyObject(Action<object> onCreate)
+        /// <param name="getNewObject"></param>
+        public LazyObjectFrom(Func<T> getNewObject)
+        {
+            GetNewObject = getNewObject;
+        }
+        public LazyObjectFrom(Func<T> getNewObject,Action<object> onCreate)
         {
             OnCreate = onCreate;
+            GetNewObject = getNewObject;
         }
-        
+
         public T Value
         {
             get
@@ -35,7 +39,7 @@ namespace Jtc.CsQuery.Utility
                 {
                     if (_Object == null || _Object.Equals(default(T)))
                     {
-                        _Object = new T();
+                        _Object = GetNewObject();
                         if (OnCreate != null)
                         {
                             OnCreate(_Object);
@@ -55,4 +59,26 @@ namespace Jtc.CsQuery.Utility
             }
         }
     }
+
+
+    public class LazyObject<T>: LazyObjectFrom<T> where T: new()
+    {
+        public LazyObject(): base(GetNewObject)
+        {
+
+        }
+        /// <summary>
+        /// When a delegate onCreate is provided, it will be called with the new object instance after creation.
+        /// </summary>
+        /// <param name="onCreate"></param>
+        public LazyObject(Action<object> onCreate): base(GetNewObject,onCreate)
+        {
+            OnCreate = onCreate;
+        }
+
+        protected static T GetNewObject() {
+            return new T();
+        }
+    }
+
 }

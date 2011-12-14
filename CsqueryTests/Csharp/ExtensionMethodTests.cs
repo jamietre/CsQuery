@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Dynamic;
-using Jtc.CsQuery;
-using Jtc.CsQuery.ExtensionMethods;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NUnit.Framework;
 using System.Web;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Assert = NUnit.Framework.Assert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
+using NUnit.Framework;
+using Jtc.CsQuery;
+using Jtc.CsQuery.ExtensionMethods;
+using Jtc.CsQuery.ExtensionMethods.Internal;
 
 namespace CsqueryTests.ExtensionMethodTests
 {

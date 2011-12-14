@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Jtc.CsQuery;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using Description = Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
+using Jtc.CsQuery;
+using Jtc.CsQuery.Utility;
 
 namespace CsqueryTests.jQuery
 {
@@ -544,21 +545,22 @@ namespace CsqueryTests.jQuery
             Assert.AreEqual(document.GetElementById("text1").ClassName, "test", "Check setting ClassName with 'class'");
 
             // Using ATTR  instead: we don't retrieve props
-            Assert.AreEqual(jQuery("#text1").AttrInt("maxlength"), 30, "Check retriieving maxLength");
+            Assert.AreEqual(jQuery("#text1").Attr<int>("maxlength"), 30, "Check retriieving maxLength");
             jQuery("#table").Attr("cellspacing", 1);
-            Assert.AreEqual(jQuery("#table").AttrInt("cellSpacing"), 1, "Check setting and retrieving cellSpacing");
+            Assert.AreEqual(jQuery("#table").Attr<int>("cellSpacing"), 1, "Check setting and retrieving cellSpacing");
             jQuery("#table").Prop("cellpadding", 1);
-            Assert.AreEqual(jQuery("#table").AttrInt("cellPadding"), 1, "Check setting and retrieving cellPadding");
+            Assert.AreEqual(jQuery("#table").Attr<int>("cellPadding"), 1, "Check setting and retrieving cellPadding");
             jQuery("#table").Prop("rowspan", 1);
-            Assert.AreEqual(jQuery("#table").AttrInt("rowSpan"), 1, "Check setting and retrieving rowSpan");
+            Assert.AreEqual(jQuery("#table").Attr<int>("rowSpan"), 1, "Check setting and retrieving rowSpan");
             jQuery("#table").Prop("colspan", 1);
-            Assert.AreEqual(jQuery("#table").AttrInt("colSpan"), 1, "Check setting and retrieving colSpan");
+            Assert.AreEqual(jQuery("#table").Attr<int>("colSpan"), 1, "Check setting and retrieving colSpan");
             jQuery("#table").Prop("usemap", 1);
-            Assert.AreEqual(jQuery("#table").AttrInt("useMap"), 1, "Check setting and retrieving useMap");
+            Assert.AreEqual(jQuery("#table").Attr<int>("useMap"), 1, "Check setting and retrieving useMap");
             jQuery("#table").Prop("frameborder", 1);
-            Assert.AreEqual(jQuery("#table").AttrInt("frameBorder"), 1, "Check setting and retrieving frameBorder");
+            Assert.AreEqual(jQuery("#table").Attr<int>("frameBorder"), 1, "Check setting and retrieving frameBorder");
             //added for csquery
-            Assert.AreEqual(jQuery("#table").AttrInt("nonexistent"), null, "Check retriving missing prop with AttrInt");
+            Assert.AreEqual(jQuery("#table").Attr<int?>("nonexistent"), null, "Check retriving missing prop with Attr<int>");
+            Assert.AreEqual(jQuery("#table").Attr<int>("nonexistent"), 0, "Check retriving missing prop with Attr<int?>");
 
             ResetQunit();
 

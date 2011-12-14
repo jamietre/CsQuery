@@ -11,6 +11,7 @@ using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using Jtc.CsQuery;
 using Jtc.CsQuery.Utility;
 using Jtc.CsQuery.ExtensionMethods;
+using Jtc.CsQuery.ExtensionMethods.Internal;
 using Jtc.CsQuery.Utility.StringScanner;
 
 namespace CsqueryTests.Csharp

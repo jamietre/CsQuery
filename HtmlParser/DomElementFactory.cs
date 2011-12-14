@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.ExtensionMethods;
 using System.Diagnostics;
+using Jtc.CsQuery.ExtensionMethods;
+using Jtc.CsQuery.ExtensionMethods.Internal;
 using Jtc.CsQuery.Implementation;
 using Jtc.CsQuery.Utility.StringScanner;
 
