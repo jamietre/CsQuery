@@ -647,7 +647,13 @@ namespace Jtc.CsQuery.HtmlParser
             }
             if (aName != null)
             {
-                current.Element.SetAttribute(aName, aValue ?? "");
+                // 12-15-11 - don't replace a valid attribute with a bad one
+
+                var curVal = current.Element.GetAttribute(aName);
+                if (string.IsNullOrEmpty(curVal))
+                {
+                    current.Element.SetAttribute(aName, aValue ?? "");
+                }
                 return true;
             }
             else

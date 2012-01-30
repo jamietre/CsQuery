@@ -212,7 +212,10 @@ namespace Jtc.CsQuery.Utility
                     {
                         return boolean;
                     }
+
                     return objectToDeserialize;
+                    
+
 
 
             }

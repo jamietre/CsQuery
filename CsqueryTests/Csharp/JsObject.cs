@@ -50,7 +50,7 @@ namespace CsqueryTests.Csharp
             Assert.IsTrue(Math.Abs(diff.Milliseconds)<1000, "Time was the same");
         }
         [Test,TestMethod]
-        public void JsObject()
+        public void JsObjectConversion()
         {
             dynamic obj = Objects.Dict2Dynamic<JsObject>(testDict);
 
@@ -69,6 +69,20 @@ namespace CsqueryTests.Csharp
 
             //Assert.AreEqual(expected, actual, "Enumerate works using a function to generate the data");
 
+        }
+        [Test,TestMethod]
+        public void JsObjectProperties()
+        {
+            JsObject jsObj = new JsObject();
+            dynamic obj = jsObj;
+            obj.someProp = "test";
+
+            Assert.AreEqual(null, obj.missingProp, "Accessing missing property returns null");
+
+            object outval;
+            bool hasValue = ((IDictionary<string, object>)jsObj).TryGetValue("someOtherProp", out outval);
+            // Bug 12-15-2011 - using JsObject as generic IDict problems
+            Assert.IsFalse(hasValue, "TryGetValue (casting as IDictionary) still knows that property doesn't exist");
 
         }
         protected long TestUseFunc(string key, object value)

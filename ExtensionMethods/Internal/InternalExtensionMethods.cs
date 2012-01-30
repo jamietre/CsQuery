@@ -23,6 +23,7 @@ namespace Jtc.CsQuery.ExtensionMethods.Internal
         public static bool IsImmutable(this object obj)
         {
             return obj == null ||
+                obj == System.DBNull.Value || 
                 obj is string ||
                 (obj is ValueType && !(obj.IsKeyValuePair()));
         }

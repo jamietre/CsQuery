@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -108,11 +108,7 @@ namespace Jtc.CsQuery
         protected bool TryGetMember(string name, Type type, out object result)
         {
             object value = null;
-            if (IgnoreCase)
-            {
-                NameXref.TryGetValue(name.ToLower(), out name);
-            }
-
+            name = getInnerName(name);
             bool success = String.IsNullOrEmpty(name) ? false : InnerProperties.TryGetValue(name, out value);
             if (!success)
             {
@@ -152,23 +148,33 @@ namespace Jtc.CsQuery
             return TrySetMember(binder.Name, value);
             
         }
+        /// <summary>
+        /// Translate name based on case-sensititity settings
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        protected string getInnerName(string name)
+        {
+            if (IgnoreCase)
+            {
+                string realName;
+                if (!NameXref.TryGetValue(name.ToLower(), out realName))
+                {
+                    NameXref[name.ToLower()] = name;
+                }
+                else
+                {
+                    name = realName;
+                }
+            }
+            return name;
+
+        }
         protected bool TrySetMember(string name, object value)
         {
             try
             {
-                if (IgnoreCase)
-                {
-                    string realName;
-                    if (!NameXref.TryGetValue(name.ToLower(), out realName))
-                    {
-                        NameXref[name.ToLower()] = name;
-                    }
-                    else
-                    {
-                        name = realName;
-                    }
-
-                }
+                name = getInnerName(name);
                 if (String.IsNullOrEmpty(name))
                 {
                     return false;
@@ -192,11 +198,11 @@ namespace Jtc.CsQuery
         }
         public bool HasProperty(string name)
         {
-            return InnerProperties.ContainsKey(name);
+            return InnerProperties.ContainsKey(getInnerName(name));
         }
         public bool Delete(string name)
         {
-            return InnerProperties.Remove(name);
+            return InnerProperties.Remove(getInnerName(name));
         }
 
         protected JsObject ToJsObject(IDictionary<string, object> value)
@@ -276,7 +282,15 @@ namespace Jtc.CsQuery
 
         bool IDictionary<string, object>.TryGetValue(string key, out object value)
         {
-            return TryGetMember(key, typeof(object), out value);
+            if (HasProperty(key))
+            {
+                return TryGetMember(key, typeof(object), out value);
+            }
+            else
+            {
+                value = null;
+                return false;
+            }
         }
 
         ICollection<object> IDictionary<string, object>.Values

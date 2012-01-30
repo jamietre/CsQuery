@@ -1,0 +1,99 @@
+$(document).ready(function() {
+  $("#convert_map").click(function() {
+      utils.zoomImage();
+   });
+});
+var utils = {};
+utils.zoomImage = function () {
+    var xAmount,yAmount,newWidth,newHeight, $mapData,$image,$map,$mapname,
+    oldWidth, oldHeight,offsetx,offsety,maxx,maxy, crop=false;
+
+    newWidth = parseInt($('#newWidth').val(),10) || 0;
+    newHeight = parseInt($('#newHeight').val(),10) || 0;
+    
+    $mapData= $("<div>
+</div>
+").append($('#map_source').val());
+    $image = $mapData.find('img');
+    if (!$image.length) {
+        alert('Could not find an IMG.');
+        return;
+    }
+    if (!newHeight && !newWidth) {
+        alert("You must a provide valid integer height and/or width.");
+        return;
+    }
+    oldWidth = parseInt($image.attr('width'),10);
+    oldHeight = parseInt($image.attr('height'),10);
+
+    offsetx = parseInt($('#topleft_x').val()) || 0;
+    offsety = parseInt($('#topleft_y').val()) || 0;
+    if (offsetx && offsety) {
+        maxx = (parseInt($('#bottomright_x').val()) || 0) - offsetx;
+        maxy = (parseInt($('#bottomright_y').val()) || 0) - offsety;
+        crop=true;
+    }
+
+
+    xAmount = newWidth / oldWidth ;
+    yAmount = newHeight / oldHeight;
+    if (!yAmount) {
+       yAmount = xAmount;
+    } else if (!xAmount) {
+       xAmount = yAmount;
+    }
+
+    $image.attr('height',Math.round(oldHeight * yAmount));
+    $image.attr('width',Math.round(oldWidth * xAmount));
+
+    $mapname = $image.attr('usemap');
+    if (!$mapname.length) {
+        alert('There is no "usemap" tag on your image.');
+        return;
+    }
+
+    $map = $mapData.find('map[name=' + $mapname.slice(1) + ']');
+    
+    if ($map.length==0) {
+        alert('Could not find an imagemap associated with an image. Ensure there is an IMG, a MAP, and a tag "usemap" associating them.');
+        return;
+    }
+
+    $map = $map.find('area');
+    if ($map.length==0) {
+        alert("There don't seem to be any AREA elements in your image map.");
+        return;
+    }
+
+    $map.each(function() {
+        var $area = $(this);
+        var coords = $area.attr('coords').split(',');
+        var coordx,coordy,isVisible=true;
+        var newCoords = ''; 
+        for (var j = 0; j < coords.length; j+=2) {
+             coordx = coords[j];
+             coordy = coords[j+1];
+                 
+             if (crop) {
+                 isVisible=false;
+                 coordx -= offsetx;
+                 coordx = Math.min(maxx,Math.max(0,coordx));
+                 coordy -= offsety;
+                 coordy = Math.min(maxy,Math.max(0,coordy));
+                 if (!isVisible && coordx> 0 && coordx < maxx && coordy > 0 && coordy < maxy ) {
+                   isVisible=true;
+                 }
+             }
+
+             newCoords += (!newCoords ? '' : ',') + Math.round(coordx * xAmount) + ','
+                + Math.round(coordy * yAmount);
+        }
+        if (isVisible) {
+            $area.attr('coords',newCoords);
+        } else {
+            $area.remove();
+        }
+    });
+
+    $('#map_dest').val($mapData.html());
+}

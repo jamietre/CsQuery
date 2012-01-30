@@ -49,6 +49,8 @@
   <ItemGroup>
     <Compile Include="Engine\Enums.cs" />
     <Compile Include="Engine\SelectorParser.cs" />
+    <Compile Include="IOutputFormatter.cs" />
+    <Compile Include="OutputFormatters\FormatPlainText.cs" />
     <Compile Include="Utility\AutoList.cs" />
     <Compile Include="Utility\EquationParser\Implementation\Functions\Quotient.cs" />
     <Compile Include="Utility\EquationParser\INativeOperation.cs" />

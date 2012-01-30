@@ -137,6 +137,11 @@ namespace Jtc.CsQuery
         {
             return Document.Render();
         }
+
+        public string Render(IOutputFormatter format)
+        {
+            return format.Format(this);
+        }
         /// <summary>
         /// Render the complete DOM with specific options
         /// </summary>
@@ -254,22 +259,38 @@ namespace Jtc.CsQuery
             }
             return this;
         }
-
+        /// <summary>
+        /// Set a specific item of a named option group selected
+        /// </summary>
+        /// <param name="groupName"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public CsQuery SetSelected(string groupName, IConvertible value)
         {
-            var group = this.Find("input[name='" + groupName + "'][value='" + value + "']");
+            var group = this.Find("input[name='" + groupName + "']");
+            var item = group.Filter("[value='" + value + "']");
             if (group.Length == 0)
             {
-                group = this.Find("#" + groupName);
+                item = this.Find("#" + groupName);
             }
-            if (group.Length > 0)
+            if (item.Length > 0)
             {
                 string nodeName = group[0].NodeName;
                 string type = group[0]["type"];
-                if (nodeName == "option" || 
-                    (nodeName == "input" && (type=="radio" || type=="checkbox")))
+                if (nodeName == "option") {
+                    var ownerMultiple = group.Closest("select").Prop("multiple");
+                    if (Objects.IsTruthy(ownerMultiple)) {
+                        item.Prop("selected",true);
+                    } else {
+                        group.Prop("selected",false);
+                        item.Prop("selected",true);
+                    }
+                } else if (nodeName == "input" && (type=="radio" || type=="checkbox"))
                 {
-                    group.Prop("checked", true);
+                    if (type=="radio") {
+                        group.Prop("checked",false);
+                    }
+                    item.Prop("checked", true);
                 }
             }
             return this;
@@ -289,6 +310,7 @@ namespace Jtc.CsQuery
         {
             return Select(selector).MakeRoot();
         }
+
         public override string ToString()
         {
             return SelectionHtml();

@@ -34,13 +34,14 @@ namespace Jtc.CsQuery.Utility
 
         /// Hardcode some token IDs to improve performance of things that are referred to often
         
-        public const ushort StyleAttrId = 2;
+        //public const ushort StyleAttrId = 2;
         public const ushort ClassAttrId = 3;
         public const ushort ValueAttrId=4;
         public const ushort IDAttrId=5;
         public const ushort ScriptNodeId = 6;
         public const ushort TextareaNodeId = 7;
-        public const ushort InputNodeId = 8;
+        public const ushort StyleNodeId = 8;
+        public const ushort InputNodeId = 9;
 
         public static ushort SelectedAttrId;
         public static ushort ReadonlyAttrId;
@@ -103,8 +104,8 @@ namespace Jtc.CsQuery.Utility
             Whitespace.CopyTo(MustBeQuotedAll, MustBeQuoted.Length);
 
             HashSet<string> noInnerHtmlAllowed = new HashSet<string>(new string[]{
-            "base","basefont","frame","link","meta","area","col","hr","param","script","textarea",
-                "img","input","br", "!doctype","!--"
+                "base","basefont","frame","link","meta","area","col","hr","param","script","textarea","style",
+                    "img","input","br", "!doctype","!--"
             });
     
             HashSet<string> blockElements = new HashSet<string>(new string[]{"body","br","address","blockquote","center","div","dir","form","frameset","h1","h2","h3","h4","h5","h6","hr",
@@ -122,16 +123,22 @@ namespace Jtc.CsQuery.Utility
             });
 
             TokenIDs = new Dictionary<string, ushort>();
-            TokenID("style"); //2
+            // where Style used to be
+            TokenID("unused"); //2
+
             TokenID("class"); //3
             // inner text allowed
             TokenID("value"); //4
             TokenID("id"); //5
 
             noInnerHtmlIDFirst = nextID;
+            // the node types that have inner content which is not parsed as HTML ever
             TokenID("script"); //6
             TokenID("textarea"); //7
-            TokenID("input"); //8
+            TokenID("style"); //8
+
+
+            TokenID("input"); //9
             
             // no inner html allowed
             
@@ -198,7 +205,7 @@ namespace Jtc.CsQuery.Utility
         /// <returns></returns>
         public static bool InnerTextAllowed(ushort nodeId)
         {
-            return nodeId == ScriptNodeId || nodeId == TextareaNodeId || !NoInnerHtmlAllowed(nodeId);
+            return nodeId == ScriptNodeId || nodeId == TextareaNodeId ||  nodeId == StyleNodeId || !NoInnerHtmlAllowed(nodeId);
         }
         public static bool InnerTextAllowed(string nodeName)
         {

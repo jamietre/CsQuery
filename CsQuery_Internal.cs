@@ -152,6 +152,7 @@ namespace Jtc.CsQuery
                         switch (e["type"])
                         {
                             case "checkbox":
+                            case "radio":
                                 attribute = "checked";
                                 break;
                         }

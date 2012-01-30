@@ -13,6 +13,7 @@ using Assert = NUnit.Framework.Assert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using HtmlAgilityPack;
+using Fizzler.Systems.HtmlAgilityPack;
 using System.Diagnostics;
 using Jtc.CsQuery.Utility.EquationParser;
 
@@ -109,25 +110,29 @@ namespace CsqueryTests.Performance
 
             int divSpan = 0;
 
-            int randomLength = doc.DocumentNode.SelectNodes("//p")[22].InnerHtml.Length;
+            int randomLength = doc.DocumentNode.QuerySelectorAll("p").ElementAt(22).InnerHtml.Length;
 
             iterationsSelect = (int)Math.Floor((double)iterationsSelect / 10);
 
             for (int i = 0; i < iterationsSelect ; i++)
             {
-                HtmlNodeCollection sel = doc.DocumentNode.SelectNodes("//div");
-                divSpan = sel.Count;
+                //HtmlNodeCollection sel = doc.DocumentNode.SelectNodes("//div");
+                HtmlNode node = doc.DocumentNode;
+                IEnumerable<HtmlNode> sel = node.QuerySelectorAll("div span");
+                divSpan = sel.Count();
             }
             DateTime selected = DateTime.Now;
 
             // This test is way too slow with HAP to be meaningful. If there is another way to 
             // create subselectors I don't know it
 
+            int count=0;
             for (int i = 0; i < iterationsClone ; i++)
             {
                 HtmlNode n = doc.DocumentNode.Clone();
-                var divs = n.SelectNodes("//div");
-                int count = divs.Count;
+                //var divs = n.SelectNodes("//div");
+                var divs = n.QuerySelectorAll("div span");
+                count = divs.Count();
                 //foreach (var item in divs)
                 //{
                 //    var spans = item.SelectNodes("//span");
@@ -145,7 +150,7 @@ namespace CsqueryTests.Performance
             string result = divSpan + " div elements";
             result += ", unknown total elements";
             result += ", " + loadTime.TotalSeconds / iterationsLoad + " seconds to load domain";
-            result += ", " + (selected - loaded).TotalSeconds / iterationsSelect + " seconds to perform select 'div span' - unknown elements - really we only selected divs";
+            result += ", " + (selected - loaded).TotalSeconds / iterationsSelect + " seconds to perform select 'div span' - " + count + " elements";
             result += ", " + (done - selected).TotalSeconds / iterationsClone + " seconds to cloning";
             result += ", " + (GC_MemoryEnd - GC_MemoryStart) + " bytes used by object";
             //Debug.WriteLine(result);

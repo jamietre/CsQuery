@@ -340,7 +340,7 @@ namespace Jtc.CsQuery.Implementation
         {
             if (!Owner.IsDisconnected)
             {
-                Owner.Document.AddToIndex(Owner.Attributes.IndexKey(DomData.StyleAttrId), Owner);
+                Owner.Document.AddToIndex(Owner.Attributes.IndexKey(DomData.StyleNodeId), Owner);
             }
         }
 
@@ -348,7 +348,7 @@ namespace Jtc.CsQuery.Implementation
         {
             if (!Owner.IsDisconnected)
             {
-                Owner.Document.RemoveFromIndex(Owner.Attributes.IndexKey(DomData.StyleAttrId));
+                Owner.Document.RemoveFromIndex(Owner.Attributes.IndexKey(DomData.StyleNodeId));
             }
         }
 

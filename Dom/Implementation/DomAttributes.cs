@@ -167,7 +167,7 @@ namespace Jtc.CsQuery.Implementation
             string value;
             switch (tokenId)
             {
-                case DomData.StyleAttrId:
+                case DomData.StyleNodeId:
                     value = Owner.Style.ToString();
                     break;
                 case DomData.ClassAttrId:
@@ -209,7 +209,7 @@ namespace Jtc.CsQuery.Implementation
                 case DomData.IDAttrId:
                     Owner.Id = value;
                     return;
-                case DomData.StyleAttrId:
+                case DomData.StyleNodeId:
                     Owner.Style.SetStyles(value, false);
                     return;
                 case DomData.ClassAttrId:

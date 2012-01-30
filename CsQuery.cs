@@ -509,13 +509,21 @@ namespace Jtc.CsQuery
             }
             return this;
         }
+        /// <summary>
+        /// Insert content, specified by the parameter, to the beginning of each element in the set of matched elements.
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        public CsQuery Prepend(params IDomObject[] element)
+        {
+            return Prepend(Objects.Enumerate(element));
+        }
+
         public CsQuery Prepend(params string[] selector)
         {
             return Prepend(mergeContent(selector));
         }
-        public CsQuery Prepend(params IDomObject[] element) {
-            return Prepend(Objects.Enumerate(element));
-        }
+       
         public CsQuery Prepend(IEnumerable<IDomObject> elements)
         {
             CsQuery ignoredOutput;

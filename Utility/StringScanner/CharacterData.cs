@@ -23,7 +23,7 @@ namespace Jtc.CsQuery.Utility.StringScanner
         private const string charsNumber = "0123456789.-";
         private const string charsLower="abcdefghijklmnopqrstuvwxyz";
         private const string charsUpper="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        private const string charsWhitespace="\x0020\x0009\x000A\x000C\x000D";
+        private const string charsWhitespace="\x0020\x0009\x000A\x000C\x000D\x00A0\x00C0";
         private const string charsQuote = "\"'";
         private const string charsOperator= "!+-*/%<>^=~";
         private const string charsEnclosing="()[]{}<>`´“”«»";

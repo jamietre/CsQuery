@@ -705,7 +705,7 @@ namespace Jtc.CsQuery
         {
             return ToExpando(source,false);
         }
-        public static T ToExpando<T>(object source) where T : IDynamicMetaObjectProvider, new()
+        public static T ToExpando<T>(object source) where T : IDynamicMetaObjectProvider, IDictionary<string,object>, new()
         {
             return ToExpando<T>(source,false);
         }
@@ -719,11 +719,11 @@ namespace Jtc.CsQuery
         {
             return ToExpando<JsObject>(source, deep);
         }
-        public static T ToExpando<T>(object source, bool deep) where T : IDynamicMetaObjectProvider, new()
+        public static T ToExpando<T>(object source, bool deep) where T : IDictionary<string,object>,IDynamicMetaObjectProvider, new()
         {
             return ToExpando<T>(source, deep, new Type[] { });
         }
-        public static T ToExpando<T>(object source, bool deep, IEnumerable<Type> ignoreAttributes) where T : IDynamicMetaObjectProvider, new()
+        public static T ToExpando<T>(object source, bool deep, IEnumerable<Type> ignoreAttributes) where T : IDictionary<string,object>, IDynamicMetaObjectProvider, new()
         {
             if (source.IsExpando() && !deep)
             {
@@ -881,7 +881,7 @@ namespace Jtc.CsQuery
         /// <param name="deep"></param>
         /// <param name="ignoreAttributes"></param>
         /// <returns></returns>
-        private static T ToNewExpando<T>(object source, bool deep, IEnumerable<Type> ignoreAttributes) where T : IDynamicMetaObjectProvider, new()
+        private static T ToNewExpando<T>(object source, bool deep, IEnumerable<Type> ignoreAttributes) where T : IDynamicMetaObjectProvider, IDictionary<string,object>, new()
         {
             if (source == null)
             {
@@ -897,6 +897,22 @@ namespace Jtc.CsQuery
             if (source.IsExpando())
             {
                 return (T)Objects.CloneObject(source, deep);
+            }
+            else if (source is IDictionary)
+            {
+                T dict = new T();
+                IDictionary sourceDict = (IDictionary)source;
+                IDictionary itemDict = (IDictionary)source;
+                foreach (var key in itemDict.Keys)
+                {
+                    string stringKey = key.ToString();
+                    if (dict.ContainsKey(stringKey))
+                    {
+                        throw new Exception("The key '" + key + "' could not be added because the same key already exists. Conversion of the source object's keys to strings did not result in unique keys.");
+                    }
+                    dict.Add(stringKey, itemDict[key]);
+                }
+                return (T)dict;
             }
             else if (!source.IsExtendableType())
             {

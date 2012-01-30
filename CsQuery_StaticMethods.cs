@@ -176,7 +176,7 @@ namespace Jtc.CsQuery
             }
             return result;
         }
-        public static T ToDynamic<T>(object obj) where T : IDynamicMetaObjectProvider, new()
+        public static T ToDynamic<T>(object obj) where T : IDynamicMetaObjectProvider, IDictionary<string,object>,new()
         {
             if (obj is IDictionary<string, object>)
             {
