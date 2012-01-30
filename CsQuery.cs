@@ -141,7 +141,13 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery Empty()
         {
-            return Each(item => item.ChildNodes.Clear());
+            
+            return Each((IDomObject e) => {
+                if (e.HasChildren)
+                {
+                    e.ChildNodes.Clear();
+                }
+            });
         }
         /// <summary>
         /// Set the HTML contents of each element in the set of matched elements. 
@@ -1025,13 +1031,14 @@ namespace Jtc.CsQuery
 
         public CsQuery Css(IDictionary<string,object> css)
         {
-            return this.Each((IDomElement e) =>
+            foreach (IDomElement e in Elements) 
             {
                 foreach (var key in css)
                 {
                     e.Style[key.Key]= key.Value.ToString();
                 }
-            });
+            }
+            return this;
         }
         /// <summary>
         ///  Set one or more CSS properties for the set of matched elements.
@@ -1134,10 +1141,10 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery Data(string key,string data)
         {
-            this.Each((IDomElement e) =>
+            foreach (IDomElement e in Elements)
             {
                 e.SetAttribute("data-" + key, data);
-            });
+            }
             return this;
         }
         /// <summary>
@@ -1149,10 +1156,10 @@ namespace Jtc.CsQuery
         public CsQuery Data(string key, object data)
         {
             string json = CsQuery.ToJSON(data);
-            this.Each((IDomElement e) =>
+            foreach (IDomElement e in Elements)
             {
                 e.SetAttribute("data-" + key, json);
-            });
+            }
             return this;
         }
         /// <summary>
@@ -1198,10 +1205,10 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="func"></param>
         /// <returns></returns>
-        public CsQuery Each(Action<int, IDomElement> func)
+        public CsQuery Each(Action<int, IDomObject> func)
         {
             int index = 0;
-            foreach (IDomElement obj in Elements)
+            foreach (IDomObject obj in Selection)
             {
                 func(index, obj);
             }
@@ -1214,9 +1221,9 @@ namespace Jtc.CsQuery
         /// <param name="func"></param>
         /// <returns></returns>
 
-        public CsQuery Each(Action<IDomElement> func)
+        public CsQuery Each(Action<IDomObject> func)
         {
-            foreach (IDomElement obj in Elements)
+            foreach (IDomObject obj in Selection)
             {
                 func(obj);
             }
@@ -1383,10 +1390,12 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery Hide()
         {
-            return this.Each((IDomElement e) =>
+            foreach (IDomElement e in Elements)
             {
                 e.Style["display"]= "none";
-            });
+            }
+            return this;
+
         }
         /// <summary>
         /// Toggle the visiblity state of the matched elements.
@@ -1394,12 +1403,13 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery Toggle()
         {
-            return this.Each((IDomElement e) =>
+           foreach (IDomElement e in Elements)
             {
                 string displ = e.Style["display"];
                 bool isVisible = displ == null || displ != "none";
                 e.Style["display"] = isVisible ? "none" : null;
-            });
+            }
+           return this;
         }
         /// <summary>
         /// Display or hide the matched elements.
@@ -1407,7 +1417,7 @@ namespace Jtc.CsQuery
         /// <returns></returns>
         public CsQuery Toggle(bool isVisible)
         {
-            return this.Each((IDomElement e) =>
+            foreach (IDomElement e in Elements)
             {
                 if (isVisible)
                 {
@@ -1417,7 +1427,8 @@ namespace Jtc.CsQuery
                 {
                     e.Style["display"] = "none";
                 }
-            });
+            }
+            return this;
         }
         /// <summary>
         /// Search for a given element from among the matched elements.
@@ -1831,7 +1842,7 @@ namespace Jtc.CsQuery
         public CsQuery RemoveClass(string className=null)
         {
             
-            return this.Each((IDomElement e) =>
+           foreach (IDomElement e in Elements)
             {
                 if (!String.IsNullOrEmpty(className))
                 {
@@ -1841,7 +1852,8 @@ namespace Jtc.CsQuery
                 {
                     e.ClassName = null;
                 }
-            });
+            }
+           return this;
         }
 
         /// <summary>

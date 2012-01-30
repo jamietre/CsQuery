@@ -99,7 +99,7 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual(1, res.Length, "Found " + res.Length + " #reputation_link items");
 
                 string inner = "";
-                Dom.Find("#reputation_link").Find("span").Each((IDomElement e) =>
+                Dom.Find("#reputation_link").Find("span").Each((IDomObject e) =>
                 {
                     inner = e.InnerHTML;
                 });

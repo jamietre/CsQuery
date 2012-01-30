@@ -200,8 +200,9 @@ namespace CsqueryTests.jQuery
 
         
         targets.Wrap("<div class='wrapper'></div>");
-    
-        targets.Each((int i, IDomElement e)=> {
+
+        targets.Each((int i, IDomObject e) =>
+        {
             CsQuery _this = jQuery(e);
 
             Assert.IsTrue( _this.Parent().Is(".wrapper"), "Check each elements parent is correct (.wrapper)" );
@@ -340,19 +341,22 @@ namespace CsqueryTests.jQuery
 
             
             jQuery("form").Append(valueObj("<input name='radiotest' type='radio' checked='checked' />"));
-            jQuery("form input[name=radiotest]").Each((int i, IDomElement e)=>{
+            jQuery("form input[name=radiotest]").Each((int i, IDomObject e) =>
+            {
                 Assert.IsTrue( jQuery(e).Is(":checked"), "Append checked radio");
             }).Remove();
 
             
             jQuery("form").Append(valueObj("<input name='radiotest' type='radio' checked    =   'checked' />"));
-            jQuery("form input[name=radiotest]").Each((int i, IDomElement e)=>{
+            jQuery("form input[name=radiotest]").Each((int i, IDomObject e) =>
+            {
                 Assert.IsTrue( jQuery(e).Is(":checked"), "Append alternately formated checked radio");
             }).Remove();
 
             
             jQuery("form").Append(valueObj("<input name='radiotest' type='radio' checked />"));
-            jQuery("form input[name=radiotest]").Each((int i, IDomElement e)=>{
+            jQuery("form input[name=radiotest]").Each((int i, IDomObject e) =>
+            {
                 Assert.IsTrue( jQuery(e).Is(":checked"), "Append HTML5-formated checked radio");
             }).Remove();
 

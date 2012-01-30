@@ -171,7 +171,7 @@ namespace CsqueryTests.jQuery
         public void Hash()
         {
             bool pass = true;
-            jQuery("div").AttrSet("{foo: 'baz', zoo: 'ping'}").Each((IDomElement e) =>
+            jQuery("div").AttrSet("{foo: 'baz', zoo: 'ping'}").Each((IDomObject e) =>
             {
                 if (e.GetAttribute("foo") != "baz" && e.GetAttribute("zoo") != "ping") pass = false;
             });

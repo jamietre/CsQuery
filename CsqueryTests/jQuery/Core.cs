@@ -209,7 +209,7 @@ namespace CsqueryTests.jQuery
         public void Each()
         {
             var div = jQuery("div");
-            div.Each((IDomElement e) =>
+            div.Each((IDomObject e) =>
            {
                e.SetAttribute("foo","zoo");
            });

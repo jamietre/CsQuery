@@ -57,7 +57,7 @@ namespace CsqueryTests.CSharp
         public void BasicDomCreation()
         {
             string tags = String.Empty;
-            csq.Each(delegate(IDomElement e)
+            csq.Each(delegate(IDomObject e)
             {
                 tags += (tags == "" ? "" : ",") + e.NodeName;
             });
@@ -67,7 +67,7 @@ namespace CsqueryTests.CSharp
         public void InputCheckbox()
         {
             string ids = String.Empty;
-            var res = csq.Select("input:checkbox").Each(delegate(IDomElement e)
+            var res = csq.Select("input:checkbox").Each(delegate(IDomObject e)
             {
                 ids += (ids == "" ? "" : ",") + e.Id;
             });
@@ -78,7 +78,7 @@ namespace CsqueryTests.CSharp
         {
             string ids = String.Empty;
 
-            var res = csq.Select("li").Each((IDomElement e) =>
+            var res = csq.Select("li").Each((IDomObject e) =>
             {
                 ids += (ids == "" ? "" : ",") + "'" + e.InnerHTML.Trim() + "'";
             });
@@ -91,7 +91,7 @@ namespace CsqueryTests.CSharp
 
             Assert.AreEqual(1, csq.Select("li").Length, "Removed a list item (one was inner, should be one) list items");
 
-            csq.Select("ul").Each((int index, IDomElement e) =>
+            csq.Select("ul").Each((int index, IDomObject e) =>
             {
                 if (index == 1)
                 {
@@ -227,7 +227,7 @@ namespace CsqueryTests.CSharp
         protected string GetChildTags(CsQuery csq)
         {
             string tags = "";
-            csq.Each(delegate(IDomElement e)
+            csq.Each(delegate(IDomObject e)
             {
                 tags += (tags == "" ? "" : ",") + "'" + e.NodeName + "'";
             });
