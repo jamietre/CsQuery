@@ -8,8 +8,8 @@ using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using Description = Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
-using Jtc.CsQuery;
-using Jtc.CsQuery.Utility;
+using CsQuery;
+using CsQuery.Utility;
 
 namespace CsqueryTests.jQuery
 {
@@ -30,7 +30,7 @@ namespace CsqueryTests.jQuery
         }
         protected void ResetQunit()
         {
-            Dom = CsQuery.Create(Support.GetFile("csquerytests\\resources\\jquery-unit-index.htm"));
+            Dom = CQ.Create(Support.GetFile("csquerytests\\resources\\jquery-unit-index.htm"));
         }
         [Test, TestMethod]
         public void Strings()
@@ -115,7 +115,7 @@ namespace CsqueryTests.jQuery
             Assert.IsTrue(0 == jQuery("#foo").Attr("style", "position:absolute;").Attr("style").IndexOf("position"), "Check style setter");
 
             //    // Check value on button element (#1954)
-            var jbutton = CsQuery.Create("<button value='foobar'>text</button>").InsertAfter("#button");
+            var jbutton = CQ.Create("<button value='foobar'>text</button>").InsertAfter("#button");
             Assert.AreEqual(jbutton.Attr("value"), "foobar", "Value retrieval on a button does not return innerHTML");
             Assert.AreEqual(jbutton.Attr("value", "baz").Html(), "text", "Setting the value does not change innerHTML");
 
@@ -208,7 +208,7 @@ namespace CsqueryTests.jQuery
             Assert.AreEqual(jQuery("#name").Attr("name"), "something", "Set name attribute");
             jQuery("#name").Attr("name", null);
             Assert.AreEqual(jQuery("#name").Attr("name"), null, "Remove name attribute");
-            var input = CsQuery.Create("<input>", "{ name: 'something' }");
+            var input = CQ.Create("<input>", "{ name: 'something' }");
             Assert.AreEqual(input.Attr("name"), "something", "Check element creation gets/sets the name attribute.");
         }
         [Test, TestMethod]
@@ -407,7 +407,7 @@ namespace CsqueryTests.jQuery
             Assert.IsTrue(thrown, "Exception thrown when trying to change type property");
             Assert.AreEqual("button", button.Attr("type"), "Verify that you can't change the type of a button element");
 
-            var jradio = new CsQuery("<input>", "{ 'value': 'sup', 'type': 'radio' }",Dom);
+            var jradio = new CQ("<input>", "{ 'value': 'sup', 'type': 'radio' }", Dom);
             jradio = jradio.AppendTo("#testForm");
             Assert.AreEqual(jradio.Val(), "sup", "Value is not reset when type is set after value on a radio");
 
@@ -584,7 +584,7 @@ namespace CsqueryTests.jQuery
 
             // original
             //Assert.AreEqual(CsQuery.Create( option).Prop("selected"), true, "Make sure that a single option is selected, even when in an optgroup." );
-            Assert.AreEqual(CsQuery.Create(select).Select("option").Prop("selected"), true, "Make sure that a single option is selected, even when in an optgroup.");
+            Assert.AreEqual(CQ.Create(select).Select("option").Prop("selected"), true, "Make sure that a single option is selected, even when in an optgroup.");
             //Assert.AreEqual(jQuery(document).Prop("nodeName"), "#document", "prop works correctly on document nodes (bug #7451)." );
 
             //var attributeNode = document.createAttribute("irrelevant"),
@@ -638,7 +638,7 @@ namespace CsqueryTests.jQuery
             Assert.AreEqual(jQuery("#text1").Val(), "Test", "Check for value of input element");
             // ticket #1714 this caused a JS error in IE
             Assert.AreEqual(jQuery("#first").Val(), "", "Check a paragraph element to see if it has a value");
-            Assert.IsTrue((CsQuery.Create()).Val() == null, "Check an empty jQuery object will return undefined from val");
+            Assert.IsTrue((CQ.Create()).Val() == null, "Check an empty jQuery object will return undefined from val");
 
             Assert.AreEqual(jQuery("#select2").Val(), "3", "Call Val() on a single=\"single\" select");
 

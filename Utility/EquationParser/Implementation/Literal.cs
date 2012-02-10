@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.Utility;
+using CsQuery.Utility;
 
-namespace Jtc.CsQuery.Utility.EquationParser.Implementation
+namespace CsQuery.Utility.EquationParser.Implementation
 {
     public class Literal: Operand, ILiteral
     {

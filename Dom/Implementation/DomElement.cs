@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
-using Jtc.CsQuery.Utility;
-using Jtc.CsQuery.ExtensionMethods;
-using Jtc.CsQuery.ExtensionMethods.Internal;
+using CsQuery.Utility;
+using CsQuery.ExtensionMethods;
+using CsQuery.ExtensionMethods.Internal;
 
-namespace Jtc.CsQuery.Implementation
+namespace CsQuery.Implementation
 {
 
     /// <summary>
@@ -330,7 +330,7 @@ namespace Jtc.CsQuery.Implementation
                 else
                 {
                     StringBuilder sb = new StringBuilder();
-                    base.Render(sb, Document == null ? CsQuery.DefaultDomRenderingOptions : Document.DomRenderingOptions);
+                    base.Render(sb, Document == null ? CQ.DefaultDomRenderingOptions : Document.DomRenderingOptions);
                     return sb.ToString();
                 }
             }
@@ -338,7 +338,7 @@ namespace Jtc.CsQuery.Implementation
             {
                 ChildNodes.Clear();
 
-                CsQuery csq = CsQuery.Create(value);
+                CQ csq = CQ.Create(value);
                 ChildNodes.AddRange(csq.Document.ChildNodes);
             }
         }
@@ -448,7 +448,7 @@ namespace Jtc.CsQuery.Implementation
         public string ElementHtml()
         {
             StringBuilder sb = new StringBuilder();
-            GetHtml(Document == null ? CsQuery.DefaultDomRenderingOptions : Document.DomRenderingOptions, sb, false);
+            GetHtml(Document == null ? CQ.DefaultDomRenderingOptions : Document.DomRenderingOptions, sb, false);
             return sb.ToString();
         }
 

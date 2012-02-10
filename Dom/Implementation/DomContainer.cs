@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.ExtensionMethods;
+using CsQuery.ExtensionMethods;
 
-namespace Jtc.CsQuery.Implementation
+namespace CsQuery.Implementation
 {
     
 
@@ -170,7 +170,7 @@ namespace Jtc.CsQuery.Implementation
         public override void Render(StringBuilder sb)
         {
             Render(sb, Document==null ? 
-                CsQuery.DefaultDomRenderingOptions :
+                CQ.DefaultDomRenderingOptions :
                 Document.DomRenderingOptions);
         }
         public override void Render(StringBuilder sb, DomRenderingOptions options)

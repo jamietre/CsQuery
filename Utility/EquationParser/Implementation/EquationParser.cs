@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.Utility.StringScanner;
-using Jtc.CsQuery.ExtensionMethods;
-using Jtc.CsQuery.Utility.EquationParser.Implementation.Functions;
+using CsQuery.Utility.StringScanner;
+using CsQuery.ExtensionMethods;
+using CsQuery.Utility.EquationParser.Implementation.Functions;
 
-namespace Jtc.CsQuery.Utility.EquationParser.Implementation
+namespace CsQuery.Utility.EquationParser.Implementation
 {
 
     public class EquationParser: IEquationParser

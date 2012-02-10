@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.ExtensionMethods;
-using Jtc.CsQuery.ExtensionMethods.Internal;
-using Jtc.CsQuery.Utility;
-using Jtc.CsQuery.Engine;
+using CsQuery.ExtensionMethods;
+using CsQuery.ExtensionMethods.Internal;
+using CsQuery.Utility;
+using CsQuery.Engine;
 
-namespace Jtc.CsQuery.Implementation
+namespace CsQuery.Implementation
 {
 
     /// <summary>
@@ -124,7 +124,7 @@ namespace Jtc.CsQuery.Implementation
             return OriginalStrings.Count - 1;
         }
 
-        protected CsQuery _Owner = null;
+        protected CQ _Owner = null;
 
         public IDomElement GetElementById(string id)
         {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery;
+using CsQuery;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
@@ -33,27 +33,27 @@ namespace CsqueryTests
         {
             
         }
-        protected CsQuery jQuery()
+        protected CQ jQuery()
         {
             return jQuery((string)null);
         }
-        protected CsQuery jQuery(string parm)
+        protected CQ jQuery(string parm)
         {
             return Dom[parm];
         }
-        protected CsQuery jQuery(string parm, CsQuery context)
+        protected CQ jQuery(string parm, CQ context)
         {
             return Dom.Select(parm, context);
         }
-        protected CsQuery jQuery(IEnumerable<IDomObject> parm)
+        protected CQ jQuery(IEnumerable<IDomObject> parm)
         {
             return Dom[parm];
         }
-        protected CsQuery jQuery(IDomObject parm)
+        protected CQ jQuery(IDomObject parm)
         {
             return Dom[parm];
         }
-        protected CsQuery jQueryAny(object parm)
+        protected CQ jQueryAny(object parm)
         {
 
             if (parm == null)
@@ -78,7 +78,7 @@ namespace CsqueryTests
             }
         }
         public IDomRoot document;
-        public CsQuery Dom
+        public CQ Dom
         {
             get
             {
@@ -90,7 +90,7 @@ namespace CsqueryTests
                 document = _Dom.Document;
             }
         }
-        public CsQuery _Dom = null;
+        public CQ _Dom = null;
         public IEnumerable<IDomObject> q(string id1, string id2 = null, string id3 = null, string id4 = null, string id5 = null, string id6 = null, string id7 = null, string id8 = null, string id9 = null)
         {
             string[] ids = new string[] { id1, id2, id3, id4, id5, id6, id7, id8, id9 };

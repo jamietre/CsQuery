@@ -10,9 +10,9 @@ using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
-using Jtc.CsQuery;
-using Jtc.CsQuery.HtmlParser;
-using Jtc.CsQuery.Utility;
+using CsQuery;
+using CsQuery.HtmlParser;
+using CsQuery.Utility;
 
 namespace CsqueryTests.Csharp
 {
@@ -26,7 +26,7 @@ namespace CsqueryTests.Csharp
         public override void FixtureSetUp()
         {
             string html = Support.GetFile(testFile);
-            Dom = CsQuery.Create(html);
+            Dom = CQ.Create(html);
             factory = new DomElementFactory(Dom.Document);
         }
         [Test,TestMethod]
@@ -77,17 +77,17 @@ namespace CsqueryTests.Csharp
         {
             string html = Support.GetFile("csquerytests\\resources\\HTML Standard.htm");
 
-            var dom = CsQuery.Create(html);
+            var dom = CQ.Create(html);
             string output = dom.Render();
-            var dom2 = CsQuery.Create(output);
+            var dom2 = CQ.Create(output);
             string output2 = dom2.Render();
             Assert.AreEqual(output, output2, "There's no entropy in reparsing a rendered domain.");
             Debug.Write("HTML5 spec parsing: original was " + html.Length + " bytes. CSQ output was " + output.Length);
 
         }
-        protected CsQuery CreateFromHtml(string html)
+        protected CQ CreateFromHtml(string html)
         {
-            return CsQuery.Create(factory.CreateObjects(html));
+            return CQ.Create(factory.CreateObjects(html));
         }
     }
 }

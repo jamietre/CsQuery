@@ -6,12 +6,12 @@ using System.Text;
 using System.Dynamic;
 using System.IO;
 using System.Web.Script.Serialization;
-using Jtc.CsQuery.ExtensionMethods;
-using Jtc.CsQuery.Utility;
+using CsQuery.ExtensionMethods;
+using CsQuery.Utility;
 
-namespace Jtc.CsQuery
+namespace CsQuery
 {
-    public partial class CsQuery
+    public partial class CQ
     {
         #region defaults
         /// <summary>
@@ -27,37 +27,37 @@ namespace Jtc.CsQuery
         #endregion 
 
         #region Create methods - returns a new DOM
-        public static CsQuery Create()
+        public static CQ Create()
         {
-            return new CsQuery();
+            return new CQ();
         }
         /// <summary>
         /// Creeate a new DOM from HTML text
         /// </summary>
         /// <param name="html"></param>
         /// <returns></returns>
-        public static CsQuery Create(string html)
+        public static CQ Create(string html)
         {
-            CsQuery csq = new CsQuery();
+            CQ csq = new CQ();
             csq.Load(html);
             return csq;
         }
 
-        public static CsQuery Create(char[] html)
+        public static CQ Create(char[] html)
         {
-            CsQuery csq = new CsQuery();
+            CQ csq = new CQ();
             csq.Load(html);
             return csq;
         }
 
-        public static CsQuery Create(string selector, string jsonCss)
+        public static CQ Create(string selector, string jsonCss)
         {
-            CsQuery csq = CsQuery.Create(selector);
+            CQ csq = CQ.Create(selector);
             return csq.AttrSet(jsonCss);
         }
-        public static CsQuery Create(string selector, IDictionary<string,object> css)
+        public static CQ Create(string selector, IDictionary<string,object> css)
         {
-            CsQuery csq = CsQuery.Create(selector);
+            CQ csq = CQ.Create(selector);
             return csq.Attr(css);
         }
 
@@ -66,30 +66,31 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="htmlFile"></param>
         /// <returns></returns>
-        public static CsQuery CreateFromFile(string htmlFile)
+        public static CQ CreateFromFile(string htmlFile)
         {
-            return CsQuery.Create(Support.GetFile(htmlFile));
+            return CQ.Create(Support.GetFile(htmlFile));
         }
         /// <summary>
         /// Creeate a new DOM from elements
         /// </summary>
         /// <param name="html"></param>
         /// <returns></returns>
-        public static CsQuery Create(IEnumerable<IDomObject> elements)
+        public static CQ Create(IEnumerable<IDomObject> elements)
         {
-            CsQuery csq = new CsQuery();
+            CQ csq = new CQ();
             csq.Load(elements);
             return csq;
         }
 
-        public static CsQuery Create(IDomObject element)
+        public static CQ Create(IDomObject element)
         {
-            CsQuery csq = new CsQuery();
+            CQ csq = new CQ();
             csq.Load(Objects.Enumerate(element));
             return csq;
         }
         #endregion
 
+  
         public static void Each<T>(IEnumerable<T> list, Action<T> func)
         {
             foreach (var obj in list)
@@ -108,11 +109,11 @@ namespace Jtc.CsQuery
         }
         public IEnumerable<T> Map<T>(Func<IDomObject, T> function)
         {
-            return CsQuery.Map(this, function);
+            return CQ.Map(this, function);
         }
         public static object Extend(object target, params object[] sources)
         {
-            return CsQuery.Extend(false, target, sources);
+            return CQ.Extend(false, target, sources);
         }
         public static object Extend(bool deep, object target, params object[] sources)
         {

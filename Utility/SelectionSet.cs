@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery.Utility
+namespace CsQuery.Utility
 {
     public enum SelectionSetOrder
     {

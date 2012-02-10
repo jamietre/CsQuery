@@ -7,12 +7,12 @@ using System.Text;
 using System.Web;
 using System.IO;
 using System.Xml;
-using Jtc.CsQuery.Utility;
-using Jtc.CsQuery.Utility.StringScanner;
-using Jtc.CsQuery.ExtensionMethods;
-using Jtc.CsQuery.ExtensionMethods.Internal;
+using CsQuery.Utility;
+using CsQuery.Utility.StringScanner;
+using CsQuery.ExtensionMethods;
+using CsQuery.ExtensionMethods.Internal;
 
-namespace Jtc.CsQuery.Implementation
+namespace CsQuery.Implementation
 {
      
     public class CSSStyleDeclaration : IDictionary<string, string>, IEnumerable<KeyValuePair<string, string>>, ICSSStyleDeclaration

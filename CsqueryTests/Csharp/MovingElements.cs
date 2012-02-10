@@ -8,8 +8,8 @@ using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
-using Jtc.CsQuery;
-using Jtc.CsQuery.Utility;
+using CsQuery;
+using CsQuery.Utility;
 
 namespace CsqueryTests.CSharp
 {
@@ -17,7 +17,7 @@ namespace CsqueryTests.CSharp
     [TestFixture, TestClass]
     public class MovingElements
     {
-        private static CsQuery csq;
+        private static CQ csq;
         [TestFixtureSetUp,ClassInitialize]
         public static void Init(TestContext context)
         {
@@ -27,7 +27,7 @@ namespace CsqueryTests.CSharp
         private static void Initialize()
         {
             string html = Support.GetFile("CsQueryTests\\Resources\\TestHtml.htm");
-            csq = CsQuery.Create(html);
+            csq = CQ.Create(html);
         }
         [TestInitialize, SetUp]
         public void TestInitialize()
@@ -38,7 +38,7 @@ namespace CsqueryTests.CSharp
         public void Wrap()
         {
             var el = csq["#reputation_link"];
-            var wrapper = CsQuery.Create("<div id=\"wrapper\"><span><div id=\"innerdiv\"></div></span></div><span><ul><li></li></ul></span>");
+            var wrapper = CQ.Create("<div id=\"wrapper\"><span><div id=\"innerdiv\"></div></span></div><span><ul><li></li></ul></span>");
             int wrapperElementCount = wrapper.Select("*").Length-3;
             int domElementCount = csq.Select("*").Length;
             el.Wrap(wrapper);

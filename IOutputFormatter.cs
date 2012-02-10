@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery
+namespace CsQuery
 {
     public interface IOutputFormatter
     {
-        string Format(CsQuery selection);
+        string Format(CQ selection);
     }
 }

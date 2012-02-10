@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.ExtensionMethods;
-using Jtc.CsQuery.Utility.StringScanner.Implementation;
+using CsQuery.ExtensionMethods;
+using CsQuery.Utility.StringScanner.Implementation;
 
-namespace Jtc.CsQuery.Utility.StringScanner.Patterns
+namespace CsQuery.Utility.StringScanner.Patterns
 {
     
     public class Number: ExpectPattern

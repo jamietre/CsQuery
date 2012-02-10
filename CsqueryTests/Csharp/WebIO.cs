@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery;
-using Jtc.CsQuery.Server;
+using CsQuery;
+using CsQuery.Server;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
@@ -18,7 +18,7 @@ namespace CsqueryTests.Csharp
         //[Test,TestMethod]
         public void GetHtml()
         {
-            Dom = CsQuery.Create();
+            Dom = CQ.Create();
             Dom.Server().UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2";
             Dom.Server().CreateFromUrl("http://www.microsoft.com/en/us/default.aspx?redir=true");
             Assert.IsTrue(Dom.Document != null, "Dom was created");

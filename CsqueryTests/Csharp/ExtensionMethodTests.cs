@@ -9,9 +9,9 @@ using Assert = NUnit.Framework.Assert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using NUnit.Framework;
-using Jtc.CsQuery;
-using Jtc.CsQuery.ExtensionMethods;
-using Jtc.CsQuery.ExtensionMethods.Internal;
+using CsQuery;
+using CsQuery.ExtensionMethods;
+using CsQuery.ExtensionMethods.Internal;
 
 namespace CsqueryTests.ExtensionMethodTests
 {

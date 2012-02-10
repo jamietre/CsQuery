@@ -9,8 +9,8 @@ using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
-using Jtc.CsQuery;
-using Jtc.CsQuery.Utility;
+using CsQuery;
+using CsQuery.Utility;
 
 namespace CsqueryTests.Csharp
 {
@@ -23,18 +23,18 @@ namespace CsqueryTests.Csharp
         public override void FixtureSetUp()
         {
             string html = Support.GetFile(testFile);
-            Dom = CsQuery.Create(html);
+            Dom = CQ.Create(html);
         }
         [Test,TestMethod]
         public void SimpleClone()
         {
-            CsQuery hlinks = Dom.Select("#hlinks-user");
+            CQ hlinks = Dom.Select("#hlinks-user");
             int spanCount = hlinks.Find("span").Length;
-            CsQuery clone = hlinks.Clone();
+            CQ clone = hlinks.Clone();
 
             Assert.AreEqual(hlinks.Find("*").Length+1, clone.Select("*").Length,"Clone has same total elements as original");
 
-            CsQuery newHome = Dom.Select("#hidden-div");
+            CQ newHome = Dom.Select("#hidden-div");
             
             spanCount = newHome.Find("span").Length;
             int cloneSpanCount = clone.Select("span").Length;
@@ -75,7 +75,7 @@ namespace CsqueryTests.Csharp
             //change it slightly to force the string refs to be offset
 
             newHtml = newHtml.Insert(newHtml.IndexOf("<body>")+6,"<div id=\"new-div\">Johnny Come Lately</div>");
-            var dom2 = CsQuery.Create(newHtml);
+            var dom2 = CQ.Create(newHtml);
 
             Assert.AreEqual(totalCount+1, dom2["*"].Length, "The new copy was the same as the original");
 

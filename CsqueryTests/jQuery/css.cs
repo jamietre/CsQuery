@@ -8,9 +8,9 @@ using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using Description = Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
-using Jtc.CsQuery;
-using Jtc.CsQuery.Utility;
-using Jtc.CsQuery.Utility.StringScanner;
+using CsQuery;
+using CsQuery.Utility;
+using CsQuery.Utility.StringScanner;
 
 namespace CsqueryTests.jQuery
 {
@@ -24,7 +24,7 @@ namespace CsqueryTests.jQuery
         }
         protected void ResetQunit()
         {
-            Dom = CsQuery.Create(Support.GetFile("csquerytests\\resources\\jquery-unit-index.htm"));
+            Dom = CQ.Create(Support.GetFile("csquerytests\\resources\\jquery-unit-index.htm"));
         }
 
         [Test,TestMethod]
@@ -85,7 +85,7 @@ namespace CsqueryTests.jQuery
             jQuery("#floatTest").CssSet("{'font-size': '30px'}");
             Assert.AreEqual(jQuery("#floatTest").Css("font-size"), "30px", "Modified CSS font-size: Assert font-size is 30px");
 
-            CsQuery.Each("0,0.25,0.5,0.75,1".Split(','), (string n) =>
+            CQ.Each("0,0.25,0.5,0.75,1".Split(','), (string n) =>
             {
 
                 jQuery("#foo").CssSet("{ opacity: " + n + "}");

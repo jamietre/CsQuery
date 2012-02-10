@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery.Utility.EquationParser.Implementation
+namespace CsQuery.Utility.EquationParser.Implementation
 {
     public class VariableReadEventArgs : EventArgs
     {

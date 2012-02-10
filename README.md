@@ -1,4 +1,38 @@
 ## CsQuery - C# jQuery Port
+
+2/10/12
+
+RELEASE 1.0 Beta 1
+
+*Namespace & core object name change* - because it's become clear through use that you are going to type "CsQuery" 
+A LOT I decided change the name of the core object to "CQ" instead of CsQuery.  The root namespace is also now
+just "CsQuery" instead of "Jtc.CsQuery." I'm sorry for the inconvenience.
+
+One minor API change too - the IDomObject method "Csq()" is now just "Cq()" to be consistent with the core object 
+name as well.
+
+IT IS COMPLETE
+
+Every jQuery DOM manipulation method has been implemented.  (OffsetParent noted previously does not seem
+relevant for a server side implementation). New methods in this update include:
+
+	End
+	WrapInner
+	WrapAll (bug fix)
+	ReplaceAll
+
+Tests for these method (ported from jQuery again) have also been added. Allowing for possible oversights this should 
+now be a 100% complete implementation of jQuery DOM manipulation methods.
+
+There are still a few things I want to tighten up in the way CSS is handled when mapping from typed data. The
+CSS parser does not correctly translate camelCased CSS styles to their dashed equivalent. I need to finish porting the
+CSS code tests (see CsqueryTests/jQuery/css.cs).
+
+Oh and I need to make a web site and write some documentation.
+
+So I'm still not going to call it RELEASE 1.0. But it's pretty much there.
+
+
 12/1/11
 
 As of this time everything is implemented EXCEPT:

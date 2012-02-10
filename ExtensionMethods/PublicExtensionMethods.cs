@@ -11,10 +11,10 @@ using System.Dynamic;
 using System.Text;
 using System.Reflection;
 
-using Jtc.CsQuery.ExtensionMethods.Internal;
-using Jtc.CsQuery.Utility;
+using CsQuery.ExtensionMethods.Internal;
+using CsQuery.Utility;
 
-namespace Jtc.CsQuery.ExtensionMethods
+namespace CsQuery.ExtensionMethods
 {
     public static class PublicExtensionMethods
     {
@@ -188,7 +188,7 @@ namespace Jtc.CsQuery.ExtensionMethods
             object subProp;
             if (dict.TryGetValue(name, out subProp))
             {
-                return CsQuery.ToExpando(subProp);
+                return CQ.ToExpando(subProp);
             }
             else
             {

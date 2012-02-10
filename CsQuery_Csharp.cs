@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Collections;
-using Jtc.CsQuery.Utility;
-using Jtc.CsQuery.Engine;
-using Jtc.CsQuery.ExtensionMethods;
+using CsQuery.Utility;
+using CsQuery.Engine;
+using CsQuery.ExtensionMethods;
 
-namespace Jtc.CsQuery
+namespace CsQuery
 {
     /// <summary>
     /// This partial contains properties & methods that are specific to the C# implementation and not part of jQuery
     /// </summary>
-    public partial class CsQuery
+    public partial class CQ
     {
         #region private properties
         protected SelectorChain _Selectors = null;
@@ -156,9 +156,9 @@ namespace Jtc.CsQuery
         /// Returns a new empty CsQuery object bound to this domain
         /// </summary>
         /// <returns></returns>
-        public CsQuery New()
+        public CQ New()
         {
-            CsQuery csq = new CsQuery();
+            CQ csq = new CQ();
             csq.CsQueryParent = this;
             return csq;
         }
@@ -166,9 +166,9 @@ namespace Jtc.CsQuery
         /// Returns a new empty CsQuery object bound to this domain, whose results are returned in the specified order
         /// </summary>
         /// <returns></returns>
-        public CsQuery New(SelectionSetOrder order)
+        public CQ New(SelectionSetOrder order)
         {
-            CsQuery csq = new CsQuery();
+            CQ csq = new CQ();
             csq.CsQueryParent = this;
             csq.Order = order;
             return csq;
@@ -180,9 +180,9 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="elements"></param>
         /// <returns></returns>
-        public CsQuery EnsureCsQuery(IEnumerable<IDomObject> elements)
+        public CQ EnsureCsQuery(IEnumerable<IDomObject> elements)
         {
-            return elements is CsQuery ? (CsQuery)elements : new CsQuery(elements);
+            return elements is CQ ? (CQ)elements : new CQ(elements);
         }
         /// <summary>
         /// The first IDomElement (e.g. not text/special nodes) in the selection set, or null if none
@@ -208,11 +208,11 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="?"></param>
         /// <returns></returns>
-        public CsQuery KeepOne(bool which, string trueSelector, string falseSelector)
+        public CQ KeepOne(bool which, string trueSelector, string falseSelector)
         {
             return KeepOne(which ? 0 : 1, trueSelector, falseSelector);
         }
-        public CsQuery KeepOne(bool which, CsQuery trueContent, CsQuery falseContent)
+        public CQ KeepOne(bool which, CQ trueContent, CQ falseContent)
         {
             return KeepOne(which ? 0 : 1, trueContent, falseContent);
         }
@@ -222,16 +222,16 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="?"></param>
         /// <returns></returns>
-        public CsQuery KeepOne(int which, params string[] content)
+        public CQ KeepOne(int which, params string[] content)
         {
-            CsQuery[] arr = new CsQuery[content.Length];
+            CQ[] arr = new CQ[content.Length];
             for (int i = 0; i < content.Length; i++)
             {
                 arr[i] = Select(content[i]);
             }
             return KeepOne(which, arr);
         }
-        public CsQuery KeepOne(int which, params CsQuery[] content)
+        public CQ KeepOne(int which, params CQ[] content)
         {
             for (int i = 0; i < content.Length; i++)
             {
@@ -251,7 +251,7 @@ namespace Jtc.CsQuery
         /// (extension of jQuery API)
         /// </summary>
         /// <returns></returns>
-        public CsQuery IncludeWhen(bool include)
+        public CQ IncludeWhen(bool include)
         {
             if (!include)
             {
@@ -265,7 +265,7 @@ namespace Jtc.CsQuery
         /// <param name="groupName"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public CsQuery SetSelected(string groupName, IConvertible value)
+        public CQ SetSelected(string groupName, IConvertible value)
         {
             var group = this.Find("input[name='" + groupName + "']");
             var item = group.Filter("[value='" + value + "']");
@@ -300,13 +300,13 @@ namespace Jtc.CsQuery
         /// The current selection set will become the DOM. This is destructive.
         /// </summary>
         /// <returns></returns>
-        public CsQuery MakeRoot()
+        public CQ MakeRoot()
         {
             Document.ChildNodes.Clear();
             Document.ChildNodes.AddRange(Elements);
             return this;
         }
-        public CsQuery MakeRoot(string selector)
+        public CQ MakeRoot(string selector)
         {
             return Select(selector).MakeRoot();
         }

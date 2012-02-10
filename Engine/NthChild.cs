@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.ExtensionMethods;
-using Jtc.CsQuery.Utility.EquationParser;
-namespace Jtc.CsQuery.Engine
+using CsQuery.ExtensionMethods;
+using CsQuery.Utility.EquationParser;
+namespace CsQuery.Engine
 {
 
     /// <summary>

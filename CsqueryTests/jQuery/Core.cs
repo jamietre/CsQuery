@@ -10,8 +10,8 @@ using Assert = NUnit.Framework.Assert;
 using Description = Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute;
 using MsTestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using TestContext = NUnit.Framework.TestContext;
-using Jtc.CsQuery;
-using Jtc.CsQuery.Utility;
+using CsQuery;
+using CsQuery.Utility;
 
 namespace CsqueryTests.jQuery
 {
@@ -22,7 +22,7 @@ namespace CsqueryTests.jQuery
         [SetUp]
         public override void FixtureSetUp()
         {
-            Dom = CsQuery.Create(Support.GetFile("csquerytests\\resources\\jquery-unit-index.htm"));
+            Dom = CQ.Create(Support.GetFile("csquerytests\\resources\\jquery-unit-index.htm"));
             
         }
 
@@ -31,12 +31,12 @@ namespace CsqueryTests.jQuery
        [Test,TestMethod]
        public void Constructor()
        {
-        Assert.AreEqual(0,(new CsQuery()).Length, "new CsQuery() === CsQuery([])" );
-        Assert.AreEqual(0, (CsQuery.Create((string)null)).Length, "new CsQuery(null) === CsQuery([])");
-        Assert.AreEqual(0, (CsQuery.Create(new List<IDomElement>())).Length, "new CsQuery(IEnumerable<IDomElement> {}) === CsQuery([])");
-        Assert.AreEqual(0, (CsQuery.Create("")).Length, "new CsQuery(\"\") === CsQuery([])");
+           Assert.AreEqual(0, (new CQ()).Length, "new CsQuery() === CsQuery([])");
+           Assert.AreEqual(0, (CQ.Create((string)null)).Length, "new CsQuery(null) === CsQuery([])");
+           Assert.AreEqual(0, (CQ.Create(new List<IDomElement>())).Length, "new CsQuery(IEnumerable<IDomElement> {}) === CsQuery([])");
+           Assert.AreEqual(0, (CQ.Create("")).Length, "new CsQuery(\"\") === CsQuery([])");
         // Note - unlike jQuery, we want to pass on all HTML unchanged if reasonable. So any constructor selector will return a DOM from a string.
-        Assert.AreEqual(1, (CsQuery.Create("#")).Length, "new CsQuery(\"#\") === CsQuery([])");
+           Assert.AreEqual(1, (CQ.Create("#")).Length, "new CsQuery(\"#\") === CsQuery([])");
         
         // var obj = jQuery("div");
         // is the selector property officially supported? the doc page is missing.
@@ -48,7 +48,7 @@ namespace CsqueryTests.jQuery
         public void CreatingElements()
         {
             var main = jQuery("#qunit-fixture");
-            Assert.AreEqual(q("sndp", "en", "sap"), (new CsQuery("div p", main)).Get(), "Basic selector with jQuery object as context");
+            Assert.AreEqual(q("sndp", "en", "sap"), (new CQ("div p", main)).Get(), "Basic selector with jQuery object as context");
             
             var code = jQuery("<code/>");
             Assert.AreEqual(1,code.Length , "Correct number of elements generated for code" );
@@ -77,7 +77,7 @@ namespace CsqueryTests.jQuery
             // 3. Add a "style" object
 
 //            bool exec = false;
-            var elem = CsQuery.Create("<div/>", @"{
+            var elem = CQ.Create("<div/>", @"{
                     width: 10,
                     css: { padding-left:1, padding-right:1 },
                     click: 'function(){ ok(exec, ""Click executed.""); }',
@@ -102,8 +102,8 @@ namespace CsqueryTests.jQuery
             //    equals( elem[0].defaultValue, "TEST", "Ensure cached nodes are cloned properly (Bug #6655)" );
 
             // This is different than the original tests - we actually want to PRESERVE whitespace/characters so we can reproduce the DOM (or sections of it) exactly.
-              Assert.AreEqual(3,CsQuery.Create(" <div/> ").Length, "Make sure whitespace is NOT trimmed." );
-              Assert.AreEqual(3,CsQuery.Create(" a<div/>b ").Length,  "Make sure whitespace and other characters are NOT trimmed.");
+            Assert.AreEqual(3, CQ.Create(" <div/> ").Length, "Make sure whitespace is NOT trimmed.");
+            Assert.AreEqual(3, CQ.Create(" a<div/>b ").Length, "Make sure whitespace and other characters are NOT trimmed.");
             
             // Unnecessary
             
@@ -149,8 +149,8 @@ namespace CsqueryTests.jQuery
             Assert.IsTrue(jQuery("<link rel='stylesheet'/>").Length>0, "Creating a link");
             Assert.IsTrue(jQuery("<script/>")[0].ParentNode==null, "Create a script");
             Assert.IsTrue(jQuery("<input/>").Attr("type", "hidden").Length>0, "Create an input and set the type.");
-            
-            var j = CsQuery.Create("<span>hi</span> there <!-- mon ami -->");
+
+            var j = CQ.Create("<span>hi</span> there <!-- mon ami -->");
             Assert.IsTrue(j.Length ==3 , "Check node,textnode,comment creation (some browsers delete comments [but not csQuery])");
             Assert.AreEqual(NodeType.COMMENT_NODE, j.Get(2).NodeType, "Third node is a comment");
             Assert.IsTrue(!jQuery("<option>test</option>")[0].Selected, "Make sure that options are auto-selected #2050");
@@ -165,7 +165,7 @@ namespace CsqueryTests.jQuery
             }
             sb.Append("</ul>");
 
-            var el = CsQuery.Create(sb.ToString())[0];
+            var el = CQ.Create(sb.ToString())[0];
 
             Assert.AreEqual(el.NodeName.ToUpper(), "UL");
             Assert.AreEqual(el.FirstChild.NodeName.ToUpper(), "LI");
@@ -319,74 +319,74 @@ namespace CsqueryTests.jQuery
         [Test,TestMethod]
         public void Extend()
         {
-            dynamic settings = CsQuery.ParseJSON("{ 'xnumber1': 5, 'xnumber2': 7, 'xstring1': 'peter', 'xstring2': 'pan' }");
-            dynamic options = CsQuery.ParseJSON("{ 'xnumber2': 1, 'xstring2': 'x', 'xxx': 'newstring'}");
-            dynamic optionsCopy = CsQuery.ParseJSON("{ 'xnumber2': 1, 'xstring2': 'x', 'xxx': 'newstring' }");
-            dynamic merged = CsQuery.ParseJSON("{ 'xnumber1': 5, 'xnumber2': 1, 'xstring1': 'peter', 'xstring2': 'x', 'xxx': 'newstring' }");
+            dynamic settings = CQ.ParseJSON("{ 'xnumber1': 5, 'xnumber2': 7, 'xstring1': 'peter', 'xstring2': 'pan' }");
+            dynamic options = CQ.ParseJSON("{ 'xnumber2': 1, 'xstring2': 'x', 'xxx': 'newstring'}");
+            dynamic optionsCopy = CQ.ParseJSON("{ 'xnumber2': 1, 'xstring2': 'x', 'xxx': 'newstring' }");
+            dynamic merged = CQ.ParseJSON("{ 'xnumber1': 5, 'xnumber2': 1, 'xstring1': 'peter', 'xstring2': 'x', 'xxx': 'newstring' }");
 
-            dynamic deep1 = CsQuery.ParseJSON("{ 'foo': { 'bar': true } }");
-            dynamic deep1copy = CsQuery.ParseJSON("{ 'foo': { 'bar': true } }");
+            dynamic deep1 = CQ.ParseJSON("{ 'foo': { 'bar': true } }");
+            dynamic deep1copy = CQ.ParseJSON("{ 'foo': { 'bar': true } }");
 
 
-            dynamic deep2 = CsQuery.ParseJSON("{ 'foo': { 'baz': true }, 'foo2': 'document' }");
-            dynamic deep2copy = CsQuery.ParseJSON("{ 'foo': { 'baz': true }, 'foo2': 'document' }");
+            dynamic deep2 = CQ.ParseJSON("{ 'foo': { 'baz': true }, 'foo2': 'document' }");
+            dynamic deep2copy = CQ.ParseJSON("{ 'foo': { 'baz': true }, 'foo2': 'document' }");
 
-            dynamic deepmerged = CsQuery.ParseJSON("{ 'foo': { 'bar': true, 'baz': true }, 'foo2': 'document' }");
+            dynamic deepmerged = CQ.ParseJSON("{ 'foo': { 'bar': true, 'baz': true }, 'foo2': 'document' }");
             
             var arr = new int[] {1, 2, 3};
             dynamic nestedarray = new ExpandoObject();
             nestedarray.arr = arr;
 
-            CsQuery.Extend(settings,options);
+            CQ.Extend(settings, options);
 
             Assert.AreEqual(merged,settings, "Check if extended: settings must be extended");
             Assert.AreEqual(optionsCopy,options, "Check if not modified: options must not be modified" );
 
 
-            CsQuery.Extend(settings, null, options);
+            CQ.Extend(settings, null, options);
             Assert.AreEqual(settings, merged, "Check if extended: settings must be extended" );
             Assert.AreEqual(optionsCopy,options, "Check if not modified: options must not be modified" );
 
             // Test deep copying
 
-            CsQuery.Extend(true, deep1, deep2);
+            CQ.Extend(true, deep1, deep2);
             Assert.AreEqual(deepmerged.foo, deep1.foo,  "Check if foo: settings must be extended" );
             Assert.AreEqual(deep2copy.foo, deep2.foo, "Check if not deep2: options must not be modified" );
             
             // n/a
             //Assert.AreEqual(document, deep1.foo2, "Make sure that a deep clone was not attempted on the document");
 
-                
-            var nullUndef = CsQuery.Extend(null, options, CsQuery.ParseJSON("{ 'xnumber2': null }"));
+
+            var nullUndef = CQ.Extend(null, options, CQ.ParseJSON("{ 'xnumber2': null }"));
             Assert.IsTrue( nullUndef.xnumber2 == null, "Check to make sure null values are copied");
 
-            nullUndef = CsQuery.Extend(null, options, CsQuery.ParseJSON("{ 'xnumber0': null }"));
+            nullUndef = CQ.Extend(null, options, CQ.ParseJSON("{ 'xnumber0': null }"));
             Assert.IsTrue(nullUndef.xnumber0 == null, "Check to make sure null values are inserted");
             
             // Test nested arrays
 
-            dynamic extendedArr = CsQuery.Extend(true, null, nestedarray);
+            dynamic extendedArr = CQ.Extend(true, null, nestedarray);
 
 
             Assert.AreNotSame(extendedArr.arr,arr, "Deep extend of object must clone child array");
             Assert.AreNotSame(extendedArr.arr,arr, "Deep extend of object must clone child array");
 
             // #5991
-            dynamic emptyArrObj = CsQuery.ParseJSON("{ arr: {} }");
-            dynamic extendedArr2= CsQuery.Extend(true,emptyArrObj, nestedarray);
+            dynamic emptyArrObj = CQ.ParseJSON("{ arr: {} }");
+            dynamic extendedArr2 = CQ.Extend(true, emptyArrObj, nestedarray);
 
             Assert.IsTrue(extendedArr2.arr is IEnumerable, "Cloned array heve to be an Array" );
 
             dynamic simpleArrObj = new ExpandoObject();
             simpleArrObj.arr = arr;
-            emptyArrObj = CsQuery.ParseJSON("{ arr: {} }");
-            dynamic result = CsQuery.Extend(true, simpleArrObj, emptyArrObj);
+            emptyArrObj = CQ.ParseJSON("{ arr: {} }");
+            dynamic result = CQ.Extend(true, simpleArrObj, emptyArrObj);
             Assert.IsTrue(!(result.arr is Array), "Cloned object heve to be an plain object" );
 
 
             dynamic empty = new JsObject();
-            dynamic optionsWithLength = CsQuery.ParseJSON("{ 'foo': { 'length': -1 } }");
-            CsQuery.Extend(true, empty, optionsWithLength);
+            dynamic optionsWithLength = CQ.ParseJSON("{ 'foo': { 'length': -1 } }");
+            CQ.Extend(true, empty, optionsWithLength);
             Assert.AreEqual( empty.foo, optionsWithLength.foo, "The length property must copy correctly" );
 
 
@@ -396,14 +396,14 @@ namespace CsqueryTests.jQuery
             dynamic optionsWithDate = new JsObject();
             optionsWithDate.foo = new JsObject();
             optionsWithDate.foo.date = new DateTime();
-            CsQuery.Extend(true, empty, optionsWithDate);
+            CQ.Extend(true, empty, optionsWithDate);
             Assert.AreEqual(empty.foo, optionsWithDate.foo, "Dates copy correctly" );
 
 
             var customObject = DateTime.Now;
             dynamic optionsWithCustomObject = new { foo= new { date= customObject } };
 
-            empty = CsQuery.Extend(true,null, optionsWithCustomObject);
+            empty = CQ.Extend(true, null, optionsWithCustomObject);
             Assert.IsTrue( empty.foo !=null && empty.foo.date == customObject, "Custom objects copy correctly (no methods)" );
 
             //// Makes the class a little more realistic
@@ -412,16 +412,16 @@ namespace CsqueryTests.jQuery
             //jQuery.extend(true, empty, optionsWithCustomObject);
             //ok( empty.foo && empty.foo.date === customObject, "Custom objects copy correctly" );
 
-            dynamic ret = CsQuery.Extend(true, CsQuery.ParseJSON("{'foo': 4 }"), new { foo=5 } );
+            dynamic ret = CQ.Extend(true, CQ.ParseJSON("{'foo': 4 }"), new { foo = 5 });
             Assert.IsTrue( ret.foo == 5, "Wrapped numbers copy correctly" );
 
-            nullUndef = CsQuery.Extend(null, options,"{ 'xnumber2': null }");
+            nullUndef = CQ.Extend(null, options, "{ 'xnumber2': null }");
             Assert.IsTrue( nullUndef.xnumber2 == null, "Check to make sure null values are copied");
 
             //    nullUndef = jQuery.extend({}, options, { xnumber2: undefined });
             //    ok( nullUndef.xnumber2 === options.xnumber2, "Check to make sure undefined values are not copied");
 
-            nullUndef = CsQuery.Extend(null, options, "{ 'xnumber0': null }");
+            nullUndef = CQ.Extend(null, options, "{ 'xnumber0': null }");
             Assert.IsTrue( nullUndef.xnumber0 == null, "Check to make sure null values are inserted");
 
             dynamic target = new ExpandoObject();
@@ -429,43 +429,43 @@ namespace CsqueryTests.jQuery
             recursive.bar = 5;
             recursive.foo = target;
 
-            CsQuery.Extend(true, target, recursive);
-            dynamic compare = CsQuery.ParseJSON("{ 'bar':5 }");
+            CQ.Extend(true, target, recursive);
+            dynamic compare = CQ.ParseJSON("{ 'bar':5 }");
 
             Assert.AreEqual(target, compare, "Check to make sure a recursive obj doesn't go never-ending loop by not copying it over");
 
             // These next checks don't really apply as they are specific to javascript nuances, but can't hurt
 
-            ret = CsQuery.Extend(true, CsQuery.ParseJSON(" { 'foo': [] }"), CsQuery.ParseJSON("{ 'foo': [0] }")); // 1907
+            ret = CQ.Extend(true, CQ.ParseJSON(" { 'foo': [] }"), CQ.ParseJSON("{ 'foo': [0] }")); // 1907
             // arrays are returned as List<object> when casting to expando object
             Assert.AreEqual(1,ret.foo.Count, "Check to make sure a value with coersion 'false' copies over when necessary to fix #1907" );
 
-            ret = CsQuery.Extend(true, CsQuery.ParseJSON("{ 'foo': '1,2,3' }"), CsQuery.ParseJSON("{ 'foo': [1, 2, 3] }"));
+            ret = CQ.Extend(true, CQ.ParseJSON("{ 'foo': '1,2,3' }"), CQ.ParseJSON("{ 'foo': [1, 2, 3] }"));
             Assert.IsTrue( !(ret.foo is string), "Check to make sure values equal with coersion (but not actually equal) overwrite correctly" );
 
 
 
-            dynamic obj = CsQuery.ParseJSON("{ 'foo':null }");
-            CsQuery.Extend(true, obj, CsQuery.ParseJSON("{ 'foo':'notnull' }"));
+            dynamic obj = CQ.ParseJSON("{ 'foo':null }");
+            CQ.Extend(true, obj, CQ.ParseJSON("{ 'foo':'notnull' }"));
             Assert.AreEqual(obj.foo, "notnull", "Make sure a null value can be overwritten" );
 
             //    function func() {}
             //    jQuery.extend(func, { key: "value" } );
             //    equals( func.key, "value", "Verify a function can be extended" );
 
-            dynamic defaults = CsQuery.ParseJSON("{ 'xnumber1': 5, 'xnumber2': 7, 'xstring1': 'peter', 'xstring2': 'pan' }");
-            dynamic defaultsCopy = CsQuery.ParseJSON(" { xnumber1: 5, xnumber2: 7, xstring1: 'peter', xstring2: 'pan' }");
-            dynamic options1 = CsQuery.ParseJSON("{ xnumber2: 1, xstring2: 'x' }");
-            dynamic options1Copy = CsQuery.ParseJSON(" { xnumber2: 1, xstring2: 'x' }");
-            dynamic options2 = CsQuery.ParseJSON(" { xstring2: 'xx', xxx: 'newstringx'}");
-            dynamic options2Copy = CsQuery.ParseJSON(" { xstring2: 'xx', xxx: 'newstringx'}");
-            dynamic merged2 = CsQuery.ParseJSON(" { xnumber1: 5, xnumber2: 1, xstring1: 'peter', xstring2: 'xx', xxx: 'newstringx' }");
+            dynamic defaults = CQ.ParseJSON("{ 'xnumber1': 5, 'xnumber2': 7, 'xstring1': 'peter', 'xstring2': 'pan' }");
+            dynamic defaultsCopy = CQ.ParseJSON(" { xnumber1: 5, xnumber2: 7, xstring1: 'peter', xstring2: 'pan' }");
+            dynamic options1 = CQ.ParseJSON("{ xnumber2: 1, xstring2: 'x' }");
+            dynamic options1Copy = CQ.ParseJSON(" { xnumber2: 1, xstring2: 'x' }");
+            dynamic options2 = CQ.ParseJSON(" { xstring2: 'xx', xxx: 'newstringx'}");
+            dynamic options2Copy = CQ.ParseJSON(" { xstring2: 'xx', xxx: 'newstringx'}");
+            dynamic merged2 = CQ.ParseJSON(" { xnumber1: 5, xnumber2: 1, xstring1: 'peter', xstring2: 'xx', xxx: 'newstringx' }");
 
 
-            ret = CsQuery.Extend(true, CsQuery.ParseJSON(" { foo:'bar' }"), CsQuery.ParseJSON("{ foo:null }"));
+            ret = CQ.Extend(true, CQ.ParseJSON(" { foo:'bar' }"), CQ.ParseJSON("{ foo:null }"));
             Assert.IsTrue(ret.foo ==null, "Make sure a null value doesn't crash with deep extend, for #1908" );
-           
-            settings = CsQuery.Extend(null, defaults, options1, options2);
+
+            settings = CQ.Extend(null, defaults, options1, options2);
             Assert.AreEqual(merged2, settings, "Check if extended: settings must be extended");
             Assert.AreEqual(defaults, defaultsCopy, "Check if not modified: options1 must not be modified");
             Assert.AreEqual(options1, options1Copy, "Check if not modified: options1 must not be modified");
@@ -614,10 +614,10 @@ namespace CsqueryTests.jQuery
         [Test,TestMethod]
         public void ParseJson()
         {
-           Assert.AreEqual(CsQuery.ParseJSON(null), null, "Nothing in, null out." );
-           Assert.AreEqual(CsQuery.ParseJSON( "" ), null, "Nothing in, null out." );
+            Assert.AreEqual(CQ.ParseJSON(null), null, "Nothing in, null out.");
+            Assert.AreEqual(CQ.ParseJSON(""), null, "Nothing in, null out.");
 
-          Assert.AreEqual(CsQuery.ParseJSON("{}"), new ExpandoObject(), "Plain object parsing." );
+            Assert.AreEqual(CQ.ParseJSON("{}"), new ExpandoObject(), "Plain object parsing.");
 
             // everything else - just the JS Serializer
 

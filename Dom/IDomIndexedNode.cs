@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery
+namespace CsQuery
 {
     /// <summary>
     /// A node that should be indexed

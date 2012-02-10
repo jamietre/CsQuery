@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery.Utility.StringScanner.Implementation
+namespace CsQuery.Utility.StringScanner.Implementation
 {
     public class CharacterInfo : ICharacterInfo
     {

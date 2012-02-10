@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.ExtensionMethods;
-using Jtc.CsQuery.ExtensionMethods.Internal;
-using Jtc.CsQuery.Utility;
+using CsQuery.ExtensionMethods;
+using CsQuery.ExtensionMethods.Internal;
+using CsQuery.Utility;
 
-namespace Jtc.CsQuery.Implementation
+namespace CsQuery.Implementation
 {
     public class DomAttributes: IDictionary<string, string>, IEnumerable<KeyValuePair<string, string>>
     {

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.Utility;
-using Jtc.CsQuery.Utility.EquationParser.Implementation;
+using CsQuery.Utility;
+using CsQuery.Utility.EquationParser.Implementation;
 
-namespace Jtc.CsQuery.Utility.EquationParser
+namespace CsQuery.Utility.EquationParser
 {
     public static class Equations
     {
@@ -22,7 +22,7 @@ namespace Jtc.CsQuery.Utility.EquationParser
         }
         public static Equation<T> CreateEquation<T>(string text) where T : IConvertible
         {
-            IEquationParser parser = new Jtc.CsQuery.Utility.EquationParser.Implementation.EquationParser();
+            IEquationParser parser = new EquationParser.Implementation.EquationParser();
             IOperand operand = parser.Parse<T>(text);
 
             Equation<T> equation = new Equation<T>(operand);
@@ -30,7 +30,7 @@ namespace Jtc.CsQuery.Utility.EquationParser
         }
         public static Equation CreateEquation(string text)
         {
-            IEquationParser parser = new Jtc.CsQuery.Utility.EquationParser.Implementation.EquationParser();
+            IEquationParser parser = new EquationParser.Implementation.EquationParser();
             IOperand operand = parser.Parse(text);
 
             Equation equation = new Equation(operand);
@@ -43,7 +43,7 @@ namespace Jtc.CsQuery.Utility.EquationParser
         /// <returns></returns>
         public static Equation CreateEquationOperand(string text)
         {
-            IEquationParser parser = new Jtc.CsQuery.Utility.EquationParser.Implementation.EquationParser();
+            IEquationParser parser = new EquationParser.Implementation.EquationParser();
             IOperand operand = parser.Parse(text);
 
             Equation equation = new Equation(operand);

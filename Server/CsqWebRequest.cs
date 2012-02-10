@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Threading;
-using Jtc.CsQuery;
-using Jtc.CsQuery.ExtensionMethods;
+using CsQuery;
+using CsQuery.ExtensionMethods;
 
-namespace Jtc.CsQuery.Server
+namespace CsQuery.Server
 {
     public class CsqWebRequest: ICsqWebRequest 
     {
@@ -17,7 +17,7 @@ namespace Jtc.CsQuery.Server
         public string UserAgent {get;set;}
         public bool Async { get; set; }
         public bool Complete { get; protected set; }
-        public CsQuery Dom { get; protected set; }
+        public CQ Dom { get; protected set; }
         public int Timeout { get; set; }
 
         public string Get(string url) {

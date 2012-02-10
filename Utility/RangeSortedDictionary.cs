@@ -3,20 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.ExtensionMethods;
+using CsQuery.ExtensionMethods;
 
-namespace Jtc.CsQuery.Utility
+namespace CsQuery.Utility
 {
-    /// <summary>
-    /// A sorted dictionary that allows lookup by range.
-    /// </summary>
-    interface IRangeSortedDictionary<TValue>: IDictionary<string, TValue>
-    {
-        IEnumerable<string> GetRangeKeys(string subKey);
-        IEnumerable<TValue> GetRange(string subKey);
-
-    }
     /*
+     * A dictionary that allows lookups by substring. E.g.
+     * 
      * .class/body/div
      * .class/body/a/span/element
      * #id/body/div/span/element
@@ -27,13 +20,24 @@ namespace Jtc.CsQuery.Utility
      */
     public class RangeSortedDictionary<TValue> : IRangeSortedDictionary<TValue>
     {
+        #region constructor
+
         public RangeSortedDictionary()
         {
             Keys = new SortedSet<string>(StringComparer.Ordinal);
         }
-        //protected SortedSet<string> Keys;
+
+        #endregion
+
+        #region private properties
+
         protected SortedSet<string> Keys;
         protected Dictionary<string,TValue> Index = new Dictionary<string,TValue>();
+
+        #endregion
+
+        #region public properties
+
         public IEnumerable<string> GetRangeKeys(string subkey)
         {
             if (string.IsNullOrEmpty(subkey)) {
@@ -49,6 +53,7 @@ namespace Jtc.CsQuery.Utility
                 }
             }
         }
+
         /// <summary>
         /// Return only keys at depth. Zero is the matching key.
         /// </summary>
@@ -99,6 +104,9 @@ namespace Jtc.CsQuery.Utility
                 yield return Index[key];
             }
         }
+
+        #endregion
+
         #region IDictionary<string,TValue> Members
 
         public void Add(string key, TValue value)
@@ -221,7 +229,6 @@ namespace Jtc.CsQuery.Utility
         }
 
         #endregion
-
  
     }
 }

@@ -6,7 +6,7 @@ using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 
-namespace Jtc.CsQuery.Utility
+namespace CsQuery.Utility
 {
     public static class DomData
     {

@@ -3,7 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Jtc.CsQuery;
+using CsQuery;
 
 namespace CsqueryTests.Csharp
 {
@@ -18,7 +18,7 @@ namespace CsqueryTests.Csharp
         [TestMethod]
         public void HtmlCleanup()
         {
-            var dom = CsQuery.Create(node);
+            var dom = CQ.Create(node);
             var expected =  "<div class=\"a b c\" attr1='{\"somejson\": \"someval\"}'></div>";
             Assert.AreEqual(expected, dom.Render(), "Basic cleanup - no duplicated class - missing end tag");
 
@@ -38,7 +38,7 @@ namespace CsqueryTests.Csharp
         public void AttributeHandling()
         {
             string test1html = "<input type=\"text\" id=\"\" checked custom=\"sometext\">";
-            var dom = CsQuery.Create(test1html);
+            var dom = CQ.Create(test1html);
             Assert.AreEqual("<input id type=\"text\" checked custom=\"sometext\" />", dom.Render(), "Missing & boolean attributes are parsed & render correctly");
 
             // remove "quote all attributes"
@@ -46,14 +46,14 @@ namespace CsqueryTests.Csharp
 
             Assert.AreEqual("<input id type=text checked custom=sometext />", dom.Render(), "Missing & boolean attributes are parsed & render correctly");
 
-            dom = CsQuery.Create("<div id='test' quotethis=\"must've\" class=\"one two\" data='\"hello\"' noquote=\"regulartext\"");
+            dom = CQ.Create("<div id='test' quotethis=\"must've\" class=\"one two\" data='\"hello\"' noquote=\"regulartext\"");
             dom.Document.DomRenderingOptions = 0;
 
             var expected = "<div id=test class=\"one two\" quotethis=\"must've\" data='\"hello\"' noquote=regulartext></div>";
             Assert.AreEqual(expected, dom.Render(), "Handle various quoting situations");
 
             // go back to test 1
-            dom = CsQuery.Create(test1html);
+            dom = CQ.Create(test1html);
 
             var jq = dom["input"];
             var el = jq[0];

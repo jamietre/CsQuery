@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.ExtensionMethods;
+using CsQuery.ExtensionMethods;
 
-namespace Jtc.CsQuery.Implementation
+namespace CsQuery.Implementation
 {
     /// <summary>
     /// Special node type to represent the DOM.

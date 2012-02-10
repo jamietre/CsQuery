@@ -8,8 +8,8 @@
     <ProjectGuid>{C38DFFE9-321B-4941-B031-29D718AB5C31}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Jtc.CsQuery</RootNamespace>
-    <AssemblyName>Jtc.CsQuery</AssemblyName>
+    <RootNamespace>CsQuery</RootNamespace>
+    <AssemblyName>CsQuery</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -56,6 +56,7 @@
     <Compile Include="Utility\EquationParser\INativeOperation.cs" />
     <Compile Include="Utility\EquationParser\IOperator.cs" />
     <Compile Include="Utility\IOrderedDictionary.cs" />
+    <Compile Include="Utility\IRangeSortedDictionary.cs" />
     <Compile Include="Utility\OrderedDictionary.cs" />
     <Compile Include="CsQuery.cs" />
     <Compile Include="Engine\Selector.cs" />

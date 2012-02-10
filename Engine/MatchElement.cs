@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery.Engine
+namespace CsQuery.Engine
 {
      ///<summary>
      /// Wrapper class used by the engine to store info on the selector stack.

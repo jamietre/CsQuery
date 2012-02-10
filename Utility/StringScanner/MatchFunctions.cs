@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery.Utility.StringScanner
+namespace CsQuery.Utility.StringScanner
 {
     public static class MatchFunctions
     {

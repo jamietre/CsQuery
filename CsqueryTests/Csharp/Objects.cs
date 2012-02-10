@@ -4,8 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Text;
 using System.Dynamic;
-using Jtc.CsQuery;
-using Jtc.CsQuery.Utility;
+using CsQuery;
+using CsQuery.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
@@ -22,7 +22,33 @@ namespace CsqueryTests.Csharp
         public static void Setup(TestContext context) {
 
         }
-        
+
+        [Test, TestMethod]
+        public void Coerce()
+        {
+            DateTime curDate = DateTime.Now;
+
+            Assert.AreEqual(Objects.Coerce(null), null);
+            Assert.AreEqual(Objects.Coerce(true), true);
+            Assert.AreEqual(Objects.Coerce(false), false);
+            Assert.AreEqual(Objects.Coerce(1), (int)1);
+            Assert.AreEqual(Objects.Coerce(1.2), (double)1.2);
+            Assert.AreEqual(Objects.Coerce((decimal)1.23), (double)1.23);
+            Assert.AreEqual(Objects.Coerce((float)1.23), (double)(float)1.23);
+            Assert.AreEqual(Objects.Coerce((Single)1), (int)1);
+            Assert.AreEqual(Objects.Coerce(curDate), curDate);
+
+            Assert.AreEqual(Objects.Coerce("null"),null);
+            Assert.AreEqual(Objects.Coerce("undefined"), null);
+            Assert.AreEqual(Objects.Coerce("false"), false);
+            Assert.AreEqual(Objects.Coerce("true"), true);
+            Assert.AreEqual(Objects.Coerce("1"), (int)1);
+            Assert.AreEqual(Objects.Coerce("3.14"), (double)3.14);
+            Assert.AreEqual(Objects.Coerce("1"), (int)1);
+            Assert.AreEqual(Objects.Coerce(curDate.ToString()).ToString(), curDate.ToString());
+            Assert.AreEqual(Objects.Coerce("1/1/2010"), DateTime.Parse("1/1/2010"));
+
+        }
         [Test,TestMethod]
         public void AttributeEncode()
         {

@@ -4,10 +4,10 @@ using System.Collections.Specialized;
 using System.Collections;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.ExtensionMethods;
+using CsQuery.ExtensionMethods;
 using System.Diagnostics;
 
-namespace Jtc.CsQuery.Utility.StringScanner
+namespace CsQuery.Utility.StringScanner
 {
     
     // Not implemented - intended to update the scanning code in Selector engine and maybe the HTML parser

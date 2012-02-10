@@ -6,7 +6,7 @@ using System.Net;
 using System.IO;
 using System.Threading;
 
-namespace Jtc.CsQuery.Server
+namespace CsQuery.Server
 {
     public class AsyncWebRequest
     {

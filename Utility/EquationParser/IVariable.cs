@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.Utility.EquationParser.Implementation;
+using CsQuery.Utility.EquationParser.Implementation;
 
-namespace Jtc.CsQuery.Utility.EquationParser
+namespace CsQuery.Utility.EquationParser
 {
     public interface IVariable : IOperand, IVariableContainer
     {

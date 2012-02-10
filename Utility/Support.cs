@@ -5,10 +5,10 @@ using System.Text;
 using System.Reflection;
 using System.IO;
 using System.Diagnostics;
-using Jtc.CsQuery.ExtensionMethods;
-using Jtc.CsQuery.ExtensionMethods.Internal;
+using CsQuery.ExtensionMethods;
+using CsQuery.ExtensionMethods.Internal;
 
-namespace Jtc.CsQuery.Utility
+namespace CsQuery.Utility
 {
     /// <summary>
     /// Some static methods that didn't fit in anywhere else. 

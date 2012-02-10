@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery
+namespace CsQuery
 {
     // marker
     public interface IDomAttribute: IDomNode, IDomIndexedNode

@@ -9,9 +9,9 @@ using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
-using Jtc.CsQuery;
-using Jtc.CsQuery.Utility;
-using Jtc.CsQuery.ExtensionMethods;
+using CsQuery;
+using CsQuery.Utility;
+using CsQuery.ExtensionMethods;
 
 namespace CsqueryTests.Csharp
 {
@@ -19,7 +19,7 @@ namespace CsqueryTests.Csharp
     [TestFixture, TestClass, Description("CsQuery Utility Tests (Not from Jquery test suite)")]
     public class JSONTests
     {
-        protected CsQuery csq;
+        protected CQ csq;
         [TestFixtureSetUp,ClassInitialize]
         public static void Init(TestContext context)
         {
@@ -32,11 +32,11 @@ namespace CsqueryTests.Csharp
         {
 
             //dynamic obj = CsQuery.FromJSON("{\"test\": \"value\", \"number\": 2}");
-            dynamic obj = CsQuery.ParseJSON("{test: 'value',number: 2}");
+            dynamic obj = CQ.ParseJSON("{test: 'value',number: 2}");
             
             Assert.AreEqual("value", obj.test);
 
-            obj = CsQuery.ParseJSON("{'test':  {'subprop1': 'subproperty1 value', 'subprop2': null }, 'number': 2}");
+            obj = CQ.ParseJSON("{'test':  {'subprop1': 'subproperty1 value', 'subprop2': null }, 'number': 2}");
 
             Assert.AreEqual("subproperty1 value", obj.test.subprop1);
             Assert.AreEqual(2, obj.number);
@@ -46,7 +46,7 @@ namespace CsqueryTests.Csharp
                 +"\"listMixed\":[3,\"hello\",{\"Prop1\":\"TC1 value1\",\"Prop2\":null},999],"
                 +"\"floatingPointProp\":123.33,\"stringProp\":\"asdad\"}";
 
-            string json = CsQuery.ToJSON(tc3);
+            string json = CQ.ToJSON(tc3);
             Assert.AreEqual(expected, json, "CsQuery.ToJson works");
         }
 
@@ -66,9 +66,9 @@ namespace CsqueryTests.Csharp
 
             Assert.AreEqual(null, obj.val3, "Can test missing property, and it is null");
             Assert.AreEqual("yo", obj.val2.subprop2, "Subproperty exists");
-            string json = CsQuery.ToJSON(obj);
+            string json = CQ.ToJSON(obj);
 
-            Assert.AreEqual("{\"val1\":\"hello\",\"val2\":{\"subprop1\":99,\"subprop2\":\"yo\"}}", CsQuery.ToJSON(obj));
+            Assert.AreEqual("{\"val1\":\"hello\",\"val2\":{\"subprop1\":99,\"subprop2\":\"yo\"}}", CQ.ToJSON(obj));
 
 
         }
@@ -84,11 +84,11 @@ namespace CsqueryTests.Csharp
             var exField2 = new string[] { "el1", "el2" };
             test2.ExField2 = exField2;
 
-            dynamic target = CsQuery.Extend(null, test);
+            dynamic target = CQ.Extend(null, test);
             Assert.AreEqual("Value from Real Object", target.Field1, "Appended a regular object field to an expando object");
             Assert.AreEqual("ValueFromProp", target.Property1, "Appended a regular object property to an expando object");
 
-            CsQuery.Extend(target, test2);
+            CQ.Extend(target, test2);
 
             Assert.AreEqual("Value from Expando", target.ExField1, "Appended an expando object property to an expando object");
             Assert.AreEqual(exField2, target.ExField2, "Appended a regular object property to an expando object");
@@ -103,7 +103,7 @@ namespace CsqueryTests.Csharp
             t2.Prop2 = "class2value2";
             t2.Prop3 = "class2vlaue3";
 
-            CsQuery.Extend(t1, t2);
+            CQ.Extend(t1, t2);
 
             Assert.AreEqual("value1", t1.Prop1, "Target prop1 unchanged");
             Assert.AreEqual("class2value2", t1.Prop2, "Target prop2 updated");
@@ -120,7 +120,7 @@ namespace CsqueryTests.Csharp
             var enumer = new object[2];
             enumer[0]= test2;
             enumer[1] =test3;
-            var merged = CsQuery.Extend(null, test, enumer);
+            var merged = CQ.Extend(null, test, enumer);
 
             Assert.AreEqual("{prop1: 'from_enum1', prop2: 'from_enum2', prop3: 'original'}".ParseJSON(), merged, "Merged with an enumerable parameter");
 

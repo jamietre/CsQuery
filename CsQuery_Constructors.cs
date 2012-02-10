@@ -2,21 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.ExtensionMethods;
-using Jtc.CsQuery.Implementation;
-using Jtc.CsQuery.Engine;
+using CsQuery.ExtensionMethods;
+using CsQuery.Implementation;
+using CsQuery.Engine;
 
-namespace Jtc.CsQuery
+namespace CsQuery
 {
-    public partial class CsQuery
+    public partial class CQ
     {
-        
-       
+        #region regular constructors
 
         /// <summary>
         /// Creates a new, empty jQuery object.
         /// </summary>
-        public CsQuery()
+        public CQ()
         {
 
         }
@@ -27,7 +26,7 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="selector"></param>
         /// <param name="context"></param>
-        public CsQuery(string selector, CsQuery context)
+        public CQ(string selector, CQ context)
         {
             Create(selector, context);
         }
@@ -36,7 +35,7 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="selector"></param>
         /// <param name="context"></param>
-        public CsQuery(string selector, string cssJson, CsQuery context)
+        public CQ(string selector, string cssJson, CQ context)
         {
             Create(selector, context);
             AttrSet(cssJson);
@@ -46,12 +45,12 @@ namespace Jtc.CsQuery
         /// </summary>
         /// <param name="selector"></param>
         /// <param name="context"></param>
-        public CsQuery(string selector, IDictionary<string,object> css, CsQuery context)
+        public CQ(string selector, IDictionary<string,object> css, CQ context)
         {
             Create(selector, context);
             Attr(css);
         }
-        protected void Create(string selector, CsQuery context)
+        protected void Create(string selector, CQ context)
         {
             // when creating a new CsQuery from another, leave Dom blank - it will be populated automatically with the
             // contents of the selector.
@@ -67,7 +66,7 @@ namespace Jtc.CsQuery
         /// Create a new CsQuery from a single elemement, using the element's context
         /// </summary>
         /// <param name="element"></param>
-        public CsQuery(IDomObject element)
+        public CQ(IDomObject element)
         {
             Document = element.Document;
             AddSelection(element);
@@ -76,7 +75,7 @@ namespace Jtc.CsQuery
         /// Create a new CsQuery from a single DOM element
         /// </summary>
         /// <param name="element"></param>
-        public CsQuery(IDomObject element, CsQuery context)
+        public CQ(IDomObject element, CQ context)
         {
             CsQueryParent = context;
             AddSelection(element);
@@ -87,14 +86,14 @@ namespace Jtc.CsQuery
         /// the context of the new CsQuery object.
         /// </summary>
         /// <param name="elements"></param>
-        public CsQuery(IEnumerable<IDomObject> elements)
+        public CQ(IEnumerable<IDomObject> elements)
         {
             //List<IDomObject> elList = new List<IDomObject>(elements);
             
             bool first = true;
-            if (elements is CsQuery)
+            if (elements is CQ)
             {
-                CsQueryParent = (CsQuery)elements;
+                CsQueryParent = (CQ)elements;
                 first = false;
             }
  
@@ -115,7 +114,7 @@ namespace Jtc.CsQuery
         /// could contain more than one context)
         /// </summary>
         /// <param name="elements"></param>
-        public CsQuery(IEnumerable<IDomObject> elements, CsQuery context)
+        public CQ(IEnumerable<IDomObject> elements, CQ context)
         {
             CsQueryParent = context;
             AddSelectionRange(elements);
@@ -130,6 +129,35 @@ namespace Jtc.CsQuery
         {
             Load((html ?? "").ToCharArray());
         }
+
+        #endregion
+
+        #region implicit constructors
+
+        /// <summary>
+        /// Create a new CQ object from html
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static implicit operator CQ(string html)
+        {
+            return CQ.Create(html);
+        }
+
+        /// <summary>
+        /// Create a new CQ object from an element
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static implicit operator CQ(DomObject obj)
+        {
+            return CQ.Create(obj);
+        }
+
+        #endregion
+
+        #region private methods
+
         protected void Load(char[] html)
         {
             Clear();
@@ -169,8 +197,9 @@ namespace Jtc.CsQuery
             {
                 Document = new DomRoot();
             }
-            Document.DomRenderingOptions = CsQuery.DefaultDomRenderingOptions;
-            Document.DocType = CsQuery.DefaultDocType;
+            Document.DomRenderingOptions = CQ.DefaultDomRenderingOptions;
+            Document.DocType = CQ.DefaultDocType;
         }
+        #endregion
     }
 }

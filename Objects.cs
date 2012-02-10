@@ -7,10 +7,10 @@ using System.Dynamic;
 using System.Reflection;
 using System.Web.Script.Serialization;
 using System.ComponentModel;
-using Jtc.CsQuery.ExtensionMethods;
-using Jtc.CsQuery.ExtensionMethods.Internal;
+using CsQuery.ExtensionMethods;
+using CsQuery.ExtensionMethods.Internal;
 
-namespace Jtc.CsQuery
+namespace CsQuery
 {
     public static class Objects
     {
@@ -50,7 +50,7 @@ namespace Jtc.CsQuery
         {
             string quoteChar;
             string attribute = AttributeEncode(text, 
-                CsQuery.DefaultDomRenderingOptions.HasFlag(DomRenderingOptions.QuoteAllAttributes),
+                CQ.DefaultDomRenderingOptions.HasFlag(DomRenderingOptions.QuoteAllAttributes),
                 out quoteChar);
             return quoteChar + attribute + quoteChar;
         }
@@ -302,7 +302,7 @@ namespace Jtc.CsQuery
                 object src = inputs.Dequeue();
                 if (src is string && Objects.IsJson(src))
                 {
-                    src= CsQuery.ParseJSON((string)src);
+                    src= CQ.ParseJSON((string)src);
                 }
                 if (!src.IsExpando() && src.IsExtendableType() &&  src is IEnumerable)
                 {
@@ -405,6 +405,66 @@ namespace Jtc.CsQuery
             return target;
         }
 
+        /// <summary>
+        /// Coerce a javascript object into a Javascript type (null, bool, int, double, datetime, or string). If you know what the 
+        /// type should be, then use Convert instead.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static IConvertible Coerce(object value)
+        {
+            if (value==null) {
+                return null;
+            }
+            Type realType = GetUnderlyingType(value.GetType());
+
+            if (realType == typeof(bool) || realType == typeof(DateTime) || realType == typeof(double))
+            {
+                return (IConvertible)value;
+            } 
+            else if (IsNumericType(value))
+            {
+                return NumberToDoubleOrInt((IConvertible)value);
+            }
+
+            string stringVal = value.ToString();
+            
+            double doubleVal;
+            DateTime dateTimeVal;
+
+            if (stringVal=="false")
+            {
+                return false;
+            }
+            else if (stringVal == "true")
+            {
+                return true;
+            }
+            else if (stringVal == "undefined" || stringVal == "null")
+            {
+                return null;
+            }
+            else if (Double.TryParse(stringVal, out doubleVal))
+            {
+                return NumberToDoubleOrInt(doubleVal);
+            }
+            else if (DateTime.TryParse(stringVal, out dateTimeVal))
+            {
+                return dateTimeVal;
+            }
+            else
+            {
+                return stringVal;
+            }
+
+
+        }
+        /// <summary>
+        /// Convert an object of any value type to the specified type using any known means
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public static T Convert<T>(object value)
         {
             T output;
@@ -415,6 +475,12 @@ namespace Jtc.CsQuery
             }
             return output;
         }
+        /// <summary>
+        /// Convert an object of any value type to the specified type using any known means
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public static object Convert(object value, Type type)
         {
             object output;
@@ -503,25 +569,10 @@ namespace Jtc.CsQuery
             }
             else if (realType == typeof(bool))
             {
-                switch (stringVal)
-                {
-                    case "on":
-                    case "yes":
-                    case "true":
-                    case "enabled":
-                    case "active":
-                    case "1":
-                        output = true;
-                        success = true;
-                        break;
-                    case "off":
-                    case "no":
-                    case "false":
-                    case "disabled":
-                    case "0":
-                        output = false;
-                        success = true;
-                        break;
+                bool result;
+                success = TryStringToBool(stringVal, out result);
+                if (success) {
+                    output = result;
                 }
             }
             else if (realType.IsEnum)
@@ -967,6 +1018,46 @@ namespace Jtc.CsQuery
             NextAttribute: { }
             }
             return target;
+        }
+        private static bool TryStringToBool(string value, out bool result)
+        {
+            switch (value)
+            {
+                case "on":
+                case "yes":
+                case "true":
+                case "enabled":
+                case "active":
+                case "1":
+                    result = true;
+                    return true;
+                case "off":
+                case "no":
+                case "false":
+                case "disabled":
+                case "0":
+                    result = false;
+                    return true;
+            }
+            result = false;
+            return false;
+        }
+        /// <summary>
+        /// Return an int or double from any number
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private static IConvertible NumberToDoubleOrInt(IConvertible value)
+        {
+            double val = (double)System.Convert.ChangeType(value, typeof(double));
+            if (val == Math.Floor(val))
+            {
+                return (int)val;
+            }
+            else
+            {
+                return val;
+            }
         }
         #endregion
     }

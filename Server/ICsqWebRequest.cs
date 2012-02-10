@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery.Server
+namespace CsQuery.Server
 {
     /// <summary>
     /// Data about a web request
@@ -16,7 +16,7 @@ namespace Jtc.CsQuery.Server
     public interface ICsqWebRequest : ICsqWebRequestMetadata
     {
         string Url { get; set; }
-        CsQuery Dom { get; }
+        CQ Dom { get; }
         bool Complete { get; }
     }
 }

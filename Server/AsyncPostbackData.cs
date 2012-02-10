@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery.Server
+namespace CsQuery.Server
 {
     /// <summary>
     /// Represents async data from an ASP.NET webforms UpdatePanel
@@ -51,18 +51,18 @@ namespace Jtc.CsQuery.Server
 
         }
         public string Content;
-        public CsQuery Dom
+        public CQ Dom
         {
             get
             {
                 if (_Dom == null)
                 {
-                    _Dom = CsQuery.Create(Content);
+                    _Dom = CQ.Create(Content);
                 }
                 return _Dom;
             }
         }
-        protected CsQuery _Dom = null;
+        protected CQ _Dom = null;
         public string ID
         {
             get

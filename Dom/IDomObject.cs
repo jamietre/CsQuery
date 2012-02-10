@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.Implementation;
+using CsQuery.Implementation;
 
-namespace Jtc.CsQuery
+namespace CsQuery
 {
 
     // Base interface for something that can appear in the DOM
@@ -71,8 +71,8 @@ namespace Jtc.CsQuery
         string PathID { get; }
         string Path { get; }
 
-        // Wrap this node in a CsQuery
-        CsQuery Csq();
+        // Wrap this node in a CQ object
+        CQ Cq();
         new IDomObject Clone();
     }
 

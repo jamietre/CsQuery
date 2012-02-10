@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery;
-using Jtc.CsQuery.Utility.StringScanner;
-using Jtc.CsQuery.Utility.StringScanner;
-using Jtc.CsQuery.ExtensionMethods.Internal;
+using CsQuery;
+using CsQuery.Utility.StringScanner;
+using CsQuery.Utility.StringScanner;
+using CsQuery.ExtensionMethods.Internal;
 
-namespace Jtc.CsQuery.OutputFormatters
+namespace CsQuery.OutputFormatters
 {
     public class FormatPlainText: IOutputFormatter
     {
@@ -15,7 +15,7 @@ namespace Jtc.CsQuery.OutputFormatters
         protected bool endingBlock = false;
         protected bool skipWhitespace = false;
 
-        public string Format(CsQuery selection)
+        public string Format(CQ selection)
         {
             stringInfo = CharacterData.CreateStringInfo();
 
@@ -76,7 +76,7 @@ namespace Jtc.CsQuery.OutputFormatters
                                     sb.Append(el.Render());
                                     break;
                                 case "a":
-                                    sb.Append(el.Csq().Children().RenderSelection() + " (" + el["href"] + ")");
+                                    sb.Append(el.Cq().Children().RenderSelection() + " (" + el["href"] + ")");
                                     break;
                                 default:
                                     if (elNode.IsBlock)

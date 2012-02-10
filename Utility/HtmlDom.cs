@@ -4,10 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.IO;
-using Jtc.CsQuery.Implementation;
+using CsQuery.Implementation;
 
-namespace Jtc.CsQuery.Utility
+namespace CsQuery.Utility
 {
+    /// <summary>
+    /// Used for style parsing
+    /// </summary>
     public static class HtmlDom
     {
         public static Dictionary<string, CssStyle> StyleDefs = new Dictionary<string, CssStyle>();
@@ -16,7 +19,7 @@ namespace Jtc.CsQuery.Utility
         static HtmlDom()
         {
             XmlDocument xDoc = new XmlDocument();
-            Stream dataStream = Support.GetResourceStream("Jtc.CsQuery.Resources." + CssDefs);
+            Stream dataStream = Support.GetResourceStream("CsQuery.Resources." + CssDefs);
             //XDocument data = XDocument.Load(dataStream);
             xDoc.Load(dataStream);
 

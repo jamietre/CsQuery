@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery.Engine
+namespace CsQuery.Engine
 {
     /// <summary>
     /// A CSS selector parsed into it's component parts

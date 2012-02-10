@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
-using Jtc.CsQuery.ExtensionMethods;
-using Jtc.CsQuery.ExtensionMethods.Internal;
-using Jtc.CsQuery.Implementation;
-using Jtc.CsQuery.Utility.StringScanner;
+using CsQuery.ExtensionMethods;
+using CsQuery.ExtensionMethods.Internal;
+using CsQuery.Implementation;
+using CsQuery.Utility.StringScanner;
 
-namespace Jtc.CsQuery.HtmlParser
+namespace CsQuery.HtmlParser
 {
     public class DomElementFactory
     {

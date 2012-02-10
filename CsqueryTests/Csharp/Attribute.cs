@@ -9,8 +9,8 @@ using Assert = NUnit.Framework.Assert;
 using CollectionAssert = NUnit.Framework.CollectionAssert;
 using StringAssert = NUnit.Framework.StringAssert;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
-using Jtc.CsQuery;
-using Jtc.CsQuery.Utility;
+using CsQuery;
+using CsQuery.Utility;
 
 namespace CsqueryTests.Csharp
 {
@@ -26,7 +26,7 @@ namespace CsqueryTests.Csharp
         }
         protected void ResetDom()
         {
-            Dom = CsQuery.Create(Support.GetFile("csquerytests\\resources\\TestHtml.htm"));
+            Dom = CQ.Create(Support.GetFile("csquerytests\\resources\\TestHtml.htm"));
         }
         [TestMethod,Test]
         public void Show()

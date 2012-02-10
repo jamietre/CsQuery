@@ -8,10 +8,10 @@ using System.Web.UI;
 using System.IO;
 using System.Threading;
 using System.Web.Script.Serialization;
-using Jtc.CsQuery.ExtensionMethods;
-using Jtc.CsQuery.ExtensionMethods.Internal;
+using CsQuery.ExtensionMethods;
+using CsQuery.ExtensionMethods.Internal;
 
-namespace Jtc.CsQuery.Server
+namespace CsQuery.Server
 {
     /// <summary>
     /// Server extension to CsQuery -- adds functionality for dealing with postbacks, and getting data from 
@@ -20,7 +20,7 @@ namespace Jtc.CsQuery.Server
     public class CsQueryHttpContext
     {
         public bool AspNet { get; set; }
-        public CsQuery Owner = null;
+        public CQ Owner = null;
         protected HttpContext Context
         {
             get
@@ -56,7 +56,7 @@ namespace Jtc.CsQuery.Server
                 return _GetData;
             }
         } protected SimpleDictionary<string> _GetData = null;
-        public CsQueryHttpContext(CsQuery owner, HttpContext context)
+        public CsQueryHttpContext(CQ owner, HttpContext context)
         {
             Context = context;
             Owner = owner;
@@ -66,7 +66,7 @@ namespace Jtc.CsQuery.Server
         /// <summary>
         /// Repopulates all selected elements with their postback data (if any exists)
         /// </summary>
-        public CsQuery RestorePost()
+        public CQ RestorePost()
         {
             foreach (IDomElement e in Owner.Select("[name], textarea"))
             {

@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Dynamic;
-using Jtc.CsQuery.Utility;
+using CsQuery.Utility;
 
 
-namespace Jtc.CsQuery
+namespace CsQuery
 {
     
     public class JsObjectUndefined
@@ -39,11 +39,11 @@ namespace Jtc.CsQuery
         }
         public override string ToString()
         {
-            return CsQuery.ToJSON(this);
+            return CQ.ToJSON(this);
         }
         public IEnumerable<T> Enumerate<T>()
         {
-            return CsQuery.Enumerate<T>(this);
+            return CQ.Enumerate<T>(this);
         }
         protected bool AllowMissingProperties
         {
@@ -93,6 +93,27 @@ namespace Jtc.CsQuery
             object value;
             TryGetMember(name, typeof(T), out value);
             return (T)value;
+        }
+        /// <summary>
+        /// Try to return a li
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public IEnumerable<T> GetList<T>(string name)
+        {
+            IEnumerable list = Get(name) as IEnumerable;
+            if (list != null)
+            {
+                foreach (object item in list)
+                {
+                    yield return (T)item;
+                }
+            }
+            else
+            {
+                throw new Exception("The property '" + name + "' is not an array.");
+            }
         }
         public object Get(string name)
         {

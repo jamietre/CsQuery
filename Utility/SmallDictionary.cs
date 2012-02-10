@@ -5,24 +5,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery.Utility
+namespace CsQuery.Utility
 {
     /// <summary>
-    /// A lightweight dictionary for small lists. 
+    /// A lightweight dictionary for small lists. This is intended to boost performance for situations where we know the list
+    /// will always be small (e.g. like HybridDictionary but even better since there's no need to check size ever). 
+    /// It is unclear if this is actually faster than a regular dictionary.
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    public class SmallDictionary<TKey,TValue>: IDictionary<TKey,TValue>
+    public class SmallDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         protected List<KeyValuePair<TKey, TValue>> InnerList = new List<KeyValuePair<TKey, TValue>>();
 
         public bool ContainsKey(TKey key)
         {
- 	        if (InnerList.Count==0) {
+            if (InnerList.Count == 0)
+            {
                 return false;
-            } else {
-                for (int i=0;i<InnerList.Count;i++) {
-                    if (InnerList[i].Key.Equals(key)) {
+            }
+            else
+            {
+                for (int i = 0; i < InnerList.Count; i++)
+                {
+                    if (InnerList[i].Key.Equals(key))
+                    {
                         return true;
                     }
                 }
@@ -32,7 +39,8 @@ namespace Jtc.CsQuery.Utility
 
         public ICollection<TKey> Keys
         {
-	        get {
+            get
+            {
                 List<TKey> keys = new List<TKey>();
                 for (int i = 0; i < InnerList.Count; i++)
                 {
@@ -75,7 +83,8 @@ namespace Jtc.CsQuery.Utility
 
         public ICollection<TValue> Values
         {
-	        get {
+            get
+            {
                 List<TValue> values = new List<TValue>();
                 for (int i = 0; i < InnerList.Count; i++)
                 {
@@ -87,20 +96,23 @@ namespace Jtc.CsQuery.Utility
 
         public TValue this[TKey key]
         {
-	        get 
-	        { 
-		        TValue value;
-                if (TryGetValue(key,out value)) {
+            get
+            {
+                TValue value;
+                if (TryGetValue(key, out value))
+                {
                     return value;
-                } else {
+                }
+                else
+                {
                     throw new Exception("The value was not found.");
                 }
-	        }
-	        set 
-	        {
+            }
+            set
+            {
                 if (InnerList.Count > 0)
                 {
-                    KeyValuePair<TKey,TValue> newVal = new KeyValuePair<TKey,TValue>(key,value);
+                    KeyValuePair<TKey, TValue> newVal = new KeyValuePair<TKey, TValue>(key, value);
                     for (int i = 0; i < InnerList.Count; i++)
                     {
                         var item = InnerList[i];
@@ -118,11 +130,11 @@ namespace Jtc.CsQuery.Utility
                     }
                 }
 
-                InnerList.Add(new KeyValuePair<TKey,TValue>(key,value));
+                InnerList.Add(new KeyValuePair<TKey, TValue>(key, value));
             }
         }
 
-        public void Add(KeyValuePair<TKey,TValue> item)
+        public void Add(KeyValuePair<TKey, TValue> item)
         {
             this[item.Key] = item.Value;
         }
@@ -130,18 +142,23 @@ namespace Jtc.CsQuery.Utility
         {
             this[key] = value;
         }
-        public void  Clear()
+        public void Clear()
         {
             InnerList.Clear();
         }
 
-        public bool Contains(KeyValuePair<TKey,TValue> item)
+        public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            if (InnerList.Count==0) {
+            if (InnerList.Count == 0)
+            {
                 return false;
-            } else {
-                for (int i=0;i<InnerList.Count;i++) {
-                    if (InnerList[i].Equals(item)) {
+            }
+            else
+            {
+                for (int i = 0; i < InnerList.Count; i++)
+                {
+                    if (InnerList[i].Equals(item))
+                    {
                         return true;
                     }
                 }
@@ -149,26 +166,26 @@ namespace Jtc.CsQuery.Utility
             }
         }
 
-        public void  CopyTo(KeyValuePair<TKey,TValue>[] array, int arrayIndex)
+        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            int index=0;
+            int index = 0;
             array = new KeyValuePair<TKey, TValue>[Count];
 
             foreach (var kvp in InnerList)
             {
-                array[arrayIndex+index++] = kvp;
+                array[arrayIndex + index++] = kvp;
 
             }
         }
 
-        public int  Count
+        public int Count
         {
-            get { return InnerList.Count;  }
+            get { return InnerList.Count; }
         }
 
-        public bool  IsReadOnly
+        public bool IsReadOnly
         {
-	        get { return false; }
+            get { return false; }
         }
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
@@ -180,7 +197,7 @@ namespace Jtc.CsQuery.Utility
             return InnerList.ToString();
         }
         #region interface members
-        public IEnumerator<KeyValuePair<TKey,TValue>> GetEnumerator()
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             return InnerList.GetEnumerator();
         }

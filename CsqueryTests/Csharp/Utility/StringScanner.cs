@@ -8,10 +8,10 @@ using Assert = NUnit.Framework.Assert;
 using CollectionAssert = NUnit.Framework.CollectionAssert;
 using StringAssert = NUnit.Framework.StringAssert;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
-using Jtc.CsQuery;
-using Jtc.CsQuery.Utility.StringScanner;
-using Jtc.CsQuery.Utility.StringScanner.Implementation;
-using Jtc.CsQuery.Utility.StringScanner.Patterns;
+using CsQuery;
+using CsQuery.Utility.StringScanner;
+using CsQuery.Utility.StringScanner.Implementation;
+using CsQuery.Utility.StringScanner.Patterns;
 
 namespace CsqueryTests.Csharp
 {

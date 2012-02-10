@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery.Implementation
+namespace CsQuery.Implementation
 {
     
     public class DomComment : DomObject<DomComment>, IDomComment

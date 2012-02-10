@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.ExtensionMethods;
-using Jtc.CsQuery.Engine;
+using CsQuery.ExtensionMethods;
+using CsQuery.Engine;
 
 
-namespace Jtc.CsQuery.Engine
+namespace CsQuery.Engine
 {
     public class SelectorChain : IEnumerable<Selector>
     {

@@ -7,8 +7,8 @@ using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using Description = Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
-using Jtc.CsQuery;
-using Jtc.CsQuery.Utility;
+using CsQuery;
+using CsQuery.Utility;
 
 namespace CsqueryTests.jQuery
 {
@@ -19,7 +19,7 @@ namespace CsqueryTests.jQuery
         public override void FixtureSetUp()
         {
 
-            Dom = CsQuery.Create(Support.GetFile("csquerytests\\resources\\jquery-unit-index.htm"));
+            Dom = CQ.Create(Support.GetFile("csquerytests\\resources\\jquery-unit-index.htm"));
         }
         [Test,TestMethod]
         public void Find_String()
@@ -252,8 +252,8 @@ namespace CsqueryTests.jQuery
             Assert.AreEqual(jQuery("<div><p></p></div>").Find("p").Closest("table").Length, 0, "Make sure disconnected closest work." );
 
             // Bug #7369
-            Assert.AreEqual(CsQuery.Create("<div foo='bar'></div>").Closest("[foo]").Length, 1, "Disconnected nodes with attribute selector" );
-            Assert.AreEqual(CsQuery.Create("<div>text</div>").Closest("[lang]").Length, 0, "Disconnected nodes with text and non-existent attribute selector");
+            Assert.AreEqual(CQ.Create("<div foo='bar'></div>").Closest("[foo]").Length, 1, "Disconnected nodes with attribute selector");
+            Assert.AreEqual(CQ.Create("<div>text</div>").Closest("[lang]").Length, 0, "Disconnected nodes with text and non-existent attribute selector");
         }
 
 //test("closest(Array)", function() {
@@ -527,29 +527,29 @@ namespace CsqueryTests.jQuery
             
             var ibody = jQuery("#loadediframe").Contents().Find("body");
             Assert.IsTrue( ibody.Length>0, "Check existance of IFrame body" );
-            var csq = new CsQuery("span", ibody);
+            var csq = new CQ("span", ibody);
             Assert.AreEqual(csq.Text(), "span text", "Find span in IFrame and check its text" );
 
             jQuery(ibody).Append("<div>init text</div>");
-            csq = new CsQuery("div", ibody);
+            csq = new CQ("div", ibody);
             Assert.AreEqual(csq.Length, 2, "Check the original div and the new div are in IFrame" );
-            csq = new CsQuery("div:last", ibody);
+            csq = new CQ("div:last", ibody);
             Assert.AreEqual(csq.Text(), "init text", "Add text to div in IFrame" );
 
-             csq = new CsQuery("div:last", ibody);
+            csq = new CQ("div:last", ibody);
             csq.Text("div text");
-            Assert.AreEqual(new CsQuery("div:last", ibody).Text(), "div text", "Add text to div in IFrame" );
+            Assert.AreEqual(new CQ("div:last", ibody).Text(), "div text", "Add text to div in IFrame");
 
-            csq = new CsQuery("div:last", ibody).Remove();
+            csq = new CQ("div:last", ibody).Remove();
             Assert.AreEqual(jQuery("div",ibody).Length, 1, "Delete the div and check only one div left in IFrame" );
 
             Assert.AreEqual(jQuery("div",ibody).Text(), "span text", "Make sure the correct div is still left after deletion in IFrame" );
 
-            csq = new CsQuery("<table/>", ibody);
+            csq = new CQ("<table/>", ibody);
             csq.Append("<tr><td>cell</td></tr>").AppendTo(ibody);
-            csq = new CsQuery("table", ibody);
+            csq = new CQ("table", ibody);
             csq.Remove();
-            csq = new CsQuery("div", ibody);
+            csq = new CQ("div", ibody);
             Assert.AreEqual(csq.Length, 1, "Check for JS error on add and delete of a table in IFrame" );
 
             // using contents will get comments regular, text, and comment nodes
@@ -591,27 +591,27 @@ namespace CsqueryTests.jQuery
 
             var tmp = jQuery("<div/>");
 
-            var x = CsQuery.Create().Add(jQuery("<p id='x1'>xxx</p>").AppendTo(tmp)).Add(jQuery("<p id='x2'>xxx</p>").AppendTo(tmp));
+            var x = CQ.Create().Add(jQuery("<p id='x1'>xxx</p>").AppendTo(tmp)).Add(jQuery("<p id='x2'>xxx</p>").AppendTo(tmp));
             Assert.AreEqual(x[0].Id, "x1", "Check on-the-fly element1" );
             Assert.AreEqual(x[1].Id, "x2", "Check on-the-fly element2" );
 
-             x = CsQuery.Create().Add(jQuery("<p id='x1'>xxx</p>").AppendTo(tmp)[0]).Add(jQuery("<p id='x2'>xxx</p>").AppendTo(tmp)[0]);
+            x = CQ.Create().Add(jQuery("<p id='x1'>xxx</p>").AppendTo(tmp)[0]).Add(jQuery("<p id='x2'>xxx</p>").AppendTo(tmp)[0]);
             Assert.AreEqual(x[0].Id, "x1", "Check on-the-fly element1" );
             Assert.AreEqual(x[1].Id, "x2", "Check on-the-fly element2" );
 
-             x = CsQuery.Create().Add(jQuery("<p id='x1'>xxx</p>")).Add(jQuery("<p id='x2'>xxx</p>"));
+            x = CQ.Create().Add(jQuery("<p id='x1'>xxx</p>")).Add(jQuery("<p id='x2'>xxx</p>"));
             Assert.AreEqual(x[0].Id, "x1", "Check on-the-fly element1" );
             Assert.AreEqual(x[1].Id, "x2", "Check on-the-fly element2" );
 
-             x = CsQuery.Create().Add("<p id='x1'>xxx</p>").Add("<p id='x2'>xxx</p>");
+            x = CQ.Create().Add("<p id='x1'>xxx</p>").Add("<p id='x2'>xxx</p>");
             Assert.AreEqual(x[0].Id, "x1", "Check on-the-fly element1" );
             Assert.AreEqual(x[1].Id, "x2", "Check on-the-fly element2" );
 
             IDomElement notDefined = null;
-            Assert.AreEqual(CsQuery.Create().Add(notDefined).Length, 0, "Check that undefined adds nothing");
+            Assert.AreEqual(CQ.Create().Add(notDefined).Length, 0, "Check that undefined adds nothing");
 
-            Assert.AreEqual(CsQuery.Create().Add( document.GetElementById("form") ).Length, 1, "Add a form" );
-            Assert.AreEqual(CsQuery.Create().Add( document.GetElementById("select1") ).Length, 1, "Add a select" );
+            Assert.AreEqual(CQ.Create().Add(document.GetElementById("form")).Length, 1, "Add a form");
+            Assert.AreEqual(CQ.Create().Add(document.GetElementById("select1")).Length, 1, "Add a select");
         }
         [Test, TestMethod]
         public void AddWithContext()

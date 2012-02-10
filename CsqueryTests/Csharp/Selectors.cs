@@ -9,8 +9,8 @@ using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
-using Jtc.CsQuery;
-using Jtc.CsQuery.Utility;
+using CsQuery;
+using CsQuery.Utility;
 
 namespace CsqueryTests.Csharp
 {
@@ -22,7 +22,7 @@ namespace CsqueryTests.Csharp
         public override void FixtureSetUp()
         {
             string html = Support.GetFile("CsQueryTests\\Resources\\TestHtml.htm");
-            Dom = CsQuery.Create(html);
+            Dom = CQ.Create(html);
         }
         protected string WriteDOMObject(IDomElement obj)
         {
@@ -46,7 +46,7 @@ namespace CsqueryTests.Csharp
         public void Find()
         {
             int spanCount = 0;
-            CsQuery res = Dom.Find("span");
+            CQ res = Dom.Find("span");
             foreach (IDomElement obj in res)
             {
                 spanCount++;
@@ -60,14 +60,14 @@ namespace CsqueryTests.Csharp
         [Test,TestMethod]
         public void AttributeEqualsSelector()
         {
-            CsQuery res = Dom.Find("span[name=badge_span_bronze]");
+            CQ res = Dom.Find("span[name=badge_span_bronze]");
             Assert.AreEqual("13",res[0].InnerHTML, "InnerHtml of element id=badge_span_bronze did not match");
 
         }
         [Test,TestMethod]
         public void AttributeStartsWithSelector()
         {
-            CsQuery res = Dom.Find("span[name^=badge_span]");
+            CQ res = Dom.Find("span[name^=badge_span]");
             Assert.AreEqual(2,res.Length,  "Expected two elements starting with badge_span");
         }
         
@@ -75,7 +75,7 @@ namespace CsqueryTests.Csharp
         public void CheckboxSelector()
         {
             List<IDomElement> foundDetails = new List<IDomElement>();
-            CsQuery res = Dom.Find("input:checkbox");
+            CQ res = Dom.Find("input:checkbox");
             foreach (IDomElement obj in res)
             {
                 foundDetails.Add(obj);
@@ -86,7 +86,7 @@ namespace CsqueryTests.Csharp
         public void CssSelector()
         {
 
-            CsQuery res = Dom.Find(".badgecount");
+            CQ res = Dom.Find(".badgecount");
 
             Assert.AreEqual(2, res.Length, "Expected 2 .badgecount items");
         }
@@ -154,7 +154,7 @@ namespace CsqueryTests.Csharp
         [Test, TestMethod]
         public void Visible()
         {
-            var dom = CsQuery.Create(@"<div id='wrapper'><div id='outer' style='display:none;'>
+            var dom = CQ.Create(@"<div id='wrapper'><div id='outer' style='display:none;'>
                 <span id='inner'>should be hidden</span></div>
                 <div id='outer2' width='10'><span id='inner2'>should not be hidden</span></div>
                 <div id='outer3' height='0'><span id='inner3'>hidden</span></div>

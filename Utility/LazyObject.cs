@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery.Utility
+namespace CsQuery.Utility
 {
     /// <summary>
-    /// Similar to framework Lazy&lt;T&gt; but provides a callback that can be used to inject dependencies in the lazily-created object.
-    /// Damn you, you lazy object! Get a job!
+    /// Similar to framework Lazy&lt;T&gt; but provides a callback that can be used to inject dependencies 
+    /// in the lazily-created object.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class LazyObjectFrom<T>
@@ -63,7 +63,8 @@ namespace Jtc.CsQuery.Utility
 
     public class LazyObject<T>: LazyObjectFrom<T> where T: new()
     {
-        public LazyObject(): base(GetNewObject)
+        public LazyObject()
+            : base(GetNewObjectImpl)
         {
 
         }
@@ -71,12 +72,13 @@ namespace Jtc.CsQuery.Utility
         /// When a delegate onCreate is provided, it will be called with the new object instance after creation.
         /// </summary>
         /// <param name="onCreate"></param>
-        public LazyObject(Action<object> onCreate): base(GetNewObject,onCreate)
+        public LazyObject(Action<object> onCreate)
+            : base(GetNewObjectImpl, onCreate)
         {
             OnCreate = onCreate;
         }
 
-        protected static T GetNewObject() {
+        protected static T GetNewObjectImpl() {
             return new T();
         }
     }

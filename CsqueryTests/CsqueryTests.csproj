@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Csharp\Clone.cs" />
+    <Compile Include="Csharp\Miscellaneous.cs" />
     <Compile Include="Csharp\Utility\Expressions.cs" />
     <Compile Include="Csharp\Rendering.cs" />
     <Compile Include="Csharp\DictionaryObjects.cs" />

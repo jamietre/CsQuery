@@ -8,17 +8,17 @@ using Assert = NUnit.Framework.Assert;
 using Description = Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute;
 using MsTestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using TestContext = NUnit.Framework.TestContext;
-using Jtc.CsQuery;
-using Jtc.CsQuery.ExtensionMethods;
-using Jtc.CsQuery.Utility;
+using CsQuery;
+using CsQuery.ExtensionMethods;
+using CsQuery.Utility;
 
 namespace CsqueryTests.jQuery
 {
     [TestClass,TestFixture]
     public class Manipulation : CsQueryTest
     {
-        
-        Func<string,string> bareObj = (input) => { return input; };
+
+        Func<object, object> bareObj = (input) => { return input; };
         Func<string,Func<int,string,string>> functionReturningObj = (input) =>
         {
             Func<int, string,string> returnFunc = (index,inputInner) => { return inputInner; };
@@ -31,7 +31,7 @@ namespace CsqueryTests.jQuery
         }
         protected void ResetQunit()
         {
-            Dom = CsQuery.Create(Support.GetFile("csquerytests\\resources\\jquery-unit-index.htm"));
+            Dom = CQ.Create(Support.GetFile("csquerytests\\resources\\jquery-unit-index.htm"));
         }
 
         [TestMethod, Test]
@@ -48,10 +48,10 @@ namespace CsqueryTests.jQuery
         }
 
 
-        protected void TestText(Func<string, string> valueObj)
+        protected void TestText(Func<string, object> valueObj)
         {
             var val = valueObj("<div><b>Hello</b> cruel world!</div>");
-             jQuery("#foo").Text(val);
+             jQuery("#foo").Text(val.ToString());
             var text = jQuery("#foo")[0].InnerHTML;
             Assert.AreEqual(text, "&lt;div&gt;&lt;b&gt;Hello&lt;/b&gt; cruel world!&lt;/div&gt;", "Check escaped text" );
 
@@ -89,189 +89,191 @@ namespace CsqueryTests.jQuery
 //    Assert.AreEqual(;
 //});
 
-    void TestWrap(Func<string,string> val) {
+        void TestWrap(Func<object,object> val) {
         
-        var defaultText = "Try them out:";
-        string textResult = jQuery("#first").Wrap(val( "<div class='red'><span></span></div>" )).Text();
-        Assert.AreEqual( defaultText, defaultText, "Check for wrapping of on-the-fly html" );
-        Assert.IsTrue( jQuery("#first").Parent().Parent().Is(".red"), "Check if wrapper has class 'red'" );
+            var defaultText = "Try them out:";
+            string textResult = jQuery("#first").Wrap((string)val("<div class='red'><span></span></div>")).Text();
+            Assert.AreEqual( defaultText, defaultText, "Check for wrapping of on-the-fly html" );
+            Assert.IsTrue( jQuery("#first").Parent().Parent().Is(".red"), "Check if wrapper has class 'red'" );
 
-        ResetQunit();
+            ResetQunit();
 
-        var result = jQuery("#first").Wrap(Dom.Document.GetElementById("empty"));
-        result= result.Parent();
+            var result = jQuery("#first").Wrap(Dom.Document.GetElementById("empty"));
+            result= result.Parent();
 
-        Assert.IsTrue( result.Is("ol"), "Check for element wrapping" );
-        Assert.AreEqual( result.Text(), defaultText, "Check for element wrapping" );
+            Assert.IsTrue( result.Is("ol"), "Check for element wrapping" );
+            Assert.AreEqual( result.Text(), defaultText, "Check for element wrapping" );
 
-        // using contents will get comments regular, text, and comment nodes
-        var j = jQuery("#nonnodes").Contents();
-        j.Wrap(val( "<i></i>" ));
+            // using contents will get comments regular, text, and comment nodes
+            var j = jQuery("#nonnodes").Contents();
+            j.Wrap((string)val("<i></i>"));
 
-        // Blackberry 4.6 doesn't maintain comments in the DOM
-        Assert.AreEqual( jQuery("#nonnodes > i").Length, jQuery("#nonnodes")[0].ChildNodes.Length, "Check node,textnode,comment wraps ok" );
-        Assert.AreEqual( jQuery("#nonnodes > i").Text(), j.Text(), "Check node,textnode,comment wraps doesn't hurt text" );
+            // Blackberry 4.6 doesn't maintain comments in the DOM
+            Assert.AreEqual( jQuery("#nonnodes > i").Length, jQuery("#nonnodes")[0].ChildNodes.Length, "Check node,textnode,comment wraps ok" );
+            Assert.AreEqual( jQuery("#nonnodes > i").Text(), j.Text(), "Check node,textnode,comment wraps doesn't hurt text" );
 
-        // Try wrapping a disconnected node
-        //var cacheLength = 0;
-        //for (var i in jQuery.cache) {
-        //    cacheLength++;
-        //}
+            // Try wrapping a disconnected node
+            //var cacheLength = 0;
+            //for (var i in jQuery.cache) {
+            //    cacheLength++;
+            //}
 
-        j = jQuery("<label/>").Wrap(val( "<li/>" ));
-        Assert.AreEqual( j[0].NodeName.ToUpper(), "LABEL", "Element is a label" );
-        Assert.AreEqual( j[0].ParentNode.NodeName.ToUpper(), "LI", "Element has been wrapped" );
+            j = jQuery("<label/>").Wrap((string)val("<li/>"));
+            Assert.AreEqual( j[0].NodeName.ToUpper(), "LABEL", "Element is a label" );
+            Assert.AreEqual( j[0].ParentNode.NodeName.ToUpper(), "LI", "Element has been wrapped" );
 
-        //for (i in jQuery.cache) {
-        //    cacheLength--;
-        //}
-       // Assert.AreEqual(cacheLength, 0, "No memory leak in jQuery.cache (bug #7165)");
+            //for (i in jQuery.cache) {
+            //    cacheLength--;
+            //}
+           // Assert.AreEqual(cacheLength, 0, "No memory leak in jQuery.cache (bug #7165)");
 
-        // Wrap an element containing a text node
-        j = jQuery("<span/>").Wrap("<div>test</div>");
-        Assert.AreEqual( (int)j[0].PreviousSibling.NodeType, 3, "Make sure the previous node is a text element" );
-        Assert.AreEqual( j[0].ParentNode.NodeName.ToUpper(), "DIV", "And that we're in the div element." );
+            // Wrap an element containing a text node
+            j = jQuery("<span/>").Wrap("<div>test</div>");
+            Assert.AreEqual( (int)j[0].PreviousSibling.NodeType, 3, "Make sure the previous node is a text element" );
+            Assert.AreEqual( j[0].ParentNode.NodeName.ToUpper(), "DIV", "And that we're in the div element." );
 
-        // Try to wrap an element with multiple elements (should fail)
-        j = jQuery("<div><span></span></div>").Children().Wrap("<p></p><div></div>");
-        Assert.AreEqual( j[0].ParentNode.ParentNode.ChildNodes.Length, 1, "There should only be one element wrapping." );
-        Assert.AreEqual( j.Length, 1, "There should only be one element (no cloning)." );
-        Assert.AreEqual( j[0].ParentNode.NodeName.ToUpper(), "P", "The span should be in the paragraph." );
+            // Try to wrap an element with multiple elements (should fail)
+            j = jQuery("<div><span></span></div>").Children().Wrap("<p></p><div></div>");
+            Assert.AreEqual( j[0].ParentNode.ParentNode.ChildNodes.Length, 1, "There should only be one element wrapping." );
+            Assert.AreEqual( j.Length, 1, "There should only be one element (no cloning)." );
+            Assert.AreEqual( j[0].ParentNode.NodeName.ToUpper(), "P", "The span should be in the paragraph." );
 
-        // Wrap an element with a jQuery set
-        j = jQuery("<span/>").Wrap(jQuery("<div></div>"));
-        Assert.AreEqual( j[0].ParentNode.NodeName.ToLower(), "div", "Wrapping works." );
+            // Wrap an element with a jQuery set
+            j = jQuery("<span/>").Wrap(jQuery("<div></div>"));
+            Assert.AreEqual( j[0].ParentNode.NodeName.ToLower(), "div", "Wrapping works." );
 
-        //// Wrap an element with a jQuery set and event
-        result = jQuery("<div></div>");
-        //.click(function(){
-        //    Assert.IsTrue(true, "Event triggered.");
+            //// Wrap an element with a jQuery set and event
+            result = jQuery("<div></div>");
+            //.click(function(){
+            //    Assert.IsTrue(true, "Event triggered.");
 
-        //    // Remove handlers on detached elements
-        //    result.unbind();
-        //    jQuery(this).unbind();
-        //});
+            //    // Remove handlers on detached elements
+            //    result.unbind();
+            //    jQuery(this).unbind();
+            //});
 
-        j = jQuery("<span/>").Wrap(result);
-        Assert.AreEqual( j[0].ParentNode.NodeName.ToLower(), "div", "Wrapping works." );
+            j = jQuery("<span/>").Wrap(result);
+            Assert.AreEqual( j[0].ParentNode.NodeName.ToLower(), "div", "Wrapping works." );
 
-//        j.Parent().trigger("click");
+    //        j.Parent().trigger("click");
    
      
-        //jQuery("#check1").click(function() {
-        //    var checkbox = this;
-        //    Assert.IsTrue( checkbox.checked, "Checkbox's state is erased after wrap() action, see #769" );
-        //    jQuery(checkbox).Wrap(val( "<div id='c1' style='display:none;'></div>" ));
-        //    Assert.IsTrue( checkbox.checked, "Checkbox's state is erased after wrap() action, see #769" );
-        //}).click();
+            //jQuery("#check1").click(function() {
+            //    var checkbox = this;
+            //    Assert.IsTrue( checkbox.checked, "Checkbox's state is erased after wrap() action, see #769" );
+            //    jQuery(checkbox).Wrap(val( "<div id='c1' style='display:none;'></div>" ));
+            //    Assert.IsTrue( checkbox.checked, "Checkbox's state is erased after wrap() action, see #769" );
+            //}).click();
 
-        // clean up attached elements
-        ResetQunit();
-    }
+            // clean up attached elements
+            ResetQunit();
+        }
 
-    [Test, TestMethod]
-    public void TestWrapString()
-    {
-        TestWrap(bareObj);
-    }
+        [Test, TestMethod]
+        public void TestWrapString()
+        {
+            TestWrap(bareObj);
+        }
 
-    //test("wrap(Function)", function() {
-    //    testWrap(functionReturningObj);
-    //});
+        //test("wrap(Function)", function() {
+        //    testWrap(functionReturningObj);
+        //});
 
-//test("wrap(Function) with index (#10177)", function() {
-//    var expectedIndex = 0,
-//        targets = jQuery("#qunit-fixture p");
+        //test("wrap(Function) with index (#10177)", function() {
+        //    var expectedIndex = 0,
+        //        targets = jQuery("#qunit-fixture p");
 
-//    expect(targets.Length);
-//    targets.Wrap(function(i) {
-//        Assert.AreEqual( i, expectedIndex, "Check if the provided index (" + i + ") is as expected (" + expectedIndex + ")" );
-//        expectedIndex++;
+        //    expect(targets.Length);
+        //    targets.Wrap(function(i) {
+        //        Assert.AreEqual( i, expectedIndex, "Check if the provided index (" + i + ") is as expected (" + expectedIndex + ")" );
+        //        expectedIndex++;
 
-//        return "<div id='wrap_index_'" + i + "'></div>";
-//    });
-//});
+        //        return "<div id='wrap_index_'" + i + "'></div>";
+        //    });
+        //});
 
-    [Test, TestMethod]
-    public void TestWrapStringConsecutive()
-    {
-        //test("wrap(String) consecutive elements (#10177)", function() {
-        var targets = jQuery("#qunit-fixture p");
+        [Test, TestMethod]
+        public void TestWrapStringConsecutive()
+        {
+            //test("wrap(String) consecutive elements (#10177)", function() {
+            var targets = jQuery("#qunit-fixture p");
 
         
-        targets.Wrap("<div class='wrapper'></div>");
+            targets.Wrap("<div class='wrapper'></div>");
 
-        targets.Each((int i, IDomObject e) =>
+            targets.Each((int i, IDomObject e) =>
+            {
+                CQ _this = jQuery(e);
+
+                Assert.IsTrue( _this.Parent().Is(".wrapper"), "Check each elements parent is correct (.wrapper)" );
+                Assert.AreEqual( _this.Siblings().Length, 0, "Each element should be wrapped individually" );
+            });
+        }
+
+
+        protected void TestWrapAll(Func<object, object> val)
         {
-            CsQuery _this = jQuery(e);
+            var prev = jQuery("#firstp")[0].PreviousSibling;
+            var p = jQuery("#firstp,#first")[0].ParentNode;
 
-            Assert.IsTrue( _this.Parent().Is(".wrapper"), "Check each elements parent is correct (.wrapper)" );
-            Assert.AreEqual( _this.Siblings().Length, 0, "Each element should be wrapped individually" );
-        });
-    }
+            var result = jQuery("#firstp,#first").WrapAll((string)val("<div class='red'><div class='tmp'></div></div>"));
+            Assert.AreEqual(result.Parent().Length, 1, "Check for wrapping of on-the-fly html");
+            Assert.IsTrue(jQuery("#first").Parent().Parent().Is(".red"), "Check if wrapper has class 'red'");
+            Assert.IsTrue(jQuery("#firstp").Parent().Parent().Is(".red"), "Check if wrapper has class 'red'");
+            Assert.AreEqual(jQuery("#first").Parent().Parent()[0].PreviousSibling, prev, "Correct Previous Sibling");
+            Assert.AreEqual(jQuery("#first").Parent().Parent()[0].ParentNode, p, "Correct Parent");
 
 
-//    protected void TestWrapAll(Func<string,string> val)
-//    {
-//        var prev = jQuery("#firstp")[0].PreviousSibling;
-//        var p = jQuery("#firstp,#first")[0].ParentNode;
+            prev = jQuery("#firstp")[0].PreviousSibling;
+            p = jQuery("#first")[0].ParentNode;
+            result = jQuery("#firstp,#first").WrapAll((IDomElement)val(document.GetElementById("empty")));
+            Assert.AreEqual(jQuery("#first").Parent()[0], jQuery("#firstp").Parent()[0], "Same Parent");
+            Assert.AreEqual(jQuery("#first").Parent()[0].PreviousSibling, prev, "Correct Previous Sibling");
+            Assert.AreEqual(jQuery("#first").Parent()[0].ParentNode, p, "Correct Parent");
 
-//        var result = jQuery("#firstp,#first").WrapAll(val( "<div class='red'><div class='tmp'></div></div>" ));
-//        Assert.AreEqual( result.Parent().Length, 1, "Check for wrapping of on-the-fly html" );
-//        Assert.IsTrue( jQuery("#first").Parent().Parent().Is(".red"), "Check if wrapper has class 'red'" );
-//        Assert.IsTrue( jQuery("#firstp").Parent().Parent().Is(".red"), "Check if wrapper has class 'red'" );
-//        Assert.AreEqual( jQuery("#first").Parent().Parent()[0].PreviousSibling, prev, "Correct Previous Sibling" );
-//        Assert.AreEqual( jQuery("#first").Parent().Parent()[0].ParentNode, p, "Correct Parent" );
+        }
+        [Test, TestMethod]
+        public void TestWrapAllString()
+        {
+            TestWrapAll(bareObj);
 
-            
-//        prev = jQuery("#firstp")[0].PreviousSibling;
-//        p = jQuery("#first")[0].parentNode;
-//        result = jQuery("#firstp,#first").wrapAll(val( document.GetElementById("empty") ));
-//        Assert.AreEqual( jQuery("#first").Parent()[0], jQuery("#firstp").Parent()[0], "Same Parent" );
-//        Assert.AreEqual( jQuery("#first").Parent()[0].previousSibling, prev, "Correct Previous Sibling" );
-//        Assert.AreEqual( jQuery("#first").Parent()[0].parentNode, p, "Correct Parent" );
+        }
 
-//}
+  
+        protected void TestWrapInner(Func<object,object> val) {
+            var num = jQuery("#first").Children().Length;
+            var result = jQuery("#first").WrapInner((string)val("<div class='red'><div id='tmp'></div></div>"));
+            Assert.AreEqual( jQuery("#first").Children().Length, 1, "Only one child" );
+            Assert.IsTrue( jQuery("#first").Children().Is(".red"), "Verify Right Element" );
+            Assert.AreEqual( jQuery("#first").Children().Children().Children().Length, num, "Verify Elements Intact" );
 
-//test("wrapAll(String|Element)", function() {
-//    testWrapAll(bareObj);
-//});
+            ResetQunit();
+            num = jQuery("#first").Html("foo<div>test</div><div>test2</div>").Children().Length;
+            result = jQuery("#first").WrapInner((string)val("<div class='red'><div id='tmp'></div></div>"));
+            Assert.AreEqual( jQuery("#first").Children().Length, 1, "Only one child" );
+            Assert.IsTrue( jQuery("#first").Children().Is(".red"), "Verify Right Element" );
+            Assert.AreEqual( jQuery("#first").Children().Children().Children().Length, num, "Verify Elements Intact" );
 
-//var testWrapInner = function(val) {
-//    expect(11);
-//    var num = jQuery("#first").Children().Length;
-//    var result = jQuery("#first").wrapInner(val("<div class='red'><div id='tmp'></div></div>"));
-//    Assert.AreEqual( jQuery("#first").Children().Length, 1, "Only one child" );
-//    Assert.IsTrue( jQuery("#first").Children().Is(".red"), "Verify Right Element" );
-//    Assert.AreEqual( jQuery("#first").Children().Children().Children().Length, num, "Verify Elements Intact" );
+            ResetQunit();
+            num = jQuery("#first").Children().Length;
+            result = jQuery("#first").WrapInner((IDomElement)val(document.GetElementById("empty")));
+            Assert.AreEqual( jQuery("#first").Children().Length, 1, "Only one child" );
+            Assert.IsTrue( jQuery("#first").Children().Is("#empty"), "Verify Right Element" );
+            Assert.AreEqual( jQuery("#first").Children().Children().Length, num, "Verify Elements Intact" );
 
-//    Assert.AreEqual(;
-//    var num = jQuery("#first").Html("foo<div>test</div><div>test2</div>").Children().Length;
-//    var result = jQuery("#first").wrapInner(val("<div class='red'><div id='tmp'></div></div>"));
-//    Assert.AreEqual( jQuery("#first").Children().Length, 1, "Only one child" );
-//    Assert.IsTrue( jQuery("#first").Children().Is(".red"), "Verify Right Element" );
-//    Assert.AreEqual( jQuery("#first").Children().Children().Children().Length, num, "Verify Elements Intact" );
+            var div = jQuery("<div/>");
+            div.WrapInner((string)val("<span></span>"));
+            Assert.AreEqual(div.Children().Length, 1, "The contents were wrapped.");
+            Assert.AreEqual(div.Children()[0].NodeName.ToLower(), "span", "A span was inserted.");
+        }
+        [Test, TestMethod]
+        public void TestWrappInnerString() {
+            TestWrapInner(bareObj);
+        }
 
-//    Assert.AreEqual(;
-//    var num = jQuery("#first").Children().Length;
-//    var result = jQuery("#first").wrapInner(val(document.GetElementById("empty")));
-//    Assert.AreEqual( jQuery("#first").Children().Length, 1, "Only one child" );
-//    Assert.IsTrue( jQuery("#first").Children().Is("#empty"), "Verify Right Element" );
-//    Assert.AreEqual( jQuery("#first").Children().Children().Length, num, "Verify Elements Intact" );
-
-//    var div = jQuery("<div/>");
-//    div.wrapInner(val("<span></span>"));
-//    Assert.AreEqual(div.Children().Length, 1, "The contents were wrapped.");
-//    Assert.AreEqual(div.Children()[0].NodeName.toLowerCase(), "span", "A span was inserted.");
-//}
-
-//test("wrapInner(String|Element)", function() {
-//    testWrapInner(bareObj);
-//});
-
-//test("wrapInner(Function)", function() {
-//    testWrapInner(functionReturningObj)
-//});
+        //test("wrapInner(Function)", function() {
+        //    testWrapInner(functionReturningObj)
+        //});
 
         [Test, TestMethod]
         public void Unwrap()
@@ -299,14 +301,14 @@ namespace CsqueryTests.jQuery
             Assert.AreEqual(jQuery("body > span.unwrap").Get(), abcdef, "body contains 6 .unwrap child spans");
         }
         
-        protected void Append(Func<string, string> valueObj)
+        protected void Append(Func<object,object> valueObj)
         {
             var defaultText = "Try them out:";
-            var result = jQuery("#first").Append(valueObj("<b>buga</b>"));
+            var result = jQuery("#first").Append((string)valueObj("<b>buga</b>"));
             Assert.AreEqual( result.Text(), defaultText + "buga", "Check if text appending works" );
-            
-            jQuery("#select3").Append(valueObj("<option value='appendTest'>Append Test</option>"));
-            Assert.AreEqual( jQuery("#select3").Append(valueObj("<option value='appendTest'>Append Test</option>"))
+
+            jQuery("#select3").Append((string)valueObj("<option value='appendTest'>Append Test</option>"));
+            Assert.AreEqual(jQuery("#select3").Append((string)valueObj("<option value='appendTest'>Append Test</option>"))
                 .Find("option:last-child")
                 .Attr("value"), "appendTest", "Appending html options to select element");
 
@@ -330,31 +332,31 @@ namespace CsqueryTests.jQuery
             Assert.IsTrue( jQuery("#sap")[0].InnerHTML.IndexOf("5")>0, "Check for appending a number" );
 
             
-            jQuery("#sap").Append(valueObj( " text with spaces " ));
+            jQuery("#sap").Append((string)valueObj( " text with spaces " ));
             Assert.IsTrue( jQuery("#sap")[0].InnerHTML.IndexOf(" text with spaces ")>0, "Check for appending text with spaces" );
 
             ResetQunit();
             var old = jQuery("#sap").Children().Length;
             Assert.IsTrue( jQuery("#sap").Append(Objects.EmptyEnumerable<IDomObject>()).Children().Length ==old, "Check for appending an empty array." );
-            Assert.IsTrue(jQuery("#sap").Append(valueObj("")).Children().Length == old, "Check for appending an empty string.");
+            Assert.IsTrue(jQuery("#sap").Append((string)valueObj("")).Children().Length == old, "Check for appending an empty string.");
             Assert.IsTrue(jQuery("#sap").Append(document.GetElementsByTagName("foo")).Children().Length == old, "Check for appending an empty nodelist.");
 
             
-            jQuery("form").Append(valueObj("<input name='radiotest' type='radio' checked='checked' />"));
+            jQuery("form").Append((string)valueObj("<input name='radiotest' type='radio' checked='checked' />"));
             jQuery("form input[name=radiotest]").Each((int i, IDomObject e) =>
             {
                 Assert.IsTrue( jQuery(e).Is(":checked"), "Append checked radio");
             }).Remove();
 
             
-            jQuery("form").Append(valueObj("<input name='radiotest' type='radio' checked    =   'checked' />"));
+            jQuery("form").Append((string)valueObj("<input name='radiotest' type='radio' checked    =   'checked' />"));
             jQuery("form input[name=radiotest]").Each((int i, IDomObject e) =>
             {
                 Assert.IsTrue( jQuery(e).Is(":checked"), "Append alternately formated checked radio");
             }).Remove();
 
             
-            jQuery("form").Append(valueObj("<input name='radiotest' type='radio' checked />"));
+            jQuery("form").Append((string)valueObj("<input name='radiotest' type='radio' checked />"));
             jQuery("form input[name=radiotest]").Each((int i, IDomObject e) =>
             {
                 Assert.IsTrue( jQuery(e).Is(":checked"), "Append HTML5-formated checked radio");
@@ -378,26 +380,26 @@ namespace CsqueryTests.jQuery
 
             //Assert.IsTrue( pass, "Test for appending a DOM node to the contents of an IFrame" );
 
-            jQuery("<fieldset/>").AppendTo("#form").Append(valueObj( "<legend id='legend'>test</legend>" ));
+            jQuery("<fieldset/>").AppendTo("#form").Append((string)valueObj( "<legend id='legend'>test</legend>" ));
             t( "Append legend", "#legend", Objects.Enumerate("legend") );
 
             
-            jQuery("#select1").Append(valueObj( "<OPTION>Test</OPTION>" ));
+            jQuery("#select1").Append((string)valueObj( "<OPTION>Test</OPTION>" ));
             Assert.AreEqual( jQuery("#select1 option:last").Text(), "Test", "Appending &lt;OPTION&gt; (all caps)" );
 
-            jQuery("#table").Append(valueObj( "<colgroup></colgroup>" ));
+            jQuery("#table").Append((string)valueObj( "<colgroup></colgroup>" ));
             Assert.IsTrue( jQuery("#table colgroup").Length>0, "Append colgroup" );
 
-            jQuery("#table colgroup").Append(valueObj( "<col/>" ));
+            jQuery("#table colgroup").Append((string)valueObj( "<col/>" ));
             Assert.IsTrue( jQuery("#table colgroup col").Length>0, "Append col" );
 
    
-            jQuery("#table").Append(valueObj( "<caption></caption>" ));
+            jQuery("#table").Append((string)valueObj( "<caption></caption>" ));
             Assert.IsTrue( jQuery("#table caption").Length>0, "Append caption" );
 
             jQuery("form:last")
-                .Append(valueObj( "<select id='appendSelect1'></select>" ))
-                .Append(valueObj( "<select id='appendSelect2'><option>Test</option></select>" ));
+                .Append((string)valueObj( "<select id='appendSelect1'></select>" ))
+                .Append((string)valueObj( "<select id='appendSelect2'><option>Test</option></select>" ));
 
             t( "Append Select", "#appendSelect1, #appendSelect2", Objects.Enumerate("appendSelect1", "appendSelect2") );
 
@@ -444,9 +446,10 @@ namespace CsqueryTests.jQuery
         }
 
 
-//test("Append(Function)", function() {
-//    testAppend(functionReturningObj);
-//});
+        //test("Append(Function)", function() {
+        //    testAppend(functionReturningObj);
+        //});
+
         [Test,TestMethod]
         public void AppendWithIncoming() {
             var defaultText = "Try them out:";
@@ -862,32 +865,33 @@ namespace CsqueryTests.jQuery
             Assert.AreEqual(jQuery("#foo span").Length, 3, "verify that all the three original element have been replaced");
             Assert.AreEqual(jQuery("#foo p").Length, 0, "verify that all the three original element have been replaced");
         }
-        //[Test, TestMethod]
-        //public void ReplaceAll()
-        //{
+        [Test, TestMethod]
+        public void ReplaceAll()
+        {
 
-        //    jQuery("<b id='replace'>buga</b>").ReplaceAll("#yahoo");
-        //    Assert.IsTrue( jQuery("#replace")[0], "Replace element with string" );
-        //    Assert.IsTrue( !jQuery("#yahoo")[0], "Verify that original element is gone, after string" );
+            jQuery("<b id='replace'>buga</b>").ReplaceAll("#yahoo");
+            Assert.IsTrue( jQuery("#replace").Length>0, "Replace element with string" );
+            Assert.IsTrue( jQuery("#yahoo").Length==0, "Verify that original element is gone, after string" );
 
-        //    Assert.AreEqual(;
-        //    jQuery(document.GetElementById("first")).replaceAll("#yahoo");
-        //    Assert.IsTrue( jQuery("#first")[0], "Replace element with element" );
-        //    Assert.IsTrue( !jQuery("#yahoo")[0], "Verify that original element is gone, after element" );
+            ResetQunit();
+            jQuery(document.GetElementById("first")).ReplaceAll("#yahoo");
+            Assert.IsTrue( jQuery("#first").Length>0, "Replace element with element" );
+            Assert.IsTrue( jQuery("#yahoo").Length==0, "Verify that original element is gone, after element" );
 
-        //    Assert.AreEqual(;
-        //    jQuery([document.GetElementById("first"), document.GetElementById("mark")]).replaceAll("#yahoo");
-        //    Assert.IsTrue( jQuery("#first")[0], "Replace element with array of elements" );
-        //    Assert.IsTrue( jQuery("#mark")[0], "Replace element with array of elements" );
-        //    Assert.IsTrue( !jQuery("#yahoo")[0], "Verify that original element is gone, after array of elements" );
+            ResetQunit();
+            jQuery(new IDomElement[] {document.GetElementById("first"), document.GetElementById("mark")})
+                .ReplaceAll("#yahoo");
+            Assert.IsTrue( jQuery("#first").Length>0, "Replace element with array of elements" );
+            Assert.IsTrue( jQuery("#mark").Length>0, "Replace element with array of elements" );
+            Assert.IsTrue( jQuery("#yahoo").Length==0, "Verify that original element is gone, after array of elements" );
 
-        //    Assert.AreEqual(;
-        //    jQuery("#mark, #first").replaceAll("#yahoo");
-        //    Assert.IsTrue( jQuery("#first")[0], "Replace element with set of elements" );
-        //    Assert.IsTrue( jQuery("#mark")[0], "Replace element with set of elements" );
-        //    Assert.IsTrue( !jQuery("#yahoo")[0], "Verify that original element is gone, after set of elements" );
+            ResetQunit();
+            jQuery("#mark, #first").ReplaceAll("#yahoo");
+            Assert.IsTrue( jQuery("#first").Length>0, "Replace element with set of elements" );
+            Assert.IsTrue( jQuery("#mark").Length>0, "Replace element with set of elements" );
+            Assert.IsTrue( jQuery("#yahoo").Length==0, "Verify that original element is gone, after set of elements" );
         
-        //}
+        }
         //test("jQuery.Clone() (#8017)", function() {
 
         //    expect(2);

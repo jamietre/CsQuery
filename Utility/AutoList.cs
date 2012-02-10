@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery.Utility
+namespace CsQuery.Utility
 {
-    public class AutoList<T>: IList<T>
+    /// <summary>
+    /// Note: Currently unused by CsQuery as of 2/1/2012. Delete in a couple months.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class AutoList<T> : IList<T>
     {
         /// <summary>
         /// Permits accessing the next indexed member by index for set/insert operations by using Add automatically.

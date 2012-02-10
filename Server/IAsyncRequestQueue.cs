@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery.Server
+namespace CsQuery.Server
 {
     public enum RequestState
     {
@@ -21,7 +21,7 @@ namespace Jtc.CsQuery.Server
     {
         void AddRequest(string url);
         void AddRequest(ICsqWebRequest request);
-        IEnumerable<CsQuery> Results();
+        IEnumerable<CQ> Results();
         RequestState State { get; }
 
     }

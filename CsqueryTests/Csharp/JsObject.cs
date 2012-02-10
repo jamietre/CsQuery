@@ -9,9 +9,9 @@ using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
-using Jtc.CsQuery;
-using Jtc.CsQuery.Utility;
-using Jtc.CsQuery.ExtensionMethods;
+using CsQuery;
+using CsQuery.Utility;
+using CsQuery.ExtensionMethods;
 
 namespace CsqueryTests.Csharp
 {
@@ -32,6 +32,17 @@ namespace CsqueryTests.Csharp
             testDict.Add("Prop4", subDict);
             subDict.Add("subProp1", "sub value 1");
             subDict.Add("subprop2", null);
+        }
+        /// <summary>
+        /// This is not possible yet. I leave this here so hopefully some future version of the C# compiler
+        /// will permit a DynamicObject to be told about the target type upon gets.
+        /// </summary>
+        [Test, TestMethod]
+        public void CoerceTypes()
+        {
+            //dynamic test = new JsObject();
+            //test.stringVal = "12";
+            //int intVal = test.stringVal;
         }
         [Test,TestMethod]
         public void Dict2Expando()

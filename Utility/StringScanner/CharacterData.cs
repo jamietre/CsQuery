@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.Utility.StringScanner;
-using Jtc.CsQuery.Utility.StringScanner.Implementation;
+using CsQuery.Utility.StringScanner;
+using CsQuery.Utility.StringScanner.Implementation;
 
-namespace Jtc.CsQuery.Utility.StringScanner
+namespace CsQuery.Utility.StringScanner
 {
     /// <summary>
     /// A static class to provide attribute information about characters, e.g. determining whether or not it

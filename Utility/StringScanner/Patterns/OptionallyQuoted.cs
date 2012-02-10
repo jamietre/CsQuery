@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.ExtensionMethods;
+using CsQuery.ExtensionMethods;
 
-namespace Jtc.CsQuery.Utility.StringScanner.Patterns
+namespace CsQuery.Utility.StringScanner.Patterns
 {
     /// <summary>
     /// Match an attribute value. Should be quoted but doesn't have to be.

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.ExtensionMethods;
-using Jtc.CsQuery;
-using Jtc.CsQuery.Utility.EquationParser;
-using Jtc.CsQuery.Utility.StringScanner;
+using CsQuery.ExtensionMethods;
+using CsQuery;
+using CsQuery.Utility.EquationParser;
+using CsQuery.Utility.StringScanner;
 
-namespace Jtc.CsQuery.Utility.EquationParser.Implementation
+namespace CsQuery.Utility.EquationParser.Implementation
 {
     public abstract class Function : Operand, IFunction
     {

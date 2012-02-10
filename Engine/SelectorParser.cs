@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.Utility;
-using Jtc.CsQuery.Utility.StringScanner;
+using CsQuery.Utility;
+using CsQuery.Utility.StringScanner;
+using CsQuery.Utility.StringScanner.Patterns;
 
-namespace Jtc.CsQuery.Engine
+namespace CsQuery.Engine
 {
     public class SelectorParser
     {
@@ -278,7 +279,7 @@ namespace Jtc.CsQuery.Engine
         #region private methods
         protected IExpectPattern expectsOptionallyQuotedValue()
         {
-            var pattern = new Jtc.CsQuery.Utility.StringScanner.Patterns.OptionallyQuoted();
+            var pattern = new OptionallyQuoted();
             pattern.Terminators = Objects.Enumerate(']');
             return pattern;
         }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery.Utility
+namespace CsQuery.Utility
 {
 
     public class OrderedDictionary<TKey, TValue> : OrderedDictionary<Dictionary<TKey, TValue>, TKey, TValue>, IOrderedDictionary<TKey,TValue>
@@ -293,6 +293,7 @@ namespace Jtc.CsQuery.Utility
             }
         }
         #endregion
+
         #region interface only
         IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
         {

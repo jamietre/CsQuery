@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Web.Script.Serialization;
 using System.Dynamic;
-using Jtc.CsQuery.ExtensionMethods.Internal;
+using CsQuery.ExtensionMethods.Internal;
 
-namespace Jtc.CsQuery.Utility
+namespace CsQuery.Utility
 {
     public static class JSON
     {
@@ -105,7 +105,7 @@ namespace Jtc.CsQuery.Utility
                 {
                     sb.Append("{");
                     bool first = true;
-                    foreach (KeyValuePair<string,object> kvp in CsQuery.Enumerate<KeyValuePair<string,object>>(value,new Type[] {typeof(ScriptIgnoreAttribute)})) {
+                    foreach (KeyValuePair<string,object> kvp in CQ.Enumerate<KeyValuePair<string,object>>(value,new Type[] {typeof(ScriptIgnoreAttribute)})) {
                         if (first)
                         {
                             first = false; 

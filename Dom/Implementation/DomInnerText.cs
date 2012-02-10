@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 
-namespace Jtc.CsQuery.Implementation
+namespace CsQuery.Implementation
 {
    
     /// <summary>

@@ -8,10 +8,10 @@ using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
-using Jtc.CsQuery;
-using Jtc.CsQuery.HtmlParser;
-using Jtc.CsQuery.Implementation;
-using Jtc.CsQuery.Utility;
+using CsQuery;
+using CsQuery.HtmlParser;
+using CsQuery.Implementation;
+using CsQuery.Utility;
 
 namespace CsqueryTests.CSharp
 {
@@ -19,7 +19,7 @@ namespace CsqueryTests.CSharp
     [TestFixture, TestClass, Description("CsQuery Tests (Not from Jquery test suite)")]
     public class DomManipulation
     {
-        private static CsQuery csq;
+        private static CQ csq;
         [TestFixtureSetUp,ClassInitialize]
         public static void Init(TestContext context)
         {
@@ -29,7 +29,7 @@ namespace CsqueryTests.CSharp
         private static void Initialize()
         {
             string html = Support.GetFile("CsQueryTests\\Resources\\TestHtml2.htm");
-            csq = CsQuery.Create(html);
+            csq = CQ.Create(html);
             //RangeSortedDictionary<IDomObject> test = ((IDomRoot)csq.Document).SelectorXref;
             //foreach (var item in test)
             //{
@@ -49,7 +49,7 @@ namespace CsqueryTests.CSharp
         [Test,TestMethod]
         public void InnerParsingRules()
         {
-            CsQuery res = csq.Select("script");
+            CQ res = csq.Select("script");
             // bug found 10/31/11
             Assert.AreEqual(0, res.Children().Length, "Script cannot have children");
         }
@@ -193,7 +193,7 @@ namespace CsqueryTests.CSharp
         [Test, TestMethod]
         public void AppendToTable()
         {
-            var csq = CsQuery.Create("<div><table></table></div>").Find("table");
+            var csq = CQ.Create("<div><table></table></div>").Find("table");
 
             csq.Append("<tr />");
 
@@ -224,7 +224,7 @@ namespace CsqueryTests.CSharp
 
 
         #region private methods
-        protected string GetChildTags(CsQuery csq)
+        protected string GetChildTags(CQ csq)
         {
             string tags = "";
             csq.Each(delegate(IDomObject e)

@@ -8,9 +8,9 @@ using System.Dynamic;
 using System.Text;
 using System.Reflection;
 using System.Diagnostics;
-using Jtc.CsQuery;
+using CsQuery;
 
-namespace Jtc.CsQuery.ExtensionMethods.Internal
+namespace CsQuery.ExtensionMethods.Internal
 {
     public static class InternalExtensionMethods
     {

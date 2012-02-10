@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery.Utility.EquationParser.Implementation.Functions
+namespace CsQuery.Utility.EquationParser.Implementation.Functions
 {
 
     public class Product : NativeOperation, IOperation

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery.Implementation
+namespace CsQuery.Implementation
 {
 
     /// <summary>
@@ -15,9 +15,9 @@ namespace Jtc.CsQuery.Implementation
         /// Wraps the element in a CsQuery object
         /// </summary>
         /// <returns></returns>
-        public CsQuery Csq()
+        public CQ Cq()
         {
-            return new CsQuery(this);
+            return new CQ(this);
         }
 
         public virtual IDomObject Clone()

@@ -7,9 +7,9 @@ using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
-using Jtc.CsQuery.Utility.EquationParser;
-using Jtc.CsQuery.Utility.EquationParser.Implementation;
-using Jtc.CsQuery.Utility.EquationParser.Implementation.Functions;
+using CsQuery.Utility.EquationParser;
+using CsQuery.Utility.EquationParser.Implementation;
+using CsQuery.Utility.EquationParser.Implementation.Functions;
 
 namespace CsqueryTests.Csharp
 {

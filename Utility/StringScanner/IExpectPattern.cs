@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Jtc.CsQuery.Utility.StringScanner
+namespace CsQuery.Utility.StringScanner
 {
     /// <summary>
     /// An interface for pattern matching. For each character, Expect will be called until it returns false.

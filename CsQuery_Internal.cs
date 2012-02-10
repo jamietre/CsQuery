@@ -3,17 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Jtc.CsQuery.Utility;
-using Jtc.CsQuery.ExtensionMethods;
-using Jtc.CsQuery.ExtensionMethods.Internal;
-using Jtc.CsQuery.Engine;
+using CsQuery.Utility;
+using CsQuery.ExtensionMethods;
+using CsQuery.ExtensionMethods.Internal;
+using CsQuery.Engine;
 
-namespace Jtc.CsQuery
+namespace CsQuery
 {
-    public partial class CsQuery
+    public partial class CQ
     {
         #region private properties
-        protected CsQuery _CsQueryParent;
+        protected CQ _CsQueryParent;
         protected SelectionSet<IDomObject> _Selection = null;
 
         protected static Dictionary<string, object> _ExtensionCache = null;
@@ -34,7 +34,7 @@ namespace Jtc.CsQuery
         /// <summary>
         /// The object from which this CsQuery was created
         /// </summary>
-        protected CsQuery CsQueryParent
+        protected CQ CsQueryParent
         {
             get
             {
@@ -258,18 +258,18 @@ namespace Jtc.CsQuery
                 }
             }
         }
-        protected CsQuery ForEach(IEnumerable<IDomObject> source, Func<IDomObject, IDomObject> del)
+        protected CQ ForEach(IEnumerable<IDomObject> source, Func<IDomObject, IDomObject> del)
         {
-            CsQuery output = New();
+            CQ output = New();
             foreach (var item in SelectionSet)
             {
                 output.SelectionSet.Add(del(item));
             }
             return output;
         }
-        protected CsQuery ForEachMany(IEnumerable<IDomObject> source, Func<IDomObject, IEnumerable<IDomObject>> del)
+        protected CQ ForEachMany(IEnumerable<IDomObject> source, Func<IDomObject, IEnumerable<IDomObject>> del)
         {
-            CsQuery output = New();
+            CQ output = New();
             foreach (var item in SelectionSet)
             {
                 output.SelectionSet.AddRange(del(item));
@@ -297,24 +297,24 @@ namespace Jtc.CsQuery
             List<IDomObject> allContent = new List<IDomObject>();
             foreach (var item in content)
             {
-                allContent.AddRange(CsQuery.Create(item));
+                allContent.AddRange(CQ.Create(item));
             }
             return allContent;
         }
-        protected CsQuery filterIfSelector(string selector, IEnumerable<IDomObject> list)
+        protected CQ filterIfSelector(string selector, IEnumerable<IDomObject> list)
         {
             return filterIfSelector(selector, list,SelectionSetOrder.OrderAdded);
         }
-        protected CsQuery filterIfSelector(string selector,IEnumerable<IDomObject> list, SelectionSetOrder order)
+        protected CQ filterIfSelector(string selector,IEnumerable<IDomObject> list, SelectionSetOrder order)
         {
-            CsQuery output;
+            CQ output;
             if (String.IsNullOrEmpty(selector))
             {
-                output= new CsQuery(list, this);
+                output= new CQ(list, this);
             }
             else
             {
-                output= new CsQuery(filterElements(list, selector), this);
+                output= new CQ(filterElements(list, selector), this);
             }
             output.Order = order;
             return output;
@@ -438,7 +438,7 @@ namespace Jtc.CsQuery
         /// <param name="target"></param>
         /// <param name="offset"></param>
         /// <returns></returns>
-        protected CsQuery InsertAtOffset(IEnumerable<IDomObject> target, int offset)
+        protected CQ InsertAtOffset(IEnumerable<IDomObject> target, int offset)
         {
             SelectionSet<IDomObject> sel = target as SelectionSet<IDomObject>;
             bool isCsQuery = sel != null;

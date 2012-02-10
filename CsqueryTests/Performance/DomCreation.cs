@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Reflection;
-using Jtc.CsQuery;
-using Jtc.CsQuery.Utility;
+using CsQuery;
+using CsQuery.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using MsAssert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
@@ -15,7 +15,7 @@ using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using HtmlAgilityPack;
 using Fizzler.Systems.HtmlAgilityPack;
 using System.Diagnostics;
-using Jtc.CsQuery.Utility.EquationParser;
+using CsQuery.Utility.EquationParser;
 
 namespace CsqueryTests.Performance
 {
@@ -39,7 +39,7 @@ namespace CsqueryTests.Performance
             for (int i = 0; i < iterationsLoad; i++)
             {
 
-                Dom = CsQuery.Create(html);
+                Dom = CQ.Create(html);
             }
             var GC_MemoryEnd = System.GC.GetTotalMemory(true);
 
@@ -54,7 +54,7 @@ namespace CsqueryTests.Performance
             for (int i = 0; i < iterationsSelect; i++)
             {
                 // todo: cache equations once parsed - should speed this up immenseley
-                CsQuery sel = Dom.Select("div:nth-child(2n+1)");
+                CQ sel = Dom.Select("div:nth-child(2n+1)");
                 //CsQuery sel = Dom.Select("div span");
                 
                 // get length to force it to iterate through everything
@@ -64,7 +64,7 @@ namespace CsqueryTests.Performance
                // var y = equation.Value;
             }
 
-            CsQuery selFinal = Dom.Select("div span");
+            CQ selFinal = Dom.Select("div span");
             divSpan = selFinal.Length;
 
             DateTime selected = DateTime.Now;
@@ -72,7 +72,7 @@ namespace CsqueryTests.Performance
           
             for (int i = 0; i < iterationsClone; i++)
             {
-                CsQuery c = Dom.Clone();
+                CQ c = Dom.Clone();
                 Assert.AreEqual(divSpan, Dom.Select("div span").Length, "Clone wasn't equal in # of elements");
                 string cloneContents = c.Select("p").Eq(22).RenderSelection();
                 Assert.AreEqual(randomLength, cloneContents.Length, "Some random text was right");
