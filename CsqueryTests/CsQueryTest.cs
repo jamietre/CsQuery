@@ -16,7 +16,6 @@ namespace CsqueryTests
     [TestClass]
     public class CsQueryTest
     {
-        
         public CsQueryTest()
         {
             FixtureSetUp();
@@ -31,7 +30,7 @@ namespace CsqueryTests
         }
         public virtual void FixtureSetUp()
         {
-            
+            CQ.DefaultDocType = DocType.XHTML;
         }
         protected CQ jQuery()
         {

@@ -652,7 +652,14 @@ namespace CsQuery.HtmlParser
                 var curVal = current.Element.GetAttribute(aName);
                 if (string.IsNullOrEmpty(curVal))
                 {
-                    current.Element.SetAttribute(aName, aValue ?? "");
+                    if (aValue == null)
+                    {
+                        current.Element.SetAttribute(aName);
+                    }
+                    else
+                    {
+                        current.Element.SetAttribute(aName, aValue);
+                    }
                 }
                 return true;
             }

@@ -15,6 +15,7 @@ namespace CsQuery
         IEnumerable<IDomObject> QueryIndex(string subKey, int depth, bool includeDescendants);
         IEnumerable<IDomObject> QueryIndex(string subKey);
 
+        IDomDocumentType DocTypeNode {get;}
         DocType DocType { get; set; }
         DomRenderingOptions DomRenderingOptions { get; set; }
         IDomElement GetElementById(string id);

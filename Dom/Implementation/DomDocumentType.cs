@@ -78,6 +78,7 @@ namespace CsQuery.Implementation
             set
             {
                 _NonAttributeData = value.Trim();
+                DocType = GetDocType();
             }
         }
         protected string _NonAttributeData = String.Empty;

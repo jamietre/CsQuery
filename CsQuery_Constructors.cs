@@ -198,7 +198,6 @@ namespace CsQuery
                 Document = new DomRoot();
             }
             Document.DomRenderingOptions = CQ.DefaultDomRenderingOptions;
-            Document.DocType = CQ.DefaultDocType;
         }
         #endregion
     }

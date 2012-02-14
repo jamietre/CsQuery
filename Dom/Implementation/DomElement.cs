@@ -623,6 +623,7 @@ namespace CsQuery.Implementation
         {
             Attributes[name] = value;
         }
+
         protected void SetAttribute(ushort tokenId, string value)
         {
             if (tokenId == DomData.ClassAttrId)
@@ -640,7 +641,8 @@ namespace CsQuery.Implementation
         /// <param name="name"></param>
         public override void SetAttribute(string name)
         {
-            SetAttribute(name, String.Empty);
+            Attributes.SetBooleanAttribute(name);
+            
         }
         public void SetAttribute(ushort tokenId)
         {
@@ -693,7 +695,10 @@ namespace CsQuery.Implementation
             if (_Attributes != null
                 && Attributes.TryGetValue(tokenId, out value))
             {
-                return value;
+                //IMPORTANT: Even though we need to distinguish between null and empty string values internally to
+                // render the same way it was brought over (e.g. either "checked" or "checked=''") --- accessing the
+                // attribute value is never null for attributes that exist.
+                return value ?? "";
             }
             else
             {
@@ -836,7 +841,9 @@ namespace CsQuery.Implementation
             }
             else
             {
-                if (Document.DocType == DocType.XHTML) {
+
+                if ((Document == null ? CQ.DefaultDocType : Document.DocType)== DocType.XHTML)
+                {
                     sb.Append(" />");
                 }
                 else

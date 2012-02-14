@@ -142,7 +142,7 @@ namespace CsQuery.Web
                 // Append the recently read data to the RequestData stringbuilder
                 // object contained in RequestState.
                 rs.RequestData.Append(
-                   Encoding.ASCII.GetString(rs.BufferRead, 0, read));
+                 Encoding.UTF8.GetString(rs.BufferRead, 0, read));
 
                 // Continue reading data until 
                 // responseStream.EndRead returns –1.

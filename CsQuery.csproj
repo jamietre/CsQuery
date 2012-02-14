@@ -94,7 +94,7 @@
     <Compile Include="Dom\IDomCData.cs" />
     <Compile Include="Dom\IDomComment.cs" />
     <Compile Include="Dom\IDomContainer.cs" />
-    <Compile Include="Dom\IDomDocument.cs" />
+    <Compile Include="Dom\IDomRoot.cs" />
     <Compile Include="Dom\IDomDocumentType.cs" />
     <Compile Include="Dom\IDomElement.cs" />
     <Compile Include="Dom\IDomFragment.cs" />

@@ -21,10 +21,18 @@ namespace CsqueryTests.Csharp
         
         public override void FixtureSetUp()
         {
+            base.FixtureSetUp();
             string html = Support.GetFile("CsQueryTests\\Resources\\TestHtml.htm");
             Dom = CQ.Create(html);
         }
-        
+
+        [Test, TestMethod]
+        public void Encoding()
+        {
+            var res = CQ.Create("<div><span>x…</span></div>");
+            Assert.AreEqual(res["div span"].Text(), "x"+(char)8230);
+
+        }
         [Test, TestMethod]
         public void End()
         {
@@ -38,14 +46,16 @@ namespace CsqueryTests.Csharp
         [Test, TestMethod]
         public void TestDocType()
         {
-            var dom = jQuery("<!doctype html >");
+            var dom = CQ.Create("<!doctype html >");
 
             Assert.AreEqual(DocType.HTML5, dom.Document.DocType);
             Assert.AreEqual("<!DOCTYPE html>", dom[0].Render() );
-            
-            dom.Document.DocType = DocType.XHTML;
 
+            dom = CQ.Create("<!doctype html PUBLIC \"-//W3C//DTD XHTML 1.0 >");
+            Assert.AreEqual(DocType.XHTML, dom.Document.DocType);
 
+            dom.Document.DocType = DocType.HTML5;
+            Assert.AreEqual("<!DOCTYPE html>", dom.First().Render());
 
         }
     }

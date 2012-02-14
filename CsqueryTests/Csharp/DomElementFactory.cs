@@ -25,6 +25,7 @@ namespace CsqueryTests.Csharp
         [SetUp]
         public override void FixtureSetUp()
         {
+            base.FixtureSetUp();
             string html = Support.GetFile(testFile);
             Dom = CQ.Create(html);
             factory = new DomElementFactory(Dom.Document);

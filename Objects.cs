@@ -61,6 +61,12 @@ namespace CsQuery
         /// <returns></returns>
         public static string AttributeEncode(string text, bool alwaysQuote, out string quoteChar)
         {
+            if (text == "")
+            {
+                quoteChar = "\"";
+                return "";
+            }
+
             bool hasQuotes = text.IndexOf("\"") >= 0;
             bool hasSingleQuotes = text.IndexOf("'") >= 0;
             string result = text;

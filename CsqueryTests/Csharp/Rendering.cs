@@ -8,8 +8,8 @@ using CsQuery;
 namespace CsqueryTests.Csharp
 {
     [TestClass]
-    public class Rendering
-    {
+    public class Rendering:CsQueryTest 
+     {
 
         protected string node = "<div class='a b c c' attr1='{\"somejson\": \"someval\"}'";
 
@@ -39,12 +39,12 @@ namespace CsqueryTests.Csharp
         {
             string test1html = "<input type=\"text\" id=\"\" checked custom=\"sometext\">";
             var dom = CQ.Create(test1html);
-            Assert.AreEqual("<input id type=\"text\" checked custom=\"sometext\" />", dom.Render(), "Missing & boolean attributes are parsed & render correctly");
+            Assert.AreEqual("<input id=\"\" type=\"text\" checked custom=\"sometext\" />", dom.Render(), "Missing & boolean attributes are parsed & render correctly");
 
             // remove "quote all attributes"
             dom.Document.DomRenderingOptions = 0;
 
-            Assert.AreEqual("<input id type=text checked custom=sometext />", dom.Render(), "Missing & boolean attributes are parsed & render correctly");
+            Assert.AreEqual("<input id=\"\" type=text checked custom=sometext />", dom.Render(), "Missing & boolean attributes are parsed & render correctly");
 
             dom = CQ.Create("<div id='test' quotethis=\"must've\" class=\"one two\" data='\"hello\"' noquote=\"regulartext\"");
             dom.Document.DomRenderingOptions = 0;

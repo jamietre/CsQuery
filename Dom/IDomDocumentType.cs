@@ -10,6 +10,7 @@ namespace CsQuery
     /// </summary>
     public interface IDomDocumentType : IDomSpecialElement
     {
+        DocType DocType { get; set; }
     }
 
 }

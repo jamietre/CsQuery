@@ -198,7 +198,7 @@ namespace CsQuery.Implementation
                 ? NodeType.DOCUMENT_FRAGMENT_NODE :
                   NodeType.DOCUMENT_NODE; }
         }
-        public DomDocumentType DocTypeNode
+        public IDomDocumentType DocTypeNode
         {
             get
             {
@@ -219,19 +219,19 @@ namespace CsQuery.Implementation
         {
             get
             {
-                if (_DocType == 0)
+                // If explicitly set, return that value, otherwise get from DomDocument node
+
+                IDomDocumentType docNode = DocTypeNode;
+                if (_DocType != 0 && docNode==null)
                 {
-                    DomDocumentType docType = DocTypeNode;
-                    if (docType == null)
-                    {
-                        _DocType = DocType.XHTML;
-                    }
-                    else
-                    {
-                        _DocType = docType.DocType;
-                    }
+                    return _DocType;
                 }
-                return _DocType;
+                if (docNode != null)
+                {
+                    return docNode.DocType;
+                } else {
+                    return CQ.DefaultDocType;
+                }
             }
             set
             {
@@ -239,10 +239,14 @@ namespace CsQuery.Implementation
                 if (_settingDocType) return;
                 _settingDocType = true;
                 _DocType = value;
-                DomDocumentType docType = DocTypeNode;
+                IDomDocumentType docType = DocTypeNode;
                 if (docType != null)
                 {
                     DocTypeNode.DocType = value;
+                }
+                else
+                {
+                    _DocType = value;
                 }
                 _settingDocType = false;
 

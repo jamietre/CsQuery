@@ -189,11 +189,11 @@ namespace CsQuery.Implementation
         /// <param name="value"></param>
         protected void Set(string name, string value)
         {
-            name = name.CleanUp();
             if (String.IsNullOrEmpty(name))
             {
                 throw new Exception("Cannot set an attribute with no name.");
             }
+            name = name.CleanUp();
             Set(DomData.TokenID(name, true), value);
         }
         /// <summary>
@@ -255,10 +255,22 @@ namespace CsQuery.Implementation
                     AddToIndex(tokenId);
                 }
                 Attributes[tokenId] = value;
-
             }
         }
-           
+        /// <summary>
+        /// Sets a boolean only attribute having no value
+        /// </summary>
+        /// <param name="name"></param>
+        internal void SetBooleanAttribute(string name) {
+            ushort tokenId = DomData.TokenID(name,true);
+
+            if (!Attributes.ContainsKey(tokenId)) 
+            {
+                AddToIndex(tokenId);
+            }
+            Attributes[tokenId] = null;
+        
+        }
         /// <summary>
         /// Removing an attribute implementation
         /// </summary>
