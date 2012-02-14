@@ -35,5 +35,18 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual("profile-triangle", res.Find("span").End()[0].ClassName);
 
         }
+        [Test, TestMethod]
+        public void TestDocType()
+        {
+            var dom = jQuery("<!doctype html >");
+
+            Assert.AreEqual(DocType.HTML5, dom.Document.DocType);
+            Assert.AreEqual("<!DOCTYPE html>", dom[0].Render() );
+            
+            dom.Document.DocType = DocType.XHTML;
+
+
+
+        }
     }
 }

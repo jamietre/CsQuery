@@ -836,15 +836,13 @@ namespace CsQuery.Implementation
             }
             else
             {
-                //TODO: make "DomRenderingOptions" a class
-                //if (options.DocType == DocType.XHTML)
-                //{
+                if (Document.DocType == DocType.XHTML) {
                     sb.Append(" />");
-                //}
-                //else
-                //{
-                //    sb.Append(">");
-                //}
+                }
+                else
+                {
+                    sb.Append(">");
+                }
             }
         }
         /// <summary>
@@ -855,7 +853,7 @@ namespace CsQuery.Implementation
         /// <returns></returns>
         protected void RenderAttribute(StringBuilder sb, string name, string value, bool quoteAll)
         {
-            if (!String.IsNullOrEmpty(value))
+            if (value != null)
             {
                 string quoteChar;
                 string attrText = Objects.AttributeEncode(value,

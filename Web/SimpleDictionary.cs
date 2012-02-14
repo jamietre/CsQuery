@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Collections.Specialized;
 
-namespace CsQuery.Server
+namespace CsQuery.Web
 {
     public class SimpleDictionary<T> where T : class
     {
@@ -25,6 +25,7 @@ namespace CsQuery.Server
                 return _InnerDict;
             }
         } protected Dictionary<string, T> _InnerDict = new Dictionary<string, T>();
+        
         public bool TryGetValue(string key, out T value)
         {
             T storedValue;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CsQuery.Server
+namespace CsQuery.Web
 {
     public enum RequestState
     {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Net;
 using System.IO;
 
-namespace CsQuery.Server
+namespace CsQuery.Web
 {
     public class WebRequestState
     {
