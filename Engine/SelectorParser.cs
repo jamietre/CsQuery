@@ -174,7 +174,7 @@ namespace CsQuery.Engine
                         if (!scanner.Finished)
                         {
                             StartNewSelector(SelectorType.ID);
-                            Current.ID = scanner.Get(MatchFunctions.HTMLAttribute);
+                            Current.ID = scanner.Get(MatchFunctions.HtmlIDValue);
                         }
 
                         break;

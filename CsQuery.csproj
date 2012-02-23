@@ -70,6 +70,7 @@
     <Compile Include="Engine\SelectorParser.cs" />
     <Compile Include="IOutputFormatter.cs" />
     <Compile Include="OutputFormatters\FormatPlainText.cs" />
+    <Compile Include="Utility\Settings.cs" />
     <Compile Include="Web\ICsqWebResponse.cs" />
     <Compile Include="Utility\AutoList.cs" />
     <Compile Include="Utility\EquationParser\Implementation\Functions\Quotient.cs" />
@@ -162,7 +163,7 @@
     <Compile Include="Web\IWebRequestInfo.cs" />
     <Compile Include="Web\CsqWebRequest.cs" />
     <Compile Include="Web\AsyncWebRequest.cs" />
-    <Compile Include="Web\SimpleDictionary.cs" />
+    <Compile Include="Utility\SimpleDictionary.cs" />
     <Compile Include="Web\WebRequestState.cs" />
     <Compile Include="Utility\SelectionSet.cs" />
     <Compile Include="Utility\EquationParser\IVariableContainer.cs" />

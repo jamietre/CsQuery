@@ -814,10 +814,20 @@ namespace CsQuery
         {
             return After(Select(selector));
         }
+        /// <summary>
+        ///  Insert content, specified by the parameter, after each element in the set of matched elements.
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns></returns>
         public CQ After(IDomObject element)
         {
             return After(Objects.Enumerate(element));
         }
+        /// <summary>
+        ///  Insert content, specified by the parameter, after each element in the set of matched elements.
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns></returns>
         public CQ After(IEnumerable<IDomObject> selection)
         {
             EnsureCsQuery(selection).InsertAtOffset(SelectionSet, 1);
@@ -1533,9 +1543,19 @@ namespace CsQuery
         {
             return InsertAtOffset(target,1);
         }
+        /// <summary>
+        /// Insert every element in the set of matched elements after the target.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
         public CQ InsertAfter(IEnumerable<IDomObject> target) {
             return InsertAtOffset(target, 1);
         }
+        /// <summary>
+        /// Insert every element in the set of matched elements after the target.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
         public CQ InsertAfter(string target)
         {
             return InsertAfter(Select(target));

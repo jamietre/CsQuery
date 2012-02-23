@@ -78,6 +78,24 @@ namespace CsqueryTests.Csharp
 
 
         }
+        [Test, TestMethod]
+        public void ParseJson()
+        {
+            string value = "null";
+            Assert.AreEqual(null,CQ.ParseJSON(value));
+            value="undefined";
+            Assert.AreEqual(null,CQ.ParseJSON(value));
+            value="\"test\"";
+            Assert.AreEqual("test",CQ.ParseJSON(value));
+            value="12";
+            Assert.AreEqual((int)12,CQ.ParseJSON(value));
+            value="12.2";
+            Assert.AreEqual((double)12.2,CQ.ParseJSON(value));
+            value="2";
+            Assert.AreEqual(CsQuery.Engine.SelectorType.Tag,CQ.ParseJSON<CsQuery.Engine.SelectorType>(value));
+
+
+        }
         protected long TestUseFunc(string key, object value)
         {
             return System.Convert.ToInt64(value);

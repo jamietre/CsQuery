@@ -13,24 +13,10 @@ namespace CsQuery
     public partial class CQ
     {
         #region private properties
+
         protected CQ _CsQueryParent;
-        protected SelectionSet<IDomObject> _Selection = null;
-
-        protected static Dictionary<string, object> _ExtensionCache = null;
-        // Used to manage extension methods by keeping a reference within the base CsQuery to whatever object it creates.
-        internal static Dictionary<string, object> ExtensionCache
-        {
-            get
-            {
-                if (_ExtensionCache == null)
-                {
-                    _ExtensionCache = new Dictionary<string, object>();
-                }
-                
-                return _ExtensionCache;
-            }
-        }
-
+        protected SelectionSet<IDomObject> _Selection;
+        
         /// <summary>
         /// The object from which this CsQuery was created
         /// </summary>

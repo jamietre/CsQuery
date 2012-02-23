@@ -134,14 +134,24 @@ namespace CsQuery
             return true;
         }
         /// <summary>
-        /// Returns true if the object is a primitive numeric type, e.g. exluding string & char
+        /// Returns true if the object is a primitive numeric type, e.g. exluding string &amp; char
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
         public static bool IsNumericType(object obj)
         {
-            Type t = Objects.GetUnderlyingType(obj.GetType());
+            Type t = GetUnderlyingType(obj.GetType());
             return t.IsPrimitive && !(t == typeof(string) || t == typeof(char) || t==typeof(bool));
+        }
+        /// <summary>
+        /// Returns true if the value is a JS native type (string, number, bool, datetime)
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static bool IsNativeType(Type type)
+        {
+            Type t = GetUnderlyingType(type);
+            return t.IsEnum || t.IsValueType || t.IsPrimitive || t == typeof(string);
         }
         public static string Join(this Array list)
         {

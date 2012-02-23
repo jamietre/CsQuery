@@ -255,13 +255,14 @@ namespace CsQuery.Utility
             {
                 
                 lock(locker) {
-
-                    Tokens.Add(tokenName);
-                    TokenIDs.Add(tokenName, nextID);
-                    // if for some reason we go over 65,535, will overflow and crash. no need 
-                    // to check
-                    id = nextID++;
-                   
+                    if (!TokenIDs.TryGetValue(tokenName, out id))
+                    {
+                        Tokens.Add(tokenName);
+                        TokenIDs.Add(tokenName, nextID);
+                        // if for some reason we go over 65,535, will overflow and crash. no need 
+                        // to check
+                        id = nextID++;
+                    }
                 }
             }
             return id;

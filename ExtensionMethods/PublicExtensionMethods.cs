@@ -28,6 +28,7 @@ namespace CsQuery.ExtensionMethods
         }
         #endregion
         #region string extension methods
+        
         public static String RegexReplace(this String input, string pattern, string replacements)
         {
             return input.RegexReplace(Objects.Enumerate(pattern), Objects.Enumerate(replacements));
@@ -53,6 +54,12 @@ namespace CsQuery.ExtensionMethods
 
             return Regex.Replace(input, pattern, evaluator);
         }
+        /// <summary>
+        /// Test whether the regular expression pattern matches the string
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="pattern"></param>
+        /// <returns></returns>
         public static bool RegexTest(this String input, string pattern)
         {
             return Regex.IsMatch(input, pattern);

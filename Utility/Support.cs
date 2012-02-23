@@ -27,6 +27,11 @@ namespace CsQuery.Utility
            return File.ReadAllText(filePath); 
 
         }
+        /// <summary>
+        /// Try to find the path to a file based on the execution location of the calling assembly
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         public static string GetFilePath(string fileName)
         {
             if (Path.IsPathRooted(fileName))

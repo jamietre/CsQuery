@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Web.Script.Serialization;
 using System.Dynamic;
+using System.Text.RegularExpressions;
+using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.Utility
@@ -166,18 +168,13 @@ namespace CsQuery.Utility
             {
                 return ParseJSONObject(objectToDeserialize);
             }
-            if (objectToDeserialize == "null" || objectToDeserialize == "undefined")
+            else if (Objects.IsNativeType(type))
             {
-                return null;
+                return ParseJSONValue(objectToDeserialize, type);
+            } else {
+                object output = Serializer.Deserialize(objectToDeserialize, type);
+                return output;
             }
-            object output = Serializer.Deserialize(objectToDeserialize, type);
-            if (type == typeof(DateTime) || (type == typeof(DateTime?) && output != null))
-            {
-                DateTime dtVal = (DateTime)(object)output;
-
-                output = DateTime.SpecifyKind(dtVal, DateTimeKind.Utc).ToLocalTime();
-            }
-            return output;
         }
         /// <summary>
         /// Parse JSON into a JsObject (dynamic) object, or single typed value
@@ -197,28 +194,93 @@ namespace CsQuery.Utility
                 case '"':
                     return Utility.JSON.ParseJSON<string>(objectToDeserialize);
                 default:
-                    int integer;
-                    if (int.TryParse(objectToDeserialize, out integer))
-                    {
-                        return integer;
-                    }
-                    double dbl;
-                    if (double.TryParse(objectToDeserialize, out dbl))
-                    {
-                        return dbl;
-                    }
-                    bool boolean;
-                    if (bool.TryParse(objectToDeserialize, out boolean))
-                    {
-                        return boolean;
-                    }
-
-                    return objectToDeserialize;
-                    
-
-
-
+                    return ParseJSONValue(objectToDeserialize);
             }
+        }
+
+        private static object ParseJSONValue(string objectToDeserialize)
+        {
+            if (objectToDeserialize == "null" || objectToDeserialize == "undefined")
+            {
+                return null;
+            }
+            int integer;
+            if (int.TryParse(objectToDeserialize, out integer))
+            {
+                return integer;
+            }
+            double dbl;
+            if (double.TryParse(objectToDeserialize, out dbl))
+            {
+                return dbl;
+            }
+            bool boolean;
+            if (bool.TryParse(objectToDeserialize, out boolean))
+            {
+                return boolean;
+            }
+
+            return objectToDeserialize;
+
+        }
+        private static object ParseJSONValue(string objectToDeserialize, Type type)
+        {
+            string value = objectToDeserialize.Trim();
+            Type baseType = Objects.GetUnderlyingType(type);
+
+            if (value=="null" || value=="undefined") {
+                return null;
+            } else if (baseType.IsEnum) {
+                return Enum.Parse(baseType, value);
+            } 
+            else if (Objects.IsNumericType(type))
+            {
+                int integer;
+                if (int.TryParse(value, out integer))
+                {
+                    return Convert.ChangeType(integer,type);
+                }
+                double dbl;
+                if (double.TryParse(value, out dbl))
+                {
+                    return Convert.ChangeType(dbl, type);
+                }
+            }
+            else if (baseType == typeof(bool))
+            {
+                bool boolean;
+                if (bool.TryParse(value, out boolean))
+                {
+                    return boolean;
+                }
+            }
+            else if (baseType == typeof(DateTime))
+            {
+
+                DateTime dtVal = FromJSDateTime(value);
+                return dtVal;
+            }
+            else if (baseType == typeof(string))
+            {
+                if (value.Length >= 2 && value.Substring(0, 1) == "\"" && value.Substring(value.Length - 1, 1) == "\"")
+                {
+                    return value.Substring(1, value.Length - 2);
+                } 
+            }
+
+            throw new Exception("The value '" + objectToDeserialize + "' could not be parsed to type '" + type.ToString() + "'");
+
+        }
+        private static DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        private static DateTime FromJSDateTime(string jsDateTime)
+        {
+            Regex regex = new Regex(@"^""\\/Date\((?<ticks>-?[0-9]+)\)\\/""");
+
+            string ticks = regex.Match(jsDateTime).Groups["ticks"].Value;
+
+            DateTime dt =  unixEpoch.AddMilliseconds(Convert.ToDouble(ticks));
+            return DateTime.SpecifyKind(dt, DateTimeKind.Utc).ToLocalTime();
+
         }
         /// <summary>
         /// Deserialize javscript, then transform to an ExpandObject

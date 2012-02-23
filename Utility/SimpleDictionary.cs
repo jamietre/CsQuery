@@ -4,8 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Collections.Specialized;
 
-namespace CsQuery.Web
+namespace CsQuery.Utility
 {
+    /// <summary>
+    /// Just convers a NameValueCollection to a disctionary with few methods
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class SimpleDictionary<T> where T : class
     {
         public SimpleDictionary(NameValueCollection dataSource)

@@ -85,6 +85,11 @@ namespace CsQuery.Implementation
         protected DocType GetDocType()
         {
             string data = NonAttributeData.Trim().ToLower();
+            // strip off trailing slashes - easy mistake to make
+            if (data.LastIndexOf("/") == data.Length - 1)
+            {
+                data = data.Substring(0, data.Length - 1).Trim();
+            }
             if (data == "html")
             {
                 return DocType.HTML5;

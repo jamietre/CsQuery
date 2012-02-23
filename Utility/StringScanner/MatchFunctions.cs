@@ -23,15 +23,23 @@ namespace CsQuery.Utility.StringScanner
         {
             return CharacterData.IsType(character, CharacterType.Alpha | CharacterType.NumberPart);
         }
+        public static bool HtmlIDValue(int index, char character)
+        {
+            // The requirements are different for HTML5 vs. older HTML specs but basically we don't want to be
+            // too rigorous on this one -- the tagname spec is about right and includes underscores & colons
+
+            return CharacterData.IsType(character, CharacterType.HtmlTagName);
+        }
         public static bool HTMLAttribute(int index, char character)
         {
+
             if (index == 0)
             {
-                return CharacterData.IsType(character, CharacterType.Alpha); 
+                return CharacterData.IsType(character, CharacterType.Alpha);
             }
             else
             {
-                return CharacterData.IsType(character,CharacterType.Alpha | CharacterType.Number)
+                return CharacterData.IsType(character, CharacterType.Alpha | CharacterType.Number)
                     || "_:.-".Contains(character);
             }
         }
