@@ -70,6 +70,7 @@
     <Compile Include="Engine\SelectorParser.cs" />
     <Compile Include="IOutputFormatter.cs" />
     <Compile Include="OutputFormatters\FormatPlainText.cs" />
+    <Compile Include="Utility\Browser.cs" />
     <Compile Include="Utility\Settings.cs" />
     <Compile Include="Web\ICsqWebResponse.cs" />
     <Compile Include="Utility\AutoList.cs" />

@@ -19,8 +19,9 @@ namespace CsQuery.Utility
 #else
         public static bool Debug = false;
         /// <summary>
-        /// Length of each node's path ID, sets a limit on the number of child nodes before a reindex
-        /// is required. For most cases, a small number will yield better performance.
+        /// Length of each node's path ID (in characters), sets a limit on the number of child nodes before a reindex
+        /// is required. For most cases, a small number will yield better performance. In production we probably can get
+        /// away with just 1 (meaning a char=65k possible values). 
         /// </summary>
         public const int pathIdLength = 1;
         /// <summary>
@@ -78,19 +79,19 @@ namespace CsQuery.Utility
 
         static DomData()
         {
-            // For path encoding - when in production mode use a single character value as each token. This lets us avoid doing 
+            // For path encoding - when in production mode use a single character value for each path ID. This lets us avoid doing 
             // a division for indexing to determine path depth, and is just faster for a lot of reasons. This should be plenty
             // of tokens: things that are tokenized are tag names style names, class names, attribute names (not values), and ID 
-            // values. You'd be hard pressed to exceed this limit. Famous last words right? 
+            // values. You'd be hard pressed to exceed this limit on a single web page. Famous last words right? 
 
-            if (!Debug)
-            {
+            #if !DEBUG_PATH
                 baseXXchars = new char[65534];
                 for (ushort i = 0; i < 65534; i++)
                 {
                     baseXXchars[i] = (char)(i+1);
                 }
-            }
+            #endif
+
             encodingLength = baseXXchars.Length;
             defaultPadding="";
             for (int i = 1; i < pathIdLength; i++)
@@ -280,6 +281,7 @@ namespace CsQuery.Utility
         #region Path Encoding
 
         private static string defaultPadding;
+        // The character set used to generate path IDs
         private static char[] baseXXchars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".ToArray();
         private static int encodingLength; // set in constructor
         private static int maxPathIndex;

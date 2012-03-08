@@ -50,6 +50,26 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual(expected, json, "CsQuery.ToJson works");
         }
 
+        [Test, TestMethod]
+        public void JsonValues()
+        {
+            dynamic obj = CQ.ParseJSON<int>("2");
+            Assert.AreEqual(2, obj);
+
+            Assert.AreEqual(2,CQ.ParseJSON("2"));
+            Assert.AreEqual(typeof(JsObject),CQ.ParseJSON("{}").GetType());
+            Assert.AreEqual("abc123", CQ.ParseJSON("\"abc123\""));
+            Assert.AreEqual(1.2, CQ.ParseJSON("1.2"));
+            Assert.AreEqual(false, CQ.ParseJSON("false"));
+            Assert.AreEqual(true, CQ.ParseJSON("true"));
+            Assert.AreEqual(null, CQ.ParseJSON("undefined"));
+            Assert.AreEqual(null, CQ.ParseJSON(""));
+            Assert.Throws<Exception>(()=>{
+                var x = CQ.ParseJSON("x");
+            });
+
+        }
+
         protected class TestExpando
         {
             public string Property1 {get;set;}

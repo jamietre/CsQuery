@@ -204,6 +204,21 @@ namespace CsQuery.Utility
             {
                 return null;
             }
+            if (objectToDeserialize == "{}")
+            {
+                return new JsObject();
+            }
+            if (objectToDeserialize.Length >= 6 && objectToDeserialize.Substring(0, 6) == "\\/Date")
+            {
+                return FromJSDateTime(objectToDeserialize);
+            }
+            else if (objectToDeserialize.Length >= 2
+              && objectToDeserialize[0] == '"'
+              && objectToDeserialize[objectToDeserialize.Length - 1] == '"')
+            {
+                return objectToDeserialize.Substring(1, objectToDeserialize.Length - 2); 
+            }
+            // It's not a string, see what we can get out of it
             int integer;
             if (int.TryParse(objectToDeserialize, out integer))
             {
@@ -220,15 +235,18 @@ namespace CsQuery.Utility
                 return boolean;
             }
 
-            return objectToDeserialize;
+            throw new Exception("The value '" + objectToDeserialize + "' could not be parsed, it doesn't seem to be something that should be a JSON value");
 
         }
+
+        // Parses a single value serailized as JSON. 
+
         private static object ParseJSONValue(string objectToDeserialize, Type type)
         {
             string value = objectToDeserialize.Trim();
             Type baseType = Objects.GetUnderlyingType(type);
 
-            if (value=="null" || value=="undefined") {
+            if (value=="null" || value=="undefined" || value=="{}") {
                 return null;
             } else if (baseType.IsEnum) {
                 return Enum.Parse(baseType, value);
@@ -262,10 +280,12 @@ namespace CsQuery.Utility
             }
             else if (baseType == typeof(string))
             {
-                if (value.Length >= 2 && value.Substring(0, 1) == "\"" && value.Substring(value.Length - 1, 1) == "\"")
+                if (value.Length >= 2 
+                    && value[0]== '"' 
+                    && value[value.Length - 1] == '"')
                 {
                     return value.Substring(1, value.Length - 2);
-                } 
+                }
             }
 
             throw new Exception("The value '" + objectToDeserialize + "' could not be parsed to type '" + type.ToString() + "'");

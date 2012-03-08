@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Dynamic;
 using System.IO;
+using System.Web;
 using System.Web.Script.Serialization;
 using CsQuery.ExtensionMethods;
 using CsQuery.Utility;
@@ -231,6 +232,20 @@ namespace CsQuery
                 }
             }
 
+        }
+
+        private static Browser _Browser;
+        public static Browser Browser
+        {
+            get
+            {
+                if (_Browser == null)
+                {
+                    _Browser = new Browser(HttpContext.Current);
+                }
+
+                return _Browser;
+            }
         }
     }
 }

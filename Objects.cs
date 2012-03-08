@@ -122,7 +122,7 @@ namespace CsQuery
             {
                 return (bool)obj;
             }
-            if (Objects.IsNumericType(obj))
+            if (Objects.IsNumericType(obj.GetType()))
             {
                 // obj is IConvertible if IsNumericType already
                 return System.Convert.ToDouble(obj) != 0.0;
@@ -138,9 +138,9 @@ namespace CsQuery
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static bool IsNumericType(object obj)
+        public static bool IsNumericType(Type type)
         {
-            Type t = GetUnderlyingType(obj.GetType());
+            Type t = GetUnderlyingType(type);
             return t.IsPrimitive && !(t == typeof(string) || t == typeof(char) || t==typeof(bool));
         }
         /// <summary>
@@ -438,7 +438,7 @@ namespace CsQuery
             {
                 return (IConvertible)value;
             } 
-            else if (IsNumericType(value))
+            else if (IsNumericType(value.GetType()))
             {
                 return NumberToDoubleOrInt((IConvertible)value);
             }
