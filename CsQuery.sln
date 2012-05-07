@@ -1,43 +1,44 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsQuery", "CsQuery.csproj", "{C38DFFE9-321B-4941-B031-29D718AB5C31}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsQuery", "CsQuery\CsQuery.csproj", "{C38DFFE9-321B-4941-B031-29D718AB5C31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsqueryTests", "CsqueryTests\CsqueryTests.csproj", "{F8920741-0BB4-4939-A774-0F9059B2B7F0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Csquery.Tests", "Csquery.Tests\Csquery.Tests.csproj", "{F8920741-0BB4-4939-A774-0F9059B2B7F0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F4DD1337-CB52-431F-A4ED-992A0F727A1F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BE94EF7A-CD05-40ED-B94A-3C78F9A81C0A}"
 	ProjectSection(SolutionItems) = preProject
-		CsQuery4.vsmdi = CsQuery4.vsmdi
-		Local.testsettings = Local.testsettings
-		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+		CsQuery.vsmdi = CsQuery.vsmdi
 	EndProjectSection
 EndProject
 Global
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = CsQuery4.vsmdi
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
 	EndGlobalSection
-	GlobalSection(SourceCodeControl) = preSolution
-		SccNumberOfProjects = 3
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = CsQuery.csproj
-		SccLocalPath1 = .
-		SccProjectUniqueName2 = CsqueryTests\\CsqueryTests.csproj
-		SccLocalPath2 = .
-		SccProjectFilePathRelativizedFromConnection2 = CsqueryTests\\
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = CsQuery.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{C38DFFE9-321B-4941-B031-29D718AB5C31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C38DFFE9-321B-4941-B031-29D718AB5C31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C38DFFE9-321B-4941-B031-29D718AB5C31}.Debug|x64.ActiveCfg = Debug|x64
+		{C38DFFE9-321B-4941-B031-29D718AB5C31}.Debug|x64.Build.0 = Debug|x64
 		{C38DFFE9-321B-4941-B031-29D718AB5C31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C38DFFE9-321B-4941-B031-29D718AB5C31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C38DFFE9-321B-4941-B031-29D718AB5C31}.Release|x64.ActiveCfg = Release|x64
+		{C38DFFE9-321B-4941-B031-29D718AB5C31}.Release|x64.Build.0 = Release|x64
 		{F8920741-0BB4-4939-A774-0F9059B2B7F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F8920741-0BB4-4939-A774-0F9059B2B7F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8920741-0BB4-4939-A774-0F9059B2B7F0}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{F8920741-0BB4-4939-A774-0F9059B2B7F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8920741-0BB4-4939-A774-0F9059B2B7F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8920741-0BB4-4939-A774-0F9059B2B7F0}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
