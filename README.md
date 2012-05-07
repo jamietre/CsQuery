@@ -2,7 +2,8 @@
 
 5/7/12
 
-Bugfix - excluding numbers as part of HTML tags
+Bugfix - excluding numbers as part of HTML tags. There were some other details related to how tags were matched
+  that would only affect edge cases. Changed to match the HTML spec except for : and . which must not match tags.
 
 
 2/10/12
