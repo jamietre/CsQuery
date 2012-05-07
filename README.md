@@ -1,5 +1,10 @@
 ## CsQuery - C# jQuery Port
 
+5/7/12
+
+Bugfix - excluding numbers as part of HTML tags
+
+
 2/10/12
 
 RELEASE 1.0 Beta 1
