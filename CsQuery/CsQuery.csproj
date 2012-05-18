@@ -12,10 +12,6 @@
     <AssemblyName>CsQuery</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SccProjectName>Svn</SccProjectName>
-    <SccLocalPath>Svn</SccLocalPath>
-    <SccAuxPath>Svn</SccAuxPath>
-    <SccProvider>SubversionScc</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -198,9 +194,6 @@
     <Compile Include="Utility\HtmlDom.cs" />
     <Compile Include="Utility\StringScanner\IStringScanner.cs" />
     <Compile Include="Utility\StringScanner\Scanner.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\css3.xml" />
