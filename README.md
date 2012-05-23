@@ -25,6 +25,8 @@ CsQuery is a jQuery port for .NET 4. It implements all the CSS selectors and DOM
     // output
 
     var html = dom.Render();
+    var elementHtml = dom[2].Render();
+    var selectionHtml = dom[".just-this-class"].RenderSelection();
 
    // DOM
 
