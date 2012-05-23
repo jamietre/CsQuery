@@ -11,14 +11,17 @@ CsQuery is a jQuery port for .NET 4. It implements all the CSS selectors and DOM
     // create
 
     var dom = CQ.Create(htmlString);
-    var dom = Server.CreateFromUrl("http://www.microsoft.com/en/us/default.aspx?redir=true");
-    var dom = Server.StartAsyncWebRequest("http://www.jquery.com",response => { ...  },1);
+
+	// create from a URL using "CsQuery.Server"
+
+    var dom = CsQuery.Server.CreateFromUrl("http://www.microsoft.com/en/us/default.aspx?redir=true");
+    var dom = CsQuery.Server.StartAsyncWebRequest("http://www.jquery.com",response => { ...  },1);
 
     // manipulate
 
     dom.Select("div > span").Eq(1).Text("Change the text content of the 2nd span child of each div");
 
-    // the default property indexer is equivalent to "select"
+    // the default property indexer is equivalent to "Select"
     
     var rowsWithClass = dom[".targetClass"].Closest("td");
 
