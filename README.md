@@ -8,36 +8,107 @@ CsQuery is a jQuery port for .NET 4. It implements all the CSS selectors and DOM
 
 ### Usage
 
-    // create
+##### Creating a new DOM
+
+*Create from a string of HTML*
 
     var dom = CQ.Create(htmlString);
 
-	// create from a URL using "CsQuery.Server"
 
-    var dom = CsQuery.Server.CreateFromUrl("http://www.microsoft.com/en/us/default.aspx?redir=true");
-    var dom = CsQuery.Server.StartAsyncWebRequest("http://www.jquery.com",response => { ...  },1);
+*Load synchronously*
 
-    // manipulate
+    var dom = CsQuery.Server.CreateFromUrl("http://www.jquery.com");
+    
 
-    dom.Select("div > span").Eq(1).Text("Change the text content of the 2nd span child of each div");
+*Load asynchronously; the 2nd parameter is a callback*
+   
+    CsQuery.Server.StartAsyncWebRequest("http://www.jquery.com",response => {
+        Dom = response.Dom;        
+    });
 
-    // the default property indexer is equivalent to "Select"
+
+##### Manipulate the DOM with jQuery methods
+
+    dom.Select("div > span")
+		.Eq(1)
+		.Text("Change the text content of the 2nd span child of each div");
+
+
+*The default property indexer is equivalent to "Select"*
     
     var rowsWithClass = dom[".targetClass"].Closest("td");
 
-    // output
 
-    var html = dom.Render();
-    var elementHtml = dom[2].Render();
-    var selectionHtml = dom[".just-this-class"].RenderSelection();
+*Most methods are flexible with the kind of input they take to try to work as intutitively as they do in jQuery. Three ways to do the same thing:*
 
-   // DOM
+    rowsWithClass.AddClass("highlighted")
+        .Css(new {
+                width="100px",
+                height=20
+            });
+
+
+    rowsWithClass.Css("{ width: 100px; height: 20px; }");
+
+    rowsWithClass.Css("width",100).Css("height","20px");
+
+
+*`Data` will create "data-xxx" elements that can be directly read by the jQuery data method*
+
+    Contact contact = GetContactInfo();
+
+    var newRow = rowsWithClass
+		.Clone()
+		.Data("address",contact);
+
+    rowsWithClass.Before(newRow);
+
+
+##### Accessing DOM elements directly
+
+    var sel = dom.Select("a");
+
+
+*The property indexer is overloaded as a simple list element indexer returning the DOM element at that position, just like $(...)[n].*
+
+    var id = dom[0].id;
+
+
+*The property indexer for IDomElement returns attributes*
+
+    var href = dom[0]["href"];
+
+
+*Most DOM node methods are implemented too...*
+
+    var linkHtml = Dom.Document.GetElementById("my-link").InnerHTML;
+    var sameHtml = Dom["#my-link"].Html();
+
+*Some utility methods return nodes, same as jQuery*
 
     dom.Each((i,e) => {
         if (e.id == "remove-this-id") {
             e.Parent().RemoveChild(e);
         }
     });
+
+
+
+##### Output as HTML
+
+*Render the entire DOM*
+
+    var html = dom.Render();
+
+
+*You can render any DOM element individually*
+
+    var elementHtml = dom[2].Render();
+
+
+*You can render just the elements that are part of the selection*
+
+    var selectionHtml = dom[".just-this-class"].RenderSelection();
 
 
 ### Performance
