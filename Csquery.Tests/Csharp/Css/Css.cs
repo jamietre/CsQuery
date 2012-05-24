@@ -31,7 +31,7 @@ namespace CsqueryTests.Csharp
         public void FromObjects()
         {
             var div = CQ.Create("<div></div>");
-            div.Css(new
+            div.CssSet(new
             {
                 width="10px",
                 height=20
@@ -43,7 +43,7 @@ namespace CsqueryTests.Csharp
         public void CamelCase()
         {
             var div = CQ.Create("<div></div>");
-            div.Css(new
+            div.CssSet(new
             {
                 fontSize = "10px",
                 overflowX = "scroll"
@@ -59,7 +59,7 @@ namespace CsqueryTests.Csharp
             dict.width = "10px";
             dict.height = 20;
 
-            div.Css(dict);
+            div.CssSet(dict);
             Assert.AreEqual("10px", div.Css("width"));
             Assert.AreEqual("20px", div.Css("height"));
         }
@@ -72,7 +72,7 @@ namespace CsqueryTests.Csharp
             dict["width"]= "10px";
             dict["height"]= 20;
 
-            div.Css(dict);
+            div.CssSet(dict);
             Assert.AreEqual("10px", div.Css("width"));
             Assert.AreEqual("20px", div.Css("height"));
         }
@@ -82,7 +82,7 @@ namespace CsqueryTests.Csharp
         {
             
             var div = CQ.Create("<div></div>");
-            div.Css(new StylesClass
+            div.CssSet(new StylesClass
             {
                 width = "10px",
                 height = 20

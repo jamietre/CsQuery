@@ -729,7 +729,7 @@ namespace CsQuery
                         switch (name)
                         {
                             case "css":
-                                Select(el).Css(Objects.ToExpando(kvp.Value));
+                                Select(el).CssSet(Objects.ToExpando(kvp.Value));
                                 break;
                             case "html":
                                 Select(el).Html(kvp.Value.ToString());
@@ -1094,24 +1094,24 @@ namespace CsQuery
 
             return new CQ(list, this);
         }
+        
+
         /// <summary>
         ///  Set one or more CSS properties for the set of matched elements from JSON data
         /// </summary>
         /// <param name="cssJson"></param>
         /// <returns></returns>
-        public CQ CssSet(string json)
+        public CQ CssSet(object css)
         {
-            object parsed = ParseJSON(json);
-            if (!(parsed is IDictionary<string,object>)) {
-                throw new ArgumentException("The string could not be parsed into name/value pairs; perhaps it's not valid JSON or is just a single value.");
+            IDictionary<string, object> dict;
+            if (Objects.IsJson(css))
+            {
+                dict = ParseJSON<IDictionary<string, object>>((string)css);
             }
-            IDictionary<string, object> dict = (IDictionary<string, object>)parsed;
-            return Css(dict);
-        }
-
-        public CQ Css(object css)
-        {
-            var dict = Objects.ToExpando(css);
+            else
+            {
+                dict = Objects.ToExpando(css);
+            }
             foreach (IDomElement e in Elements) 
             {
                 foreach (var key in dict)
