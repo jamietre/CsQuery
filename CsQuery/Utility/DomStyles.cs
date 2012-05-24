@@ -9,14 +9,14 @@ using CsQuery.Implementation;
 namespace CsQuery.Utility
 {
     /// <summary>
-    /// Used for style parsing
+    /// Exposes a dictionary of valid styles.
     /// </summary>
-    public static class HtmlDom
+    public static class DomStyles
     {
         public static Dictionary<string, CssStyle> StyleDefs = new Dictionary<string, CssStyle>();
         private static char[] StringSep = new char[] { ' ' };
         public static string CssDefs = "css3.xml";
-        static HtmlDom()
+        static DomStyles()
         {
             XmlDocument xDoc = new XmlDocument();
             Stream dataStream = Support.GetResourceStream("CsQuery.Resources." + CssDefs);

@@ -378,7 +378,7 @@ namespace CsQuery.Implementation
             value = value.Trim().Replace(";", String.Empty);
             name = name.Trim();
             CssStyle style = null;
-            if (!HtmlDom.StyleDefs.TryGetValue(name, out style))
+            if (!DomStyles.StyleDefs.TryGetValue(name, out style))
             {
                 if (strict)
                 {

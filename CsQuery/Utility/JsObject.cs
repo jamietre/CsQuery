@@ -9,37 +9,31 @@ using CsQuery.Utility;
 
 namespace CsQuery
 {
-    // todo: make the undefined value a singleton
-    public class JsObjectUndefined
-    {
-    }
-    public class JsObjectDefault
-    {
-     
-    }
+ 
+    /// <summary>
+    /// A dynamic object implementation that differs from ExpandoObject in two ways:
+    /// 
+    /// 1) Missing property values always return null (or a specified value)
+    /// 2) Allows case-insensitivity
+    /// 
+    /// </summary>
     public class JsObject  : DynamicObject, IDictionary<string, object>, IEnumerable<KeyValuePair<string, object>>, IEnumerable
     {
-
         public JsObject()
         {
-            Initialize();
+            Initialize(null, null);
         }
-        public JsObject(object missingPropertyValue)
+        public JsObject(StringComparer comparer = null,object missingPropertyValue=null)
         {
-            Initialize();
-            MissingPropertyValue = missingPropertyValue;
+            Initialize(comparer,missingPropertyValue);
+
         }
 
-        protected void Initialize()
+        protected void Initialize(StringComparer comparer, object missingPropertyValue)
         {
             AllowMissingProperties = true;
-            MissingPropertyValue = null;
-            IgnoreCase = true;
-            // TODO: remove tolower stuff
-            InnerProperties = new Dictionary<string, object>(IgnoreCase ? 
-                StringComparer.OrdinalIgnoreCase:
-                StringComparer.Ordinal
-                );
+            MissingPropertyValue = missingPropertyValue;
+            InnerProperties = new Dictionary<string, object>(comparer ?? StringComparer.OrdinalIgnoreCase);
         }
         public override string ToString()
         {
@@ -69,15 +63,6 @@ namespace CsQuery
             get;
             protected set;
         }
-
-        protected IDictionary<string, string> NameXref
-        {
-            get
-            {
-                return _NameXref.Value;
-            }
-        }
-        private Lazy<Dictionary<string, string>> _NameXref = new Lazy<Dictionary<string, string>>();
         
         public object this[string name]
         {
@@ -133,8 +118,10 @@ namespace CsQuery
         protected bool TryGetMember(string name, Type type, out object result)
         {
             object value = null;
-            name = getInnerName(name);
-            bool success = String.IsNullOrEmpty(name) ? false : InnerProperties.TryGetValue(name, out value);
+            bool success = String.IsNullOrEmpty(name) ?
+                false : 
+                InnerProperties.TryGetValue(name, out value);
+
             if (!success)
             {
                 if (AllowMissingProperties)
@@ -173,38 +160,15 @@ namespace CsQuery
             return TrySetMember(binder.Name, value);
             
         }
-        /// <summary>
-        /// Translate name based on case-sensititity settings
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        protected string getInnerName(string name)
-        {
-            if (IgnoreCase)
-            {
-                string realName;
-                if (!NameXref.TryGetValue(name.ToLower(), out realName))
-                {
-                    NameXref[name.ToLower()] = name;
-                }
-                else
-                {
-                    name = realName;
-                }
-            }
-            return name;
 
-        }
         protected bool TrySetMember(string name, object value)
         {
             try
             {
-                name = getInnerName(name);
                 if (String.IsNullOrEmpty(name))
                 {
                     return false;
                 }
-            
 
                 if (value is IDictionary<string, object> && !(value is JsObject))
                 {
@@ -223,11 +187,11 @@ namespace CsQuery
         }
         public bool HasProperty(string name)
         {
-            return InnerProperties.ContainsKey(getInnerName(name));
+            return InnerProperties.ContainsKey(name);
         }
         public bool Delete(string name)
         {
-            return InnerProperties.Remove(getInnerName(name));
+            return InnerProperties.Remove(name);
         }
 
         protected JsObject ToJsObject(IDictionary<string, object> value)
@@ -244,19 +208,6 @@ namespace CsQuery
             return InnerProperties.Keys;
         }
 
-        //public override bool TryBinaryOperation(BinaryOperationBinder binder, object arg, out object result)
-        //{
-        //    if (binder.Operation == System.Linq.Expressions.ExpressionType.Equal)
-        //    {
-        //        JsObject compare = arg.ToExpando();
-        //        return this.Equals(arg);
-        //    }
-        //    else
-        //    {
-        //        return base.TryBinaryOperation(binder, arg, out result);
-        //    }
-            
-        //}
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
             return InnerProperties.GetEnumerator();
@@ -266,23 +217,7 @@ namespace CsQuery
         {
             return GetEnumerator();
         }
-
-        #region Static values
-        public static JsObjectUndefined Undefined
-        {
-            get
-            {
-                return new JsObjectUndefined();
-            }
-        }
-        public static JsObjectDefault Default
-        {
-            get
-            {
-                return new JsObjectDefault();
-            }
-        }
-        #endregion
+        
         #region explicit interface members
 
         void IDictionary<string, object>.Add(string key, object value)

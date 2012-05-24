@@ -167,7 +167,7 @@ namespace CsQuery
             return value == null ? null :
                 (value is string ? (string)value :
                     (value is IEnumerable ?
-                        ((IEnumerable)value).Join() : value.ToString()
+                        Objects.Join((IEnumerable)value) : value.ToString()
                     )
                 );
         }
@@ -231,7 +231,7 @@ namespace CsQuery
         /// <param name="value"></param>
         protected void SetProp(string name, object value)
         {
-            bool state = value.IsTruthy();
+            bool state = Objects.IsTruthy(value);
             foreach (IDomElement e in Elements)
             {
                 if (state)

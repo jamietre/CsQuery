@@ -5,7 +5,10 @@ using System.Text;
 
 namespace CsQuery
 {
-    public interface IDomRoot : IDomContainer
+    /// <summary>
+    /// 
+    /// </summary>
+    public interface IDomDocument : IDomContainer
     {
         //RangeSortedDictionary<IDomObject> SelectorXref { get; }
         void AddToIndex(string key, IDomIndexedNode element);

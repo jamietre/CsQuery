@@ -185,7 +185,7 @@ namespace CsQuery
             }
             else
             {
-                return obj.ToExpando();
+                return Objects.ToExpando(obj);
             }
             return result;
         }

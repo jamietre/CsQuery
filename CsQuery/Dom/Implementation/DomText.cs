@@ -36,7 +36,7 @@ namespace CsQuery.Implementation
         }
         protected int textIndex=-1;
         // for use during initial construction from char array
-        public void SetTextIndex(IDomRoot dom, int index)
+        public void SetTextIndex(IDomDocument dom, int index)
         {
             textIndex = index;
             // create a hard reference to the DOM from which we are mapping our string data. Otherwise if this
@@ -44,7 +44,7 @@ namespace CsQuery.Implementation
             stringRef = dom;
         }
 
-        protected IDomRoot stringRef = null;
+        protected IDomDocument stringRef = null;
         protected string unboundText=null;
         
         public override string NodeValue

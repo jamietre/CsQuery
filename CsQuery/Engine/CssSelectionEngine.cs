@@ -13,7 +13,7 @@ namespace CsQuery.Engine
         #region private properties
         private Lazy<NthChild> _NthChildMatcher = new Lazy<NthChild>();
 
-        protected IDomRoot Document;
+        protected IDomDocument Document;
         protected List<Selector> ActiveSelectors;
         protected int activeSelectorId;
 
@@ -41,7 +41,7 @@ namespace CsQuery.Engine
         /// </summary>
         /// <param name="document"></param>
         /// <returns></returns>
-        public IEnumerable<IDomObject> Select(IDomRoot document, IEnumerable<IDomObject> context)
+        public IEnumerable<IDomObject> Select(IDomDocument document, IEnumerable<IDomObject> context)
         {
             if (Selectors == null )
             {

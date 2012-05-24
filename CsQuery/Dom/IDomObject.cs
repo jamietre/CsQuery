@@ -13,7 +13,7 @@ namespace CsQuery
         // To simulate the way the real DOM works, most properties/methods of things directly in the DOM
         // are part of a common interface, even if they do not apply.
 
-        IDomRoot Document { get; }
+        IDomDocument Document { get; }
         IDomContainer ParentNode { get; }
         IDomObject this[int index] { get; }
         string this[string attribute] { get; set; }

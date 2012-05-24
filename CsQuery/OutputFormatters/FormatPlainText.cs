@@ -8,6 +8,9 @@ using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.OutputFormatters
 {
+    /// <summary>
+    /// Removes all extraneous whitespace
+    /// </summary>
     public class FormatPlainText: IOutputFormatter
     {
         protected IStringInfo stringInfo;
@@ -136,20 +139,6 @@ namespace CsQuery.OutputFormatters
                 index++;
             }
 
-            //index = sb.Length - 1;
-            //// clean up end: remove all whitespace; add just a single space if there was any whitespace
-            //int count=0;
-            //while (charInfo.Whitespace && index>0) 
-            //{
-            //    index--;
-            //    count++;
-            //    charInfo.Target = text[index];
-            //}
-            //if (count > 0)
-            //{
-            //    sb.Remove(index + 1, count-1);
-            //    sb.Append(" ");
-            //}
             return sb.ToString();
         }
     }

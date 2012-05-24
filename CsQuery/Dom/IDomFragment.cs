@@ -7,7 +7,7 @@ namespace CsQuery
 {
 
 
-    public interface IDomFragment : IDomRoot
+    public interface IDomFragment : IDomDocument
     {
 
     }

@@ -6,18 +6,22 @@ using System.Text;
 
 namespace CsQuery.Utility
 {
-
+    /// <summary>
+    /// Default implementation of OrderedDictionary-T,TKey,TValue-
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     public class OrderedDictionary<TKey, TValue> : OrderedDictionary<Dictionary<TKey, TValue>, TKey, TValue>, IOrderedDictionary<TKey,TValue>
     {
 
     }
     
     /// <summary>
-    /// Allows specifying the type used for the inner dictionary
+    /// A dictionary that also maintains the order added.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TKey"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
+    /// <typeparam name="T">The concrete type of dictionary to use for the inner dictionary</typeparam>
+    /// <typeparam name="TKey">The key type</typeparam>
+    /// <typeparam name="TValue">The value type</typeparam>
     public class OrderedDictionary<T, TKey, TValue> : IDictionary<TKey, TValue>, IList<KeyValuePair<TKey, TValue>>, ICollection<KeyValuePair<TKey, TValue>>, IEnumerable<KeyValuePair<TKey, TValue>> where T : IDictionary<TKey, TValue>, new()
     {
         #region private members
@@ -39,6 +43,7 @@ namespace CsQuery.Utility
         #endregion
 
         #region public properties
+
         public IList<TKey> Keys
         {
             get { 

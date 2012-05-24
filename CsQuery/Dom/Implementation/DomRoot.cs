@@ -13,7 +13,7 @@ namespace CsQuery.Implementation
     /// <summary>
     /// Special node type to represent the DOM.
     /// </summary>
-    public class DomRoot : DomContainer<DomRoot>, IDomRoot
+    public class DomRoot : DomContainer<DomRoot>, IDomDocument
     {
 
         public DomRoot()
@@ -185,7 +185,7 @@ namespace CsQuery.Implementation
         }
         protected DomRenderingOptions _DomRenderingOptions = 0;
         
-        public override IDomRoot Document
+        public override IDomDocument Document
         {
             get
             {

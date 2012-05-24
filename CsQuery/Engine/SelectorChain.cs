@@ -112,21 +112,21 @@ namespace CsQuery.Engine
         #endregion
 
         #region public methods
-        public IEnumerable<IDomObject> Is(IDomRoot root, IDomObject element)
+        public IEnumerable<IDomObject> Is(IDomDocument root, IDomObject element)
         {
             List<IDomObject> list = new List<IDomObject>();
             list.Add(element);
             return Select(root, list);
         }
-        public IEnumerable<IDomObject> Select(IDomRoot document)
+        public IEnumerable<IDomObject> Select(IDomDocument document)
         {
             return Select(document, (IEnumerable<IDomObject>)null);
         }
-        public IEnumerable<IDomObject> Select(IDomRoot document, IDomObject context)
+        public IEnumerable<IDomObject> Select(IDomDocument document, IDomObject context)
         {
             return Select(document, Objects.Enumerate(context));
         }
-        public IEnumerable<IDomObject> Select(IDomRoot document, IEnumerable<IDomObject> context)
+        public IEnumerable<IDomObject> Select(IDomDocument document, IEnumerable<IDomObject> context)
         {
             return Engine.Select(document, context);
         }

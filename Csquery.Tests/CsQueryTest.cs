@@ -76,7 +76,7 @@ namespace CsqueryTests
                 throw new Exception("Invalid parameter");
             }
         }
-        public IDomRoot document;
+        public IDomDocument document;
         public CQ Dom
         {
             get

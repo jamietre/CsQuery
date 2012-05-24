@@ -140,10 +140,7 @@ namespace CsQuery
                 // obj is IConvertible if IsNumericType already
                 return System.Convert.ToDouble(obj) != 0.0;
             }
-            if (obj is JsObjectUndefined)
-            {
-                return false;
-            }
+
             return true;
         }
         /// <summary>
@@ -166,20 +163,58 @@ namespace CsQuery
             Type t = GetUnderlyingType(type);
             return t.IsEnum || t.IsValueType || t.IsPrimitive || t == typeof(string);
         }
-        public static string Join(this Array list)
+        public static string Join(Array list)
         {
             return Join(toStringList(list), ",");
         }
-        public static string Join(this IEnumerable list)
+        public static string Join(IEnumerable list)
         {
             return Join(toStringList(list), ",");
+        }
+        /// <summary>
+        /// Test if an object is "Expando-like", e.g. a an IDictionary-string,object-
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static bool IsExpando(object obj)
+        {
+            return (obj is IDictionary<string, object>);
+        }
+
+        /// <summary>
+        /// Test if an object is a an IDictionary-string,object- that is empty
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static bool IsEmptyExpando(object obj)
+        {
+            return IsExpando(obj) && ((IDictionary<string, object>)obj).Count == 0;
+        }
+
+        /// <summary>
+        /// Test if an object is a KeyValuePair<,> (e.g. of any types)
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static bool IsKeyValuePair(object obj)
+        {
+            Type valueType = obj.GetType();
+            if (valueType.IsGenericType)
+            {
+                Type baseType = valueType.GetGenericTypeDefinition();
+                if (baseType == typeof(KeyValuePair<,>))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         /// <summary>
         /// Combine elements of a list into a single string, separated by separator
         /// </summary>
         /// <param name="list"></param>
         /// <returns></returns>
-        public static string Join(this IEnumerable<string> list, string separator)
+        public static string Join(IEnumerable<string> list, string separator)
         {
             StringBuilder sb = new StringBuilder();
             foreach (string item in list)
@@ -370,7 +405,7 @@ namespace CsQuery
                 {
                     src= CQ.ParseJSON((string)src);
                 }
-                if (!src.IsExpando() && src.IsExtendableType() &&  src is IEnumerable)
+                if (!Objects.IsExpando(src) && src.IsExtendableType() &&  src is IEnumerable)
                 {
                     foreach (var innerSrc in (IEnumerable)src)
                     {
@@ -399,7 +434,7 @@ namespace CsQuery
             {
                 source = sources.Dequeue();
 
-                if (source.IsExpando())
+                if (Objects.IsExpando(source))
                 {
                     // Expando object -- copy/clone it
                     foreach (var kvp in (IDictionary<string, object>)source)
@@ -818,7 +853,7 @@ namespace CsQuery
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        public static JsObject ToExpando(this object source)
+        public static JsObject ToExpando(object source)
         {
             return ToExpando(source,false);
         }
@@ -842,7 +877,7 @@ namespace CsQuery
         }
         public static T ToExpando<T>(object source, bool deep, IEnumerable<Type> ignoreAttributes) where T : IDictionary<string,object>, IDynamicMetaObjectProvider, new()
         {
-            if (source.IsExpando() && !deep)
+            if (Objects.IsExpando(source) && !deep)
             {
                 return Objects.Dict2Dynamic<T>((IDictionary<string, object>)source);
             }
@@ -883,7 +918,7 @@ namespace CsQuery
         /// <param name="property"></param>
         public static object DeleteProperty(object obj, string property)
         {
-            if (!obj.IsExpando())
+            if (!Objects.IsExpando(obj))
             {
                 throw new Exception("This object does not have properties.");
             }
@@ -911,7 +946,7 @@ namespace CsQuery
         private static void AddExtendKVP(bool deep, HashSet<object> parents, object target, string name, object value)
         {
             IDictionary<string, object> targetDict = null;
-            if (target.IsExpando())
+            if (Objects.IsExpando(target))
             {
                 targetDict = (IDictionary<string, object>)target;
             }
@@ -1011,7 +1046,7 @@ namespace CsQuery
                 source = Utility.JSON.ParseJSON((string)source);
             }
 
-            if (source.IsExpando())
+            if (Objects.IsExpando(source))
             {
                 return (T)Objects.CloneObject(source, deep);
             }

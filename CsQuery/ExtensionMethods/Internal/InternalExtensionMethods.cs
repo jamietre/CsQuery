@@ -25,7 +25,7 @@ namespace CsQuery.ExtensionMethods.Internal
             return obj == null ||
                 obj == System.DBNull.Value || 
                 obj is string ||
-                (obj is ValueType && !(obj.IsKeyValuePair()));
+                (obj is ValueType && !(Objects.IsKeyValuePair(obj)));
         }
         /// <summary>
         /// Returns false if this is a value type, null string, or enumerable (but not Extendable)
@@ -36,7 +36,7 @@ namespace CsQuery.ExtensionMethods.Internal
         {
             // Want to allow enumerable types since we can treat them as objects. Exclude arrays.
             // This is tricky. How do we know if something should be treated as an object or enumerated? Do both somehow?
-            return obj.IsExpando() || (!obj.IsImmutable() && !(obj is IEnumerable));
+            return Objects.IsExpando(obj) || (!obj.IsImmutable() && !(obj is IEnumerable));
         }
         #endregion
         #region Enums

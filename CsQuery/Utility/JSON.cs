@@ -169,9 +169,6 @@ namespace CsQuery.Utility
         /// <returns></returns>
         public static T ParseJSON<T>(string objectToDeserialize)
         {
-            // TODO: Don't use Javascript Serializer. Even if we are not converting to ExpandoObject, we would like better
-            // control over the deserialization process to fix dates. This code only works for date values, not members.
-            // JavaScriptSerializer serializer = new JavaScriptSerializer();
 
             return (T)ParseJSON(objectToDeserialize, typeof(T));
         }
@@ -355,7 +352,6 @@ namespace CsQuery.Utility
         /// <returns></returns>
         private static JsObject ParseJSONObject(string objectToDeserialize)
         {
-            //JavaScriptSerializer serializer = new JavaScriptSerializer();
             Dictionary<string, object> dict = (Dictionary<string, object>)Serializer.Deserialize(objectToDeserialize, typeof(Dictionary<string, object>));
 
             return Objects.Dict2Dynamic<JsObject>(dict,true);

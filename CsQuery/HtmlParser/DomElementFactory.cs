@@ -12,11 +12,11 @@ namespace CsQuery.HtmlParser
 {
     public class DomElementFactory
     {
-        public DomElementFactory(IDomRoot document)
+        public DomElementFactory(IDomDocument document)
         {
             Document = document;
         }
-        public IDomRoot Document { get; set; }
+        public IDomDocument Document { get; set; }
         protected char[] BaseHtml;
         protected int EndPos
         {

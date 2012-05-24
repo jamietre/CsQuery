@@ -101,9 +101,5 @@ namespace CsQuery.Utility
             stream.Read(data, 0, (int)stream.Length);
             return (Encoding.ASCII.GetString(data));
         }
-
-        #region object extension methods
-
-        #endregion
     }
 }

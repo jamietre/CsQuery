@@ -9,8 +9,9 @@ namespace CsQuery.Utility
 {
     /// <summary>
     /// A lightweight dictionary for small lists. This is intended to boost performance for situations where we know the list
-    /// will always be small (e.g. like HybridDictionary but even better since there's no need to check size ever). 
-    /// It is unclear if this is actually faster than a regular dictionary.
+    /// will always be small (e.g. like HybridDictionary but even better since there's no need to check size ever). Performance
+    /// testing could reveal that this doesn't affect performance much or it should just be implemented with a regular dictionary;
+    /// I leave this is a different implementation than a standard dictionary so it can be easily changed in the future.
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>

@@ -96,7 +96,7 @@ namespace CsQuery.Implementation
         /// The DOM for this object. This is obtained by looking at its parents value until it finds a non-null
         /// Document in a parent. The value is cached locally as long as the current value of Parent remains the same.
         /// </summary>
-        public virtual IDomRoot Document
+        public virtual IDomDocument Document
         {
             get
             {
@@ -119,7 +119,7 @@ namespace CsQuery.Implementation
                 }
             }
         }
-        private IDomRoot _Document;
+        private IDomDocument _Document;
 
          protected string PathEncode(int number)
         {

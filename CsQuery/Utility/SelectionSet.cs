@@ -13,15 +13,31 @@ namespace CsQuery.Utility
         Descending=3
     }
     /// <summary>
-    /// A list of DOM elements, ordered by appearance in the DOM
+    /// A list of DOM elements. The default order is the order added to this construct; the Order property can be changed to
+    /// return the contents in a different order.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class SelectionSet<T>: ISet<T>, IList<T>, ICollection<T>,IEnumerable<T>, IEnumerable where T: IDomObject
     {
+        #region constructor
+
         public SelectionSet()
         {
             Order = SelectionSetOrder.OrderAdded;
         }
+
+        #endregion
+
+        #region private properties
+
+        // We maintain both a List<T> and a HashSet<T> for selections because set operations are performance-critical
+        // for many selectors, but we cannot depend on HashSet<T> to maintain order. If the list is accessed in a sorted
+        // order, the sorted version is cached additionally using sortedList.
+
+        private HashSet<T> _innerList = null;
+        private List<T> _innerListOrdered = null;
+        protected IEnumerable<T> _sortedList = null;
+
         protected HashSet<T> innerList
         {
             get
@@ -34,9 +50,6 @@ namespace CsQuery.Utility
                 return _innerList;
             }
         }
-        private HashSet<T> _innerList = null;
-        private List<T> _innerListOrdered= null;
-        
         protected IEnumerable<T> sortedList
         {
             get
@@ -49,75 +62,57 @@ namespace CsQuery.Utility
                     return _innerListOrdered;
                 }
 
-                if (dirty || _sortedList==null)
+                if (_sortedList==null)
                 {
                     //TODO - right now we copy the list to the target when first accessed in order to ensure its integrity
                     // should the path of an item change (e.g. b/c it's removed from the DOM). Ideally we would not
                     // require this, so the list is only enumerated when needed, but I can't think how to accomplish this easily
-                    var comparer = new listOrderComparer(Order);
+                    var comparer = new SelectionSetComparer(Order);
                     _sortedList = new List<T>(_innerListOrdered.OrderBy(item => item,comparer));
-                    dirty = false;
                 }
                 return _sortedList;
             }
         }
-        private class listOrderComparer : IComparer<IDomObject>
-        {
-            public listOrderComparer(SelectionSetOrder order)
-            {
-                if (order != SelectionSetOrder.Ascending && order != SelectionSetOrder.Descending)
-                {
-                    throw new Exception("This comparer can only be used to sort.");
-                }
-                Order = order;
-            }
-            protected SelectionSetOrder Order;
-            public int Compare(IDomObject x, IDomObject y)
-            {
-                return Order == SelectionSetOrder.Ascending ?
-                    String.CompareOrdinal(x.Path,y.Path) :
-                    String.CompareOrdinal(y.Path,x.Path);
-            }
-        }
-        protected IEnumerable<T> _sortedList = null;
-        // Make the list dirty, forcing a resort. 
-        protected bool dirty = false;
-        protected void Touch()
-        {
-            dirty = true;
-        }
+        
+
+        #endregion
+
+        #region public properties
 
         /// <summary>
         /// The order in which elements in the set are returned
         /// </summary>
         public SelectionSetOrder Order {get;set;}
 
-        public IEnumerator<T> GetEnumerator()
+        public int Count
         {
-            return sortedList.GetEnumerator();
+            get
+            {
+                return _innerList != null ?
+                    innerList.Count :
+                    0;
+            }
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        public bool IsReadOnly
         {
-            return GetEnumerator();
+            get { return false; }
         }
-       
+
+        #endregion
+
+        #region public methods
 
         public bool Add(T item)
         {
-
-            bool result = innerList.Add(item);
-            if (result)
+            if (innerList.Add(item))
             {
                 _innerListOrdered.Add(item);
                 Touch();
-            }
-            return result;
-            
-        }
-        void ICollection<T>.Add(T item)
-        {
-            Add(item);
+                return true;
+            } else {
+                return false;
+            }        
         }
 
         public void Clear()
@@ -132,7 +127,7 @@ namespace CsQuery.Utility
 
         public bool Contains(T item)
         {
-            return _innerList!=null ? 
+            return _innerList != null ?
                 innerList.Contains(item) : false;
         }
 
@@ -141,20 +136,7 @@ namespace CsQuery.Utility
            innerList.CopyTo(array, arrayIndex);
         }
 
-        public int Count
-        {
-            get { 
-                return _innerList!=null ? 
-                innerList.Count :
-                0; 
-            }
-        }
-
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
-
+       
         public bool Remove(T item)
         {
             bool result = false;
@@ -169,24 +151,7 @@ namespace CsQuery.Utility
             }
             return result;
         }
-        /// <summary>
-        /// Use after set operations
-        /// </summary>
-        private void SynchronizeOrderedListAfterRemove()
-        {
-            int index = 0;
-            while (index < _innerListOrdered.Count)
-            {
-                if (!_innerList.Contains(_innerListOrdered[index]))
-                {
-                    _innerListOrdered.RemoveAt(index);
-                }
-                else
-                {
-                    index++;
-                }
-            }
-        }
+
         public void ExceptWith(IEnumerable<T> other)
         {
             innerList.ExceptWith(other);
@@ -240,7 +205,8 @@ namespace CsQuery.Utility
 
         public void UnionWith(IEnumerable<T> other)
         {
-            // This is just adding things since this list maintains uniqueness
+            // The hashset maintains uniqueness; we can just try to add everything.
+
             foreach (T item in other)
             {
                 Add(item);
@@ -288,5 +254,53 @@ namespace CsQuery.Utility
                 Touch();
             }
         }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return sortedList.GetEnumerator();
+        }
+
+        #endregion
+
+        #region private methods
+
+        /// <summary>
+        /// Force the list to be re-sorted.
+        /// </summary>
+        protected void Touch()
+        {
+            _sortedList = null;
+        }
+
+        /// <summary>
+        /// Use after set operations that alter the list
+        /// </summary>
+        private void SynchronizeOrderedListAfterRemove()
+        {
+            int index = 0;
+            while (index < _innerListOrdered.Count)
+            {
+                if (!_innerList.Contains(_innerListOrdered[index]))
+                {
+                    _innerListOrdered.RemoveAt(index);
+                }
+                else
+                {
+                    index++;
+                }
+            }
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+        void ICollection<T>.Add(T item)
+        {
+            Add(item);
+        }
+
+        #endregion
+
     }
 }

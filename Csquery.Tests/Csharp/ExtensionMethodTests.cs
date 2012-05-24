@@ -35,8 +35,8 @@ namespace CsqueryTests.ExtensionMethodTests
             Assert.IsTrue(test.IsImmutable(), "null is immutable type");
             Assert.IsTrue(!test2.IsImmutable(), "List is not immutable type");
             Assert.IsTrue(!kvp.IsImmutable(), "KVP is not immutable type");
-            Assert.IsTrue(!kvp.IsExpando(), "KVP is not expando");
-            Assert.IsTrue(exp.IsExpando(), "expando object is expando");
+            Assert.IsTrue(!Objects.IsExpando(kvp), "KVP is not expando");
+            Assert.IsTrue(Objects.IsExpando(exp), "expando object is expando");
 
             Assert.IsTrue(!x.IsExtendableType(), "int is not extendable");
             Assert.IsTrue(!a.IsExtendableType(), "string is not extendable");

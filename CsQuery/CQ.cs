@@ -33,8 +33,7 @@ namespace CsQuery
     /// Selection is a set of DOM nodes matching the selector. 
     /// 
     /// Elements is a set of IDomElement nodes matching the selector. This is a subset of Selection - it 
-    /// basically excludes Text and Comment notes.
-    /// 
+    /// excludes non-Element nodes.
     /// 
     /// The static Create() methods create new DOMs. To create a CsQuery object based on an existing dom, 
     /// use new CQ() (similar to jQuery() methods).

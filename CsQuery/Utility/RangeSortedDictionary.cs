@@ -7,17 +7,12 @@ using CsQuery.ExtensionMethods;
 
 namespace CsQuery.Utility
 {
-    /*
-     * A dictionary that allows lookups by substring. E.g.
-     * 
-     * .class/body/div
-     * .class/body/a/span/element
-     * #id/body/div/span/element
-     * 
-     * search for .class#id
-     * 1) return all .class elements
-     * 2) serach #id/body/div
-     */
+    /// <summary>
+    /// A dictionary that is substring-lookup capable. This is the data structure used to index HTML documents for selectors.
+    /// A SortedSet of keys is used for the index because it allows fast access by substring. A list of keys obtained from the
+    /// SortedSet for a selector is used to obtain the target references from a regular dictionary.
+    /// </summary>
+    /// <typeparam name="TValue"></typeparam>
     public class RangeSortedDictionary<TValue> : IRangeSortedDictionary<TValue>
     {
         #region constructor

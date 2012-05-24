@@ -13,6 +13,9 @@ using System.Diagnostics;
 
 namespace CsqueryTests.Csharp
 {
+    /// <summary>
+    /// This test is disabled by default because it accesses public web sites, activate it just to test this feature
+    /// </summary>
     [TestFixture, TestClass, Description("CsQuery Tests (Not from Jquery test suite)")]
     public class WebIO : CsQueryTest
     {
@@ -32,9 +35,7 @@ namespace CsqueryTests.Csharp
         public void GetHtmlAsync()
         {
             Server.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2";
-            Server.StartAsyncWebRequest("http://www.microsoft.com/en/us/default.aspx?redir=true", response =>
-            {
-            }, 1);
+            Server.StartAsyncWebRequest("http://www.microsoft.com/en/us/default.aspx?redir=true", FinishRequest, 1);
             Debug.WriteLine("Started Async Request 1 @" + DateTime.Now);
             AsyncStep |= 1;
             Server.StartAsyncWebRequest("http://www.cnn.com/", FinishRequest,2);

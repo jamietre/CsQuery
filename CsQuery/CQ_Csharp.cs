@@ -16,7 +16,7 @@ namespace CsQuery
     {
         #region private properties
         protected SelectorChain _Selectors = null;
-        protected IDomRoot _Document = null;
+        protected IDomDocument _Document = null;
         #endregion
         
         #region public properties
@@ -24,7 +24,7 @@ namespace CsQuery
         /// <summary>
         /// Represents the full, parsed DOM for an object created with an HTML parameter
         /// </summary>
-        public IDomRoot Document
+        public IDomDocument Document
         {
             get
             {
@@ -116,8 +116,6 @@ namespace CsQuery
 
         #region public methods
 
-     
-
         /// <summary>
         /// Renders just the selection set completely.
         /// </summary>
@@ -132,14 +130,18 @@ namespace CsQuery
             return sb.ToString();
         }
         /// <summary>
-        /// Renders the DOM to a string
+        /// Render the DOM to a string
         /// </summary>
         /// <returns></returns>
         public string Render()
         {
             return Document.Render();
         }
-
+        /// <summary>
+        /// Render the DOM using the specified OuputFormatter to process the output
+        /// </summary>
+        /// <param name="format"></param>
+        /// <returns></returns>
         public string Render(IOutputFormatter format)
         {
             return format.Format(this);

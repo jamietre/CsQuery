@@ -16,9 +16,13 @@ using CsQuery.Utility;
 
 namespace CsQuery.ExtensionMethods
 {
+    /// <summary>
+    /// Some extension methods that come in handy when working with CsQuery
+    /// </summary>
     public static class PublicExtensionMethods
     {
         #region IEnumerable<T> extension methods
+
         public static void AddRange<T>(this ICollection<T> baseList, IEnumerable<T> list)
         {
             foreach (T obj in list)
@@ -26,13 +30,16 @@ namespace CsQuery.ExtensionMethods
                 baseList.Add(obj);
             }
         }
+
         #endregion
+
         #region string extension methods
         
         public static String RegexReplace(this String input, string pattern, string replacements)
         {
             return input.RegexReplace(Objects.Enumerate(pattern), Objects.Enumerate(replacements));
         }
+
         public static String RegexReplace(this String input, IEnumerable<string> patterns, IEnumerable<string> replacements)
         {
             List<string> patternList = new List<string>(patterns);
@@ -49,6 +56,7 @@ namespace CsQuery.ExtensionMethods
 
             return input;
         }
+
         public static string RegexReplace(this String input, string pattern, MatchEvaluator evaluator)
         {
 
@@ -76,16 +84,8 @@ namespace CsQuery.ExtensionMethods
 
         #endregion
 
-        #region object extension methods
-        public static bool IsTruthy(this object obj)
-        {
-            return Objects.IsTruthy(obj);
-        }
-        #endregion
-
-
         /// <summary>
-        /// Deep clone an enumerable. Deals with expando objects.
+        /// (Alpha) Clone a sequence of objects.
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
@@ -93,6 +93,12 @@ namespace CsQuery.ExtensionMethods
         {
             return obj.CloneList(false);
         }
+        /// <summary>
+        /// (Alpha) Deep clone a sequence of objects.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="deep"></param>
+        /// <returns></returns>
         public static IEnumerable CloneList(this IEnumerable obj, bool deep)
         {
             IEnumerable newList;
@@ -101,7 +107,7 @@ namespace CsQuery.ExtensionMethods
             //{
             //    return (IEnumerable)((Array)obj).Clone();
             //} 
-            if (obj.IsExpando())
+            if (Objects.IsExpando(obj))
             {
                 newList = new JsObject();
                 var newListDict = (IDictionary<string, object>)newList;
@@ -152,21 +158,17 @@ namespace CsQuery.ExtensionMethods
         }
 
         /// <summary>
-        /// Convert an expandoobject to a list
+        /// Indicates whether a property exists on an ExpandoObject
         /// </summary>
         /// <param name="obj"></param>
+        /// <param name="propertyName"></param>
         /// <returns></returns>
-        public static IEnumerable<KeyValuePair<string, object>> ToKvpList(this ExpandoObject obj)
-        {
-            var dict = ((IDictionary<string, object>)obj);
-            return dict == null ? Objects.EmptyEnumerable<KeyValuePair<string, object>>() : dict.ToList();
-        }
         public static bool HasProperty(this ExpandoObject obj, string propertyName)
         {
             return ((IDictionary<string, object>)obj).ContainsKey(propertyName);
         }
         /// <summary>
-        /// Return typed value from an expandoobject
+        /// Return a yped value from an ExpandoObject
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
@@ -188,54 +190,6 @@ namespace CsQuery.ExtensionMethods
             {
                 return default(T);
             }
-        }
-        public static JsObject Get(this ExpandoObject obj, string name)
-        {
-            IDictionary<string, object> dict = obj;
-            object subProp;
-            if (dict.TryGetValue(name, out subProp))
-            {
-                return CQ.ToExpando(subProp);
-            }
-            else
-            {
-                return null;
-            }
-
-        }
-
-
-
-        /// <summary>
-        /// Test if is an expando object.
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public static bool IsExpando(this object obj)
-        {
-            return (obj is IDictionary<string, object>) ;
-        }
-        /// <summary>
-        /// Returns true for expando objects with no properties
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public static bool IsEmptyExpando(this object obj)
-        {
-            return obj.IsExpando() && ((IDictionary<string, object>)obj).Count == 0;
-        }
-        public static bool IsKeyValuePair(this object obj)
-        {
-            Type valueType = obj.GetType();
-            if (valueType.IsGenericType)
-            {
-                Type baseType = valueType.GetGenericTypeDefinition();
-                if (baseType == typeof(KeyValuePair<,>))
-                {
-                    return true;
-                }
-            }
-            return false;
         }
     }
     
