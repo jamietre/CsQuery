@@ -191,11 +191,11 @@ namespace CsQuery
         {
             if (html!=null)
             {
-                Document = new DomRoot(html);
+                Document = new DomDocument(html);
             }
             else
             {
-                Document = new DomRoot();
+                Document = new DomDocument();
             }
             Document.DomRenderingOptions = CQ.DefaultDomRenderingOptions;
         }

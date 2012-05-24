@@ -9,7 +9,7 @@ namespace CsQuery.Implementation
     /// <summary>
     /// Special node type to represent the DOM.
     /// </summary>
-    public class DomFragment : DomRoot, IDomFragment
+    public class DomFragment : DomDocument, IDomFragment
     {
 
         public DomFragment()

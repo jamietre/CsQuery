@@ -13,18 +13,18 @@ namespace CsQuery.Implementation
     /// <summary>
     /// Special node type to represent the DOM.
     /// </summary>
-    public class DomRoot : DomContainer<DomRoot>, IDomDocument
+    public class DomDocument : DomContainer<DomDocument>, IDomDocument
     {
 
-        public DomRoot()
+        public DomDocument()
             : base()
         {
         }
-        public DomRoot(IEnumerable<IDomObject> elements): base()
+        public DomDocument(IEnumerable<IDomObject> elements): base()
         {
             ChildNodes.AddRange(elements);
         }
-        public DomRoot(char[] html)
+        public DomDocument(char[] html)
         {
             SourceHtml = html;
         }
@@ -276,9 +276,9 @@ namespace CsQuery.Implementation
         {
             return "DOM Root (" + DocType.ToString() + ", " + DescendantCount().ToString() + " elements)";
         }
-        public override DomRoot Clone()
+        public override DomDocument Clone()
         {
-            DomRoot clone = new DomRoot();
+            DomDocument clone = new DomDocument();
             clone.SourceHtml = SourceHtml;
             clone.OriginalStrings = OriginalStrings;
 
