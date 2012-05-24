@@ -42,16 +42,17 @@ CsQuery is a jQuery port for .NET 4. It implements all the CSS selectors and DOM
 *Most methods are flexible with the kind of input they take to try to work as intutitively as they do in jQuery. Three ways to do the same thing:*
 
     rowsWithClass.AddClass("highlighted")
-        .Css(new {
+        .CssSet(new {
                 width="100px",
                 height=20
             });
 
 
-    rowsWithClass.Css("{ width: 100px; height: 20px; }");
+    rowsWithClass.CssSet("{ width: 100px; height: 20px; }");
 
     rowsWithClass.Css("width",100).Css("height","20px");
 
+See below "C# objects vs. jQuery objects" for an explanation of CssSet vs. Css.
 
 *`Data` will create "data-xxx" elements that can be directly read by the jQuery data method*
 
