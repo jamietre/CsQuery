@@ -231,7 +231,7 @@ namespace CsQuery.Utility
         {
             if (index >= Count || Count==0)
             {
-                throw new Exception("Index out of range");
+                throw new IndexOutOfRangeException("Index out of range");
             }
             T item = _innerListOrdered[index];
             innerList.Remove(item);

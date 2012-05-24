@@ -137,7 +137,7 @@ namespace CsqueryTests.Csharp
             {
                 if (!val.IsOneOf("","separator","attribute","alpha", "alphanumeric", "bound", "lower", "upper", "whitespace", "operator", "parenthesis","numericext","numeric"))
                 {
-                    throw new Exception("Invalid parm passed to IsOnly");
+                    throw new ArgumentException("Invalid parameter passed to IsOnly");
                 }
             }
 

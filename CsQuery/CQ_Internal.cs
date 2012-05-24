@@ -205,7 +205,7 @@ namespace CsQuery
         {
             //if (!ReferenceEquals(element.Dom, Dom))
             //{
-            //    throw new Exception("Cannot add unbound elements or elements bound to another DOM directly to a selection set.");
+            //    throw new InvalidOperationException("Cannot add unbound elements or elements bound to another DOM directly to a selection set.");
             //}
             return SelectionSet.Add(element);
         }
@@ -448,7 +448,7 @@ namespace CsQuery
                         // Disconnected items are added to the selection set (if that's the target)
                         if (!isCsQuery)
                         {
-                            throw new Exception("You can't add elements to a disconnected element list, it must be in a selection set");
+                            throw new InvalidOperationException("You can't add elements to a disconnected element list, it must be in a selection set");
                         }
                         int index = sel.IndexOf(el);
                         foreach (var item in SelectionSet)
@@ -510,6 +510,8 @@ namespace CsQuery
             }
             return element;
         }
+
+       
         #endregion
         
         

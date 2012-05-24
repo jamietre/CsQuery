@@ -90,7 +90,7 @@ namespace CsQuery.HtmlParser
         {
             if (Document == null)
             {
-                throw new Exception("This method requires Document be set");
+                throw new InvalidOperationException("This method requires Document be set");
             }
             isBound = true;
 

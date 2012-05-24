@@ -191,7 +191,7 @@ namespace CsQuery.Implementation
         {
             if (String.IsNullOrEmpty(name))
             {
-                throw new Exception("Cannot set an attribute with no name.");
+                throw new ArgumentException("Cannot set an attribute with no name.");
             }
             name = name.CleanUp();
             Set(DomData.TokenID(name, true), value);

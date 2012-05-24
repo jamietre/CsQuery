@@ -57,7 +57,7 @@ namespace CsQuery.Utility.EquationParser.Implementation
            // {
                 if (OnGetValue == null)
                 {
-                    throw new Exception("This variable is not bound to a formula, so it's value cannot be read.");
+                    throw new InvalidOperationException("This variable is not bound to a formula, so it's value cannot be read.");
                 }
                 VariableReadEventArgs args = new VariableReadEventArgs(Name);
                 args.Type = Type;

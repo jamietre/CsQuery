@@ -64,7 +64,7 @@ namespace CsQuery.Utility
                         st.Type = CssStyleType.Url;
                         break;
                     default:
-                        throw new Exception("Error parsing css xml: unknown type '" + type + "'");
+                        throw new NotImplementedException("Error parsing css xml: unknown type '" + type + "'");
                 }
                 st.Description = el.Attributes["description"].Value;
                 StyleDefs[st.Name] = st;

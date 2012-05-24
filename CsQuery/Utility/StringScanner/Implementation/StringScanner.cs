@@ -233,7 +233,7 @@ namespace CsQuery.Utility.StringScanner.Implementation
         {
             if (!Success)
             {
-                throw new Exception("The last operation was not successful; a new string scanner cannot be created.");
+                throw new InvalidOperationException("The last operation was not successful; a new string scanner cannot be created.");
             }
             return Scanner.Create(Match);
         }
@@ -246,7 +246,7 @@ namespace CsQuery.Utility.StringScanner.Implementation
         {
             if (!Success)
             {
-                throw new Exception("The last operation was not successful; a new string scanner cannot be created.");
+                throw new InvalidOperationException("The last operation was not successful; a new string scanner cannot be created.");
             }
             return Scanner.Create(String.Format(format,Match));
         }
@@ -366,7 +366,7 @@ namespace CsQuery.Utility.StringScanner.Implementation
         {
             if (Pos == 0)
             {
-                throw new Exception("Cannot reverse beyond beginning of string");
+                throw new InvalidOperationException("Cannot reverse beyond beginning of string");
             }
             Pos-=count;
             return Pos >= 0;
@@ -856,7 +856,7 @@ namespace CsQuery.Utility.StringScanner.Implementation
             }
             else
             {
-                throw new Exception(error);
+                throw new InvalidOperationException(error);
             }
         }
         #endregion
@@ -877,7 +877,7 @@ namespace CsQuery.Utility.StringScanner.Implementation
             Success = true;
             if (cached)
             {
-                throw new Exception("Internal error: already cached");
+                throw new InvalidOperationException("Internal error: already cached");
             }
             cached = true;
             cachedPos = Pos;

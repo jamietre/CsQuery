@@ -162,7 +162,7 @@ namespace CsQuery.Utility.StringScanner
             char result = CloserImpl(character);
             if (result == (char)0)
             {
-                throw new Exception("The character '" + character + "' is not a known opening bound.");
+                throw new InvalidOperationException("The character '" + character + "' is not a known opening bound.");
             }
             return result;
         }
@@ -222,7 +222,7 @@ namespace CsQuery.Utility.StringScanner
                     char result =  CloserImpl(character);
                     if (result == (char)0)
                     {
-                        throw new Exception("The character '" + character + "' is not a bound.");
+                        throw new InvalidOperationException("The character '" + character + "' is not a bound.");
                     };
                     return result;
             }

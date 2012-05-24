@@ -126,7 +126,7 @@ namespace CsQuery.Utility.EquationParser.Implementation
                             Clause.ReplaceLastOperand(newOp);
                             break;
                         default:
-                            throw new Exception("Unknown association type.");
+                            throw new NotImplementedException("Unknown association type.");
                     }
                 }
                 lastOperand = nextOperand;
@@ -154,7 +154,7 @@ namespace CsQuery.Utility.EquationParser.Implementation
                 }
                 else
                 {
-                    throw new Exception("Unable to parse number from '" + text + "'");
+                    throw new InvalidCastException("Unable to parse number from '" + text + "'");
                 }
             }
             else if (scanner.Info.Alpha)
@@ -194,7 +194,7 @@ namespace CsQuery.Utility.EquationParser.Implementation
             }
             else
             {
-                throw new Exception("Unexpected character '" + scanner.Match + "' found, expected an operand (a number or variable name)");
+                throw new InvalidOperationException("Unexpected character '" + scanner.Match + "' found, expected an operand (a number or variable name)");
             }
             scanner.SkipWhitespace();
             ParseEnd = scanner.Finished;

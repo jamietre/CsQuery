@@ -51,15 +51,12 @@ namespace CsQuery
             return csq;
         }
 
-        public static CQ Create(string selector, string jsonCss)
+
+        public static CQ Create(string selector, object css)
         {
             CQ csq = CQ.Create(selector);
-            return csq.AttrSet(jsonCss);
-        }
-        public static CQ Create(string selector, IDictionary<string,object> css)
-        {
-            CQ csq = CQ.Create(selector);
-            return csq.Attr(css);
+            
+            return csq.AttrSet(css,true);
         }
 
         /// <summary>

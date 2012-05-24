@@ -428,16 +428,16 @@ namespace CsqueryTests.jQuery
             var elem = jelem[0];
 
             // one at a time
-            jelem.AttrSet("{html: 'foo'}");
+            jelem.AttrSet("{html: 'foo'}",true);
             Assert.AreEqual(elem.InnerHTML, "foo", "attr(html)");
 
-            jelem.AttrSet("{text: 'bar'}");
+            jelem.Attr("{text: 'bar'}",true);
             Assert.AreEqual(elem.InnerHTML, "bar", "attr(text)");
 
-            jelem.AttrSet("{css: {color: 'red'}}");
+            jelem.AttrSet("{css: {color: 'red'}}",true);
             Assert.IsTrue(Regex.IsMatch(elem.Style["color"], "^(#ff0000|red)$"), "attr(css)");
 
-            jelem.AttrSet("{height: 10}");
+            jelem.AttrSet("{height: 10}",true);
             Assert.AreEqual(elem.Style["height"], "10px", "attr(height)");
 
             // Multiple attributes
@@ -445,7 +445,7 @@ namespace CsqueryTests.jQuery
             jelem.AttrSet(@"{
                     width:10,
                     css:{ padding-left:1, padding-right:1 }
-                }");
+                }",true);
 
             Assert.AreEqual(elem.Style["width"], "10px", "attr({...})");
             Assert.AreEqual(elem.Style["padding-left"], "1px", "attr({...})");

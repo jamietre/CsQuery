@@ -70,7 +70,7 @@ namespace CsQuery.Implementation
                         case DocType.HTML4:
                             return "html PUBLIC \"-//W3C//DTD HTML 4.01 Frameset//EN\" \"http://www.w3.org/TR/html4/frameset.dtd\"";
                         default:
-                            throw new Exception("Unimplemented doctype");
+                            throw new NotImplementedException("Unimplemented doctype");
                     }
 
                 }

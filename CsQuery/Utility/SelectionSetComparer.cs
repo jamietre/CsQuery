@@ -15,7 +15,7 @@ namespace CsQuery.Utility
         {
             if (order != SelectionSetOrder.Ascending && order != SelectionSetOrder.Descending)
             {
-                throw new Exception("This comparer can only be used to sort.");
+                throw new InvalidOperationException("This comparer can only be used to sort.");
             }
             Order = order;
         }

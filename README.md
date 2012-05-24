@@ -126,32 +126,104 @@ The HTML parser itself is of a purely functional and nonrecursing design. I did 
 There are some minor API issues that need resolving. The "Server" object, which was originally envisioned as part of a namespaced extension design for methods that are not part of the core jQuery api, is not well conceived. The DOM model has a few problem areas. Specifically, document fragments are not represented correctly, and the value (inner text) of `script` and `textarea` nodes is not represented correctly. In the latter situation, this content is handled as a special-case text node; it should be handled as a property. This issue creates the need for some special handling in a few areas, and should be fixed.
 
 
-### Basic use in C#
+### CsQuery vs. jQuery
+
+The primary goal of this project was to make it as familiar and portable as possible. I even though about using lowercased methods so it might be almost practical to copy and paste code between JS and C# but... I just couldn't. 
+
+There are necessarily some differences in usage because of the language itself and strong typing. This section covers what you need to know to get going with CsQuery. Everything else should work more or less the same as jQuery.
+
+##### Creating a new DOM
 
 The static `Create` method is used to create a new DOM from an html string, a sequence of `IDomObject` elements, or another CQ object.
 
     CQ.Create(..)            Constructor for new DOM, same as $(...) (when passed HTML or elements)
 
-Each instance of CQ is bound to a single DOM. Most methods return a new instance of CQ, however, they are bound to the same DOM as their originator. For example:
+You don't need to do this in a browser. The "document" is already there. You can, however, create new fragments in jQuery:
+
+    var frag = $('<div>This is a div</div'). 
+
+There's not really a distinction between a true Document and a fragment in CsQuery; there's no actual browser involved, it's just a node tree.
+
+This doesn't mean that every CQ instance referes to its own DOM. Quite the opposite, the CQ object returned from most methods will be bound to the same DOM as it's parent. For example:
 
     var dom = CQ.Create(someHtml);
     var divs = dom.Select("div");
     divs.Empty();
 
-the two variables `dom` and `divs` are just like two jQuery objects. `dom` is the same as `$(document)`. `divs` is the result of a selector, of course. The final `Empty` statement alters the underlying DOM associated with both. 
+this is about the same as:
 
-When working in a web browser with jQuery, you generally only have to worry about one `document`. Every method will select against it, and destructive methods will affect it. With CsQuery, however, you create a new DOM every time you use `Create`, so you could have many different ones. But every `CQ` object returned from the original target of a `Create` will be bound to its ancestor's DOM.
+    var dom = $(document);
+    var divs = $("div");
+    divs.empty();
 
-Some methods return a new instance of CQ, typically, when that method results in a different selection set. Other methods return the same instance. The rules for each method are the same as jQuery.
+Just like jQuery, some methods return a new instance of CQ, typically, when that method results in a different selection set. Other methods return the same instance. But either way, they are bound to the same DOM. The rules for whether a new instance is returned, or the existing one is altered, are the same as for each method in jQuery.
 
-CsQuery also adds methods to return its contents (either the full DOM, or just the selection) as a string:
+##### C# objects vs. jQuery objects
+
+The object in Javascript is a fundamental language construct; it's amorphous, nonstatic nature and simple syntax makes it useful for lots of purposes. Some jQuery methods accept objects as a convenient way to define data structures. 
+
+CsQuery uses reflection to allow C# objects in most of the same situations. It usually also will allow you to pass a string of JSON when an object structure would be expected, providing more syntax portability with Javascript (though you'lll have to use quotes in C#, of course). For example:
+
+
+    var anchor = dom["a"].Eq(0);
+
+    div.AttrSet(new {
+                href="http://www.jquery.com",
+                target="_blank"
+            })
+       .Text("Go to jQuery.com!");
+
+Alternatively:
+
+    dynamic props = new ExpandoObject();
+    props.href="http://www.jquery.com";
+    props.target="_blank";
+    
+    div.AttrSet(props).Text("Go to jQuery.com!");
+
+Using the Quick Setter syntax (which is sort of minimally documented by jQuery):
+
+
+    div.AttrSet(new { 
+                css = new { 
+                    href="http://www.jquery.com",
+                    target="_blank"
+                },
+                text = "Go to jQuery.com!"
+            });
+
+Using JSON:
+
+     div.AttrSet("{ css: { 
+                    href: 'http://www.jquery.com',
+                    target: '_blank'
+                },
+                text: 'Go to jQuery.com!'
+            }");
+
+
+There are a couple things to note here.
+
+1) The method `AttrSet`. This is a special case where overloading didn't work out very well in C#. The basic "get attribute" method:
+
+    public string Attr(string)
+
+conflicts with the signature for a general-purpose set method:
+ 
+    public CQ Attr(object map)
+
+I chose this convention to resolve the conflict for `Css` and `Attr` setting methods.
+
+2) The JSON string permits apostrophes in addition to quotes as a legal bounding character. While this makes it not legal JSON, it is much more convenient because you must use double-quotes to bound the string in C#. 
+
+
+### Important nonstandard methods
+
+CsQuery adds methods to return its contents (either the full DOM, or just the selection) as a string:
 
     Render()              Output the entire DOM as an html string
 
     RenderSelection()     Output only the selection set as an html string
-
-
-### Important nonstandard methods
 
 CsQuery contains a number of methods that are specific to its language implementation.
 
@@ -160,6 +232,9 @@ CsQuery contains a number of methods that are specific to its language implement
 	EnsureCsQuery(obj)    Return either obj, or a new CsQuery object based on obj (if a sequence of elements)
 
 `Elements` is important because of strong typing in C# vs. Javascript. The default enumerator exposes interface `IDomObject`, an interface common to all node types. As such it has very few standard DOM node methods. Most of the time, you only care about element nodes; this method provides the results in that cast.
+
+
+
 
 ### Utility Methods
 
@@ -174,4 +249,22 @@ These methods' purposes are straightforward.
 Extend tries to do a lot, allowing you to merge POCO and expando objects with properties of arbitrary types. It may not work in all situations, specifically, those involving deep-copying of list or enumerable types. This is a huge can of worms, and should not be considered part of the core framework. Ideally, I will just replace the implementation with some other library that does a great job of complex type mapping. For the time being, though, it works well in most common situations and is useful for dealing with abitrary objects of the sort you get from a javascript application. 
 
 The JSON handling uses the .NET framework JavaScriptSerializer with some postprocessing to normalize object structures when using expando objects. This also works well enough but, again, would ideal be addressed using a more robust JSON parser.
+
+
+### The basics of the CsQuery object model
+
+
+The `CQ` object is the jQuery object. 
+
+    var dom = $(document);
+    --
+    CQ dom = CQ.Create(htmlString);
+
+Static methods work like utility methods in jQuery:
+
+    var json = $.parseJSON(jsonString);
+    --
+    string json = CQ.parseJSON(jsonString);
+
+
 

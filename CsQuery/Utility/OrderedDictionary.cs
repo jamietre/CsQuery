@@ -223,7 +223,7 @@ namespace CsQuery.Utility
         {
             if (typeof(TKey) != typeof(string) && typeof(TKey) != typeof(int))
             {
-                throw new Exception("I can only autogenerate keys for string & int key types.");
+                throw new InvalidOperationException("I can only autogenerate keys for string & int key types.");
             }
             else
             {
@@ -252,7 +252,7 @@ namespace CsQuery.Utility
 
             if (typeof(TKey) != typeof(string) && typeof(TKey) != typeof(int))
             {
-                throw new Exception("I can only autogenerate keys for string & int key types.");
+                throw new InvalidOperationException("I can only autogenerate keys for string & int key types.");
             }
             else
             {

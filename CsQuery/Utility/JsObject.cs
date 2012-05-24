@@ -101,7 +101,7 @@ namespace CsQuery
             }
             else
             {
-                throw new Exception("The property '" + name + "' is not an array.");
+                throw new ArgumentException("The property '" + name + "' is not an array.");
             }
         }
         public object Get(string name)
@@ -138,7 +138,7 @@ namespace CsQuery
                 }
                 else
                 {
-                    throw new Exception("There is no property named \"" + name + "\".");
+                    throw new KeyNotFoundException("There is no property named \"" + name + "\".");
                 }
             }
             else

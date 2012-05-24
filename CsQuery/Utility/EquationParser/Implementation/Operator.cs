@@ -68,7 +68,7 @@ namespace CsQuery.Utility.EquationParser.Implementation
                     case OperationType.Modulus:
                         return AssociationType.Function;
                     default:
-                        throw new Exception("Unknown operation type, can't determine association");
+                        throw new NotImplementedException("Unknown operation type, can't determine association");
                 }
             }
         }
@@ -91,14 +91,14 @@ namespace CsQuery.Utility.EquationParser.Implementation
                 case OperationType.Division:
                     return new Functions.Product();
                 default:
-                    throw new Exception("Not yet supported");
+                    throw new NotImplementedException("Not yet supported");
             }
         }
         public void Set(string op)
         {
             if (!TrySet(op))
             {
-                throw new Exception("'" + op + "' is not a valid operator.");
+                throw new ArgumentException("'" + op + "' is not a valid operator.");
             }
         }
 

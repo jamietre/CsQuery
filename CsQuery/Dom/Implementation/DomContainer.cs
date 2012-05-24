@@ -126,7 +126,7 @@ namespace CsQuery.Implementation
         {
             if (referenceNode.ParentNode != this)
             {
-                throw new Exception("The reference node is not a child of this node");
+                throw new InvalidOperationException("The reference node is not a child of this node");
             }
             ChildNodes.Insert(referenceNode.Index, newNode);
         }
@@ -134,7 +134,7 @@ namespace CsQuery.Implementation
         {
             if (referenceNode.ParentNode != this)
             {
-                throw new Exception("The reference node is not a child of this node");
+                throw new InvalidOperationException("The reference node is not a child of this node");
             }
             ChildNodes.Insert(referenceNode.Index + 1, newNode);
         }
