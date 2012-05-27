@@ -219,7 +219,7 @@ namespace CsQuery.Utility.EquationParser.Implementation
             if (VariableValues.TryGetValue(e.Name, out value)) {
                 e.Value = VariableValues[e.Name];
             } else {
-                throw new Exception("The value for variable '" + e.Name +"' was not set.");
+                throw new InvalidOperationException("The value for variable '" + e.Name + "' was not set.");
             }
 
         }

@@ -88,7 +88,7 @@ namespace CsQuery.Implementation
             }
             internal set
             {
-                throw new Exception("Cannot set parent for a DOM root node.");
+                throw new InvalidOperationException("Cannot set parent for a DOM root node.");
             }
         }
         public override string Path

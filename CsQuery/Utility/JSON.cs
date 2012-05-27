@@ -96,7 +96,7 @@ namespace CsQuery.Utility
                 }
                 else
                 {
-                    throw new Exception("Serializer error: valueToJson called for an object");
+                    throw new InvalidOperationException("Serializer error: valueToJson called for an object");
                 }
             }
             protected bool IsKeyValueDictionary(object value)
@@ -235,7 +235,7 @@ namespace CsQuery.Utility
                     return boolean;
                 }
 
-                throw new Exception("The value '" + objectToDeserialize + "' could not be parsed, it doesn't seem to be something that should be a JSON value");
+                throw new ArgumentException("The value '" + objectToDeserialize + "' could not be parsed, it doesn't seem to be something that should be a JSON value");
 
            }
         }
@@ -287,7 +287,7 @@ namespace CsQuery.Utility
                     }
                 }
             }
-            throw new Exception("The value '" + objectToDeserialize + "' could not be parsed to type '" + type.ToString() + "'");
+            throw new ArgumentException("The value '" + objectToDeserialize + "' could not be parsed to type '" + type.ToString() + "'");
 
         }
         /// <summary>
@@ -300,7 +300,7 @@ namespace CsQuery.Utility
             var obj = objectToDeserialize.Trim();
             if (String.IsNullOrEmpty(obj))
             {
-                throw new Exception("No value passed, not a valid json value.");
+                throw new ArgumentException("No value passed, not a valid json value.");
             }
             else if (obj == "null" || obj == "undefined")
             {

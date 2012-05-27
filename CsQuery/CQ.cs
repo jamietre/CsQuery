@@ -645,8 +645,16 @@ namespace CsQuery
         /// <param name="name"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public CQ Attr(string name, object value)
+        public CQ Attr(string name, IConvertible value)
         {
+
+            // Make sure attempts to pass a JSON string end up a the right place
+            if (Objects.IsJson(name) && value.GetType()==typeof(bool))
+            {
+                return AttrSet(name, (bool)value);
+            }
+            
+            // jQuery 1.7 compatibility
             bool isBoolean = DomData.IsBoolean(name);
             if (isBoolean)
             {
@@ -674,58 +682,74 @@ namespace CsQuery
                 if ((e.NodeName == "input" || e.NodeName == "button") && name == "type"
                     && !e.IsDisconnected)
                 {
-                    throw new Exception("Can't change type of input elements in DOM");
+                    throw new InvalidOperationException("Can't change type of \"input\" elements that have already been added to a DOM");
                 }
                 e.SetAttribute(name, val);
             }
             return this;
         }
+        
         /// <summary>
-        /// Set attributes from a JSON string
-        /// </summary>
-        /// <param name="json"></param>
-        /// <returns></returns>
-        public CQ AttrSet(string json)
-        {
-            object parsed = ParseJSON(json);
-            if (!(parsed is IDictionary<string, object>))
-            {
-                throw new Exception("Cannot parse string into name/value pairs");
-            }
-            IDictionary<string, object> dict = (IDictionary<string, object>)parsed;
-            return Attr(dict);
-        }
-        /// <summary>
-        /// Sets the attributes of the selected elements from an object of key/value pairs
+        /// Map an object to attributes.
         /// </summary>
         /// <param name="attributes"></param>
         /// <returns></returns>
-        public CQ Attr(IDictionary<string,object> attributes) 
+        public CQ AttrSet(object attributes)
         {
+            return AttrSet(attributes, false);
+        }
+
+
+        /// <summary>
+        /// Map an object to attributes. If quickSet is true, treat give special treamtent to "css", "html", "text", "width" and "height" properties.
+        /// </summary>
+        /// <param name="attributes"></param>
+        /// <returns></returns>
+        public CQ AttrSet(object attributes, bool quickSet=false)
+        {
+            IDictionary<string, object> dict;
+
+            string cssString = attributes as string;
+            if (cssString != null && Objects.IsJson((cssString)))
+            {
+                dict = ParseJSON<IDictionary<string, object>>(cssString);
+            }
+            else
+            {
+                dict = Objects.ToExpando(attributes);
+            }
 
             foreach (IDomElement el in Elements)
             {
-                foreach (var kvp in attributes)
+                foreach (var kvp in dict)
                 {
-                    string name = kvp.Key.ToLower();
-                    switch(name) {
-                        case "css":
-                            Select(el).Css((IDictionary<string,object>)kvp.Value);
-                            break;
-                        case "html":
-                            Select(el).Html(kvp.Value.ToString());
-                            break;
-                        case "height":
-                        case "width":
-                            // for height and width, do not set attributes - set css
-                            Select(el).Css(name, kvp.Value.ToString());
-                            break;
-                        case "text":
-                            Select(el).Text(kvp.Value.ToString());
-                            break;
-                        default:
-                            el.SetAttribute(kvp.Key, kvp.Value.ToString());
-                            break;
+                    if (quickSet)
+                    {
+                        string name = kvp.Key.ToLower();
+                        switch (name)
+                        {
+                            case "css":
+                                Select(el).CssSet(Objects.ToExpando(kvp.Value));
+                                break;
+                            case "html":
+                                Select(el).Html(kvp.Value.ToString());
+                                break;
+                            case "height":
+                            case "width":
+                                // for height and width, do not set attributes - set css
+                                Select(el).Css(name, kvp.Value.ToString());
+                                break;
+                            case "text":
+                                Select(el).Text(kvp.Value.ToString());
+                                break;
+                            default:
+                                el.SetAttribute(kvp.Key, kvp.Value.ToString());
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        el.SetAttribute(kvp.Key, kvp.Value.ToString());
                     }
                 }
             }
@@ -1070,42 +1094,34 @@ namespace CsQuery
 
             return new CQ(list, this);
         }
+        
+
         /// <summary>
         ///  Set one or more CSS properties for the set of matched elements from JSON data
         /// </summary>
         /// <param name="cssJson"></param>
         /// <returns></returns>
-        public CQ CssSet(string json)
+        public CQ CssSet(object css)
         {
-            object parsed = ParseJSON(json);
-            if (!(parsed is IDictionary<string,object>)) {
-                throw new Exception("Cannot parse sting into name/value pairs");
+            IDictionary<string, object> dict;
+            if (Objects.IsJson(css))
+            {
+                dict = ParseJSON<IDictionary<string, object>>((string)css);
             }
-            IDictionary<string, object> dict = (IDictionary<string, object>)parsed;
-            return Css(dict);
-        }
-
-        public CQ Css(IEnumerable<KeyValuePair<string,object>> css)
-        {
+            else
+            {
+                dict = Objects.ToExpando(css);
+            }
             foreach (IDomElement e in Elements) 
             {
-                foreach (var key in css)
+                foreach (var key in dict)
                 {
                     e.Style[key.Key]= key.Value.ToString();
                 }
             }
             return this;
         }
-        public CQ Css(object css) 
-        {
-            Type t = css.GetType();
-            if (!t.IsClass || t is IEnumerable)
-            {
-                throw new Exception("Only non-enumerable classes can be mapped to Css using the object overload.");
-            }
-            Css(Objects.ToExpando(css));
-            return this;
-        }
+
         /// <summary>
         ///  Set one or more CSS properties for the set of matched elements.
         /// </summary>
@@ -1832,7 +1848,7 @@ namespace CsQuery
         /// </summary>
         /// <param name="name"></param>
         /// <param name="value"></param>
-        public CQ Prop(string name, object value)
+        public CQ Prop(string name, IConvertible value)
         {
             // Prop actually works on things other than boolean - e.g. SelectedIndex. For now though only use prop for booleans
 

@@ -90,7 +90,8 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual(true, CQ.ParseJSON("true"));
             Assert.AreEqual(null, CQ.ParseJSON("undefined"));
             Assert.AreEqual(null, CQ.ParseJSON(""));
-            Assert.Throws<Exception>(()=>{
+            Assert.Throws<ArgumentException>(() =>
+            {
                 var x = CQ.ParseJSON("x");
             });
 

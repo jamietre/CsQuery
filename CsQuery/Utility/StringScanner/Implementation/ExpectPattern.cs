@@ -132,7 +132,7 @@ namespace CsQuery.Utility.StringScanner.Implementation
                             }
                             else
                             {
-                                throw new Exception("Invalid escape character found in quoted string: '" + current + "'");
+                                throw new InvalidOperationException("Invalid escape character found in quoted string: '" + current + "'");
                             }
                         }
                     }

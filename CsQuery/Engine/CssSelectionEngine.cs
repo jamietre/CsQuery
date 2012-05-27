@@ -45,7 +45,7 @@ namespace CsQuery.Engine
         {
             if (Selectors == null )
             {
-                throw new Exception("No selectors provided.");
+                throw new ArgumentException("No selectors provided.");
             }
             if (Selectors.Count == 0)
             {
@@ -507,7 +507,7 @@ namespace CsQuery.Engine
                             value.Substring(value.Length - len) == selector.AttributeValue;
                         break;
                     default:
-                        throw new Exception("No AttributeSelectorType set");
+                        throw new InvalidOperationException("No AttributeSelectorType set");
                 }
                 if (!match)
                 {
@@ -684,7 +684,7 @@ namespace CsQuery.Engine
                             yield return child;
                             break;
                         default:
-                            throw new Exception("Unimplemented position type selector");
+                            throw new NotImplementedException("Unimplemented position type selector");
                     }
                 }
             }
@@ -714,7 +714,7 @@ namespace CsQuery.Engine
                 case PositionType.NthChild:
                     return NthChildMatcher.IndexMatches(obj.ElementIndex, criteria);
                 default:
-                    throw new Exception("Unimplemented position type selector");
+                    throw new NotImplementedException("Unimplemented position type selector");
             }
         }
 

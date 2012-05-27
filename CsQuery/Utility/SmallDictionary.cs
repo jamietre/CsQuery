@@ -106,7 +106,7 @@ namespace CsQuery.Utility
                 }
                 else
                 {
-                    throw new Exception("The value was not found.");
+                    throw new KeyNotFoundException("The value was not found.");
                 }
             }
             set

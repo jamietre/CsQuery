@@ -94,7 +94,7 @@ namespace CsQuery.Utility.EquationParser.Implementation
                 case "abs":
                     return new Functions.Abs();
                 default:
-                    throw new Exception("Undefined function '" + functionName + "'");
+                    throw new ArgumentException("Undefined function '" + functionName + "'");
 
             }
         }

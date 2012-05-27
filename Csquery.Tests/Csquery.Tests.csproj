@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Csharp\Clone.cs" />
+    <Compile Include="Csharp\Css\Css.cs" />
     <Compile Include="Csharp\Server.cs" />
     <Compile Include="Csharp\Miscellaneous.cs" />
     <Compile Include="Csharp\Utility\Expressions.cs" />
@@ -74,7 +75,7 @@
     <Compile Include="Csharp\Utility\StringScanner.cs" />
     <Compile Include="Csharp\Utility\ValueInfo.cs" />
     <Compile Include="jQuery\Attribute.cs" />
-    <Compile Include="Csharp\Attribute.cs" />
+    <Compile Include="Csharp\Attributes\Attributes.cs" />
     <Compile Include="Csharp\JsObject.cs" />
     <Compile Include="jQuery\Extra.cs" />
     <Compile Include="jQuery\Core.cs" />

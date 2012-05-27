@@ -31,7 +31,8 @@ namespace CsqueryTests.Csharp
             scanner.Expect("4");
             Assert.AreEqual("4",scanner.Match, "Expect 4");
 
-            Assert.Throws(typeof(Exception),Del(() => { 
+            Assert.Throws(typeof(InvalidOperationException), Del(() =>
+            { 
                 scanner.Expect("y"); 
             }),"Expect thows");
 
@@ -76,7 +77,7 @@ namespace CsqueryTests.Csharp
             var text = scanner.GetAlpha();
             Assert.AreEqual("someSelect", text, "Got first word");
 
-            Assert.Throws(typeof(Exception), Del(() =>
+            Assert.Throws(typeof(InvalidOperationException), Del(() =>
             {
                 scanner.Expect(MatchFunctions.Quoted);
             }), "Bounds don't work with quoted value");

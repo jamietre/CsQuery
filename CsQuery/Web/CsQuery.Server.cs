@@ -40,81 +40,8 @@ namespace CsQuery
              return new SimpleDictionary<string>(context.Request.Form);
         }
         
-        /// <summary>
-        /// Update form values from the HTTP post data
-        /// TODO: This needs tests and is probably incomplete.
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
 
-        public static CQ RestorePost(this CQ obj)
-        {
 
-            return RestorePost(obj, HttpContext.Current);
-        }
-
-        /// <summary>
-        /// Update form values from the HTTP post data
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public static CQ RestorePost(this CQ obj, HttpContext context)
-        {
-            var dict = PostData(context);
-            string selector = "input[name], select[name], button[name], textarea";
-            CQ src = obj.Selectors== null? obj.Select(selector) : obj.Filter(selector);
-            foreach (IDomElement e in src)
-            {
-                string value;
-                if (dict.TryGetValue(e["name"], out value))
-                {
-                    switch (e.NodeName)
-                    {
-                        case "textarea":
-                            e.InnerText = value;
-                            break;
-                        case "input":
-                            switch (e["type"])
-                            {
-                                case "checkbox":
-                                case "radio":
-                                    if (value != null)
-                                    {
-                                        e.SetAttribute("checked");
-                                    }
-                                    else
-                                    {
-                                        e.RemoveAttribute("checked");
-                                    }
-                                    break;
-                                case "hidden":
-                                case "text":
-                                case "password":
-                                case "button":
-                                case "submit":
-                                case "image":
-                                    e.SetAttribute("value", value);
-                                    break;
-                                case "file":
-                                    break;
-                                default:
-                                    e.SetAttribute("value", value);
-                                    break;
-                            }
-                            break;
-                        case "select":
-                            obj[e].Val(value);
-                            break;
-                        default:
-                            // just use value
-                            obj[e].Val(value);
-                            break;
-                    }
-                }
-            }
-            return obj;
-
-        }
         public static CsQueryHttpContext CreateFromRender(Page page, Action<HtmlTextWriter> renderMethod, HtmlTextWriter writer)
         {
             return CreateFromRender(page, renderMethod, writer, HttpContext.Current);

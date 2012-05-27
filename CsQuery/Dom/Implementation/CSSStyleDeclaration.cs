@@ -382,7 +382,7 @@ namespace CsQuery.Implementation
             {
                 if (strict)
                 {
-                    throw new Exception("No attribute named '" + name + "' exists (strict mode)");
+                    throw new ArgumentException("The style '" + name + "' is not valid (strict mode)");
                 }
             }
             else
@@ -398,7 +398,7 @@ namespace CsQuery.Implementation
                             }
                             catch
                             {
-                                throw new Exception("No valid unit data or option provided for attribue '"
+                                throw new ArgumentException("No valid unit data or option provided for attribue '"
                                     + name + "'. Valid options are: " + OptionList(style));
                             }
                         }
@@ -406,7 +406,7 @@ namespace CsQuery.Implementation
                     case CssStyleType.Option:
                         if (!style.Options.Contains(value))
                         {
-                            throw new Exception("The value '" + value + "' is not allowed for attribute '"
+                            throw new ArgumentException("The value '" + value + "' is not allowed for attribute '"
                                 + name + "'. Valid options are: " + OptionList(style));
                         }
                         break;
@@ -475,12 +475,12 @@ namespace CsQuery.Implementation
                 else
                 {
                     // unknown unit type - this is invalid, and we're in strict mode
-                    throw new Exception("Invalid unit data type for attribute, data: '" + value + "'");
+                    throw new ArgumentException("Invalid unit data type for attribute, data: '" + value + "'");
                 }
             }
             if (outVal.Length == 0)
             {
-                throw new Exception("No data provided for attribute, data: '" + value + "'");
+                throw new ArgumentException("No data provided for attribute, data: '" + value + "'");
             }
             outVal.Append(type);
             return outVal.ToString();

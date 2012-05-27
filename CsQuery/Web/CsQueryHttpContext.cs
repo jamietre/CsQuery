@@ -93,7 +93,7 @@ namespace CsQuery.Web
                         int nextPos = input.IndexOf('|', pos);
                         if (nextPos > inputLength)
                         {
-                            throw new Exception("Unable to parse UpdatePanel data");
+                            throw new InvalidOperationException("Unable to parse UpdatePanel data");
                         }
                         string data = input.SubstringBetween(pos, nextPos);
                         switch (step)

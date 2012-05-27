@@ -130,7 +130,7 @@ namespace CsQuery.Implementation
         public virtual IDomObject this[int index]
         {
             get {
-                throw new Exception("This element type does not have children");
+                throw new InvalidOperationException("This element type does not have children");
             }
         }
         /// <summary>
@@ -142,11 +142,11 @@ namespace CsQuery.Implementation
         {
             get
             {
-                throw new Exception("This element type does not have attributes");
+                throw new InvalidOperationException("This element type does not have attributes");
             }
             set
             {
-                throw new Exception("This element type does not have attributes");
+                throw new InvalidOperationException("This element type does not have attributes");
             }
         }
          public virtual IEnumerable<IDomElement> ChildElements
@@ -168,7 +168,7 @@ namespace CsQuery.Implementation
              }
              set
              {
-                 throw new Exception("You can't set NodeValue for this node type.");
+                 throw new InvalidOperationException("You can't set NodeValue for this node type.");
              }
          }
          /// <summary>
@@ -178,7 +178,7 @@ namespace CsQuery.Implementation
          {
              if (ParentNode == null)
              {
-                 throw new Exception("This element has no parent.");
+                 throw new InvalidOperationException("This element has no parent.");
              }
              ParentNode.ChildNodes.Remove(this);
          }
@@ -221,7 +221,7 @@ namespace CsQuery.Implementation
 
              set
              {
-                 throw new Exception("DefaultValue is not valid for this node type");
+                 throw new InvalidOperationException("DefaultValue is not valid for this node type");
              }
          }
          /// <summary>
@@ -250,7 +250,7 @@ namespace CsQuery.Implementation
              }
              set
              {
-                 throw new Exception("Cannot set ID for this node type.");
+                 throw new InvalidOperationException("Cannot set ID for this node type.");
              }
          }
 
@@ -262,7 +262,7 @@ namespace CsQuery.Implementation
              }
              set
              {
-                 throw new Exception("Cannot set value for this node type.");
+                 throw new InvalidOperationException("Cannot set value for this node type.");
              }
          }
          public virtual string ClassName
@@ -273,7 +273,7 @@ namespace CsQuery.Implementation
              }
              set
              {
-                 throw new Exception("ClassName is not applicable to this node type.");
+                 throw new InvalidOperationException("ClassName is not applicable to this node type.");
              }
          }
          public virtual DomAttributes Attributes
@@ -284,7 +284,7 @@ namespace CsQuery.Implementation
              }
              protected set
              {
-                 throw new Exception("Attributes collection is not applicable to this node type.");
+                 throw new InvalidOperationException("Attributes collection is not applicable to this node type.");
              }
          }
 
@@ -296,7 +296,7 @@ namespace CsQuery.Implementation
              }
              protected set
              {
-                 throw new Exception("Style is not applicable to this node type.");
+                 throw new InvalidOperationException("Style is not applicable to this node type.");
              }
          }
 
@@ -309,7 +309,7 @@ namespace CsQuery.Implementation
              }
              set
              {
-                 throw new Exception("You can't change the node name.");
+                 throw new InvalidOperationException("You can't change the node name.");
              }
          }
          public virtual string TagName
@@ -326,11 +326,11 @@ namespace CsQuery.Implementation
          {
              get
              {
-                 throw new Exception("Accessing InnerText is not valid for this element type.");
+                 throw new InvalidOperationException("Accessing InnerText is not valid for this element type.");
              }
              set
              {
-                 throw new Exception("Assigning InnerText is not valid for this element type.");
+                 throw new InvalidOperationException("Assigning InnerText is not valid for this element type.");
              }
          }
          // Owner can be null (this is an unbound element)
@@ -340,11 +340,11 @@ namespace CsQuery.Implementation
          {
              get
              {
-                 throw new Exception("Accessing InnerHtml is not valid for this element type.");
+                 throw new InvalidOperationException("Accessing InnerHtml is not valid for this element type.");
              }
              set
              {
-                 throw new Exception("Assigning InnerHtml is not valid for this element type.");
+                 throw new InvalidOperationException("Assigning InnerHtml is not valid for this element type.");
              }
          }
 
@@ -381,19 +381,19 @@ namespace CsQuery.Implementation
          }
          public virtual void AppendChild(IDomObject element)
          {
-             throw new Exception("This type of element does not have children.");
+             throw new InvalidOperationException("This type of element does not have children.");
          }
          public virtual void RemoveChild(IDomObject element)
          {
-             throw new Exception("This type of element does not have children.");
+             throw new InvalidOperationException("This type of element does not have children.");
          }
          public virtual void InsertBefore(IDomObject newNode, IDomObject referenceNode)
          {
-             throw new Exception("This type of element does not have children.");
+             throw new InvalidOperationException("This type of element does not have children.");
          }
          public virtual void InsertAfter(IDomObject newNode, IDomObject referenceNode)
          {
-             throw new Exception("This type of element does not have children.");
+             throw new InvalidOperationException("This type of element does not have children.");
          }
 
          public virtual void SetAttribute(string name)
@@ -466,7 +466,7 @@ namespace CsQuery.Implementation
              }
              set
              {
-                 throw new Exception("Not valid for this element type.");
+                 throw new InvalidOperationException("Not valid for this element type.");
              }
          }
 
@@ -478,7 +478,7 @@ namespace CsQuery.Implementation
              }
              set
              {
-                 throw new Exception("Not valid for this element type.");
+                 throw new InvalidOperationException("Not valid for this element type.");
              }
          }
 

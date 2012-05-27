@@ -64,7 +64,7 @@ namespace CsQuery.Utility
                     return m.DeclaringType.Assembly;
                 }
             }
-            throw new Exception("Never found an external assembly.");
+            throw new InvalidOperationException("Never found an external assembly.");
         }
         /// <summary>
         ///  Gets a resource from the calling assembly

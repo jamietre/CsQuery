@@ -425,7 +425,7 @@ namespace CsQuery
 
             else if (!target.IsExtendableType())
             {
-                throw new Exception("Target type '" + target.GetType().ToString() + "' is not valid for CsQuery.Extend.");
+                throw new InvalidCastException("Target type '" + target.GetType().ToString() + "' is not valid for CsQuery.Extend.");
             }
 
             //sources = sources.Dequeue();
@@ -575,7 +575,7 @@ namespace CsQuery
 
             if (!TryConvert<T>(value, out output))
             {
-                throw new Exception("Unable to convert to type " + typeof(T).ToString());
+                throw new InvalidCastException("Unable to convert to type " + typeof(T).ToString());
             }
             return output;
         }
@@ -590,7 +590,7 @@ namespace CsQuery
             object output;
             if (!TryConvert(value, out output, type, Objects.DefaultValue(type)))
             {
-                throw new Exception("Unable to convert to type " + type.ToString());
+                throw new InvalidCastException("Unable to convert to type " + type.ToString());
             }
             return output;
         }
@@ -689,13 +689,8 @@ namespace CsQuery
                     success = true;
                 }
             }
-            else if (realType == typeof(string))
-            {
-                output = value;
-            }
             else
             {
-                //throw new Exception("Don't know how to convert type " + type.UnderlyingSystemType.ToString());
                 output = value;
             }
 
@@ -811,7 +806,7 @@ namespace CsQuery
                 }
                 else
                 {
-                    throw new Exception("Unhandled type for TryParseNumber: " + T.GetType().ToString());
+                    throw new InvalidCastException("Unhandled type for TryParseNumber: " + T.GetType().ToString());
                 }
                 return true;
             }
@@ -920,7 +915,7 @@ namespace CsQuery
         {
             if (!Objects.IsExpando(obj))
             {
-                throw new Exception("This object does not have properties.");
+                throw new InvalidOperationException("This method only works on objects that implement IDictionary<string,object>");
             }
             ExpandoObject target = (ExpandoObject)CloneObject(obj);
             DeleteProperty(target,property);
@@ -1060,7 +1055,7 @@ namespace CsQuery
                     string stringKey = key.ToString();
                     if (dict.ContainsKey(stringKey))
                     {
-                        throw new Exception("The key '" + key + "' could not be added because the same key already exists. Conversion of the source object's keys to strings did not result in unique keys.");
+                        throw new InvalidCastException("The key '" + key + "' could not be added because the same key already exists. Conversion of the source object's keys to strings did not result in unique keys.");
                     }
                     dict.Add(stringKey, itemDict[key]);
                 }
@@ -1068,7 +1063,7 @@ namespace CsQuery
             }
             else if (!source.IsExtendableType())
             {
-                throw new Exception("Conversion to ExpandObject must be from a JSON string, an object, or an ExpandoObject");
+                throw new InvalidCastException("Conversion to ExpandObject must be from a JSON string, an object, or an ExpandoObject");
             }
 
             T target = new T();

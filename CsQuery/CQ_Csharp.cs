@@ -16,15 +16,15 @@ namespace CsQuery
     {
         #region private properties
         protected SelectorChain _Selectors = null;
-        protected IDomDocument _Document = null;
+        protected IDomRoot _Document = null;
         #endregion
-        
+
         #region public properties
-      
+
         /// <summary>
         /// Represents the full, parsed DOM for an object created with an HTML parameter
         /// </summary>
-        public IDomDocument Document
+        public IDomRoot Document
         {
             get
             {
@@ -38,8 +38,8 @@ namespace CsQuery
             {
                 _Document = value;
             }
-        } 
-        
+        }
+
         /// <summary>
         ///  The selector (parsed) used to create this instance
         /// </summary>
@@ -116,6 +116,8 @@ namespace CsQuery
 
         #region public methods
 
+
+
         /// <summary>
         /// Renders just the selection set completely.
         /// </summary>
@@ -130,18 +132,14 @@ namespace CsQuery
             return sb.ToString();
         }
         /// <summary>
-        /// Render the DOM to a string
+        /// Renders the DOM to a string
         /// </summary>
         /// <returns></returns>
         public string Render()
         {
             return Document.Render();
         }
-        /// <summary>
-        /// Render the DOM using the specified OuputFormatter to process the output
-        /// </summary>
-        /// <param name="format"></param>
-        /// <returns></returns>
+
         public string Render(IOutputFormatter format)
         {
             return format.Format(this);
@@ -281,24 +279,66 @@ namespace CsQuery
             {
                 string nodeName = group[0].NodeName;
                 string type = group[0]["type"];
-                if (nodeName == "option") {
-                    var ownerMultiple = group.Closest("select").Prop("multiple");
-                    if (Objects.IsTruthy(ownerMultiple)) {
-                        item.Prop("selected",true);
-                    } else {
-                        group.Prop("selected",false);
-                        item.Prop("selected",true);
-                    }
-                } else if (nodeName == "input" && (type=="radio" || type=="checkbox"))
+                if (nodeName == "option")
                 {
-                    if (type=="radio") {
-                        group.Prop("checked",false);
+                    var ownerMultiple = group.Closest("select").Prop("multiple");
+                    if (Objects.IsTruthy(ownerMultiple))
+                    {
+                        item.Prop("selected", true);
+                    }
+                    else
+                    {
+                        group.Prop("selected", false);
+                        item.Prop("selected", true);
+                    }
+                }
+                else if (nodeName == "input" && (type == "radio" || type == "checkbox"))
+                {
+                    if (type == "radio")
+                    {
+                        group.Prop("checked", false);
                     }
                     item.Prop("checked", true);
                 }
             }
             return this;
         }
+
+        /// <summary>
+        /// Given a table header or cell, returns all members of the columm.
+        /// </summary>
+        /// <param name="columnMember"></param>
+        /// <returns></returns>
+        public CQ GetTableColumn()
+        {
+            var els = this.Filter("th,td");
+            CQ result = New();
+            foreach (var el in els)
+            {
+                var elCq = el.Cq();
+                int colIndex = elCq.Index();
+                result.AddSelectionRange(elCq.Closest("table").GetTableColumn(colIndex));
+            }
+            return result;
+        }
+        /// <summary>
+        /// Selects then zero-based nth th and td cells from all rows in any matched tables.
+        /// DOES NOT ACCOUNT FOR COLSPAN. If you have inconsistent numbers of columns, you will get inconsistent results.
+        /// </summary>
+        /// <param name="column"></param>
+        /// <returns></returns>
+        public CQ GetTableColumn(int column)
+        {
+            CQ result = New();
+            foreach (var el in filterElements(this, "table"))
+            {
+
+                result.AddSelectionRange(el.Cq().Find(String.Format("tr>th:eq({0}), tr>td:eq({0})", column)));
+
+            }
+            return result;
+        }
+
 
         /// <summary>
         /// The current selection set will become the DOM. This is destructive.
@@ -310,6 +350,11 @@ namespace CsQuery
             Document.ChildNodes.AddRange(Elements);
             return this;
         }
+        /// <summary>
+        /// Conver the results of the selection into the DOM. This is destructive.
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns></returns>
         public CQ MakeRoot(string selector)
         {
             return Select(selector).MakeRoot();

@@ -58,7 +58,7 @@ namespace CsQuery.Utility.EquationParser.Implementation
     //    {
     //        if (!TrySet(op))
     //        {
-    //            throw new Exception("'" + op + "' is not a valid operator.");
+    //            throw new InvalidOperationException("'" + op + "' is not a valid operator.");
     //        }
     //    }
 

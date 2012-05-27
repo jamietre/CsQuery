@@ -293,13 +293,15 @@ namespace CsQuery.Utility
 
             // optimize for small numbers - this should mostly eliminate the ineffieciency of base62
             // encoding while giving benefits for storage space
+
             if (number < encodingLength)
             {
                 return defaultPadding +baseXXchars[number];
             }
+
             if (number > maxPathIndex)
             {
-                throw new Exception("Maximum number of child nodes (" + maxPathIndex + ") exceeded."); 
+                throw new OverflowException("Maximum number of child nodes (" + maxPathIndex + ") exceeded."); 
             }
             string sc_result = "";
             int num_to_encode = number;

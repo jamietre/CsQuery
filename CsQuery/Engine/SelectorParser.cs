@@ -160,7 +160,7 @@ namespace CsQuery.Engine
                                 Current.OtherType = OtherType.Visible;
                                 break;
                             default:
-                                throw new Exception("Unknown pseudoselector :\"" + key + "\"");
+                                throw new ArgumentOutOfRangeException("Unknown pseudoselector :\"" + key + "\"");
                         }
                         break;
                     case '.':
@@ -215,7 +215,7 @@ namespace CsQuery.Engine
                                     Current.AttributeSelectorType = AttributeSelectorType.NotEquals;
                                     break;
                                 default:
-                                    throw new Exception("Unknown attibute matching operator '" + matchType + "'");
+                                    throw new ArgumentOutOfRangeException("Unknown attibute matching operator '" + matchType + "'");
                             }
                         }
 
@@ -262,7 +262,7 @@ namespace CsQuery.Engine
                             }
                             else
                             {
-                                throw new Exception(scanner.LastError);
+                                throw new InvalidOperationException(scanner.LastError);
                             }
 
                         }

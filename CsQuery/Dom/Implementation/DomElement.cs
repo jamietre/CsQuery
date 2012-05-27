@@ -131,7 +131,7 @@ namespace CsQuery.Implementation
                 }
                 else
                 {
-                    throw new Exception("You can't change the tag of an element once it has been created.");
+                    throw new InvalidOperationException("You can't change the tag of an element once it has been created.");
                 }
             }
         }
@@ -338,7 +338,7 @@ namespace CsQuery.Implementation
             {
                 if (!InnerHtmlAllowed)
                 {
-                    throw new Exception(String.Format("You can't set the innerHTML for a {0} element.", NodeName));
+                    throw new InvalidOperationException(String.Format("You can't set the innerHTML for a {0} element.", NodeName));
                 }
                 ChildNodes.Clear();
 
@@ -371,7 +371,7 @@ namespace CsQuery.Implementation
             {
                 if (!InnerTextAllowed)
                 {
-                    throw new Exception(String.Format("You can't set the innerHTML for a {0} element.", NodeName));
+                    throw new InvalidOperationException(String.Format("You can't set the innerHTML for a {0} element.", NodeName));
                 }
                 IDomText text;
                 if (!InnerHtmlAllowed)

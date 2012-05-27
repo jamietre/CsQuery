@@ -65,7 +65,7 @@ namespace CsQuery.Utility.EquationParser.Implementation.Functions
         {
             if (Operands.Count == 0)
             {
-                throw new Exception("There are no operands to replace.");
+                throw new InvalidOperationException("There are no operands to replace.");
             }
 
             _Operands[Operands.Count - 1] = operand;

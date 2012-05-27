@@ -73,7 +73,7 @@ namespace CsqueryTests
             }
             else
             {
-                throw new Exception("Invalid parameter");
+                throw new ArgumentException("Invalid parameter");
             }
         }
         public IDomDocument document;

@@ -13,7 +13,7 @@ namespace CsQuery.Implementation
     //    {
     //        if (String.IsNullOrEmpty(name))
     //        {
-    //            throw new Exception("Node must have a name");
+    //            throw new InvalidOperationException("Node must have a name");
     //        }
     //        NodeName = name;
     //        NodeValue = value;

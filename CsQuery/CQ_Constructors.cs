@@ -45,10 +45,10 @@ namespace CsQuery
         /// </summary>
         /// <param name="selector"></param>
         /// <param name="context"></param>
-        public CQ(string selector, IDictionary<string,object> css, CQ context)
+        public CQ(string selector, object css, CQ context)
         {
             Create(selector, context);
-            Attr(css);
+            AttrSet(css);
         }
         protected void Create(string selector, CQ context)
         {

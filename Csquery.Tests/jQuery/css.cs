@@ -100,6 +100,7 @@ namespace CsqueryTests.jQuery
             //Assert.AreEqual( jQuery("#empty").Css("opacity"), "0", "Assert opacity is accessible via filter property set in stylesheet in IE" );
             jQuery("#empty").Css("{ opacity: '1'}");
             Assert.AreEqual(jQuery("#empty").Css("opacity"), "1", "Assert opacity is taken from style attribute when set vs stylesheet in IE with filters");
+            
             //jQuery.support.opacity ?
             //    Assert.IsTrue(true, "Requires the same number of tests"):
             //    Assert.IsTrue( ~jQuery("#empty")[0].currentStyle.filter.indexOf("gradient"), "Assert setting opacity doesn't overwrite other filters of the stylesheet in IE" );
@@ -107,8 +108,10 @@ namespace CsqueryTests.jQuery
             div = jQuery("#nothiddendiv");
             var child = jQuery("#nothiddendivchild");
 
-            //STOPPED HERE
-            ////Assert.AreEqual( parseInt(div.Css("fontSize")), 16, "Verify fontSize px set." );
+            // STOPPED HERE:  Things get wierd with CSS because obviously we can only set values and not expect browser interpretation upon reading.
+
+            /// Assert.AreEqual( parseInt(div.Css("fontSize")), 16, "Verify fontSize px set." );
+            
             //// We always return strings.
             //Assert.AreEqual(parseInt(div.Css("font-size")), "16px", "Verify fontSize px set.");
             ////Assert.AreEqual( parseInt(child.Css("fontSize")), 16, "Verify fontSize px set." );
@@ -187,116 +190,7 @@ namespace CsqueryTests.jQuery
     }
 
 
-//test("css(String|Hash)", function() {
-//    expect( 44 );
-
-//    Assert.AreEqual( jQuery("#qunit-fixture").Css("display"), "block", "Check for css property \"display\"");
-
-//    Assert.IsTrue( jQuery("#nothiddendiv").Is(":visible"), "Modifying CSS display: Assert element is visible");
-//    jQuery("#nothiddendiv").Css({display: "none"});
-//    Assert.IsTrue( !jQuery("#nothiddendiv").Is(":visible"), "Modified CSS display: Assert element is hidden");
-//    jQuery("#nothiddendiv").Css({display: "block"});
-//    Assert.IsTrue( jQuery("#nothiddendiv").Is(":visible"), "Modified CSS display: Assert element is visible");
-//    Assert.IsTrue( jQuery(window).Is(":visible"), "Calling is(':visible') on window does not throw an error in IE.");
-//    Assert.IsTrue( jQuery(document).Is(":visible"), "Calling is(':visible') on document does not throw an error in IE.");
-
-//    var div = jQuery( "<div>" );
-
-//    // These should be "auto" (or some better value)
-//    // temporarily provide "0px" for backwards compat
-//    Assert.AreEqual( div.Css("width"), "0px", "Width on disconnected node." );
-//    Assert.AreEqual( div.Css("height"), "0px", "Height on disconnected node." );
-
-//    div.Css({ width: 4, height: 4 });
-
-//    Assert.AreEqual( div.Css("width"), "4px", "Width on disconnected node." );
-//    Assert.AreEqual( div.Css("height"), "4px", "Height on disconnected node." );
-
-//    var div2 = jQuery( "<div style='display:none;'><input type='text' style='height:20px;'/><textarea style='height:20px;'/><div style='height:20px;'></div></div>").appendTo("body");
-
-//    Assert.AreEqual( div2.find("input").Css("height"), "20px", "Height on hidden input." );
-//    Assert.AreEqual( div2.find("textarea").Css("height"), "20px", "Height on hidden textarea." );
-//    Assert.AreEqual( div2.find("div").Css("height"), "20px", "Height on hidden textarea." );
-
-//    div2.remove();
-
-//    // handle negative numbers by ignoring #1599, #4216
-//    jQuery("#nothiddendiv").Css( {width: 1, height: 1} );
-
-//    var width = parseFloat(jQuery("#nothiddendiv").Css("width")), height = parseFloat(jQuery("#nothiddendiv").Css("height"));
-//    jQuery("#nothiddendiv").Css({ width: -1, height: -1 });
-//    Assert.AreEqual( parseFloat(jQuery("#nothiddendiv").Css("width")), width, "Test negative width ignored");
-//    Assert.AreEqual( parseFloat(jQuery("#nothiddendiv").Css("height")), height, "Test negative height ignored");
-
-//    Assert.AreEqual( jQuery("<div style='display: none;'>").Css("display"), "none", "Styles on disconnected nodes");
-
-//    jQuery("#floatTest").Css({"float": "right"});
-//    Assert.AreEqual( jQuery("#floatTest").Css("float"), "right", "Modified CSS float using \"float\": Assert float is right");
-//    jQuery("#floatTest").Css({"font-size": "30px"});
-//    Assert.AreEqual( jQuery("#floatTest").Css("font-size"), "30px", "Modified CSS font-size: Assert font-size is 30px");
-//    jQuery.each("0,0.25,0.5,0.75,1".split(","), function(i, n) {
-//        jQuery("#foo").Css({opacity: n});
-
-//        Assert.AreEqual( jQuery("#foo").Css("opacity"), parseFloat(n), "Assert opacity is " + parseFloat(n) + " as a String" );
-//        jQuery("#foo").Css({opacity: parseFloat(n)});
-//        Assert.AreEqual( jQuery("#foo").Css("opacity"), parseFloat(n), "Assert opacity is " + parseFloat(n) + " as a Number" );
-//    });
-//    jQuery("#foo").Css({opacity: ""});
-//    Assert.AreEqual( jQuery("#foo").Css("opacity"), "1", "Assert opacity is 1 when set to an empty String" );
-
-//    Assert.AreEqual( jQuery("#empty").Css("opacity"), "0", "Assert opacity is accessible via filter property set in stylesheet in IE" );
-//    jQuery("#empty").Css({ opacity: "1" });
-//    Assert.AreEqual( jQuery("#empty").Css("opacity"), "1", "Assert opacity is taken from style attribute when set vs stylesheet in IE with filters" );
-//    jQuery.support.opacity ?
-//        Assert.IsTrue(true, "Requires the same number of tests"):
-//        Assert.IsTrue( ~jQuery("#empty")[0].currentStyle.filter.indexOf("gradient"), "Assert setting opacity doesn't overwrite other filters of the stylesheet in IE" );
-
-//    div = jQuery("#nothiddendiv");
-//    var child = jQuery("#nothiddendivchild");
-
-//    Assert.AreEqual( parseInt(div.Css("fontSize")), 16, "Verify fontSize px set." );
-//    Assert.AreEqual( parseInt(div.Css("font-size")), 16, "Verify fontSize px set." );
-//    Assert.AreEqual( parseInt(child.Css("fontSize")), 16, "Verify fontSize px set." );
-//    Assert.AreEqual( parseInt(child.Css("font-size")), 16, "Verify fontSize px set." );
-
-//    child.Css("height", "100%");
-//    Assert.AreEqual( child[0].style.height, "100%", "Make sure the height is being set correctly." );
-
-//    child.attr("class", "em");
-//    Assert.AreEqual( parseInt(child.Css("fontSize")), 32, "Verify fontSize em set." );
-
-//    // Have to verify this as the result depends upon the browser's CSS
-//    // support for font-size percentages
-//    child.attr("class", "prct");
-//    var prctval = parseInt(child.Css("fontSize")), checkval = 0;
-//    if ( prctval === 16 || prctval === 24 ) {
-//        checkval = prctval;
-//    }
-
-//    Assert.AreEqual( prctval, checkval, "Verify fontSize % set." );
-
-//    Assert.AreEqual( typeof child.Css("width"), "string", "Make sure that a string width is returned from css('width')." );
-
-//    var old = child[0].style.height;
-
-//    // Test NaN
-//    child.Css("height", parseFloat("zoo"));
-//    Assert.AreEqual( child[0].style.height, old, "Make sure height isn't changed on NaN." );
-
-//    // Test null
-//    child.Css("height", null);
-//    Assert.AreEqual( child[0].style.height, old, "Make sure height isn't changed on null." );
-
-//    old = child[0].style.fontSize;
-
-//    // Test NaN
-//    child.Css("font-size", parseFloat("zoo"));
-//    Assert.AreEqual( child[0].style.fontSize, old, "Make sure font-size isn't changed on NaN." );
-
-//    // Test null
-//    child.Css("font-size", null);
-//    Assert.AreEqual( child[0].style.fontSize, old, "Make sure font-size isn't changed on null." );
-//});
+        
 
 //test("css() explicit and relative values", function() {
 //    expect(29);
