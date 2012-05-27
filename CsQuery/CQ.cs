@@ -19,7 +19,7 @@ using CsQuery.ExtensionMethods.Internal;
 namespace CsQuery
 {
     /// <summary>
-    /// Document is an IDomRoot object, referred to sometimes as the "DOM", and represents the DOM that this 
+    /// Document is an IDomDocument object, referred to sometimes as the "DOM", and represents the DOM that this 
     /// CsQuery objects applies to. When CQ methods are run, the resulting CQ object will refer to the same 
     /// Document as the original. Selectors always run against this DOM. 
     /// 
@@ -1392,7 +1392,8 @@ namespace CsQuery
             CQ csq = New();
             csq.Selectors = new SelectorChain(selector);
             // If the selector is HTML create it as a new fragment so it can be indexed & traversed upon
-            //IDomRoot dom = selectors.IsHtml ? new DomFragment(selector.ToCharArray()) : Document;
+            // (This comment is a placeholder for implementing document fragments properly)
+            // IDomDocument dom = selectors.IsHtml ? new DomFragment(selector.ToCharArray()) : Document;
             csq.AddSelectionRange(csq.Selectors.Select(Document));
             return csq;
         }

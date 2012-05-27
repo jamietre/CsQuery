@@ -55,7 +55,7 @@ namespace CsQuery.Implementation
         private IDomContainer _ParentNode;
 
         /// <summary>
-        /// The element is not associated with an IDomRoot
+        /// The element is not associated with an IDomDocument
         /// </summary>
         public bool IsDisconnected
         {

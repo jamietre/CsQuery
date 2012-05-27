@@ -576,7 +576,7 @@ namespace CsqueryTests.jQuery
 
             //TODO: It would be nice to have a ParentNode exist & be typed to 11 for disconnected nodes. However this creates some complexity
             //b/c we still need to keep the nodes conceptually bound to another domain. I think that we may want a special "disconnected" heirarchy
-            //within and IDomRoot. For now just compare to null instead.
+            //within and IDomDocument. For now just compare to null instead.
 
             var divs = jQuery("<div/>").Add("#sndp");
             //Assert.IsTrue( (int)divs[0].ParentNode.NodeType ==11, "Make sure the first element is still the disconnected node." );

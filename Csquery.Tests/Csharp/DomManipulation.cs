@@ -30,11 +30,6 @@ namespace CsqueryTests.CSharp
         {
             string html = Support.GetFile("CsQuery\\CsQuery.Tests\\Resources\\TestHtml2.htm");
             csq = CQ.Create(html);
-            //RangeSortedDictionary<IDomObject> test = ((IDomRoot)csq.Document).SelectorXref;
-            //foreach (var item in test)
-            //{
-            //    ;
-            //}
         }
         [TestInitialize, SetUp]
         public void TestSetUp()
