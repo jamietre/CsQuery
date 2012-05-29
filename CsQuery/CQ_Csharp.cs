@@ -16,7 +16,7 @@ namespace CsQuery
     {
         #region private properties
         protected SelectorChain _Selectors = null;
-        protected IDomRoot _Document = null;
+        protected IDomDocument _Document = null;
         #endregion
 
         #region public properties
@@ -24,7 +24,7 @@ namespace CsQuery
         /// <summary>
         /// Represents the full, parsed DOM for an object created with an HTML parameter
         /// </summary>
-        public IDomRoot Document
+        public IDomDocument Document
         {
             get
             {
