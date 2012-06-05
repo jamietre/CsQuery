@@ -67,16 +67,33 @@ namespace CsqueryTests.Csharp
             var res = Dom["body > :nth-child(2)"];
             Assert.AreEqual(jQuery("body").Children().Eq(1)[0], res[0], "nth-child(x) works");
 
-            res =  Dom["body > :nth-child(2n)"];
-            Assert.AreEqual(jQuery("body").Children(":odd").Elements, res.Elements, "Simple math nth child workd");
 
-            res = Dom["body > :nth-child(2n+1)"];
-            Assert.AreEqual(jQuery("body").Children(":even").Elements, res.Elements, "Simple math nth child workd");
+            // odd & even are reversed for the jQuery pseudoselectors from nth-child version.
+
+            var even =  Dom["body > :nth-child(2n)"];
+            Assert.AreEqual(jQuery("body").Children(":odd").Elements, even.Elements, "Simple math nth child workd");
+
+            var odd = Dom["body > :nth-child(2n+1)"];
+            Assert.AreEqual(jQuery("body").Children(":even").Elements, odd.Elements, "Simple math nth child workd");
 
             res = Dom["#hlinks-user > :nth-child(2(n+1))"];
             Assert.AreEqual(jQuery("#hlinks-user").Children(":odd").Not("#profile-triangle").Elements, res.Elements, "Simple math nth child workd");
 
+            // odd & even parms
+
+            res = Dom["body > :nth-child(even)"];
+            Assert.AreEqual(res.Elements, even.Elements);
+
+            res = Dom["body > :nth-child(odd)"];
+            Assert.AreEqual(res.Elements, odd.Elements);
         }
+
+        //[Test, TestMethod]
+        //public void NthOfType()
+        //{
+        //    var res = Dom["body > div:nth-of-type(2n+2)"];
+
+        //}
 
         [Test, TestMethod]
         public void Checkbox()

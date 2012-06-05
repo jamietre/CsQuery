@@ -10,6 +10,7 @@ namespace CsQuery.Engine
     /// </summary>
     public class Selector
     {
+
         #region constructors
        
         public Selector()

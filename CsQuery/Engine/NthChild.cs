@@ -53,19 +53,11 @@ namespace CsQuery.Engine
             set
             {
                 _Text = value;
-                CheckForSimpleNumber();
+                CheckForSimpleNumber(value);
+
                 if (!IsJustNumber)
                 {
-                    formula = Equations.CreateEquation<int>(value);
-
-                    if (!ParsedEquationCache.TryGetValue(value, out cacheInfo))
-                    {
-                        cacheInfo = new CacheInfo();
-                        cacheInfo.MatchingIndices = new HashSet<int>();
-                        ParsedEquationCache[value] = cacheInfo;
-                    }
-
-
+                    ParseEquation(value);
                 }
             }
         }
@@ -156,15 +148,42 @@ namespace CsQuery.Engine
             cacheInfo.MaxIndex = lastIndex;
             cacheInfo.NextIterator = iterator;
         }
-        protected void CheckForSimpleNumber()
+        protected void CheckForSimpleNumber(string equation)
         {
             int matchIndex;
-            if (Int32.TryParse(Text, out matchIndex))
+            if (Int32.TryParse(equation, out matchIndex))
             {
                 MatchOnlyIndex = matchIndex;
                 IsJustNumber = true;
 
             }
+        }
+        protected string  CheckForEvenOdd(string equation)
+        {
+            switch (_Text)
+            {
+                case "odd":
+                    return "2n+1";
+                case "even":
+                    return "2n";
+                default:
+                    return equation;
+            }
+        }
+        protected void ParseEquation(string equation)
+        {
+            equation = CheckForEvenOdd(equation);
+            formula = Equations.CreateEquation<int>(equation);
+
+            if (!ParsedEquationCache.TryGetValue(equation, out cacheInfo))
+            {
+                cacheInfo = new CacheInfo();
+                cacheInfo.MatchingIndices = new HashSet<int>();
+                ParsedEquationCache[equation] = cacheInfo;
+            }
+
+
+
         }
         #endregion
     }
