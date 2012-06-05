@@ -7,7 +7,6 @@ using CsQuery.Implementation;
 namespace CsQuery
 {
 
-    // Base interface for something that can appear in the DOM
     public interface IDomObject: IDomNode
     {
         // To simulate the way the real DOM works, most properties/methods of things directly in the DOM

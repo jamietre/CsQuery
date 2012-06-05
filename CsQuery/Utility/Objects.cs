@@ -712,7 +712,21 @@ namespace CsQuery
             return returnObj;
         }
 
-        public static object Extend(HashSet<object> parents, bool deep, object target, params object[] inputObjects)
+        /// <summary>
+        /// Map properties of inputObjects to target. If target is an expando object, it will be updated. If not,
+        /// a new one will be created including the properties of target and inputObjects.
+        /// </summary>
+        /// <param name="parents"></param>
+        /// <param name="deep"></param>
+        /// <param name="target"></param>
+        /// <param name="inputObjects"></param>
+        /// <returns></returns>
+        public static object Extend( bool deep, object target, params object[] inputObjects)
+        {
+            return ExtendImpl(null, deep, target, inputObjects);
+        }
+       
+        private static object ExtendImpl(HashSet<object> parents, bool deep, object target, params object[] inputObjects)
         {
             if (deep && parents == null)
             {
@@ -900,7 +914,7 @@ namespace CsQuery
         
 
         /// <summary>
-        /// Remove a property from an object, returning a new object.
+        /// Remove a property from an object, returning a new expando object.
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="property"></param>
@@ -915,6 +929,12 @@ namespace CsQuery
             return target;
 
         }
+
+        /// <summary>
+        /// Remove a property from an object, returning a new expando object.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="property"></param>
         public static void DeleteProperty(ExpandoObject obj, string property)
         {
             IDictionary<string, object> objDict = (IDictionary<string, object>)obj;
@@ -959,7 +979,7 @@ namespace CsQuery
                     && targetDict.TryGetValue(name, out curValue))
                 {
                     //targetDic[name]=Extend(parents,true, null, curValue.IsExtendableType() ? curValue : null, value);
-                    value = Extend(parents, true, null, Objects.IsExtendableType(curValue) ? curValue : null, value);
+                    value = ExtendImpl(parents, true, null, Objects.IsExtendableType(curValue) ? curValue : null, value);
 
                 }
                 else

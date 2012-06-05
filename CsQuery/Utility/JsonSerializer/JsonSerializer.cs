@@ -59,7 +59,7 @@ namespace CsQuery.Utility
             {
                 sb.Append("{");
                 bool first = true;
-                foreach (KeyValuePair<string,object> kvp in CQ.Enumerate<KeyValuePair<string,object>>(value,new Type[] {typeof(ScriptIgnoreAttribute)})) {
+                foreach (KeyValuePair<string,object> kvp in CQ.EnumerateProperties<KeyValuePair<string,object>>(value,new Type[] {typeof(ScriptIgnoreAttribute)})) {
                     if (first)
                     {
                         first = false; 

@@ -14,7 +14,8 @@ namespace CsQuery
 {
     public partial class CQ
     {
-        #region defaults
+        #region CsQuery global options
+
         /// <summary>
         /// Rendering option flags
         /// </summary>
@@ -27,7 +28,14 @@ namespace CsQuery
 
         #endregion 
 
+        #region private properties
+        
+        private static Browser _Browser;
+        
+        #endregion
+
         #region Create methods - returns a new DOM
+
         public static CQ Create()
         {
             return new CQ();
@@ -44,6 +52,11 @@ namespace CsQuery
             return csq;
         }
 
+        /// <summary>
+        /// Create a new DOM object from a character array
+        /// </summary>
+        /// <param name="html"></param>
+        /// <returns></returns>
         public static CQ Create(char[] html)
         {
             CQ csq = new CQ();
@@ -51,16 +64,20 @@ namespace CsQuery
             return csq;
         }
 
-
-        public static CQ Create(string selector, object css)
+        /// <summary>
+        /// Create a new DOM object from html, and use quickSet to create attributes (and/or css)
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <param name="quickSet"></param>
+        /// <returns></returns>
+        public static CQ Create(string html, object quickSet)
         {
-            CQ csq = CQ.Create(selector);
-            
-            return csq.AttrSet(css,true);
+            CQ csq = CQ.Create(html);
+            return csq.AttrSet(quickSet, true);
         }
 
         /// <summary>
-        /// Creates a new DOM from a file
+        /// Creates a new DOM from an HTML file.
         /// </summary>
         /// <param name="htmlFile"></param>
         /// <returns></returns>
@@ -69,7 +86,7 @@ namespace CsQuery
             return CQ.Create(Support.GetFile(htmlFile));
         }
         /// <summary>
-        /// Creeate a new DOM from elements
+        /// Creeate a new DOM from a squence of elements, or another CQ object
         /// </summary>
         /// <param name="html"></param>
         /// <returns></returns>
@@ -80,15 +97,28 @@ namespace CsQuery
             return csq;
         }
 
+        /// <summary>
+        /// Create a new DOM from a single element
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
         public static CQ Create(IDomObject element)
         {
             CQ csq = new CQ();
             csq.Load(Objects.Enumerate(element));
             return csq;
         }
+
         #endregion
 
-  
+        #region static utility methods
+
+        /// <summary>
+        /// Iterate over each element in a sequence, and call a delegate for each element
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="func"></param>
         public static void Each<T>(IEnumerable<T> list, Action<T> func)
         {
             foreach (var obj in list)
@@ -120,13 +150,29 @@ namespace CsQuery
         {
             return CQ.Map(this, function);
         }
+
+        /// <summary>
+        /// Map each property of the objects in sources to the target object.  Returns an expando object (either 
+        /// the target object, if it's an expando object, or a new expando object)
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="sources"></param>
+        /// <returns></returns>
         public static object Extend(object target, params object[] sources)
         {
-            return CQ.Extend(false, target, sources);
+            return Objects.Extend(false, target, sources);
         }
+
+        /// <summary>
+        /// Map each property of the objects in sources to the target object.  Returns an expando object (either 
+        /// the target object, if it's an expando object, or a new expando object)
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="sources"></param>
+        /// <returns></returns>
         public static object Extend(bool deep, object target, params object[] sources)
         {
-            return Objects.Extend(null, deep, target, sources);
+            return Objects.Extend(deep, target, sources);
         }
 
         /// <summary>
@@ -150,9 +196,9 @@ namespace CsQuery
 
             return Utility.JSON.ParseJSON<T>(objectToDeserialize);
         }
+        
         /// <summary>
-        /// Parse JSON into an expando object, or a primitive type if possible, or just return
-        /// itself if no parsing can be done.
+        /// Parse a JSON string into an expando object, or a json value into a primitive type.
         /// </summary>
         /// <param name="objectToDeserialize"></param>
         /// <returns></returns>
@@ -160,6 +206,12 @@ namespace CsQuery
         {
             return Utility.JSON.ParseJSON(objectToDeserialize);
         }
+
+        /// <summary>
+        /// Parse a JSON string into an expando object, or a json value into a primitive type.
+        /// </summary>
+        /// <param name="objectToDeserialize"></param>
+        /// <returns></returns>
         public static object ParseJSON(string objectToDeserialize, Type type)
         {
             return Utility.JSON.ParseJSON(objectToDeserialize, type);
@@ -186,6 +238,8 @@ namespace CsQuery
             }
             return result;
         }
+
+
         public static T ToDynamic<T>(object obj) where T : IDynamicMetaObjectProvider, IDictionary<string,object>,new()
         {
             if (obj is IDictionary<string, object>)
@@ -197,16 +251,26 @@ namespace CsQuery
                 return Objects.ToExpando<T>(obj);
             }
         }
-        public static IEnumerable<T> Enumerate<T>(object obj)
-        {
-            return Enumerate<T>(obj, new Type[] { typeof(ScriptIgnoreAttribute) });
-        }
+
         /// <summary>
-        /// Enumerate the properties of an object, casting to type T
+        /// Enumerate the values of the properties of an object to a sequence of type T
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static IEnumerable<T> Enumerate<T>(object obj, IEnumerable<Type> ignoreAttributes)
+        public static IEnumerable<T> EnumerateProperties<T>(object obj)
+        {
+            return EnumerateProperties<T>(obj, new Type[] { typeof(ScriptIgnoreAttribute) });
+        }
+
+        /// <summary>
+        /// Enumerate the values of the properties of an object to a sequence of type T
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <param name="ignoreAttributes">All properties with an attribute of these types will be ignored</param>
+        /// <returns></returns>
+        public static IEnumerable<T> EnumerateProperties<T>(object obj, IEnumerable<Type> ignoreAttributes)
         {
             HashSet<Type> IgnoreList = new HashSet<Type>();
             if (ignoreAttributes != null)
@@ -242,7 +306,10 @@ namespace CsQuery
 
         }
 
-        private static Browser _Browser;
+
+        /// <summary>
+        /// Provide simple user agent information
+        /// </summary>
         public static Browser Browser
         {
             get
@@ -255,5 +322,8 @@ namespace CsQuery
                 return _Browser;
             }
         }
+        
+        #endregion
+
     }
 }

@@ -10,7 +10,7 @@ namespace CsQuery
     {
         RemoveMismatchedCloseTags = 1,
         RemoveComments = 2,
-        QuoteAllAttributes = 4,
-        ValidateCss = 8
+        QuoteAllAttributes = 4
+        //,ValidateCss = 8
     }
 }

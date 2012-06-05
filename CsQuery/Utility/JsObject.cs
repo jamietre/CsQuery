@@ -41,7 +41,7 @@ namespace CsQuery
         }
         public IEnumerable<T> Enumerate<T>()
         {
-            return CQ.Enumerate<T>(this);
+            return CQ.EnumerateProperties<T>(this);
         }
         protected bool AllowMissingProperties
         {
