@@ -129,7 +129,7 @@ There are some minor API issues that need resolving. The "Server" object, which 
 
 ### CsQuery vs. jQuery
 
-The primary goal of this project was to make it as familiar and portable as possible. I even though about using lowercased methods so it might be almost practical to copy and paste code between JS and C# but... I just couldn't. 
+The primary goal of this project was to make it as familiar and portable as possible. I even thought about using lowercased methods so it might be almost practical to copy and paste code between JS and C# but... I just couldn't. 
 
 There are necessarily some differences in usage because of the language itself and strong typing. This section covers what you need to know to get going with CsQuery. Everything else should work more or less the same as jQuery.
 
