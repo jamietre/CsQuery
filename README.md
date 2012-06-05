@@ -134,6 +134,8 @@ The HTML parser itself is of a purely functional and nonrecursing design. I did 
 
 There are some minor API issues that need resolving. The "Server" object, which was originally envisioned as part of a namespaced extension design for methods that are not part of the core jQuery api, is not well conceived. The DOM model has a few problem areas. Specifically, document fragments are not represented correctly, and the value (inner text) of `script` and `textarea` nodes is not represented correctly. In the latter situation, this content is handled as a special-case text node; it should be handled as a property. This issue creates the need for some special handling in a few areas, and should be fixed.
 
+In the early stages of this project I had not much time to get it working "well enough" to solve a particular problem.That resulted in a some regrettable decisions and code. The nice thing about porting something is that you don't need to start from scratch with unit tests. The jQuery tests have the benefit of covering a lot of edge cases discovered over the years, but have the disavantage of being a bit messy and disorganized. Not that my own are a lot better! But as time permits I have been cleaning up and adding to the tests. While I think this project has pretty good test coverage for the vast majority of its features (selectors and DOM manipulation methods) some of the more complex features like Extend -- which, in particular, is difficult to test well - are not well covered.
+
 
 ### CsQuery vs. jQuery
 
