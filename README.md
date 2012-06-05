@@ -264,7 +264,7 @@ defines default options set for each new `CQ` instance created. You can assign t
 
     var dom = CQ.Create(html);
     dom.Document.DomRenderingOptions = DomRenderingOptions.RemoveComments 
-        | DomRenderingOptions.ValidateCss;
+        | DomRenderingOptions.QuoteAllAttributes;
 
 There options available are below. The default options are `QuoteAllAttributes` only.
 
