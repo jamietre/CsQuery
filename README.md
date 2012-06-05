@@ -4,7 +4,7 @@
 
 Release 1.0 Beta 1
 
-CsQuery is a jQuery port for .NET 4. It implements all the CSS selectors and DOM manipulation methods of jQuery and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) is ported and passes. The project necessarily includes an object model that represents the browser DOM.
+CsQuery is a jQuery port for .NET 4. It implements all the CSS selectors and DOM manipulation methods of jQuery and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) is ported and passes. The project necessarily includes an object model that represents the browser DOM. The document model uses a subselect-capable index that can perform multipart selectors on large documents in milliseconds.
 
 ### Usage
 
@@ -110,31 +110,6 @@ See below "C# objects vs. jQuery objects" for an explanation of CssSet vs. Css.
 *You can render just the elements that are part of the selection*
 
     var selectionHtml = dom[".just-this-class"].RenderSelection();
-
-
-### Performance
-
-Selecting "div span" from the HTML5 spec (a 6 megabyte HTML file) is about *a hundred times faster* than HtmlAgilityPack + Fizzler. CsQuery takes about 60-70% longer to parse the HTML in the first place (which is not unexpected, since it's building an index of everything at the same time). Without fizzler, the test case against the 6 megabyte HTML spec using a multipart XML selector with just HAP is unworkably slow so I haven't included that comparison.
-
-On my desktop machine, the reference for these times is about 2.2 seconds for CsQuery to parse the HTML, and 17.8 *milliseconds* (0.0178 s) for it to perform the selector (returning about 2,800 elements). For HAP+Fizzler, it's about 1.2 seconds to parse, and 1.8 *seconds* (1800 miliseconds) to perform the single selection. This basic comparison is included in the test suite.
-
-While the time to parse the HTML is significant, bear in mind that this is a huge file intended as a test case. It has over 100,000 nodes. In practice, the time to run selectors and do manipulation is far more significant, since you only need to parse the DOM once. If there were a need to use CsQuery in a real-time high-load web server situation, there is much that could be done to further optimize it. For example, you could easily cache the DOM for frequently-requested pages in a cache rather than parsing static HTML files on each request, and cut that time down significantly by cloning it instead of parsing from HTML. If you had to work with very large HTML files for some reason, you could fragment out only the parts of large files that you need to manipulate with CsQuery. And of course, if you used CsQuery *instead* of some other parsing engine line Razor you'd benefit from that tradeoff, too.
-
-A comprehensive performance evaluation would require a lot of analysis, since there are obviously a lot of moving parts at play when trying to determine how this will fare compared to other ways of manipulating HTML. At the end of the day, though, CsQuery is fast enough for me to use in real-time to parse HTML before streaming to the client in public web sites. YMMV depending on demand and server capabilities, of course.
-
-Internally, tags, class, and attribute names are indexed using a subselect-capable index, meaning that unlike jQuery, complex selectors still benefit from the index. (With jQuery, any selector that cannot be run directly against the browser DOM using `document.querySelector`, because it's a subquery, is performed manually using sizzler). I don't know anything about how the Fizzler index works, so this may or may not be an advantage compared to HAP + Fizzler.
-
-### Shortcomings
-
-The DOM model is not perfect. Mimicing the browser DOM would sacrifice the benefits of strong typing; I opted for a compromise that exposes some nonapplicable members on all node types. This probably could use some refactoring at this point, but it's perfectly workable.
-
-Most of the code for pulling source HTML from URI sources is minimally tested and in the "prototype" stage. I actually use this rarely my own purposes; most of what I do is real-time parsing of html being served for HTTP requests. But since scraping is an obvious use for CsQuery, I added basic methods to grab data from a URI. They need much attention, particularly the async request code. But work well enough in simple cases. I use the asyc code on a project web site to grab & republish data in real time from GitHub about the latest commits, for example. 
-
-The HTML parser itself is of a purely functional and nonrecursing design. I did this on purpose to make it fast. In retrospect this was probably a bad decision, because in practice the speed of parsing HTML text into an object model is limited by object creation time than by the parser itself. While it works fine, the code is hard to understand and therefore maintain. It does not comply to HTML5 rules for parsing invalid HTML. It does a decent job of recovering from errors by making some basic assumptions. If a good HTML5 parser for C# turns up one day I will probably try to replace the parser with it.
-
-There are some minor API issues that need resolving. The "Server" object, which was originally envisioned as part of a namespaced extension design for methods that are not part of the core jQuery api, is not well conceived. The DOM model has a few problem areas. Specifically, document fragments are not represented correctly, and the value (inner text) of `script` and `textarea` nodes is not represented correctly. In the latter situation, this content is handled as a special-case text node; it should be handled as a property. This issue creates the need for some special handling in a few areas, and should be fixed.
-
-In the early stages of this project I had not much time to get it working "well enough" to solve a particular problem.That resulted in a some regrettable decisions and code. The nice thing about porting something is that you don't need to start from scratch with unit tests. The jQuery tests have the benefit of covering a lot of edge cases discovered over the years, but have the disavantage of being a bit messy and disorganized. Not that my own are a lot better! But as time permits I have been cleaning up and adding to the tests. While I think this project has pretty good test coverage for the vast majority of its features (selectors and DOM manipulation methods) some of the more complex features like Extend -- which, in particular, is difficult to test well - are not well covered.
 
 
 ### CsQuery vs. jQuery
@@ -417,9 +392,35 @@ To deal with this in a way that is the lease obtrusive, I decided to expose many
 
 he `Document` property of a `CQ` object represents the DOM. This is an object of type `DomDocument`. When you use a method that returns a new instance of `CQ`, its `Document` refers to the same actual object as the original. Using destructive methods will affect any `CQ` objects that are based on the same DOM.
 
-
-
 (More to come)
+
+
+### Performance
+
+Selecting "div span" from the HTML5 spec (a 6 megabyte HTML file) is about *a hundred times faster* than HtmlAgilityPack + Fizzler. CsQuery takes about 60-70% longer to parse the HTML in the first place (which is not unexpected, since it's building an index of everything at the same time). Without fizzler, the test case against the 6 megabyte HTML spec using a multipart XML selector with just HAP is unworkably slow so I haven't included that comparison.
+
+On my desktop machine, the reference for these times is about 2.2 seconds for CsQuery to parse the HTML, and 17.8 *milliseconds* (0.0178 s) for it to perform the selector (returning about 2,800 elements). For HAP+Fizzler, it's about 1.2 seconds to parse, and 1.8 *seconds* (1800 miliseconds) to perform the single selection. This basic comparison is included in the test suite.
+
+While the time to parse the HTML is significant, bear in mind that this is a huge file intended as a test case. It has over 100,000 nodes. In practice, the time to run selectors and do manipulation is far more significant, since you only need to parse the DOM once. If there were a need to use CsQuery in a real-time high-load web server situation, there is much that could be done to further optimize it. For example, you could easily cache the DOM for frequently-requested pages in a cache rather than parsing static HTML files on each request, and cut that time down significantly by cloning it instead of parsing from HTML. If you had to work with very large HTML files for some reason, you could fragment out only the parts of large files that you need to manipulate with CsQuery. And of course, if you used CsQuery *instead* of some other parsing engine line Razor you'd benefit from that tradeoff, too.
+
+A comprehensive performance evaluation would require a lot of analysis, since there are obviously a lot of moving parts at play when trying to determine how this will fare compared to other ways of manipulating HTML. At the end of the day, though, CsQuery is fast enough for me to use in real-time to parse HTML before streaming to the client in public web sites. YMMV depending on demand and server capabilities, of course.
+
+Internally, tags, class, and attribute names are indexed using a subselect-capable index, meaning that unlike jQuery, complex selectors still benefit from the index. (With jQuery, any selector that cannot be run directly against the browser DOM using `document.querySelector`, because it's a subquery, is performed manually using sizzler). I don't know anything about how the Fizzler index works, so this may or may not be an advantage compared to HAP + Fizzler.
+
+### Shortcomings
+
+The DOM model is not perfect. Mimicing the browser DOM would sacrifice the benefits of strong typing; I opted for a compromise that exposes some nonapplicable members on all node types. This probably could use some refactoring at this point, but it's perfectly workable.
+
+Most of the code for pulling source HTML from URI sources is minimally tested and in the "prototype" stage. I actually use this rarely my own purposes; most of what I do is real-time parsing of html being served for HTTP requests. But since scraping is an obvious use for CsQuery, I added basic methods to grab data from a URI. They need much attention, particularly the async request code. But work well enough in simple cases. I use the asyc code on a project web site to grab & republish data in real time from GitHub about the latest commits, for example. 
+
+The HTML parser itself is of a purely functional and nonrecursing design. I did this on purpose to make it fast. In retrospect this was probably a bad decision, because in practice the speed of parsing HTML text into an object model is limited by object creation time than by the parser itself. While it works fine, the code is hard to understand and therefore maintain. It does not comply to HTML5 rules for parsing invalid HTML. It does a decent job of recovering from errors by making some basic assumptions. If a good HTML5 parser for C# turns up one day I will probably try to replace the parser with it.
+
+There are some minor API issues that need resolving. The "Server" object, which was originally envisioned as part of a namespaced extension design for methods that are not part of the core jQuery api, is not well conceived. The DOM model has a few problem areas. Specifically, document fragments are not represented correctly, and the value (inner text) of `script` and `textarea` nodes is not represented correctly. In the latter situation, this content is handled as a special-case text node; it should be handled as a property. This issue creates the need for some special handling in a few areas, and should be fixed.
+
+In the early stages of this project I had not much time to get it working "well enough" to solve a particular problem.That resulted in a some regrettable decisions and code. The nice thing about porting something is that you don't need to start from scratch with unit tests. The jQuery tests have the benefit of covering a lot of edge cases discovered over the years, but have the disavantage of being a bit messy and disorganized. Not that my own are a lot better! But as time permits I have been cleaning up and adding to the tests. While I think this project has pretty good test coverage for the vast majority of its features (selectors and DOM manipulation methods) some of the more complex features like Extend -- which, in particular, is difficult to test well - are not well covered.
+
+
+
 
 
 
