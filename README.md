@@ -396,6 +396,8 @@ CsQuery is built around an object model that mostly mimics the browser DOM. Ever
 	
 * may be deprecated
 
+You will notice that there's no attribute node. Attributes are managed using a string dictionary. I might try to make this more consistent with the DOM model, but there will likely be a substantial performance hit to the HTML parser in order to implementing attributes as an object. I don't have a compelling reason, other than purity, to do so at this point.
+
 Methods from CsQuery return either `IDomElement` sequences or `IDomObject` sequences. In Javascript, the distinction between text nodes and element nodes is not important for the most part when dealing with jQuery output. Most methods return only element nodes, unless you've specifically asked for text nodes. However, if we used this approach with CsQuery, you would have to deal the more general interface of `IDomObject` all the time, when you really want to be dealing with `IDomElement` most of the time.
 
 To deal with this in a way that is the lease obtrusive, I decided to expose many methods that really only apply to `IDomElement` on `IDomObject`. This is pretty much how you think when working in javascript, anyway, since there is no type checking. This can result in exceptions if you try to operate on a text node as if it were an element. To help with this, CsQuery includs an `Elements` property that returns only elements. If you are unsure if a particular selector could return text nodes, use `Elements` to filter the results first (and cast them correctly). There
