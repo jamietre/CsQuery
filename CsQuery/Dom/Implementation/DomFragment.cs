@@ -8,6 +8,7 @@ namespace CsQuery.Implementation
 {
     /// <summary>
     /// Special node type to represent the DOM.
+    /// THIS IS NOT USED YET
     /// </summary>
     public class DomFragment : DomDocument, IDomFragment
     {

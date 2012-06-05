@@ -213,7 +213,7 @@ namespace CsQuery.Implementation
             }
         }
         /// <summary>
-        /// Gets the DocType for this node. This can be changed through the DomRoot
+        /// Gets the DocType for this node. This can be changed through the DomDocument
         /// </summary>
         public DocType DocType
         {
