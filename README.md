@@ -114,7 +114,9 @@ See below "C# objects vs. jQuery objects" for an explanation of CssSet vs. Css.
 
 ### Performance
 
-About twice as as fast as HtmlAgilityPack + Fizzler in some simple tests. Tags, class, and attribute values are indexed using a subselect-capable index, meaning that complex selectors still benefit from the index. A lot more analysis is needed to say more, but it should be fast enough to use for real-time HTML parsing in most situations.
+About twice as as fast as HtmlAgilityPack + Fizzler in some simple tests. It blows away HAP without fizzler - but HAP doesn't create an index natively, so that's hardly fair. A comprehensive performance comparison would require a lot of analysis, since there are several facets (HTML parsing, indexing, selectors) at play. But CsQuery is fast enough for me to use in real-time to parse HTML before streaming to the client. Of course YMMV depending on traffic and server capabilities. If there were a need to use CsQuery in a high-load web server situation, there is much that could be done to further optimize it, e.g. caching the DOM rather than parsing static HTML files on each request.
+
+Tags, class, and attribute values are indexed using a subselect-capable index, meaning that unlike jQuery, complex selectors still benefit from the index. (With jQuery, any selector that cannot be run directly against the browser DOM using `document.querySelector`, because it's a subquery, is performed manually using sizzler). I don't know anything about how the Fizzler index works, so this may or may not be an advantage compared to HAP + Fizzler.
 
 ### Shortcomings
 

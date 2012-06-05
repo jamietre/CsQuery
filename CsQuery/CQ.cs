@@ -41,18 +41,7 @@ namespace CsQuery
     
     public partial class CQ : IEnumerable<IDomObject>
     {
-        // TODO:
-
-        // End
-        // WrapInner
-        // OffsetParent
-
-        // jquery.Contains
-        // jquery.Grep
-        
-        // + some selectors
-        
-
+       
         /// <summary>
         /// Add the previous set of elements on the stack to the current set.
         /// </summary>

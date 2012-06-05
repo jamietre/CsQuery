@@ -19,142 +19,103 @@ using CsQuery.Utility.EquationParser;
 
 namespace CsqueryTests.Performance
 {
+    /// <summary>
+    /// This is a quick and dirty test to compare CsQuery to HTML Agility Pack + fizzler. This is by no means comprehensive and
+    /// doesn't test things like complex subselectors, or do much to compare dom creation vs. selector time. 
+    /// </summary>
     [TestClass]
     public class _DomCreationPerformance: CsQueryTest
     {
         protected int iterationsLoad = 3;
         protected int iterationsSelect = 10;
         protected int iterationsClone = 2;
-        
+        string selector = "div span";
+
         [TestMethod,Test]
-        public void ParseHTMLSpec()
+        public void CompareCsQueryToHAP()
         {
-            string html;
+            CQ Dom=null;
+            Action CsQueryLoad = new Action(()=> {
+                var html = Support.GetFile(TestDomPath("HTML Standard"));
+                Dom = CQ.Create(html);
+
+            });
+            Func<string,int> CsQuerySelect =  new Func<string,int>(selector =>{
+                // accessing Length will force iterating through all results
+                return Dom.Select(selector).Count();
+            });
+            Func<int> CsQueryClone = new Func<int>(()=> {
+                return Dom.Clone().Length;
+            });
+            HtmlDocument doc = null;
+
+            Action HapLoad = new Action(()=> {
+                var html = Support.GetFile(TestDomPath("HTML Standard"));
+                doc = new HtmlDocument();
+                doc.LoadHtml(html);
+
+            });
+            Func<string, int> HapSelect = new Func<string, int>(selector =>
+            {
+                return doc.DocumentNode.QuerySelectorAll(selector).Count();
+
+            });
+            Func<int> HapClone = new Func<int>( ()=> {
+                return doc.DocumentNode.Clone().ChildNodes.Count;
+            });
+
+            string result = "";
+            result += RunPerfTest("CsQuery", CsQueryLoad, CsQuerySelect, CsQueryClone);
+            result += RunPerfTest("HTMLAgilityPack+Fizzler",HapLoad, HapSelect,HapClone);
+            
+            Assert.Pass(result);
+        }
+
+
+        public string RunPerfTest(string title, Action loadFunc, Func<string,int> selectionFunc, Func<int> cloneFunc)
+        {
 
             DateTime start = DateTime.Now;
 
             System.GC.Collect();
             var GC_MemoryStart = System.GC.GetTotalMemory(true);
-            html = Support.GetFile(TestDomPath("HTML Standard"));
+
+
             for (int i = 0; i < iterationsLoad; i++)
             {
 
-                Dom = CQ.Create(html);
+                loadFunc();
             }
             var GC_MemoryEnd = System.GC.GetTotalMemory(true);
 
             DateTime loaded = DateTime.Now;
 
             int divSpan = 0;
-
-            int randomLength = Dom.Select("p").Eq(22).RenderSelection().Length;
-
-            var equation = Equations.CreateEquation<int>("2x+2");
 
             for (int i = 0; i < iterationsSelect; i++)
             {
-                // todo: cache equations once parsed - should speed this up immenseley
-                CQ sel = Dom.Select("div:nth-child(2n+1)");
-                //CsQuery sel = Dom.Select("div span");
-                
-                // get length to force it to iterate through everything
-                int len = sel.Length;
-
-                //equation.SetVariable("x", 12);
-               // var y = equation.Value;
+               divSpan = selectionFunc(selector);
             }
 
-            CQ selFinal = Dom.Select("div span");
-            divSpan = selFinal.Length;
-
             DateTime selected = DateTime.Now;
-
           
             for (int i = 0; i < iterationsClone; i++)
             {
-                CQ c = Dom.Clone();
-                Assert.AreEqual(divSpan, Dom.Select("div span").Length, "Clone wasn't equal in # of elements");
-                string cloneContents = c.Select("p").Eq(22).RenderSelection();
-                Assert.AreEqual(randomLength, cloneContents.Length, "Some random text was right");
+                int cloneLen = cloneFunc();
             }
             DateTime done = DateTime.Now;
             TimeSpan loadTime = loaded - start;
 
-            string result = Dom.Select("div").Length + " div elements";
-            result += ", " + Dom.Select("*").Length + " total elements";
+            string result = title+ ":" +  selectionFunc("*") + " total elements";
             result += ", " + loadTime.TotalSeconds / iterationsLoad + " seconds to load domain";
-            result += ", " + (selected - loaded).TotalSeconds / iterationsSelect + " seconds to perform select 'div span' - " + Dom.Select("div span").Length + " elements";
+            result += ", " + (selected - loaded).TotalSeconds / iterationsSelect + " seconds to select - " 
+                + divSpan + " elements";
             result += ", " + (done - selected).TotalSeconds / iterationsClone + " seconds to cloning";
-            result += ", " + (GC_MemoryEnd - GC_MemoryStart) + " bytes used by object";
-            //Debug.WriteLine(result);
-            Assert.Pass(result);
-        }
-        [TestMethod, Test]
-        public void ParseHTMLSpecHAP()
-        {
-            string html;
+            result += ", " + (GC_MemoryEnd - GC_MemoryStart) + " bytes used";
+            result += System.Environment.NewLine;
 
-            DateTime start = DateTime.Now;
-            HtmlDocument doc = new HtmlDocument();
-            var GC_MemoryStart = System.GC.GetTotalMemory(true);
-            html = Support.GetFile(TestDomPath("HTML Standard"));
-            for (int i = 0; i < iterationsLoad; i++)
-            {
-                doc = new HtmlDocument();
-                doc.LoadHtml(html);
+            return result;
 
-            }
-            var GC_MemoryEnd = System.GC.GetTotalMemory(true);
-
-            DateTime loaded = DateTime.Now;
-
-            int divSpan = 0;
-
-            int randomLength = doc.DocumentNode.QuerySelectorAll("p").ElementAt(22).InnerHtml.Length;
-
-            iterationsSelect = (int)Math.Floor((double)iterationsSelect / 10);
-
-            for (int i = 0; i < iterationsSelect ; i++)
-            {
-                //HtmlNodeCollection sel = doc.DocumentNode.SelectNodes("//div");
-                HtmlNode node = doc.DocumentNode;
-                IEnumerable<HtmlNode> sel = node.QuerySelectorAll("div span");
-                divSpan = sel.Count();
-            }
-            DateTime selected = DateTime.Now;
-
-            // This test is way too slow with HAP to be meaningful. If there is another way to 
-            // create subselectors I don't know it
-
-            int count=0;
-            for (int i = 0; i < iterationsClone ; i++)
-            {
-                HtmlNode n = doc.DocumentNode.Clone();
-                //var divs = n.SelectNodes("//div");
-                var divs = n.QuerySelectorAll("div span");
-                count = divs.Count();
-                //foreach (var item in divs)
-                //{
-                //    var spans = item.SelectNodes("//span");
-                //    count += spans.Count;
-                // }
-
-                Assert.AreEqual(divSpan, count, "Clone was equal in # of elements");
-
-                int cloneContentsLen = n.SelectNodes("//p")[22].InnerHtml.Length; ;
-                Assert.AreEqual(randomLength, cloneContentsLen, "Some random text was right");
-            }
-            DateTime done = DateTime.Now;
-            TimeSpan loadTime = loaded - start;
-
-            string result = divSpan + " div elements";
-            result += ", unknown total elements";
-            result += ", " + loadTime.TotalSeconds / iterationsLoad + " seconds to load domain";
-            result += ", " + (selected - loaded).TotalSeconds / iterationsSelect + " seconds to perform select 'div span' - " + count + " elements";
-            result += ", " + (done - selected).TotalSeconds / iterationsClone + " seconds to cloning";
-            result += ", " + (GC_MemoryEnd - GC_MemoryStart) + " bytes used by object";
-            //Debug.WriteLine(result);
-            Assert.Pass(result);
         }
     }
 }
