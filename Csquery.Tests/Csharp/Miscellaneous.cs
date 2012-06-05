@@ -48,8 +48,7 @@ namespace CsqueryTests.Csharp
         public override void FixtureSetUp()
         {
             base.FixtureSetUp();
-            string html = Support.GetFile("csquery\\CsQuery.Tests\\Resources\\TestHtml.htm");
-            Dom = CQ.Create(html);
+            Dom = TestDom("TestHtml");
         }
         #endregion
 

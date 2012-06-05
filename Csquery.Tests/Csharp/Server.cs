@@ -17,22 +17,14 @@ using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 
 namespace CsqueryTests.Csharp
 {
-    [TestFixture, TestClass, Description("CsQuery Tests (Not from Jquery test suite)")]
+    [TestFixture, TestClass]
     public class Server_ : CsQueryTest
     {
+        //[Test, TestMethod]
+        //public void RestorePost_()
+        //{
+     
 
-        protected void ResetQunit()
-        {
-            Dom = CQ.Create(Support.GetFile("csquery\\csquery.tests\\resources\\jquery-unit-index.htm"));
-        }
-        [Test, TestMethod]
-        public void RestorePost_()
-        {
-            ResetQunit();
-
-
-        }
-        
-
+        //}
     }
 }

@@ -18,23 +18,20 @@ namespace CsqueryTests.Csharp
     [TestFixture, TestClass]
     public class Clone: CsQueryTest
     {
-        const string testFile="csquery\\CsQuery.Tests\\Resources\\TestHtml.htm";
-        [SetUp]
-        public override void FixtureSetUp()
-        {
-            string html = Support.GetFile(testFile);
-            Dom = CQ.Create(html);
-        }
+        
+        
         [Test,TestMethod]
         public void SimpleClone()
         {
-            CQ hlinks = Dom.Select("#hlinks-user");
+            var dom = TestDom("TestHtml");
+
+            CQ hlinks = dom.Select("#hlinks-user");
             int spanCount = hlinks.Find("span").Length;
             CQ clone = hlinks.Clone();
 
             Assert.AreEqual(hlinks.Find("*").Length+1, clone.Select("*").Length,"Clone has same total elements as original");
 
-            CQ newHome = Dom.Select("#hidden-div");
+            CQ newHome = dom.Select("#hidden-div");
             
             spanCount = newHome.Find("span").Length;
             int cloneSpanCount = clone.Select("span").Length;
@@ -51,9 +48,10 @@ namespace CsqueryTests.Csharp
         [Test, TestMethod]
         public void ChangingClones()
         {
-            FixtureSetUp();
-            var hlinks = Dom.Select("#hlinks-user");
-            var cloneRoot = Dom["#test-show"].Append(hlinks.Clone());
+            var dom = TestDom("TestHtml");
+
+            var hlinks = dom.Select("#hlinks-user");
+            var cloneRoot = dom["#test-show"].Append(hlinks.Clone());
             
             Assert.AreEqual("jamietre", hlinks.Find(".profile-link").Text(), "Sanity check: got the correct text");
             
@@ -74,10 +72,10 @@ namespace CsqueryTests.Csharp
         [Test, TestMethod]
         public void InsertingContent()
         {
+            var dom = TestDom("TestHtml");
+            var totalCount = dom["*"].Length;
 
-            var totalCount = Dom["*"].Length;
-
-            string newHtml = Support.GetFile(testFile);
+            string newHtml = Support.GetFile(TestDomPath("TestHtml"));
             //change it slightly to force the string refs to be offset
 
             newHtml = newHtml.Insert(newHtml.IndexOf("<body>")+6,"<div id=\"new-div\">Johnny Come Lately</div>");
@@ -86,12 +84,12 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual(totalCount+1, dom2["*"].Length, "The new copy was the same as the original");
 
             var addingCount = dom2["body *"].Length;
-            dom2["body"].Children().InsertBefore(Dom["#hlinks-user"].Children().First());
-            Assert.AreEqual(totalCount + addingCount, Dom["*"].Length, "The combined DOM is the right length");
+            dom2["body"].Children().InsertBefore(dom["#hlinks-user"].Children().First());
+            Assert.AreEqual(totalCount + addingCount, dom["*"].Length, "The combined DOM is the right length");
 
-            Dom["#hlinks-user .reputation-score"].Clone().AppendTo("body");
-            Assert.AreEqual("3,215", Dom[".reputation-score"].First().Text(), "Text didn't get mangled on multiple moves (bug 11/11/11)");
-            Assert.AreEqual("3,215", Dom[".reputation-score"].Last().Text(), "Text didn't get mangled on multiple moves (bug 11/11/11)");
+            dom["#hlinks-user .reputation-score"].Clone().AppendTo("body");
+            Assert.AreEqual("3,215", dom[".reputation-score"].First().Text(), "Text didn't get mangled on multiple moves (bug 11/11/11)");
+            Assert.AreEqual("3,215", dom[".reputation-score"].Last().Text(), "Text didn't get mangled on multiple moves (bug 11/11/11)");
         }
 
         /// <summary>
@@ -100,13 +98,15 @@ namespace CsqueryTests.Csharp
         [Test, TestMethod]
         public void CloningRules()
         {
-            FixtureSetUp();
-            var dom = Dom["#hlinks-user"];
+            var baseDom = TestDom("TestHtml");
+
+            var dom = baseDom["#hlinks-user"];
+
             Assert.AreEqual(1, dom.Length, "Sanity check");
             var hlinks = dom.Clone();
             Assert.AreEqual("hlinks-user",dom[0].Id,"Cloned element retains ID");
 
-            var badges = Dom["span[title*='badges']"];
+            var badges = baseDom["span[title*='badges']"];
             Assert.AreEqual(2, badges.Length, "Sanity check");
             hlinks.AddClass("followme");
             badges.Append(hlinks);

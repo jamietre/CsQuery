@@ -20,6 +20,13 @@ namespace CsqueryTests
     [TestClass]
     public class CsQueryTest
     {
+        /// <summary>
+        /// If you keep CsQuery.Tests in a folder named other than CsQuery, change this. The tests need to access things from the Resources folder in the
+        /// test project. We can't be sure where this will be relative to the executing folder, so the root of the project is used as a
+        /// reference. Copying the files on each build is time consuming because we test against a really big file.
+        /// </summary>
+        public static string SolutionDirectory = "CsQuery";
+
         public CsQueryTest()
         {
             FixtureSetUp();
@@ -35,6 +42,13 @@ namespace CsqueryTests
         public virtual void FixtureSetUp()
         {
             CQ.DefaultDocType = DocType.XHTML;
+        }
+        
+        // for jQuery tests
+
+        protected void ResetQunit()
+        {
+            Dom = TestDom("jquery-unit-index.htm");
         }
         protected CQ jQuery()
         {
@@ -125,15 +139,25 @@ namespace CsqueryTests
             return action.Invoke;
         }
 
+        /// <summary>
+        /// Get a CQ object from the Resources folder for file name.htm
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         protected CQ TestDom(string name)
         {
-            string fName = name.EndsWith(".htm") || name.EndsWith(".html") ?
-                name :
-                name + ".htm";
+           
 
-
-            string html = Support.GetFile("csquery\\CsQuery.Tests\\Resources\\" + fName);
+            string html = Support.GetFile(TestDomPath(name));
             return CQ.Create(html);
+        }
+        protected string TestDomPath(string name)
+        {
+            string fName = name.EndsWith(".htm") || name.EndsWith(".html") ?
+               name :
+               name + ".htm";
+
+            return SolutionDirectory + "\\CsQuery.Tests\\Resources\\" + fName;
         }
     }
 }

@@ -35,7 +35,7 @@ namespace CsqueryTests.Performance
 
             System.GC.Collect();
             var GC_MemoryStart = System.GC.GetTotalMemory(true);
-            html = Support.GetFile("csquery\\csquery.tests\\resources\\HTML Standard.htm");
+            html = Support.GetFile(TestDomPath("HTML Standard"));
             for (int i = 0; i < iterationsLoad; i++)
             {
 
@@ -97,7 +97,7 @@ namespace CsqueryTests.Performance
             DateTime start = DateTime.Now;
             HtmlDocument doc = new HtmlDocument();
             var GC_MemoryStart = System.GC.GetTotalMemory(true);
-            html = Support.GetFile("csquery\\csquery.tests\\resources\\HTML Standard.htm");
+            html = Support.GetFile(TestDomPath("HTML Standard"));
             for (int i = 0; i < iterationsLoad; i++)
             {
                 doc = new HtmlDocument();

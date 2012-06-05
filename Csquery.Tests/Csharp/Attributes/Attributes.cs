@@ -22,11 +22,12 @@ namespace CsqueryTests.Csharp
         [SetUp]
         public override void FixtureSetUp()
         {
+            base.FixtureSetUp();
             ResetDom();
         }
         protected void ResetDom()
         {
-            Dom = CQ.Create(Support.GetFile("csquery\\csquery.tests\\resources\\TestHtml.htm"));
+            Dom = TestDom("TestHtml");
         }
         [TestMethod,Test]
         public void Show()

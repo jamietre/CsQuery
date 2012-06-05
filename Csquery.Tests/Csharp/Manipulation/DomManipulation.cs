@@ -16,64 +16,52 @@ using CsQuery.Utility;
 namespace CsqueryTests.CSharp
 {
 
-    [TestFixture, TestClass, Description("CsQuery Tests (Not from Jquery test suite)")]
-    public class DomManipulation
+    [TestFixture, TestClass]
+    public class DomManipulation: CsQueryTest
     {
-        private static CQ csq;
-        [TestFixtureSetUp,ClassInitialize]
-        public static void Init(TestContext context)
-        {
-            Initialize();
-        }
+        
 
-        private static void Initialize()
+        public override void FixtureSetUp()
         {
-            string html = Support.GetFile("CsQuery\\CsQuery.Tests\\Resources\\TestHtml2.htm");
-            csq = CQ.Create(html);
-        }
-        [TestInitialize, SetUp]
-        public void TestSetUp()
-        {
-            Initialize();
-        }
-        [Test, TestMethod]
-        public void UnWrap()
-        {
-
+            Dom = TestDom("TestHtml2");
         }
         [Test,TestMethod]
         public void InnerParsingRules()
         {
-            CQ res = csq.Select("script");
+            CQ res = Dom.Select("script");
             // bug found 10/31/11
             Assert.AreEqual(0, res.Children().Length, "Script cannot have children");
         }
+
         [Test,TestMethod]
         public void BasicDomCreation()
         {
             string tags = String.Empty;
-            csq.Each(delegate(IDomObject e)
+            Dom.Each(delegate(IDomObject e)
             {
                 tags += (tags == "" ? "" : ",") + e.NodeName;
             });
-            Assert.AreEqual(12, csq.Length, "Found correct number of elements in the DOM");
+            Assert.AreEqual(12, Dom.Length, "Found correct number of elements in the DOM");
         }
         [Test,TestMethod]
         public void InputCheckbox()
         {
             string ids = String.Empty;
-            var res = csq.Select("input:checkbox").Each(delegate(IDomObject e)
+            var res = Dom.Select("input:checkbox").Each(delegate(IDomObject e)
             {
                 ids += (ids == "" ? "" : ",") + e.Id;
             });
             Assert.AreEqual(4, res.Length, "Test input:checkbox");
         }
+
         [Test,TestMethod]
         public void DomManipulationTests()
         {
+            var dom = TestDom("TestHtml2");
+
             string ids = String.Empty;
 
-            var res = csq.Select("li").Each((IDomObject e) =>
+            var res = dom.Select("li").Each((IDomObject e) =>
             {
                 ids += (ids == "" ? "" : ",") + "'" + e.InnerHTML.Trim() + "'";
             });
@@ -81,53 +69,54 @@ namespace CsqueryTests.CSharp
 
             ids = String.Empty;
 
-            res = csq.Select("li");
+            res = dom.Select("li");
             res.Eq(1).Remove();
 
-            Assert.AreEqual(1, csq.Select("li").Length, "Removed a list item (one was inner, should be one) list items");
+            Assert.AreEqual(1, dom.Select("li").Length, "Removed a list item (one was inner, should be one) list items");
 
-            csq.Select("ul").Each((int index, IDomObject e) =>
+            dom.Select("ul").Each((int index, IDomObject e) =>
             {
                 if (index == 1)
                 {
 
-                    csq.Remove(":eq(1)");
+                    dom.Remove(":eq(1)");
                 }
             });
-            res = csq.Select("ul");
+            res = dom.Select("ul");
             Assert.AreEqual(1, res.Length, "Removed a ul");
 
             
             ids = String.Empty;
 
-            res = csq.Select("li");
+            res = dom.Select("li");
             res.Remove();
             Assert.AreEqual(1, res.Length, "Removing an item leaves it in the selection set");
-            Assert.AreEqual(0, csq.Select("li").Length, "Test removing last list item");
+            Assert.AreEqual(0, dom.Select("li").Length, "Test removing last list item");
 
 
         }
         [Test,TestMethod]
         public void ComplexSelectors()
         {
-            Initialize();
-            var res = csq.Select("input:checkbox,li");
+            
+            var res = Dom.Select("input:checkbox,li");
             Assert.AreEqual(7,res.Length,"Multiple select (two queries appended)");
 
         }
         [Test,TestMethod]
         public void DomManipulation2()
         {
-            csq.Select("#last_div").Html("<span>Test</span>");
-            var res = csq.Select("#last_div");
+            var dom = TestDom("TestHtml2");
+            dom.Select("#last_div").Html("<span>Test</span>");
+            var res = dom.Select("#last_div");
             Assert.AreEqual(res[0].InnerHTML, "<span>Test</span>", "Replace inner HTML");
 
             res.Append("<p>This is some more content</p>");
-            res = csq.Select("#last_div");
+            res = dom.Select("#last_div");
             Assert.AreEqual(2, res[0].ChildNodes.Count(), "Test results of appending content (verify node length)");
             Assert.AreEqual("<span>Test</span><p>This is some more content</p>", res[0].InnerHTML, "Test results of appending content (verify actual content)");
 
-            res = csq.Select("#last_div").Children();
+            res = dom.Select("#last_div").Children();
 
             Assert.AreEqual(2,res.Length,"Inspect children of last div");
 
@@ -153,18 +142,16 @@ namespace CsqueryTests.CSharp
         [Test,TestMethod]
         public void MoreDomManipulation()
         {
-            // Start over now, the dom is so messed up it's impossible to know if things are working
-            Initialize();
-
-            var res = csq.Select("div:contains('Product')");
+            var dom = TestDom("TestHtml2");
+            var res = dom.Select("div:contains('Product')");
 
             
             Assert.AreEqual(2, res.Length, "Contains: found " + GetChildTags(res));
 
 
-            res = csq.Select("#chk_utility_products_qualified").Attr("checked", String.Empty);
+            res = dom.Select("#chk_utility_products_qualified").Attr("checked", String.Empty);
 
-            Assert.AreEqual(true,csq.Find("#chk_utility_products_qualified").Is(":checked"), "Checking checkbox using attr");
+            Assert.AreEqual(true, dom.Find("#chk_utility_products_qualified").Is(":checked"), "Checking checkbox using attr");
 
             
             res.Attr("checked", false);
@@ -173,7 +160,7 @@ namespace CsqueryTests.CSharp
 
             // Test Eq method
 
-            res = csq.Select("div");
+            res = dom.Select("div");
             Assert.AreEqual("Div1",res.Eq(1).Attr("id"), "Test eq method");
             Assert.AreEqual("first_div",res.First().Attr("id"), "test first method");
 
@@ -181,6 +168,7 @@ namespace CsqueryTests.CSharp
             Assert.AreEqual("para",res.Eq(0).Next().Attr("id"), "test next method");
             Assert.AreEqual("para",res.Eq(-1).Prev().Attr("id"),"Test eq with negative parm, and prev");
         }
+
 
         /// <summary>
         /// Added 12/15/11 - ensure that appending to a table element attds to a tbody tag (or creates one)
@@ -219,6 +207,7 @@ namespace CsqueryTests.CSharp
 
 
         #region private methods
+
         protected string GetChildTags(CQ csq)
         {
             string tags = "";

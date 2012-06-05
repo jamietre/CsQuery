@@ -26,12 +26,10 @@ namespace CsqueryTests.jQuery
         [SetUp]
         public override void FixtureSetUp()
         {
+            base.FixtureSetUp();
             ResetQunit();
         }
-        protected void ResetQunit()
-        {
-            Dom = CQ.Create(Support.GetFile("csquery\\csquery.tests\\resources\\jquery-unit-index.htm"));
-        }
+
         [Test, TestMethod]
         public void Strings()
         {

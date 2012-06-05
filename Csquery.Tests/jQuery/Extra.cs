@@ -25,8 +25,8 @@ namespace CsqueryTests.jQuery
         [SetUp]
         public override void FixtureSetUp()
         {
-            Dom = CQ.Create(Support.GetFile("csquery\\csquery.tests\\resources\\wiki-cheese.htm"));
-            
+            base.FixtureSetUp();
+            Dom = TestDom("wiki-cheese");            
         }
 
 

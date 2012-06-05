@@ -21,8 +21,8 @@ namespace CsqueryTests.Csharp
         
         public override void FixtureSetUp()
         {
-            string html = Support.GetFile("csquery\\CsQuery.Tests\\Resources\\TestHtml.htm");
-            Dom = CQ.Create(html);
+            base.FixtureSetUp();
+            Dom = TestDom("TestHtml");
         }
 
         protected string WriteDOMObject(IDomElement obj)

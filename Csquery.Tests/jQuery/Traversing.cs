@@ -18,8 +18,8 @@ namespace CsqueryTests.jQuery
         [SetUp]
         public override void FixtureSetUp()
         {
-
-            Dom = CQ.Create(Support.GetFile("csquery\\csquery.tests\\resources\\jquery-unit-index.htm"));
+            base.FixtureSetUp();
+            ResetQunit();
         }
         [Test,TestMethod]
         public void Find_String()

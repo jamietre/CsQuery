@@ -17,19 +17,20 @@ using CsQuery.Utility;
 namespace CsqueryTests.Csharp
 {
     
-    [TestFixture, TestClass,Description("HTML parser (DomElementFactory)")]
+    [TestFixture, TestClass]
     public class DomElementFactory_ : CsQueryTest
     {
         DomElementFactory factory;
-        const string testFile="csquery\\CsQuery.Tests\\Resources\\TestHtml.htm";
+
         [SetUp]
         public override void FixtureSetUp()
         {
             base.FixtureSetUp();
-            string html = Support.GetFile(testFile);
-            Dom = CQ.Create(html);
+
+            Dom = TestDom("TestHtml");
             factory = new DomElementFactory(Dom.Document);
         }
+
         [Test,TestMethod]
         public void BasicCreate()
         {
@@ -76,7 +77,8 @@ namespace CsqueryTests.Csharp
         [Test, TestMethod]
         public void CopyEntireDom()
         {
-            string html = Support.GetFile("csquery\\csquery.tests\\resources\\HTML Standard.htm");
+
+            string html = Support.GetFile(TestDomPath("HTML Standard"));
 
             var dom = CQ.Create(html);
             string output = dom.Render();
