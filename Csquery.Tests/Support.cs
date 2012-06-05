@@ -10,6 +10,11 @@ namespace Jtc.CsQuery.Tests
 {
     public class Support
     {
+        /// <summary>
+        /// Locate & load a file in the project heirarchy 
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         public static string GetFile(string fileName)
         {
 

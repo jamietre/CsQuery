@@ -11,8 +11,18 @@ using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.Utility
 {
+    /// <summary>
+    /// Methods for working with JSON. TODO: This class needs some help. While not thrilled about the idea of writing another JSON serializer,
+    /// CsQuery does some unique handling for deserialization, e.g. mapping sub-objects to expando objects. We can do a post-op parsing from 
+    /// any other JSON serializer (such as we are doing now) but this doubles the overhead required. Look at a customized implementation from 
+    /// Newtonsoft, though any customization makes it difficult to use a simple strategy for drop-in replacement of the serializer. Perhaps 
+    /// implement an interface for the serializer with a simple wrapper class for a generic serializer that performs needed post-op
+    /// substitutions as part of the base library, with an optimized native implementation?
+    /// </summary>
     public static class JSON
     {
+        #region constructor and internal data
+
         static JSON()
         {
             escapeLookup = new char[127];
@@ -26,15 +36,7 @@ namespace CsQuery.Utility
             escapeLookup['\\'] = '\\';
 
         }
-        private static JavaScriptSerializer Serializer
-        {
-            get
-            {
-                return _Serializer.Value;
-            }
-        }
-        private static Lazy<JavaScriptSerializer> _Serializer = new Lazy<JavaScriptSerializer>();
-
+        private static char[] escapeLookup;
         /// <summary>
         /// Internal class to optimize StringBuilder creation
         /// </summary>
@@ -47,7 +49,7 @@ namespace CsQuery.Utility
             StringBuilder sb = new StringBuilder();
             private void valueToJSON(object value)
             {
-                if (value.IsImmutable())
+                if (Objects.IsImmutable(value))
                 {
                     sb.Append(Serializer.Serialize(value));
                 }
@@ -83,7 +85,7 @@ namespace CsQuery.Utility
                         {
                             sb.Append(",");
                         }
-                        if (obj.IsImmutable())
+                        if (Objects.IsImmutable(obj))
                         {
                             valueToJSON(obj);
                         }
@@ -112,7 +114,7 @@ namespace CsQuery.Utility
             }
             public void SerializeImpl(object value) {
                 //if ((value is IEnumerable && !value.IsExpando()) || value.IsImmutable())
-                if (!value.IsExtendableType())
+                if (!Objects.IsExtendableType(value))
                 {
                     valueToJSON(value);
                 }
@@ -137,8 +139,22 @@ namespace CsQuery.Utility
                 }
             }
         }
+
+        private static Lazy<JavaScriptSerializer> _Serializer = new Lazy<JavaScriptSerializer>();
+        private static JavaScriptSerializer Serializer
+        {
+            get
+            {
+                return _Serializer.Value;
+            }
+        }
+       
+        #endregion
+
+        #region public methods
+
         /// <summary>
-        /// Convert an object to JSON
+        /// Convert an object to JSON using the default handling of the serializer
         /// </summary>
         /// <param name="objectToSerialize"></param>
         /// <returns></returns>
@@ -148,19 +164,6 @@ namespace CsQuery.Utility
             return serializer.Serialize(objectToSerialize);
 
         }
-        //public static string ToJSONFormatted(object objectToSerialize)
-        //{
-        //    JsonSerializer serializer = new JsonSerializer();
-        //    serializer.FormatOutput = true;
-        //    return serializer.Serialize(objectToSerialize);
-
-        //}
-        /// <summary>
-        ///  Serialize a value type
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        
         /// <summary>
         /// Parse JSON into a typed object
         /// </summary>
@@ -169,9 +172,15 @@ namespace CsQuery.Utility
         /// <returns></returns>
         public static T ParseJSON<T>(string objectToDeserialize)
         {
-
             return (T)ParseJSON(objectToDeserialize, typeof(T));
         }
+
+        /// <summary>
+        /// Parse JSON into a typed object
+        /// </summary>
+        /// <param name="objectToDeserialize"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public static object ParseJSON(string objectToDeserialize, Type type)
         {
             if (typeof(IDynamicMetaObjectProvider).IsAssignableFrom(type))
@@ -187,7 +196,7 @@ namespace CsQuery.Utility
             }
         }
         /// <summary>
-        /// Parse JSON into a JsObject (dynamic) object, or single typed value
+        /// Parse JSON into a dynamic object, or single typed value
         /// </summary>
         /// <param name="objectToDeserialize"></param>
         /// <returns></returns>
@@ -196,26 +205,20 @@ namespace CsQuery.Utility
             if (String.IsNullOrEmpty(objectToDeserialize))
             {
                 return null;
-            }
-            switch (objectToDeserialize.Trim()[0])
-            {
-                case '{':
-                    return Utility.JSON.ParseJSONObject(objectToDeserialize);
-                case '"':
-                    return Utility.JSON.ParseJSON<string>(objectToDeserialize);
-                default:
+            } else {
                     return ParseJSONValue(objectToDeserialize);
             }
         }
+
         /// <summary>
-        /// Return a typed instance of the JSON value
+        /// Parse a JSON value to a C# value (string,bool, int, double, datetime) or, if the value is another object, an object or array.
         /// </summary>
         /// <param name="objectToDeserialize"></param>
         /// <returns></returns>
         public static object ParseJSONValue(string objectToDeserialize)
         {
             object value;
-            if (TryParseJsonValue(objectToDeserialize, out value)) {
+            if (TryParseJsonValueImpl(objectToDeserialize, out value)) {
                 return value;
             } else {
                 // It's not a string, see what we can get out of it
@@ -241,7 +244,7 @@ namespace CsQuery.Utility
         }
 
         /// <summary>
-        /// Return a typed instance of the JSON value
+        /// Parse a JSON value to a C# value of the type requested
         /// </summary>
         /// <param name="objectToDeserialize"></param>
         /// <returns></returns>
@@ -250,7 +253,7 @@ namespace CsQuery.Utility
             
             Type baseType = Objects.GetUnderlyingType(type);
             object value;
-            if (TryParseJsonValue(objectToDeserialize, out value))
+            if (TryParseJsonValueImpl(objectToDeserialize, out value))
             {
                 return Convert.ChangeType(value, type);
             }
@@ -290,13 +293,60 @@ namespace CsQuery.Utility
             throw new ArgumentException("The value '" + objectToDeserialize + "' could not be parsed to type '" + type.ToString() + "'");
 
         }
+
+       
         /// <summary>
-        /// Try to handle sub-object types 
+        /// The value represents a JSON date (MS format)
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static bool IsJsonDate(string input)
+        {
+            return input.Length >= 7 && input.Substring(0, 7) == "\"\\/Date";
+        }
+
+        /// <summary>
+        /// The value represents a JSON object, e.g. is bounded by curly braces
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static bool IsJsonObject(string input)
+        {
+            return input != null && input.StartsWith("{") && input.EndsWith("}");
+        }
+
+        /// <summary>
+        /// The value represents a JSON string, e.g. is bounded by double-quotes
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static bool IsJsonString(string input)
+        {
+            return input.StartsWith("\"") && input.EndsWith("\"");
+        }
+
+        /// <summary>
+        /// The value represents a JSON array, e.g. is bounded by square brackets
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static bool IsJsonArray(string input)
+        {
+            return input.StartsWith("[") && input.EndsWith("]");
+        }
+       
+        #endregion
+
+        #region private methods
+        /// <summary>
+        /// Try to parse a JSON value into a value type or, if the value represents an object or array, an object. This method does not
+        /// address numeric types, leaving that up to a caller, so that they can map to specific numeric casts if desired.
         /// </summary>
         /// <param name="objectToDeserialize"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        private static bool TryParseJsonValue(string objectToDeserialize, out object value) {
+        private static bool TryParseJsonValueImpl(string objectToDeserialize, out object value)
+        {
             var obj = objectToDeserialize.Trim();
             if (String.IsNullOrEmpty(obj))
             {
@@ -304,7 +354,7 @@ namespace CsQuery.Utility
             }
             else if (obj == "null" || obj == "undefined")
             {
-                value= null;
+                value = null;
             }
             else if (obj == "{}")
             {
@@ -341,7 +391,7 @@ namespace CsQuery.Utility
 
             string ticks = regex.Match(jsDateTime).Groups["ticks"].Value;
 
-            DateTime dt =  unixEpoch.AddMilliseconds(Convert.ToDouble(ticks));
+            DateTime dt = unixEpoch.AddMilliseconds(Convert.ToDouble(ticks));
             return DateTime.SpecifyKind(dt, DateTimeKind.Utc).ToLocalTime();
 
         }
@@ -354,25 +404,41 @@ namespace CsQuery.Utility
         {
             Dictionary<string, object> dict = (Dictionary<string, object>)Serializer.Deserialize(objectToDeserialize, typeof(Dictionary<string, object>));
 
-            return Objects.Dict2Dynamic<JsObject>(dict,true);
+            return Objects.Dict2Dynamic<JsObject>(dict, true);
         }
-        public static bool IsJsonDate(string input)
+
+        private  static string ParseJsonString(string input)
         {
-            return input.Length >= 7 && input.Substring(0, 7) == "\"\\/Date";
+
+            string obj = input.Substring(1, input.Length - 2);
+            StringBuilder output = new StringBuilder();
+            int pos = 0;
+            while (pos < obj.Length)
+            {
+                char cur = obj[pos];
+                if (cur == '\\')
+                {
+                    cur = obj[++pos];
+                    char unescaped = escapeLookup[(byte)obj[pos]];
+                    if (unescaped > 0)
+                    {
+                        output.Append(unescaped);
+                    }
+                    else
+                    {
+                        output.Append(cur);
+                    }
+                }
+                else
+                {
+                    output.Append(cur);
+                }
+                pos++;
+            }
+            return output.ToString();
         }
-        public static bool IsJsonObject(string input)
-        {
-            return input != null && input.StartsWith("{") && input.EndsWith("}");
-        }
-        public static bool IsJsonString(string input)
-        {
-            return input.StartsWith("\"") && input.EndsWith("\"");
-        }
-        public static bool IsJsonArray(string input)
-        {
-            return input.StartsWith("[") && input.EndsWith("]");
-        }
-        public static object ParseJsonArray(string input)
+
+         private static object ParseJsonArray(string input)
         {
             string obj = input.Substring(1, input.Length - 2);
             List<object> list = new List<object>();
@@ -413,35 +479,6 @@ namespace CsQuery.Utility
             }
 
         }
-        private static char[] escapeLookup;
-        public static string ParseJsonString(string input)
-        {
-            
-            string obj = input.Substring(1, input.Length - 2);
-            StringBuilder output = new StringBuilder();
-            int pos=0;
-            while (pos<obj.Length) {
-                char cur = obj[pos];
-                if (cur == '\\')
-                {
-                    cur = obj[++pos];
-                    char unescaped = escapeLookup[(byte)obj[pos]];
-                    if (unescaped > 0)
-                    {
-                        output.Append(unescaped);
-                    }
-                    else
-                    {
-                        output.Append(cur);
-                    }
-                }
-                else
-                {
-                    output.Append(cur);
-                }
-                pos++;
-            }
-            return output.ToString();
-        }
+        #endregion
     }
 }

@@ -19,7 +19,7 @@ namespace CsQuery.ExtensionMethods
     /// <summary>
     /// Some extension methods that come in handy when working with CsQuery
     /// </summary>
-    public static class PublicExtensionMethods
+    public static class ExtensionMethods
     {
         #region IEnumerable<T> extension methods
 

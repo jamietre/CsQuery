@@ -16,15 +16,9 @@ namespace CsqueryTests.Csharp
 {
     
     [TestFixture, TestClass,Description("CsQuery Tests (Not from Jquery test suite)")]
-    public class Miscellanoeous: CsQueryTest
+    public class Miscellaneous: CsQueryTest
     {
         
-        public override void FixtureSetUp()
-        {
-            base.FixtureSetUp();
-            string html = Support.GetFile("csquery\\CsQuery.Tests\\Resources\\TestHtml.htm");
-            Dom = CQ.Create(html);
-        }
 
         [Test, TestMethod]
         public void Encoding()
@@ -33,16 +27,7 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual(res["div span"].Text(), "x"+(char)8230);
 
         }
-        [Test, TestMethod]
-        public void End()
-        {
 
-            var res = jQuery("#hlinks-user").Find("span");
-            Assert.AreEqual("profile-triangle",res[0].ClassName);
-            Assert.AreEqual("badge2", res.Find("span")[0].ClassName);
-            Assert.AreEqual("profile-triangle", res.Find("span").End()[0].ClassName);
-
-        }
         [Test, TestMethod]
         public void TestDocType()
         {
@@ -58,5 +43,15 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual("<!DOCTYPE html>", dom.First().Render());
 
         }
+
+        #region setup
+        public override void FixtureSetUp()
+        {
+            base.FixtureSetUp();
+            string html = Support.GetFile("csquery\\CsQuery.Tests\\Resources\\TestHtml.htm");
+            Dom = CQ.Create(html);
+        }
+        #endregion
+
     }
 }

@@ -877,7 +877,7 @@ namespace CsQuery.Implementation
             if (value != null)
             {
                 string quoteChar;
-                string attrText = Objects.AttributeEncode(value,
+                string attrText = DomData.AttributeEncode(value,
                     quoteAll,
                     out quoteChar);
                 sb.Append(name);

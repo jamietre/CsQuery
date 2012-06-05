@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using CsQuery.Utility;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 using CsQuery.Implementation;
@@ -434,7 +435,7 @@ namespace CsQuery.HtmlParser
             else
             {
                 string text = BaseHtml.SubstringBetween(current.HtmlStart, current.Pos);
-                lit.NodeValue = Objects.HtmlDecode(text);
+                lit.NodeValue = DomData.HtmlDecode(text);
             }
              
             if (!current.AllowLiterals)

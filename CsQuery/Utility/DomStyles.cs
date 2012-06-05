@@ -9,7 +9,7 @@ using CsQuery.Implementation;
 namespace CsQuery.Utility
 {
     /// <summary>
-    /// Exposes a dictionary of valid styles.
+    /// A dictionary of valid styles, based on a Visual Studio format XML schema. 
     /// </summary>
     public static class DomStyles
     {
@@ -20,7 +20,6 @@ namespace CsQuery.Utility
         {
             XmlDocument xDoc = new XmlDocument();
             Stream dataStream = Support.GetResourceStream("CsQuery.Resources." + CssDefs);
-            //XDocument data = XDocument.Load(dataStream);
             xDoc.Load(dataStream);
 
             XmlNamespaceManager nsMan = new XmlNamespaceManager(xDoc.NameTable);

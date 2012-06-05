@@ -150,7 +150,7 @@
     <Compile Include="Engine\NthChild.cs" />
     <Compile Include="Engine\CssSelectionEngine.cs" />
     <Compile Include="Utility\EquationParser\IOperand.cs" />
-    <Compile Include="ExtensionMethods\Internal\InternalExtensionMethods.cs" />
+    <Compile Include="ExtensionMethods\Internal\ExtensionMethods.cs" />
     <Compile Include="Utility\EquationParser\Implementation\Equation.cs" />
     <Compile Include="HtmlParser\IterationData.cs" />
     <Compile Include="Utility\SmallDictionary.cs" />
@@ -175,7 +175,7 @@
     <Compile Include="Engine\SelectorChain.cs" />
     <Compile Include="Dom\Implementation\DomElement.cs" />
     <Compile Include="HtmlParser\DomElementFactory.cs" />
-    <Compile Include="ExtensionMethods\PublicExtensionMethods.cs" />
+    <Compile Include="ExtensionMethods\ExtensionMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\StringScanner\Implementation\ExpectPattern.cs" />
     <Compile Include="Utility\StringScanner\IExpectPattern.cs" />
@@ -188,7 +188,7 @@
     <Compile Include="Utility\StringScanner\Patterns\Quoted.cs" />
     <Compile Include="Utility\StringScanner\Implementation\StringScanner.cs" />
     <Compile Include="Utility\Support.cs" />
-    <Compile Include="Objects.cs" />
+    <Compile Include="Utility\Objects.cs" />
     <Compile Include="Utility\JSON.cs" />
     <Compile Include="Utility\DomStyles.cs" />
     <Compile Include="Utility\StringScanner\IStringScanner.cs" />

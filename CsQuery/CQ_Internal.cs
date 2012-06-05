@@ -339,7 +339,7 @@ namespace CsQuery
                 SelectorChain selectors = new SelectorChain(selector);
                 if (selectors.Count > 0)
                 {
-                    selectors.Do(item=>item.TraversalType = TraversalType.Filter);
+                    selectors.ForEach(item=>item.TraversalType = TraversalType.Filter);
                 }
                 // this is kind of unfortunate but is required to keep the order correct. Probably a more efficient
                 // way to do it but works fine for now

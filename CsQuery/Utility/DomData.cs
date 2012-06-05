@@ -8,8 +8,14 @@ using System.Diagnostics;
 
 namespace CsQuery.Utility
 {
+    /// <summary>
+    /// Utility functions 
+    /// 
+    /// </summary>
     public static class DomData
     {
+        #region contstants and data
+
         // when false, will use binary data for the character set
 
 #if DEBUG_PATH
@@ -76,6 +82,30 @@ namespace CsQuery.Utility
         private static ushort booleanLast;
         private static ushort blockFirst;
         private static ushort blockLast;
+
+
+        /// <summary>
+        /// Fields used internally
+        /// </summary>
+
+        private static ushort nextID = 2;
+        private static List<string> Tokens = new List<string>();
+        private static Dictionary<string, ushort> TokenIDs;
+        private static object locker = new Object();
+        
+        // Constants for path encoding functions
+
+        private static string defaultPadding;
+        // The character set used to generate path IDs
+        private static char[] baseXXchars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".ToArray();
+        private static int encodingLength; // set in constructor
+        private static int maxPathIndex;
+        // The length of each path key - this sets an upper limit on the number of subelements
+        // that can be added without reindexing the node
+
+        #endregion
+
+        #region constructor
 
         static DomData()
         {
@@ -165,19 +195,14 @@ namespace CsQuery.Utility
             blockLast = (ushort)(nextID - 1);
         }
 
-        /// <summary>
-        /// Fields used internally
-        /// </summary>
+        #endregion
 
-        private static ushort nextID=2;
-        private static List<string> Tokens = new List<string>();        
-        private static Dictionary<string, ushort> TokenIDs;
-        private static object locker=new Object();
+
+        #region public methods
 
         /// <summary>
-        /// Public methods 
+        /// A list of all keys (tokens) created
         /// </summary>
-        /// 
         public static IEnumerable<string> Keys
         {
             get
@@ -185,6 +210,7 @@ namespace CsQuery.Utility
                 return Tokens;
             }
         }
+
         /// <summary>
         /// This type does not allow HTML children. Some of these types may allow text but not HTML.
         /// </summary>
@@ -195,10 +221,17 @@ namespace CsQuery.Utility
             return nodeId >= noInnerHtmlIDFirst &&
                 nodeId <= noInnerHtmlIDLast;
         }
+
+        /// <summary>
+        /// This type does not allow HTML children. Some of these types may allow text but not HTML.
+        /// </summary>
+        /// <param name="nodeId"></param>
+        /// <returns></returns>
         public static bool NoInnerHtmlAllowed(string nodeName)
         {
             return NoInnerHtmlAllowed(TokenID(nodeName,true));
         }
+
         /// <summary>
         /// Text is allowed within this node type. Is includes all types that also permit HTML.
         /// </summary>
@@ -278,16 +311,13 @@ namespace CsQuery.Utility
             return id <= 0 ? "" : Tokens[id-2];
         }
 
-        #region Path Encoding
+       
 
-        private static string defaultPadding;
-        // The character set used to generate path IDs
-        private static char[] baseXXchars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".ToArray();
-        private static int encodingLength; // set in constructor
-        private static int maxPathIndex;
-        // The length of each path key - this sets an upper limit on the number of subelements
-        // that can be added without reindexing the node
-
+        /// <summary>
+        /// Encode to base XX (defined in constants)
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
         public static string BaseXXEncode(int number)
         {
 
@@ -317,6 +347,86 @@ namespace CsQuery.Utility
             
             return sc_result.PadLeft(pathIdLength, '0');
         }
+
+        /// <summary>
+        /// HtmlEncode the string (pass-thru to system; abstracted in case we want to change)
+        /// </summary>
+        /// <param name="html"></param>
+        /// <returns></returns>
+        public static string HtmlEncode(string html)
+        {
+            return System.Web.HttpUtility.HtmlEncode(html);
+
+        }
+        public static string HtmlDecode(string html)
+        {
+            return System.Web.HttpUtility.HtmlDecode(html);
+        }
+
+
+        /// <summary>
+        /// Encode text as part of an attribute
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static string AttributeEncode(string text)
+        {
+            string quoteChar;
+            string attribute = AttributeEncode(text,
+                CQ.DefaultDomRenderingOptions.HasFlag(DomRenderingOptions.QuoteAllAttributes),
+                out quoteChar);
+            return quoteChar + attribute + quoteChar;
+        }
+        
+        /// <summary>
+        /// Htmlencode a string, except for double-quotes, so it can be enclosed in single-quotes
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static string AttributeEncode(string text, bool alwaysQuote, out string quoteChar)
+        {
+            if (text == "")
+            {
+                quoteChar = "\"";
+                return "";
+            }
+
+            bool hasQuotes = text.IndexOf("\"") >= 0;
+            bool hasSingleQuotes = text.IndexOf("'") >= 0;
+            string result = text;
+            if (hasQuotes || hasSingleQuotes)
+            {
+
+                //un-encode quotes or single-quotes when possible. When writing the attribute it will use the right one
+                if (hasQuotes && hasSingleQuotes)
+                {
+                    result = result.Replace("'", "&#39;");
+                    quoteChar = "\'";
+                }
+                else if (hasQuotes)
+                {
+                    quoteChar = "'";
+                }
+                else
+                {
+                    quoteChar = "\"";
+                }
+            }
+            else
+            {
+                if (alwaysQuote)
+                {
+                    quoteChar = "\"";
+                }
+                else
+                {
+                    quoteChar = result.IndexOfAny(Utility.DomData.MustBeQuotedAll) >= 0 ? "\"" : "";
+                }
+            }
+
+            return result;
+        }
+
         #endregion
 
     }

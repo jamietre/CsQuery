@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
+using CsQuery.Utility;
 
 namespace CsQuery.Implementation
 {
@@ -52,7 +53,7 @@ namespace CsQuery.Implementation
             get
             {
                 return textIndex >= 0 ?
-                    Objects.HtmlDecode(stringRef.GetTokenizedString(textIndex))
+                    DomData.HtmlDecode(stringRef.GetTokenizedString(textIndex))
                         : unboundText;
             }
             set
@@ -65,7 +66,7 @@ namespace CsQuery.Implementation
 
         public override string Render()
         {
-            return Objects.HtmlEncode(NodeValue);
+            return DomData.HtmlEncode(NodeValue);
         }
         public override void Render(StringBuilder sb)
         {

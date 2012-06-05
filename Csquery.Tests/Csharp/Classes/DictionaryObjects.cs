@@ -17,7 +17,7 @@ using CsQuery.Utility;
 namespace CsqueryTests.Csharp
 {
 
-    [TestFixture, TestClass, Description("CsQuery Tests (Not from Jquery test suite)")]
+    [TestFixture, TestClass, Description("Special purpose dictionaries")]
     public class DictionaryObjects_ : CsQueryTest
     {
      

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CsQuery;
+using CsQuery.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
@@ -13,6 +14,9 @@ using MSClassInitialize = Microsoft.VisualStudio.TestTools.UnitTesting.ClassInit
 
 namespace CsqueryTests
 {
+    /// <summary>
+    /// Base class for most tests. This incorporates C# versions of some of the shared code from the jQuery test suite.
+    /// </summary>
     [TestClass]
     public class CsQueryTest
     {
@@ -119,6 +123,17 @@ namespace CsqueryTests
         protected TestDelegate Del(Action action)
         {
             return action.Invoke;
+        }
+
+        protected CQ TestDom(string name)
+        {
+            string fName = name.EndsWith(".htm") || name.EndsWith(".html") ?
+                name :
+                name + ".htm";
+
+
+            string html = Support.GetFile("csquery\\CsQuery.Tests\\Resources\\" + fName);
+            return CQ.Create(html);
         }
     }
 }

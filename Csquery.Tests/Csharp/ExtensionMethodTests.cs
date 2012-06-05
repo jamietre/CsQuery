@@ -16,35 +16,10 @@ using CsQuery.ExtensionMethods.Internal;
 namespace CsqueryTests.ExtensionMethodTests
 {
 
-    [TestFixture, TestClass, Description("CsQuery Core Tests ")]
+    [TestFixture, TestClass]
     public class External
     {
 
-        [Test,TestMethod]
-        public void IsImmutable()
-        {
-            int x = 1;
-            string a = "hello";
-            object test = null;
-            object test2 = new List<string>();
-            object exp = new ExpandoObject();
-            KeyValuePair<string, string> kvp = new KeyValuePair<string, string>("somekey", "somevalue");
-
-            Assert.IsTrue(x.IsImmutable(), "integer is immutable type");
-            Assert.IsTrue(a.IsImmutable(), "string is immutable type");
-            Assert.IsTrue(test.IsImmutable(), "null is immutable type");
-            Assert.IsTrue(!test2.IsImmutable(), "List is not immutable type");
-            Assert.IsTrue(!kvp.IsImmutable(), "KVP is not immutable type");
-            Assert.IsTrue(!Objects.IsExpando(kvp), "KVP is not expando");
-            Assert.IsTrue(Objects.IsExpando(exp), "expando object is expando");
-
-            Assert.IsTrue(!x.IsExtendableType(), "int is not extendable");
-            Assert.IsTrue(!a.IsExtendableType(), "string is not extendable");
-            Assert.IsTrue(!test.IsExtendableType(), "null is not extendable");
-            Assert.IsTrue(exp.IsExtendableType(), "expando object is extendable");
-            Assert.IsTrue(kvp.IsExtendableType(), "kvp is extendable");
-
-        }
         [Test, TestMethod]
         public void Seek()
         {

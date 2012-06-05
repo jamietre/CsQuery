@@ -15,7 +15,7 @@ using CsQuery.Utility;
 namespace CsqueryTests.Csharp
 {
     
-    [TestFixture, TestClass,Description("CsQuery Tests (Not from Jquery test suite)")]
+    [TestFixture, TestClass]
     public class Clone: CsQueryTest
     {
         const string testFile="csquery\\CsQuery.Tests\\Resources\\TestHtml.htm";
@@ -45,6 +45,9 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual(spanCount+cloneSpanCount, newHome.Find("span").Length, "Same # of spans in the clone");
         }
 
+        /// <summary>
+        /// Test clones by altering the original after a clone has been made
+        /// </summary>
         [Test, TestMethod]
         public void ChangingClones()
         {
@@ -53,8 +56,10 @@ namespace CsqueryTests.Csharp
             var cloneRoot = Dom["#test-show"].Append(hlinks.Clone());
             
             Assert.AreEqual("jamietre", hlinks.Find(".profile-link").Text(), "Sanity check: got the correct text");
+            
             var profileLink =  cloneRoot.Find(".profile-link");
             Assert.AreEqual("jamietre",profileLink.Text(), "Clone had the correct text");
+            
             profileLink.Text("ChangedMyName");
             Assert.AreEqual("ChangedMyName", profileLink.Text(), "Clone had the correct text after change");
             Assert.AreEqual("jamietre", hlinks.Find(".profile-link").Text(), "Original still had the correct text");
@@ -65,6 +70,7 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual("jamietre", hlinks.Find(".profile-link").Text(), "Original still had the correct text");
 
         }
+
         [Test, TestMethod]
         public void InsertingContent()
         {
@@ -86,11 +92,11 @@ namespace CsqueryTests.Csharp
             Dom["#hlinks-user .reputation-score"].Clone().AppendTo("body");
             Assert.AreEqual("3,215", Dom[".reputation-score"].First().Text(), "Text didn't get mangled on multiple moves (bug 11/11/11)");
             Assert.AreEqual("3,215", Dom[".reputation-score"].Last().Text(), "Text didn't get mangled on multiple moves (bug 11/11/11)");
-
-
-            
         }
 
+        /// <summary>
+        /// Test cloning rules: IDs are copied when initially cloned, but removed when added to a DOM where the ID is already found.
+        /// </summary>
         [Test, TestMethod]
         public void CloningRules()
         {
