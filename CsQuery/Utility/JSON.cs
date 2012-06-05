@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Web.Script.Serialization;
 using System.Dynamic;
 using System.Text.RegularExpressions;
 using CsQuery.ExtensionMethods;
@@ -12,13 +11,9 @@ using CsQuery.ExtensionMethods.Internal;
 namespace CsQuery.Utility
 {
     /// <summary>
-    /// Methods for working with JSON. TODO: This class needs some help. While not thrilled about the idea of writing another JSON serializer,
-    /// CsQuery does some unique handling for deserialization, e.g. mapping sub-objects to expando objects. We can do a post-op parsing from 
-    /// any other JSON serializer (such as we are doing now) but this doubles the overhead required. Look at a customized implementation from 
-    /// Newtonsoft, though any customization makes it difficult to use a simple strategy for drop-in replacement of the serializer. Perhaps 
-    /// implement an interface for the serializer with a simple wrapper class for a generic serializer that performs needed post-op
-    /// substitutions as part of the base library, with an optimized native implementation?
+    /// Methods for working with JSON. 
     /// </summary>
+    /// 
     public static class JSON
     {
         #region constructor and internal data
@@ -37,117 +32,7 @@ namespace CsQuery.Utility
 
         }
         private static char[] escapeLookup;
-        /// <summary>
-        /// Internal class to optimize StringBuilder creation
-        /// </summary>
-        private class JsonSerializer
-        {
-            public bool FormatOutput
-            { get; set; }
-            protected int Indent = 0;
-
-            StringBuilder sb = new StringBuilder();
-            private void valueToJSON(object value)
-            {
-                if (Objects.IsImmutable(value))
-                {
-                    sb.Append(Serializer.Serialize(value));
-                }
-                else if (IsKeyValueDictionary(value))
-                {
-                    sb.Append("{");
-                    bool first = true;
-                    foreach (dynamic item in (IEnumerable)value)
-                    {
-                        if (first)
-                        {
-                            first = false;
-                        }
-                        else
-                        {
-                            sb.Append(",");
-                        }
-                        sb.Append(item.Key + ":" + JSON.ToJSON(item.Value));
-                    }
-                    sb.Append("}");
-                }
-                else if (value is IEnumerable)
-                {
-                    sb.Append("[");
-                    bool first = true;
-                    foreach (object obj in (IEnumerable)value)
-                    {
-                        if (first)
-                        {
-                            first = false;
-                        }
-                        else
-                        {
-                            sb.Append(",");
-                        }
-                        if (Objects.IsImmutable(obj))
-                        {
-                            valueToJSON(obj);
-                        }
-                        else
-                        {
-                            sb.Append(ToJSON(obj));
-                        }
-                    }
-                    sb.Append("]");
-                }
-                else
-                {
-                    throw new InvalidOperationException("Serializer error: valueToJson called for an object");
-                }
-            }
-            protected bool IsKeyValueDictionary(object value)
-            {
-                Type type = value.GetType();
-                return type.IsGenericType &&
-                    typeof(Dictionary<,>).IsAssignableFrom(type.GetGenericTypeDefinition());
-            }
-            public string Serialize(object value)
-            {
-                SerializeImpl(value);
-                return sb.ToString();
-            }
-            public void SerializeImpl(object value) {
-                //if ((value is IEnumerable && !value.IsExpando()) || value.IsImmutable())
-                if (!Objects.IsExtendableType(value))
-                {
-                    valueToJSON(value);
-                }
-                else
-                {
-                    sb.Append("{");
-                    bool first = true;
-                    foreach (KeyValuePair<string,object> kvp in CQ.Enumerate<KeyValuePair<string,object>>(value,new Type[] {typeof(ScriptIgnoreAttribute)})) {
-                        if (first)
-                        {
-                            first = false; 
-                        }
-                        else
-                        {
-                            sb.Append(",");
-                        }
-                        sb.Append("\"" + kvp.Key + "\":");
-                        SerializeImpl(kvp.Value);
-
-                    }
-                    sb.Append("}");
-                }
-            }
-        }
-
-        private static Lazy<JavaScriptSerializer> _Serializer = new Lazy<JavaScriptSerializer>();
-        private static JavaScriptSerializer Serializer
-        {
-            get
-            {
-                return _Serializer.Value;
-            }
-        }
+       
        
         #endregion
 
@@ -191,7 +76,8 @@ namespace CsQuery.Utility
             {
                 return ParseJSONValue(objectToDeserialize, type);
             } else {
-                object output = Serializer.Deserialize(objectToDeserialize, type);
+                IJsonSerializer serializer = new JsonSerializer();
+                object output = serializer.Deserialize(objectToDeserialize, type);
                 return output;
             }
         }
@@ -402,7 +288,8 @@ namespace CsQuery.Utility
         /// <returns></returns>
         private static JsObject ParseJSONObject(string objectToDeserialize)
         {
-            Dictionary<string, object> dict = (Dictionary<string, object>)Serializer.Deserialize(objectToDeserialize, typeof(Dictionary<string, object>));
+            JsonSerializer serializer = new JsonSerializer();
+            Dictionary<string, object> dict = (Dictionary<string, object>)serializer.Deserialize(objectToDeserialize, typeof(Dictionary<string, object>));
 
             return Objects.Dict2Dynamic<JsObject>(dict, true);
         }

@@ -68,6 +68,8 @@
     <Compile Include="OutputFormatters\IOutputFormatter.cs" />
     <Compile Include="OutputFormatters\FormatPlainText.cs" />
     <Compile Include="Utility\Browser.cs" />
+    <Compile Include="Utility\JsonSerializer\IJsonSerializer.cs" />
+    <Compile Include="Utility\JsonSerializer\JsonSerializer.cs" />
     <Compile Include="Utility\SelectionSetComparer.cs" />
     <Compile Include="Web\ICsqWebResponse.cs" />
     <Compile Include="Utility\EquationParser\Implementation\Functions\Quotient.cs" />

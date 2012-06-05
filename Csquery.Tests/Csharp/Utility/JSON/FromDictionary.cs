@@ -25,7 +25,7 @@ namespace CsqueryTests.Csharp
         /// When mapping from a dictionary, the keys can be numeric. Make sure these values get quoted (per bug 6/5)
         /// </summary>
         [Test, TestMethod]
-        public void NumericProperties()
+        public void StringProperties()
         {
             IDictionary<string, object> dict = new Dictionary<string, object>();
 
@@ -52,9 +52,21 @@ namespace CsqueryTests.Csharp
             dict["false"] = "foobar";
             json = JSON.ToJSON(dict);
             Assert.AreEqual("{\"false\":\"foobar\"}", json);
-            
-
-            
         }
+
+        [Test, TestMethod]
+        public void NumericProperties()
+        {
+            IDictionary<int, object> dict = new Dictionary<int, object>();
+
+
+            dict.Clear();
+            dict[1] = "bar";
+            string json = JSON.ToJSON(dict);
+            Assert.AreEqual("{\"1\":\"bar\"}", json);
+
+        }
+
+
     }
 }
