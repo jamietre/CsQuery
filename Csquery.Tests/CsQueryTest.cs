@@ -108,9 +108,9 @@ namespace CsqueryTests
             }
         }
         public CQ _Dom = null;
-        public IEnumerable<IDomObject> q(string id1, string id2 = null, string id3 = null, string id4 = null, string id5 = null, string id6 = null, string id7 = null, string id8 = null, string id9 = null)
+        public IEnumerable<IDomObject> q(params string[] ids)
         {
-            string[] ids = new string[] { id1, id2, id3, id4, id5, id6, id7, id8, id9 };
+
             foreach (string id in ids)
             {
                 foreach (IDomElement el in Dom.Select("#" + id))

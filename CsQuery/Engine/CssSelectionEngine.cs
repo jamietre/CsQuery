@@ -11,20 +11,12 @@ namespace CsQuery.Engine
     public class CssSelectionEngine
     {
         #region private properties
-        private Lazy<NthChild> _NthChildMatcher = new Lazy<NthChild>();
+
 
         protected IDomDocument Document;
         protected List<Selector> ActiveSelectors;
         protected int activeSelectorId;
 
-        protected NthChild NthChildMatcher
-        {
-            get
-            {
-                return _NthChildMatcher.Value;
-            }
-        }
-        
         #endregion
 
         #region public properties
@@ -353,6 +345,7 @@ namespace CsQuery.Engine
             {
                 // We must check everything again when looking for specific depth of children
                 // otherwise - no point - skip em
+
                 if (selector.TraversalType != TraversalType.Child && uniqueElements.Contains(e))
                 {
                     continue;
@@ -380,9 +373,10 @@ namespace CsQuery.Engine
                     {
                         SelectorType selectorType = selector.SelectorType;
                         IDomElement elm = current.Element;
-                        if (selector.TraversalType == TraversalType.Child
-                            && selector.ChildDepth == current.Depth + 1
-                            && selector.IsDomIndexPosition)
+
+                        if (selector.IsDomIndexPosition &&
+                            ((selector.TraversalType == TraversalType.Child && selector.ChildDepth == current.Depth + 1) ||
+                            (selector.TraversalType == TraversalType.Descendent && selector.ChildDepth <= current.Depth + 1))) 
                         {
                             temporaryResults.AddRange(GetDomPositionMatches(elm, selector));
                             selectorType &= ~SelectorType.Position;
@@ -523,7 +517,7 @@ namespace CsQuery.Engine
             if (selector.SelectorType.HasFlag(SelectorType.Position) &&
                 selector.TraversalType == TraversalType.Filter && 
                 !MatchesDOMPosition(elm, selector.PositionType,
-                selector.PositionType == PositionType.NthChild ? selector.Criteria : null))
+                selector.Criteria))
             {
                 return false;
             }
@@ -549,147 +543,79 @@ namespace CsQuery.Engine
         {
             switch (selector.PositionType)
             {
+                case PositionType.Odd:
+                    return PseudoSelectors.OddElements(list);
+                case PositionType.Even:
+                    return PseudoSelectors.EvenElements(list);
                 case PositionType.First:
-                    IDomObject first = list.FirstOrDefault();
-                    if (first != null)
-                    {
-                        yield return first;
-                    }
-                    break;
+                    return PseudoSelectors.Enumerate(list.FirstOrDefault());
                 case PositionType.Last:
-                    IDomObject last = list.LastOrDefault();
-                    if (last != null)
-                    {
-                        yield return last;
-                    }
-                    break;
+                    return PseudoSelectors.Enumerate(list.LastOrDefault());
                 case PositionType.IndexEquals:
-                    int critIndex = selector.PositionIndex;
-                    if (critIndex < 0)
-                    {
-                        critIndex = list.Count() + critIndex;
-                    }
-                    bool ok = true;
-                    IEnumerator<IDomObject> enumerator = list.GetEnumerator();
-                    for (int i = 0; i <= critIndex && ok; i++)
-                    {
-                        ok = enumerator.MoveNext();
-                    }
-                    if (ok)
-                    {
-                        yield return enumerator.Current;
-                    }
-                    else
-                    {
-                        yield break;
-                    }
-                    break;
+                    return PseudoSelectors.Enumerate(PseudoSelectors.ElementAtIndex(list, selector.PositionIndex));
                 case PositionType.IndexGreaterThan:
-                    int index = 0;
-                    foreach (IDomObject obj in list)
-                    {
-                        if (index++ > selector.PositionIndex)
-                        {
-                            yield return obj;
-                        }
-                    }
-                    break;
+                    return PseudoSelectors.IndexGreaterThan(list, selector.PositionIndex);
                 case PositionType.IndexLessThan:
-                    int indexLess = 0;
-                    foreach (IDomObject obj in list)
-                    {
-                        if (indexLess++ < selector.PositionIndex)
-                        {
-                            yield return obj;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    break;
+                    return PseudoSelectors.IndexLessThan(list, selector.PositionIndex);
+                default:
+                    throw new NotImplementedException("Unimplemented result position type selector");
+
             }
-            yield break;
         }
         /// <summary>
-        /// Determine if an element matches a position-type filter
+        /// Return all elements matching a DOM-position type selector
         /// </summary>
         /// <param name="elm"></param>
         /// <param name="selector"></param>
         /// <returns></returns>
         protected IEnumerable<IDomObject> GetDomPositionMatches(IDomElement elm, Selector selector)
         {
-            if (selector.PositionType == PositionType.NthChild)
+            IEnumerable<IDomObject> results;
+            switch (selector.PositionType)
             {
-                return NthChildMatcher.GetMatchingChildren(elm,selector.Criteria);
+                case PositionType.NthChild:
+                    results= PseudoSelectors.NthChilds(elm,selector.Criteria);
+                    break;
+                case PositionType.NthOfType:
+                    results= PseudoSelectors.NthChildsOfType(elm,selector.Criteria);
+                    break;
+                case PositionType.FirstOfType:
+                    results=PseudoSelectors.FirstOfType(elm, selector.Criteria);
+                    break;
+                case PositionType.LastOfType:
+                    results=PseudoSelectors.LastOfType(elm, selector.Criteria);
+                    break;
+                case PositionType.FirstChild:
+                    results=PseudoSelectors.Enumerate(PseudoSelectors.FirstChild(elm));
+                    break;
+                case PositionType.LastChild:
+                    results=PseudoSelectors.Enumerate(PseudoSelectors.LastChild(elm));
+                    break;
+                case PositionType.All:
+                    results=elm.ChildElements;
+                    break;
+                default:
+                    throw new NotImplementedException("Unimplemented position type selector");
             }
-            else
-            {
-                return GetSimpleDomPostionMatches(elm,selector.PositionType);
-            }
-        }     
-        /// <summary>
-        /// Return DOM position matches (other than Nth Child)
-        /// </summary>
-        /// <param name="elm"></param>
-        /// <param name="position"></param>
-        /// <returns></returns>
-        protected IEnumerable<IDomObject> GetSimpleDomPostionMatches(IDomContainer elm, PositionType position)
-        {
-            if (position == PositionType.FirstChild)
-            {
-                IDomObject child = elm.FirstChild;
-                if (child.NodeType != NodeType.ELEMENT_NODE)
-                {
-                    child = child.NextElementSibling;
-                }
-                if (child != null)
-                {
-                    yield return child;
-                }
-            }
-            else if (position == PositionType.LastChild)
-            {
-                IDomObject child = elm.LastChild;
-                if (child.NodeType != NodeType.ELEMENT_NODE)
-                {
-                    child = child.PreviousElementSibling;
-                }
-                if (child != null)
-                {
-                    yield return child;
-                }
-            }
-            else
-            {
-                int index = 0;
 
-                foreach (var child in elm.ChildNodes)
+            foreach (var item in results)
+            {
+                yield return item;
+            }
+
+            if (selector.TraversalType == TraversalType.Descendent)
+            {
+                foreach (var child in elm.ChildElements)
                 {
-                    switch (position)
+                    foreach (var item in GetDomPositionMatches(child, selector))
                     {
-                        case PositionType.Odd:
-                            if (index % 2 != 0)
-                            {
-                                yield return child;
-                            }
-                            break;
-                        case PositionType.Even:
-                            if (index % 2 == 0)
-                            {
-                                yield return child;
-                            }
-                            break;
-                        case PositionType.All:
-                            yield return child;
-                            break;
-                        default:
-                            throw new NotImplementedException("Unimplemented position type selector");
+                        yield return item;
                     }
                 }
             }
+        }    
 
-        }
+      
         /// <summary>
         /// Return true if an element matches a specific DOM position-type filter
         /// </summary>
@@ -701,18 +627,20 @@ namespace CsQuery.Engine
         {
             switch (position)
             {
+                case PositionType.FirstOfType:
+                    return PseudoSelectors.IsFirstOfType(obj, criteria);
+                case PositionType.LastOfType:
+                    return PseudoSelectors.IsLastOfType(obj, criteria);
                 case PositionType.FirstChild:
                     return obj.PreviousElementSibling == null;
                 case PositionType.LastChild:
                     return obj.NextElementSibling == null;
-                case PositionType.Odd:
-                    return obj.ElementIndex % 2 != 0;
-                case PositionType.Even:
-                    return obj.ElementIndex % 2 == 0;
                 case PositionType.All:
                     return true;
                 case PositionType.NthChild:
-                    return NthChildMatcher.IndexMatches(obj.ElementIndex, criteria);
+                    return PseudoSelectors.IsNthChild(obj, criteria);
+                case PositionType.NthOfType:
+                    return PseudoSelectors.IsNthChildOfType(obj, criteria);
                 default:
                     throw new NotImplementedException("Unimplemented position type selector");
             }

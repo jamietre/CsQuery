@@ -21,7 +21,7 @@ namespace CsQuery.Engine
         /// last index this list represents and the iteration. The next time it's called we can either reference
         /// the list of matches so far, or update it only from the point where we stopped last time.
         /// </summary>
-        protected struct CacheInfo
+        protected class CacheInfo
         {
             public HashSet<int> MatchingIndices;
             public int NextIterator;
@@ -44,7 +44,7 @@ namespace CsQuery.Engine
         /// <summary>
         /// The formula for this nth child selector
         /// </summary>
-        public string Text
+        protected string Text
         {
             get
             {
@@ -60,6 +60,17 @@ namespace CsQuery.Engine
                     ParseEquation(value);
                 }
             }
+        }
+
+        /// <summary>
+        /// Keep this private so changes can only me made by the GetMatchingChildren methods. This must be set before
+        /// Text.
+        /// </summary>
+        protected string OnlyNodeName { get; set; }
+        public bool IndexMatches(int index, string formulaText, string type)
+        {
+            OnlyNodeName = type;
+            return IndexMatches(index, formulaText);
         }
         public bool IndexMatches(int index, string formulaText)
         {
@@ -80,6 +91,21 @@ namespace CsQuery.Engine
             }
                 
         }
+
+        /// <summary>
+        /// Return nth children that match type
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="formula"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public IEnumerable<IDomObject> GetMatchingChildren(IDomElement obj, string formula, string type)
+        {
+            OnlyNodeName = type;
+            return GetMatchingChildren(obj, formula);
+
+        }
+
         public IEnumerable<IDomObject> GetMatchingChildren(IDomElement obj, string formula)
         {
             Text = formula;
@@ -98,10 +124,13 @@ namespace CsQuery.Engine
                     (IDomElement)obj.FirstChild :
                     obj.FirstChild.NextElementSibling;
 
-                while (index++ < MatchOnlyIndex && child != null)
+                while (index++ < MatchOnlyIndex 
+                    && child != null 
+                    && (String.IsNullOrEmpty(OnlyNodeName) || child.NodeName == OnlyNodeName))
                 {
                     child = child.NextElementSibling;
                 }
+
                 if (child != null)
                 {
                     yield return child;
@@ -175,14 +204,14 @@ namespace CsQuery.Engine
             equation = CheckForEvenOdd(equation);
             formula = Equations.CreateEquation<int>(equation);
 
-            if (!ParsedEquationCache.TryGetValue(equation, out cacheInfo))
+            string cacheKey = (String.IsNullOrEmpty(OnlyNodeName) ? "" : OnlyNodeName + "|") + equation;
+
+            if (!ParsedEquationCache.TryGetValue(cacheKey, out cacheInfo))
             {
                 cacheInfo = new CacheInfo();
                 cacheInfo.MatchingIndices = new HashSet<int>();
                 ParsedEquationCache[equation] = cacheInfo;
             }
-
-
 
         }
         #endregion

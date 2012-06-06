@@ -39,6 +39,15 @@ namespace CsqueryTests.Csharp
             res.Attr("id", null);
             res.Attr("id", "newid");
             Assert.AreEqual(res["body [id='newid']"][0], res[0], "Further messing with ID and everything is fine");
+
+            res = Dom["#hlinks-user span:last-child"];
+            Assert.AreEqual(3, res.Length);
+
+            res = Dom["#hlinks-user > span:last-child"];
+            Assert.AreEqual(0, res.Length);
+
+            res = Dom["#hlinks-user > textarea:last-child"];
+            Assert.AreEqual(1, res.Length);
         }
 
 
@@ -88,12 +97,90 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual(res.Elements, odd.Elements);
         }
 
-        //[Test, TestMethod]
-        //public void NthOfType()
-        //{
-        //    var res = Dom["body > div:nth-of-type(2n+2)"];
 
-        //}
+        [Test, TestMethod]
+        public void NthChildOfType()
+        {
+            var res = Dom["body > span:nth-of-type(1)"];
+            Assert.AreEqual(1, res.Length);
+            Assert.AreEqual("hlinks-user", res[0].Id);
+
+            res = Dom["body span:nth-of-type(2)"];
+            Assert.AreEqual(3,res.Length);
+            Assert.AreEqual("badgecount", res[1].ClassName);
+            Assert.AreEqual("badgecount", res[2].ClassName);
+
+            // odd & even are reversed for the jQuery pseudoselectors from nth-child version.
+
+            var even = Dom["body span:nth-of-type(2n)"];
+            Assert.AreEqual(4, even.Length);
+            Assert.AreEqual("lsep", even[3].ClassName);
+            
+        }
+
+        /// <summary>
+        /// First of Type selector returns elements which are the first child matching the type of the specific element type.
+        /// Differs from first-child in that elements that aren't the same type are not consisdered when evaluating "first"
+        /// </summary>
+        [Test, TestMethod]
+        public void FirstOfType()
+        {
+            var res = Dom["#hlinks-user a:first-of-type"];
+            Assert.AreEqual(1, res.Length);
+            Assert.IsTrue(res.Is(".profile-link"));
+
+            res = Dom["#hlinks-user a:first-child"];
+            Assert.AreEqual(0, res.Length);
+
+            // with no tag type, should return anything that is the first of its type
+            res = Dom["#hlinks-user :first-of-type"];
+            Assert.AreEqual(7, res.Length);
+            Assert.AreEqual("profile-triangle",res[0].ClassName);
+            Assert.AreEqual("profile-link",res[1].ClassName);
+            Assert.AreEqual("reputation-score",res[2].ClassName);
+            Assert.AreEqual("badge2",res[3].ClassName);
+            Assert.AreEqual("badge3",res[4].ClassName);
+            Assert.AreEqual("input",res[5].NodeName);
+            Assert.AreEqual("textarea",res[6].NodeName);
+        }
+
+        [Test, TestMethod]
+        public void LastOfType()
+        {
+            var res = Dom["#hlinks-user > span:last-of-type"];
+            Assert.AreEqual(1, res.Length);
+            Assert.IsTrue(res.Is(".lsep"));
+
+            res = Dom["#hlinks-user span:last-of-type"];
+            Assert.AreEqual(4, res.Length);
+
+            // with no tag type, should return all children
+            res = Dom["#hlinks-user :last-of-type"];
+            Assert.AreEqual(7, res.Length);
+
+        }
+
+
+
+        [Test, TestMethod]
+        public void Odd()
+        {
+            var res = Dom["#hlinks-user span:odd"];
+            Assert.AreEqual(4, res.Length);
+            Assert.AreEqual("reputation-score", res[0].ClassName);
+            Assert.AreEqual("badge2", res[1].ClassName);
+        }
+
+
+        [Test, TestMethod]
+        public void Even()
+        {
+            var res = Dom["#hlinks-user span:even"];
+            Assert.AreEqual(5, res.Length);
+            Assert.AreEqual("profile-triangle", res[0].ClassName);
+            Assert.AreEqual("badgecount", res[2].ClassName);
+        }
+
 
         [Test, TestMethod]
         public void Checkbox()

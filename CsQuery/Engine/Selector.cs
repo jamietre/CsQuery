@@ -71,9 +71,12 @@ namespace CsQuery.Engine
             }
         }
         /// <summary>
-        /// Selection criteria for attibute selector functions
+        /// This is really "parameters" and is used differently by different selectors. It's the criteria for attribute selectors;
+        /// the node type for -of-type selectors, the equation for nth-child. For nth-of-type, its "type|equation"
         /// </summary>
         public string Criteria {get;set;}
+
+        /// <summary>
         /// <summary>
         /// For Position selectors, the position. Negative numbers start from the end.
         /// </summary>
@@ -131,6 +134,8 @@ namespace CsQuery.Engine
                 }
                 switch (PositionType)
                 {
+                    case PositionType.Even:
+                    case PositionType.Odd:
                     case PositionType.Last:
                     case PositionType.First:
                     case PositionType.IndexEquals:

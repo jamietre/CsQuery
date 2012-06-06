@@ -141,11 +141,29 @@ namespace CsQuery.Engine
                                 StartNewSelector(SelectorType.Position);
                                 Current.PositionType = PositionType.FirstChild;
                                 break;
+                            case "first-of-type":
+                                string type = Current.Tag;
+                                StartNewSelector(SelectorType.Position);
+                                Current.PositionType = PositionType.FirstOfType;
+                                Current.Criteria = type;
+                                break;
+                            case "last-of-type":
+                                type = Current.Tag;
+                                StartNewSelector(SelectorType.Position);
+                                Current.PositionType = PositionType.LastOfType;
+                                Current.Criteria = type;
+                                break;
                             case "nth-child":
                                 StartNewSelector(SelectorType.Position);
                                 Current.PositionType = PositionType.NthChild;
                                 Current.Criteria = scanner.GetBoundedBy('(');
                                 break;
+                            case "nth-of-type":
+                                type = Current.Tag;
+                                StartNewSelector(SelectorType.Position);
+                                Current.PositionType = PositionType.NthOfType;
+                                Current.Criteria = type+"|"+scanner.GetBoundedBy('(');
+                                break;                                
                             case "has":
                             case "not":
                                 StartNewSelector(key == "has" ? SelectorType.SubSelectorHas : SelectorType.SubSelectorNot);
