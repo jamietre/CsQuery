@@ -22,6 +22,8 @@ namespace CsQuery.Engine
         
         #endregion
 
+        #region CSS3 pseudoselectors
+
         public static bool IsNthChild(IDomElement obj, string criteria)
         {
             return NthChildMatcher.IndexMatches(obj.ElementIndex, criteria);
@@ -182,9 +184,35 @@ namespace CsQuery.Engine
             return parent.LastElementChild;
         }
 
+        public static bool IsOnlyChild(IDomObject elm)
+        {
+            return OnlyChild(elm.ParentNode) == elm;
+        }
+
+        public static IDomObject OnlyChild(IDomObject parent)
+        {
+            IDomElement only = null;
+            foreach (var item in parent.ChildElements)
+            {
+                if (only == null)
+                {
+                    only = item;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            return only;
+        }
+
+        #endregion
+
+        #region Selection set position pseudoselectors (jQuery additions)
+
         public static IEnumerable<IDomObject> OddElements(IEnumerable<IDomObject> list)
         {
-            int index=0;
+            int index = 0;
             foreach (var child in list)
             {
                 if (index % 2 != 0)
@@ -194,6 +222,7 @@ namespace CsQuery.Engine
                 index++;
             }
         }
+
         public static IEnumerable<IDomObject> EvenElements(IEnumerable<IDomObject> list)
         {
             int index = 0;
@@ -251,6 +280,8 @@ namespace CsQuery.Engine
                 }
             }
         }
+        #endregion
+
         /// <summary>
         /// Yield nothing if obj is null, or the object if not
         /// </summary>

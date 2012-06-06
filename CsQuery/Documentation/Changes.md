@@ -5,3 +5,5 @@
 
 ADDED :last-of-type, :first-of-type, :nth-of-type
 FIXED pseudoselectors affecting all descendants only returning children
+
+ADDED :only-child

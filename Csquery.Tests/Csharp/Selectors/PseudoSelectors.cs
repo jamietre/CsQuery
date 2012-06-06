@@ -96,7 +96,24 @@ namespace CsqueryTests.Csharp
             res = Dom["body > :nth-child(odd)"];
             Assert.AreEqual(res.Elements, odd.Elements);
         }
+        [Test, TestMethod]
+        public void OnlyChild()
+        {
+            var res = Dom["span:only-child"];
+            Assert.AreEqual(1,res.Length);
+            Assert.AreEqual("reputation-score", res[0].ClassName);
 
+            res = Dom["body :only-child"];
+            Assert.AreEqual(2, res.Length);
+
+
+            // CsQuery allows you to select ALL NODES including the doctype node - so this gets returned as an only child.
+            // the other one is Title.
+
+            res = Dom[":only-child"];
+            Assert.AreEqual(4, res.Length);
+        }
+          
 
         [Test, TestMethod]
         public void NthChildOfType()

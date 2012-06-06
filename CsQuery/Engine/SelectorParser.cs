@@ -163,6 +163,10 @@ namespace CsQuery.Engine
                                 StartNewSelector(SelectorType.Position);
                                 Current.PositionType = PositionType.NthOfType;
                                 Current.Criteria = type+"|"+scanner.GetBoundedBy('(');
+                                break;
+                            case "only-child":
+                                StartNewSelector(SelectorType.Position);
+                                Current.PositionType = PositionType.OnlyChild;
                                 break;                                
                             case "has":
                             case "not":

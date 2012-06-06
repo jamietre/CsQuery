@@ -375,7 +375,8 @@ namespace CsQuery.Engine
                         IDomElement elm = current.Element;
 
                         if (selector.IsDomIndexPosition &&
-                            ((selector.TraversalType == TraversalType.Child && selector.ChildDepth == current.Depth + 1) ||
+                            ((selector.TraversalType == TraversalType.All) ||
+                            (selector.TraversalType == TraversalType.Child && selector.ChildDepth == current.Depth + 1) ||
                             (selector.TraversalType == TraversalType.Descendent && selector.ChildDepth <= current.Depth + 1))) 
                         {
                             temporaryResults.AddRange(GetDomPositionMatches(elm, selector));
@@ -557,6 +558,8 @@ namespace CsQuery.Engine
                     return PseudoSelectors.IndexGreaterThan(list, selector.PositionIndex);
                 case PositionType.IndexLessThan:
                     return PseudoSelectors.IndexLessThan(list, selector.PositionIndex);
+                case PositionType.All:
+                    return list;
                 default:
                     throw new NotImplementedException("Unimplemented result position type selector");
 
@@ -591,6 +594,9 @@ namespace CsQuery.Engine
                 case PositionType.LastChild:
                     results=PseudoSelectors.Enumerate(PseudoSelectors.LastChild(elm));
                     break;
+                case PositionType.OnlyChild:
+                    results = PseudoSelectors.Enumerate(PseudoSelectors.OnlyChild(elm));
+                    break;
                 case PositionType.All:
                     results=elm.ChildElements;
                     break;
@@ -603,7 +609,8 @@ namespace CsQuery.Engine
                 yield return item;
             }
 
-            if (selector.TraversalType == TraversalType.Descendent)
+            if (selector.TraversalType == TraversalType.Descendent || 
+                selector.TraversalType == TraversalType.All)
             {
                 foreach (var child in elm.ChildElements)
                 {
@@ -641,6 +648,8 @@ namespace CsQuery.Engine
                     return PseudoSelectors.IsNthChild(obj, criteria);
                 case PositionType.NthOfType:
                     return PseudoSelectors.IsNthChildOfType(obj, criteria);
+                case PositionType.OnlyChild:
+                    return PseudoSelectors.IsOnlyChild(obj);
                 default:
                     throw new NotImplementedException("Unimplemented position type selector");
             }

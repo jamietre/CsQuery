@@ -62,7 +62,8 @@ namespace CsQuery.Engine
         IndexGreaterThan = 11,
         FirstOfType=12,
         LastOfType=13,
-        NthOfType= 14
+        NthOfType= 14,
+        OnlyChild=15
     }
     public enum OtherType
     {
