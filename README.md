@@ -1,8 +1,8 @@
 ## CsQuery - C# jQuery Port
 
-5/7/12
+6/6/2012
 
-Release 1.0 Beta 1
+Release 1.0 Beta 2
 
 CsQuery is a jQuery port for .NET 4. It implements all the CSS selectors and DOM manipulation methods of jQuery and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) is ported and passes. The project necessarily includes an object model that represents the browser DOM. The document model uses a subselect-capable index that can perform multipart selectors on large documents in milliseconds.
 
@@ -15,16 +15,27 @@ CsQuery is a jQuery port for .NET 4. It implements all the CSS selectors and DOM
     var dom = CQ.Create(htmlString);
 
 
-*Load synchronously*
+*Load synchronously* 
 
-    var dom = CsQuery.Server.CreateFromUrl("http://www.jquery.com");
+    var dom = CQ.CreateFromUrl("http://www.jquery.com");
     
 
 *Load asynchronously; the 2nd parameter is a callback*
+
+CsQuery (as of 1.0 Beta 2) implements a basic Promise API for asynchronous callbacks. This is similar to jQuery promises and can be used to create convenient constructs for managing asynchronous requests.
    
-    CsQuery.Server.StartAsyncWebRequest("http://www.jquery.com",response => {
-        Dom = response.Dom;        
-    });
+    CQ.CreateFromUrlAsync("http://www.jquery.com")
+        .Then(response => {
+            Dom = ((ICsqWebRequest)response).Dom;        
+        });
+
+You can also use a regular callback with this signature:
+
+    CQ.CreateFromUrlAsync("http://www.jquery.com", response => {
+            Dom = response.Dom;        
+        });
+
+For more details and examples right now, please see the "_WebIO" tests.
 
 
 ##### Manipulate the DOM with jQuery methods

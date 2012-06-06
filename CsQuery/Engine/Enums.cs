@@ -47,6 +47,10 @@ namespace CsQuery.Engine
         Child = 4
     }
 
+    /// <summary>
+    /// Position-type selectors match one or more element children of another element. The selection engine can either access all 
+    /// matching children, or test a particular element for matching a selector
+    /// </summary>
     public enum PositionType
     {
         All = 1,
@@ -65,9 +69,14 @@ namespace CsQuery.Engine
         NthOfType= 14,
         OnlyChild=15
     }
+
+    /// <summary>
+    /// Other-type selectors are true/false tests only for a specific element.
+    /// </summary>
     public enum OtherType
     {
-        Visible = 1
+        Visible = 1,
+        Empty=2
     }
 
 }

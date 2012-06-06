@@ -9,6 +9,9 @@ using System.Web;
 using System.Web.Script.Serialization;
 using CsQuery.ExtensionMethods;
 using CsQuery.Utility;
+using CsQuery.Engine;
+using CsQuery.Web;
+using CsQuery.Promises;
 
 namespace CsQuery
 {
@@ -20,6 +23,11 @@ namespace CsQuery
         /// Rendering option flags
         /// </summary>
         public static DomRenderingOptions DefaultDomRenderingOptions = DomRenderingOptions.QuoteAllAttributes;
+
+        /// <summary>
+        /// The default settings used when making remote requests
+        /// </summary>
+        public static ServerConfig DefaultServerConfig = new ServerConfig();
 
         /// <summary>
         /// The default rendering type. This mostly controls the header and how tags are closed. UNIMPLEMENTED right now.
@@ -77,15 +85,6 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Creates a new DOM from an HTML file.
-        /// </summary>
-        /// <param name="htmlFile"></param>
-        /// <returns></returns>
-        public static CQ CreateFromFile(string htmlFile)
-        {
-            return CQ.Create(Support.GetFile(htmlFile));
-        }
-        /// <summary>
         /// Creeate a new DOM from a squence of elements, or another CQ object
         /// </summary>
         /// <param name="html"></param>
@@ -108,6 +107,123 @@ namespace CsQuery
             csq.Load(Objects.Enumerate(element));
             return csq;
         }
+
+        /// <summary>
+        /// Create a new CQ object from an existing context, bound to the same domain.
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <param name="context"></param>
+        protected void Create(string selector, CQ context)
+        {
+            // when creating a new CsQuery from another, leave Dom blank - it will be populated automatically with the
+            // contents of the selector.
+
+            CsQueryParent = context;
+
+            if (!String.IsNullOrEmpty(selector))
+            {
+                Selectors = new SelectorChain(selector);
+                AddSelectionRange(Selectors.Select(Document, context.Children()));
+            }
+        }
+
+        /// <summary>
+        /// Creates a new DOM from an HTML file.
+        /// </summary>
+        /// <param name="htmlFile"></param>
+        /// <returns></returns>
+        public static CQ CreateFromFile(string htmlFile)
+        {
+            return CQ.Create(Support.GetFile(htmlFile));
+        }
+
+        /// <summary>
+        /// Creates a new DOM from an HTML file.
+        /// </summary>
+        /// <param name="htmlFile"></param>
+        /// <returns></returns>
+        public static CQ CreateFromUrl(string url, ServerConfig options=null)
+        {
+            ServerConfig config = ServerConfig.Merge(options);
+             
+            CsqWebRequest con = new CsqWebRequest(url);
+            
+            if (config.UserAgent!=null) {
+                con.UserAgent = config.UserAgent;
+            }
+            if (config.Timeout != null)
+            {
+                con.Timeout = (int)config.Timeout;
+            }
+            con.Get();
+
+            return CQ.Create(con.Html);
+        }
+
+        /// <summary>
+        /// Start an asynchronous request to an HTTP server, returning a promise that will resolve when the request is completed or rejected
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="callbackSuccess"></param>
+        /// <param name="callbackFail"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+
+        public static IPromise CreateFromUrlAsync(string url, ServerConfig options = null)
+        {
+            var deferred = Promise.Deferred();
+            int uniqueID = AsyncWebRequestManager.StartAsyncWebRequest(url, deferred.Resolve, deferred.Reject, options);
+            return deferred;
+        }
+
+
+        /// <summary>
+        /// Start an asynchronous request to an HTTP server
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="callbackSuccess"></param>
+        /// <param name="callbackFail"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static int CreateFromUrlAsync(string url, Action<ICsqWebResponse> callbackSuccess, Action<ICsqWebResponse> callbackFail=null, ServerConfig options = null)
+        {
+            return AsyncWebRequestManager.StartAsyncWebRequest(url,callbackSuccess,callbackFail,options); 
+            
+        }
+        /// <summary>
+        /// Start an asynchronous request to an HTTP server
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="callbackSuccess"></param>
+        /// <param name="callbackFail"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+
+        public static void CreateFromUrlAsync(string url, int id, Action<ICsqWebResponse> callbackSuccess, Action<ICsqWebResponse> callbackFail = null, ServerConfig options = null)
+        {
+            AsyncWebRequestManager.StartAsyncWebRequest(url, callbackSuccess, callbackFail,id, options);
+
+        }
+
+        /// <summary>
+        /// Block this thread until all pending asynchronous web requests have completed.
+        /// </summary>
+        /// <param name="timeout"></param>
+        public static void WaitForAsyncEvents(int timeout = -1)
+        {
+            AsyncWebRequestManager.WaitForAsyncEvents(timeout);
+        }
+
+        /// <summary>
+        /// Return a new promise that resolves when all the promises passed in are resolved
+        /// </summary>
+        /// <param name="promises"></param>
+        /// <returns></returns>
+        public static IPromise WhenAll(params IPromise[] promises)
+        {
+            return Promise.All(promises);
+        }
+
 
         #endregion
 
@@ -324,6 +440,7 @@ namespace CsQuery
         }
         
         #endregion
+
 
     }
 }

@@ -181,6 +181,8 @@ namespace CsQuery.Engine
                                 StartNewSelector(SelectorType.Other);
                                 Current.OtherType = OtherType.Visible;
                                 break;
+                            case "empty":
+
                             default:
                                 throw new ArgumentOutOfRangeException("Unknown pseudoselector :\"" + key + "\"");
                         }

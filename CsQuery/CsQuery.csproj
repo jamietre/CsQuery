@@ -68,10 +68,16 @@
     <Compile Include="ExtensionMethods\Forms.cs" />
     <Compile Include="OutputFormatters\IOutputFormatter.cs" />
     <Compile Include="OutputFormatters\FormatPlainText.cs" />
+    <Compile Include="Promise\WhenAll.cs" />
+    <Compile Include="Promise\Promises.cs" />
+    <Compile Include="Promise\DeferredT.cs" />
+    <Compile Include="Promise\IPromise.cs" />
+    <Compile Include="Promise\Deferred.cs" />
     <Compile Include="Utility\Browser.cs" />
     <Compile Include="Utility\JsonSerializer\IJsonSerializer.cs" />
     <Compile Include="Utility\JsonSerializer\JsonSerializer.cs" />
     <Compile Include="Utility\SelectionSetComparer.cs" />
+    <Compile Include="Web\AsyncWebRequestManager.cs" />
     <Compile Include="Web\ICsqWebResponse.cs" />
     <Compile Include="Utility\EquationParser\Implementation\Functions\Quotient.cs" />
     <Compile Include="Utility\EquationParser\INativeOperation.cs" />
@@ -164,6 +170,7 @@
     <Compile Include="Web\CsqWebRequest.cs" />
     <Compile Include="Web\AsyncWebRequest.cs" />
     <Compile Include="Utility\SimpleDictionary.cs" />
+    <Compile Include="Web\ServerConfig.cs" />
     <Compile Include="Web\WebRequestState.cs" />
     <Compile Include="Utility\SelectionSet.cs" />
     <Compile Include="Utility\EquationParser\IVariableContainer.cs" />

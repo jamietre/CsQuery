@@ -50,19 +50,7 @@ namespace CsQuery
             Create(selector, context);
             AttrSet(css);
         }
-        protected void Create(string selector, CQ context)
-        {
-            // when creating a new CsQuery from another, leave Dom blank - it will be populated automatically with the
-            // contents of the selector.
-            CsQueryParent = context;
-
-            if (!String.IsNullOrEmpty(selector))
-            {
-                Selectors = new SelectorChain(selector);
-                AddSelectionRange(Selectors.Select(Document, context.Children()));
-            }
-        }
-        /// <summary>
+        
         /// Create a new CsQuery from a single elemement, using the element's context
         /// </summary>
         /// <param name="element"></param>
@@ -156,12 +144,11 @@ namespace CsQuery
 
         #endregion
 
-        #region private methods
+        #region Internal DOM creation methods
 
         protected void Load(char[] html)
         {
             Clear();
-
             CreateNewDom(html);
             HtmlParser.DomElementFactory factory = new HtmlParser.DomElementFactory(Document);
             if (html != null)
@@ -171,7 +158,6 @@ namespace CsQuery
                     Document.ChildNodes.Add(obj);
                     AddSelectionRange(Document.ChildNodes);
                 }
-
             }
         }
         /// <summary>
@@ -187,6 +173,11 @@ namespace CsQuery
             Document.ChildNodes.AddRange(elements);
             AddSelectionRange(Document.ChildNodes);
         }
+
+        /// <summary>
+        /// Replace the existing DOM with the html (or empty if no parameter passed)
+        /// </summary>
+        /// <param name="html"></param>
         protected void CreateNewDom(char[] html=null)
         {
             if (html!=null)
@@ -199,6 +190,7 @@ namespace CsQuery
             }
             Document.DomRenderingOptions = CQ.DefaultDomRenderingOptions;
         }
+
         #endregion
     }
 }

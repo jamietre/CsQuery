@@ -10,13 +10,23 @@ namespace CsQuery.Web
 {
     public class AsyncWebRequest : ICsqWebResponse
     {
-        protected ManualResetEvent allDone = new ManualResetEvent(false);
-        const int BUFFER_SIZE = 1024;
-
         public AsyncWebRequest(WebRequest request)
         {
             Request = request;
         }
+        protected ManualResetEvent allDone = new ManualResetEvent(false);
+        const int BUFFER_SIZE = 1024;
+
+        protected StringBuilder HtmlStringbuilder { get; set; }
+        protected Stream ResponseStream { get; set; }
+
+        
+
+        #region public properties
+
+        public Action<ICsqWebResponse> CallbackSuccess { get; set; }
+        public Action<ICsqWebResponse> CallbackFail { get; set; }
+
         public object Id { get; set; }
 
         public string Url
@@ -26,34 +36,51 @@ namespace CsQuery.Web
                 return Request.RequestUri.AbsoluteUri;
             }
         }
-
+        
         public int Timeout
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get;
+            set;
         }
 
         public string UserAgent
         {
+            get;
+            set;
+        }
+        public DateTime? Started { get; protected set; }
+        public DateTime? Finished { get; protected set; }
+        
+        public bool Complete
+        {
             get
             {
-                throw new NotImplementedException();
+                return Finished != null;
             }
-            set
+            protected set
             {
-                throw new NotImplementedException();
+                if (value == true)
+                {
+                    Finished = DateTime.Now;
+                }
+                else
+                {
+                    throw new InvalidOperationException("You can only set complete to True.");
+                }
             }
         }
-        public DateTime Started { get; protected set; }
-        public DateTime Finished { get; protected set; }
 
-        public bool Complete { get; set; }
+        public bool Success
+        {
+            get;
+            protected set;
+
+        }
+        public WebException WebException
+        {
+            get;
+            protected set;
+        }
         public WebRequest Request
         {
             get;
@@ -74,13 +101,13 @@ namespace CsQuery.Web
                 return CQ.Create(Html);
             }
         }
-        protected StringBuilder HtmlStringbuilder { get; set; }
-        protected Stream ResponseStream { get; set; }
 
-        public Action<ICsqWebResponse> Callback { get; set; }
+        #endregion
+
 
         public ManualResetEvent GetAsync()
         {
+            Started = DateTime.Now;
 
             // Create the state object.
             WebRequestState rs = new WebRequestState(this);
@@ -96,15 +123,38 @@ namespace CsQuery.Web
         }
         private void RespCallback(IAsyncResult ar)
         {
+
             // Get the RequestState object from the async result.
             WebRequestState rs = (WebRequestState)ar.AsyncState;
 
             // Get the WebRequest from RequestState.
             WebRequest req = rs.Request;
+            req.Timeout = Timeout;
+            req.Headers["UserAgent"] = UserAgent;
 
-            // Call EndGetResponse, which produces the WebResponse object
-            //  that came from the request issued above.
-            WebResponse resp = req.EndGetResponse(ar);
+            WebResponse resp;
+            try
+            {
+               
+
+                // Call EndGetResponse, which produces the WebResponse object
+                //  that came from the request issued above.
+                resp = req.EndGetResponse(ar);
+
+            }
+            catch (WebException e)
+            {
+                Complete = true;
+                Success = false;
+                WebException = e;
+
+                if (CallbackFail != null)
+                {
+                    CallbackFail(this);
+                }
+                allDone.Set();
+                return;
+            }
 
             //  Start reading data from the response stream.
             Stream ResponseStream = resp.GetResponseStream();
@@ -119,6 +169,7 @@ namespace CsQuery.Web
         }
         private void ReadCallBack(IAsyncResult asyncResult)
         {
+
             // Get the RequestState object from AsyncResult.
             WebRequestState rs = (WebRequestState)asyncResult.AsyncState;
 
@@ -154,13 +205,24 @@ namespace CsQuery.Web
             {
                 if (rs.RequestData.Length > 0)
                 {
-                    //  Display data to the console.
                     HtmlStringbuilder = rs.RequestData;
+                    Complete = true;
+                    Success = true;
 
-                    if (Callback != null)
+                    if (CallbackSuccess != null)
                     {
-                        Callback( this);
+                        CallbackSuccess(this);
                     }
+                }
+                else
+                {
+                    Complete = true;
+                    Success = false;
+                    if (CallbackFail != null)
+                    {
+                        CallbackFail(this);
+                    }
+
                 }
                 // Close down the response stream.
                 responseStream.Close();

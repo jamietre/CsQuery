@@ -72,12 +72,15 @@ namespace CsQuery.Web
         }
         Lazy<List<KeyValuePair<string, string>>> _PostData = new Lazy<List<KeyValuePair<string, string>>>();
 
-        public ManualResetEvent GetAsync(Action<ICsqWebResponse> callback)
+        public ManualResetEvent GetAsync(Action<ICsqWebResponse> success, Action<ICsqWebResponse> fail)
         {
             HttpWebRequest request = GetWebRequest();
             var requestInfo = new AsyncWebRequest(request);
+            requestInfo.Timeout = Timeout;
+            requestInfo.UserAgent = UserAgent;
             requestInfo.Id = Id;
-            requestInfo.Callback = callback;
+            requestInfo.CallbackSuccess  = success;
+            requestInfo.CallbackFail = fail;
 
             return requestInfo.GetAsync();
         }

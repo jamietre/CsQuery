@@ -23,14 +23,14 @@ namespace CsQuery
          */
 
         
-        public static string UserAgent { get; set; }
-        public static CQ CreateFromUrl(string url)
-        {
-            CsqWebRequest con = new CsqWebRequest(url);
-            con.Get();
-            con.UserAgent = UserAgent;
-            return CQ.Create(con.Html);
-        }
+        //public static string UserAgent { get; set; }
+        //public static CQ CreateFromUrl(string url)
+        //{
+        //    CsqWebRequest con = new CsqWebRequest(url);
+        //    con.Get();
+        //    con.UserAgent = UserAgent;
+        //    return CQ.Create(con.Html);
+        //}
         public static SimpleDictionary<string> PostData()
         {
             return PostData(HttpContext.Current);
@@ -47,17 +47,17 @@ namespace CsQuery
             return CreateFromRender(page, renderMethod, writer, HttpContext.Current);
         }
 
-        public static void StartAsyncWebRequest(string url, Action<ICsqWebResponse> callback, object id=null)
-        {
+        //public static void StartAsyncWebRequest(string url, Action<ICsqWebResponse> callback, object id=null)
+        //{
 
-            var request = new CsqWebRequest(url);
-            request.Id = id;
-            request.Async = true;
+        //    var request = new CsqWebRequest(url);
+        //    request.Id = id;
+        //    request.Async = true;
 
-            var mrEvent = request.GetAsync(callback);
-            AsyncEvents.Add(mrEvent);
+        //    var mrEvent = request.GetAsync(callback);
+        //    AsyncEvents.Add(mrEvent);
 
-        }
+        //}
 
         /// <summary>
         /// Creates a new CSQuery object from a Page.Render method. The base Render method of a page should be overridden,
@@ -81,38 +81,38 @@ namespace CsQuery
 
         }
 
-        /// <summary>
-        /// Waits until all async events have completed. Use for testing primarily as a web app should not stop normally.
-        /// </summary>
-        public static void WaitForAsyncEvents(int millisecondsTimeout=-1)
-        {
-            ManualResetEvent evt;
-            int timeLeft = millisecondsTimeout;
-            DateTime start = DateTime.Now;
+        ///// <summary>
+        ///// Waits until all async events have completed. Use for testing primarily as a web app should not stop normally.
+        ///// </summary>
+        //public static void WaitForAsyncEvents(int millisecondsTimeout=-1)
+        //{
+        //    ManualResetEvent evt;
+        //    int timeLeft = millisecondsTimeout;
+        //    DateTime start = DateTime.Now;
 
-            while (AsyncEvents.TryTake(out evt) && timeLeft != 0)
-            {
-                if (!evt.SafeWaitHandle.IsClosed)
-                {
-                    evt.WaitOne(timeLeft);
-                    if (timeLeft >= 0)
-                    {
-                        // subtract elapsed time from the total timeout for waiting on all threads
-                        timeLeft = Math.Max(0, millisecondsTimeout - (int)(DateTime.Now - start).TotalMilliseconds);
-                    }
-                }
-            }
-            DateTime endTime = DateTime.Now;
+        //    while (AsyncEvents.TryTake(out evt) && timeLeft != 0)
+        //    {
+        //        if (!evt.SafeWaitHandle.IsClosed)
+        //        {
+        //            evt.WaitOne(timeLeft);
+        //            if (timeLeft >= 0)
+        //            {
+        //                // subtract elapsed time from the total timeout for waiting on all threads
+        //                timeLeft = Math.Max(0, millisecondsTimeout - (int)(DateTime.Now - start).TotalMilliseconds);
+        //            }
+        //        }
+        //    }
+        //    DateTime endTime = DateTime.Now;
 
-        }
-        internal static ConcurrentBag<ManualResetEvent> AsyncEvents
-        {
-            get
-            {
-                return _AsyncEvents.Value;
-            }
-        }
-        private static Lazy<ConcurrentBag<ManualResetEvent>> _AsyncEvents = new Lazy<ConcurrentBag<ManualResetEvent>>();
+        ////}
+        //internal static ConcurrentBag<ManualResetEvent> AsyncEvents
+        //{
+        //    get
+        //    {
+        //        return _AsyncEvents.Value;
+        //    }
+        //}
+        //private static Lazy<ConcurrentBag<ManualResetEvent>> _AsyncEvents = new Lazy<ConcurrentBag<ManualResetEvent>>();
     }
 
 }

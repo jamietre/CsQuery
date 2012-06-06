@@ -69,6 +69,7 @@
     <Compile Include="Csharp\Css\Css.cs" />
     <Compile Include="Csharp\Dom\Styles.cs" />
     <Compile Include="Csharp\Methods\End.cs" />
+    <Compile Include="Csharp\Promises\Promises.cs" />
     <Compile Include="Csharp\Selectors\PseudoSelectors.cs" />
     <Compile Include="Csharp\Server.cs" />
     <Compile Include="Csharp\Miscellaneous.cs" />
@@ -100,7 +101,7 @@
     <Compile Include="Csharp\ExtensionMethodTests.cs" />
     <Compile Include="Csharp\Utility\JSON\JSON.cs" />
     <Compile Include="jQuery\Traversing.cs" />
-    <Compile Include="Csharp\WebIO.cs" />
+    <Compile Include="Csharp\_WebIO.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\HTML Standard.htm">
