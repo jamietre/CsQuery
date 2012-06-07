@@ -151,7 +151,7 @@ See below "C# objects vs. jQuery objects" for an explanation of CssSet vs. Css.
 *Some utility methods return nodes, same as jQuery*
 
     dom.Each((i,e) => {
-        if (e.id == "remove-this-id") {
+        if (e.Id == "remove-this-id") {
             e.Parent().RemoveChild(e);
         }
     });
@@ -162,17 +162,17 @@ See below "C# objects vs. jQuery objects" for an explanation of CssSet vs. Css.
 
 *Render the entire DOM*
 
-    var html = dom.Render();
+    string html = dom.Render();
 
 
 *You can render any DOM element individually*
 
-    var elementHtml = dom[2].Render();
+    string elementHtml = dom[2].Render();
 
 
 *You can render just the elements that are part of the selection*
 
-    var selectionHtml = dom[".just-this-class"].RenderSelection();
+    string selectionHtml = dom[".just-this-class"].RenderSelection();
 
 
 ### CsQuery vs. jQuery
@@ -195,8 +195,8 @@ There's not really a distinction between a true Document and a fragment in CsQue
 
 This doesn't mean that every CQ instance referes to its own DOM. Quite the opposite, the CQ object returned from most methods will be bound to the same DOM as it's parent. For example:
 
-    var dom = CQ.Create(someHtml);
-    var divs = dom.Select("div");
+    CQ dom = CQ.Create(someHtml);
+    CQ divs = dom.Select("div");
     divs.Empty();
 
 this is about the same as:
