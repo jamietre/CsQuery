@@ -71,7 +71,7 @@ Of course you could just chain "Then" directly to the request without assigning 
     CQ.CreateFromUrlAsync("http://www.jquery.com", responseSuccess => {
             Dom = response.Dom;        
         }, responseFail => {
-
+            ..
         });
 
 Returning a promise gives you a lot of flexibility, since you can than attach other events to the resolution or rejection of the request, or create a new promise that resolves when a set of promises have all resolved. For more details and examples right now, please see the "_WebIO" tests.
@@ -304,12 +304,13 @@ So, the http request that actually triggered the update will be shown the old in
         /// to obtain commit & version info
 
         var url = "https://github.com/jamietre/ImageMapster/commits/master";
-        CQ.CreateFromUrlAsync(url, response => {
-            LastUpdate = DateTime.Now;
-            var gitHubDOM = response.Dom;
-            ... 
-            // use CsQuery to extract needed info from the response
-        });
+        CQ.CreateFromUrlAsync(url)
+           .Then(response => {
+            	LastUpdate = DateTime.Now;
+	            var gitHubDOM = response.Dom;
+	            ... 
+	            // use CsQuery to extract needed info from the response
+	        });
     }
 
     ...
