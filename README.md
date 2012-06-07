@@ -389,7 +389,7 @@ This makes it incredibly simple to write code with success & failure handlers in
              // do something
         });
 
-CsQuery provides one other useful promise-related function called `WhenAll`. This lets you create a new promise that resolves when every one of a set of promises has resolved. This is especially useful for this situation, since it means you can intiate several independent web requests, and have a promise that resolves only when all of them are complete. It works like this:
+CsQuery provides one other useful promise-related function called `When.All`. This lets you create a new promise that resolves when every one of a set of promises has resolved. This is especially useful for this situation, since it means you can intiate several independent web requests, and have a promise that resolves only when all of them are complete. It works like this:
 
 
     var promise1 = CQ.CreateFromUrlAsync(url);
@@ -404,16 +404,16 @@ You can also give it a timeout which will cause the promise to reject if it has 
     CsQuery.When.All(5000,promise1,promise2)
         .Then(successDelegate, failDelegate);
 
-`When` is a static object that is used to create instances of promise-related functions. You can also use it to create your own deferred entities:
+`When` is a static object that is used to create instances of promise-related objects. You can also use it to create your own deferred entities:
 
     var deferred = CsQuery.When.Deferred();
     
     // a "deferred" object implements IPromise, and also has methods to resolve or reject
 
-   deferred.Then(successDelegate, failDelegate);
-   deferred.Resolve();   // causes successDelegate to run
+    deferred.Then(successDelegate, failDelegate);
+    deferred.Resolve();   // causes successDelegate to run
 
-What's interesting about promises, too, is that they can be resolved *before* the appropriate delegates have been bound and everything still works:
+Another interesting thing about promises is that they can be resolved *before* the appropriate delegates have been bound and everything still works:
 
     var deferred = CsQuery.When.Deferred();
 
