@@ -280,6 +280,21 @@ CsQuery contains a number of methods that are specific to its language implement
 
 `Elements` is important because of strong typing in C# vs. Javascript. The default enumerator exposes interface `IDomObject`, an interface common to all node types. As such it has very few standard DOM node methods. Most of the time, you only care about element nodes; this method provides the results in that cast.
 
+Another thing that you do a lot in jQuery is this:
+
+    var jqObject = $(domElement);
+
+That is, you wrap a single DOM element in a jQuery object so you can use jQuery methods to manipulate it. Without the "default method" concept in C#, you'd be looking at:
+
+    var csqObject = CQ.Create(domElement);
+
+That felt a bit to wordy for something that you do a lot, so there is a `Csq()` method on DOM elements that does the same thing:
+
+    var csqObject = domElement.Csq();
+    
+    bool visible = domElement.Csq().Is(":visible");
+
+This, by the way, is the only dependency external dependency that the DOM model has.
 
 ##### Utility Methods
 
