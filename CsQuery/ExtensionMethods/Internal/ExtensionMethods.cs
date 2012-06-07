@@ -435,6 +435,30 @@ namespace CsQuery.ExtensionMethods.Internal
         }
 
         /// <summary>
+        /// Return a single element or the default value; does not fail on >1 value but also returns the default.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static T SingleOrDefaultAlways<T>(this IEnumerable<T> list)
+        {
+            T single=default(T);
+            bool found=false;
+            foreach (var item  in list) {
+                if (!found)
+                {
+                    single = item;
+                    found = true;
+                }
+                else
+                {
+                    return default(T);
+                }
+            }
+            return single;
+        }
+
+        /// <summary>
         /// Iterate over a sequence, calling the delegate for each element
         /// </summary>
         /// <typeparam name="T"></typeparam>

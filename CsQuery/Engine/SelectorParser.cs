@@ -67,6 +67,9 @@ namespace CsQuery.Engine
                             case "button":
                             case "file":
                             case "text":
+                            case "image":
+                            case "reset":
+                            case "submit":
                             case "password":
                                 StartNewSelector(SelectorType.Attribute);
 
@@ -104,12 +107,12 @@ namespace CsQuery.Engine
                             case "eq":
                             case "gt":
                             case "lt":
-                                StartNewSelector(SelectorType.Position);
+                                StartNewSelector(SelectorType.PseudoClass);
                                 switch (key)
                                 {
-                                    case "eq": Current.PositionType = PositionType.IndexEquals; break;
-                                    case "lt": Current.PositionType = PositionType.IndexLessThan; break;
-                                    case "gt": Current.PositionType = PositionType.IndexGreaterThan; break;
+                                    case "eq": Current.PseudoClassType = PseudoClassType.IndexEquals; break;
+                                    case "lt": Current.PseudoClassType = PseudoClassType.IndexLessThan; break;
+                                    case "gt": Current.PseudoClassType = PseudoClassType.IndexGreaterThan; break;
                                 }
 
                                 scanner.ExpectChar('(');
@@ -118,55 +121,55 @@ namespace CsQuery.Engine
 
                                 break;
                             case "even":
-                                StartNewSelector(SelectorType.Position);
-                                Current.PositionType = PositionType.Even;
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.Even;
                                 break;
                             case "odd":
-                                StartNewSelector(SelectorType.Position);
-                                Current.PositionType = PositionType.Odd;
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.Odd;
                                 break;
                             case "first":
-                                StartNewSelector(SelectorType.Position);
-                                Current.PositionType = PositionType.First;
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.First;
                                 break;
                             case "last":
-                                StartNewSelector(SelectorType.Position);
-                                Current.PositionType = PositionType.Last;
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.Last;
                                 break;
                             case "last-child":
-                                StartNewSelector(SelectorType.Position);
-                                Current.PositionType = PositionType.LastChild;
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.LastChild;
                                 break;
                             case "first-child":
-                                StartNewSelector(SelectorType.Position);
-                                Current.PositionType = PositionType.FirstChild;
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.FirstChild;
                                 break;
                             case "first-of-type":
                                 string type = Current.Tag;
-                                StartNewSelector(SelectorType.Position);
-                                Current.PositionType = PositionType.FirstOfType;
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.FirstOfType;
                                 Current.Criteria = type;
                                 break;
                             case "last-of-type":
                                 type = Current.Tag;
-                                StartNewSelector(SelectorType.Position);
-                                Current.PositionType = PositionType.LastOfType;
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.LastOfType;
                                 Current.Criteria = type;
                                 break;
                             case "nth-child":
-                                StartNewSelector(SelectorType.Position);
-                                Current.PositionType = PositionType.NthChild;
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.NthChild;
                                 Current.Criteria = scanner.GetBoundedBy('(');
                                 break;
                             case "nth-of-type":
                                 type = Current.Tag;
-                                StartNewSelector(SelectorType.Position);
-                                Current.PositionType = PositionType.NthOfType;
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.NthOfType;
                                 Current.Criteria = type+"|"+scanner.GetBoundedBy('(');
                                 break;
                             case "only-child":
-                                StartNewSelector(SelectorType.Position);
-                                Current.PositionType = PositionType.OnlyChild;
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.OnlyChild;
                                 break;                                
                             case "has":
                             case "not":
@@ -178,13 +181,41 @@ namespace CsQuery.Engine
                                 Current.SubSelectors.Add(subSelectors);
                                 break;
                             case "visible":
-                                StartNewSelector(SelectorType.Other);
-                                Current.OtherType = OtherType.Visible;
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.Visible;
                                 break;
                             case "empty":
-
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.Empty;
+                                break;
+                            case "only-of-type":
+                                type = Current.Tag;
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.OnlyOfType;
+                                Current.Criteria = type;
+                                break;
+                            case "hidden":
+                                throw new NotImplementedException(":hidden is not implemented, but will be.");
+                            case "parent":
+                                throw new NotImplementedException(":parent is not implemented, but will be.");
+                            case "header":
+                                throw new NotImplementedException(":header is not implemented, but will be.");
+                            case "lang":
+                                throw new NotImplementedException(":lang is not implemented, but will be.");
+                            case "nth-last-child":
+                                throw new NotImplementedException(":nth-last-child is not implemented, but will be.");
+                            case "nth-last-of-type":
+                                throw new NotImplementedException(":nth-last-of-type is not implemented, but will be.");
+                            case "first-letter":
+                                throw new NotImplementedException(":first-letter is not implemented, but will be.");
+                            case "first-line":
+                                throw new NotImplementedException(":first-line is not implemented, but will be.");
+                            case "before":
+                                throw new NotImplementedException(":before is not implemented, but will be.");
+                            case "after":
+                                throw new NotImplementedException(":after is not implemented, but will be.");
                             default:
-                                throw new ArgumentOutOfRangeException("Unknown pseudoselector :\"" + key + "\"");
+                                throw new ArgumentOutOfRangeException("Unknown pseudo-class :\"" + key + "\". If this is a valid CSS or jQuery selector, please let us know.");
                         }
                         break;
                     case '.':

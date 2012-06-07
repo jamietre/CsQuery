@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("CsQuery")]
-[assembly: AssemblyDescription("A C# jQuery port for .NET 4")]
+[assembly: AssemblyDescription("CsQuery is C# jQuery port for .NET 4. It implements ")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("James Treworgy")]
 [assembly: AssemblyProduct("CsQuery")]

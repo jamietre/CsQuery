@@ -5,6 +5,7 @@ using System.Text;
 using CsQuery.Utility;
 using CsQuery.Utility.StringScanner;
 using CsQuery.Utility.StringScanner.Patterns;
+using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.Engine
 {
@@ -42,7 +43,7 @@ namespace CsQuery.Engine
                 if (item == obj) {
                     break;
                 }
-                if (item.NodeName == obj.NodeName) {
+                if (item.TagName == obj.TagName) {
                     typeIndex++;
                 }
             }
@@ -137,9 +138,9 @@ namespace CsQuery.Engine
                 return LastOfTypeImpl(parent);
             }
         }
-        private static IEnumerable<IDomObject> LastOfTypeImpl(IDomObject parent)
+        private static IEnumerable<IDomElement> LastOfTypeImpl(IDomObject parent)
         {
-            IDictionary<string, IDomObject> Types = new Dictionary<string, IDomObject>();
+            IDictionary<string, IDomElement> Types = new Dictionary<string, IDomElement>();
             foreach (var child in parent.ChildElements)
             {
                 Types[child.NodeName] = child;
@@ -150,8 +151,9 @@ namespace CsQuery.Engine
         {
             if (string.IsNullOrEmpty(type))
             {
-                throw new ArgumentException("Type is not defined.");
+                throw new ArgumentException("Type must be defined for LastOfTypeImpl.");
             }
+
             IDomObject last = null;
             foreach (var child in parent.ChildElements)
             {
@@ -191,19 +193,93 @@ namespace CsQuery.Engine
 
         public static IDomObject OnlyChild(IDomObject parent)
         {
-            IDomElement only = null;
-            foreach (var item in parent.ChildElements)
+            return parent.ChildElements.SingleOrDefaultAlways();
+        }
+
+        public static bool IsOnlyOfType(IDomObject elm)
+        {
+            return OnlyOfTypeImpl(elm.ParentNode, elm.TagName)!=null;
+        }
+
+        public static IEnumerable<IDomObject> OnlyOfType(IDomObject parent, string type)
+        {
+            if (!String.IsNullOrEmpty(type))
             {
-                if (only == null)
+                return Enumerate(OnlyOfTypeImpl(parent, type));
+            }
+            else
+            {
+                return OnlyOfTypeImpl(parent);
+            }
+        }
+        /// <summary>
+        /// When there's no type, it must return all children that are the only one of that type
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <returns></returns>
+        public static IEnumerable<IDomObject> OnlyOfTypeImpl(IDomObject parent)
+        {
+            IDictionary<string, IDomElement> Types = new Dictionary<string, IDomElement>();
+            foreach (var child in parent.ChildElements)
+            {
+                if (Types.ContainsKey(child.NodeName))
                 {
-                    only = item;
+                    Types[child.NodeName] = null;
                 }
                 else
                 {
-                    return null;
+                    Types[child.NodeName] = child;
                 }
             }
-            return only;
+            // if the value is null, there was more than one of the type
+            return Types.Values.Where(item=>item!=null);
+        }
+        public static IDomObject OnlyOfTypeImpl(IDomObject parent, string type)
+        {
+            if (string.IsNullOrEmpty(type))
+            {
+                throw new ArgumentException("Type must be defined for OnlyOfType.");
+            }
+            return parent.ChildElements
+                .Where(item=>item.TagName==type)
+                .SingleOrDefaultAlways();
+        }
+
+
+        /// <summary>
+        /// Element nodes and non-empty text nodes are considered to be children; empty text nodes, comments,
+        /// and processing instructions don’t count as children. A text node is considered empty if it has a data 
+        /// length of zero; so, for example, a text node with a single space isn’t empty.
+        /// </summary>
+        /// <param name="elm"></param>
+        /// <returns></returns>
+        public static bool IsEmpty(IDomObject elm)
+        {
+            // try to optimize this by checking for the least labor-intensive things first
+            bool simpleEmpty = !elm.HasChildren ||
+                elm.ChildNodes.Count==0;
+
+            if (simpleEmpty)
+            {
+                return true;
+            }
+            else
+            {
+                return !elm.ChildNodes
+                    .Where(item => item.NodeType == NodeType.TEXT_NODE && 
+                        !String.IsNullOrEmpty(item.NodeValue))
+                    .Any();
+            }
+        }
+
+        /// <summary>
+        /// Return all child nodes that are empty
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static IEnumerable<IDomObject> Empty(IEnumerable<IDomObject> list)
+        {
+            return list.Where(item => IsEmpty(item));
         }
 
         #endregion
@@ -280,8 +356,65 @@ namespace CsQuery.Engine
                 }
             }
         }
+
         #endregion
 
+        #region special pseuedo selectors (jquery) 
+
+        
+        /// <summary>
+        /// Return all child nodes that are visible
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static IEnumerable<IDomObject> Visible(IEnumerable<IDomObject> list)
+        {
+            return list.Where(item => IsVisible(item));
+        }
+
+        /// <summary>
+        /// Tests visibility by inspecting "display", "height" and "width" css & properties for object & all parents.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static bool IsVisible(IDomObject obj)
+        {
+            IDomObject el = obj;
+            while (el != null && el.NodeType == NodeType.ELEMENT_NODE)
+            {
+                if (ElementIsItselfHidden((IDomElement)el))
+                {
+                    return false;
+                }
+                el = el.ParentNode;
+            }
+            return true;
+        }
+
+        private static bool ElementIsItselfHidden(IDomElement el)
+        {
+            if (el.HasStyles)
+            {
+                if (el.Style["display"] == "none")
+                {
+                    return true;
+                }
+                double? wid = el.Style.NumberPart("width");
+                double? height = el.Style.NumberPart("height");
+                if (wid == 0 || height == 0)
+                {
+                    return true;
+                }
+            }
+            string widthAttr, heightAttr;
+            widthAttr = el.GetAttribute("width");
+            heightAttr = el.GetAttribute("height");
+
+            return widthAttr == "0" || heightAttr == "0";
+
+        }
+
+        #endregion
         /// <summary>
         /// Yield nothing if obj is null, or the object if not
         /// </summary>

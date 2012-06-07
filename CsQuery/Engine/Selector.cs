@@ -23,7 +23,7 @@ namespace CsQuery.Engine
             AttributeSelectorType = AttributeSelectorType.Equals;
             CombinatorType = CombinatorType.Root;
             TraversalType = TraversalType.All;
-            PositionType = PositionType.All;
+            PseudoClassType = PseudoClassType.All;
         }
 
         #endregion
@@ -51,9 +51,8 @@ namespace CsQuery.Engine
         }
         public CombinatorType CombinatorType { get; set; }
         public TraversalType TraversalType { get; set; }
-        public PositionType PositionType { get; set; }
+        public PseudoClassType PseudoClassType { get; set; }
         public AttributeSelectorType AttributeSelectorType { get; set; }
-        public OtherType OtherType { get; set; }
 
         /// <summary>
         /// Selection tag name
@@ -112,7 +111,7 @@ namespace CsQuery.Engine
         {
             get
             {
-                if (SelectorType != SelectorType.Position)
+                if (SelectorType != SelectorType.PseudoClass)
                 {
                     return false;
                 }
@@ -128,19 +127,19 @@ namespace CsQuery.Engine
         {
             get
             {
-                if (SelectorType != SelectorType.Position)
+                if (SelectorType != SelectorType.PseudoClass)
                 {
                     return false;
                 }
-                switch (PositionType)
+                switch (PseudoClassType)
                 {
-                    case PositionType.Even:
-                    case PositionType.Odd:
-                    case PositionType.Last:
-                    case PositionType.First:
-                    case PositionType.IndexEquals:
-                    case PositionType.IndexGreaterThan:
-                    case PositionType.IndexLessThan:
+                    case PseudoClassType.Even:
+                    case PseudoClassType.Odd:
+                    case PseudoClassType.Last:
+                    case PseudoClassType.First:
+                    case PseudoClassType.IndexEquals:
+                    case PseudoClassType.IndexGreaterThan:
+                    case PseudoClassType.IndexLessThan:
                         return true;
                     default:
                         return false;
@@ -151,12 +150,12 @@ namespace CsQuery.Engine
         {
             get
             {
-                switch (PositionType)
+                switch (PseudoClassType)
                 {
-                    case PositionType.IndexEquals:
-                    case PositionType.IndexGreaterThan:
-                    case PositionType.IndexLessThan:
-                    case PositionType.NthChild:
+                    case PseudoClassType.IndexEquals:
+                    case PseudoClassType.IndexGreaterThan:
+                    case PseudoClassType.IndexLessThan:
+                    case PseudoClassType.NthChild:
                         return true;
                     default:
                         return false;
@@ -212,7 +211,6 @@ namespace CsQuery.Engine
             PositionIndex = 0;
             SelectElements = null;
             Tag = null;
-            OtherType = 0;
             _SubSelectors = null;
 
             Initialize();
@@ -226,7 +224,7 @@ namespace CsQuery.Engine
             clone.TraversalType = TraversalType;
             clone.CombinatorType = CombinatorType;
 
-            clone.PositionType = PositionType;
+            clone.PseudoClassType = PseudoClassType;
             clone.AttributeName = AttributeName;
             clone.AttributeSelectorType = AttributeSelectorType;
             clone.AttributeValue = AttributeValue;
@@ -239,7 +237,6 @@ namespace CsQuery.Engine
             clone.PositionIndex = PositionIndex;
             clone.SelectElements = SelectElements;
             clone.Tag = Tag;
-            clone.OtherType = OtherType;
             
             if (HasSubSelectors)
             {
@@ -299,9 +296,9 @@ namespace CsQuery.Engine
             {
                 output += "*";
             }
-            if (SelectorType.HasFlag(SelectorType.Position))
+            if (SelectorType.HasFlag(SelectorType.PseudoClass))
             {
-                output += ":" + PositionType.ToString();
+                output += ":" + PseudoClassType.ToString();
                 if (IsFunction)
                 {
                     output += "(" + PositionIndex + ")";

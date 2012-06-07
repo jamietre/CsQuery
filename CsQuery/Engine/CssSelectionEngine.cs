@@ -374,7 +374,7 @@ namespace CsQuery.Engine
             }
 
             // Result-list position selectors are simple -- skip out of main matching code if so
-            if (selector.SelectorType.HasFlag(SelectorType.Position) && selector.IsResultListPosition)
+            if (selector.SelectorType.HasFlag(SelectorType.PseudoClass) && selector.IsResultListPosition)
             {
                 foreach (var obj in GetResultPositionMatches(curList, selector))
                 {
@@ -424,7 +424,7 @@ namespace CsQuery.Engine
                             (selector.TraversalType == TraversalType.Descendent && selector.ChildDepth <= current.Depth + 1))) 
                         {
                             temporaryResults.AddRange(GetDomPositionMatches(elm, selector));
-                            selectorType &= ~SelectorType.Position;
+                            selectorType &= ~SelectorType.PseudoClass;
                         }
                         if (selectorType == 0)
                         {
@@ -554,14 +554,9 @@ namespace CsQuery.Engine
                 }
             }
 
-            if (selector.SelectorType.HasFlag(SelectorType.Other))
-            {
-                return IsVisible(elm);
-            }
-
-            if (selector.SelectorType.HasFlag(SelectorType.Position) &&
+            if (selector.SelectorType.HasFlag(SelectorType.PseudoClass) &&
                 selector.TraversalType == TraversalType.Filter && 
-                !MatchesDOMPosition(elm, selector.PositionType,
+                !MatchesDOMPosition(elm, selector.PseudoClassType,
                 selector.Criteria))
             {
                 return false;
@@ -586,29 +581,30 @@ namespace CsQuery.Engine
         /// <returns></returns>
         protected IEnumerable<IDomObject> GetResultPositionMatches(IEnumerable<IDomObject> list, Selector selector)
         {
-            switch (selector.PositionType)
+            switch (selector.PseudoClassType)
             {
-                case PositionType.Odd:
+                case PseudoClassType.Odd:
                     return PseudoSelectors.OddElements(list);
-                case PositionType.Even:
+                case PseudoClassType.Even:
                     return PseudoSelectors.EvenElements(list);
-                case PositionType.First:
+                case PseudoClassType.First:
                     return PseudoSelectors.Enumerate(list.FirstOrDefault());
-                case PositionType.Last:
+                case PseudoClassType.Last:
                     return PseudoSelectors.Enumerate(list.LastOrDefault());
-                case PositionType.IndexEquals:
+                case PseudoClassType.IndexEquals:
                     return PseudoSelectors.Enumerate(PseudoSelectors.ElementAtIndex(list, selector.PositionIndex));
-                case PositionType.IndexGreaterThan:
+                case PseudoClassType.IndexGreaterThan:
                     return PseudoSelectors.IndexGreaterThan(list, selector.PositionIndex);
-                case PositionType.IndexLessThan:
+                case PseudoClassType.IndexLessThan:
                     return PseudoSelectors.IndexLessThan(list, selector.PositionIndex);
-                case PositionType.All:
+                case PseudoClassType.All:
                     return list;
                 default:
                     throw new NotImplementedException("Unimplemented result position type selector");
 
             }
         }
+
         /// <summary>
         /// Return all elements matching a DOM-position type selector
         /// </summary>
@@ -618,30 +614,39 @@ namespace CsQuery.Engine
         protected IEnumerable<IDomObject> GetDomPositionMatches(IDomElement elm, Selector selector)
         {
             IEnumerable<IDomObject> results;
-            switch (selector.PositionType)
+            switch (selector.PseudoClassType)
             {
-                case PositionType.NthChild:
+                case PseudoClassType.NthChild:
                     results= PseudoSelectors.NthChilds(elm,selector.Criteria);
                     break;
-                case PositionType.NthOfType:
+                case PseudoClassType.NthOfType:
                     results= PseudoSelectors.NthChildsOfType(elm,selector.Criteria);
                     break;
-                case PositionType.FirstOfType:
+                case PseudoClassType.FirstOfType:
                     results=PseudoSelectors.FirstOfType(elm, selector.Criteria);
                     break;
-                case PositionType.LastOfType:
+                case PseudoClassType.LastOfType:
                     results=PseudoSelectors.LastOfType(elm, selector.Criteria);
                     break;
-                case PositionType.FirstChild:
+                case PseudoClassType.FirstChild:
                     results=PseudoSelectors.Enumerate(PseudoSelectors.FirstChild(elm));
                     break;
-                case PositionType.LastChild:
+                case PseudoClassType.LastChild:
                     results=PseudoSelectors.Enumerate(PseudoSelectors.LastChild(elm));
                     break;
-                case PositionType.OnlyChild:
+                case PseudoClassType.OnlyChild:
                     results = PseudoSelectors.Enumerate(PseudoSelectors.OnlyChild(elm));
                     break;
-                case PositionType.All:
+                case PseudoClassType.OnlyOfType:
+                    results = PseudoSelectors.OnlyOfType(elm, selector.Criteria);
+                    break;
+                case PseudoClassType.Empty:
+                    results= PseudoSelectors.Empty(elm.ChildElements);
+                    break;
+                case PseudoClassType.Visible:
+                    results = PseudoSelectors.Visible(elm.ChildElements);
+                    break;
+                case PseudoClassType.All:
                     results=elm.ChildElements;
                     break;
                 default:
@@ -670,75 +675,42 @@ namespace CsQuery.Engine
         /// <summary>
         /// Return true if an element matches a specific DOM position-type filter
         /// </summary>
-        /// <param name="obj"></param>
+        /// <param name="elm"></param>
         /// <param name="position"></param>
         /// <param name="criteria"></param>
         /// <returns></returns>
-        protected bool MatchesDOMPosition(IDomElement obj, PositionType position, string criteria)
+        protected bool MatchesDOMPosition(IDomElement elm, PseudoClassType position, string criteria)
         {
             switch (position)
             {
-                case PositionType.FirstOfType:
-                    return PseudoSelectors.IsFirstOfType(obj, criteria);
-                case PositionType.LastOfType:
-                    return PseudoSelectors.IsLastOfType(obj, criteria);
-                case PositionType.FirstChild:
-                    return obj.PreviousElementSibling == null;
-                case PositionType.LastChild:
-                    return obj.NextElementSibling == null;
-                case PositionType.All:
+                case PseudoClassType.FirstOfType:
+                    return PseudoSelectors.IsFirstOfType(elm, criteria);
+                case PseudoClassType.LastOfType:
+                    return PseudoSelectors.IsLastOfType(elm, criteria);
+                case PseudoClassType.FirstChild:
+                    return elm.PreviousElementSibling == null;
+                case PseudoClassType.LastChild:
+                    return elm.NextElementSibling == null;
+                case PseudoClassType.All:
                     return true;
-                case PositionType.NthChild:
-                    return PseudoSelectors.IsNthChild(obj, criteria);
-                case PositionType.NthOfType:
-                    return PseudoSelectors.IsNthChildOfType(obj, criteria);
-                case PositionType.OnlyChild:
-                    return PseudoSelectors.IsOnlyChild(obj);
+                case PseudoClassType.NthChild:
+                    return PseudoSelectors.IsNthChild(elm, criteria);
+                case PseudoClassType.NthOfType:
+                    return PseudoSelectors.IsNthChildOfType(elm, criteria);
+                case PseudoClassType.OnlyChild:
+                    return PseudoSelectors.IsOnlyChild(elm);
+                case PseudoClassType.OnlyOfType:
+                    return PseudoSelectors.IsOnlyOfType(elm);
+                case PseudoClassType.Empty:
+                    return PseudoSelectors.IsEmpty(elm);
+                case PseudoClassType.Visible:
+                    return PseudoSelectors.IsVisible(elm);
                 default:
                     throw new NotImplementedException("Unimplemented position type selector");
             }
         }
 
-        /// <summary>
-        /// Tests visibility by inspecting "display", "height" and "width" css & properties for object & all parents.
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        protected bool IsVisible(IDomElement obj)
-        {
-            IDomObject el = obj;
-            while (el != null && el.NodeType == NodeType.ELEMENT_NODE)
-            {
-                if (ElementIsItselfHidden((IDomElement)el))
-                {
-                    return false;
-                }
-                el = el.ParentNode;
-            }
-            return true;
-        }
-        protected bool ElementIsItselfHidden(IDomElement el)
-        {
-            if (el.HasStyles)
-            {
-                if (el.Style["display"] == "none")
-                {
-                    return true;
-                }
-                double? wid = el.Style.NumberPart("width");
-                double? height = el.Style.NumberPart("height");
-                if (wid == 0 || height == 0)
-                {
-                    return true;
-                }
-            }
-            string widthAttr,heightAttr;
-            widthAttr = el.GetAttribute("width");
-            heightAttr = el.GetAttribute("height");
-
-            return widthAttr=="0" || heightAttr=="0"; 
-
-        }
+ 
         #endregion
 
         #region private methods

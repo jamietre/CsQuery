@@ -7,6 +7,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
+using CollectionAssert = NUnit.Framework.CollectionAssert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
@@ -211,8 +212,36 @@ namespace CsqueryTests.Csharp
             }
             Assert.AreEqual(2, res.Length, "Expected to find 2 checkbox elements");
         }
+        [Test, TestMethod]
+        public void Empty()
+        {
+            var res = Dom["span:empty"];
+            Assert.AreEqual(2, res.Length);
+            CollectionAssert.AreEquivalent(res,Dom[".badge2,.badge3"]);
 
 
+            res = Dom["body :empty"];
+            Assert.AreEqual(5, res.Length);
+
+            res = Dom[":empty"];
+            Assert.AreEqual(7, res.Length, "7 total element seleced (5 in body, + title & html nopde ");
+
+        }
+        [Test, TestMethod]
+        public void OnlyOfType()
+        {
+            var res = Dom["span:only-of-type"];
+            Assert.AreEqual(4, res.Length);
+            CollectionAssert.AreEquivalent(res, Dom["#hlinks-user,.reputation-score,#hidden-span,#non-hidden-span"]);
+
+
+            res = Dom["body :only-of-type"];
+            Assert.AreEqual(11, res.Length);
+
+            res = Dom["a:only-of-type"];
+            Assert.AreEqual(0, res.Length);
+
+        }
         #region Setup
         public override void FixtureSetUp()
         {

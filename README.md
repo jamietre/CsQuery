@@ -639,11 +639,13 @@ Some CSS3 pseudo-classes have not been implemented yet; this should be finished 
 
 Pseudo-classes:
 
-    :empty
     :lang(C)
     :nth-last-child(N)
     :nth-last-of-type(N)
-    :only-of-type
+
+	:hidden (jquery)
+    :header (jquery)
+	:parent (jquery)
 
 Pseudo-elements (none implemented)
 

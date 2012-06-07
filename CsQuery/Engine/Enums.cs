@@ -14,12 +14,11 @@ namespace CsQuery.Engine
         Class = 8,
         Attribute = 16,
         Contains = 32,
-        Position = 64,
+        PseudoClass = 64,
         Elements = 128,
         HTML = 256,
         SubSelectorHas = 512,
-        SubSelectorNot = 1024,
-        Other=2048
+        SubSelectorNot = 1024
     }
     public enum AttributeSelectorType
     {
@@ -53,7 +52,7 @@ namespace CsQuery.Engine
     /// Position-type selectors match one or more element children of another element. The selection engine can either access all 
     /// matching children, or test a particular element for matching a selector
     /// </summary>
-    public enum PositionType
+    public enum PseudoClassType
     {
         All = 1,
         Even = 2,
@@ -69,16 +68,11 @@ namespace CsQuery.Engine
         FirstOfType=12,
         LastOfType=13,
         NthOfType= 14,
-        OnlyChild=15
+        OnlyChild=15,
+        Empty = 16,
+        Visible = 17,
+        OnlyOfType=18
     }
 
-    /// <summary>
-    /// Other-type selectors are true/false tests only for a specific element.
-    /// </summary>
-    public enum OtherType
-    {
-        Visible = 1,
-        Empty=2
-    }
 
 }
