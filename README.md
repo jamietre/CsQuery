@@ -6,6 +6,16 @@ Release 1.0 Beta 2
 
 CsQuery is a jQuery port for .NET 4. It implements all the CSS selectors and DOM manipulation methods of jQuery and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) is ported and passes. The project necessarily includes an object model that represents the browser DOM. The document model uses a subselect-capable index that can perform multipart selectors on large documents in milliseconds.
 
+### Roadmap
+
+This project is essentially feature-complete, except for a handful of CSS3 selectors which should be done very soon. The core functionality has good test coverage. In the coming weeks I will be working on cleaning up some old code and adding better test coverage; creating a NuGet package; writing documentation; and establishing a web site for the project.
+
+If anyone's interested in joining this effort contact me; with some help it could get done a lot faster! The biggest need is for a web presence with good documentation. 
+
+### Other sources of information
+
+I post about CsQuery on my blog from time to time. See [CsQuery posts](http://blog.outsharked.com/search/label/csquery)  from blog.outsharked.com
+
 ### Contents
 
 This is the only formal documentation for CsQuery. When I get time I'll organize this into a web site, but for now I'm trying to keep this up to date as best as possible with anything that you'll need to know. Most of CsQuery works like jQuery, as is it's intent, so please refer to the jQuery documentation for information on jQuery methods. This document covers usage differences and methods that are not part of jQuery
@@ -326,7 +336,7 @@ The `CreateFromUrlAsync` method can return an `IPromise<ICsqWebResponse>` object
 
 The basic use in JS is this:
     
-    someAsyncAcion().then(successDelegate,failureDelegate);
+    someAsyncAction().then(successDelegate,failureDelegate);
 
 When the action is resolved, "success" is called with an optional parameter from the caller; if it failed, "failure" is called.
 
