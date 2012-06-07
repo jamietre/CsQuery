@@ -12,7 +12,7 @@ CsQuery is a jQuery port for .NET 4. It implements almost all CSS2 & CSS3 select
 
 ### Roadmap
 
-This project is essentially feature-complete, except for a handful of CSS3 selectors which should be done very soon. The core functionality has good test coverage. In the coming weeks I will be working on cleaning up some old code and adding better test coverage; creating a NuGet package; writing documentation; and establishing a web site for the project.
+This project is essentially feature-complete, except for a few CSS3 selectors (see the very end for a list of what's missing). The core functionality has good test coverage. In the coming weeks I will be working on cleaning up some old code and adding better test coverage; creating a NuGet package; writing documentation; and establishing a web site for the project.
 
 If anyone's interested in joining this effort contact me; with some help it could get done a lot faster! The biggest need is for a web presence with good documentation. 
 
