@@ -60,7 +60,7 @@ namespace CsqueryTests.Csharp
             Deferred test2 = new Deferred();
 
             
-            IPromise all = Promise.All(test, test2)
+            IPromise all = When.All(test, test2)
                 .Then((Action<string>)Resolved);
 
             test.Resolve();
@@ -81,7 +81,7 @@ namespace CsqueryTests.Csharp
             Deferred test2 = new Deferred();
 
 
-            IPromise all = Promise.All(test, test2)
+            IPromise all = When.All(test, test2)
                 .Then((Action<string>)Resolved, (Action<string>)Rejected);
 
             test.Reject();
@@ -101,7 +101,7 @@ namespace CsqueryTests.Csharp
             Deferred test = new Deferred();
             Deferred test2 = new Deferred();
 
-            IPromise all = Promise.All(500,test, test2)
+            IPromise all = When.All(500,test, test2)
                 .Then((Action<string>)Resolved, (Action<string>)Rejected);
 
             message = null;

@@ -68,11 +68,11 @@
     <Compile Include="ExtensionMethods\Forms.cs" />
     <Compile Include="OutputFormatters\IOutputFormatter.cs" />
     <Compile Include="OutputFormatters\FormatPlainText.cs" />
-    <Compile Include="Promise\WhenAll.cs" />
-    <Compile Include="Promise\Promises.cs" />
-    <Compile Include="Promise\DeferredT.cs" />
-    <Compile Include="Promise\IPromise.cs" />
-    <Compile Include="Promise\Deferred.cs" />
+    <Compile Include="Promises\WhenAll.cs" />
+    <Compile Include="Promises\When.cs" />
+    <Compile Include="Promises\DeferredT.cs" />
+    <Compile Include="Promises\IPromise.cs" />
+    <Compile Include="Promises\Deferred.cs" />
     <Compile Include="Utility\Browser.cs" />
     <Compile Include="Utility\JsonSerializer\IJsonSerializer.cs" />
     <Compile Include="Utility\JsonSerializer\JsonSerializer.cs" />

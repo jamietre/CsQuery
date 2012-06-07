@@ -6,13 +6,17 @@ using CsQuery.Promises;
 
 namespace CsQuery
 {
-    public static class Promise
+    public static class When
     {
         public static Deferred Deferred()
         {
             return new Deferred();
-
         }
+        public static Deferred<T> Deferred<T>()
+        {
+            return new Deferred<T>();
+        }
+
         public static IPromise All(params IPromise[] promises)
         {
             return new WhenAll(promises);

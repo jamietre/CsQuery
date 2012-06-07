@@ -44,6 +44,20 @@ namespace CsqueryTests.Csharp
 
         }
 
+        /// <summary>
+        /// Note - this wasn't actually a bug - this test was created to confirm that invalid IDs are handled properly
+        /// per the report.
+        /// </summary>
+        [Test, TestMethod, Description("ID with space - issue #5")]
+        public void TestInvalidID()
+        {
+            var dom = CQ.Create("<body><div></div><img id=\"image test\" src=\"url\"/>content</div></body>");
+            var res = dom["img"];
+            Assert.AreEqual(1, res.Length);
+            Assert.AreEqual("image test", res[0].Id);
+
+        }
+
         #region setup
         public override void FixtureSetUp()
         {

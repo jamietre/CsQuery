@@ -6,6 +6,21 @@ Release 1.0 Beta 2
 
 CsQuery is a jQuery port for .NET 4. It implements all the CSS selectors and DOM manipulation methods of jQuery and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) is ported and passes. The project necessarily includes an object model that represents the browser DOM. The document model uses a subselect-capable index that can perform multipart selectors on large documents in milliseconds.
 
+### Contents
+
+This is the only formal documentation for CsQuery. When I get time I'll organize this into a web site, but for now I'm trying to keep this up to date as best as possible with anything that you'll need to know. Most of CsQuery works like jQuery, as is it's intent, so please refer to the jQuery documentation for information on jQuery methods. This document covers usage differences and methods that are not part of jQuery
+
+* Usage
+	* Creating a new DOM
+	* Manipulate the DOM with jQuery methods
+	* Accessing DOM elements directly
+	* Output as HTML
+* CsQuery vs. jQuery
+	* Creating a new DOM
+	* C# objects vs. jQuery objects
+
+
+
 ### Usage
 
 ##### Creating a new DOM
@@ -214,7 +229,7 @@ I chose this convention to resolve the conflict for `Css` and `Attr` setting met
 2) The JSON string permits apostrophes in addition to quotes as a legal bounding character. While this makes it not legal JSON, it is much more convenient because you must use double-quotes to bound the string in C#. 
 
 
-### Important nonstandard methods
+##### Important nonstandard methods
 
 CsQuery adds methods to return its contents (either the full DOM, or just the selection) as a string:
 
@@ -231,9 +246,7 @@ CsQuery contains a number of methods that are specific to its language implement
 `Elements` is important because of strong typing in C# vs. Javascript. The default enumerator exposes interface `IDomObject`, an interface common to all node types. As such it has very few standard DOM node methods. Most of the time, you only care about element nodes; this method provides the results in that cast.
 
 
-
-
-### Utility Methods
+##### Utility Methods
 
     Map(..)                You probably don't need this because you can use LINQ
     Extend(..)             Return an expando object composed of properties from the source objects
@@ -248,6 +261,54 @@ These methods' purposes are straightforward.
 Ideally, I will just replace the implementation with some other library that does a great job of complex type mapping. For the time being, though, it works well in most common situations and is useful for dealing with abitrary objects of the sort you get from a javascript application. 
 
 The JSON handling uses the .NET framework JavaScriptSerializer along with some postprocessing to normalize object structures when returning expando objects. It also has some special treatment for dictionaries when serializing - that is, they are converted to objects (as if they were expando objects) rather than key/value arrays. This also works well enough but, again, would ideally be addressed using a more robust JSON parser. 
+
+##### Promises
+
+More recent versions jQuery introduced a "deferred" object for managing callbacks using a concept called Promises. Though this is less relevant for CsQuery because your work won't be interactive for the most part, there is one important situation where you will have to manage asynchronous events: loading data from a web server.
+
+Making a request to a web server can take a substantial amount of time, and if you are using CsQuery for a real-time application, you probably won't want to make your users wait for the request to finish.
+
+For example, I used CsQuery to provide current status information on the "What's New" section for the [ImageMapster](http://www.outsharked.com/imagemapster/) (my jQuery plugin) web site. But I certainly do not want to cause every single user to wait while the server makes a remote web request to GitHub (which could be slow or inaccessible). Rather, the code keeps track of when the last time it's updated it's information using a static variable. If it's become "stale", it initiates a new async request, and when that request is completed, it updates the cached data. 
+
+So, the http request that actually triggered the update will be shown the old information, but there will be no lag. Any requests coming in after the request to GitHub has finished will of course use the new information. The code looks pretty much like this:
+
+    private static DateTime LastUpdate;
+    
+    if (LastUpdate.AddHours(4) < DateTime.Now) {
+
+        /// stale - start the update process. The actual code makes three independent requests
+        /// to obtain commit & version info
+
+        var url = "https://github.com/jamietre/ImageMapster/commits/master";
+        CQ.CreateFromUrlAsync(url, response => {
+            LastUpdate = DateTime.Now;
+            var gitHubDOM = response.Dom;
+            ... 
+            // use CsQuery to extract needed info from the response
+        });
+    }
+
+    ...
+
+    // render the page using the current data - code flow is never blocked even if an update
+    // was requested
+
+Though C# 5 includes some language features that greatly improve asynchronous handling such as `await`, I dind't want to "wait", and the promise API used often in Javascript is actually extraordinarily elegant so I decided to make a basic C# implementation to assist in using this method. 
+
+The `CreateFromUrlAsync` method can return an `IPromise<ICsqWebResponse>` object. The basic promise interface (from CommonJS Promises/A) has only one method:
+
+    then(success,failure,progress)
+
+The basic use in JS is this:
+    
+    someAsyncAcion().then(success,failure);
+
+When the action is resolved, "success" is called with an optional parameter from the caller; if it failed, "failure" is called.
+
+I decided to skip progress for now; handling the two callbacks in C# requires a bit of overloading because function delegates can have different signatures. The CsQuery implementation can accept any delegate that has zero or one parameters, and returns void or something. A promise can also be generically typed, with the generic type identifying the type of parameter that is passed to the callback functions. So the signature for `CreateFromUrlAsync` is this:
+
+
+
 
 
 ### Options

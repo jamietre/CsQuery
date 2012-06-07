@@ -100,17 +100,17 @@ namespace CsqueryTests.Csharp
             bool p2rejected = false;
 
             var promise1 = CQ.CreateFromUrlAsync("http://www.microsoft.com/en/us/default.aspx?redir=true")
-                .Then(new Action<ICsqWebResponse>((resp) =>
+                .Then(resp =>
                 {
                     Assert.IsTrue(resp.Dom.Find(".hpMst_Stage").Length == 1, "I found an expected content container - if MS changed their web site this could fail.");
                     p1resolved = true;
-                }));
+                });
 
             var promise2 = CQ.CreateFromUrlAsync("http://www.bad-domain.zzyzx/").Then(null,
-                new Action<ICsqWebResponse>((resp) =>
+                resp =>
                 {
                     p2rejected = true;
-                }));
+                });
 
 
             bool complete = false;

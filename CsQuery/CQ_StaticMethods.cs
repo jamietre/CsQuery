@@ -169,9 +169,9 @@ namespace CsQuery
         /// <param name="options"></param>
         /// <returns></returns>
 
-        public static IPromise CreateFromUrlAsync(string url, ServerConfig options = null)
+        public static IPromise<ICsqWebResponse> CreateFromUrlAsync(string url, ServerConfig options = null)
         {
-            var deferred = Promise.Deferred();
+            var deferred = When.Deferred<ICsqWebResponse>();
             int uniqueID = AsyncWebRequestManager.StartAsyncWebRequest(url, deferred.Resolve, deferred.Reject, options);
             return deferred;
         }
@@ -221,7 +221,7 @@ namespace CsQuery
         /// <returns></returns>
         public static IPromise WhenAll(params IPromise[] promises)
         {
-            return Promise.All(promises);
+            return When.All(promises);
         }
 
 
