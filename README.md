@@ -18,7 +18,20 @@ This is the only formal documentation for CsQuery. When I get time I'll organize
 * CsQuery vs. jQuery
 	* Creating a new DOM
 	* C# objects vs. jQuery objects
-
+    * Important nonstandard methods
+    * Utility methods
+* Promises
+* Options
+    * Rendering Options
+    * HTTP request options
+* The CsQuery Object Model
+    * Overview
+    * Creating a CQ object from HTML
+* The DOM (Document Object Model)
+    * Overview
+    * Referencing the "document" equivalent or DOM
+* Performance
+* Shortcomings
 
 
 ### Usage
@@ -35,22 +48,33 @@ This is the only formal documentation for CsQuery. When I get time I'll organize
     var dom = CQ.CreateFromUrl("http://www.jquery.com");
     
 
-*Load asynchronously; the 2nd parameter is a callback*
+*Load asynchronously (non-blocking)*
 
-CsQuery (as of 1.0 Beta 2) implements a basic Promise API for asynchronous callbacks. This is similar to jQuery promises and can be used to create convenient constructs for managing asynchronous requests.
+CsQuery (as of 1.0 Beta 2) implements a basic Promise API for asynchronous callbacks. This can be used to create convenient constructs for managing asynchronous requests; see the "Promises" section below for more details.
    
-    CQ.CreateFromUrlAsync("http://www.jquery.com")
-        .Then(response => {
-            Dom = ((ICsqWebRequest)response).Dom;        
+    private static CQ Dom;
+    ..
+ 
+    // code execution continues immediately; the delegates in "Then" get executed when the
+    // request finishes
+
+    var promise = CQ.CreateFromUrlAsync("http://www.jquery.com");
+    
+    promise.Then(responseSuccess => {
+            Dom = responseSuccess.Dom;        
+        }, responseFail => { 
+            ..  
         });
 
-You can also use a regular callback with this signature:
+Of course you could just chain "Then" directly to the request without assigning it to a variable, too, but I wanted to demonstrate that this signature actually returns something you can use. You can also use a regular "callback" type construct by calling CreateFromUrlAsync with this signature:
 
-    CQ.CreateFromUrlAsync("http://www.jquery.com", response => {
+    CQ.CreateFromUrlAsync("http://www.jquery.com", responseSuccess => {
             Dom = response.Dom;        
+        }, responseFail => {
+
         });
 
-For more details and examples right now, please see the "_WebIO" tests.
+Returning a promise gives you a lot of flexibility, since you can than attach other events to the resolution or rejection of the request, or create a new promise that resolves when a set of promises have all resolved. For more details and examples right now, please see the "_WebIO" tests.
 
 
 ##### Manipulate the DOM with jQuery methods
@@ -262,7 +286,7 @@ Ideally, I will just replace the implementation with some other library that doe
 
 The JSON handling uses the .NET framework JavaScriptSerializer along with some postprocessing to normalize object structures when returning expando objects. It also has some special treatment for dictionaries when serializing - that is, they are converted to objects (as if they were expando objects) rather than key/value arrays. This also works well enough but, again, would ideally be addressed using a more robust JSON parser. 
 
-##### Promises
+### Promises
 
 More recent versions jQuery introduced a "deferred" object for managing callbacks using a concept called Promises. Though this is less relevant for CsQuery because your work won't be interactive for the most part, there is one important situation where you will have to manage asynchronous events: loading data from a web server.
 
@@ -301,21 +325,47 @@ The `CreateFromUrlAsync` method can return an `IPromise<ICsqWebResponse>` object
 
 The basic use in JS is this:
     
-    someAsyncAcion().then(success,failure);
+    someAsyncAcion().then(successDelegate,failureDelegate);
 
 When the action is resolved, "success" is called with an optional parameter from the caller; if it failed, "failure" is called.
 
 I decided to skip progress for now; handling the two callbacks in C# requires a bit of overloading because function delegates can have different signatures. The CsQuery implementation can accept any delegate that has zero or one parameters, and returns void or something. A promise can also be generically typed, with the generic type identifying the type of parameter that is passed to the callback functions. So the signature for `CreateFromUrlAsync` is this:
 
+    IPromise<ICsqWebResponse> CreateFromUrlAsync(string url, ServerConfig options = null)
+
+This makes it incredibly simple to write code with success & failure handlers inline. By strongly typing the returned promise, you don't have to cast the delegates, as in the original example: the `response` parameter is implicitly typed as `ICsqWebResponse`. If I wanted to add a fail handler, I could do this:
+
+    CQ.CreateFromUrlAsync(url, responseSuccess => {
+            LastUpdate = DateTime.Now;
+             ...
+        }, responseFail => {
+             // do something
+        });
+
+CsQuery provides one other useful promise-related function called `WhenAll`. This lets you create a new promise that resolves when every one of a set of promises has resolved. This is especially useful for this situation, since it means you can intiate several independent web requests, and have a promise that resolves only when all of them are complete. It works like this:
 
 
+    var promise1 = CQ.CreateFromUrlAsync(url);
+    var promise2 = CQ.CreateFromUrlAsync(url);
 
+    CsQuery.When.All(promise1,promise2).Then(successDelegate, failDelegate);
+
+You can also give it a timeout which will cause the promise to reject if it has not resolved by that time. This is valuable for ensuring that you get a resolution no matter what happens in the client promises:
+
+    // Automatically reject after 5 seconds
+
+    CsQuery.When.All(5000,promise1,promise2)
+        .Then(successDelegate, failDelegate);
+
+By the way - the basic API and operation for "when" was 100% inspired by Brian Cavalier's excellent [when.js](https://github.com/cujojs/when) project which I use extensively in Javascript. As time permits I will probably expand the C# implementation to include many of the other promise-related utility functions from his project.
 
 ### Options
 
-There are a few options that mostly affect rendering. These are set on the `Document` property of a `CQ` object. The static property
+##### Rendering options 
 
-    CQ.DefaultDomRenderingOptions
+There are a few options that affect HTML rendering. These are set on the `Document` property of a `CQ` object. The static property
+
+    public static DomRenderingOptions CQ.DefaultDomRenderingOptions
 
 defines default options set for each new `CQ` instance created. You can assign them to any object after creation. The options are all boolean flags and can be combined.
 
@@ -339,6 +389,22 @@ HTML attributes (except those that are boolean properties, such as "checked") wi
 
 When true, quotes are always used. Double-quotes are used by default, unless the content can be safely quoted without escaping using single-quotes but not using double-quotes. If escaping is required either way, double-quotes are also used.
 
+
+##### HTTP request options
+
+You can also pass options when making requests from remote servers. The global defaults are found in
+
+    public static ServerConfig DefaultServerConfig
+
+At this point there are only two options, but this will surely expand in the future as this functionality is more fully developed.
+
+    int Timeout
+
+A time (in milliseconds) after which the request should fail if it has not resolved. Default is 10000 (10 seconds).
+
+    string UserAgent
+
+The user agent string that should be reported to the remote server.
 
 
 ### The basics of the CsQuery object model
