@@ -44,15 +44,29 @@ namespace CsqueryTests.Csharp
 
         }
 
-        /// <summary>
-        /// Note - this wasn't actually a bug - this test was created to confirm that invalid IDs are handled properly
-        /// per the report.
-        /// </summary>
         [Test, TestMethod, Description("ID with space - issue #5")]
         public void TestInvalidID()
         {
-            var dom = CQ.Create("<body><div></div><img id=\"image test\" src=\"url\"/>content</div></body>");
+            string html = @"<img alt="""" id=""Picture 7"" src=""Image.aspx?imageId=26381""
+                style=""border-top-width: 1px; border-right-width: 1px; border-bottom-width:
+                1px; border-left-width: 1px; border-top-style: solid; border-right-style:
+                solid; border-bottom-style: solid; border-left-style: solid; margin-left:
+                1px; margin-right: 1px; width: 950px; height: 451px; "" />";
+
+            var dom = CQ.Create(html);
             var res = dom["img"];
+            Assert.AreEqual(1, res.Length);
+            Assert.AreEqual("Picture 7", res[0].Id);
+
+            var img = dom.Document.GetElementById("Picture 7");
+            Assert.IsNotNull(img);
+            Assert.AreEqual("Picture 7", img.Id);
+
+            img = dom.Document.GetElementById("Picture");
+            Assert.IsNull(img);
+
+            dom = CQ.Create("<body><div></div><img id=\"image test\" src=\"url\"/>content</div></body>");
+            res = dom["img"];
             Assert.AreEqual(1, res.Length);
             Assert.AreEqual("image test", res[0].Id);
 

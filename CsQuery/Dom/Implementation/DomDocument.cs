@@ -128,7 +128,13 @@ namespace CsQuery.Implementation
 
         public IDomElement GetElementById(string id)
         {
-            SelectorChain selectors = new SelectorChain("#" + id);
+            // construct the selector manually so there's no syntax checking
+
+            Selector selector = new Selector();
+            selector.SelectorType = SelectorType.ID;
+            selector.ID = id;
+
+            SelectorChain selectors = new SelectorChain(selector);
             return (IDomElement)selectors.Select(Document).FirstOrDefault();
         }
         public IDomElement GetElementByTagName(string tagName)

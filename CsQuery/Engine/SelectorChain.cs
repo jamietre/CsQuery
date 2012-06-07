@@ -12,6 +12,12 @@ namespace CsQuery.Engine
     public class SelectorChain : IEnumerable<Selector>
     {
         #region constructors
+
+        public SelectorChain(Selector selector)
+        {
+            Selectors.Add(selector);
+        }
+
         public SelectorChain(IEnumerable<Selector> selectors)
         {
             Selectors.AddRange(selectors);

@@ -353,7 +353,7 @@ namespace CsQuery.HtmlParser
 
                                 if (current.Parent != null)
                                 {
-                                    current.Parent.Element.AppendChild(current.Object);
+                                    current.Parent.Element.ChildNodes.AddAlways(current.Object);
                                 } else if (!hasChildren) {
                                     yield return current.Object;
                                 }

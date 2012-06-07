@@ -65,13 +65,29 @@ namespace CsQuery.Implementation
             {
                 item.Remove();
             }
+
             // Ensure ID uniqueness - remove ID if same-named object already exists
-            if (!String.IsNullOrEmpty(item.Id) 
-                && !Owner.IsDisconnected 
-                && Owner.Document.GetElementById(item.Id)!=null) 
+            if (!String.IsNullOrEmpty(item.Id)
+                && !Owner.IsDisconnected
+                && Owner.Document.GetElementById(item.Id) != null)
             {
                 item.Id = null;
             }
+
+            InnerList.Add(item);
+            AddParent(item, InnerList.Count - 1);
+        }
+        /// <summary>
+        /// Add a child without validating the ID is unique
+        /// </summary>
+        /// <param name="item"></param>
+        public void AddAlways(IDomObject item)
+        {
+            if (item.ParentNode != null)
+            {
+                item.Remove();
+            }
+
             InnerList.Add(item);
             AddParent(item, InnerList.Count - 1);
         }
