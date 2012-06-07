@@ -88,6 +88,17 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual(2, res.Length);
         }
 
+        //[Test, TestMethod]
+        //public void GetText()
+        //{
+
+        //    var allTextStrings = Dom.Select("*")
+        //        .Contents()
+        //        .Where(el => el.NodeType == NodeType.TEXT_NODE)
+        //        .Select(el => el.NodeValue);
+        //    string x = String.Join(",",allTextStrings.ToList());
+        //}
+
         #region setup
         public override void FixtureSetUp()
         {
