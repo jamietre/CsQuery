@@ -348,7 +348,7 @@ So, the http request that actually triggered the update will be shown the old in
     // render the page using the current data - code flow is never blocked even if an update
     // was requested
 
-Though C# 5 includes some language features & methods that greatly improve asynchronous handling (see `await`), I'm not using C# 5 and I dind't want to "wait". Besides, the promise API used often in Javascript is actually extraordinarily elegant so I decided to make a basic C# implementation to assist in using this method. When VS 2012 comes out I may revisit this.
+Though C# 5 includes some language features & methods that greatly improve asynchronous handling (see `await` and the `Task` class), I'm not using C# 5 and I dind't want to "wait". Besides, the promise API used often in Javascript is actually extraordinarily elegant so I decided to make a basic C# implementation to assist in using this method. When VS 2012 comes out I may revisit this.
 
 The `CreateFromUrlAsync` method can return an `IPromise<ICsqWebResponse>` object. The basic promise interface (from CommonJS Promises/A) has only one method:
 
@@ -393,7 +393,7 @@ This makes it incredibly simple to write code with success & failure handlers in
              // do something
         });
 
-CsQuery provides one other useful promise-related function called `When.All`. This lets you create a new promise that resolves when every one of a set of promises has resolved. This is especially useful for this situation, since it means you can intiate several independent web requests, and have a promise that resolves only when all of them are complete. It works like this:
+CsQuery provides one other useful promise-related function called `When.All`. This is roughly equivalent to `Task.WhenAll` in C# 5 and  lets you create a new promise that resolves when every one of a set of promises has resolved. This is especially useful for this situation, since it means you can intiate several independent web requests, and have a promise that resolves only when all of them are complete. It works like this:
 
 
     var promise1 = CQ.CreateFromUrlAsync(url);
