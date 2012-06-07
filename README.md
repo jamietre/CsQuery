@@ -294,7 +294,7 @@ That felt a bit to wordy for something that you do a lot, so there is a `Csq()` 
     
     bool visible = domElement.Csq().Is(":visible");
 
-This, by the way, is the only dependency external dependency that the DOM model has.
+This, by the way, is the only external dependency that the DOM model has.
 
 ##### Utility Methods
 
@@ -356,7 +356,26 @@ The basic use in JS is this:
 
 When the action is resolved, "success" is called with an optional parameter from the caller; if it failed, "failure" is called.
 
-I decided to skip progress for now; handling the two callbacks in C# requires a bit of overloading because function delegates can have different signatures. The CsQuery implementation can accept any delegate that has zero or one parameters, and returns void or something. A promise can also be generically typed, with the generic type identifying the type of parameter that is passed to the callback functions. So the signature for `CreateFromUrlAsync` is this:
+I decided to skip progress for now; handling the two callbacks in C# requires a bit of overloading because function delegates can have different signatures. The CsQuery implementation can accept any delegate that has zero or one parameters, and returns void or something. A promise can also be generically typed, with the generic type identifying the type of parameter that is passed to the callback functions. The interface has ended up like this:
+
+    public interface IPromise
+    {
+        IPromise Then(Delegate success, Delegate failure=null);
+        IPromise Then(Action success, Action failure = null);
+        IPromise Then(Func<IPromise> success, Func<IPromise> failure = null);
+        IPromise Then(Action<object> success, Action<object> failure = null);
+        IPromise Then(Func<object, IPromise> success, Func<object, IPromise> failure = null);
+
+    }
+
+    public interface IPromise<T> : IPromise
+    {
+        IPromise Then(Action<T> success, Action<T> failure = null);
+        IPromise Then(Func<T, IPromise> success, Func<T, IPromise> failure = null);
+    }
+
+
+So the signature for `CreateFromUrlAsync` is this:
 
     IPromise<ICsqWebResponse> CreateFromUrlAsync(string url, ServerConfig options = null)
 
@@ -374,7 +393,7 @@ CsQuery provides one other useful promise-related function called `WhenAll`. Thi
 
 
     var promise1 = CQ.CreateFromUrlAsync(url);
-    var promise2 = CQ.CreateFromUrlAsync(url);
+    var promise2 = CQ.CreateFromUrlAsync(url2);
 
     CsQuery.When.All(promise1,promise2).Then(successDelegate, failDelegate);
 
