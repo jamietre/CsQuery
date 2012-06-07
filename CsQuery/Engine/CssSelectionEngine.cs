@@ -79,7 +79,30 @@ namespace CsQuery.Engine
                             }
                             break;
                         case CombinatorType.Chained:
-                            selectionSource = lastResult;
+
+                            // If the selector used the adjacent combinator, grab the next element for each
+                            if (lastResult!=null) {
+                                switch (traversalType)
+                                {
+                                    case TraversalType.Adjacent:
+                                        selectionSource = CQ.Map(lastResult, item =>
+                                        {
+                                            return item.NextElementSibling;
+                                        });
+                                        break;
+                                    case TraversalType.Sibling:
+                                        selectionSource = GetSiblings(lastResult);
+                                        break;
+                                    default:
+                                        selectionSource = lastResult;
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                selectionSource =  null;
+                            }
+
                             lastResult = null;
                             break;
                         // default (chained): leave lastresult alone
@@ -151,6 +174,7 @@ namespace CsQuery.Engine
                 // If part of the selector was indexed, key will not be empty. Return initial set from the
                 // index. If any selectors remain after this they will be searched the hard way.
                 
+
                 if (key != String.Empty)
                 {
                     int depth = 0;
@@ -163,6 +187,8 @@ namespace CsQuery.Engine
                             descendants = false;
                             break;
                         case TraversalType.Filter:
+                        case TraversalType.Adjacent:
+                        case TraversalType.Sibling:
                             depth = 0;
                             descendants = false;
                             break;
@@ -206,10 +232,8 @@ namespace CsQuery.Engine
                         }
                     }
                 }
-                // TODO - GetMatch should work if passed with no selectors (returning nothing), now it returns everything
-                // 12/10/11 - this todo is not verified, much has changed since it was written. TODO confirm this and
-                // fix if needed. If having the conversation with self again, remove comments and forget it. This is
-                // an example of why comments can do more harm than good.
+
+                
 
                 if ((selectorType & ~(SelectorType.SubSelectorNot | SelectorType.SubSelectorHas)) != 0)
                 {
@@ -298,6 +322,26 @@ namespace CsQuery.Engine
         #endregion
 
         #region selection matching main code
+        protected IEnumerable<IDomElement> GetSiblings(IEnumerable<IDomObject> list)
+        {
+            foreach (var item in list)
+            {
+
+                IDomContainer parent = item.ParentNode;
+                int index = item.Index + 1;
+                int length = parent.ChildNodes.Count;
+
+                while (index < length)
+                {
+                    IDomElement node = parent.ChildNodes[index] as IDomElement;
+                    if (node != null)
+                    {
+                        yield return node;
+                    }
+                    index++;
+                }
+            }
+        }
         /// <summary>
         /// Return all elements matching a selector, within a domain baseList, starting from list.
         /// </summary>

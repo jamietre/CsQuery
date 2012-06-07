@@ -25,7 +25,7 @@ namespace CsQuery
         public static IPromise All(int timeoutMilliseconds, params IPromise[] promises)
         {
             return new WhenAll(timeoutMilliseconds,promises);
-
+            
         }
     }
 }

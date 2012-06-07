@@ -44,7 +44,9 @@ namespace CsQuery.Engine
         All = 1,
         Filter = 2,
         Descendent = 3,
-        Child = 4
+        Child = 4,
+        Adjacent = 5,
+        Sibling = 6
     }
 
     /// <summary>

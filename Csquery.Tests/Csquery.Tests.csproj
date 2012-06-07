@@ -70,6 +70,7 @@
     <Compile Include="Csharp\Dom\Styles.cs" />
     <Compile Include="Csharp\Methods\End.cs" />
     <Compile Include="Csharp\Promises\Promises.cs" />
+    <Compile Include="Csharp\Selectors\Combinators.cs" />
     <Compile Include="Csharp\Selectors\PseudoSelectors.cs" />
     <Compile Include="Csharp\Server.cs" />
     <Compile Include="Csharp\Miscellaneous.cs" />

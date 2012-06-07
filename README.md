@@ -42,7 +42,8 @@ This is the only formal documentation for CsQuery. When I get time I'll organize
     * Referencing the "document" equivalent or DOM
 * Performance
 * Shortcomings
-
+    * General
+    * Missing CSS Selectors
 
 ### Usage
 
@@ -575,9 +576,11 @@ Internally, tags, class, and attribute names are indexed using a subselect-capab
 
 ### Shortcomings
 
+##### General
+
 The DOM model is not perfect. Mimicing the browser DOM would sacrifice the benefits of strong typing; I opted for a compromise that exposes some nonapplicable members on all node types. This probably could use some refactoring at this point, but it's perfectly workable.
 
-Most of the code for pulling source HTML from URI sources is minimally tested and in the "prototype" stage. I actually use this rarely my own purposes; most of what I do is real-time parsing of html being served for HTTP requests. But since scraping is an obvious use for CsQuery, I added basic methods to grab data from a URI. They need much attention, particularly the async request code. But work well enough in simple cases. I use the asyc code on a project web site to grab & republish data in real time from GitHub about the latest commits, for example. 
+Some of the code for pulling source HTML from URI sources is minimally tested and in the "prototype" stage. I actually use this rarely my own purposes; most of what I do is real-time parsing of html being served for HTTP requests. But since scraping is an obvious use for CsQuery, I added basic methods to grab data from a URI. They need much attention, particularly the async request code. But work well enough in simple cases. I use the asyc code on a project web site to grab & republish data in real time from GitHub about the latest commits, for example. 
 
 The HTML parser itself is of a purely functional and nonrecursing design. I did this on purpose to make it fast. In retrospect this was probably a bad decision, because in practice the speed of parsing HTML text into an object model is limited by object creation time than by the parser itself. While it works fine, the code is hard to understand and therefore maintain. It does not comply to HTML5 rules for parsing invalid HTML. It does a decent job of recovering from errors by making some basic assumptions. If a good HTML5 parser for C# turns up one day I will probably try to replace the parser with it.
 
@@ -585,12 +588,10 @@ There are some minor API issues that need resolving. The "Server" object, which 
 
 In the early stages of this project I had not much time to get it working "well enough" to solve a particular problem.That resulted in a some regrettable decisions and code. The nice thing about porting something is that you don't need to start from scratch with unit tests. The jQuery tests have the benefit of covering a lot of edge cases discovered over the years, but have the disavantage of being a bit messy and disorganized. Not that my own are a lot better! But as time permits I have been cleaning up and adding to the tests. While I think this project has pretty good test coverage for the vast majority of its features (selectors and DOM manipulation methods) some of the more complex features like Extend -- which, in particular, is difficult to test well - are not well covered.
 
+##### Missing CSS selectors
+
 Some CSS3 pseudo-classes have not been implemented yet; this should be finished very shortly. Anything that is **not** here has been implemented, or is not relevant in this context (e.g. ":hover" and ":root").
 
-Combinators:
-     
-     + adjacent selector
-     ~ general sibling selector
 
 Pseudo-classes:
 

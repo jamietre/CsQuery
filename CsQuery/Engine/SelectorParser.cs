@@ -248,6 +248,28 @@ namespace CsQuery.Engine
                         FinishSelector();
                         scanner.NextNonWhitespace();
                         break;
+                    case '+':
+                        if (!Current.IsComplete)
+                        {
+                            throw new ArgumentOutOfRangeException("The adjacent combinator (+) must have two operands.");
+                        }
+                        else
+                        {
+                            StartNewSelector(TraversalType.Adjacent);
+                        }
+                        scanner.NextNonWhitespace();
+                        break;
+                    case '~':
+                        if (!Current.IsComplete)
+                        {
+                            throw new ArgumentOutOfRangeException("The sibling combinator (~) must have two operands.");
+                        }
+                        else
+                        {
+                            StartNewSelector(TraversalType.Sibling);
+                        }
+                        scanner.NextNonWhitespace();
+                        break;
                     case '>':
                         if (Current.IsComplete)
                         {

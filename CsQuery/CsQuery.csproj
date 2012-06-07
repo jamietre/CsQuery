@@ -180,7 +180,6 @@
     <Compile Include="Utility\JsObject.cs" />
     <Compile Include="Dom\Implementation\NodeList.cs" />
     <Compile Include="Utility\RangeSortedDictionary.cs" />
-    <Compile Include="Web\CsQuery.Server.cs" />
     <Compile Include="Web\CsQueryHttpContext.cs" />
     <Compile Include="Engine\SelectorChain.cs" />
     <Compile Include="Dom\Implementation\DomElement.cs" />
