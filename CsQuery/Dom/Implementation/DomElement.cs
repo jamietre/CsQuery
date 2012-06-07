@@ -516,7 +516,7 @@ namespace CsQuery.Implementation
             // will not create ChildNodes lazy object unless results are returned (this is why we don't use AddRange)
             foreach (IDomObject child in CloneChildren())
             {
-                clone.ChildNodes.Add(child);
+                clone.ChildNodes.AddAlways(child);
             }
 
             return clone;

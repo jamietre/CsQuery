@@ -155,7 +155,7 @@ namespace CsQuery
             {
                 foreach (IDomObject obj in factory.CreateObjects())
                 {
-                    Document.ChildNodes.Add(obj);
+                    Document.ChildNodes.AddAlways(obj);
                     AddSelectionRange(Document.ChildNodes);
                 }
             }

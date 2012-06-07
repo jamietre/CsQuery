@@ -1015,7 +1015,7 @@ namespace CsQuery
             foreach (IDomObject elm in SelectionSet)
             {
                 IDomObject clone = elm.Clone();
-                csq.Document.AppendChild(clone);
+                csq.Document.ChildNodes.AddAlways(clone);
                 csq.AddSelection(clone);
             }
             return csq;

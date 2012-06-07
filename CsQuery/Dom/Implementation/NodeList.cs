@@ -78,16 +78,11 @@ namespace CsQuery.Implementation
             AddParent(item, InnerList.Count - 1);
         }
         /// <summary>
-        /// Add a child without validating the ID is unique
+        /// Add a child without validating that a node is a member of this DOM already or that the ID is unique
         /// </summary>
         /// <param name="item"></param>
         public void AddAlways(IDomObject item)
         {
-            if (item.ParentNode != null)
-            {
-                item.Remove();
-            }
-
             InnerList.Add(item);
             AddParent(item, InnerList.Count - 1);
         }

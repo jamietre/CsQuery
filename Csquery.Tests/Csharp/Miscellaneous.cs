@@ -72,6 +72,22 @@ namespace CsqueryTests.Csharp
 
         }
 
+        /// <summary>
+        /// Issue #5 revealed that during DOM creation duplicate IDs were being stripped. We want this
+        /// when an end-user adds things to an existing DOM (e.g. for clones) but not when building from HTML.
+        /// Added "AddAlways" method to NodeList to eliminate this check during DOM creation. This actually made
+        /// a significant performance improvement for DOM creation too.
+        /// </summary>
+        [Test, TestMethod, Description("Issue #5 side effects - make sure dup ids can be added")]
+        public void TestInvalidID2()
+        {
+            string html = @"<div id=""test""></div><div id=""test""></div>";
+            var dom = CQ.Create(html);
+            
+            var res = dom["#test"];
+            Assert.AreEqual(2, res.Length);
+        }
+
         #region setup
         public override void FixtureSetUp()
         {
