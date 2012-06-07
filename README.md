@@ -4,7 +4,7 @@
 
 Release 1.0 Beta 2
 
-CsQuery is a jQuery port for .NET 4. It implements all the CSS selectors and DOM manipulation methods of jQuery and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) is ported and passes. The project necessarily includes an object model that represents the browser DOM. The document model uses a subselect-capable index that can perform multipart selectors on large documents in milliseconds.
+CsQuery is a jQuery port for .NET 4. It implements almost all CSS2 & CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) is ported and passes. The project necessarily includes an object model that represents the browser DOM. The document model uses a subselect-capable index that can perform multipart selectors on large documents in milliseconds.
 
 ### Roadmap
 
@@ -585,11 +585,29 @@ There are some minor API issues that need resolving. The "Server" object, which 
 
 In the early stages of this project I had not much time to get it working "well enough" to solve a particular problem.That resulted in a some regrettable decisions and code. The nice thing about porting something is that you don't need to start from scratch with unit tests. The jQuery tests have the benefit of covering a lot of edge cases discovered over the years, but have the disavantage of being a bit messy and disorganized. Not that my own are a lot better! But as time permits I have been cleaning up and adding to the tests. While I think this project has pretty good test coverage for the vast majority of its features (selectors and DOM manipulation methods) some of the more complex features like Extend -- which, in particular, is difficult to test well - are not well covered.
 
+Some CSS3 pseudo-classes have not been implemented yet; this should be finished very shortly. Anything that is **not** here has been implemented, or is not relevant in this context (e.g. ":hover" and ":root").
 
+Combinators:
+     
+     + adjacent selector
+     ~ general sibling selector
 
+Pseudo-classes:
 
+    :empty
+    :lang(C)
+    :nth-last-child(N)
+    :nth-last-of-type(N)
+    :only-of-type
 
+Pseudo-elements (none implemented)
 
+    :first-letter
+    :first-line
+    :before
+    :after
+
+That's all.
 
 
 
