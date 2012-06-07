@@ -115,7 +115,7 @@ Returning a promise gives you a lot of flexibility, since you can than attach ot
 
 See below "C# objects vs. jQuery objects" for an explanation of CssSet vs. Css.
 
-*`Data` will create "data-xxx" elements that can be directly read by the jQuery data method*
+*`Data` will create "data-xxx" attributes that can be directly read by the jQuery data method*
 
     Contact contact = GetContactInfo();
 
@@ -133,18 +133,20 @@ See below "C# objects vs. jQuery objects" for an explanation of CssSet vs. Css.
 
 *The property indexer is overloaded as a simple list element indexer returning the DOM element at that position, just like $(...)[n].*
 
-    var id = dom[0].id;
+    IDomObject element = dom[0];
+    string id = element.Id;
+    string classes = element.ClassName;
 
+*The property indexer for IDomObject returns attributes*
 
-*The property indexer for IDomElement returns attributes*
+    string href = dom[0]["href"];
 
-    var href = dom[0]["href"];
+*Most DOM node methods are implemented too. These are equivalent.*
 
-
-*Most DOM node methods are implemented too...*
-
-    var linkHtml = Dom.Document.GetElementById("my-link").InnerHTML;
-    var sameHtml = Dom["#my-link"].Html();
+    string html = Dom["#my-link"].Html();
+    
+    string html = Dom.Document.GetElementById("my-link").InnerHTML;
+    
 
 *Some utility methods return nodes, same as jQuery*
 
