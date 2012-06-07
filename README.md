@@ -348,7 +348,7 @@ So, the http request that actually triggered the update will be shown the old in
     // render the page using the current data - code flow is never blocked even if an update
     // was requested
 
-Though C# 5 includes some language features that greatly improve asynchronous handling such as `await`, I dind't want to "wait", and the promise API used often in Javascript is actually extraordinarily elegant so I decided to make a basic C# implementation to assist in using this method. 
+Though C# 5 includes some language features & methods that greatly improve asynchronous handling (see `await`), I'm not using C# 5 and I dind't want to "wait". Besides, the promise API used often in Javascript is actually extraordinarily elegant so I decided to make a basic C# implementation to assist in using this method. When VS 2012 comes out I may revisit this.
 
 The `CreateFromUrlAsync` method can return an `IPromise<ICsqWebResponse>` object. The basic promise interface (from CommonJS Promises/A) has only one method:
 
