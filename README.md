@@ -359,6 +359,22 @@ You can also give it a timeout which will cause the promise to reject if it has 
     CsQuery.When.All(5000,promise1,promise2)
         .Then(successDelegate, failDelegate);
 
+`When` is a static object that is used to create instances of promise-related functions. You can also use it to create your own deferred entities:
+
+    var deferred = CsQuery.When.Deferred();
+    
+    // a "deferred" object implements IPromise, and also has methods to resolve or reject
+
+   deferred.Then(successDelegate, failDelegate);
+   deferred.Resolve();   // causes successDelegate to run
+
+What's interesting about promises, too, is that they can be resolved *before* the appropriate delegates have been bound and everything still works:
+
+    var deferred = CsQuery.When.Deferred();
+
+    deferred.Resolve();
+    deferred.Then(successDelegate, failDelegate);   // successDelegate runs immediately
+
 By the way - the basic API and operation for "when" was 100% inspired by Brian Cavalier's excellent [when.js](https://github.com/cujojs/when) project which I use extensively in Javascript. As time permits I will probably expand the C# implementation to include many of the other promise-related utility functions from his project.
 
 ### Options
