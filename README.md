@@ -336,7 +336,8 @@ I decided to skip progress for now; handling the two callbacks in C# requires a 
 
 This makes it incredibly simple to write code with success & failure handlers inline. By strongly typing the returned promise, you don't have to cast the delegates, as in the original example: the `response` parameter is implicitly typed as `ICsqWebResponse`. If I wanted to add a fail handler, I could do this:
 
-    CQ.CreateFromUrlAsync(url, responseSuccess => {
+    CQ.CreateFromUrlAsync(url)
+        .Then(responseSuccess => {
             LastUpdate = DateTime.Now;
              ...
         }, responseFail => {
