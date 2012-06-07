@@ -10,6 +10,10 @@ CsQuery is a jQuery port for .NET 4. It implements almost all CSS2 & CSS3 select
 
 **API Change in Beta 2**: The `CsQuery.Server` object has been removed. Methods for loading a DOM from a http server have been replaced with static methods on `CQ` object (see "Creating a new DOM" below). The API should be stable before 1.0 final.
 
+### Installation
+
+    PM> Install-Package CsQuery
+
 ### Roadmap
 
 This project is essentially feature-complete, except for a few CSS3 selectors (see the very end for a list of what's missing). In the coming weeks I will be working on a little bit of cleanup; filling in a couple holes; writing documentation; and establishing a web site for the project.
