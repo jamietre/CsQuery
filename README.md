@@ -4,7 +4,7 @@
 
 6/6/2012
 
-Release 1.1 Beta 3
+Release 1.1 Beta 4
 
 CsQuery is a jQuery port for .NET 4. It implements almost all CSS2 & CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) is ported and passes. The project necessarily includes an object model that represents the browser DOM. The document model uses a subselect-capable index that can perform multipart selectors on large documents in milliseconds.
 
@@ -24,7 +24,9 @@ I post about CsQuery on my blog from time to time. See [CsQuery posts](http://bl
 
 ### Release Notes
 
-**API Change in Beta 3**: The NodeName method now returns its results in uppercase to be consistent with browser behavior. Formerly, results were returned in lowercase. Sorry for this late change; I realize this can easily break code in ways that the compiler cannot detect but this is important to be consistent with the browser DOM. There should be no more breaking changes before the final release. 
+Beta 4: You will need ILMerge to build this as a single DLL (see post-build script). The EquationParser and StringScanner parts have been broken into separate projects. The namespaces of these components changed, but this should have no effect on usage unless you were using those tools directly for some reason.
+
+**API Change in Beta 3**: The `IDomElement.NodeName` method now returns its results in uppercase to be consistent with browser behavior. Formerly, results were returned in lowercase. Sorry for this late change; I realize this can easily break code in ways that the compiler cannot detect but this is important to be consistent with the browser DOM. There should be no more breaking changes before the final release. 
 
 **API Change in Beta 2**: The `CsQuery.Server` object has been removed. Methods for loading a DOM from a http server have been replaced with static methods on `CQ` object (see "Creating a new DOM" below) to make them consistent with other DOM creation methods. 
 
