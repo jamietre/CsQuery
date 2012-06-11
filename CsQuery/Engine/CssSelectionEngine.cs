@@ -146,7 +146,7 @@ namespace CsQuery.Engine
 #else
                     if (selectorType.HasFlag(SelectorType.Attribute))
                     {
-                        key = "!" + (char)DomData.TokenID(selector.AttributeName);
+                        key = "!" + (char)DomData.TokenID(selector.AttributeName,true);
                         selectorType &= ~SelectorType.Attribute;
                         if (selector.AttributeValue != null)
                         {
@@ -554,12 +554,10 @@ namespace CsQuery.Engine
                 }
             }
 
-            if (selector.SelectorType.HasFlag(SelectorType.PseudoClass) &&
-                selector.TraversalType == TraversalType.Filter && 
-                !MatchesDOMPosition(elm, selector.PseudoClassType,
-                selector.Criteria))
-            {
-                return false;
+            if (selector.SelectorType.HasFlag(SelectorType.PseudoClass)) {
+                return selector.TraversalType == TraversalType.Filter && 
+                    MatchesPseudoClass(elm, selector.PseudoClassType,
+                    selector.Criteria);
             }
             // remove this so it doesn't get re-run
             // selector.SelectorType &= ~SelectorType.Position;
@@ -646,6 +644,12 @@ namespace CsQuery.Engine
                 case PseudoClassType.Visible:
                     results = PseudoSelectors.Visible(elm.ChildElements);
                     break;
+                case PseudoClassType.Hidden:
+                    results = PseudoSelectors.Hidden(elm.ChildElements);
+                    break;
+                case PseudoClassType.Header:
+                    results = PseudoSelectors.Headers(elm.ChildElements);
+                    break;
                 case PseudoClassType.All:
                     results=elm.ChildElements;
                     break;
@@ -679,7 +683,7 @@ namespace CsQuery.Engine
         /// <param name="position"></param>
         /// <param name="criteria"></param>
         /// <returns></returns>
-        protected bool MatchesDOMPosition(IDomElement elm, PseudoClassType position, string criteria)
+        protected bool MatchesPseudoClass(IDomElement elm, PseudoClassType position, string criteria)
         {
             switch (position)
             {
@@ -691,8 +695,6 @@ namespace CsQuery.Engine
                     return elm.PreviousElementSibling == null;
                 case PseudoClassType.LastChild:
                     return elm.NextElementSibling == null;
-                case PseudoClassType.All:
-                    return true;
                 case PseudoClassType.NthChild:
                     return PseudoSelectors.IsNthChild(elm, criteria);
                 case PseudoClassType.NthOfType:
@@ -705,6 +707,12 @@ namespace CsQuery.Engine
                     return PseudoSelectors.IsEmpty(elm);
                 case PseudoClassType.Visible:
                     return PseudoSelectors.IsVisible(elm);
+                case PseudoClassType.Hidden:
+                    return !PseudoSelectors.IsVisible(elm);
+                case PseudoClassType.Header:
+                    return PseudoSelectors.IsHeader(elm);
+                case PseudoClassType.All:
+                    return true;
                 default:
                     throw new NotImplementedException("Unimplemented position type selector");
             }

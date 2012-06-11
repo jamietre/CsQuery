@@ -10,7 +10,7 @@ using Description = Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttr
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
 using CsQuery.Utility;
-using CsQuery.Utility.StringScanner;
+using CsQuery.StringScanner;
 
 namespace CsqueryTests.Csharp
 {

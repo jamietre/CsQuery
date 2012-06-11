@@ -1,5 +1,11 @@
 ﻿### Change Log
 
+6/11/2012: Version 1.1 Beta 3
+
+API change: NodeName returns uppercase
+ADDED :hidden, :header (jQuery pseudoclasses)
+Broke out EquationParser and StringScanner into separate projects
+
 6/7/2012
 
 ADDED :only-of-type, :empty

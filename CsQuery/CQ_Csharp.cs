@@ -278,8 +278,8 @@ namespace CsQuery
             if (item.Length > 0)
             {
                 string nodeName = group[0].NodeName;
-                string type = group[0]["type"];
-                if (nodeName == "option")
+                string type = group[0]["type"].ToUpper();
+                if (nodeName == "OPTION")
                 {
                     var ownerMultiple = group.Closest("select").Prop("multiple");
                     if (Objects.IsTruthy(ownerMultiple))
@@ -292,9 +292,9 @@ namespace CsQuery
                         item.Prop("selected", true);
                     }
                 }
-                else if (nodeName == "input" && (type == "radio" || type == "checkbox"))
+                else if (nodeName == "INPUT" && (type == "RADIO" || type == "CHECKBOX"))
                 {
-                    if (type == "radio")
+                    if (type == "RADIO")
                     {
                         group.Prop("checked", false);
                     }

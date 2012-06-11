@@ -143,7 +143,7 @@ namespace CsQuery.ExtensionMethods.Forms
         /// <returns></returns>
         public static CQ CreateDropDown(this CQ selection, IEnumerable<KeyValuePair<string, object>> data, string zeroText = null)
         {
-            foreach (var el in selection.Elements.Where(item => item.NodeName == "select"))
+            foreach (var el in selection.Elements.Where(item => item.NodeName == "SELECT"))
             {
                 CreateDropDown(el, data, zeroText);
             }

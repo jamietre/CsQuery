@@ -51,32 +51,12 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual(1, res.Length);
         }
 
-
-        [Test, TestMethod]
-        public void Visible()
-        {
-            var dom = CQ.Create(@"<div id='wrapper'><div id='outer' style='display:none;'>
-                <span id='inner'>should be hidden</span></div>
-                <div id='outer2' width='10'><span id='inner2'>should not be hidden</span></div>
-                <div id='outer3' height='0'><span id='inner3'>hidden</span></div>
-                <div id='outer4' style='width:0px;'><span id='inner4'>hidden</span></div>
-                <div id='outer5' style='display:block'><span id='inner5'>visible</span></div></div>
-            ");
-
-            var res = dom.Select("span:visible");
-            Assert.AreEqual(dom.Select("#inner2,#inner5"), res, "Correct spans are visible");
-
-            res = dom.Select("div:visible");
-            Assert.AreEqual(dom.Select("#wrapper, #outer2, #outer5"), res, "Correct divs are visible");
-
-        }
-
+        
         [Test, TestMethod]
         public void NthChild()
         {
             var res = Dom["body > :nth-child(2)"];
             Assert.AreEqual(jQuery("body").Children().Eq(1)[0], res[0], "nth-child(x) works");
-
 
             // odd & even are reversed for the jQuery pseudoselectors from nth-child version.
 
@@ -97,6 +77,7 @@ namespace CsqueryTests.Csharp
             res = Dom["body > :nth-child(odd)"];
             Assert.AreEqual(res.Elements, odd.Elements);
         }
+        
         [Test, TestMethod]
         public void OnlyChild()
         {
@@ -108,11 +89,11 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual(2, res.Length);
 
 
-            // CsQuery allows you to select ALL NODES including the doctype node - so this gets returned as an only child.
-            // the other one is Title.
+            // CsQuery allows you to select ALL NODES including the doctype node - so this also returns "title"
+            // when not selecting from body. 
 
             res = Dom[":only-child"];
-            Assert.AreEqual(4, res.Length);
+            Assert.AreEqual(3, res.Length);
         }
           
 
@@ -158,8 +139,8 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual("reputation-score",res[2].ClassName);
             Assert.AreEqual("badge2",res[3].ClassName);
             Assert.AreEqual("badge3",res[4].ClassName);
-            Assert.AreEqual("input",res[5].NodeName);
-            Assert.AreEqual("textarea",res[6].NodeName);
+            Assert.AreEqual("INPUT",res[5].NodeName);
+            Assert.AreEqual("TEXTAREA",res[6].NodeName);
         }
 
         [Test, TestMethod]
@@ -175,43 +156,9 @@ namespace CsqueryTests.Csharp
             // with no tag type, should return all children
             res = Dom["#hlinks-user :last-of-type"];
             Assert.AreEqual(7, res.Length);
-
         }
 
 
-
-        [Test, TestMethod]
-        public void Odd()
-        {
-            var res = Dom["#hlinks-user span:odd"];
-            Assert.AreEqual(4, res.Length);
-            Assert.AreEqual("reputation-score", res[0].ClassName);
-            Assert.AreEqual("badge2", res[1].ClassName);
-        }
-
-
-        [Test, TestMethod]
-        public void Even()
-        {
-            var res = Dom["#hlinks-user span:even"];
-            Assert.AreEqual(5, res.Length);
-            Assert.AreEqual("profile-triangle", res[0].ClassName);
-            Assert.AreEqual("badgecount", res[2].ClassName);
-        }
-
-
-        [Test, TestMethod]
-        public void Checkbox()
-        {
-            List<IDomElement> foundDetails = new List<IDomElement>();
-            
-            CQ res = Dom.Find("input:checkbox");
-            foreach (IDomElement obj in res)
-            {
-                foundDetails.Add(obj);
-            }
-            Assert.AreEqual(2, res.Length, "Expected to find 2 checkbox elements");
-        }
         [Test, TestMethod]
         public void Empty()
         {
@@ -224,9 +171,9 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual(5, res.Length);
 
             res = Dom[":empty"];
-            Assert.AreEqual(7, res.Length, "7 total element seleced (5 in body, + title & html nopde ");
-
+            Assert.AreEqual(6, res.Length, "6 total element seleced (5 in body, + title & html nopde ");
         }
+
         [Test, TestMethod]
         public void OnlyOfType()
         {
@@ -242,11 +189,14 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual(0, res.Length);
 
         }
+
         #region Setup
+        
         public override void FixtureSetUp()
         {
             Dom = TestDom("TestHtml");
         }
+       
         #endregion
     }
 }

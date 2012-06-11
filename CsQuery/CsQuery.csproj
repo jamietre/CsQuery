@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CsQuery</RootNamespace>
-    <AssemblyName>CsQuery</AssemblyName>
+    <AssemblyName>CsQuery.Core</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -79,12 +79,7 @@
     <Compile Include="Utility\SelectionSetComparer.cs" />
     <Compile Include="Web\AsyncWebRequestManager.cs" />
     <Compile Include="Web\ICsqWebResponse.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\Functions\Quotient.cs" />
-    <Compile Include="Utility\EquationParser\INativeOperation.cs" />
-    <Compile Include="Utility\EquationParser\IOperator.cs" />
-    <Compile Include="Utility\IOrderedDictionary.cs" />
     <Compile Include="Utility\IRangeSortedDictionary.cs" />
-    <Compile Include="Utility\OrderedDictionary.cs" />
     <Compile Include="CQ.cs" />
     <Compile Include="Engine\Selector.cs" />
     <Compile Include="CQ_Constructors.cs" />
@@ -129,38 +124,10 @@
     <Compile Include="Dom\IDomNode.cs" />
     <Compile Include="Dom\IDomSpecialElement.cs" />
     <Compile Include="Dom\INodeList.cs" />
-    <Compile Include="Utility\EquationParser\enumAssociation.cs" />
-    <Compile Include="Utility\EquationParser\IEquationParser.cs" />
-    <Compile Include="Utility\EquationParser\IFunction.cs" />
-    <Compile Include="Utility\EquationParser\enumOperationType.cs" />
-    <Compile Include="Utility\EquationParser\Equations.cs" />
-    <Compile Include="Utility\EquationParser\IClause.cs" />
-    <Compile Include="Utility\EquationParser\IEquation.cs" />
-    <Compile Include="Utility\EquationParser\ILiteral.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\Functions\Difference.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\Functions\NativeOperation.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\Operator.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\Functions\Sum.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\Functions\Product.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\Function.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\Functions\Abs.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\IntegerValue.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\Operator_old.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\Literal.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\EquationParser.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\Types.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\Utils.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\Variable.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\Operand.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\VariableReadEventArgs.cs" />
-    <Compile Include="Utility\EquationParser\IOperation.cs" />
-    <Compile Include="Utility\EquationParser\IVariable.cs" />
     <Compile Include="Engine\MatchElement.cs" />
     <Compile Include="Engine\NthChild.cs" />
     <Compile Include="Engine\CssSelectionEngine.cs" />
-    <Compile Include="Utility\EquationParser\IOperand.cs" />
     <Compile Include="ExtensionMethods\Internal\ExtensionMethods.cs" />
-    <Compile Include="Utility\EquationParser\Implementation\Equation.cs" />
     <Compile Include="HtmlParser\IterationData.cs" />
     <Compile Include="Utility\SmallDictionary.cs" />
     <Compile Include="Web\AsyncPostbackData.cs" />
@@ -173,10 +140,6 @@
     <Compile Include="Web\ServerConfig.cs" />
     <Compile Include="Web\WebRequestState.cs" />
     <Compile Include="Utility\SelectionSet.cs" />
-    <Compile Include="Utility\EquationParser\IVariableContainer.cs" />
-    <Compile Include="Utility\StringScanner\enumCharacterType.cs" />
-    <Compile Include="Utility\StringScanner\CharacterData.cs" />
-    <Compile Include="Utility\StringScanner\Implementation\CharacterInfo.cs" />
     <Compile Include="Utility\JsObject.cs" />
     <Compile Include="Dom\Implementation\NodeList.cs" />
     <Compile Include="Utility\RangeSortedDictionary.cs" />
@@ -186,22 +149,10 @@
     <Compile Include="HtmlParser\DomElementFactory.cs" />
     <Compile Include="ExtensionMethods\ExtensionMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utility\StringScanner\Implementation\ExpectPattern.cs" />
-    <Compile Include="Utility\StringScanner\IExpectPattern.cs" />
-    <Compile Include="Utility\StringScanner\Implementation\StringInfo.cs" />
-    <Compile Include="Utility\StringScanner\IValueInfo.cs" />
-    <Compile Include="Utility\StringScanner\MatchFunctions.cs" />
-    <Compile Include="Utility\StringScanner\Patterns\Bounded.cs" />
-    <Compile Include="Utility\StringScanner\Patterns\Number.cs" />
-    <Compile Include="Utility\StringScanner\Patterns\OptionallyQuoted.cs" />
-    <Compile Include="Utility\StringScanner\Patterns\Quoted.cs" />
-    <Compile Include="Utility\StringScanner\Implementation\StringScanner.cs" />
     <Compile Include="Utility\Support.cs" />
     <Compile Include="Utility\Objects.cs" />
     <Compile Include="Utility\JSON.cs" />
     <Compile Include="Utility\DomStyles.cs" />
-    <Compile Include="Utility\StringScanner\IStringScanner.cs" />
-    <Compile Include="Utility\StringScanner\Scanner.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\css3.xml" />
@@ -209,9 +160,26 @@
   <ItemGroup>
     <None Include="Documentation\Changes.md" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CsQuery.EquationParser\CsQuery.EquationParser.csproj">
+      <Project>{9DE463B1-E263-4580-82FF-35ECAE1D7C2E}</Project>
+      <Name>CsQuery.EquationParser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CsQuery.StringScanner\CsQuery.StringScanner.csproj">
+      <Project>{68678A22-AD49-42A7-8C6A-38B333C13BF2}</Project>
+      <Name>CsQuery.StringScanner</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Distribution</PostBuildEvent>
+    <PostBuildEvent>if not $(ConfigurationName) == Release goto :finished
+if not exist "C:\Program Files (x86)\Microsoft\ILMerge\ILMerge.exe" goto :finished
+"C:\Program Files (x86)\Microsoft\ILMerge\ILMerge.exe" /lib:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319" /lib:"C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\PublicAssemblies"  /targetplatform:v4 /out:"$(SolutionDir)CsQuery\$(OutDir)CsQuery.dll" "$(SolutionDir)CsQuery\$(OutDir)CsQuery.StringScanner.dll" "$(SolutionDir)CsQuery\$(OutDir)CsQuery.EquationParser.dll" "$(SolutionDir)CsQuery\$(OutDir)CsQuery.Core.dll"  /xmldocs 
+xcopy "$(SolutionDir)CsQuery\$(OutDir)CsQuery.dll" "$(SolutionDir)Distribution\" /Y
+echo "success"
+:finished
+exit 0
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

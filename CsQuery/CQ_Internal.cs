@@ -131,10 +131,10 @@ namespace CsQuery
                 attribute = String.Empty;
                 switch (e.NodeName)
                 {
-                    case "option":
+                    case "OPTION":
                         attribute = "selected";
                         break;
-                    case "input":
+                    case "INPUT":
                         switch (e["type"])
                         {
                             case "checkbox":
@@ -143,7 +143,7 @@ namespace CsQuery
                                 break;
                         }
                         break;
-                    case "optgroup":
+                    case "OPTGROUP":
                         SetOptionSelected(e.ChildElements, values, multiple);
                         break;
                 }
@@ -481,12 +481,12 @@ namespace CsQuery
         {
             //Special handling for tables: make sure we add to the TBODY
             IDomElement element = target;
-            if (target.NodeName == "table")
+            if (target.NodeName == "TABLE")
             {
                 bool addBody = false;
                 if (target.HasChildren)
                 {
-                    IDomElement body = target.ChildElements.FirstOrDefault(item => item.NodeName == "tbody");
+                    IDomElement body = target.ChildElements.FirstOrDefault(item => item.NodeName == "TBODY");
                     if (body != null) {
                         element = body;
                     }

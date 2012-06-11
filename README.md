@@ -4,13 +4,15 @@
 
 6/6/2012
 
-Release 1.0.1 Beta 2
+Release 1.1 Beta 3
 
 CsQuery is a jQuery port for .NET 4. It implements almost all CSS2 & CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) is ported and passes. The project necessarily includes an object model that represents the browser DOM. The document model uses a subselect-capable index that can perform multipart selectors on large documents in milliseconds.
 
 ### Installation
 
     PM> Install-Package CsQuery
+
+The current package on NuGet is 1.1 Beta 2 (also known as 1.0.1.xxx).
 
 ### Roadmap
 
@@ -22,7 +24,11 @@ I post about CsQuery on my blog from time to time. See [CsQuery posts](http://bl
 
 ### Release Notes
 
-**API Change in Beta 2**: The `CsQuery.Server` object has been removed. Methods for loading a DOM from a http server have been replaced with static methods on `CQ` object (see "Creating a new DOM" below) to make them consistent with other DOM creation methods. The API will be stable until a major new release.
+**API Change in Beta 3**: The NodeName method now returns its results in uppercase to be consistent with browser behavior. Formerly, results were returned in lowercase. Sorry for this late change; I realize this can easily break code in ways that the compiler cannot detect but this is important to be consistent with the browser DOM. There should be no more breaking changes before the final release. 
+
+**API Change in Beta 2**: The `CsQuery.Server` object has been removed. Methods for loading a DOM from a http server have been replaced with static methods on `CQ` object (see "Creating a new DOM" below) to make them consistent with other DOM creation methods. 
+
+
 
 ### Contents
 
@@ -642,17 +648,7 @@ Pseudo-classes:
     :lang(C)
     :nth-last-child(N)
     :nth-last-of-type(N)
-
-	:hidden (jquery)
-    :header (jquery)
 	:parent (jquery)
-
-Pseudo-elements (none implemented)
-
-    :first-letter
-    :first-line
-    :before
-    :after
 
 That's all.
 

@@ -12,7 +12,7 @@ using CsQuery;
 using CsQuery.Utility;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
-using CsQuery.Utility.StringScanner;
+using CsQuery.StringScanner;
 
 namespace CsqueryTests.Csharp
 {

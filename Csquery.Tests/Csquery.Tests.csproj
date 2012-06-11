@@ -71,6 +71,7 @@
     <Compile Include="Csharp\Methods\End.cs" />
     <Compile Include="Csharp\Promises\Promises.cs" />
     <Compile Include="Csharp\Selectors\Combinators.cs" />
+    <Compile Include="Csharp\Selectors\PseudoSelectorsJquery.cs" />
     <Compile Include="Csharp\Selectors\PseudoSelectors.cs" />
     <Compile Include="Csharp\Server.cs" />
     <Compile Include="Csharp\Miscellaneous.cs" />
@@ -122,6 +123,14 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CsQuery.EquationParser\CsQuery.EquationParser.csproj">
+      <Project>{9DE463B1-E263-4580-82FF-35ECAE1D7C2E}</Project>
+      <Name>CsQuery.EquationParser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CsQuery.StringScanner\CsQuery.StringScanner.csproj">
+      <Project>{68678A22-AD49-42A7-8C6A-38B333C13BF2}</Project>
+      <Name>CsQuery.StringScanner</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CsQuery\CsQuery.csproj">
       <Project>{C38DFFE9-321B-4941-B031-29D718AB5C31}</Project>
       <Name>CsQuery</Name>

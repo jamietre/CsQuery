@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CsQuery.Utility;
-using CsQuery.Utility.StringScanner;
-using CsQuery.Utility.StringScanner.Patterns;
+using CsQuery.StringScanner;
+using CsQuery.StringScanner.Patterns;
 using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.Engine
@@ -372,6 +372,11 @@ namespace CsQuery.Engine
             return list.Where(item => IsVisible(item));
         }
 
+        public static IEnumerable<IDomObject> Hidden(IEnumerable<IDomObject> list)
+        {
+            return list.Where(item => !IsVisible(item));
+        }
+
         /// <summary>
         /// Tests visibility by inspecting "display", "height" and "width" css & properties for object & all parents.
         /// </summary>
@@ -395,7 +400,7 @@ namespace CsQuery.Engine
         {
             if (el.HasStyles)
             {
-                if (el.Style["display"] == "none")
+                if (el.Style["display"] == "none" || el.Style.NumberPart("opacity")==0)
                 {
                     return true;
                 }
@@ -414,7 +419,24 @@ namespace CsQuery.Engine
 
         }
 
+        public static bool IsHeader(IDomObject el)
+        {
+            var nodeName = el.NodeName;
+            return nodeName[0] == 'H'
+                && nodeName.Length == 2
+                && nodeName[1] >= '0'
+                && nodeName[1] <= '9';
+
+        }
+        public static IEnumerable<IDomObject> Headers(IEnumerable<IDomObject> list)
+        {
+            return list.Where(item => IsHeader(item));
+        }
+
         #endregion
+  
+        #region utility functions
+        
         /// <summary>
         /// Yield nothing if obj is null, or the object if not
         /// </summary>
@@ -432,5 +454,6 @@ namespace CsQuery.Engine
             }
 
         }
+        #endregion
     }
 }

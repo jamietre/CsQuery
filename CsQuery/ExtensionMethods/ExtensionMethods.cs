@@ -10,7 +10,6 @@ using System.Web.Script.Serialization;
 using System.Dynamic;
 using System.Text;
 using System.Reflection;
-
 using CsQuery.ExtensionMethods.Internal;
 using CsQuery.Utility;
 

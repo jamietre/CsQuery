@@ -11,7 +11,7 @@ using System.IO;
 using System.Web.Script.Serialization;
 using CsQuery.ExtensionMethods;
 using CsQuery.Utility;
-using CsQuery.Utility.StringScanner;
+using CsQuery.StringScanner;
 using CsQuery.Implementation;
 using CsQuery.Engine;
 using CsQuery.ExtensionMethods.Internal;
@@ -603,9 +603,9 @@ namespace CsQuery
                                 return value; 
                             }
                         } else if (name=="value" &&
-                            (el.NodeName =="input" || el.NodeName=="select" || el.NodeName=="option")) {
+                            (el.NodeName =="INPUT" || el.NodeName=="SELECT" || el.NodeName=="OPTION")) {
                             return Val();
-                        } else if (name=="value" && el.NodeName =="textarea") {
+                        } else if (name=="value" && el.NodeName =="TEXTAREA") {
                             return el.InnerText;
                         }
                         break;
@@ -668,7 +668,7 @@ namespace CsQuery
 
             foreach (IDomElement e in Elements)
             {
-                if ((e.NodeName == "input" || e.NodeName == "button") && name == "type"
+                if ((e.NodeName == "INPUT" || e.NodeName == "BUTTON") && name == "type"
                     && !e.IsDisconnected)
                 {
                     throw new InvalidOperationException("Can't change type of \"input\" elements that have already been added to a DOM");
@@ -2105,9 +2105,9 @@ namespace CsQuery
             {
                 IDomElement e = this.Elements.First();
                 switch(e.NodeName) {
-                    case "textarea":
+                    case "TEXTAREA":
                         return e.InnerText;
-                    case "input":
+                    case "INPUT":
                         string val = e.GetAttribute("value",String.Empty);
                         switch(e.GetAttribute("type",String.Empty)) {
                             case "radio":
@@ -2121,7 +2121,7 @@ namespace CsQuery
                                 break;
                         }
                         return val;
-                    case "select":
+                    case "SELECT":
                         string result = String.Empty;
                         // TODO optgroup handling (just like the setter code)
                         var options =Find("option");
@@ -2131,7 +2131,8 @@ namespace CsQuery
                         
                         foreach (IDomElement child in options)
                         {
-                            bool disabled = child.HasAttribute("disabled") || (child.ParentNode.NodeName == "optgroup" && child.ParentNode.HasAttribute("disabled"));
+                            bool disabled = child.HasAttribute("disabled") 
+                                || (child.ParentNode.NodeName == "OPTGROUP" && child.ParentNode.HasAttribute("disabled"));
 
                             if (child.HasAttribute("selected") && !disabled)
                             {
@@ -2153,7 +2154,7 @@ namespace CsQuery
                             result = options[0].GetAttribute("value", String.Empty);
                         }
                         return result;
-                    case "option":
+                    case "OPTION":
                         val = e.GetAttribute("value");
                         return val ?? e.InnerText;
                     default:
@@ -2179,11 +2180,11 @@ namespace CsQuery
             {
                 switch (e.NodeName)
                 {
-                    case "textarea":
+                    case "TEXTAREA":
                         // should we delete existing children first? they should not exist
                         e.InnerText = val;
                         break;
-                    case "input":
+                    case "INPUT":
                         switch (e.GetAttribute("type",String.Empty))
                         {
                             case "checkbox":
@@ -2198,7 +2199,7 @@ namespace CsQuery
                                 break;
                         }
                         break;
-                    case "select":
+                    case "SELECT":
                         if (first) {
                             var multiple = e.HasAttribute("multiple");
                             SetOptionSelected(e.ChildElements, value, multiple);

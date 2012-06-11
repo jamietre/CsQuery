@@ -135,15 +135,15 @@ namespace CsQuery.Utility
             Whitespace.CopyTo(MustBeQuotedAll, MustBeQuoted.Length);
 
             HashSet<string> noInnerHtmlAllowed = new HashSet<string>(new string[]{
-                "base","basefont","frame","link","meta","area","col","hr","param","script","textarea","style",
-                    "img","input","br", "!doctype","!--"
+                "BASE","BASEFONT","FRAME","LINK","META","AREA","COL","HR","PARAM","SCRIPT","TEXTAREA","STYLE",
+                    "IMG","INPUT","BR", "!DOCTYPE","!--"
             });
     
-            HashSet<string> blockElements = new HashSet<string>(new string[]{"body","br","address","blockquote","center","div","dir","form","frameset","h1","h2","h3","h4","h5","h6","hr",
-                "isindex","li","noframes","noscript","object","ol","p","pre","table","tr","textarea","ul",
+            HashSet<string> blockElements = new HashSet<string>(new string[]{"BODY","BR","ADDRESS","BLOCKQUOTE","CENTER","DIV","DIR","FORM","FRAMESET","H1","H2","H3","H4","H5","H6","HR",
+                "ISINDEX","LI","NOFRAMES","NOSCRIPT","OBJECT","OL","P","PRE","TABLE","TR","TEXTAREA","UL",
                 // html5 additions
-                "article","aside","button","canvas","caption","col","colgroup","dd","dl","dt","embed","fieldset","figcaption",
-                "figure","footer","header","hgroup","object","progress","section","tbody","thead","tfoot","video"
+                "ARTICLE","ASIDE","BUTTON","CANVAS","CAPTION","COL","COLGROUP","DD","DL","DT","EMBED","FIELDSET","FIGCAPTION",
+                "FIGURE","FOOTER","HEADER","HGROUP","OBJECT","PROGRESS","SECTION","TBODY","THEAD","TFOOT","VIDEO"
             });
 
             HashSet<string> booleanAttributes = new HashSet<string>(new string[] {
@@ -155,42 +155,42 @@ namespace CsQuery.Utility
 
             TokenIDs = new Dictionary<string, ushort>();
             // where Style used to be
-            TokenID("unused"); //2
+            TokenID("unused",true); //2
 
-            TokenID("class"); //3
+            TokenID("class",true); //3
             // inner text allowed
-            TokenID("value"); //4
-            TokenID("id"); //5
+            TokenID("value",true); //4
+            TokenID("id",true); //5
 
             noInnerHtmlIDFirst = nextID;
             // the node types that have inner content which is not parsed as HTML ever
-            TokenID("script"); //6
-            TokenID("textarea"); //7
-            TokenID("style"); //8
+            TokenID("script",true); //6
+            TokenID("textarea",true); //7
+            TokenID("style",true); //8
 
 
-            TokenID("input"); //9
+            TokenID("input",true); //9
             
             // no inner html allowed
             
             foreach (string tag in noInnerHtmlAllowed)
             {
-                TokenID(tag);
+                TokenID(tag,true);
             }
             noInnerHtmlIDLast = (ushort)(nextID - 1);
             booleanFirst = (ushort)nextID;
             foreach (string tag in booleanAttributes)
             {
-                TokenID(tag);
+                TokenID(tag,true);
             }
-            SelectedAttrId= TokenID("selected"); 
-            ReadonlyAttrId = TokenID("readonly"); 
-            CheckedAttrId = TokenID("checked"); 
+            SelectedAttrId= TokenID("selected",true); 
+            ReadonlyAttrId = TokenID("readonly",true); 
+            CheckedAttrId = TokenID("checked",true); 
             booleanLast = (ushort)(nextID - 1);
             blockFirst = (ushort)nextID;
             foreach (string tag in blockElements)
             {
-                TokenID(tag);
+                TokenID(tag,true);
             }
             blockLast = (ushort)(nextID - 1);
         }
@@ -274,14 +274,16 @@ namespace CsQuery.Utility
         }
         /// <summary>
         /// Return a token ID for a name, adding to the index if it doesn't exist.
+        /// When indexing tags and attributes, ignoreCase should be used
         /// </summary>
         /// <param name="tokenName"></param>
-        /// <param name="toLower"></param>
+        /// <param name="ignoreCase"></param>
         /// <returns></returns>
-        public static ushort TokenID(string tokenName, bool toLower = false)
+        public static ushort TokenID(string tokenName, bool ignoreCase = false)
         {
             ushort id;
-            if (toLower) {
+
+            if (ignoreCase) {
                 tokenName = tokenName.ToLower();
             }
 

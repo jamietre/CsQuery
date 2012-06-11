@@ -124,7 +124,7 @@ namespace CsQuery.Implementation
                 List<string> keys = new List<string>();
                 foreach (var id in Attributes.Keys)
                 {
-                    keys.Add(DomData.TokenName(id));
+                    keys.Add(DomData.TokenName(id).ToLower());
                 }
                 return keys;
             }
@@ -221,8 +221,8 @@ namespace CsQuery.Implementation
                 default:
                     // Uncheck any other radio buttons
                     if (tokenId == DomData.CheckedAttrId
-                        && Owner.NodeName == "input" 
-                        && Owner["type"] == "radio" 
+                        && Owner.NodeName == "INPUT" 
+                        && Owner.Type == "radio" 
                         && !String.IsNullOrEmpty(Owner["name"])
                         && value!=null
                         && Owner.Document != null)
@@ -305,7 +305,7 @@ namespace CsQuery.Implementation
         }
         public string IndexKey(string attrName)
         {
-            return IndexKey(DomData.TokenID(attrName));
+            return IndexKey(DomData.TokenID(attrName,true));
         }
         public string IndexKey(ushort attrId)
         {
@@ -319,7 +319,7 @@ namespace CsQuery.Implementation
         {
             foreach (var kvp in Attributes)
             {
-                yield return new KeyValuePair<string, string>(DomData.TokenName(kvp.Key), kvp.Value);
+                yield return new KeyValuePair<string, string>(DomData.TokenName(kvp.Key).ToLower(), kvp.Value);
             }
         }
         internal IEnumerable<ushort> GetAttributeIds()

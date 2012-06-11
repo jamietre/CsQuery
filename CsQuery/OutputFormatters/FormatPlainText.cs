@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CsQuery;
-using CsQuery.Utility.StringScanner;
+using CsQuery.StringScanner;
 using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.OutputFormatters

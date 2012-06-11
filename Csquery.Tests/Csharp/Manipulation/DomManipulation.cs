@@ -180,13 +180,13 @@ namespace CsqueryTests.CSharp
 
             csq.Append("<tr />");
 
-            Assert.AreEqual("tbody", csq.Select("table :first-child")[0].NodeName, "Adding a span to an empty table created tbody");
+            Assert.AreEqual("TBODY", csq.Select("table :first-child")[0].NodeName, "Adding a span to an empty table created tbody");
             Assert.AreEqual(2, csq.Select("table *").Length, "Two total elements in the table");
 
             csq.Append("<b>yo</b>");
 
             var nodeNames =  csq.Select("table tbody > *").Elements.Select(item => item.NodeName);
-            Assert.AreEqual(Objects.Enumerate("tr","b"),nodeNames, 
+            Assert.AreEqual(Objects.Enumerate("TR","B"),nodeNames, 
                 "Adding another element was within the now-existing tbody");
 
             Assert.AreEqual(3, csq.Select("table *").Length, "3 total elements in the table");
@@ -199,7 +199,7 @@ namespace CsqueryTests.CSharp
             csq.Append("<p>Text</p>");
 
             nodeNames = csq.Select("table > *").Elements.Select(item => item.NodeName);
-            Assert.AreEqual(Objects.Enumerate("tr", "b", "p"),
+            Assert.AreEqual(Objects.Enumerate("TR", "B", "P"),
                nodeNames,
                "Adding another element was within the now-existing tbody");
             Assert.AreEqual(0, csq.Find("tbody").Length, "No tbody after another append.");

@@ -15,7 +15,7 @@ using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using HtmlAgilityPack;
 using Fizzler.Systems.HtmlAgilityPack;
 using System.Diagnostics;
-using CsQuery.Utility.EquationParser;
+using CsQuery.EquationParser;
 
 namespace CsqueryTests.Performance
 {

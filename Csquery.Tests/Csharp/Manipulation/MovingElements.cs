@@ -47,9 +47,9 @@ namespace CsqueryTests.CSharp
             Assert.AreEqual(2, el.Length, "Sanity check");
             Assert.AreEqual(1, Dom["[title='13 bronze badges']"].Length, "Badgecount parent was found");
             el.Unwrap();
-            Assert.AreEqual("body", Dom[".badgecount:first"].Parent()[0].NodeName, "Badgecount appears to be unwrapped");
+            Assert.AreEqual("BODY", Dom[".badgecount:first"].Parent()[0].NodeName, "Badgecount appears to be unwrapped");
             Assert.AreEqual(0, Dom["[title='2 silver badges']"].Length, "Badgecount parent is gone");
-            Assert.AreEqual("body", Dom["#reputation_link"].Parent()[0].NodeName, "reputation_link is now a direct child of body");
+            Assert.AreEqual("BODY", Dom["#reputation_link"].Parent()[0].NodeName, "reputation_link is now a direct child of body");
             Assert.AreEqual(oldLen - 2, Dom.Select("*").Length, "Correct # of elements after unwrapping");
         }
         [Test, TestMethod]

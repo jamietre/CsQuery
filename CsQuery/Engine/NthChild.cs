@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using CsQuery.ExtensionMethods;
-using CsQuery.Utility.EquationParser;
+using CsQuery.EquationParser;
 namespace CsQuery.Engine
 {
 

@@ -18,6 +18,7 @@ namespace CsQuery
         bool HasStyle(string styleName);
         void AddStyle(string styleString);
         bool RemoveStyle(string name);
+
         bool IsBlock { get; }
 
         // iterator to access classes. Style and Attributes are enumerable directly.

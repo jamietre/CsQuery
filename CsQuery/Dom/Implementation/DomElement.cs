@@ -115,13 +115,13 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// The NodeName for the element, in LOWER CASE.
+        /// The NodeName for the element (upper case).
         /// </summary>
         public override string NodeName
         {
             get
             {
-                return DomData.TokenName(nodeNameID);
+                return DomData.TokenName(nodeNameID).ToUpper();
             }
             set
             {
@@ -135,12 +135,30 @@ namespace CsQuery.Implementation
                 }
             }
         }
+        /// <summary>
+        /// TODO: in HTML5 type can be used on OL attributes (and maybe others?) and its value is
+        /// case sensitive. The Type of input elements is always lower case, though. This behavior
+        /// needs to be verified against the spec
+        /// </summary>
+        public override string Type
+        {
+            get
+            {
+                return NodeName=="INPUT" ?
+                    Attributes["type"].ToLower() :
+                    Attributes["type"];
+            }
+            set
+            {
+                Attributes["type"] = value;
+            }
+        }
         public override string DefaultValue
         {
             get
             {
                 return hasDefaultValue() ?
-                    (NodeName == "textarea" ? InnerText : Attributes["value"]) :
+                    (NodeName == "TEXTAREA" ? InnerText : Attributes["value"]) :
                     base.DefaultValue;
             }
             set
@@ -151,7 +169,7 @@ namespace CsQuery.Implementation
                 }
                 else
                 {
-                    if (NodeName == "textarea")
+                    if (NodeName == "TEXTAREA")
                     {
                         InnerText = value;
                     }
@@ -472,6 +490,7 @@ namespace CsQuery.Implementation
         /// <returns></returns>
         public IEnumerable<string> IndexKeys()
         {
+
             string path = Path;
             yield return ""+DomData.indexSeparator+path;
             yield return IndexKey("+",nodeNameID, path);
@@ -771,7 +790,7 @@ namespace CsQuery.Implementation
         }
         protected bool hasDefaultValue()
         {
-            return NodeName == "input" || NodeName == "textarea";
+            return NodeName == "INPUT" || NodeName == "TEXTAREA";
         }
         internal string IndexKey(string prefix, ushort keyTokenId)
         {
@@ -786,7 +805,7 @@ namespace CsQuery.Implementation
 #if DEBUG_PATH
             return prefix + key + DomData.indexSeparator + path;
 #else
-            return IndexKey(prefix, DomData.TokenID(key), path);
+            return IndexKey(prefix, DomData.TokenID(key,true), path);
 #endif
         }
         internal string IndexKey(string prefix, ushort keyTokenId, string path)
@@ -803,7 +822,8 @@ namespace CsQuery.Implementation
             bool quoteAll = options.HasFlag(DomRenderingOptions.QuoteAllAttributes);
 
             sb.Append("<");
-            sb.Append(NodeName);
+            string nodeName = NodeName.ToLower();
+            sb.Append(nodeName);
             // put ID first. Must use GetAttribute since the Id property defaults to ""
             string id = GetAttribute(DomData.IDAttrId,null);
             
@@ -850,7 +870,7 @@ namespace CsQuery.Implementation
                             String.Empty);
                 }
                 sb.Append("</");
-                sb.Append(NodeName);
+                sb.Append(nodeName);
                 sb.Append(">");
             }
             else
@@ -880,7 +900,7 @@ namespace CsQuery.Implementation
                 string attrText = DomData.AttributeEncode(value,
                     quoteAll,
                     out quoteChar);
-                sb.Append(name);
+                sb.Append(name.ToLower());
                 sb.Append("=");
                 sb.Append(quoteChar);
                 sb.Append(attrText);

@@ -7,7 +7,7 @@ using CsQuery.Utility;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 using CsQuery.Implementation;
-using CsQuery.Utility.StringScanner;
+using CsQuery.StringScanner;
 
 namespace CsQuery.HtmlParser
 {
@@ -163,7 +163,7 @@ namespace CsQuery.HtmlParser
                                             if (caretPos > 0)
                                             {
                                                 string tag = BaseHtml.SubstringBetween(endPos + 1, caretPos).Trim().ToLower();
-                                                if (tag == "/" +current.Parent.Element.NodeName)
+                                                if (tag.ToUpper() == "/" +current.Parent.Element.NodeName)
                                                 {
                                                     // this is the end tag -- exit the block
                                                     current.Pos=endPos;
@@ -305,7 +305,7 @@ namespace CsQuery.HtmlParser
                                 else
                                 {
                                     current.Object = new DomElement(newTag);
-                                    
+
                                     if (!current.Element.InnerHtmlAllowed && current.Element.InnerTextAllowed)
                                     {
                                         current.ReadTextOnly = true;

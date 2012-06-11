@@ -30,6 +30,7 @@ namespace CsQuery.Engine
 
         #region private properties
 
+        protected string _Tag;
         protected SelectorType _SelectorType;
         protected string _AttributeName;
         protected List<SelectorChain> _SubSelectors;
@@ -57,7 +58,19 @@ namespace CsQuery.Engine
         /// <summary>
         /// Selection tag name
         /// </summary>
-        public string Tag { get; set; }
+        public string Tag
+        {
+            get
+            {
+                return _Tag;
+            }
+            set
+            {
+                _Tag = value == null ?
+                    value:
+                    value.ToUpper();
+            }
+        }
         public string AttributeName
         {
             get

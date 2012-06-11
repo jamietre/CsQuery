@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CsQuery.Utility;
-using CsQuery.Utility.StringScanner;
-using CsQuery.Utility.StringScanner.Patterns;
+using CsQuery.StringScanner;
+using CsQuery.StringScanner.Patterns;
 
 namespace CsQuery.Engine
 {
@@ -184,6 +184,10 @@ namespace CsQuery.Engine
                                 StartNewSelector(SelectorType.PseudoClass);
                                 Current.PseudoClassType = PseudoClassType.Visible;
                                 break;
+                            case "hidden":
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.Hidden;
+                                break;
                             case "empty":
                                 StartNewSelector(SelectorType.PseudoClass);
                                 Current.PseudoClassType = PseudoClassType.Empty;
@@ -194,12 +198,12 @@ namespace CsQuery.Engine
                                 Current.PseudoClassType = PseudoClassType.OnlyOfType;
                                 Current.Criteria = type;
                                 break;
-                            case "hidden":
-                                throw new NotImplementedException(":hidden is not implemented, but will be.");
+                            case "header":
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.Header;
+                                break;
                             case "parent":
                                 throw new NotImplementedException(":parent is not implemented, but will be.");
-                            case "header":
-                                throw new NotImplementedException(":header is not implemented, but will be.");
                             case "lang":
                                 throw new NotImplementedException(":lang is not implemented, but will be.");
                             case "nth-last-child":
@@ -207,13 +211,10 @@ namespace CsQuery.Engine
                             case "nth-last-of-type":
                                 throw new NotImplementedException(":nth-last-of-type is not implemented, but will be.");
                             case "first-letter":
-                                throw new NotImplementedException(":first-letter is not implemented, but will be.");
                             case "first-line":
-                                throw new NotImplementedException(":first-line is not implemented, but will be.");
                             case "before":
-                                throw new NotImplementedException(":before is not implemented, but will be.");
                             case "after":
-                                throw new NotImplementedException(":after is not implemented, but will be.");
+                                throw new NotImplementedException("The CSS pseudoelement selectors are not implemented in CsQuery.");
                             default:
                                 throw new ArgumentOutOfRangeException("Unknown pseudo-class :\"" + key + "\". If this is a valid CSS or jQuery selector, please let us know.");
                         }

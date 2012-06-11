@@ -9,6 +9,9 @@ namespace CsQuery
     {
         NodeType NodeType { get; }
 
+        /// <summary>
+        /// The node (tag) name, in upper case 
+        /// </summary>
         string NodeName { get; set; }
         string NodeValue { get; set; }
 

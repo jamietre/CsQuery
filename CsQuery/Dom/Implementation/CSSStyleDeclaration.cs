@@ -8,7 +8,7 @@ using System.Web;
 using System.IO;
 using System.Xml;
 using CsQuery.Utility;
-using CsQuery.Utility.StringScanner;
+using CsQuery.StringScanner;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 
@@ -490,7 +490,7 @@ namespace CsQuery.Implementation
         {
             foreach (var kvp in Styles)
             {
-                yield return new KeyValuePair<string, string>(DomData.TokenName(kvp.Key), kvp.Value);
+                yield return new KeyValuePair<string, string>(DomData.TokenName(kvp.Key).ToLower(), kvp.Value);
 
             }
             yield break;
@@ -544,7 +544,7 @@ namespace CsQuery.Implementation
             int index = 0;
             foreach (var kvp in Styles)
             {
-                array[index++] = new KeyValuePair<string, string>(DomData.TokenName(kvp.Key), kvp.Value);
+                array[index++] = new KeyValuePair<string, string>(DomData.TokenName(kvp.Key).ToLower(), kvp.Value);
             }
         }
 

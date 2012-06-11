@@ -18,6 +18,10 @@ namespace CsQuery
         string this[string attribute] { get; set; }
 
         string Id { get; set; }
+
+        /// <summary>
+        /// The same as NodeName, but not mapped to uppercase (e.g. exactly as parsed)
+        /// </summary>
         string TagName { get; }
 
         DomAttributes Attributes { get; }
@@ -52,13 +56,29 @@ namespace CsQuery
         bool HasAttribute(string name);
         bool RemoveAttribute(string name);
 
+        /// <summary>
+        /// Returns true if this node has any attributes
+        /// </summary>
         bool HasAttributes { get; }
+
+        /// <summary>
+        /// Returns true if this node has CSS classes
+        /// </summary>
         bool HasClasses { get; }
+
+        /// <summary>
+        /// Returns true if this node has styles
+        /// </summary>
         bool HasStyles { get; }
 
         bool Selected { get; }
         bool Checked { get; set; }
         bool ReadOnly { get; set; }
+
+        /// <summary>
+        /// The type of attribute
+        /// </summary>
+        string Type { get; set; }
 
         // Nonstandard elements
         bool InnerHtmlAllowed { get; }

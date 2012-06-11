@@ -55,23 +55,25 @@ namespace CsQuery.Engine
     public enum PseudoClassType
     {
         All = 1,
-        Even = 2,
-        Odd = 3,
-        First = 4,
-        Last = 5,
+        Even = 2, // jquery
+        Odd = 3, // jquery
+        First = 4, // jquery
+        Last = 5, // jquery
         FirstChild = 6,
         LastChild = 7,
         NthChild = 8,
-        IndexEquals = 9,
-        IndexLessThan = 10,
-        IndexGreaterThan = 11,
+        IndexEquals = 9, // jquery
+        IndexLessThan = 10, // jquery
+        IndexGreaterThan = 11, // jquery
         FirstOfType=12,
         LastOfType=13,
         NthOfType= 14,
         OnlyChild=15,
         Empty = 16,
-        Visible = 17,
-        OnlyOfType=18
+        Visible = 17, // jquery
+        Hidden = 18, // jquery
+        OnlyOfType=19,
+        Header = 20
     }
 
 
