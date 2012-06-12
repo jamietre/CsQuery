@@ -13,7 +13,7 @@ using CsQuery;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 
-namespace CsqueryTests.ExtensionMethodTests
+namespace CsqueryTests.ExtensionMethods_
 {
 
     [TestFixture, TestClass]

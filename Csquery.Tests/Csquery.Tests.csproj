@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Csharp\Dom\DocType.cs" />
+    <Compile Include="Csharp\ExtensionMethods\Forms.cs" />
     <Compile Include="Csharp\Manipulation\Clone.cs" />
     <Compile Include="Csharp\Css\Css.cs" />
     <Compile Include="Csharp\Dom\Styles.cs" />
@@ -102,7 +103,7 @@
     <Compile Include="Support.cs" />
     <Compile Include="Csharp\Selectors\Selectors.cs" />
     <Compile Include="Csharp\Manipulation\DomManipulation.cs" />
-    <Compile Include="Csharp\ExtensionMethodTests.cs" />
+    <Compile Include="Csharp\ExtensionMethods\ExtensionMethodTests.cs" />
     <Compile Include="Csharp\Utility\JSON\JSON.cs" />
     <Compile Include="jQuery\Traversing.cs" />
     <Compile Include="Csharp\_WebIO.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Web;
 using System.Web.UI.WebControls;
 using System.Web.UI;
@@ -22,7 +23,20 @@ namespace CsQuery.ExtensionMethods.Forms
     public static class ExtensionMethods
     {
         /// <summary>
-        /// Get the posted value for a particular form element identified by "#ID" or "name"
+        /// Get the value for a particular form element identified by "#ID" or "name". This method will create a selector
+        /// that identifies any input, select, button or textarea element by name attribute (if not passed an ID selector)
+        /// </summary>
+        /// <typeparam name="T">The datatype that should be returned</typeparam>
+        /// <param name="obj">The CsQuery object to which this applies</param>
+        /// <param name="name">The name of the input element</param>
+        /// <returns></returns>
+        public static string FormValue(this CQ obj, string name)
+        {
+            return FormValue<string>(obj, name);
+        }
+
+        /// <summary>
+        /// Get the value for a particular form element identified by "#ID" or "name"
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
@@ -30,107 +44,129 @@ namespace CsQuery.ExtensionMethods.Forms
         /// <returns></returns>
         public static T FormValue<T>(this CQ obj, string name)
         {
-            if (String.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("Name cannot be null or missing.");
-            }
-            var sel = name[0] == '#' ?
-                obj[name] :
-                obj[String.Format("input[name='{0}'], select[name='{0}'], button[name='{0}'], textarea[name='{0}']", name)];
-
+            var sel = FormElement(obj, name);
             if (sel.Length > 0)
             {
-                //RestoreData(sel.Elements.First(), obj);
                 return sel.Val<T>();
             }
             else
             {
                 return default(T);
             }
-
         }
-        //public static string FormValue(string name)
-        //{
-
-        //}
         /// <summary>
-        /// Update form values from the HTTP post data
-        /// TODO: This needs tests and is probably incomplete.
+        /// Return an element identified by "#id" or "name". (Special case selector to simplify accessing form elements).
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static CQ FormElement(this CQ obj, string name)
+        {
+            if (String.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("Name cannot be null or missing.");
+            }
+            return name[0] == '#' ?
+                obj[name] :
+                obj[String.Format("input[name='{0}'], select[name='{0}'], button[name='{0}'], textarea[name='{0}']", name)];
+
+            
+        }
+
+        /// <summary>
+        /// (BETA) Update form values from the HTTP post data in the current HttpContext
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
         public static CQ RestorePost(this CQ obj)
         {
 
-            return RestorePost(obj, HttpContext.Current);
+            return RestorePost(obj, HttpContext.Current.Request.Form);
         }
 
-        public static CQ RestorePost(this CQ selection, HttpContext httpContext = null)
+        /// <summary>
+        /// (BETA) Update form values from the data in collection provided
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns>A CQ object with all form elements searched</returns>
+        public static CQ RestorePost(this CQ selection, NameValueCollection postData)
         {
             string selector = "input[name], select[name], button[name], textarea";
             CQ src = selection.Selectors == null ?
                 selection.Select(selector) :
                 selection.Find(selector);
 
-
-            foreach (IDomElement e in src)
+            HashSet<string> keys = new HashSet<string>(postData.AllKeys);
+            foreach (IDomElement e in src.Where(item=>keys.Contains(item.Name)))
             {
-                RestoreData(e, selection, httpContext);
-
+                RestoreData(e, selection, postData[e.Name]);
             }
             return selection;
 
         }
 
-        private static void RestoreData(IDomElement e, CQ csQueryContext, HttpContext httpContext = null)
+        /// <summary>
+        /// (BETA) Update form values from the data in httpContext.Request.Form
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns>A CQ object with all form elements searched</returns>
+        public static CQ RestorePost(this CQ selection, HttpContext httpContext)
         {
-            var context = httpContext ?? HttpContext.Current;
-            string value = context.Request.Form[e["name"]];
-            if (value != null)
+            return RestorePost(selection,httpContext.Request.Form);
+
+        }
+        /// <summary>
+        /// Restore "value" to a single element
+        /// </summary>
+        /// <param name="e"></param>
+        /// <param name="csQueryContext"></param>
+        /// <param name="value"></param>
+        private static void RestoreData(IDomElement e, CQ csQueryContext, string value)
+        {
+            switch (e.NodeName)
             {
-                switch (e.NodeName)
-                {
-                    case "textarea":
-                        e.InnerText = value;
-                        break;
-                    case "input":
-                        switch (e["type"])
-                        {
-                            case "checkbox":
-                            case "radio":
-                                if (value != null)
-                                {
-                                    e.SetAttribute("checked");
-                                }
-                                else
-                                {
-                                    e.RemoveAttribute("checked");
-                                }
-                                break;
-                            case "hidden":
-                            case "text":
-                            case "password":
-                            case "button":
-                            case "submit":
-                            case "image":
-                                e.SetAttribute("value", value);
-                                break;
-                            case "file":
-                                break;
-                            default:
-                                e.SetAttribute("value", value);
-                                break;
-                        }
-                        break;
-                    case "select":
-                        csQueryContext[e].Val(value);
-                        break;
-                    default:
-                        // just use value
-                        csQueryContext[e].Val(value);
-                        break;
-                }
+                case "TEXTAREA":
+                    e.InnerText = value;
+                    break;
+                case "INPUT":
+                    switch (e["type"])
+                    {
+                        case "checkbox":
+                        case "radio":
+                            if (value != null && 
+                                ((e.Value ?? "on") == value))
+                            {
+                                e.SetAttribute("checked");
+                            }
+                            else
+                            {
+                                e.RemoveAttribute("checked");
+                            }
+                            break;
+                        case "hidden":
+                        case "text":
+                        case "password":
+                        case "button":
+                        case "submit":
+                        case "image":
+                            e.SetAttribute("value", value);
+                            break;
+                        case "file":
+                            break;
+                        default:
+                            e.SetAttribute("value", value);
+                            break;
+                    }
+                    break;
+                case "SELECT":
+                case "BUTTON":
+                    csQueryContext[e].Val(value);
+                    break;
+                        
+                default:
+                    throw new InvalidOperationException(String.Format("An unknown element type was found while restoring post data: '{0}'", e.NodeName));
             }
+            
 
         }
         /// <summary>

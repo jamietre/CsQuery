@@ -162,8 +162,8 @@ namespace CsQuery.HtmlParser
                                             int caretPos = CharIndexOf(BaseHtml, '>', endPos + 1);
                                             if (caretPos > 0)
                                             {
-                                                string tag = BaseHtml.SubstringBetween(endPos + 1, caretPos).Trim().ToLower();
-                                                if (tag.ToUpper() == "/" +current.Parent.Element.NodeName)
+                                                string tag = BaseHtml.SubstringBetween(endPos + 1, caretPos).Trim().ToUpper();
+                                                if (tag == "/" +current.Parent.Element.NodeName)
                                                 {
                                                     // this is the end tag -- exit the block
                                                     current.Pos=endPos;
@@ -192,25 +192,23 @@ namespace CsQuery.HtmlParser
                                 int tagStartPos = current.Pos;
                                 string newTag;
                                 
-                                newTag = GetTagOpener(current);
-                                
-                                string newTagLower = newTag.ToLower();
+                                newTag = GetTagOpener(current).ToUpper();
                                 
                                 // when Element exists, it's because a previous iteration created it: it's our parent
                                 string parentTag = String.Empty;
                                 if (current.Parent != null)
                                 {
-                                    parentTag = current.Parent.Element.NodeName.ToLower();
+                                    parentTag = current.Parent.Element.NodeName;
                                 }
 
                                 if (newTag == String.Empty)
                                 {
                                     // It's a tag closer. Make sure it's the right one.
                                     current.Pos = tagStartPos + 1;
-                                    string closeTag = GetCloseTag(current);
+                                    string closeTag = GetCloseTag(current).ToUpper();
 
                                     // Ignore empty tags, or closing tags found when no parent is open
-                                    bool isProperClose = closeTag.ToLower() == parentTag;
+                                    bool isProperClose = closeTag == parentTag;
                                     if (closeTag == String.Empty)
                                     {
                                         // ignore empty tags
@@ -224,7 +222,7 @@ namespace CsQuery.HtmlParser
                                         if (!isProperClose)
                                         {
                                             actualParent = current.Parent;
-                                            while (actualParent != null && actualParent.Element.NodeName.ToLower() != closeTag.ToLower())
+                                            while (actualParent != null && actualParent.Element.NodeName != closeTag)
                                             {
                                                 actualParent = actualParent.Parent;
                                             }
@@ -276,14 +274,14 @@ namespace CsQuery.HtmlParser
                                 
                                 IDomSpecialElement specialElement = null;
                                 
-                                if (newTagLower[0] == '!')
+                                if (newTag[0] == '!')
                                 {
-                                    if (newTagLower.StartsWith("!doctype"))
+                                    if (newTag.StartsWith("!DOCTYPE"))
                                     {
                                         specialElement = new DomDocumentType();
                                         current.Object = specialElement;
                                     }
-                                    else if (newTagLower.StartsWith("![cdata["))
+                                    else if (newTag.StartsWith("![CDATA["))
                                     {
                                         specialElement = new DomCData();
                                         current.Object = specialElement;
@@ -293,7 +291,7 @@ namespace CsQuery.HtmlParser
                                     {
                                         specialElement = new DomComment();
                                         current.Object = specialElement;
-                                        if (newTagLower.StartsWith("!--"))
+                                        if (newTag.StartsWith("!--"))
                                         {
                                             ((DomComment)specialElement).IsQuoted = true;
                                             current.Pos = tagStartPos + 4;
@@ -768,21 +766,21 @@ namespace CsQuery.HtmlParser
         {
             switch (tag)
             {
-                case "li":
-                case "option":
-                case "p":
-                case "tr":
-                case "td":
-                case "th":
+                case "LI":
+                case "OPTION":
+                case "P":
+                case "TR":
+                case "TD":
+                case "TH":
 
                     // simple case: repeater-like tags should be closed by another occurence of itself
                     return tag == newTag;
-                case "head":
-                    return (newTag == "body");
-                case "dt":
-                    return tag == newTag || newTag == "dd";
-                case "colgroup":
-                    return tag == newTag || newTag == "tr";
+                case "HEAD":
+                    return (newTag == "BODY");
+                case "DT":
+                    return tag == newTag || newTag == "DD";
+                case "COLGROUP":
+                    return tag == newTag || newTag == "TR";
                 default:
                     return false;
 

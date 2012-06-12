@@ -64,20 +64,20 @@ namespace CsQuery.OutputFormatters
                     {
                         IDomElement elNode = (IDomElement)el;
                         // first add any inner contents
-                        if (el.NodeName != "head" && el.NodeName != "style" && el.NodeName != "script")
+                        if (el.NodeName != "HEAD" && el.NodeName != "STYLE" && el.NodeName != "SCRIPT")
                         {
                             AddContents(sb, el);
 
                             switch (elNode.NodeName)
                             {
-                                case "br":
+                                case "BR":
                                     sb.Append(System.Environment.NewLine);
                                     skipWhitespace = true;
                                     break;
-                                case "pre":
+                                case "PRE":
                                     sb.Append(el.Render());
                                     break;
-                                case "a":
+                                case "A":
                                     sb.Append(el.Cq().Children().RenderSelection() + " (" + el["href"] + ")");
                                     break;
                                 default:

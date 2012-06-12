@@ -80,6 +80,11 @@ namespace CsQuery
         /// </summary>
         string Type { get; set; }
 
+        /// <summary>
+        /// For input elements, the name
+        /// </summary>
+        string Name { get; set; }
+
         // Nonstandard elements
         bool InnerHtmlAllowed { get; }
         bool InnerTextAllowed { get; }

@@ -77,6 +77,8 @@ jQuery extensions:
 
 ### Release Notes
 
+Beta 5: Finished missing CSS selectors - all ported functionality is complete.
+
 Beta 4: You will need ILMerge to build this as a single DLL (see post-build script). The EquationParser and StringScanner parts have been broken into separate projects. The namespaces of these components changed, but this should have no effect on usage unless you were using those tools directly for some reason.
 
 **API Change in Beta 3**: The `IDomElement.NodeName` method now returns its results in uppercase to be consistent with browser behavior. Formerly, results were returned in lowercase. Sorry for this late change; I realize this can easily break code in ways that the compiler cannot detect but this is important to be consistent with the browser DOM. There should be no more breaking changes before the final release. 

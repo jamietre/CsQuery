@@ -1,5 +1,12 @@
 ﻿### Change Log
-6/12/2012: Version 1.1. Beta 4
+
+6/12/2012: Version 1.1 Beta 6
+
+ADDED :nth-last-of-type(N), nth-last-child(N) -- final outstanding pseudoselectors
+ADDED IDomObject.Name property
+Some test coverage for ExtensionMethods.Forms
+
+6/12/2012: Version 1.1 Beta 4
 
 ADDED :parent pseudoclass
 CHANGED ensure that HTML node is handled the same way it is in browsers, e.g. it can be 

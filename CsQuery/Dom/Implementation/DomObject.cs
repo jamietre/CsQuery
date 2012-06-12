@@ -182,6 +182,17 @@ namespace CsQuery.Implementation
                  throw new InvalidOperationException("You can't set Type for this node type.");
              }
          }
+         public virtual string Name
+         {
+             get
+             {
+                 return null;
+             }
+             set
+             {
+                 throw new InvalidOperationException("You can't set Name for this node type.");
+             }
+         }
          /// <summary>
          /// Remove this element from the DOM
          /// </summary>

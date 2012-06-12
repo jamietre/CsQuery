@@ -153,6 +153,21 @@ namespace CsQuery.Implementation
                 Attributes["type"] = value;
             }
         }
+
+        /// <summary>
+        /// For certain elements, the Name. TODO: Verify attribute is applicable.
+        /// </summary>
+        public override string Name
+        {
+            get
+            {
+                return Attributes["name"];
+            }
+            set
+            {
+                Attributes["name"]= value;
+            }
+        }
         public override string DefaultValue
         {
             get
