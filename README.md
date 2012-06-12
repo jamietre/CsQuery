@@ -18,6 +18,48 @@ The current package on NuGet is 1.1 Beta 2 (also known as 1.0.1.xxx).
 
 This project is essentially feature-complete, except for a few CSS3 selectors (see the very end for a list of what's missing). In the coming weeks I will be working on a little bit of cleanup; filling in a couple holes; writing documentation; and establishing a web site for the project.
 
+
+### Features
+
+All jQuery DOM manipulation methods are implemented.
+
+All CSS2 & CSS3 selectors have been implemented:
+
+    *       			Universal selector
+    TAG      			element type selector
+    .class   			class name selector
+    #id      			id selector
+	[attr]				Attribute selector, with all matchers:
+						CSS2: = | |= | ~=
+                    	CSS3: ^= | $= ^ *=
+                    	jQuery: !=
+
+	E, F#id				Selector grouping
+	E F           		Descendant selector
+	E>F					Child selector
+	E+F					Adjacent sibling selector
+	E~F					General sibling selector
+
+All pseudoclasses that do not depend on browser state except :nth-last-child(N) and :nth-last-of-type(N) are implemented. The last two will be done before the final release:
+
+	:nth-child(N)				:nth-of-type(N)
+	:last-child					:first-of-type
+	:last-of-type				:only-child
+	:only-of-type				:root
+	:empty						:enabled
+	:disabled					:checked
+	:not(S)
+
+jQuery extensions:
+
+	:visible					:hidden
+	:odd						:even
+	:first						:last
+	:eq(N)						:gt(N)
+	:lt(N)						:parent
+	:hidden						:header
+	
+
 ### Other sources of information
 
 I post about CsQuery on my blog from time to time. See [CsQuery posts](http://blog.outsharked.com/search/label/csquery)  from blog.outsharked.com
@@ -642,17 +684,37 @@ In the early stages of this project I had not much time to get it working "well 
 
 ##### Missing CSS selectors
 
-Some CSS3 pseudo-classes have not been implemented yet; this should be finished very shortly. Anything that is **not** here has been implemented, or is not relevant in this context (e.g. ":hover" and ":root").
+Some CSS3 pseudo-classes have not been implemented yet; this should be finished very shortly. Anything that is **not** here has been implemented, or is not relevant in this context.
 
 
-Pseudo-classes:
+Pseudo-classes **not yet implemented**, but will be:
 
-    :lang(C)
     :nth-last-child(N)
     :nth-last-of-type(N)
-	:parent (jquery)
 
-That's all.
+**Not targeted for implementation:**
+
+    :lang(C)
+
+<i>:lang may eventually be added, but is slightly more complex because it depends on environmental information in the browser. I'm not sure it makes sense.</i>
+
+UI related:
+
+	:link    
+	:hover
+	:active
+	:focus
+	:visited
+	:target
+
+Pseudo-elements:
+
+    :first-letter (pseudoelement)
+	:first-line (pseudoelement)
+    :before (pseudoelement)
+	:after (pseudoelement)
+                            
+Everything else (both browser & jQuery extensions) has been implemented.
 
 
 

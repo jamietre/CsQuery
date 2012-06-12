@@ -62,8 +62,19 @@ namespace CsqueryTests.Csharp
             var res = Dom.Find("p~span+div");
             Assert.AreEqual(1, res.Length);
             Assert.AreEqual("test-show", res[0].Id);
-
         }
+
+        //[Test, TestMethod]
+        //public void Inherited()
+        //{
+        //    var dom = TestDom("TestHtml2");
+        //    var res = dom["div > span:lang(en)"];
+        //    Assert.AreEqual(res.Length, 2);
+
+        //    res = dom["div > span:lang(en-uk)"];
+        //    Assert.AreEqual(res.Length, 1);
+        //}
+
 
     }
 }

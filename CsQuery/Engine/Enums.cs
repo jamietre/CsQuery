@@ -29,7 +29,8 @@ namespace CsQuery.Engine
         NotExists = 5,
         ContainsWord = 6,
         EndsWith = 7,
-        NotEquals = 8
+        NotEquals = 8,
+        StartsWithOrHyphen=9 // for lang
     }
 
     public enum CombinatorType
@@ -46,6 +47,7 @@ namespace CsQuery.Engine
         Child = 4,
         Adjacent = 5,
         Sibling = 6
+        //,Inherited = 7
     }
 
     /// <summary>
@@ -69,11 +71,12 @@ namespace CsQuery.Engine
         LastOfType=13,
         NthOfType= 14,
         OnlyChild=15,
-        Empty = 16,
-        Visible = 17, // jquery
-        Hidden = 18, // jquery
-        OnlyOfType=19,
-        Header = 20
+        OnlyOfType = 16,
+        Empty = 17,
+        Parent = 18, // jquery
+        Visible = 19, // jquery
+        Hidden = 20, // jquery
+        Header = 21 // jquery
     }
 
 

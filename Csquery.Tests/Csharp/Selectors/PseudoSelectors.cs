@@ -175,6 +175,26 @@ namespace CsqueryTests.Csharp
         }
 
         [Test, TestMethod]
+        public void Parent()
+        {
+            var dom = CQ.Create("<html><div></div></html>");
+            var res2 = dom[":parent"];
+            Assert.AreEqual(res2[0].NodeName, "HTML");
+
+            /// when testing this with jsfiddle, you will get 26: it includes title, style, script from the wrapper
+            /// 
+            var res = Dom[":parent"];
+            Assert.AreEqual(23, res.Length);
+
+            res = Dom["span:parent"];
+            Assert.AreEqual(10, res.Length);
+
+            res = Dom["body :parent"];
+            Assert.AreEqual(20, res.Length);
+
+
+        }
+        [Test, TestMethod]
         public void OnlyOfType()
         {
             var res = Dom["span:only-of-type"];
@@ -190,6 +210,20 @@ namespace CsqueryTests.Csharp
 
         }
 
+        //[Test, TestMethod]
+        //public void Lang()
+        //{
+        //    var dom = TestDom("TestHtml2");
+        //    CQ res = dom.Select(":lang(en)");
+        //    Assert.AreEqual(3, res.Length);
+
+        //    res = dom.Select("div > span:lang(en)");
+        //    Assert.AreEqual(2, res.Length);
+
+        //    res = dom.Select("div>span:lang(en-uk)");
+        //    Assert.AreEqual(1, res.Length);
+        
+        //}
         #region Setup
         
         public override void FixtureSetUp()

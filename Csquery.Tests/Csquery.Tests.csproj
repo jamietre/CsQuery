@@ -65,12 +65,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Csharp\Dom\DocType.cs" />
     <Compile Include="Csharp\Manipulation\Clone.cs" />
     <Compile Include="Csharp\Css\Css.cs" />
     <Compile Include="Csharp\Dom\Styles.cs" />
     <Compile Include="Csharp\Methods\End.cs" />
     <Compile Include="Csharp\Promises\Promises.cs" />
     <Compile Include="Csharp\Selectors\Combinators.cs" />
+    <Compile Include="Csharp\Selectors\AttributeSelectors.cs" />
     <Compile Include="Csharp\Selectors\PseudoSelectorsJquery.cs" />
     <Compile Include="Csharp\Selectors\PseudoSelectors.cs" />
     <Compile Include="Csharp\Server.cs" />

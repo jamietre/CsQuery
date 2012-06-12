@@ -193,7 +193,9 @@ namespace CsQuery.Engine
 
         public static IDomObject OnlyChild(IDomObject parent)
         {
-            return parent.ChildElements.SingleOrDefaultAlways();
+            // DOM does not consider the HTML node to be an "only child" so we don't eithter - return nothing for the document node
+            return parent==parent.Document ? null :
+                parent.ChildElements.SingleOrDefaultAlways();
         }
 
         public static bool IsOnlyOfType(IDomObject elm)
@@ -256,19 +258,13 @@ namespace CsQuery.Engine
         public static bool IsEmpty(IDomObject elm)
         {
             // try to optimize this by checking for the least labor-intensive things first
-            bool simpleEmpty = !elm.HasChildren ||
-                elm.ChildNodes.Count==0;
-
-            if (simpleEmpty)
+            if (elm.HasChildren)
             {
-                return true;
+                return false;
             }
             else
             {
-                return !elm.ChildNodes
-                    .Where(item => item.NodeType == NodeType.TEXT_NODE && 
-                        !String.IsNullOrEmpty(item.NodeValue))
-                    .Any();
+                return IsReallyEmpty(elm);
             }
         }
 
@@ -280,6 +276,41 @@ namespace CsQuery.Engine
         public static IEnumerable<IDomObject> Empty(IEnumerable<IDomObject> list)
         {
             return list.Where(item => IsEmpty(item));
+        }
+
+        /// <summary>
+        /// Return true of the node is a parent.
+        /// Element nodes and non-empty text nodes are considered to be children; empty text nodes, comments,
+        /// and processing instructions don’t count as children. A text node is considered empty if it has a data 
+        /// length of zero; so, for example, a text node with a single space isn’t empty.
+        /// </summary>
+        /// <param name="elm"></param>
+        /// <returns></returns>
+        public static bool IsParent(IDomObject elm)
+        {
+            // try to optimize this by checking for the least labor-intensive things first
+
+            if (!elm.HasChildren)
+            {
+                return false;
+            }
+            else
+            {
+                return !IsReallyEmpty(elm);
+            }
+        }
+
+        public static IEnumerable<IDomObject> Parent(IEnumerable<IDomObject> list)
+        {
+            return list.Where(item => !IsEmpty(item));
+        }
+        private static bool IsReallyEmpty(IDomObject elm)
+        {
+            return !elm.ChildNodes
+                   .Where(item => item.NodeType == NodeType.ELEMENT_NODE ||
+                       (item.NodeType == NodeType.TEXT_NODE &&
+                       !String.IsNullOrEmpty(item.NodeValue)))
+                   .Any();
         }
 
         #endregion

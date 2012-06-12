@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 using CsQuery.Utility;
@@ -53,6 +54,24 @@ namespace CsQuery.Engine
 
             // Copy the list because it may change during the process
             ActiveSelectors = new List<Selector>(Selectors);
+
+            // Deal with filter/all selectors: if the first selector is a pseudoclass, & there's no context,
+            // then convert it to a filter, and add "all" selector first
+
+            var firstSelector = ActiveSelectors[0];
+            if (firstSelector.SelectorType == SelectorType.PseudoClass && 
+                firstSelector.TraversalType == TraversalType.All && 
+                context==null)
+            {
+                var selector = new Selector();
+                selector.SelectorType = SelectorType.All;
+                selector.TraversalType = TraversalType.All;
+                selector.CombinatorType = CombinatorType.Root;
+                ActiveSelectors.Insert(0, selector);
+
+                firstSelector.TraversalType = TraversalType.Filter;
+                firstSelector.CombinatorType = CombinatorType.Chained;
+            }
 
             for (activeSelectorId = 0; activeSelectorId < ActiveSelectors.Count; activeSelectorId++)
             {
@@ -198,6 +217,8 @@ namespace CsQuery.Engine
                             break;
                     }
 
+                    // This is the main index access point 
+
                     if (selectionSource == null)
                     {
                         interimResult = document.QueryIndex(key + DomData.indexSeparator, depth, descendants);
@@ -283,6 +304,8 @@ namespace CsQuery.Engine
                     }
                     interimResult = filteredResults;
                 }
+
+
                 tempResult = new HashSet<IDomObject>();
                 if (lastResult != null)
                 {
@@ -423,7 +446,7 @@ namespace CsQuery.Engine
                             (selector.TraversalType == TraversalType.Child && selector.ChildDepth == current.Depth + 1) ||
                             (selector.TraversalType == TraversalType.Descendent && selector.ChildDepth <= current.Depth + 1))) 
                         {
-                            temporaryResults.AddRange(GetDomPositionMatches(elm, selector));
+                            temporaryResults.AddRange(GetPseudoClassMatches(elm, selector));
                             selectorType &= ~SelectorType.PseudoClass;
                         }
                         if (selectorType == 0)
@@ -465,8 +488,6 @@ namespace CsQuery.Engine
         /// <returns></returns>
         protected bool Matches(Selector selector, IDomObject obj, int depth)
         {
-            bool match = true;
-
             switch (selector.TraversalType)
             {
                 case TraversalType.Child:
@@ -510,48 +531,10 @@ namespace CsQuery.Engine
                 return false;
             }
 
+            
             if (selector.SelectorType.HasFlag(SelectorType.Attribute))
             {
-                string value;
-                match = elm.TryGetAttribute(selector.AttributeName, out value);
-                if (!match ||
-                    (match && selector.AttributeSelectorType.IsOneOf(AttributeSelectorType.NotExists, AttributeSelectorType.NotEquals)))
-                {
-                    return false;
-                }
-
-                switch (selector.AttributeSelectorType)
-                {
-                    case AttributeSelectorType.Exists:
-                        break;
-                    case AttributeSelectorType.Equals:
-                        match = selector.AttributeValue == value;
-                        break;
-                    case AttributeSelectorType.StartsWith:
-                        match = value.Length >= selector.AttributeValue.Length &&
-                            value.Substring(0, selector.AttributeValue.Length) == selector.AttributeValue;
-                        break;
-                    case AttributeSelectorType.Contains:
-                        match = value.IndexOf(selector.AttributeValue) >= 0;
-                        break;
-                    case AttributeSelectorType.ContainsWord:
-                        match = ContainsWord(value, selector.AttributeValue);
-                        break;
-                    case AttributeSelectorType.NotEquals:
-                        match = value.IndexOf(selector.AttributeValue) == 0;
-                        break;
-                    case AttributeSelectorType.EndsWith:
-                        int len = selector.AttributeValue.Length;
-                        match = value.Length >= len &&
-                            value.Substring(value.Length - len) == selector.AttributeValue;
-                        break;
-                    default:
-                        throw new InvalidOperationException("No AttributeSelectorType set");
-                }
-                if (!match)
-                {
-                    return false;
-                }
+                return AttributeSelectors.MatchesAttribute(selector, elm);
             }
 
             if (selector.SelectorType.HasFlag(SelectorType.PseudoClass)) {
@@ -559,14 +542,13 @@ namespace CsQuery.Engine
                     MatchesPseudoClass(elm, selector.PseudoClassType,
                     selector.Criteria);
             }
-            // remove this so it doesn't get re-run
-            // selector.SelectorType &= ~SelectorType.Position;
 
             if (selector.SelectorType.HasFlag(SelectorType.Contains) &&
                 !ContainsText(elm, selector.Criteria))
             {
                 return false;
             }
+
             return true;
         }
 
@@ -604,12 +586,12 @@ namespace CsQuery.Engine
         }
 
         /// <summary>
-        /// Return all elements matching a DOM-position type selector
+        /// Return all child elements matching a DOM-position type selector
         /// </summary>
         /// <param name="elm"></param>
         /// <param name="selector"></param>
         /// <returns></returns>
-        protected IEnumerable<IDomObject> GetDomPositionMatches(IDomElement elm, Selector selector)
+        protected IEnumerable<IDomObject> GetPseudoClassMatches(IDomElement elm, Selector selector)
         {
             IEnumerable<IDomObject> results;
             switch (selector.PseudoClassType)
@@ -641,6 +623,9 @@ namespace CsQuery.Engine
                 case PseudoClassType.Empty:
                     results= PseudoSelectors.Empty(elm.ChildElements);
                     break;
+                case PseudoClassType.Parent:
+                    results = PseudoSelectors.Parent(elm.ChildElements);
+                    break;
                 case PseudoClassType.Visible:
                     results = PseudoSelectors.Visible(elm.ChildElements);
                     break;
@@ -667,12 +652,13 @@ namespace CsQuery.Engine
             {
                 foreach (var child in elm.ChildElements)
                 {
-                    foreach (var item in GetDomPositionMatches(child, selector))
+                    foreach (var item in GetPseudoClassMatches(child, selector))
                     {
                         yield return item;
                     }
                 }
             }
+          
         }    
 
       
@@ -680,12 +666,12 @@ namespace CsQuery.Engine
         /// Return true if an element matches a specific DOM position-type filter
         /// </summary>
         /// <param name="elm"></param>
-        /// <param name="position"></param>
+        /// <param name="type"></param>
         /// <param name="criteria"></param>
         /// <returns></returns>
-        protected bool MatchesPseudoClass(IDomElement elm, PseudoClassType position, string criteria)
+        protected bool MatchesPseudoClass(IDomElement elm, PseudoClassType type, string criteria)
         {
-            switch (position)
+            switch (type)
             {
                 case PseudoClassType.FirstOfType:
                     return PseudoSelectors.IsFirstOfType(elm, criteria);
@@ -705,6 +691,8 @@ namespace CsQuery.Engine
                     return PseudoSelectors.IsOnlyOfType(elm);
                 case PseudoClassType.Empty:
                     return PseudoSelectors.IsEmpty(elm);
+                case PseudoClassType.Parent:
+                    return PseudoSelectors.IsParent(elm);
                 case PseudoClassType.Visible:
                     return PseudoSelectors.IsVisible(elm);
                 case PseudoClassType.Hidden:
@@ -722,6 +710,29 @@ namespace CsQuery.Engine
         #endregion
 
         #region private methods
+
+        private bool ContainsText(IDomElement obj, string text)
+        {
+            foreach (IDomObject e in obj.ChildNodes)
+            {
+                if (e.NodeType == NodeType.TEXT_NODE)
+                {
+                    if (((IDomText)e).NodeValue.IndexOf(text) >= 0)
+                    {
+                        return true;
+                    }
+                }
+                else if (e.NodeType == NodeType.ELEMENT_NODE)
+                {
+                    if (ContainsText((IDomElement)e, text))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         /// <summary>
         /// Adds a new selector for just the attribute value. Used to chain with the indexed attribute exists selector.
         /// </summary>
@@ -747,32 +758,6 @@ namespace CsQuery.Engine
             }
         }
 
-        protected bool ContainsWord(string text, string word)
-        {
-            HashSet<string> words = new HashSet<string>(word.Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-            return words.Contains(text);
-        }
-        protected bool ContainsText(IDomElement obj, string text)
-        {
-            foreach (IDomObject e in obj.ChildNodes)
-            {
-                if (e.NodeType == NodeType.TEXT_NODE)
-                {
-                    if (((IDomText)e).NodeValue.IndexOf(text) >= 0)
-                    {
-                        return true;
-                    }
-                }
-                else if (e.NodeType == NodeType.ELEMENT_NODE)
-                {
-                    if (ContainsText((IDomElement)e, text))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
 
         #endregion
     }

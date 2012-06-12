@@ -62,6 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Engine\AttributeSelectors.cs" />
     <Compile Include="Engine\PseudoSelectors.cs" />
     <Compile Include="Engine\Enums.cs" />
     <Compile Include="Engine\SelectorParser.cs" />

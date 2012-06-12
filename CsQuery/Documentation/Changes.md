@@ -1,4 +1,12 @@
 ﻿### Change Log
+6/12/2012: Version 1.1. Beta 4
+
+ADDED :parent pseudoclass
+CHANGED ensure that HTML node is handled the same way it is in browsers, e.g. it can be 
+   selected but is not considered a child of anything when targeted with selectors. Affects behavior
+   for open-ended pseudoclass selectors e.g. dom[":last-child"].
+CHANGED update logic for open-ended pseudoclass selectors to treat like "*:last-child" and handle as a filter
+   instead of some other internal "all" logic.
 
 6/11/2012: Version 1.1 Beta 3
 

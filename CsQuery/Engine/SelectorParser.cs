@@ -192,6 +192,10 @@ namespace CsQuery.Engine
                                 StartNewSelector(SelectorType.PseudoClass);
                                 Current.PseudoClassType = PseudoClassType.Empty;
                                 break;
+                            case "parent":
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.Parent;
+                                break;
                             case "only-of-type":
                                 type = Current.Tag;
                                 StartNewSelector(SelectorType.PseudoClass);
@@ -202,14 +206,24 @@ namespace CsQuery.Engine
                                 StartNewSelector(SelectorType.PseudoClass);
                                 Current.PseudoClassType = PseudoClassType.Header;
                                 break;
-                            case "parent":
-                                throw new NotImplementedException(":parent is not implemented, but will be.");
-                            case "lang":
-                                throw new NotImplementedException(":lang is not implemented, but will be.");
                             case "nth-last-child":
                                 throw new NotImplementedException(":nth-last-child is not implemented, but will be.");
                             case "nth-last-of-type":
                                 throw new NotImplementedException(":nth-last-of-type is not implemented, but will be.");
+                            case "lang":
+                                // The problem with :lang is that it is based on an inherited property value. This messes  with the index since
+                                // elements will be pre-filtered by an attribute selector. This could probably be implemented using a pseudoclass
+                                // type construct instead, e.g. as "visible", but since this is a low priority it's excluded for now.
+
+                                //StartNewSelector(SelectorType.Attribute);
+                                //Current.AttributeSelectorType = AttributeSelectorType.StartsWithOrHyphen;
+                                //Current.TraversalType = TraversalType.Inherited;
+                                //Current.AttributeName = "lang";
+
+                                //Current.Criteria = scanner.GetBoundedBy('(', false);
+                                //break;
+                                throw new NotImplementedException(":lang is not currently supported.");
+                                
                             case "first-letter":
                             case "first-line":
                             case "before":
@@ -247,7 +261,7 @@ namespace CsQuery.Engine
                         }
                         else
                         {
-                            string matchType = innerScanner.Get("=", "^=", "*=", "~=", "$=", "!=");
+                            string matchType = innerScanner.Get("=", "^=", "*=", "~=", "$=", "!=","|=");
                             Current.AttributeValue = innerScanner.Get(expectsOptionallyQuotedValue());
                             switch (matchType)
                             {
@@ -269,6 +283,9 @@ namespace CsQuery.Engine
                                     break;
                                 case "!=":
                                     Current.AttributeSelectorType = AttributeSelectorType.NotEquals;
+                                    break;
+                                case "|=":
+                                    Current.AttributeSelectorType = AttributeSelectorType.StartsWithOrHyphen;
                                     break;
                                 default:
                                     throw new ArgumentOutOfRangeException("Unknown attibute matching operator '" + matchType + "'");
@@ -407,6 +424,7 @@ namespace CsQuery.Engine
                 FinishSelector();
                 result = true;
             }
+           
             return result;
         }
         /// <summary>

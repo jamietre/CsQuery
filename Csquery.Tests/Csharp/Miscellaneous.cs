@@ -15,7 +15,7 @@ using CsQuery.Utility;
 namespace CsqueryTests.Csharp
 {
     
-    [TestFixture, TestClass,Description("CsQuery Tests (Not from Jquery test suite)")]
+    [TestFixture, TestClass,Description("Misc. tests; from support and bug reports")]
     public class Miscellaneous: CsQueryTest
     {
         
@@ -28,21 +28,7 @@ namespace CsqueryTests.Csharp
 
         }
 
-        [Test, TestMethod]
-        public void TestDocType()
-        {
-            var dom = CQ.Create("<!doctype html >");
 
-            Assert.AreEqual(DocType.HTML5, dom.Document.DocType);
-            Assert.AreEqual("<!DOCTYPE html>", dom[0].Render() );
-
-            dom = CQ.Create("<!doctype html PUBLIC \"-//W3C//DTD XHTML 1.0 >");
-            Assert.AreEqual(DocType.XHTML, dom.Document.DocType);
-
-            dom.Document.DocType = DocType.HTML5;
-            Assert.AreEqual("<!DOCTYPE html>", dom.First().Render());
-
-        }
 
         [Test, TestMethod, Description("ID with space - issue #5")]
         public void TestInvalidID()
@@ -88,17 +74,40 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual(2, res.Length);
         }
 
-        //[Test, TestMethod]
-        //public void GetText()
-        //{
+        [Test, TestMethod]
+        public void GetText()
+        {
+            string html = @"<table>
+                <tr>
+            <td>
+            <div class='background_picture'></div>
+            <a href='my/link/to/page2'>Page 2 Title</a> :second part of title</td>
+            <td>09/09/2011</td>
+            </tr>
+            </table>";
 
-        //    var allTextStrings = Dom.Select("*")
-        //        .Contents()
-        //        .Where(el => el.NodeType == NodeType.TEXT_NODE)
-        //        .Select(el => el.NodeValue);
-        //    string x = String.Join(",",allTextStrings.ToList());
-        //}
+            var dom = CQ.Create(html);
+            string text = dom["tr td:first-child"].Text();
+            Assert.AreEqual("Page 2 Title :second part of title", text.Trim());
 
+            var target = dom["tr td:first-child"].Clone();
+            target.Children().Remove();
+            text= target.Text();
+            Assert.AreEqual(":second part of title", text.Trim());
+
+            var textNodeAfterLink = dom["tr td:first-child a"][0].NextSibling.NodeValue;
+            Assert.AreEqual(":second part of title", textNodeAfterLink.Trim());
+        }
+
+        [Test, TestMethod]
+        public void LastWithHTMLNode()
+        {
+            var dom = TestDom("jquery-unit-index");
+            //var parents =dom["#groups"].Parents();
+            var res = dom["html"].Not(":last");
+            Assert.AreEqual(0,res.Length);
+            
+        }
         #region setup
         public override void FixtureSetUp()
         {
