@@ -4,7 +4,7 @@
 
 6/6/2012
 
-Release 1.1 Beta 4
+Release 1.1 Beta 5
 
 CsQuery is a jQuery port for .NET 4. It implements almost all CSS2 & CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) is ported and passes. The project necessarily includes an object model that represents the browser DOM. The document model uses a subselect-capable index that can perform multipart selectors on large documents in milliseconds.
 
