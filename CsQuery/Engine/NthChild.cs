@@ -36,8 +36,33 @@ namespace CsQuery.Engine
         protected IEquation<int> formula;
         
         protected string _Text;
+
+        /// <summary>
+        /// When true, the current equation is just a number, and the MatchOnlyIndex value should be used directly
+        /// </summary>
         protected bool IsJustNumber;
         protected int MatchOnlyIndex;
+        /// <summary>
+        /// Only nodes with this name will be included in the count to determine if an index matches the equation
+        /// </summary>
+        protected string OnlyNodeName
+        {
+            get
+            {
+                return _OnlyNodeName;
+            }
+            set
+            {
+                _OnlyNodeName = !String.IsNullOrEmpty(value) ?
+                    value.ToUpper() :
+                    null;
+            }
+
+        }
+        private string _OnlyNodeName;
+
+        protected bool FromLast;
+
         #endregion
 
         #region public properties/methods
@@ -63,13 +88,17 @@ namespace CsQuery.Engine
         }
 
         /// <summary>
-        /// Keep this private so changes can only me made by the GetMatchingChildren methods. This must be set before
-        /// Text.
+        /// Return true if the index matches the formula provided
         /// </summary>
-        protected string OnlyNodeName { get; set; }
-        public bool IndexMatches(int index, string formulaText, string type)
+        /// <param name="index"></param>
+        /// <param name="formulaText"></param>
+        /// <param name="onlyNodeName">Only include nodes of this type</param>
+        /// <param name="fromLast">Count from the last element instead of the first</param>
+        /// <returns></returns>
+        public bool IndexMatches(int index, string formulaText, string onlyNodeName=null, bool fromLast=false)
         {
-            OnlyNodeName = type;
+            OnlyNodeName = onlyNodeName;
+            FromLast = fromLast;
             return IndexMatches(index, formulaText);
         }
         public bool IndexMatches(int index, string formulaText)
@@ -95,13 +124,14 @@ namespace CsQuery.Engine
         /// <summary>
         /// Return nth children that match type
         /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="formula"></param>
-        /// <param name="type"></param>
+        /// <param name="obj">The parent object</param>
+        /// <param name="formula">The formula for determining n</param>
+        /// <param name="onlyNodeName">The type of node to match</param>
         /// <returns></returns>
-        public IEnumerable<IDomObject> GetMatchingChildren(IDomElement obj, string formula, string type)
+        public IEnumerable<IDomObject> GetMatchingChildren(IDomElement obj, string formula, string onlyNodeName=null, bool fromLast=false)
         {
-            OnlyNodeName = type;
+            OnlyNodeName = onlyNodeName;
+            FromLast = fromLast;
             return GetMatchingChildren(obj, formula);
 
         }
@@ -111,6 +141,7 @@ namespace CsQuery.Engine
             Text = formula;
             return GetMatchingChildren(obj);
         }
+
         public IEnumerable<IDomObject> GetMatchingChildren(IDomElement obj)
         {
             if (!obj.HasChildren)
@@ -119,17 +150,7 @@ namespace CsQuery.Engine
             }
             else if (IsJustNumber)
             {
-                int index = 1;
-                IDomElement child = obj.FirstChild.NodeType == NodeType.ELEMENT_NODE ?
-                    (IDomElement)obj.FirstChild :
-                    obj.FirstChild.NextElementSibling;
-
-                while (index++ < MatchOnlyIndex 
-                    && child != null 
-                    && (String.IsNullOrEmpty(OnlyNodeName) || child.NodeName == OnlyNodeName))
-                {
-                    child = child.NextElementSibling;
-                }
+                IDomElement child = GetNthChild(obj,MatchOnlyIndex);
 
                 if (child != null)
                 {
@@ -142,24 +163,108 @@ namespace CsQuery.Engine
             }
             else
             {
-
-                int index = 1;
                 UpdateCacheInfo(obj.ChildNodes.Count);
-                foreach (var child in obj.ChildElements)
+
+                int elementIndex = 1;
+                int newActualIndex=-1;
+
+                IDomElement el = GetNextChild(obj, -1, out newActualIndex);
+                while (newActualIndex >= 0)
                 {
-                    if (cacheInfo.MatchingIndices.Contains(index))
+                    if (cacheInfo.MatchingIndices.Contains(elementIndex))
                     {
-                        yield return child;
+                        yield return el;
                     }
-                    index++;
+                    el = GetNextChild(obj, newActualIndex, out newActualIndex);
+                    elementIndex++;
                 }
             }
         }
+
+        #endregion
+
+        #region public static methods
+
+        /// <summary>
+        /// Return the correct child from a list based on an index, and the fromLast setting
+        /// </summary>
+        /// <param name="nodeList"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public static IDomObject GetEffectiveChild(INodeList nodeList, int index, bool fromLast)
+        {
+            if (fromLast)
+            {
+                return nodeList[nodeList.Length - index - 1];
+            }
+            else
+            {
+                return nodeList[index];
+            }
+        }
+
         #endregion
 
         #region private methods
+
+        private IDomElement GetNthChild(IDomElement parent, int index)
+        {
+            int newActualIndex;
+            int elementIndex = 1;
+            IDomElement nthChild = GetNextChild(parent,-1, out newActualIndex);
+
+            while (nthChild != null && elementIndex != index)
+            {
+                nthChild = GetNextChild(parent, newActualIndex, out newActualIndex);
+                elementIndex++;
+            }
+            return nthChild;
+        }
+
+        private IDomElement GetNextChild(IDomElement parent, int currentIndex, out int newIndex)
+        {
+
+            int index = currentIndex;
+            
+
+            var children = parent.ChildNodes;
+            int count = children.Count;
+            IDomObject effectiveNextChild = null;
+
+            while (++index < count) {
+                effectiveNextChild= GetEffectiveChild(children, index);
+                if (effectiveNextChild.NodeType == NodeType.ELEMENT_NODE)
+                {
+                    break;
+                }
+            }
+             
+
+            if (index < count)
+            {
+                newIndex = index;
+                return (IDomElement)effectiveNextChild;
+            }
+            else
+            {
+                newIndex = -1;
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Return the correct child from a list based on an index, and the current "FromLast" setting
+        /// </summary>
+        /// <param name="nodeList"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        private IDomObject GetEffectiveChild(INodeList nodeList, int index)
+        {
+            return GetEffectiveChild(nodeList, index, FromLast);
+        }
         protected void UpdateCacheInfo(int lastIndex)
         {
+
             if (cacheInfo.MaxIndex >= lastIndex)
             {
                 return;
@@ -177,6 +282,9 @@ namespace CsQuery.Engine
             cacheInfo.MaxIndex = lastIndex;
             cacheInfo.NextIterator = iterator;
         }
+
+
+
         protected void CheckForSimpleNumber(string equation)
         {
             int matchIndex;
@@ -187,6 +295,11 @@ namespace CsQuery.Engine
 
             }
         }
+        /// <summary>
+        /// Replaces _Text with the correct equation for "even" and "odd"
+        /// </summary>
+        /// <param name="equation"></param>
+        /// <returns></returns>
         protected string  CheckForEvenOdd(string equation)
         {
             switch (_Text)
@@ -199,12 +312,15 @@ namespace CsQuery.Engine
                     return equation;
             }
         }
+
         protected void ParseEquation(string equation)
         {
             equation = CheckForEvenOdd(equation);
             formula = Equations.CreateEquation<int>(equation);
 
-            string cacheKey = (String.IsNullOrEmpty(OnlyNodeName) ? "" : OnlyNodeName + "|") + equation;
+            string cacheKey = (String.IsNullOrEmpty(OnlyNodeName) ? "" : OnlyNodeName + "|") +
+                (FromLast ? "1|" : "0|") +
+                equation;
 
             if (!ParsedEquationCache.TryGetValue(cacheKey, out cacheInfo))
             {

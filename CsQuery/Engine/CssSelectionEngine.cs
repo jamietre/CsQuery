@@ -597,10 +597,8 @@ namespace CsQuery.Engine
             switch (selector.PseudoClassType)
             {
                 case PseudoClassType.NthChild:
-                    results= PseudoSelectors.NthChilds(elm,selector.Criteria);
-                    break;
                 case PseudoClassType.NthOfType:
-                    results= PseudoSelectors.NthChildsOfType(elm,selector.Criteria);
+                    results= PseudoSelectors.NthChilds(elm,selector.Criteria);
                     break;
                 case PseudoClassType.FirstOfType:
                     results=PseudoSelectors.FirstOfType(elm, selector.Criteria);
@@ -619,6 +617,10 @@ namespace CsQuery.Engine
                     break;
                 case PseudoClassType.OnlyOfType:
                     results = PseudoSelectors.OnlyOfType(elm, selector.Criteria);
+                    break;
+                case PseudoClassType.NthLastChild:
+                case PseudoClassType.NthLastOfType:
+                    results = PseudoSelectors.NthLastChilds(elm, selector.Criteria);
                     break;
                 case PseudoClassType.Empty:
                     results= PseudoSelectors.Empty(elm.ChildElements);
@@ -682,13 +684,16 @@ namespace CsQuery.Engine
                 case PseudoClassType.LastChild:
                     return elm.NextElementSibling == null;
                 case PseudoClassType.NthChild:
-                    return PseudoSelectors.IsNthChild(elm, criteria);
                 case PseudoClassType.NthOfType:
-                    return PseudoSelectors.IsNthChildOfType(elm, criteria);
+                    return PseudoSelectors.IsNthChild(elm, criteria);
+                    return PseudoSelectors.IsNthChild(elm, criteria);
                 case PseudoClassType.OnlyChild:
                     return PseudoSelectors.IsOnlyChild(elm);
                 case PseudoClassType.OnlyOfType:
                     return PseudoSelectors.IsOnlyOfType(elm);
+                case PseudoClassType.NthLastChild:
+                case PseudoClassType.NthLastOfType:
+                    return PseudoSelectors.IsNthLastChild(elm, criteria);
                 case PseudoClassType.Empty:
                     return PseudoSelectors.IsEmpty(elm);
                 case PseudoClassType.Parent:

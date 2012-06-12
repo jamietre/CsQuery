@@ -25,44 +25,116 @@ namespace CsQuery.Engine
 
         #region CSS3 pseudoselectors
 
+        /// <summary>
+        /// Criteria should be the formula, optionally preceded by a node type filter e.g. "span|2n"
+        /// </summary>
+        /// <param name="elm"></param>
+        /// <param name="criteria"></param>
+        /// <returns></returns>
         public static bool IsNthChild(IDomElement obj, string criteria)
         {
-            return NthChildMatcher.IndexMatches(obj.ElementIndex, criteria);
+            return IsNthChildOfTypeImpl(obj, criteria, false);
+        }
+        /// <summary>
+        /// Criteria should be the formula, optionally preceded by a node type filter e.g. "span|2n"
+        /// </summary>
+        /// <param name="elm"></param>
+        /// <param name="criteria"></param>
+        /// <returns></returns>
+        public static bool IsNthLastChild(IDomElement obj, string criteria)
+        {
+            return IsNthChildOfTypeImpl(obj, criteria,true);
         }
 
-        public static bool IsNthChildOfType(IDomElement obj, string criteria)
+        private static bool IsNthChildOfTypeImpl(IDomElement obj, string criteria, bool fromLast = false)
         {
             string[] crit = criteria.Split('|');
             if (crit.Length != 2)
             {
                 throw new Exception("Invalid criteria was passed to IsNthChildsOfType; it must be \"type|equation\"");
             }
+            
+            string onlyNodeName = crit[0].ToUpper();
+            string formula = crit[1];
+
+            return NthChildMatcher.IndexMatches(IndexOfTypeOnly(obj,onlyNodeName,fromLast ),formula,onlyNodeName,fromLast);
+        }
+
+        /// <summary>
+        /// Return the index of obj within its siblings, including only elements with the same node name
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        private static int IndexOfTypeOnly(IDomElement obj, string onlyNodeName, bool fromLast=false)
+        {
             // get the index just for this type
-            int typeIndex=0;
-            foreach (var item in obj.ParentNode.ChildElements) {
-                if (item == obj) {
-                    break;
-                }
-                if (item.TagName == obj.TagName) {
+            int typeIndex = 0;
+            var childNodes = obj.ParentNode.ChildNodes;
+            int length = childNodes.Count;
+            for (int index=0;index<length;index++) {
+                var el = NthChild.GetEffectiveChild(childNodes,index,fromLast);
+                if (el.TagName == obj.TagName) {
+                    if (ReferenceEquals(el,obj)) {
+                        return typeIndex;
+                    }
                     typeIndex++;
                 }
             }
-
-            return NthChildMatcher.IndexMatches(typeIndex, crit[1], crit[0]);
+            return -1;
         }
 
+        /// <summary>
+        /// Criteria should be the formula, optionally preceded by a node type filter e.g. "span|2n"
+        /// </summary>
+        /// <param name="elm"></param>
+        /// <param name="criteria"></param>
+        /// <returns></returns>
         public static IEnumerable<IDomObject> NthChilds(IDomElement elm, string criteria)
         {
-            return NthChildMatcher.GetMatchingChildren(elm, criteria);
+            return NthChildsOfTypeImpl(elm, criteria,false);
         }
 
-        public static IEnumerable<IDomObject> NthChildsOfType(IDomElement elm, string criteria)
+        /// <summary>
+        /// Criteria should be the formula, optionally preceded by a node type filter e.g. "span|2n"
+        /// </summary>
+        /// <param name="elm"></param>
+        /// <param name="criteria"></param>
+        /// <returns></returns>
+        public static IEnumerable<IDomObject> NthLastChilds(IDomElement elm, string criteria)
         {
-            string[] crit = criteria.Split('|');
-            if (crit.Length!=2) {
-                throw new Exception("Invalid criteria was passed to NthChildsOfType; it must be \"type|equation\"");
+            return NthChildsOfTypeImpl(elm, criteria, true);
+        }
+        public static IEnumerable<IDomObject> NthLastChildsOfType(IDomElement elm, string criteria)
+        {
+            return NthChildsOfTypeImpl(elm, criteria, true);
+        }
+
+        private static IEnumerable<IDomObject> NthChildsOfTypeImpl(IDomElement elm, string criteria, bool fromLast = false)
+        {
+            string onlyNodeName=null;
+            string formula = null;
+            
+            if (!String.IsNullOrEmpty(criteria))
+            {
+                string[] crit = criteria.Split('|');
+                if (crit.Length > 2)
+                {
+                    throw new Exception("Invalid criteria was passed to NthChildsOfType; it must be \"type|equation\"");
+                }
+                
+                if (crit.Length == 2)
+                {
+                    onlyNodeName = crit[0].ToUpper();
+                    formula = crit[1];
+                }
+                else
+                {
+                    formula = crit[0];
+                }
+                
             }
-            return NthChildMatcher.GetMatchingChildren(elm, crit[1], crit[0]);
+            
+            return NthChildMatcher.GetMatchingChildren(elm, formula, onlyNodeName, fromLast);
         }
 
         public static bool IsFirstOfType(IDomObject elm, string type) {

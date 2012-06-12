@@ -6,7 +6,8 @@
 
 Release 1.1 Beta 5
 
-CsQuery is a jQuery port for .NET 4. It implements almost all CSS2 & CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) is ported and passes. The project necessarily includes an object model that represents the browser DOM. The document model uses a subselect-capable index that can perform multipart selectors on large documents in milliseconds.
+CsQuery is a jQuery port for .NET 4. It implements all CSS2 & CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) has been ported to C#. The project necessarily includes an object model that represents the browser DOM. The document model uses a subselect-capable index that can perform multipart selectors on large documents in milliseconds.
+
 
 ### Installation
 
@@ -14,14 +15,22 @@ CsQuery is a jQuery port for .NET 4. It implements almost all CSS2 & CSS3 select
 
 The current package on NuGet is 1.1 Beta 2 (also known as 1.0.1.xxx).
 
+
 ### Roadmap
 
-This project is essentially feature-complete, except for a few CSS3 selectors (see the very end for a list of what's missing). In the coming weeks I will be working on a little bit of cleanup; filling in a couple holes; writing documentation; and establishing a web site for the project.
+As of 6/12/2012, the project is feature-complete. In the coming weeks I will be working on a little bit of cleanup; writing documentation; and establishing a web site for the project.
+
+
+### Other sources of information
+
+I post about CsQuery on my blog from time to time. See [CsQuery posts](http://blog.outsharked.com/search/label/csquery)  from blog.outsharked.com
 
 
 ### Features
 
-All jQuery DOM manipulation methods are implemented.
+CsQuery is a .NET library that provides an implementation of the jQuery API and a document object model that simulates the browser DOM. 
+
+All jQuery DOM manipulation methods have been implemented, and some utility methods like `Extend` and `ToJSON` have been implemented as well. It also includes other methods that are specific to CsQuery's server-based implementation for loading content from remote URLs and parsing HTTP POST data.
 
 All CSS2 & CSS3 selectors have been implemented:
 
@@ -40,29 +49,31 @@ All CSS2 & CSS3 selectors have been implemented:
 	E+F					Adjacent sibling selector
 	E~F					General sibling selector
 
-All pseudoclasses that do not depend on browser state except :nth-last-child(N) and :nth-last-of-type(N) are implemented. The last two will be done before the final release:
+All pseudoclasses that do not depend on browser state except "lang" and  are implemented:
 
+	:first-child				:last-child					
+	:first-of-type				:last-of-type				
+	:only-child					:only-of-type					
 	:nth-child(N)				:nth-of-type(N)
-	:last-child					:first-of-type
-	:last-of-type				:only-child
-	:only-of-type				:root
-	:empty						:enabled
-	:disabled					:checked
-	:not(S)
+	:nth-last-child(N)			:nth-last-of-type(N)
+	:enabled					:disabled
+	:empty						:checked
+	:root:						:not(S)
 
 jQuery extensions:
 
-	:visible					:hidden
-	:odd						:even
 	:first						:last
+	:odd						:even
 	:eq(N)						:gt(N)
 	:lt(N)						:parent
-	:hidden						:header
+	:visible					:hidden
+	:radio						:button
+	:file						:text
+	:image						:reset
+	:submit						:password
+	:selected					:contains(T)
+	:has(S)
 	
-
-### Other sources of information
-
-I post about CsQuery on my blog from time to time. See [CsQuery posts](http://blog.outsharked.com/search/label/csquery)  from blog.outsharked.com
 
 ### Release Notes
 
@@ -71,7 +82,6 @@ Beta 4: You will need ILMerge to build this as a single DLL (see post-build scri
 **API Change in Beta 3**: The `IDomElement.NodeName` method now returns its results in uppercase to be consistent with browser behavior. Formerly, results were returned in lowercase. Sorry for this late change; I realize this can easily break code in ways that the compiler cannot detect but this is important to be consistent with the browser DOM. There should be no more breaking changes before the final release. 
 
 **API Change in Beta 2**: The `CsQuery.Server` object has been removed. Methods for loading a DOM from a http server have been replaced with static methods on `CQ` object (see "Creating a new DOM" below) to make them consistent with other DOM creation methods. 
-
 
 
 ### Contents
@@ -156,6 +166,13 @@ Returning a promise gives you a lot of flexibility, since you can than attach ot
 *The default property indexer is equivalent to "Select"*
     
     var rowsWithClass = dom[".targetClass"].Closest("td");
+
+
+*Use Find (like in jQuery) to access only child elements of a selection:
+
+    // get all elements that are first children within 'body' (e.g. excluding 'head')
+    
+	var childSpans = dom["body"].Find(":first-child");
 
 
 *Most methods are flexible with the kind of input they take to try to work as intutitively as they do in jQuery. Three ways to do the same thing:*
@@ -684,21 +701,15 @@ In the early stages of this project I had not much time to get it working "well 
 
 ##### Missing CSS selectors
 
-Some CSS3 pseudo-classes have not been implemented yet; this should be finished very shortly. Anything that is **not** here has been implemented, or is not relevant in this context.
-
-
-Pseudo-classes **not yet implemented**, but will be:
-
-    :nth-last-child(N)
-    :nth-last-of-type(N)
-
-**Not targeted for implementation:**
+Some parts of the CSS selection language have not been implemented; in each case it's because the selector doesn't make sense without a browser UI context. The only exception is
 
     :lang(C)
 
-<i>:lang may eventually be added, but is slightly more complex because it depends on environmental information in the browser. I'm not sure it makes sense.</i>
+"lang" may eventually be added, but it's unique in that it depends on environmental information in the browser. I am not planning to implement it at this time. You can still use the attribute selector to target nodes specifically identified with the "lang" attribute, e.g. `[lang|='en']` which would match "en-uk" and "en-us", for example. It will only return nodes that actually have the attribute, though, and not nodes that inherit it. In the correct browser implementation of `lang(C)`, every otherwise unmarked node would be returned for the default langauge of the document.
 
-UI related:
+Complete list of other unimplemented pseudoselectors:
+
+<i>UI related</i>
 
 	:link    
 	:hover
@@ -707,7 +718,7 @@ UI related:
 	:visited
 	:target
 
-Pseudo-elements:
+<i>Pseudo-elements</i>
 
     :first-letter (pseudoelement)
 	:first-line (pseudoelement)

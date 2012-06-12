@@ -61,22 +61,25 @@ namespace CsQuery.Engine
         Odd = 3, // jquery
         First = 4, // jquery
         Last = 5, // jquery
-        FirstChild = 6,
-        LastChild = 7,
-        NthChild = 8,
-        IndexEquals = 9, // jquery
-        IndexLessThan = 10, // jquery
-        IndexGreaterThan = 11, // jquery
-        FirstOfType=12,
-        LastOfType=13,
-        NthOfType= 14,
-        OnlyChild=15,
-        OnlyOfType = 16,
-        Empty = 17,
-        Parent = 18, // jquery
-        Visible = 19, // jquery
-        Hidden = 20, // jquery
-        Header = 21 // jquery
+        IndexEquals = 6, // jquery
+        IndexLessThan = 7, // jquery
+        IndexGreaterThan = 8, // jquery
+        Parent = 9, // jquery
+        Visible = 10, // jquery
+        Hidden = 11, // jquery
+        Header = 12, // jquery
+        FirstChild = 20,
+        LastChild = 21,
+        NthChild = 22,
+        FirstOfType = 23,
+        LastOfType = 24,
+        NthOfType = 25,
+        NthLastChild = 26,
+        NthLastOfType = 27,
+        OnlyChild = 28,
+        OnlyOfType = 29,
+        Empty = 30
+        
     }
 
 

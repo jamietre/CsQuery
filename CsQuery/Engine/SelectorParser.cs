@@ -156,17 +156,6 @@ namespace CsQuery.Engine
                                 Current.PseudoClassType = PseudoClassType.LastOfType;
                                 Current.Criteria = type;
                                 break;
-                            case "nth-child":
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.NthChild;
-                                Current.Criteria = scanner.GetBoundedBy('(');
-                                break;
-                            case "nth-of-type":
-                                type = Current.Tag;
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.NthOfType;
-                                Current.Criteria = type+"|"+scanner.GetBoundedBy('(');
-                                break;
                             case "only-child":
                                 StartNewSelector(SelectorType.PseudoClass);
                                 Current.PseudoClassType = PseudoClassType.OnlyChild;
@@ -206,10 +195,29 @@ namespace CsQuery.Engine
                                 StartNewSelector(SelectorType.PseudoClass);
                                 Current.PseudoClassType = PseudoClassType.Header;
                                 break;
+                            case "nth-child":
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.NthChild;
+                                Current.Criteria = scanner.GetBoundedBy('(');
+                                break;
+                            case "nth-of-type":
+                                type = Current.Tag;
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.NthOfType;
+                                Current.Criteria = type+"|"+scanner.GetBoundedBy('(');
+                                break;
                             case "nth-last-child":
-                                throw new NotImplementedException(":nth-last-child is not implemented, but will be.");
+                                type = Current.Tag;
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.NthLastChild;
+                                Current.Criteria = type+"|"+scanner.GetBoundedBy('(');
+                                break;
                             case "nth-last-of-type":
-                                throw new NotImplementedException(":nth-last-of-type is not implemented, but will be.");
+                                type = Current.Tag;
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.NthLastOfType;
+                                Current.Criteria = type+"|"+scanner.GetBoundedBy('(');
+                                break;
                             case "lang":
                                 // The problem with :lang is that it is based on an inherited property value. This messes  with the index since
                                 // elements will be pre-filtered by an attribute selector. This could probably be implemented using a pseudoclass
@@ -224,11 +232,20 @@ namespace CsQuery.Engine
                                 //break;
                                 throw new NotImplementedException(":lang is not currently supported.");
                                 
+
                             case "first-letter":
                             case "first-line":
                             case "before":
                             case "after":
                                 throw new NotImplementedException("The CSS pseudoelement selectors are not implemented in CsQuery.");
+                            case "target":
+                            case "link":
+                            case "hover":
+                            case "active":
+                            case "focus":
+                            case "visited":
+                                throw new NotImplementedException("Pseudoclasses that require a browser aren't implemented.");
+
                             default:
                                 throw new ArgumentOutOfRangeException("Unknown pseudo-class :\"" + key + "\". If this is a valid CSS or jQuery selector, please let us know.");
                         }

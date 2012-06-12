@@ -33,7 +33,7 @@ namespace CsqueryTests.Csharp
 
             res = res["#textarea"].Attr("id", null);
             Assert.AreEqual(res["[id]"].Length + 1, count, "One less ID");
-            Assert.AreEqual(bodyChildIDCount - 1, res["body > [id]"].Length, "Setting ID to null removed it from the index too");
+            Assert.AreEqual(bodyChildIDCount - 1, res["body [id] > :last-child[id]"].Length, "Setting ID to null removed it from the index too");
 
             res[0].Id = "";
             Assert.AreEqual(bodyChildIDCount, res["body [id] > :last-child[id]"].Length, "Setting ID to empty string added it back");
@@ -77,7 +77,42 @@ namespace CsqueryTests.Csharp
             res = Dom["body > :nth-child(odd)"];
             Assert.AreEqual(res.Elements, odd.Elements);
         }
-        
+
+
+
+        [Test, TestMethod]
+        public void NthLastChild()
+        {
+            var res = Dom["body > :nth-last-child(2)"];
+            Assert.AreEqual(Dom["#hlinks-user"],res);
+
+            // odd & even are reversed for the jQuery pseudoselectors from nth-child version.
+
+            res = Dom["body > :nth-last-child(2n)"];
+            Assert.AreEqual(Dom["#first-p, #hlinks-user"], res);
+            
+            res = Dom["body > :nth-last-child(2n+1)"];
+            Assert.AreEqual(Dom["hr:first, #test-show"], res);
+
+        }
+
+
+        [Test, TestMethod]
+        public void NthLastChildOfType()
+        {
+            var res = Dom["span:nth-last-of-type(2)"];
+            Assert.AreEqual(Dom[".badge2, [title='13 bronze badges'], .badge3"], res);
+
+            // odd & even are reversed for the jQuery pseudoselectors from nth-child version.
+
+            res = Dom["span:nth-last-of-type(2n)"];
+            Assert.AreEqual(Dom[".profile-triangle, .badge2, [title='13 bronze badges'], .badge3"], res);
+
+            res = Dom["span:nth-last-of-type(2n+1)"];
+            Assert.AreEqual(8, res.Length); ;
+
+        }
+
         [Test, TestMethod]
         public void OnlyChild()
         {
