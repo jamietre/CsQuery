@@ -77,14 +77,7 @@ jQuery extensions:
 
 ### Release Notes
 
-Release 1.1: No substantial changes from Beta 5.
-
-Beta 5: Finished missing CSS selectors - all ported functionality is complete.
-
-**API Change in Beta 3**: The `IDomElement.NodeName` method now returns its results in uppercase to be consistent with browser behavior. Formerly, results were returned in lowercase. Sorry for this late change; I realize this can easily break code in ways that the compiler cannot detect but this is important to be consistent with the browser DOM. There should be no more breaking changes before the final release. 
-
-**API Change in Beta 2**: The `CsQuery.Server` object has been removed. Methods for loading a DOM from a http server have been replaced with static methods on `CQ` object (see "Creating a new DOM" below) to make them consistent with other DOM creation methods. 
-
+See [release notes for version 1.1 on blog.outsharked.com](http://blog.outsharked.com/2012/06/csquery-11-released-and-available-on.html)
 
 ### Contents
 
