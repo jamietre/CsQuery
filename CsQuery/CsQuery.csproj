@@ -67,7 +67,7 @@
     <Compile Include="Engine\Enums.cs" />
     <Compile Include="Engine\SelectorParser.cs" />
     <Compile Include="ExtensionMethods\Forms.cs" />
-    <Compile Include="ExtensionMethods\WebForms.cs" />
+    <Compile Include="Web\WebForms.cs" />
     <Compile Include="OutputFormatters\IOutputFormatter.cs" />
     <Compile Include="OutputFormatters\FormatPlainText.cs" />
     <Compile Include="Promises\WhenAll.cs" />
