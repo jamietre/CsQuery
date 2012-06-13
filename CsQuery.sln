@@ -10,10 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CsQuery.vsmdi = CsQuery.vsmdi
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsQuery.StringScanner", "CsQuery.StringScanner\CsQuery.StringScanner.csproj", "{68678A22-AD49-42A7-8C6A-38B333C13BF2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsQuery.EquationParser", "CsQuery.EquationParser\CsQuery.EquationParser.csproj", "{9DE463B1-E263-4580-82FF-35ECAE1D7C2E}"
-EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = CsQuery.vsmdi

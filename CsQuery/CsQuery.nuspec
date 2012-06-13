@@ -1,18 +1,24 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>$id$</id>
-    <version>$version$</version>
-    <title>$title$</title>
-    <authors>$author$</authors>
-    <owners>$author$</owners>
+    <id>CsQuery</id>
+    <version>1.1.0</version>
+    <title>CsQuery</title>
+    <authors>James Treworgy</authors>
+    <owners>James Treworgy</owners>
     <licenseUrl>https://github.com/jamietre/CsQuery/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/jamietre/CsQuery/</projectUrl>
     <iconUrl>http://www.outsharked.com/csquery/images/csquery-icon-large.gif</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
-    <releaseNotes>First public release.</releaseNotes>
+    <description>CsQuery is C# jQuery port for .NET 4. It implements all CSS2 and CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. It includes a document object model that mimics the browser DOM, and uses a subselect-capable index for very fast operation.</description>
+    <releaseNotes>Version 1.1 is feature-complete and implements all CSS3 selectors that were missing from 1.0.</releaseNotes>
     <copyright>Copyright 2012</copyright>
     <tags>jquery html</tags>
   </metadata>
+    <files>
+        <file src="..\Distribution\CsQuery.dll" target="lib\net40" />
+        <file src="..\Distribution\CsQuery.pdb" target="lib\net40" />
+        <file src="**\*.cs" target="src" />
+  </files>  
 </package>
+

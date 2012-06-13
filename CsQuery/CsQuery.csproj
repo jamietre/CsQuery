@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CsQuery</RootNamespace>
-    <AssemblyName>CsQuery.Core</AssemblyName>
+    <AssemblyName>CsQuery</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\CsQuery.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -50,6 +51,9 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -62,6 +66,55 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EquationParser\enumAssociation.cs" />
+    <Compile Include="EquationParser\enumOperationType.cs" />
+    <Compile Include="EquationParser\Equations.cs" />
+    <Compile Include="EquationParser\IClause.cs" />
+    <Compile Include="EquationParser\IEquation.cs" />
+    <Compile Include="EquationParser\IEquationParser.cs" />
+    <Compile Include="EquationParser\IFunction.cs" />
+    <Compile Include="EquationParser\ILiteral.cs" />
+    <Compile Include="EquationParser\Implementation\Equation.cs" />
+    <Compile Include="EquationParser\Implementation\EquationParser.cs" />
+    <Compile Include="EquationParser\Implementation\Function.cs" />
+    <Compile Include="EquationParser\Implementation\Functions\Abs.cs" />
+    <Compile Include="EquationParser\Implementation\Functions\Difference.cs" />
+    <Compile Include="EquationParser\Implementation\Functions\NativeOperation.cs" />
+    <Compile Include="EquationParser\Implementation\Functions\Product.cs" />
+    <Compile Include="EquationParser\Implementation\Functions\Quotient.cs" />
+    <Compile Include="EquationParser\Implementation\Functions\Sum.cs" />
+    <Compile Include="EquationParser\Implementation\IntegerValue.cs" />
+    <Compile Include="EquationParser\Implementation\Literal.cs" />
+    <Compile Include="EquationParser\Implementation\Operand.cs" />
+    <Compile Include="EquationParser\Implementation\Operator.cs" />
+    <Compile Include="EquationParser\Implementation\OrderedDictionary.cs" />
+    <Compile Include="EquationParser\Implementation\Types.cs" />
+    <Compile Include="EquationParser\Implementation\Utils.cs" />
+    <Compile Include="EquationParser\Implementation\Variable.cs" />
+    <Compile Include="EquationParser\Implementation\VariableReadEventArgs.cs" />
+    <Compile Include="EquationParser\INativeOperation.cs" />
+    <Compile Include="EquationParser\IOperand.cs" />
+    <Compile Include="EquationParser\IOperation.cs" />
+    <Compile Include="EquationParser\IOperator.cs" />
+    <Compile Include="EquationParser\IOrderedDictionary.cs" />
+    <Compile Include="EquationParser\IVariable.cs" />
+    <Compile Include="EquationParser\IVariableContainer.cs" />
+    <Compile Include="StringScanner\CharacterData.cs" />
+    <Compile Include="StringScanner\enumCharacterType.cs" />
+    <Compile Include="StringScanner\ExtensionMethods.cs" />
+    <Compile Include="StringScanner\IExpectPattern.cs" />
+    <Compile Include="StringScanner\Implementation\CharacterInfo.cs" />
+    <Compile Include="StringScanner\Implementation\ExpectPattern.cs" />
+    <Compile Include="StringScanner\Implementation\StringInfo.cs" />
+    <Compile Include="StringScanner\Implementation\StringScanner.cs" />
+    <Compile Include="StringScanner\IStringScanner.cs" />
+    <Compile Include="StringScanner\IValueInfo.cs" />
+    <Compile Include="StringScanner\MatchFunctions.cs" />
+    <Compile Include="StringScanner\Patterns\Bounded.cs" />
+    <Compile Include="StringScanner\Patterns\Number.cs" />
+    <Compile Include="StringScanner\Patterns\OptionallyQuoted.cs" />
+    <Compile Include="StringScanner\Patterns\Quoted.cs" />
+    <Compile Include="StringScanner\Scanner.cs" />
     <Compile Include="Engine\AttributeSelectors.cs" />
     <Compile Include="Engine\PseudoSelectors.cs" />
     <Compile Include="Engine\Enums.cs" />
@@ -172,16 +225,15 @@
       <Name>CsQuery.StringScanner</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if not $(ConfigurationName) == Release goto :finished
-if not exist "C:\Program Files (x86)\Microsoft\ILMerge\ILMerge.exe" goto :finished
-"C:\Program Files (x86)\Microsoft\ILMerge\ILMerge.exe" /lib:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319" /lib:"C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\PublicAssemblies"  /targetplatform:v4 /out:"$(SolutionDir)CsQuery\$(OutDir)CsQuery.dll" "$(SolutionDir)CsQuery\$(OutDir)CsQuery.StringScanner.dll" "$(SolutionDir)CsQuery\$(OutDir)CsQuery.EquationParser.dll" "$(SolutionDir)CsQuery\$(OutDir)CsQuery.Core.dll"  /xmldocs 
-xcopy "$(SolutionDir)CsQuery\$(OutDir)CsQuery.dll" "$(SolutionDir)Distribution\" /Y
-echo "success"
-:finished
-exit 0
-</PostBuildEvent>
+    <PostBuildEvent>xcopy $(TargetDir)CsQuery.dll $(SolutionDir)Distribution /Y
+;
+xcopy $(TargetDir)CsQuery.pdb $(SolutionDir)Distribution /Y
+;
+xcopy $(TargetDir)CsQuery.xml $(SolutionDir)Distribution /Y
+;</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

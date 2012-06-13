@@ -686,7 +686,6 @@ namespace CsQuery.Engine
                 case PseudoClassType.NthChild:
                 case PseudoClassType.NthOfType:
                     return PseudoSelectors.IsNthChild(elm, criteria);
-                    return PseudoSelectors.IsNthChild(elm, criteria);
                 case PseudoClassType.OnlyChild:
                     return PseudoSelectors.IsOnlyChild(elm);
                 case PseudoClassType.OnlyOfType:

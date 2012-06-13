@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("CsQuery")]
-[assembly: AssemblyDescription("CsQuery is C# jQuery port for .NET 4. It implements ")]
+[assembly: AssemblyDescription("CsQuery is C# jQuery port for .NET 4. It implements all CSS2 & CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. It includes a document object model that mimics the browser DOM, and uses a subselect-capable index for fast operation.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("James Treworgy")]
 [assembly: AssemblyProduct("CsQuery")]
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.1.*")]
+[assembly: AssemblyVersion("1.1.0.*")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
