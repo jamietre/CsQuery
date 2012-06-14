@@ -280,7 +280,7 @@ namespace CsQuery.Engine
                 if (selectorType.HasFlag(SelectorType.SubSelectorHas) 
                     || selectorType.HasFlag(SelectorType.SubSelectorNot))
                 {
-                    bool isHasSelector = selectorType.HasFlag(SelectorType.SubSelectorHas);
+                    //bool isHasSelector = selectorType.HasFlag(SelectorType.SubSelectorHas);
 
                     IEnumerable<IDomObject> subSelectWithin = interimResult
                         ?? (combinatorType == CombinatorType.Chained ? lastResult : null)
@@ -288,26 +288,73 @@ namespace CsQuery.Engine
 
                     // subselects are a filter. start a new interim result.
 
-                    HashSet<IDomObject> filteredResults = new HashSet<IDomObject>();
-
-                    foreach (IDomObject obj in subSelectWithin)
+                    var subSelector = new SelectorChain(selector.Criteria);
+                    IEnumerable<IDomObject> subResults;
+                    
+                    var hasList = new List<IDomObject>();
+                    
+                    if (selectorType.HasFlag(SelectorType.SubSelectorHas))
                     {
-                        bool match = true;
-                        foreach (var sub in selector.SubSelectors)
+                        foreach (IDomObject item in subSelectWithin)
                         {
-                            List<IDomObject> listOfOne = new List<IDomObject>();
-                            listOfOne.Add(obj);
-
-                            bool has = !sub.Select(document, listOfOne).IsNullOrEmpty();
-
-                            match &= isHasSelector == has;
-                        }
-                        if (match)
-                        {
-                            filteredResults.Add(obj);
+                            subResults = subSelector.Select(document, GetDescendantElements(item));
+                            if (subResults.Any())
+                            {
+                                hasList.Add(item);
+                            }
                         }
                     }
-                    interimResult = filteredResults;
+                    else
+                    {
+                        // these are always filters
+                        subSelector.ForEach(item => item.TraversalType = TraversalType.Filter);
+
+                        subResults = subSelector.Select(document, subSelectWithin);
+
+                        // this is kind of unfortunate but is required to keep the order correct. Probably a more efficient
+                        // way to do it but works fine for now
+
+                        interimResult = subSelectWithin.Except(subResults);
+
+
+                        
+                        //foreach (IDomObject item in subSelectWithin)
+                        //{
+                        //    subResults = subSelector.Select(document, item);
+                        //    if (!subResults.Any())
+                        //    {
+                        //        hasList.Add(item);
+                        //    }
+                        //}
+                    }
+
+                    if (hasList.Count > 0)
+                    {
+                        interimResult = hasList;
+                    }
+
+                    //HashSet<IDomObject> filteredResults = new HashSet<IDomObject>();
+
+                    //foreach (IDomObject obj in subSelectWithin)
+                    //{
+                    //    bool match = true;
+                    //    foreach (var sub in selector.SubSelectors)
+                    //    {
+                    //        List<IDomObject> listOfOne = new List<IDomObject>();
+                    //        listOfOne.Add(obj);
+
+                    //        bool has = !sub.Select(document, listOfOne).IsNullOrEmpty();
+
+                    //        match &= isHasSelector == has;
+                    //    }
+                    //    if (match)
+                    //    {
+                    //        filteredResults.Add(obj);
+                    //    }
+                    //}
+                    //interimResult = filteredResults;
+
+
                 }
 
 
@@ -751,6 +798,7 @@ namespace CsQuery.Engine
             return sourceList;
         }
 
+
         /// <summary>
         /// Map a list to its children or descendants, if needed.
         /// </summary>
@@ -829,15 +877,26 @@ namespace CsQuery.Engine
         {
             foreach (var item in list)
             {
-                foreach (var child in item.ChildElements)
+                foreach (var child in GetDescendantElements(item))
                 {
                     yield return child;
-                    foreach (var grandChild in GetDescendantElements(child.ChildElements))
-                    {
-                        yield return grandChild;
-                    }
                 }
             }
+
+
+        }
+
+        protected IEnumerable<IDomElement> GetDescendantElements(IDomObject element)
+        {
+            foreach (var child in element.ChildElements)
+            {
+                yield return child;
+                foreach (var grandChild in GetDescendantElements(child.ChildElements))
+                {
+                    yield return grandChild;
+                }
+            }
+            
         }
         protected IEnumerable<IDomElement> GetAdjacentElements(IEnumerable<IDomObject> list)
         {

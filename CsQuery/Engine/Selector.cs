@@ -105,20 +105,6 @@ namespace CsQuery.Engine
         /// The list of elements that should be matched, for elements selectors
         /// </summary>
         public IEnumerable<IDomObject> SelectElements { get; set; }
-        /// <summary>
-        /// A list of subselectors. The results of this are used as criteria for a primary selector, e.g. has or not.
-        /// </summary>
-        public List<SelectorChain> SubSelectors
-        {
-            get
-            {
-                if (_SubSelectors == null)
-                {
-                    _SubSelectors = new List<SelectorChain>();
-                }
-                return _SubSelectors;
-            }
-        }
 
         public bool IsDomPositionPseudoSelector
         {
@@ -173,13 +159,6 @@ namespace CsQuery.Engine
                     default:
                         return false;
                 }
-            }
-        }
-        public bool HasSubSelectors
-        {
-            get
-            {
-                return _SubSelectors != null && SubSelectors.Count > 0;
             }
         }
 
@@ -250,14 +229,7 @@ namespace CsQuery.Engine
             clone.PositionIndex = PositionIndex;
             clone.SelectElements = SelectElements;
             clone.Tag = Tag;
-            
-            if (HasSubSelectors)
-            {
-                foreach (var selector in SubSelectors)
-                {
-                    clone.SubSelectors.Add(selector.Clone());
-                }
-            }
+
             return clone;
         }
 
@@ -314,12 +286,9 @@ namespace CsQuery.Engine
                 output += ":" + PseudoClassType.ToString();
                 if (IsFunction)
                 {
-                    output += "(" + PositionIndex + ")";
+                    output += "(" + Criteria + ")";
                 }
-                else if (SubSelectors.Count > 0)
-                {
-                    output += SubSelectors.ToString();
-                }
+               
             }
             if (SelectorType.HasFlag(SelectorType.Contains))
             {

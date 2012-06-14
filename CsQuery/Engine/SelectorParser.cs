@@ -172,11 +172,8 @@ namespace CsQuery.Engine
                             case "has":
                             case "not":
                                 StartNewSelector(key == "has" ? SelectorType.SubSelectorHas : SelectorType.SubSelectorNot);
-                                Current.TraversalType = TraversalType.Descendent;
-
                                 string criteria = Current.Criteria = scanner.GetBoundedBy('(', true);
-                                SelectorChain subSelectors = new SelectorChain(criteria);
-                                Current.SubSelectors.Add(subSelectors);
+
                                 break;
                             case "visible":
                                 StartNewSelector(SelectorType.PseudoClass);

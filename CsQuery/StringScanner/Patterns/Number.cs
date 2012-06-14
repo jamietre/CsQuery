@@ -50,7 +50,7 @@ namespace CsQuery.StringScanner.Patterns
             info.Target = current;
             if (index == StartIndex)
             {
-                if (!info.Numeric && current!='-')
+                if (!info.Numeric && current!='-' && current!='+')
                 {
                     failed=true;
                     return false;

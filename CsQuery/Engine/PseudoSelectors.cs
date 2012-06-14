@@ -79,13 +79,19 @@ namespace CsQuery.Engine
             int typeIndex = 0;
             var childNodes = obj.ParentNode.ChildNodes;
             int length = childNodes.Count;
+            bool onlyNodes = !String.IsNullOrEmpty(onlyNodeName);
             for (int index=0;index<length;index++) {
                 var el = NthChild.GetEffectiveChild(childNodes,index,fromLast);
-                if (el.TagName == obj.TagName) {
-                    if (ReferenceEquals(el,obj)) {
-                        return typeIndex;
+                if (el.NodeType == NodeType.ELEMENT_NODE)
+                {
+                    if (!onlyNodes || el.NodeName == obj.NodeName)
+                    {
+                        if (ReferenceEquals(el, obj))
+                        {
+                            return typeIndex;
+                        }
+                        typeIndex++;
                     }
-                    typeIndex++;
                 }
             }
             return -1;
