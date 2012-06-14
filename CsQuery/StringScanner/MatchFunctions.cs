@@ -23,36 +23,27 @@ namespace CsQuery.StringScanner
         {
             return CharacterData.IsType(character, CharacterType.Alpha | CharacterType.NumberPart);
         }
-        public static bool HtmlIDValue(int index, char character)
+        public static IExpectPattern HtmlIDValue()
         {
             // The requirements are different for HTML5 vs. older HTML specs but basically we don't want to be
             // too rigorous on this one -- the tagname spec is about right and includes underscores & colons
 
-            return CharacterData.IsType(character, CharacterType.HtmlTagNameExceptStart);
+            return new Patterns.HtmlID();
         }
-        public static bool HTMLAttribute(int index, char character)
+        public static IExpectPattern HTMLAttribute()
         {
-
-            if (index == 0)
-            {
-                return CharacterData.IsType(character, CharacterType.Alpha);
-            }
-            else
-            {
-                return CharacterData.IsType(character, CharacterType.Alpha | CharacterType.Number)
-                    || "_:.-".Contains(character);
-            }
+            return new Patterns.HTMLAttributeName();
+          
         }
-        public static bool HTMLTagName(int index, char character)
+        public static bool HTMLTagSelectorName(int index, char character)
         {
             if (index == 0)
             {
-                return CharacterData.IsType(character, CharacterType.HtmlTagNameStart);
+                return CharacterData.IsType(character, CharacterType.HtmlTagSelectorStart);
             }
             else
             {
-                return CharacterData.IsType(character, CharacterType.HtmlTagNameExceptStart)
-                    || character == '_' || character == '-';
+                return CharacterData.IsType(character, CharacterType.HtmlTagSelectorExceptStart);
             }
         }
 
@@ -123,17 +114,10 @@ namespace CsQuery.StringScanner
         /// <param name="index"></param>
         /// <param name="character"></param>
         /// <returns></returns>
-        public static bool CssClass(int index, char character)
+        public static IExpectPattern CssClassName
         {
-            //TODO - doesn't validate hyphen-digit combo.
-
-            if (index == 0)
-            {
-                return CharacterData.IsType(character, CharacterType.AlphaISO10646);
-            }
-            else
-            {
-                return CharacterData.IsType(character, CharacterType.AlphaISO10646 | CharacterType.Number);
+            get {
+                return new Patterns.CssClassName();
             }
         }
         public static IExpectPattern OptionallyQuoted

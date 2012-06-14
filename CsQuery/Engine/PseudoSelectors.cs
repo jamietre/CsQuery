@@ -51,7 +51,7 @@ namespace CsQuery.Engine
             string[] crit = criteria.Split('|');
             if (crit.Length != 2)
             {
-                throw new Exception("Invalid criteria was passed to IsNthChildsOfType; it must be \"type|equation\"");
+                throw new ArgumentOutOfRangeException("Invalid criteria was passed to IsNthChildsOfType; it must be \"type|equation\"");
             }
             
             string onlyNodeName = crit[0].ToUpper();
@@ -119,7 +119,7 @@ namespace CsQuery.Engine
                 string[] crit = criteria.Split('|');
                 if (crit.Length > 2)
                 {
-                    throw new Exception("Invalid criteria was passed to NthChildsOfType; it must be \"type|equation\"");
+                    throw new ArgumentOutOfRangeException("Invalid criteria was passed to NthChildsOfType; it must be \"type|equation\"");
                 }
                 
                 if (crit.Length == 2)

@@ -1,6 +1,13 @@
 ﻿### Change Log
 
-6/12/2012: Version 1.1 Beta 6
+Added some tests from sizzle
+Allow escaping characters in ID selectors
+Allow escaping characters in class name selectors
+Allow HTML parser to handle : and . in node names and attribute names
+Make property indexer overloads match Select() overloads
+Enhance compliance with HTML spec for allowable characters in attributes, ids
+
+6/12/2012: Version 1.1
 
 ADDED :nth-last-of-type(N), nth-last-child(N) -- final outstanding pseudoselectors
 ADDED IDomObject.Name property

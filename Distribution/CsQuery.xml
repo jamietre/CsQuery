@@ -1002,6 +1002,14 @@
             Create a new CsQuery object using an existing instance and a selector. if the selector is null or missing, then
             it will contain no selection results.
             </summary>
+            <param name="selector">A valid CSS selector</param>
+            <param name="context">The context</param>
+        </member>
+        <member name="M:CsQuery.CQ.#ctor(System.String,CsQuery.IDomElement)">
+            <summary>
+            Create a new CsQuery object using an existing instance and a selector. if the selector is null or missing, then
+            it will contain no selection results.
+            </summary>
             <param name="selector"></param>
             <param name="context"></param>
         </member>
@@ -1108,22 +1116,8 @@
             <summary>
             Create a new DOM object from html, and use quickSet to create attributes (and/or css)
             </summary>
-            <param name="selector"></param>
+            <param name="html">A string of HTML</param>
             <param name="quickSet"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.Create(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
-            <summary>
-            Creeate a new DOM from a squence of elements, or another CQ object
-            </summary>
-            <param name="html"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.Create(CsQuery.IDomObject)">
-            <summary>
-            Create a new DOM from a single element
-            </summary>
-            <param name="element"></param>
             <returns></returns>
         </member>
         <member name="M:CsQuery.CQ.Create(System.String,CsQuery.CQ)">
@@ -1132,6 +1126,20 @@
             </summary>
             <param name="selector"></param>
             <param name="context"></param>
+        </member>
+        <member name="M:CsQuery.CQ.Create(CsQuery.IDomObject)">
+            <summary>
+            Create a new DOM from a single element
+            </summary>
+            <param name="element"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.Create(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+            <summary>
+            Creeate a new DOM from a squence of elements, or another CQ object
+            </summary>
+            <param name="elements">A sequence of elements</param>
+            <returns></returns>
         </member>
         <member name="M:CsQuery.CQ.CreateFromFile(System.String)">
             <summary>
@@ -1401,6 +1409,19 @@
             End the most recent filtering operation in the current chain and return the set of matched elements 
             to its previous state
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.Get">
+            <summary>
+            Return the active selection set
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.Get(System.Int32)">
+            <summary>
+            Return a specific element from the selection set
+            </summary>
+            <param name="index">The zero-based index of the element to be returned</param>
             <returns></returns>
         </member>
         <member name="M:CsQuery.CQ.Empty">
@@ -1773,9 +1794,31 @@
             <param name="selector"></param>
             <returns></returns>
         </member>
+        <member name="M:CsQuery.CQ.Select(CsQuery.IDomObject)">
+            <summary>
+            Return element wrapped in a new CQ
+            </summary>
+            <param name="element"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.Select(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+            <summary>
+            Return a sequence of elements wrapped in a new CQ
+            </summary>
+            <param name="element"></param>
+            <returns></returns>
+        </member>
         <member name="M:CsQuery.CQ.Select(System.String,CsQuery.IDomObject)">
             <summary>
             Select elements from within a context
+            </summary>
+            <param name="selector"></param>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.Select(System.String,System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+            <summary>
+             Select elements from within a context
             </summary>
             <param name="selector"></param>
             <param name="context"></param>
@@ -2093,6 +2136,43 @@
             Return matched element. 
             </summary>
             <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="P:CsQuery.CQ.Item(System.String)">
+            <summary>
+            Select elements and return a new CSQuery object 
+            </summary>
+            <param name="selector"></param>
+            <returns></returns>
+        </member>
+        <member name="P:CsQuery.CQ.Item(CsQuery.IDomObject)">
+            <summary>
+            Return element wrapped in a new CQ
+            </summary>
+            <param name="element"></param>
+            <returns></returns>
+        </member>
+        <member name="P:CsQuery.CQ.Item(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+            <summary>
+            Return a sequence of elements wrapped in a new CQ
+            </summary>
+            <param name="element"></param>
+            <returns></returns>
+        </member>
+        <member name="P:CsQuery.CQ.Item(System.String,CsQuery.IDomObject)">
+            <summary>
+            Select elements from within a context
+            </summary>
+            <param name="selector"></param>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="P:CsQuery.CQ.Item(System.String,System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+            <summary>
+             Select elements from within a context
+            </summary>
+            <param name="selector"></param>
+            <param name="context"></param>
             <returns></returns>
         </member>
         <member name="T:CsQuery.StringScanner.IExpectPattern">

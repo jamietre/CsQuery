@@ -256,7 +256,7 @@ namespace CsQuery.StringScanner.Implementation
         /// <returns></returns>
         public bool Is(string text)
         {
-            return text.Length + Pos < Length && Text.Substring(Pos, text.Length) == text;
+            return text.Length + Pos <= Length && Text.Substring(Pos, text.Length) == text;
         }
         public bool IsOneOf(params string[] text)
         {
@@ -855,7 +855,7 @@ namespace CsQuery.StringScanner.Implementation
             }
             else
             {
-                throw new InvalidOperationException(error);
+                throw new ArgumentException(error);
             }
         }
         #endregion

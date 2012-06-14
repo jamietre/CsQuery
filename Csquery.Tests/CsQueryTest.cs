@@ -119,9 +119,15 @@ namespace CsqueryTests
                 }
             }
         }
-        public void t(string testName, string selector, IEnumerable<string> ids)
+        public void t(string testName, string selector, IEnumerable<string> ids=null)
         {
             var csq = jQuery(selector);
+            if (ids == null)
+            {
+                Assert.IsTrue(csq.Length == 0);
+                return;
+            }
+
             List<string> idList = new  List<string>(ids);
             int index=0;
             bool success=true;

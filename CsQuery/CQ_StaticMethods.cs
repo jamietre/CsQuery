@@ -75,7 +75,7 @@ namespace CsQuery
         /// <summary>
         /// Create a new DOM object from html, and use quickSet to create attributes (and/or css)
         /// </summary>
-        /// <param name="selector"></param>
+        /// <param name="html">A string of HTML</param>
         /// <param name="quickSet"></param>
         /// <returns></returns>
         public static CQ Create(string html, object quickSet)
@@ -84,29 +84,6 @@ namespace CsQuery
             return csq.AttrSet(quickSet, true);
         }
 
-        /// <summary>
-        /// Creeate a new DOM from a squence of elements, or another CQ object
-        /// </summary>
-        /// <param name="html"></param>
-        /// <returns></returns>
-        public static CQ Create(IEnumerable<IDomObject> elements)
-        {
-            CQ csq = new CQ();
-            csq.Load(elements);
-            return csq;
-        }
-
-        /// <summary>
-        /// Create a new DOM from a single element
-        /// </summary>
-        /// <param name="element"></param>
-        /// <returns></returns>
-        public static CQ Create(IDomObject element)
-        {
-            CQ csq = new CQ();
-            csq.Load(Objects.Enumerate(element));
-            return csq;
-        }
 
         /// <summary>
         /// Create a new CQ object from an existing context, bound to the same domain.
@@ -126,6 +103,32 @@ namespace CsQuery
                 AddSelectionRange(Selectors.Select(Document, context.Children()));
             }
         }
+
+
+        /// <summary>
+        /// Create a new DOM from a single element
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        public static CQ Create(IDomObject element)
+        {
+            CQ csq = new CQ();
+            csq.Load(Objects.Enumerate(element));
+            return csq;
+        }
+
+        /// <summary>
+        /// Creeate a new DOM from a squence of elements, or another CQ object
+        /// </summary>
+        /// <param name="elements">A sequence of elements</param>
+        /// <returns></returns>
+        public static CQ Create(IEnumerable<IDomObject> elements)
+        {
+            CQ csq = new CQ();
+            csq.Load(elements);
+            return csq;
+        }
+
 
         /// <summary>
         /// Creates a new DOM from an HTML file.

@@ -82,45 +82,21 @@ namespace CsQuery
             }
         }
 
+
         /// <summary>
-        /// Return matched element. 
+        /// Return the active selection set
         /// </summary>
-        /// <param name="index"></param>
         /// <returns></returns>
-        public IDomObject this[int index]
-        {
-            get {
-                return Get(index);
-            }
-        }
-
-        
-        public CQ this[string selector]
-        {
-            get
-            {
-                return Select(selector);
-            }
-        }
-
-        public CQ this[IDomObject element]
-        {
-            get
-            {
-                return Select(element);
-            }
-        }
-        public CQ this[IEnumerable<IDomObject> element]
-        {
-            get
-            {
-                return Select(element);
-            }
-        }
         public IEnumerable<IDomObject> Get()
         {
             return SelectionSet;
         }
+
+        /// <summary>
+        /// Return a specific element from the selection set
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to be returned</param>
+        /// <returns></returns>
         public IDomObject Get(int index)
         {
             int effectiveIndex = index < 0 ? SelectionSet.Count+index-1 : index;
@@ -1388,6 +1364,19 @@ namespace CsQuery
         }
 
         /// <summary>
+        /// Return matched element. 
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public IDomObject this[int index]
+        {
+            get
+            {
+                return Get(index);
+            }
+        }
+
+        /// <summary>
         /// Select elements and return a new CSQuery object 
         /// </summary>
         /// <param name="selector"></param>
@@ -1403,16 +1392,67 @@ namespace CsQuery
             return csq;
         }
 
+        /// <summary>
+        /// Select elements and return a new CSQuery object 
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        public CQ this[string selector]
+        {
+            get
+            {
+                return Select(selector);
+            }
+        }
+
+        /// <summary>
+        /// Return element wrapped in a new CQ
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
         public CQ Select(IDomObject element)
         {
             CQ csq = new CQ(element,this);
             return csq;
         }
+
+        /// <summary>
+        /// Return element wrapped in a new CQ
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        public CQ this[IDomObject element]
+        {
+            get
+            {
+                return Select(element);
+            }
+        }
+
+        /// <summary>
+        /// Return a sequence of elements wrapped in a new CQ
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
         public CQ Select(IEnumerable<IDomObject> elements)
         {
             CQ csq = new CQ(elements,this);
             return csq;
         }
+
+        /// <summary>
+        /// Return a sequence of elements wrapped in a new CQ
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        public CQ this[IEnumerable<IDomObject> element]
+        {
+            get
+            {
+                return Select(element);
+            }
+        }
+
         /// <summary>
         /// Select elements from within a context
         /// </summary>
@@ -1422,17 +1462,58 @@ namespace CsQuery
         public CQ Select(string selector, IDomObject context)
         {
             var selectors = new SelectorChain(selector);
-            CQ csq = new CQ(selectors.Select(Document, context), this);
+            var selection = selectors.Select(Document, context);
+
+            CQ csq = new CQ(selection, this);
             csq.Selectors = selectors;
             return csq;
         }
+
+        /// <summary>
+        /// Select elements from within a context
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public CQ this[string selector, IDomObject context]
+        {
+            get
+            {
+                return Select(selector, context);
+            }
+        }
+
+        /// <summary>
+        ///  Select elements from within a context
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public CQ Select(string selector, IEnumerable<IDomObject> context)
         {
             var selectors = new SelectorChain(selector);
-            CQ csq = new CQ(selectors.Select(Document, context), this);
+
+            IEnumerable<IDomObject> selection = selectors.Select(Document, context);
+
+            CQ csq = new CQ(selection, (CQ)this);
             csq.Selectors = selectors;
             return csq;
         }
+       
+        /// <summary>
+        ///  Select elements from within a context
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public CQ this[string selector, IEnumerable<IDomObject> context]
+        {
+            get
+            {
+                return Select(selector, context);
+            }
+        }
+
         /// <summary>
         /// Reduce the set of matched elements to the first in the set.
         /// </summary>

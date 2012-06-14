@@ -31,7 +31,7 @@ namespace CsqueryTests.Csharp
             scanner.Expect("4");
             Assert.AreEqual("4",scanner.Match, "Expect 4");
 
-            Assert.Throws(typeof(InvalidOperationException), Del(() =>
+            Assert.Throws(typeof(ArgumentException), Del(() =>
             { 
                 scanner.Expect("y"); 
             }),"Expect thows");
@@ -77,14 +77,14 @@ namespace CsqueryTests.Csharp
             var text = scanner.GetAlpha();
             Assert.AreEqual("someSelect", text, "Got first word");
 
-            Assert.Throws(typeof(InvalidOperationException), Del(() =>
+            Assert.Throws(typeof(ArgumentException), Del(() =>
             {
                 scanner.Expect(MatchFunctions.Quoted);
             }), "Bounds don't work with quoted value");
 
             scanner.Expect(MatchFunctions.BoundChar);
 
-            text = scanner.Get(MatchFunctions.HTMLAttribute);
+            text = scanner.Get(MatchFunctions.HTMLAttribute());
             Assert.AreEqual("attr-bute", text, "Got attribue");
 
             scanner.ExpectChar('=');
@@ -102,14 +102,14 @@ namespace CsqueryTests.Csharp
         {
             scanner=@"someSelect[attr-bute= 'this ""is \' a quoted value']";
 
-            var text = scanner.Get(MatchFunctions.HTMLTagName);
+            var text = scanner.Get(MatchFunctions.HTMLTagSelectorName);
             Assert.AreEqual("someSelect", text, "Got first word");
 
             StringScanner innerScanner = scanner.Get(MatchFunctions.BoundedWithQuotedContent);
             Assert.IsTrue(scanner.Finished, "Outer scanner finished");
             Assert.AreEqual(@"attr-bute= 'this ""is \' a quoted value'", innerScanner.Text, "Inner scanner text is right");
 
-            text = innerScanner.Get(MatchFunctions.HTMLAttribute);
+            text = innerScanner.Get(MatchFunctions.HTMLAttribute());
             Assert.AreEqual("attr-bute", text, "Got the attribute name");
             innerScanner.Expect("=");
             text = innerScanner.Get(MatchFunctions.Quoted);
@@ -135,7 +135,7 @@ namespace CsqueryTests.Csharp
 
             scanner.AssertFinished();
 
-            inner.Expect(MatchFunctions.HTMLAttribute)
+            inner.Expect(MatchFunctions.HTMLAttribute())
                 .Expect("=");
 
             var optQuote = new OptionallyQuoted();
@@ -175,7 +175,7 @@ namespace CsqueryTests.Csharp
         public void Selectors()
         {
             scanner = "div:contains('Product')";
-            string text = scanner.Get(MatchFunctions.HTMLTagName );
+            string text = scanner.Get(MatchFunctions.HTMLTagSelectorName );
             Assert.AreEqual("div", text, "Got the first part");
             scanner.Expect(":");
             text = scanner.Get(MatchFunctions.PseudoSelector);

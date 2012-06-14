@@ -20,9 +20,13 @@ namespace CsQuery.StringScanner
         Escape=512,
         Separator=1024,
         AlphaISO10646 = 2048,
-        HtmlTagNameStart=4096,
-        HtmlTagNameExceptStart=8192,
+        HtmlTagSelectorStart=4096,
+        HtmlTagSelectorExceptStart=8192,
         HtmlTagEnd=16384,
-        HtmlTagAny=32768
+        HtmlTagAny=32768,
+        HtmlTagNameStart = 65536,
+        HtmlTagNameExceptStart = 131072,
+        HtmlIDNameExceptStart = 262144
+
     }
 }

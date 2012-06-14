@@ -11,42 +11,56 @@ namespace CsQuery.Engine
 {
     public static class AttributeSelectors
     {
+
+
         public static bool MatchesAttribute(Selector selector, IDomElement elm)
         {
+            //string value;
+            //bool match = elm.TryGetAttribute(selector.AttributeName, out value);
+            //if (!match ||
+            //    (match && selector.AttributeSelectorType == AttributeSelectorType.NotExists))
+            //{
+            //    return false;
+            //}
+
+            bool match=true;
+            string name = selector.AttributeName;
             string value;
-            bool match = elm.TryGetAttribute(selector.AttributeName, out value);
-            if (!match ||
-                (match && selector.AttributeSelectorType.IsOneOf(AttributeSelectorType.NotExists, AttributeSelectorType.NotEquals)))
-            {
-                return false;
-            }
 
             switch (selector.AttributeSelectorType)
             {
                 case AttributeSelectorType.Exists:
+                    match= elm.HasAttribute(name);
                     break;
                 case AttributeSelectorType.Equals:
-                    match = selector.AttributeValue == value;
+                    match = selector.AttributeValue == elm[name];
                     break;
                 case AttributeSelectorType.StartsWith:
+                    value = elm[name];
                     match = value.Length >= selector.AttributeValue.Length &&
                         value.Substring(0, selector.AttributeValue.Length) == selector.AttributeValue;
                     break;
                 case AttributeSelectorType.Contains:
-                    match = value.IndexOf(selector.AttributeValue) >= 0;
+                    match = elm[name].IndexOf(selector.AttributeValue) >= 0;
                     break;
                 case AttributeSelectorType.ContainsWord:
-                    match = ContainsWord(value, selector.AttributeValue);
+                    match = ContainsWord(elm[name], selector.AttributeValue);
                     break;
                 case AttributeSelectorType.NotEquals:
-                    match = value.IndexOf(selector.AttributeValue) == 0;
+                    match = !elm.HasAttribute(name) ||
+                        !selector.AttributeValue.Equals(elm[name]);
+                    break;
+                case AttributeSelectorType.NotExists:
+                    match = !elm.HasAttribute(name);
                     break;
                 case AttributeSelectorType.EndsWith:
                     int len = selector.AttributeValue.Length;
+                    value = elm[name];
                     match = value.Length >= len &&
                         value.Substring(value.Length - len) == selector.AttributeValue;
                     break;
                 case AttributeSelectorType.StartsWithOrHyphen:
+                    value = elm[name];
                     int dashPos = value.IndexOf("-");
                     string beforeDash = value;
   

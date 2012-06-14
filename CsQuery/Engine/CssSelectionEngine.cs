@@ -58,6 +58,8 @@ namespace CsQuery.Engine
             // Deal with filter/all selectors: if the first selector is a pseudoclass, & there's no context,
             // then convert it to a filter, and add "all" selector first
 
+
+
             var firstSelector = ActiveSelectors[0];
             if (firstSelector.SelectorType == SelectorType.PseudoClass && 
                 firstSelector.TraversalType == TraversalType.All && 
@@ -73,6 +75,17 @@ namespace CsQuery.Engine
                 firstSelector.CombinatorType = CombinatorType.Chained;
             }
 
+            // when selecting in a context, always treat as if chained
+            bool isFirst = true;
+
+            if (firstSelector.CombinatorType == CombinatorType.Root 
+                && context != null)
+            {
+                firstSelector.CombinatorType = CombinatorType.Chained;
+                lastResult = selectionSource;
+                isFirst = false;
+            }
+
             for (activeSelectorId = 0; activeSelectorId < ActiveSelectors.Count; activeSelectorId++)
             {
                 var selector = ActiveSelectors[activeSelectorId];
@@ -82,7 +95,7 @@ namespace CsQuery.Engine
 
                 // Determine what kind of combining method we will use with previous selection results
 
-                if (activeSelectorId != 0)
+                if (!isFirst)
                 {
                     switch (combinatorType)
                     {
@@ -127,6 +140,7 @@ namespace CsQuery.Engine
                         // default (chained): leave lastresult alone
                     }
                 }
+                isFirst = false;
 
                 HashSet<IDomObject> tempResult = null;
                 IEnumerable<IDomObject> interimResult = null;
@@ -163,7 +177,12 @@ namespace CsQuery.Engine
                     }
 
 #else
-                    if (selectorType.HasFlag(SelectorType.Attribute))
+                    // the index is not useful for NotExists & NotEquals - they must be matched manually since they won't appear in the
+                    // index if there is no matching attribute
+                    if (selectorType.HasFlag(SelectorType.Attribute) && 
+                        selector.AttributeSelectorType!=AttributeSelectorType.NotExists && 
+                        selector.AttributeSelectorType!=AttributeSelectorType.NotEquals 
+                        )
                     {
                         key = "!" + (char)DomData.TokenID(selector.AttributeName,true);
                         selectorType &= ~SelectorType.Attribute;

@@ -24,12 +24,24 @@ namespace CsQuery
         /// Create a new CsQuery object using an existing instance and a selector. if the selector is null or missing, then
         /// it will contain no selection results.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="context"></param>
+        /// <param name="selector">A valid CSS selector</param>
+        /// <param name="context">The context</param>
         public CQ(string selector, CQ context)
         {
             Create(selector, context);
         }
+
+        /// <summary>
+        /// Create a new CsQuery object using an existing instance and a selector. if the selector is null or missing, then
+        /// it will contain no selection results.
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <param name="context"></param>
+        public CQ(string selector, IDomElement context)
+        {
+            Create(selector, context);
+        }
+
         /// <summary>
         /// Create a new CsQuery object from HTML, and assign CSS from a JSON string, within a context
         /// </summary>
@@ -98,8 +110,7 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Create a new CsQuery object from a set of DOM elements, using the DOM of the first element.
-        /// could contain more than one context)
+        /// Create a new CsQuery object from a set of DOM elements, using the DOM from context
         /// </summary>
         /// <param name="elements"></param>
         public CQ(IEnumerable<IDomObject> elements, CQ context)

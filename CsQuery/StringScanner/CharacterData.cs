@@ -11,9 +11,9 @@ namespace CsQuery.StringScanner
     /// <summary>
     /// A static class to provide attribute information about characters, e.g. determining whether or not it
     /// belongs to a number of predefined classes. This creates an array of every possible character with a 
-    /// ushort that is a bitmap (of up to 16 possible values, we can expand this to an int at some point if
-    /// needed). This permits very fast access to this information since it only needs to be looked up
-    /// via an index.
+    /// unit that is a bitmap (of up to 32 possible values)
+    /// This permits very fast access to this information since it only needs to be looked up
+    /// via an index. Uses an array of 65536 uints = 256K of memory
     /// 
     /// </summary>
     public static class CharacterData
@@ -31,50 +31,66 @@ namespace CsQuery.StringScanner
         private const string charsSeparators = ", |";
 
 
-        private static ushort[] characterFlags;
+        private static uint[] characterFlags;
         /// <summary>
         /// Configuration of the xref of character info
         /// </summary>
         static CharacterData()
         {
-            characterFlags = new ushort[65536];
-            setBit(charsWhitespace,(ushort)CharacterType.Whitespace);
-            setBit(charsAlpha,(ushort)CharacterType.Alpha);
-            setBit(charsNumeric,(ushort)CharacterType.Number);
-            setBit(charsNumber,(ushort)CharacterType.NumberPart);
-            setBit(charsLower,(ushort)CharacterType.Lower);
-            setBit(charsUpper,(ushort)CharacterType.Upper);
-            setBit(charsQuote,(ushort)CharacterType.Quote);
-            setBit(charsOperator,(ushort)CharacterType.Operator);
-            setBit(charsEnclosing,(ushort)CharacterType.Enclosing);
-            setBit(charsEscape,(ushort)CharacterType.Escape);
-            setBit(charsSeparators, (ushort)CharacterType.Separator);
+            characterFlags = new uint[65536];
+            setBit(charsWhitespace, (uint)CharacterType.Whitespace);
+            setBit(charsAlpha, (uint)CharacterType.Alpha);
+            setBit(charsNumeric, (uint)CharacterType.Number);
+            setBit(charsNumber, (uint)CharacterType.NumberPart);
+            setBit(charsLower, (uint)CharacterType.Lower);
+            setBit(charsUpper, (uint)CharacterType.Upper);
+            setBit(charsQuote, (uint)CharacterType.Quote);
+            setBit(charsOperator, (uint)CharacterType.Operator);
+            setBit(charsEnclosing, (uint)CharacterType.Enclosing);
+            setBit(charsEscape, (uint)CharacterType.Escape);
+            setBit(charsSeparators, (uint)CharacterType.Separator);
             // html tag start
-            
-            SetHtmlTagNameStart((ushort)CharacterType.HtmlTagNameStart);
-            SetHtmlTagNameChar();
+
+            SetHtmlTagNameStart((uint)CharacterType.HtmlTagNameStart);
+            SetHtmlTagNameExceptStart((uint)CharacterType.HtmlTagNameExceptStart);
+
+            SetHtmlTagNameStart((uint)CharacterType.HtmlTagSelectorStart);
+            SetHtmlTagSelectorExceptStart((uint)CharacterType.HtmlTagSelectorExceptStart);
+
+            SetHtmlIdNameExceptStart((uint)CharacterType.HtmlIDNameExceptStart);
 
             // html tag end
-            setBit(" />",(ushort)CharacterType.HtmlTagEnd);
+            setBit(" />", (uint)CharacterType.HtmlTagEnd);
             // html tag any
-            setBit("<>/", (ushort)CharacterType.HtmlTagAny);
+            setBit("<>/", (uint)CharacterType.HtmlTagAny);
 
-            SetAlphaISO10646();
+            SetAlphaISO10646((uint)CharacterType.AlphaISO10646);
         }
-        private static void SetAlphaISO10646()
+        private static void SetAlphaISO10646(uint hsb)
         {
-            ushort isoBit = (ushort)CharacterType.AlphaISO10646;
-            setBit(charsAlpha, isoBit);
-            setBit('-', isoBit);
-            setBit('_', isoBit);
+
+            setBit(charsAlpha, hsb);
+            setBit('-', hsb);
+            setBit('_', hsb);
             // 161 = A1
-            SetRange(isoBit,0x00A1,0xFFFF);
+            SetRange(hsb, 0x00A1, 0xFFFF);
+        }
+
+        /// <summary>
+        /// Matches anything but the first character for a valid ID or name value. The first character is just alpha.
+        /// </summary>
+        /// <param name="hsb"></param>
+        private static void SetHtmlIdNameExceptStart(uint hsb)
+        {
+            SetAlphaISO10646(hsb);
+            setBit(charsNumber, hsb);
+            setBit("_:.-", hsb);
         }
         /// <summary>
         /// We omit ":" as a valid name start character because it makes pseudoselectors impossible to parse.
         /// </summary>
         /// <param name="hsb"></param>
-        private static void SetHtmlTagNameStart(ushort hsb)
+        private static void SetHtmlTagSelectorStart(uint hsb)
         {
             //  | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF]
 
@@ -98,31 +114,48 @@ namespace CsQuery.StringScanner
         /// <summary>
         /// Similar to above, we omit "." as a valid in-name char because it breaks chained CSS selectors.
         /// </summary>
-        private static void SetHtmlTagNameChar()
+        private static void SetHtmlTagSelectorExceptStart(uint hsb)
         {
-            
-            ushort hsb = (ushort)CharacterType.HtmlTagNameExceptStart;
-            SetHtmlTagNameStart(hsb);
+            SetHtmlTagSelectorStart(hsb);
             setBit(charsNumeric, hsb);
             setBit("-", hsb);
             setBit((char)0xB7,hsb);
             SetRange(hsb, 0x0300, 0x036F);
             SetRange(hsb, 0x203F, 0x2040);
         }
-        private static void SetRange(ushort flag, ushort start, ushort end)
+        /// <summary>
+        /// Add the : back in when actually parsing html
+        /// </summary>
+        /// <param name="hsb"></param>
+        private static void SetHtmlTagNameStart(uint hsb) {
+            SetHtmlTagSelectorStart(hsb);
+            setBit(":", hsb);
+        }
+
+        /// <summary>
+        /// Add the . back in when actually parsing html
+        /// </summary>
+        /// <param name="hsb"></param>
+        private static void SetHtmlTagNameExceptStart(uint hsb)
+        {
+            SetHtmlTagSelectorExceptStart(hsb);
+            setBit(":", hsb);
+            setBit(".", hsb);
+        }
+        private static void SetRange(uint flag, ushort start, ushort end)
         {
             for (int i = start; i <= end; i++)
             {
                 setBit((char)i, flag);
             }
         }
-        private static void setBit(string forCharacters, ushort bit)
+        private static void setBit(string forCharacters, uint bit)
         {
             for (int i=0;i<forCharacters.Length;i++) {
                 setBit(forCharacters[i], bit);
             }
         }
-        private static void setBit(char character, ushort bit)
+        private static void setBit(char character, uint bit)
         {
             characterFlags[(ushort)character] |= bit;
         }
@@ -145,7 +178,7 @@ namespace CsQuery.StringScanner
         }
         public static bool IsType(char character, CharacterType type)
         {
-            return (characterFlags[character] & (ushort)type) > 0;
+            return (characterFlags[character] & (uint)type) > 0;
         }
         public static CharacterType GetType(char character)
         {

@@ -65,6 +65,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Arrays.cs" />
     <Compile Include="Csharp\Dom\DocType.cs" />
     <Compile Include="Csharp\ExtensionMethods\Forms.cs" />
     <Compile Include="Csharp\Manipulation\Clone.cs" />
@@ -98,6 +99,13 @@
     <Compile Include="jQuery\css.cs" />
     <Compile Include="jQuery\Data.cs" />
     <Compile Include="jQuery\Manipulation.cs" />
+    <Compile Include="jQuery\Sizzle\BrokenSelectors.cs" />
+    <Compile Include="jQuery\Sizzle\ClassSelectors.cs" />
+    <Compile Include="jQuery\Sizzle\ChildAndAdjacentSelectors.cs" />
+    <Compile Include="jQuery\Sizzle\AttributeSelectors.cs" />
+    <Compile Include="jQuery\Sizzle\IDSelectors.cs" />
+    <Compile Include="jQuery\Sizzle\sizzle.cs" />
+    <Compile Include="jQuery\Sizzle\SizzleTest.cs" />
     <Compile Include="Performance\DomCreation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support.cs" />
@@ -115,6 +123,7 @@
     <Content Include="Resources\jquery-unit-index.htm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\sizzle.htm" />
     <Content Include="Resources\TestHtml.htm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -126,14 +135,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CsQuery.EquationParser\CsQuery.EquationParser.csproj">
-      <Project>{9DE463B1-E263-4580-82FF-35ECAE1D7C2E}</Project>
-      <Name>CsQuery.EquationParser</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CsQuery.StringScanner\CsQuery.StringScanner.csproj">
-      <Project>{68678A22-AD49-42A7-8C6A-38B333C13BF2}</Project>
-      <Name>CsQuery.StringScanner</Name>
-    </ProjectReference>
     <ProjectReference Include="..\CsQuery\CsQuery.csproj">
       <Project>{C38DFFE9-321B-4941-B031-29D718AB5C31}</Project>
       <Name>CsQuery</Name>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CsQuery.Utility;
 
 namespace CsQuery
 {
@@ -10,7 +11,10 @@ namespace CsQuery
     /// </summary>
     public interface IDomDocument : IDomContainer
     {
-        //RangeSortedDictionary<IDomObject> SelectorXref { get; }
+        /// <summary>
+        /// The primary selection index
+        /// </summary>
+        RangeSortedDictionary<IDomObject> SelectorXref { get; }
         void AddToIndex(string key, IDomIndexedNode element);
         void AddToIndex(IDomIndexedNode element);
         void RemoveFromIndex(string key);
@@ -28,10 +32,18 @@ namespace CsQuery
         IDomElement GetElementByTagName(string tagName);
         IList<IDomElement> QuerySelectorAll(string tagName);
         IList<IDomElement> GetElementsByTagName(string tagName);
+
+        /// <summary>
+        /// Return the body element for this DOM
+        /// </summary>
+        IDomElement Body { get; }
+
         // void SetOwner(CsQuery owner);
         int TokenizeString(int startIndex, int length);
         string GetTokenizedString(int index);
         char[] SourceHtml { get; }
+        
+        
         /// <summary>
         /// Any user data to be persisted with this DOM
         /// </summary>

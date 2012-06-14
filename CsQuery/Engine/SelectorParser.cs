@@ -8,6 +8,9 @@ using CsQuery.StringScanner.Patterns;
 
 namespace CsQuery.Engine
 {
+    /// <summary>
+    /// A class to parse a CSS selector string into a sequence of Selector objects
+    /// </summary>
     public class SelectorParser
     {
         #region private properties
@@ -29,6 +32,12 @@ namespace CsQuery.Engine
         #endregion
 
         #region public methods
+
+        /// <summary>
+        /// Parse the string, and return a sequence of Selector objects
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns></returns>
         public IEnumerable<Selector> Parse(string selector)
         {
             Selectors = new List<Selector>();
@@ -247,13 +256,13 @@ namespace CsQuery.Engine
                                 throw new NotImplementedException("Pseudoclasses that require a browser aren't implemented.");
 
                             default:
-                                throw new ArgumentOutOfRangeException("Unknown pseudo-class :\"" + key + "\". If this is a valid CSS or jQuery selector, please let us know.");
+                                throw new ArgumentException("Unknown pseudo-class :\"" + key + "\". If this is a valid CSS or jQuery selector, please let us know.");
                         }
                         break;
                     case '.':
                         StartNewSelector(SelectorType.Class);
                         scanner.Next();
-                        Current.Class = scanner.Get(MatchFunctions.CssClass);
+                        Current.Class = scanner.Get(MatchFunctions.CssClassName);
                         break;
                     case '#':
 
@@ -261,7 +270,7 @@ namespace CsQuery.Engine
                         if (!scanner.Finished)
                         {
                             StartNewSelector(SelectorType.ID);
-                            Current.ID = scanner.Get(MatchFunctions.HtmlIDValue);
+                            Current.ID = scanner.Get(MatchFunctions.HtmlIDValue());
                         }
 
                         break;
@@ -269,7 +278,8 @@ namespace CsQuery.Engine
                         StartNewSelector(SelectorType.Attribute);
 
                         IStringScanner innerScanner = scanner.ExpectBoundedBy('[', true).ToNewScanner();
-                        Current.AttributeName = innerScanner.Get(MatchFunctions.HTMLAttribute);
+                        
+                        Current.AttributeName = innerScanner.Get(MatchFunctions.HTMLAttribute());
                         innerScanner.SkipWhitespace();
 
                         if (innerScanner.Finished)
@@ -279,33 +289,48 @@ namespace CsQuery.Engine
                         else
                         {
                             string matchType = innerScanner.Get("=", "^=", "*=", "~=", "$=", "!=","|=");
-                            Current.AttributeValue = innerScanner.Get(expectsOptionallyQuotedValue());
-                            switch (matchType)
-                            {
 
-                                case "=":
-                                    Current.AttributeSelectorType = AttributeSelectorType.Equals;
-                                    break;
-                                case "^=":
-                                    Current.AttributeSelectorType = AttributeSelectorType.StartsWith;
-                                    break;
-                                case "*=":
-                                    Current.AttributeSelectorType = AttributeSelectorType.Contains;
-                                    break;
-                                case "~=":
-                                    Current.AttributeSelectorType = AttributeSelectorType.ContainsWord;
-                                    break;
-                                case "$=":
-                                    Current.AttributeSelectorType = AttributeSelectorType.EndsWith;
-                                    break;
-                                case "!=":
-                                    Current.AttributeSelectorType = AttributeSelectorType.NotEquals;
-                                    break;
-                                case "|=":
-                                    Current.AttributeSelectorType = AttributeSelectorType.StartsWithOrHyphen;
-                                    break;
-                                default:
-                                    throw new ArgumentOutOfRangeException("Unknown attibute matching operator '" + matchType + "'");
+                            // CSS allows [attr=] as a synonym for [attr]
+                            if (innerScanner.Finished)
+                            {
+                                Current.AttributeSelectorType = AttributeSelectorType.Exists;
+                            } 
+                            else 
+                            {
+                                Current.AttributeValue=innerScanner.Get(expectsOptionallyQuotedValue());
+                                switch (matchType)
+                                {
+
+                                    case "=":
+                                        Current.AttributeSelectorType = AttributeSelectorType.Equals;
+                                        break;
+                                    case "^=":
+                                        Current.AttributeSelectorType = AttributeSelectorType.StartsWith;
+                                        // attributevalue starts with "" matches nothing
+                                        if (Current.AttributeValue == "")
+                                        {
+                                            Current.AttributeValue = "" + (char)0;
+                                        }
+                                        break;
+                                    case "*=":
+                                        Current.AttributeSelectorType = AttributeSelectorType.Contains;
+                                        break;
+                                    case "~=":
+                                        Current.AttributeSelectorType = AttributeSelectorType.ContainsWord;
+                                        break;
+                                    case "$=":
+                                        Current.AttributeSelectorType = AttributeSelectorType.EndsWith;
+                                        break;
+                                    case "!=":
+                                        Current.AttributeSelectorType = AttributeSelectorType.NotEquals;
+                                        break;
+                                    case "|=":
+                                        Current.AttributeSelectorType = AttributeSelectorType.StartsWithOrHyphen;
+
+                                        break;
+                                    default:
+                                        throw new ArgumentException("Unknown attibute matching operator '" + matchType + "'");
+                                }
                             }
                         }
 
@@ -315,24 +340,24 @@ namespace CsQuery.Engine
                         scanner.NextNonWhitespace();
                         break;
                     case '+':
-                        if (!Current.IsComplete)
+                        if (Current.IsComplete)
                         {
-                            throw new ArgumentOutOfRangeException("The adjacent combinator (+) must have two operands.");
+                            StartNewSelector(TraversalType.Adjacent);
                         }
                         else
                         {
-                            StartNewSelector(TraversalType.Adjacent);
+                            Current.TraversalType = TraversalType.Adjacent;
                         }
                         scanner.NextNonWhitespace();
                         break;
                     case '~':
-                        if (!Current.IsComplete)
+                        if (Current.IsComplete)
                         {
-                            throw new ArgumentOutOfRangeException("The sibling combinator (~) must have two operands.");
+                            StartNewSelector(TraversalType.Sibling);
                         }
                         else
                         {
-                            StartNewSelector(TraversalType.Sibling);
+                            Current.TraversalType = TraversalType.Sibling;
                         }
                         scanner.NextNonWhitespace();
                         break;
@@ -359,7 +384,7 @@ namespace CsQuery.Engine
                     default:
 
                         string tag = "";
-                        if (scanner.TryGet(MatchFunctions.HTMLTagName, out tag))
+                        if (scanner.TryGet(MatchFunctions.HTMLTagSelectorName, out tag))
                         {
                             StartNewSelector(SelectorType.Tag);
                             Current.Tag = tag;
@@ -374,7 +399,7 @@ namespace CsQuery.Engine
                             }
                             else
                             {
-                                throw new InvalidOperationException(scanner.LastError);
+                                throw new ArgumentException(scanner.LastError);
                             }
 
                         }
@@ -389,6 +414,11 @@ namespace CsQuery.Engine
         #endregion
 
         #region private methods
+
+        /// <summary>
+        /// A pattern for the operand of an attribute selector
+        /// </summary>
+        /// <returns></returns>
         protected IExpectPattern expectsOptionallyQuotedValue()
         {
             var pattern = new OptionallyQuoted();
@@ -396,18 +426,34 @@ namespace CsQuery.Engine
             return pattern;
         }
 
-        protected void StartNewSelector(SelectorType positionType)
+        /// <summary>
+        /// Start a new chained filter selector of the specified type
+        /// </summary>
+        /// <param name="positionType"></param>
+        protected void StartNewSelector(SelectorType selectorType)
         {
-            StartNewSelector(positionType, CombinatorType.Chained, TraversalType.Filter);
+            StartNewSelector(selectorType, CombinatorType.Chained, TraversalType.Filter);
         }
+
+        /// <summary>
+        /// Start a new selector that does not yet have a type specified
+        /// </summary>
+        /// <param name="combinatorType"></param>
+        /// <param name="traversalType"></param>
         protected void StartNewSelector(CombinatorType combinatorType, TraversalType traversalType)
         {
             StartNewSelector(0, combinatorType, traversalType);
         }
+
+        /// <summary>
+        /// Start a new chained selector that does not yet have a type specified
+        /// </summary>
+        /// <param name="traversalType"></param>
         protected void StartNewSelector(TraversalType traversalType)
         {
             StartNewSelector(0, CombinatorType.Chained, traversalType);
         }
+
         /// <summary>
         /// Close the currently active selector. If it's partial (e.g. a descendant/child marker) then merge its into into the 
         /// new selector created.
@@ -455,10 +501,20 @@ namespace CsQuery.Engine
             }
             Current.Clear();
         }
+
+        /// <summary>
+        /// Clear the currently open selector
+        /// </summary>
         protected void ClearCurrent()
         {
             _Current = null;
         }
+
+        /// <summary>
+        /// Return true of the text appears to be HTML (e.g. starts with a caret)
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
         public bool IsHtml(string text)
         {
             return !String.IsNullOrEmpty(text) && text[0] == '<';

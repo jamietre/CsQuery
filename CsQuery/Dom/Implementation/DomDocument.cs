@@ -15,71 +15,62 @@ namespace CsQuery.Implementation
     /// </summary>
     public class DomDocument : DomContainer<DomDocument>, IDomDocument
     {
+        #region constructors
 
+        /// <summary>
+        /// Create a new, empty DOM document
+        /// </summary>
         public DomDocument()
             : base()
         {
         }
+
+        /// <summary>
+        /// Create a new document from a sequence of elements
+        /// </summary>
+        /// <param name="elements"></param>
         public DomDocument(IEnumerable<IDomObject> elements): base()
         {
             ChildNodes.AddRange(elements);
         }
+
+        /// <summary>
+        /// Create a new document from a character array of html
+        /// </summary>
+        /// <param name="html"></param>
         public DomDocument(char[] html)
         {
             SourceHtml = html;
         }
 
+        #endregion
 
-        public void AddToIndex(IDomIndexedNode element)
+        #region private properties
+
+        private List<Tuple<int, int>> OriginalStrings = new List<Tuple<int, int>>();
+        private bool _settingDocType = false;
+        private IDictionary<string, object> _Data;
+
+        protected CQ _Owner = null;
+        protected DocType _DocType = 0;
+        protected Lazy<RangeSortedDictionary<IDomObject>> _SelectorXref =
+            new Lazy<RangeSortedDictionary<IDomObject>>();
+
+        #endregion
+
+        #region public properties
+
+        /// <summary>
+        /// The index
+        /// </summary>
+        public RangeSortedDictionary<IDomObject> SelectorXref
         {
-            foreach (string key in element.IndexKeys())
+            get
             {
-                AddToIndex(key, element);
-            }
-
-            if (element.HasChildren)
-            {
-                foreach (DomElement child in ((IDomContainer)element).ChildElements)
-                {
-                    AddToIndex(child);
-                }
-            }
-        }
-
-        public void AddToIndex(string key, IDomIndexedNode element)
-        {
-            SelectorXref.Add(key, element.IndexReference);
-        }
-        public void RemoveFromIndex(IDomIndexedNode element)
-        {
-            if (element.HasChildren)
-            {
-                foreach (IDomElement child in ((IDomContainer)element).ChildElements)
-                {
-                    if (child.IsIndexed)
-                    {
-                        RemoveFromIndex(child);
-                    }
-                }
-            }
-
-            foreach (string key in element.IndexKeys())
-            {
-                RemoveFromIndex(key);
+                return _SelectorXref.Value;
             }
         }
-        public void RemoveFromIndex(string key)
-        {
-            SelectorXref.Remove(key);
-        }
-        public IEnumerable<IDomObject> QueryIndex(string subKey, int depth, bool includeDescendants)
-        {
-            return SelectorXref.GetRange(subKey, depth, includeDescendants);
-        }
-        public IEnumerable<IDomObject> QueryIndex(string subKey)
-        {
-            return SelectorXref.GetRange(subKey);
-        }
+
         public override IDomContainer ParentNode
         {
             get
@@ -91,6 +82,7 @@ namespace CsQuery.Implementation
                 throw new InvalidOperationException("Cannot set parent for a DOM root node.");
             }
         }
+        
         public override string Path
         {
             get
@@ -98,6 +90,10 @@ namespace CsQuery.Implementation
                 return "";
             }
         }
+
+        /// <summary>
+        /// The depth in the node tree at which this node occurs. This is always 0 for the DomDocument.
+        /// </summary>
         public override int Depth
         {
             get
@@ -105,74 +101,11 @@ namespace CsQuery.Implementation
                 return 0;
             }
         }
-        public  char[] SourceHtml
+
+        public char[] SourceHtml
         {
             get;
             protected set;
-        }
-        private List<Tuple<int,int>> OriginalStrings = new List<Tuple<int,int>>();
-
-        public virtual string GetTokenizedString(int index)
-        {
-            var range = OriginalStrings[index];
-            return SourceHtml.Substring(range.Item1, range.Item2);
-        }
-
-        public int TokenizeString(int start, int length)
-        {
-            OriginalStrings.Add(new Tuple<int,int>(start,length));
-            return OriginalStrings.Count - 1;
-        }
-
-        protected CQ _Owner = null;
-
-        public IDomElement GetElementById(string id)
-        {
-            // construct the selector manually so there's no syntax checking
-
-            Selector selector = new Selector();
-            selector.SelectorType = SelectorType.ID;
-            selector.ID = id;
-
-            SelectorChain selectors = new SelectorChain(selector);
-            return (IDomElement)selectors.Select(Document).FirstOrDefault();
-        }
-        public IDomElement GetElementByTagName(string tagName)
-        {
-            return GetElementsByTagName(tagName).FirstOrDefault();
-        }
-        public IList<IDomElement> GetElementsByTagName(string tagName)
-        {
-            SelectorChain selectors = new SelectorChain(tagName);
-            return (new List<IDomElement>(OnlyElements(selectors.Select(Document)))).AsReadOnly();
-        }
-        public IList<IDomElement> QuerySelectorAll(string selector)
-        {
-            SelectorChain selectors = new SelectorChain(selector);
-            return (new List<IDomElement>(OnlyElements(selectors.Select(Document)))).AsReadOnly();
-        }
-        protected IEnumerable<IDomElement> OnlyElements(IEnumerable<IDomObject> objectList)
-        {
-            foreach (IDomObject obj in objectList)
-            {
-                if (obj.NodeType == NodeType.ELEMENT_NODE)
-                {
-                    yield return (IDomElement)obj;
-                }
-            }
-            yield break;
-        }
-        public IDomElement CreateElement(string nodeName) {
-            return new DomElement(nodeName);
-        }
-
-        public IDomText CreateTextNode(string text)
-        {
-            return new DomText(text);
-        }
-        public IDomComment CreateComment(string comment)
-        {
-            return new DomComment(comment);
         }
 
         // Store for all text node content (to avoid overhead of allocation when cloning large numbers of objects)
@@ -180,17 +113,9 @@ namespace CsQuery.Implementation
 
         public DomRenderingOptions DomRenderingOptions
         {
-            get
-            {
-                return _DomRenderingOptions;
-            }
-            set
-            {
-                _DomRenderingOptions = value;
-            }
+            get; set;
         }
-        protected DomRenderingOptions _DomRenderingOptions = 0;
-        
+
         public override IDomDocument Document
         {
             get
@@ -198,12 +123,17 @@ namespace CsQuery.Implementation
                 return this;
             }
         }
+
         public override NodeType NodeType
         {
-            get { return GetElementById("html")==null 
-                ? NodeType.DOCUMENT_FRAGMENT_NODE :
-                  NodeType.DOCUMENT_NODE; }
+            get
+            {
+                return GetElementById("html") == null
+                    ? NodeType.DOCUMENT_FRAGMENT_NODE :
+                NodeType.DOCUMENT_NODE;
+            }
         }
+
         public IDomDocumentType DocTypeNode
         {
             get
@@ -218,6 +148,7 @@ namespace CsQuery.Implementation
                 return null;
             }
         }
+
         /// <summary>
         /// Gets the DocType for this node. This can be changed through the DomDocument
         /// </summary>
@@ -228,14 +159,16 @@ namespace CsQuery.Implementation
                 // If explicitly set, return that value, otherwise get from DomDocument node
 
                 IDomDocumentType docNode = DocTypeNode;
-                if (_DocType != 0 && docNode==null)
+                if (_DocType != 0 && docNode == null)
                 {
                     return _DocType;
                 }
                 if (docNode != null)
                 {
                     return docNode.DocType;
-                } else {
+                }
+                else
+                {
                     return CQ.DefaultDocType;
                 }
             }
@@ -258,51 +191,17 @@ namespace CsQuery.Implementation
 
             }
         }
-        private bool _settingDocType = false;
-        protected DocType _DocType = 0;
-        public RangeSortedDictionary<IDomObject> SelectorXref
-        {
-            get
-            {
-                return _SelectorXref.Value;
-            }
-        }
-        protected Lazy<RangeSortedDictionary<IDomObject>> _SelectorXref =
-            new Lazy<RangeSortedDictionary<IDomObject>>();
 
         public override bool InnerHtmlAllowed
         {
             get { return true; }
         }
+        
         public override bool Complete
         {
             get { return true; }
         }
-        public override string ToString()
-        {
-            return "DOM Root (" + DocType.ToString() + ", " + DescendantCount().ToString() + " elements)";
-        }
-        public override DomDocument Clone()
-        {
-            DomDocument clone = new DomDocument();
-            clone.SourceHtml = SourceHtml;
-            clone.OriginalStrings = OriginalStrings;
 
-            return clone;
-        }
-
-        public override IEnumerable<IDomObject> CloneChildren()
-        {
-            if (HasChildren)
-            {
-                foreach (IDomObject obj in ChildNodes)
-                {
-                    yield return obj.Clone();
-                }
-            }
-            yield break;
-        }
-        private IDictionary<string, object> _Data;
         public IDictionary<string, object> Data
         {
             get
@@ -318,6 +217,213 @@ namespace CsQuery.Implementation
                 _Data = value;
             }
         }
+
+        public IDomElement Body
+        {
+            get
+            {
+                return this.QuerySelectorAll("body").FirstOrDefault();
+            }
+        }
+
+        #endregion
+
+        #region public methods
+
+        /// <summary>
+        /// Add an element to the index using the default keys for this element
+        /// </summary>
+        /// <param name="element"></param>
+        public void AddToIndex(IDomIndexedNode element)
+        {
+            foreach (string key in element.IndexKeys())
+            {
+                AddToIndex(key, element);
+            }
+
+            if (element.HasChildren)
+            {
+                foreach (DomElement child in ((IDomContainer)element).ChildElements)
+                {
+                    AddToIndex(child);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Add an element to the index using a specified index key
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="element"></param>
+        public void AddToIndex(string key, IDomIndexedNode element)
+        {
+            SelectorXref.Add(key, element.IndexReference);
+        }
+        
+        /// <summary>
+        /// Remove an element from the index
+        /// </summary>
+        /// <param name="element"></param>
+        public void RemoveFromIndex(IDomIndexedNode element)
+        {
+            if (element.HasChildren)
+            {
+                foreach (IDomElement child in ((IDomContainer)element).ChildElements)
+                {
+                    if (child.IsIndexed)
+                    {
+                        RemoveFromIndex(child);
+                    }
+                }
+            }
+
+            foreach (string key in element.IndexKeys())
+            {
+                RemoveFromIndex(key);
+            }
+        }
+
+        /// <summary>
+        /// Remove an element from the index using its key
+        /// </summary>
+        /// <param name="key"></param>
+        public void RemoveFromIndex(string key)
+        {
+            SelectorXref.Remove(key);
+        }
+
+        /// <summary>
+        /// Query the document's index for a subkey up to a specific depth, optionally including descendants that match the selector
+        /// </summary>
+        /// <param name="subKey"></param>
+        /// <param name="depth">The zero-based depth to which searches should be limited</param>
+        /// <param name="includeDescendants"></param>
+        /// <returns></returns>
+        public IEnumerable<IDomObject> QueryIndex(string subKey, int depth, bool includeDescendants)
+        {
+            return SelectorXref.GetRange(subKey, depth, includeDescendants);
+        }
+
+        /// <summary>
+        /// Query the document's index for a subkey
+        /// </summary>
+        /// <param name="subKey"></param>
+        /// <returns></returns>
+        public IEnumerable<IDomObject> QueryIndex(string subKey)
+        {
+            return SelectorXref.GetRange(subKey);
+        }
+
+        public virtual string GetTokenizedString(int index)
+        {
+            var range = OriginalStrings[index];
+            return SourceHtml.Substring(range.Item1, range.Item2);
+        }
+
+        public int TokenizeString(int start, int length)
+        {
+            OriginalStrings.Add(new Tuple<int,int>(start,length));
+            return OriginalStrings.Count - 1;
+        }
+
+        public IDomElement GetElementById(string id)
+        {
+            // construct the selector manually so there's no syntax checking
+
+            Selector selector = new Selector();
+            selector.SelectorType = SelectorType.ID;
+            selector.ID = id;
+
+            SelectorChain selectors = new SelectorChain(selector);
+            return (IDomElement)selectors.Select(Document).FirstOrDefault();
+        }
+
+        public IDomElement GetElementByTagName(string tagName)
+        {
+            return GetElementsByTagName(tagName).FirstOrDefault();
+        }
+
+        public IList<IDomElement> GetElementsByTagName(string tagName)
+        {
+            SelectorChain selectors = new SelectorChain(tagName);
+            return (new List<IDomElement>(OnlyElements(selectors.Select(Document)))).AsReadOnly();
+        }
+
+        public IList<IDomElement> QuerySelectorAll(string selector)
+        {
+            SelectorChain selectors = new SelectorChain(selector);
+            return (new List<IDomElement>(OnlyElements(selectors.Select(Document)))).AsReadOnly();
+        }
+
+
+        public IDomElement CreateElement(string nodeName) {
+            return new DomElement(nodeName);
+        }
+
+        public IDomText CreateTextNode(string text)
+        {
+            return new DomText(text);
+        }
+
+        public IDomComment CreateComment(string comment)
+        {
+            return new DomComment(comment);
+        }
+
+        public override DomDocument Clone()
+        {
+            DomDocument clone = new DomDocument();
+            clone.SourceHtml = SourceHtml;
+            clone.OriginalStrings = OriginalStrings;
+
+            return clone;
+        }
+
+        public override string ToString()
+        {
+            return "DOM Root (" + DocType.ToString() + ", " + DescendantCount().ToString() + " elements)";
+        }
+
+
+        public override IEnumerable<IDomObject> CloneChildren()
+        {
+            if (HasChildren)
+            {
+                foreach (IDomObject obj in ChildNodes)
+                {
+                    yield return obj.Clone();
+                }
+            }
+            yield break;
+        }
+
+        #endregion
+
+        #region private methods
+
+        protected IEnumerable<IDomElement> OnlyElements(IEnumerable<IDomObject> objectList)
+        {
+            foreach (IDomObject obj in objectList)
+            {
+                if (obj.NodeType == NodeType.ELEMENT_NODE)
+                {
+                    yield return (IDomElement)obj;
+                }
+            }
+            yield break;
+        }
+
+        #endregion
+
+       
+        
+      
+       
+       
+
+        
+
+
     }
     
 }
