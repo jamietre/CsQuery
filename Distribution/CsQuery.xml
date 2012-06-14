@@ -401,6 +401,54 @@
             <param name="addRemoveSwitch"></param>
             <returns></returns>
         </member>
+        <member name="T:CsQuery.StringScanner.Patterns.EscapedString">
+            <summary>
+            Match a string pattern against a particular character validation function, but allow the backslash to escape 
+            any character.
+            </summary>
+        </member>
+        <member name="T:CsQuery.StringScanner.IExpectPattern">
+            <summary>
+            An interface for pattern matching. For each character, Expect will be called until it returns false.
+            Validate will be called with the resulting string, and should return true or false to valide the entire pattern.
+            Initialize allows setting up/capturing global data about the string in case other info is eneded
+            </summary>
+        </member>
+        <member name="M:CsQuery.StringScanner.IExpectPattern.Validate">
+            <summary>
+            Should return the next position (typically int++) or -1 if matching is complete
+            </summary>
+            <param name="index"></param>
+            <param name="current"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.Implementation.ExpectPattern.Validate">
+            <summary>
+            By default, returns true if the string is not empty
+            </summary>
+            <param name="result"></param>
+            <param name="parsedResult"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.Implementation.ExpectPattern.GetOuput(System.Int32,System.Int32,System.Boolean,System.Boolean)">
+            <summary>
+            Copy the source to an output string betweem startIndex and endIndex, optionally unescaping part of it
+            </summary>
+            <param name="source"></param>
+            <param name="startIndex"></param>
+            <param name="endIndex"></param>
+            <param name="quotedStartIndex"></param>
+            <param name="quotedEndIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.Patterns.HTMLAttributeName.IsValidAttributeName(System.Int32,System.Char)">
+            <summary>
+            Match a pattern for am attribute name selector
+            </summary>
+            <param name="index"></param>
+            <param name="character"></param>
+            <returns></returns>
+        </member>
         <member name="P:CsQuery.StringScanner.IValueInfo.AlphaISO10646">
             <summary>
             Indicates that a character is alphabetic-like character defined as a-z, A-Z, hyphen, underscore, and ISO 10646 code U+00A1 and higher.
@@ -776,9 +824,87 @@
             
             </summary>
         </member>
+        <member name="P:CsQuery.IDomDocument.SelectorXref">
+            <summary>
+            The primary selection index
+            </summary>
+        </member>
+        <member name="P:CsQuery.IDomDocument.Body">
+            <summary>
+            Return the body element for this DOM
+            </summary>
+        </member>
         <member name="P:CsQuery.IDomDocument.Data">
             <summary>
             Any user data to be persisted with this DOM
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.#ctor">
+            <summary>
+            Create a new, empty DOM document
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.#ctor(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+            <summary>
+            Create a new document from a sequence of elements
+            </summary>
+            <param name="elements"></param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.#ctor(System.Char[])">
+            <summary>
+            Create a new document from a character array of html
+            </summary>
+            <param name="html"></param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.AddToIndex(CsQuery.IDomIndexedNode)">
+            <summary>
+            Add an element to the index using the default keys for this element
+            </summary>
+            <param name="element"></param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.AddToIndex(System.String,CsQuery.IDomIndexedNode)">
+            <summary>
+            Add an element to the index using a specified index key
+            </summary>
+            <param name="key"></param>
+            <param name="element"></param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.RemoveFromIndex(CsQuery.IDomIndexedNode)">
+            <summary>
+            Remove an element from the index
+            </summary>
+            <param name="element"></param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.RemoveFromIndex(System.String)">
+            <summary>
+            Remove an element from the index using its key
+            </summary>
+            <param name="key"></param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.QueryIndex(System.String,System.Int32,System.Boolean)">
+            <summary>
+            Query the document's index for a subkey up to a specific depth, optionally including descendants that match the selector
+            </summary>
+            <param name="subKey"></param>
+            <param name="depth">The zero-based depth to which searches should be limited</param>
+            <param name="includeDescendants"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.QueryIndex(System.String)">
+            <summary>
+            Query the document's index for a subkey
+            </summary>
+            <param name="subKey"></param>
+            <returns></returns>
+        </member>
+        <member name="P:CsQuery.Implementation.DomDocument.SelectorXref">
+            <summary>
+            The index
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomDocument.Depth">
+            <summary>
+            The depth in the node tree at which this node occurs. This is always 0 for the DomDocument.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomDocument.DocType">
@@ -1044,8 +1170,7 @@
         </member>
         <member name="M:CsQuery.CQ.#ctor(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},CsQuery.CQ)">
             <summary>
-            Create a new CsQuery object from a set of DOM elements, using the DOM of the first element.
-            could contain more than one context)
+            Create a new CsQuery object from a set of DOM elements, using the DOM from context
             </summary>
             <param name="elements"></param>
         </member>
@@ -2175,40 +2300,6 @@
             <param name="context"></param>
             <returns></returns>
         </member>
-        <member name="T:CsQuery.StringScanner.IExpectPattern">
-            <summary>
-            An interface for pattern matching. For each character, Expect will be called until it returns false.
-            Validate will be called with the resulting string, and should return true or false to valide the entire pattern.
-            Initialize allows setting up/capturing global data about the string in case other info is eneded
-            </summary>
-        </member>
-        <member name="M:CsQuery.StringScanner.IExpectPattern.Validate">
-            <summary>
-            Should return the next position (typically int++) or -1 if matching is complete
-            </summary>
-            <param name="index"></param>
-            <param name="current"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.StringScanner.Implementation.ExpectPattern.Validate">
-            <summary>
-            By default, returns true if the string is not empty
-            </summary>
-            <param name="result"></param>
-            <param name="parsedResult"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.StringScanner.Implementation.ExpectPattern.GetOuput(System.Int32,System.Int32,System.Boolean,System.Boolean)">
-            <summary>
-            Copy the source to an output string betweem startIndex and endIndex, optionally unescaping part of it
-            </summary>
-            <param name="source"></param>
-            <param name="startIndex"></param>
-            <param name="endIndex"></param>
-            <param name="quotedStartIndex"></param>
-            <param name="quotedEndIndex"></param>
-            <returns></returns>
-        </member>
         <member name="T:CsQuery.JsObject">
             <summary>
             A dynamic object implementation that differs from ExpandoObject in two ways:
@@ -2250,12 +2341,12 @@
         </member>
         <member name="M:CsQuery.Engine.CssSelectionEngine.Matches(CsQuery.Engine.Selector,CsQuery.IDomObject,System.Int32)">
             <summary>
-            Test 
+            Return true if an object matches a specific selector. If the selector has a desecendant or child traversal type, it must also
+            match the specificed depth.
             </summary>
-            <param name="selector"></param>
-            <param name="obj"></param>
-            <param name="matchIndex"></param>
-            <param name="depth"></param>
+            <param name="selector">The jQuery/CSS selector</param>
+            <param name="obj">The target object</param>
+            <param name="depth">The depth at which the target must appear for descendant or child selectors</param>
             <returns></returns>
         </member>
         <member name="M:CsQuery.Engine.CssSelectionEngine.GetResultPositionMatches(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},CsQuery.Engine.Selector)">
@@ -2263,7 +2354,7 @@
             Return all position-type matches. These are selectors that are keyed to the position within the selection
             set itself.
             </summary>
-            <param name="list"></param>
+            <param name="sourceList"></param>
             <param name="selector"></param>
             <returns></returns>
         </member>
@@ -2282,6 +2373,44 @@
             <param name="elm"></param>
             <param name="type"></param>
             <param name="criteria"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.Engine.CssSelectionEngine.GetAdjacentOrSiblings(CsQuery.Engine.TraversalType,System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+            <summary>
+            Map a list to its siblings or adjacent elements if needed. Ignore other traversal types.
+            </summary>
+            <param name="traversalType"></param>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.Engine.CssSelectionEngine.GetChildOrDescendants(CsQuery.Engine.TraversalType,System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+            <summary>
+            Map a list to its children or descendants, if needed.
+            </summary>
+            <param name="traversalType"></param>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.Engine.CssSelectionEngine.GetChildElements(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+            <summary>
+            Return all children of each element in the list
+            </summary>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.Engine.CssSelectionEngine.GetDescendantElements(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+            <summary>
+            Return all descendants of each element in the list
+            </summary>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.Engine.CssSelectionEngine.ContainsText(CsQuery.IDomElement,System.String)">
+            <summary>
+            Return true if any text node descendant of the source element contains the specified text
+            </summary>
+            <param name="source"></param>
+            <param name="text"></param>
             <returns></returns>
         </member>
         <member name="M:CsQuery.Engine.CssSelectionEngine.InsertAttributeValueSelector(CsQuery.Engine.Selector)">
@@ -2310,6 +2439,43 @@
             internal paths.
             </summary>
         </member>
+        <member name="T:CsQuery.Engine.SelectorParser">
+            <summary>
+            A class to parse a CSS selector string into a sequence of Selector objects
+            </summary>
+        </member>
+        <member name="M:CsQuery.Engine.SelectorParser.Parse(System.String)">
+            <summary>
+            Parse the string, and return a sequence of Selector objects
+            </summary>
+            <param name="selector"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.Engine.SelectorParser.expectsOptionallyQuotedValue">
+            <summary>
+            A pattern for the operand of an attribute selector
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.Engine.SelectorParser.StartNewSelector(CsQuery.Engine.SelectorType)">
+            <summary>
+            Start a new chained filter selector of the specified type
+            </summary>
+            <param name="positionType"></param>
+        </member>
+        <member name="M:CsQuery.Engine.SelectorParser.StartNewSelector(CsQuery.Engine.CombinatorType,CsQuery.Engine.TraversalType)">
+            <summary>
+            Start a new selector that does not yet have a type specified
+            </summary>
+            <param name="combinatorType"></param>
+            <param name="traversalType"></param>
+        </member>
+        <member name="M:CsQuery.Engine.SelectorParser.StartNewSelector(CsQuery.Engine.TraversalType)">
+            <summary>
+            Start a new chained selector that does not yet have a type specified
+            </summary>
+            <param name="traversalType"></param>
+        </member>
         <member name="M:CsQuery.Engine.SelectorParser.StartNewSelector(CsQuery.Engine.SelectorType,CsQuery.Engine.CombinatorType,CsQuery.Engine.TraversalType)">
             <summary>
             Close the currently active selector. If it's partial (e.g. a descendant/child marker) then merge its into into the 
@@ -2329,6 +2495,32 @@
             <summary>
             Finishes any open selector and clears the current selector
             </summary>
+        </member>
+        <member name="M:CsQuery.Engine.SelectorParser.ClearCurrent">
+            <summary>
+            Clear the currently open selector
+            </summary>
+        </member>
+        <member name="M:CsQuery.Engine.SelectorParser.IsHtml(System.String)">
+            <summary>
+            Return true of the text appears to be HTML (e.g. starts with a caret)
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+        </member>
+        <member name="T:CsQuery.StringScanner.Patterns.HtmlID">
+            <summary>
+            ID and NAME tokens must begin with a letter ([A-Za-z]) and may be followed by any number of letters, 
+            digits ([0-9]), hyphens ("-"), underscores ("_"), colons (":"), and periods (".").
+            </summary>
+        </member>
+        <member name="M:CsQuery.StringScanner.Patterns.HtmlID.IsValidID(System.Int32,System.Char)">
+            <summary>
+            Match a pattern for a valid HTML ID 
+            </summary>
+            <param name="index"></param>
+            <param name="character"></param>
+            <returns></returns>
         </member>
         <member name="T:CsQuery.Engine.NthChild">
             <summary>
@@ -2404,9 +2596,9 @@
             <summary>
             A static class to provide attribute information about characters, e.g. determining whether or not it
             belongs to a number of predefined classes. This creates an array of every possible character with a 
-            ushort that is a bitmap (of up to 16 possible values, we can expand this to an int at some point if
-            needed). This permits very fast access to this information since it only needs to be looked up
-            via an index.
+            unit that is a bitmap (of up to 32 possible values)
+            This permits very fast access to this information since it only needs to be looked up
+            via an index. Uses an array of 65536 uints = 256K of memory
             
             </summary>
         </member>
@@ -2415,16 +2607,34 @@
             Configuration of the xref of character info
             </summary>
         </member>
-        <member name="M:CsQuery.StringScanner.CharacterData.SetHtmlTagNameStart(System.UInt16)">
+        <member name="M:CsQuery.StringScanner.CharacterData.SetHtmlIdNameExceptStart(System.UInt32)">
+            <summary>
+            Matches anything but the first character for a valid ID or name value. The first character is just alpha.
+            </summary>
+            <param name="hsb"></param>
+        </member>
+        <member name="M:CsQuery.StringScanner.CharacterData.SetHtmlTagSelectorStart(System.UInt32)">
             <summary>
             We omit ":" as a valid name start character because it makes pseudoselectors impossible to parse.
             </summary>
             <param name="hsb"></param>
         </member>
-        <member name="M:CsQuery.StringScanner.CharacterData.SetHtmlTagNameChar">
+        <member name="M:CsQuery.StringScanner.CharacterData.SetHtmlTagSelectorExceptStart(System.UInt32)">
             <summary>
             Similar to above, we omit "." as a valid in-name char because it breaks chained CSS selectors.
             </summary>
+        </member>
+        <member name="M:CsQuery.StringScanner.CharacterData.SetHtmlTagNameStart(System.UInt32)">
+            <summary>
+            Add the : back in when actually parsing html
+            </summary>
+            <param name="hsb"></param>
+        </member>
+        <member name="M:CsQuery.StringScanner.CharacterData.SetHtmlTagNameExceptStart(System.UInt32)">
+            <summary>
+            Add the . back in when actually parsing html
+            </summary>
+            <param name="hsb"></param>
         </member>
         <member name="M:CsQuery.StringScanner.CharacterData.Closer(System.Char)">
             <summary>
@@ -2617,7 +2827,7 @@
             A single CSS style
             </summary>
         </member>
-        <member name="M:CsQuery.StringScanner.MatchFunctions.CssClass(System.Int32,System.Char)">
+        <member name="P:CsQuery.StringScanner.MatchFunctions.CssClassName">
             <summary>
             Matches a valid CSS class: http://www.w3.org/TR/CSS21/syndata.html#characters
             Does not currently deal with escaping though.
@@ -2779,6 +2989,15 @@
             Deserialize javscript, then transform to an ExpandObject
             </summary>
             <param name="objectToDeserialize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.Patterns.CssClassName.IsValidClassName(System.Int32,System.Char)">
+            <summary>
+            Match a pattern for a CSS class name selector
+            TODO - doesn't validate hyphen-digit combo.
+            </summary>
+            <param name="index"></param>
+            <param name="character"></param>
             <returns></returns>
         </member>
         <member name="T:CsQuery.IDomDocumentType">

@@ -42,23 +42,30 @@ namespace CsqueryTests.jQuery.Sizzle
 
             broken("Doesn't exist", ":visble");
             broken( "Nth-child", ":nth-child" );
-            // Sigh again. IE 9 thinks this is also a real selector
-            // not super critical that we fix this case
-            broken<ArgumentOutOfRangeException>("Nth-child", ":nth-child(-)" );
+
         }
 
         [Test, TestMethod]
         public void BrokenNthChildSelectors()
         {
+
+
             // Sigh. WebKit thinks this is a real selector in qSA
             // They've already fixed this and it'll be coming into
             // current browsers soon. Currently, Safari 5.0 still has this problem
-            broken<ArgumentOutOfRangeException>("Nth-child", ":nth-child(asdf)");
+            broken<ArgumentException>("Nth-child", ":nth-child(asdf)");
 
-            broken<ArgumentOutOfRangeException>("Nth-child", ":nth-child(2n+-0)");
-            broken<ArgumentOutOfRangeException>("Nth-child", ":nth-child(2+0)");
-            broken<ArgumentOutOfRangeException>("Nth-child", ":nth-child(- 1n)");
-            broken<ArgumentOutOfRangeException>("Nth-child", ":nth-child(-1 n)");
+            // Sigh again. IE 9 thinks this is also a real selector
+            // not super critical that we fix this case
+            broken<ArgumentException>("Nth-child", ":nth-child(-)");
+
+            broken<ArgumentException>("Nth-child", ":nth-child(2n+-0)");
+            broken<ArgumentException>("Nth-child", ":nth-child(2+0)");
+            broken<ArgumentException>("Nth-child", ":nth-child(- 1n)");
+
+            // [CsQuery] our expression parser ignores whitespace between associative operands, I think this is ok
+
+            //broken<ArgumentException>("Nth-child", ":nth-child(-1 n)");
         }
         [Test, TestMethod]
         public void ParamsToParameterlessSelectors() {

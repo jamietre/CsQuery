@@ -33,7 +33,7 @@ namespace CsQuery.Engine
         
         protected CacheInfo cacheInfo;
         protected bool cached = false;
-        protected IEquation<int> formula;
+        protected IEquation<int> Equation;
         
         protected string _Text;
 
@@ -274,8 +274,8 @@ namespace CsQuery.Engine
             int val = -1;
             while (val < lastIndex && iterator <= lastIndex)
             {
-                formula.SetVariable("n", iterator);
-                val = formula.Value;
+                Equation.SetVariable("n", iterator);
+                val = Equation.Value;
                 cacheInfo.MatchingIndices.Add(val);
                 iterator++;
             }
@@ -315,8 +315,33 @@ namespace CsQuery.Engine
 
         protected void ParseEquation(string equation)
         {
+            // TODO: Why do we parse the equation no matter what? Shouldn't the equation itself also be cached?
+
             equation = CheckForEvenOdd(equation);
-            formula = Equations.CreateEquation<int>(equation);
+            try
+            {
+                Equation = Equations.CreateEquation<int>(equation);
+            }
+            catch (InvalidCastException e)
+            {
+                throw new ArgumentException(String.Format("The equation {{0}} could not be parsed.", equation),e);
+            }
+
+            IVariable variable;
+            try
+            {
+                variable = Equation.Variables.Single();
+            }
+            catch (InvalidOperationException e)
+            {
+                throw new ArgumentException(String.Format("The equation {{0}} must contain a single variable 'n'.", equation), e);
+            }
+
+            if (variable.Name != "n")
+            {
+                throw new ArgumentException(String.Format("The equation {{0}} does not have a variable 'n'.", equation));
+            }
+
 
             string cacheKey = (String.IsNullOrEmpty(OnlyNodeName) ? "" : OnlyNodeName + "|") +
                 (FromLast ? "1|" : "0|") +
