@@ -48,14 +48,22 @@ namespace CsQuery.Engine
 
         private static bool IsNthChildOfTypeImpl(IDomElement obj, string criteria, bool fromLast = false)
         {
+            string onlyNodeName;
+            string formula;
+
             string[] crit = criteria.Split('|');
-            if (crit.Length != 2)
+            if (crit.Length == 2)
             {
-                throw new ArgumentOutOfRangeException("Invalid criteria was passed to IsNthChildsOfType; it must be \"type|equation\"");
+                onlyNodeName = crit[0].ToUpper();
+                formula = crit[1];
+            }
+            else
+            {
+                onlyNodeName = null;
+                formula = crit[0];
             }
             
-            string onlyNodeName = crit[0].ToUpper();
-            string formula = crit[1];
+            
 
             return NthChildMatcher.IndexMatches(IndexOfTypeOnly(obj,onlyNodeName,fromLast ),formula,onlyNodeName,fromLast);
         }

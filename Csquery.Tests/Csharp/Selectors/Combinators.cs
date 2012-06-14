@@ -45,12 +45,14 @@ namespace CsqueryTests.Csharp
         public void Siblings()
         {
 
-            var res = Dom.Find("div~span");
-            Assert.AreEqual(0, res.Length);
-
-            res = Dom.Find("p~span");
+            
+            var res = Dom.Find("p~span");
             Assert.AreEqual(1, res.Length);
             Assert.AreEqual("hlinks-user", res[0].Id);
+
+            res = Dom.Find("div~span");
+            Assert.AreEqual(0, res.Length);
+
 
             res = Dom.Find("a~a");
             Assert.AreEqual(1, res.Length);

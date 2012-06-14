@@ -103,6 +103,7 @@
     <Compile Include="jQuery\Sizzle\ClassSelectors.cs" />
     <Compile Include="jQuery\Sizzle\ChildAndAdjacentSelectors.cs" />
     <Compile Include="jQuery\Sizzle\AttributeSelectors.cs" />
+    <Compile Include="jQuery\Sizzle\PseudoChild.cs" />
     <Compile Include="jQuery\Sizzle\IDSelectors.cs" />
     <Compile Include="jQuery\Sizzle\sizzle.cs" />
     <Compile Include="jQuery\Sizzle\SizzleTest.cs" />

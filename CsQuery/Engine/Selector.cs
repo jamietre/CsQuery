@@ -120,7 +120,7 @@ namespace CsQuery.Engine
             }
         }
 
-        public bool IsDomIndexPosition
+        public bool IsDomPositionPseudoSelector
         {
             get
             {

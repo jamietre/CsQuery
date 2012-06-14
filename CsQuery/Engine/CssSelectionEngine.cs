@@ -114,21 +114,7 @@ namespace CsQuery.Engine
 
                             // If the selector used the adjacent combinator, grab the next element for each
                             if (lastResult!=null) {
-                                switch (traversalType)
-                                {
-                                    case TraversalType.Adjacent:
-                                        selectionSource = CQ.Map(lastResult, item =>
-                                        {
-                                            return item.NextElementSibling;
-                                        });
-                                        break;
-                                    case TraversalType.Sibling:
-                                        selectionSource = GetSiblings(lastResult);
-                                        break;
-                                    default:
-                                        selectionSource = lastResult;
-                                        break;
-                                }
+                                selectionSource = GetAdjacentOrSiblings(selector.TraversalType,lastResult);
                             }
                             else
                             {
@@ -364,26 +350,8 @@ namespace CsQuery.Engine
         #endregion
 
         #region selection matching main code
-        protected IEnumerable<IDomElement> GetSiblings(IEnumerable<IDomObject> list)
-        {
-            foreach (var item in list)
-            {
-
-                IDomContainer parent = item.ParentNode;
-                int index = item.Index + 1;
-                int length = parent.ChildNodes.Count;
-
-                while (index < length)
-                {
-                    IDomElement node = parent.ChildNodes[index] as IDomElement;
-                    if (node != null)
-                    {
-                        yield return node;
-                    }
-                    index++;
-                }
-            }
-        }
+        
+        
         /// <summary>
         /// Return all elements matching a selector, within a domain baseList, starting from list.
         /// </summary>
@@ -398,7 +366,11 @@ namespace CsQuery.Engine
             HashSet<IDomObject> uniqueElements = null;
 
             Stack<MatchElement> stack = null;
-            IEnumerable<IDomObject> curList = list;
+
+            // map the list to adacent/siblings if needed. Descendant & child travarsals are handled through
+            // recursion.
+            IEnumerable<IDomObject> curList = GetAdjacentOrSiblings(selector.TraversalType, list);
+
             HashSet<IDomObject> temporaryResults = new HashSet<IDomObject>();
 
             // The unique list has to be reset for each sub-selector
@@ -415,7 +387,9 @@ namespace CsQuery.Engine
                 yield break;
             }
 
-            // Result-list position selectors are simple -- skip out of main matching code if so
+            // For the jQuery extensions (which are mapped to the position in the output, not the DOM) we have to enumerate
+            // the results first, rather than targeting specific child elements. Handle it here,
+
             if (selector.SelectorType.HasFlag(SelectorType.PseudoClass) && selector.IsResultListPosition)
             {
                 foreach (var obj in GetResultPositionMatches(curList, selector))
@@ -424,7 +398,17 @@ namespace CsQuery.Engine
                 }
                 yield break;
             }
+            else if (selector.SelectorType.HasFlag(SelectorType.All))
+            {
+                // special case for all, just recurse
+                foreach (var item in GetChildOrDescendants(selector.TraversalType,curList))
+                {
+                    yield return item;
+                }
+            }
+
             // Otherwise, try to match each element individually
+            
             stack = new Stack<MatchElement>();
 
             foreach (var e in curList)
@@ -460,7 +444,7 @@ namespace CsQuery.Engine
                         SelectorType selectorType = selector.SelectorType;
                         IDomElement elm = current.Element;
 
-                        if (selector.IsDomIndexPosition &&
+                        if (selector.IsDomPositionPseudoSelector &&
                             ((selector.TraversalType == TraversalType.All) ||
                             (selector.TraversalType == TraversalType.Child && selector.ChildDepth == current.Depth + 1) ||
                             (selector.TraversalType == TraversalType.Descendent && selector.ChildDepth <= current.Depth + 1))) 
@@ -468,6 +452,7 @@ namespace CsQuery.Engine
                             temporaryResults.AddRange(GetPseudoClassMatches(elm, selector));
                             selectorType &= ~SelectorType.PseudoClass;
                         }
+
                         if (selectorType == 0)
                         {
                             continue;
@@ -498,12 +483,12 @@ namespace CsQuery.Engine
         }
 
         /// <summary>
-        /// Test 
+        /// Return true if an object matches a specific selector. If the selector has a desecendant or child traversal type, it must also
+        /// match the specificed depth.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="obj"></param>
-        /// <param name="matchIndex"></param>
-        /// <param name="depth"></param>
+        /// <param name="selector">The jQuery/CSS selector</param>
+        /// <param name="obj">The target object</param>
+        /// <param name="depth">The depth at which the target must appear for descendant or child selectors</param>
         /// <returns></returns>
         protected bool Matches(Selector selector, IDomObject obj, int depth)
         {
@@ -575,35 +560,40 @@ namespace CsQuery.Engine
         /// Return all position-type matches. These are selectors that are keyed to the position within the selection
         /// set itself.
         /// </summary>
-        /// <param name="list"></param>
+        /// <param name="sourceList"></param>
         /// <param name="selector"></param>
         /// <returns></returns>
         protected IEnumerable<IDomObject> GetResultPositionMatches(IEnumerable<IDomObject> list, Selector selector)
         {
+            // for sibling traversal types the mapping was done already by the Matches function
+
+            var sourceList = GetChildOrDescendants(selector.TraversalType, list);
+
             switch (selector.PseudoClassType)
             {
                 case PseudoClassType.Odd:
-                    return PseudoSelectors.OddElements(list);
+                    return PseudoSelectors.OddElements(sourceList);
                 case PseudoClassType.Even:
-                    return PseudoSelectors.EvenElements(list);
+                    return PseudoSelectors.EvenElements(sourceList);
                 case PseudoClassType.First:
-                    return PseudoSelectors.Enumerate(list.FirstOrDefault());
+                    return PseudoSelectors.Enumerate(sourceList.FirstOrDefault());
                 case PseudoClassType.Last:
-                    return PseudoSelectors.Enumerate(list.LastOrDefault());
+                    return PseudoSelectors.Enumerate(sourceList.LastOrDefault());
                 case PseudoClassType.IndexEquals:
-                    return PseudoSelectors.Enumerate(PseudoSelectors.ElementAtIndex(list, selector.PositionIndex));
+                    return PseudoSelectors.Enumerate(PseudoSelectors.ElementAtIndex(sourceList, selector.PositionIndex));
                 case PseudoClassType.IndexGreaterThan:
-                    return PseudoSelectors.IndexGreaterThan(list, selector.PositionIndex);
+                    return PseudoSelectors.IndexGreaterThan(sourceList, selector.PositionIndex);
                 case PseudoClassType.IndexLessThan:
-                    return PseudoSelectors.IndexLessThan(list, selector.PositionIndex);
+                    return PseudoSelectors.IndexLessThan(sourceList, selector.PositionIndex);
                 case PseudoClassType.All:
-                    return list;
+                    return sourceList;
                 default:
                     throw new NotImplementedException("Unimplemented result position type selector");
 
             }
         }
 
+        
         /// <summary>
         /// Return all child elements matching a DOM-position type selector
         /// </summary>
@@ -618,6 +608,10 @@ namespace CsQuery.Engine
                 case PseudoClassType.NthChild:
                 case PseudoClassType.NthOfType:
                     results= PseudoSelectors.NthChilds(elm,selector.Criteria);
+                    break;
+                case PseudoClassType.NthLastChild:
+                case PseudoClassType.NthLastOfType:
+                    results = PseudoSelectors.NthLastChilds(elm, selector.Criteria);
                     break;
                 case PseudoClassType.FirstOfType:
                     results=PseudoSelectors.FirstOfType(elm, selector.Criteria);
@@ -637,10 +631,7 @@ namespace CsQuery.Engine
                 case PseudoClassType.OnlyOfType:
                     results = PseudoSelectors.OnlyOfType(elm, selector.Criteria);
                     break;
-                case PseudoClassType.NthLastChild:
-                case PseudoClassType.NthLastOfType:
-                    results = PseudoSelectors.NthLastChilds(elm, selector.Criteria);
-                    break;
+               
                 case PseudoClassType.Empty:
                     results= PseudoSelectors.Empty(elm.ChildElements);
                     break;
@@ -668,6 +659,8 @@ namespace CsQuery.Engine
                 yield return item;
             }
 
+            // Traverse children if needed
+
             if (selector.TraversalType == TraversalType.Descendent || 
                 selector.TraversalType == TraversalType.All)
             {
@@ -694,6 +687,12 @@ namespace CsQuery.Engine
         {
             switch (type)
             {
+                case PseudoClassType.NthChild:
+                case PseudoClassType.NthOfType:
+                    return PseudoSelectors.IsNthChild(elm, criteria);
+                case PseudoClassType.NthLastChild:
+                case PseudoClassType.NthLastOfType:
+                    return PseudoSelectors.IsNthLastChild(elm, criteria);
                 case PseudoClassType.FirstOfType:
                     return PseudoSelectors.IsFirstOfType(elm, criteria);
                 case PseudoClassType.LastOfType:
@@ -702,16 +701,10 @@ namespace CsQuery.Engine
                     return elm.PreviousElementSibling == null;
                 case PseudoClassType.LastChild:
                     return elm.NextElementSibling == null;
-                case PseudoClassType.NthChild:
-                case PseudoClassType.NthOfType:
-                    return PseudoSelectors.IsNthChild(elm, criteria);
                 case PseudoClassType.OnlyChild:
                     return PseudoSelectors.IsOnlyChild(elm);
                 case PseudoClassType.OnlyOfType:
                     return PseudoSelectors.IsOnlyOfType(elm);
-                case PseudoClassType.NthLastChild:
-                case PseudoClassType.NthLastOfType:
-                    return PseudoSelectors.IsNthLastChild(elm, criteria);
                 case PseudoClassType.Empty:
                     return PseudoSelectors.IsEmpty(elm);
                 case PseudoClassType.Parent:
@@ -734,9 +727,156 @@ namespace CsQuery.Engine
 
         #region private methods
 
-        private bool ContainsText(IDomElement obj, string text)
+        /// <summary>
+        /// Map a list to its siblings or adjacent elements if needed. Ignore other traversal types.
+        /// </summary>
+        /// <param name="traversalType"></param>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        protected IEnumerable<IDomObject> GetAdjacentOrSiblings(TraversalType traversalType, IEnumerable<IDomObject> list)
         {
-            foreach (IDomObject e in obj.ChildNodes)
+            IEnumerable<IDomObject> sourceList;
+            switch (traversalType)
+            {
+                case TraversalType.Adjacent:
+                    sourceList = GetAdjacentElements(list);
+                    break;
+                case TraversalType.Sibling:
+                    sourceList = GetSiblings(list);
+                    break;
+                default:
+                    sourceList = list;
+                    break;
+            }
+            return sourceList;
+        }
+
+        /// <summary>
+        /// Map a list to its children or descendants, if needed.
+        /// </summary>
+        /// <param name="traversalType"></param>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        protected IEnumerable<IDomObject> GetChildOrDescendants(TraversalType traversalType, IEnumerable<IDomObject> list)
+        {
+            IEnumerable<IDomObject> sourceList;
+            switch (traversalType)
+            {
+                case TraversalType.Child:
+                    sourceList = GetChildElements(list);
+                    break;
+                case TraversalType.Descendent:
+                    sourceList = GetDescendantElements(list);
+                    break;
+                default:
+                    sourceList = list;
+                    break;
+            }
+            return sourceList;
+        }
+
+
+        protected IEnumerable<IDomObject> GetTraversalTargetElements(TraversalType traversalType, IEnumerable<IDomObject> list)
+        {
+            IEnumerable<IDomObject> sourceList;
+            switch (traversalType)
+            {
+                case TraversalType.Filter:
+                    sourceList = list;
+                    break;
+                case TraversalType.Child:
+
+                    sourceList = GetChildElements(list);
+                    break;
+                case TraversalType.Adjacent:
+                    sourceList = GetAdjacentElements(list);
+                    break;
+                case TraversalType.Sibling:
+                    sourceList = GetSiblings(list);
+                    break;
+                case TraversalType.Descendent:
+                    throw new InvalidOperationException("TraversalType.Descendant should not be found at this point.");
+                case TraversalType.All:
+                    throw new InvalidOperationException("TraversalType.All should not be found at this point.");
+                default:
+                    throw new NotImplementedException("Unimplemented traversal type.");
+            }
+            return sourceList;
+        }
+
+        /// <summary>
+        /// Return all children of each element in the list
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        protected IEnumerable<IDomElement> GetChildElements(IEnumerable<IDomObject> list)
+        {
+            foreach (var item in list)
+            {
+                foreach (var child in item.ChildElements)
+                {
+                    yield return child;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Return all descendants of each element in the list
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        protected IEnumerable<IDomElement> GetDescendantElements(IEnumerable<IDomObject> list)
+        {
+            foreach (var item in list)
+            {
+                foreach (var child in item.ChildElements)
+                {
+                    yield return child;
+                    foreach (var grandChild in GetDescendantElements(child.ChildElements))
+                    {
+                        yield return grandChild;
+                    }
+                }
+            }
+        }
+        protected IEnumerable<IDomElement> GetAdjacentElements(IEnumerable<IDomObject> list)
+        {
+            return CQ.Map(list, item =>
+            {
+                return item.NextElementSibling;
+            });
+        }
+
+        protected IEnumerable<IDomElement> GetSiblings(IEnumerable<IDomObject> list)
+        {
+            foreach (var item in list)
+            {
+
+                IDomContainer parent = item.ParentNode;
+                int index = item.Index + 1;
+                int length = parent.ChildNodes.Count;
+
+                while (index < length)
+                {
+                    IDomElement node = parent.ChildNodes[index] as IDomElement;
+                    if (node != null)
+                    {
+                        yield return node;
+                    }
+                    index++;
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Return true if any text node descendant of the source element contains the specified text
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        protected bool ContainsText(IDomElement source, string text)
+        {
+            foreach (IDomObject e in source.ChildNodes)
             {
                 if (e.NodeType == NodeType.TEXT_NODE)
                 {
