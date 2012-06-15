@@ -4,7 +4,7 @@
 
 6/13/2012
 
-Release 1.1
+Release 1.1.1
 
 CsQuery is a jQuery port for .NET 4. It implements all CSS2 & CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) has been ported to C#. The project necessarily includes an object model that represents the browser DOM. The document model uses a subselect-capable index that can perform multipart selectors on large documents in milliseconds.
 
@@ -13,8 +13,7 @@ CsQuery is a jQuery port for .NET 4. It implements all CSS2 & CSS3 selectors, al
 
     PM> Install-Package CsQuery
 
-The current package on NuGet is 1.1.0.
-
+The NuGet package will always reflect the release noted here. The code on GitHub may contain changes since the last NuGet release.
 
 ### Roadmap
 
@@ -72,10 +71,18 @@ jQuery extensions:
 	:image						:reset
 	:submit						:password
 	:selected					:contains(T)
-	:has(S)
+	:has(S)						:input
 	
 
 ### Release Notes
+
+Version 1.1.1:
+
+All tests from jQuery Sizzle project have been migrated; some bugs in complex selectors were revealed during this exercise. All known bugs have been fixed and all tests pass with one exception: leading operators (+ and -) are not allowed in formula CSS selectors. For example, `:nth-child(+2n+1)` will fail, but `:nth-child(2n+1)` will work. This is legal CSS but also a low priority as it is an edge case.
+
+This realease added the `:input` jQuery pseudoclass selector which I had overlooked before. The CSS engine was refactored a bit and should perform better too.
+
+Version 1.1.0:
 
 See [release notes for version 1.1 on blog.outsharked.com](http://blog.outsharked.com/2012/06/csquery-11-released-and-available-on.html)
 
