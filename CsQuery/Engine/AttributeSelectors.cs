@@ -13,70 +13,74 @@ namespace CsQuery.Engine
     {
 
 
-        public static bool MatchesAttribute(Selector selector, IDomElement elm)
+        public static bool MatchesAttribute(SelectorClause selector, IDomElement elm)
         {
-            //string value;
-            //bool match = elm.TryGetAttribute(selector.AttributeName, out value);
-            //if (!match ||
-            //    (match && selector.AttributeSelectorType == AttributeSelectorType.NotExists))
-            //{
-            //    return false;
-            //}
-
-            bool match=true;
-            string name = selector.AttributeName;
-            string value;
-
-            switch (selector.AttributeSelectorType)
+            bool match = elm.HasAttribute(selector.AttributeName);
+            
+            if (!match)
             {
-                case AttributeSelectorType.Exists:
-                    match= elm.HasAttribute(name);
-                    break;
-                case AttributeSelectorType.Equals:
-                    match = selector.AttributeValue == elm[name];
-                    break;
-                case AttributeSelectorType.StartsWith:
-                    value = elm[name];
-                    match = value.Length >= selector.AttributeValue.Length &&
-                        value.Substring(0, selector.AttributeValue.Length) == selector.AttributeValue;
-                    break;
-                case AttributeSelectorType.Contains:
-                    match = elm[name].IndexOf(selector.AttributeValue) >= 0;
-                    break;
-                case AttributeSelectorType.ContainsWord:
-                    match = ContainsWord(elm[name], selector.AttributeValue);
-                    break;
-                case AttributeSelectorType.NotEquals:
-                    match = !elm.HasAttribute(name) ||
-                        !selector.AttributeValue.Equals(elm[name]);
-                    break;
-                case AttributeSelectorType.NotExists:
-                    match = !elm.HasAttribute(name);
-                    break;
-                case AttributeSelectorType.EndsWith:
-                    int len = selector.AttributeValue.Length;
-                    value = elm[name];
-                    match = value.Length >= len &&
-                        value.Substring(value.Length - len) == selector.AttributeValue;
-                    break;
-                case AttributeSelectorType.StartsWithOrHyphen:
-                    value = elm[name];
-                    int dashPos = value.IndexOf("-");
-                    string beforeDash = value;
-  
-                    if (dashPos >= 0)
-                    {
-                        // match a dash that's included in the match attribute according to common browser behavior
-                        beforeDash = value.Substring(0, dashPos);
-                    }
-
-                    match = selector.AttributeValue == beforeDash || selector.AttributeValue == value;
-                    break;
-                default:
-                    throw new InvalidOperationException("No AttributeSelectorType set");
+                if (selector.SelectorType.HasFlag(SelectorType.AttributeExists))
+                {
+                    return false;
+                }
+                switch (selector.AttributeSelectorType)
+                {
+                    case AttributeSelectorType.Exists:
+                        return false;
+                    case AttributeSelectorType.NotEquals:
+                        return true;
+                    default:
+                        return false;
+                }
             }
+            else
+            {
+                string value = elm[selector.AttributeName];
 
-            return match;
+                switch (selector.AttributeSelectorType)
+                {
+                    case AttributeSelectorType.Exists:
+                        return true;
+                    case AttributeSelectorType.Equals:
+                        return selector.AttributeValue == value;
+                    case AttributeSelectorType.StartsWith:
+                        return value != null &&
+                            value.Length >= selector.AttributeValue.Length &&
+                            value.Substring(0, selector.AttributeValue.Length) == selector.AttributeValue;
+                    case AttributeSelectorType.Contains:
+                        return value != null && value.IndexOf(selector.AttributeValue) >= 0;
+
+                    case AttributeSelectorType.ContainsWord:
+                        return value != null && ContainsWord(value, selector.AttributeValue);
+                    case AttributeSelectorType.NotEquals:
+                        return !selector.AttributeValue.Equals(value);
+                    case AttributeSelectorType.NotExists:
+                        return false;
+                    case AttributeSelectorType.EndsWith:
+                        int len = selector.AttributeValue.Length;
+                        return value!=null && value.Length >= len &&
+                            value.Substring(value.Length - len) == selector.AttributeValue;
+                    case AttributeSelectorType.StartsWithOrHyphen:
+                        if (value == null)
+                        {
+                            return false;
+                        }
+                        int dashPos = value.IndexOf("-");
+                        string beforeDash = value;
+
+                        if (dashPos >= 0)
+                        {
+                            // match a dash that's included in the match attribute according to common browser behavior
+                            beforeDash = value.Substring(0, dashPos);
+                        }
+
+                        return selector.AttributeValue == beforeDash || selector.AttributeValue == value;
+                    default:
+                        throw new InvalidOperationException("No AttributeSelectorType set");
+
+                }
+
+            }
         }
 
         private static bool ContainsWord(string text, string word)

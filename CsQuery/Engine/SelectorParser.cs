@@ -14,21 +14,26 @@ namespace CsQuery.Engine
     public class SelectorParser
     {
         #region private properties
-        protected IStringScanner scanner;
-        protected List<Selector> Selectors;
 
-        protected Selector Current
+        protected IStringScanner scanner;
+        
+        protected  Selector Selectors;
+        private SelectorClause _Current;
+        TraversalType NextTraversalType = TraversalType.All;
+        CombinatorType NextCombinatorType = CombinatorType.Root;
+
+        protected SelectorClause Current
         {
             get
             {
                 if (_Current == null)
                 {
-                    _Current = new Selector();
+                    _Current = new SelectorClause();
                 }
                 return _Current;
             }
+        } 
 
-        } private Selector _Current = null;
         #endregion
 
         #region public methods
@@ -38,9 +43,9 @@ namespace CsQuery.Engine
         /// </summary>
         /// <param name="selector"></param>
         /// <returns></returns>
-        public IEnumerable<Selector> Parse(string selector)
+        public Selector Parse(string selector)
         {
-            Selectors = new List<Selector>();
+            Selectors = new Selector();
 
             string sel = (selector ?? String.Empty).Trim();
 
@@ -51,6 +56,7 @@ namespace CsQuery.Engine
                 Selectors.Add(Current);
                 return Selectors;
             }
+            
             scanner = Scanner.Create(sel);
 
             while (!scanner.Finished)
@@ -58,7 +64,7 @@ namespace CsQuery.Engine
                 switch (scanner.NextChar)
                 {
                     case '*':
-                        Current.SelectorType = SelectorType.All;
+                        StartNewSelector(SelectorType.All);
                         scanner.Next();
                         break;
                     case '<':
@@ -71,6 +77,12 @@ namespace CsQuery.Engine
                         string key = scanner.Get(MatchFunctions.PseudoSelector);
                         switch (key)
                         {
+                            case "input":
+                                AddTagSelector("input");
+                                AddTagSelector("textarea",true);
+                                AddTagSelector("select",true);
+                                AddInputSelector("button",true);
+                                break;
                             case "checkbox":
                             case "radio":
                             case "button":
@@ -80,30 +92,17 @@ namespace CsQuery.Engine
                             case "reset":
                             case "submit":
                             case "password":
-                                StartNewSelector(SelectorType.Attribute);
-
-                                //Current.SelectorType |= SelectorType.Attribute;
-                                Current.AttributeSelectorType = AttributeSelectorType.Equals;
-                                Current.AttributeName = "type";
-                                Current.AttributeValue = key;
-
-                                if (key == "button" && !Current.SelectorType.HasFlag(SelectorType.Tag))
-                                {
-                                    //StartNewSelector(CombinatorType.Cumulative);
-                                    StartNewSelector(SelectorType.Tag, CombinatorType.Cumulative, Current.TraversalType);
-                                    //Current.SelectorType = SelectorType.Tag;
-                                    Current.Tag = "button";
-                                }
+                                AddInputSelector(key);
                                 break;
                             case "checked":
                             case "selected":
                             case "disabled":
-                                StartNewSelector(SelectorType.Attribute);
+                                StartNewSelector(SelectorType.AttributeExists);
                                 Current.AttributeSelectorType = AttributeSelectorType.Exists;
                                 Current.AttributeName = key;
                                 break;
                             case "enabled":
-                                StartNewSelector(SelectorType.Attribute);
+                                StartNewSelector(SelectorType.AttributeValue);
                                 Current.AttributeSelectorType = AttributeSelectorType.NotExists;
                                 Current.AttributeName = "disabled";
                                 break;
@@ -170,10 +169,16 @@ namespace CsQuery.Engine
                                 Current.PseudoClassType = PseudoClassType.OnlyChild;
                                 break;                                
                             case "has":
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.Has;
+                                Current.Criteria = scanner.GetBoundedBy('(', true);
+                                break;
                             case "not":
-                                StartNewSelector(key == "has" ? SelectorType.SubSelectorHas : SelectorType.SubSelectorNot);
-                                string criteria = Current.Criteria = scanner.GetBoundedBy('(', true);
-
+                                //StartNewSelector(key == "has" ? SelectorType.SubSelectorHas : SelectorType.SubSelectorNot);
+                                //string criteria = Current.Criteria = scanner.GetBoundedBy('(', true);
+                                StartNewSelector(SelectorType.PseudoClass);
+                                Current.PseudoClassType = PseudoClassType.Not;
+                                Current.Criteria = scanner.GetBoundedBy('(', true);
                                 break;
                             case "visible":
                                 StartNewSelector(SelectorType.PseudoClass);
@@ -195,7 +200,12 @@ namespace CsQuery.Engine
                                 type = Current.Tag;
                                 StartNewSelector(SelectorType.PseudoClass);
                                 Current.PseudoClassType = PseudoClassType.OnlyOfType;
-                                Current.Criteria = type;
+                                
+                                // when it's not a filter, we are getting the only one of every type; skip criteria
+                                if (Current.TraversalType == TraversalType.Filter)
+                                {
+                                    Current.Criteria = type;
+                                }
                                 break;
                             case "header":
                                 StartNewSelector(SelectorType.PseudoClass);
@@ -210,19 +220,32 @@ namespace CsQuery.Engine
                                 type = Current.Tag;
                                 StartNewSelector(SelectorType.PseudoClass);
                                 Current.PseudoClassType = PseudoClassType.NthOfType;
-                                Current.Criteria = type+"|"+scanner.GetBoundedBy('(');
+                                
+                                // when it's not a filter, we are getting the only one of every type; skip criteria
+
+                                Current.Criteria = scanner.GetBoundedBy('(');
+                                if (Current.TraversalType == TraversalType.Filter)
+                                {
+                                    Current.Criteria += "|"+ type;
+                                }
                                 break;
                             case "nth-last-child":
                                 type = Current.Tag;
                                 StartNewSelector(SelectorType.PseudoClass);
                                 Current.PseudoClassType = PseudoClassType.NthLastChild;
-                                Current.Criteria = type+"|"+scanner.GetBoundedBy('(');
+                                
+                                Current.Criteria = scanner.GetBoundedBy('(') + "|"+ type;
+
                                 break;
                             case "nth-last-of-type":
                                 type = Current.Tag;
                                 StartNewSelector(SelectorType.PseudoClass);
                                 Current.PseudoClassType = PseudoClassType.NthLastOfType;
-                                Current.Criteria = type+"|"+scanner.GetBoundedBy('(');
+                                Current.Criteria = scanner.GetBoundedBy('(');
+                                if (Current.TraversalType == TraversalType.Filter)
+                                {
+                                    Current.Criteria += "|"+ type;
+                                }
                                 break;
                             case "lang":
                                 // The problem with :lang is that it is based on an inherited property value. This messes  with the index since
@@ -272,7 +295,7 @@ namespace CsQuery.Engine
 
                         break;
                     case '[':
-                        StartNewSelector(SelectorType.Attribute);
+                        StartNewSelector(SelectorType.AttributeExists);
 
                         IStringScanner innerScanner = scanner.ExpectBoundedBy('[', true).ToNewScanner();
                         
@@ -299,9 +322,11 @@ namespace CsQuery.Engine
                                 {
 
                                     case "=":
+                                        Current.SelectorType |= SelectorType.AttributeValue;
                                         Current.AttributeSelectorType = AttributeSelectorType.Equals;
                                         break;
                                     case "^=":
+                                        Current.SelectorType |= SelectorType.AttributeValue;
                                         Current.AttributeSelectorType = AttributeSelectorType.StartsWith;
                                         // attributevalue starts with "" matches nothing
                                         if (Current.AttributeValue == "")
@@ -310,18 +335,26 @@ namespace CsQuery.Engine
                                         }
                                         break;
                                     case "*=":
+                                        Current.SelectorType |= SelectorType.AttributeValue;
                                         Current.AttributeSelectorType = AttributeSelectorType.Contains;
                                         break;
                                     case "~=":
+                                        Current.SelectorType |= SelectorType.AttributeValue;
                                         Current.AttributeSelectorType = AttributeSelectorType.ContainsWord;
                                         break;
                                     case "$=":
+                                        Current.SelectorType |= SelectorType.AttributeValue;
                                         Current.AttributeSelectorType = AttributeSelectorType.EndsWith;
                                         break;
                                     case "!=":
+                                        Current.SelectorType |= SelectorType.AttributeValue;
+                                        Current.SelectorType &= ~SelectorType.AttributeExists;
                                         Current.AttributeSelectorType = AttributeSelectorType.NotEquals;
+                                        // must matched manually - missing also validates as notEquals
+                                        
                                         break;
                                     case "|=":
+                                        Current.SelectorType |= SelectorType.AttributeValue;
                                         Current.AttributeSelectorType = AttributeSelectorType.StartsWithOrHyphen;
 
                                         break;
@@ -334,57 +367,38 @@ namespace CsQuery.Engine
                         break;
                     case ',':
                         FinishSelector();
+                        NextCombinatorType = CombinatorType.Root;
+                        NextTraversalType = TraversalType.All;
                         scanner.NextNonWhitespace();
                         break;
                     case '+':
-                        if (Current.IsComplete)
-                        {
-                            StartNewSelector(TraversalType.Adjacent);
-                        }
-                        else
-                        {
-                            Current.TraversalType = TraversalType.Adjacent;
-                        }
+                        StartNewSelector(TraversalType.Adjacent);
                         scanner.NextNonWhitespace();
                         break;
                     case '~':
-                        if (Current.IsComplete)
-                        {
-                            StartNewSelector(TraversalType.Sibling);
-                        }
-                        else
-                        {
-                            Current.TraversalType = TraversalType.Sibling;
-                        }
+                        StartNewSelector(TraversalType.Sibling);
                         scanner.NextNonWhitespace();
                         break;
                     case '>':
-                        if (Current.IsComplete)
-                        {
-                            StartNewSelector(TraversalType.Child);
-                        }
-                        else
-                        {
-                            Current.TraversalType = TraversalType.Child;
-                        }
-
+                        StartNewSelector(TraversalType.Child);
                         // This is a wierd thing because if you use the > selector against a set directly, the meaning is "filter" 
                         // whereas if it is used in a combination selector the meaning is "filter for 1st child"
-                        Current.ChildDepth = (Current.CombinatorType == CombinatorType.Root ? 0 : 1);
+                        //Current.ChildDepth = (Current.CombinatorType == CombinatorType.Root ? 0 : 1);
+                        Current.ChildDepth = 1;
                         scanner.NextNonWhitespace();
                         break;
                     case ' ':
                         // if a ">" or "," is later found, it will be overridden.
                         scanner.NextNonWhitespace();
-                        StartNewSelector(TraversalType.Descendent);
+                        NextTraversalType = TraversalType.Descendent;
+                        //StartNewSelector(TraversalType.Descendent);
                         break;
                     default:
 
                         string tag = "";
                         if (scanner.TryGet(MatchFunctions.HTMLTagSelectorName, out tag))
                         {
-                            StartNewSelector(SelectorType.Tag);
-                            Current.Tag = tag;
+                            AddTagSelector(tag);
                         }
                         else
                         {
@@ -406,12 +420,60 @@ namespace CsQuery.Engine
             }
             // Close any open selectors
             FinishSelector();
+            if (Selectors.Count == 0)
+            {
+                var empty = new SelectorClause
+                {
+                    SelectorType = SelectorType.None,
+                    TraversalType = TraversalType.Filter
+                };
+                Selectors.Add(empty);
+                
+            }
             return Selectors;
         }
         #endregion
 
         #region private methods
 
+        /*
+         * The "And" combinator is used to create groups of selectors that are kept in the context of an active subselector.
+         * e.g. unlike just adding another clause with CombinatorType.Root (or a ","), this joins them but acting as a single
+         * selector.
+         * */
+
+        private void AddTagSelector(string tagName, bool combineWithPrevious=false) 
+        {
+            if (!combineWithPrevious) {
+                StartNewSelector(SelectorType.Tag);
+            } else {
+                 StartNewSelector(SelectorType.Tag,CombinatorType.And,Current.TraversalType);
+            }
+            Current.Tag = tagName;
+        }
+
+        private void AddInputSelector(string type, bool combineWithPrevious=false)
+        {
+            if (!combineWithPrevious)
+            {
+                StartNewSelector(SelectorType.AttributeExists);
+            }
+            else
+            {
+                StartNewSelector(SelectorType.AttributeExists, CombinatorType.And, Current.TraversalType);
+            }
+            Current.SelectorType |= SelectorType.AttributeValue;
+
+            Current.AttributeSelectorType = AttributeSelectorType.Equals;
+            Current.AttributeName = "type";
+            Current.AttributeValue = type;
+
+            if (type == "button" && !Current.SelectorType.HasFlag(SelectorType.Tag))
+            {
+                AddTagSelector("button",true);
+            }
+
+        }
         /// <summary>
         /// A pattern for the operand of an attribute selector
         /// </summary>
@@ -429,7 +491,7 @@ namespace CsQuery.Engine
         /// <param name="positionType"></param>
         protected void StartNewSelector(SelectorType selectorType)
         {
-            StartNewSelector(selectorType, CombinatorType.Chained, TraversalType.Filter);
+            StartNewSelector(selectorType, NextCombinatorType, NextTraversalType);
         }
 
         /// <summary>
@@ -448,7 +510,7 @@ namespace CsQuery.Engine
         /// <param name="traversalType"></param>
         protected void StartNewSelector(TraversalType traversalType)
         {
-            StartNewSelector(0, CombinatorType.Chained, traversalType);
+            StartNewSelector(0, NextCombinatorType, traversalType);
         }
 
         /// <summary>
@@ -462,31 +524,27 @@ namespace CsQuery.Engine
             CombinatorType combinatorType,
             TraversalType traversalType)
         {
+
             // if a selector was not finished, do not overwrite the existing combinator & traversal types,
-            // as they could have been changed by a descendant or child selector.
-            if (TryFinishSelector())
+            // as they could have been changed by a descendant or child selector. The exception is when
+            // the new selector is an explicit "all" type; we always 
+
+            // a new selector will not have been started if there was an explicit "*" creating an all. However, if there's
+            // anything other than a filter, we do actually want 
+
+
+            if (Current.IsComplete &&
+                Current.SelectorType != SelectorType.All || traversalType != TraversalType.Filter)
             {
-                Current.CombinatorType = combinatorType;
-                Current.TraversalType = traversalType;
+                    FinishSelector();
+                    Current.CombinatorType = combinatorType;
+                    Current.TraversalType = traversalType;
+                
             }
+
             Current.SelectorType = selectorType;
         }
 
-        /// <summary>
-        /// Finishes any open selector, but if it was not finish, leaves current selector unaffected.
-        /// Returns true if a selector was closed and a new selector started.
-        /// </summary>
-        protected bool TryFinishSelector()
-        {
-            bool result = false;
-            if (Current.IsComplete)
-            {
-                FinishSelector();
-                result = true;
-            }
-           
-            return result;
-        }
         /// <summary>
         /// Finishes any open selector and clears the current selector
         /// </summary>
@@ -494,9 +552,12 @@ namespace CsQuery.Engine
         {
             if (Current.IsComplete)
             {
-                Selectors.Add(Current.Clone());
+                var cur = Current.Clone();
+                Selectors.Add(cur);
             }
             Current.Clear();
+            NextTraversalType = TraversalType.Filter;
+            NextCombinatorType = CombinatorType.Chained;
         }
 
         /// <summary>

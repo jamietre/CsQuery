@@ -732,7 +732,7 @@ namespace CsQuery.StringScanner.Implementation
         /// <param name="bound"></param>
         public string GetBoundedBy(char bound, bool allowQuoting=false)
         {
-            ExpectBoundedBy(bound);
+            ExpectBoundedBy(bound, allowQuoting);
             return Match;
         }
         public IStringScanner ExpectBoundedBy(char bound, bool allowQuoting = false)

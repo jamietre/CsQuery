@@ -34,7 +34,7 @@ namespace CsQuery.StringScanner.Patterns
             }
             else
             {
-                return CharacterData.IsType(character, CharacterType.HtmlIDNameExceptStart);
+                return CharacterData.IsType(character, CharacterType.AlphaISO10646 | CharacterType.Number);
             }
         }
     }

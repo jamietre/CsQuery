@@ -15,26 +15,13 @@ using CsQuery.Utility;
 namespace CsqueryTests.jQuery.Sizzle
 {
     /// <summary>
-    /// Tests from sizzle.js test suite as of June 13, 2011
+    /// Tests from sizzle.js test suite as of June 13, 2012
     /// https://github.com/jquery/sizzle/tree/master/test
     /// </summary>
     [TestClass, TestFixture]
     public class Sizzle_Element : SizzleTest
     {
-        //q(...);
-        //    Returns an array of elements with the given IDs
-        //    @example q("main", "foo", "bar") => [<div id="main">, <span id="foo">, <input id="bar">]
 
-        //t( testName, selector, [ "array", "of", "ids" ] );
-        //    Asserts that a select matches the given IDs
-        //    @example t("Check for something", "//[a]", ["foo", "baar"]);
-
-        //url( "some/url.php" );
-        //    Add random number to url to stop caching
-        //    @example url("data/test.html") => "data/test.html?10538358428943"
-        //    @example url("data/test.php?foo=bar") => "data/test.php?foo=bar&10538358345554"
-
-        // Sizzle maps to Dom, the default DOM 
 
         [Test, TestMethod]
         public void Element()

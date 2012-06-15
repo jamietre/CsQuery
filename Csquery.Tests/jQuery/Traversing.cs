@@ -24,6 +24,7 @@ namespace CsqueryTests.jQuery
         [Test,TestMethod]
         public void Find_String()
         {
+            Assert.AreEqual(jQuery("#qunit-fixture").Find("> #foo, > #moretests").Get(), q("foo", "moretests"), "find child elements");
 
             Assert.AreEqual("Yahoo", jQuery("#foo").Find(".blogTest").Text(), "Check for find" );
 
@@ -32,7 +33,7 @@ namespace CsqueryTests.jQuery
             Assert.AreEqual(j.Find("div").Length, 0, "Check node,textnode,comment to find zero divs" );
 
             Assert.AreEqual(jQuery("#qunit-fixture").Find("> div").Get(), q("foo", "moretests", "tabindex-tests", "liveHandlerOrder", "siblingTest"), "find child elements" );
-            Assert.AreEqual(jQuery("#qunit-fixture").Find("> #foo, > #moretests").Get(), q("foo", "moretests"), "find child elements" );
+            
             Assert.AreEqual(jQuery("#qunit-fixture").Find("> #foo > p").Get(), q("sndp", "en", "sap"), "find child elements" );
         }
         [Test,TestMethod]

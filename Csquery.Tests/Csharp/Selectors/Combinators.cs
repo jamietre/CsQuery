@@ -37,9 +37,16 @@ namespace CsqueryTests.Csharp
         [Test,TestMethod]
         public void AdjacentMultiple() {
 
-            var res = Dom.Find("a+span+span");
+            var res = Dom.Select("a+*");
+            Assert.AreEqual(2, res.Length);
+            Assert.AreEqual("reputation_link", res[0].Id);
+
+            res = Dom.Select("a+span+span");
             Assert.AreEqual(1, res.Length);
             Assert.AreEqual("13 bronze badges", res[0]["title"]);
+
+            res = Dom.Select("a+*+span");
+            Assert.AreEqual(2, res.Length);
         }
         [Test, TestMethod]
         public void Siblings()

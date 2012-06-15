@@ -86,6 +86,7 @@ namespace CsQuery.StringScanner
             setBit(charsNumber, hsb);
             setBit("_:.-", hsb);
         }
+
         /// <summary>
         /// We omit ":" as a valid name start character because it makes pseudoselectors impossible to parse.
         /// </summary>

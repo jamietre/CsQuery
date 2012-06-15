@@ -41,7 +41,23 @@ namespace CsQuery
     
     public partial class CQ : IEnumerable<IDomObject>
     {
-       
+        #region public properties
+
+        /// <summary>
+        /// The number of elements in the CsQuery object
+        /// </summary>
+        public int Length
+        {
+            get
+            {
+                return SelectionSet.Count;
+            }
+        }
+
+        #endregion
+
+        #region public methods
+
         /// <summary>
         /// Add the previous set of elements on the stack to the current set.
         /// </summary>
@@ -61,6 +77,7 @@ namespace CsQuery
                 return csq;
             }
         }
+
         /// <summary>
         /// End the most recent filtering operation in the current chain and return the set of matched elements 
         /// to its previous state
@@ -70,18 +87,6 @@ namespace CsQuery
         {
             return CsQueryParent ?? New();
         }
-
-        /// <summary>
-        /// The number of elements in the CsQuery object
-        /// </summary>
-        public int Length
-        {
-            get
-            {
-                return SelectionSet.Count;
-            }
-        }
-
 
         /// <summary>
         /// Return the active selection set
@@ -104,6 +109,7 @@ namespace CsQuery
                 SelectionSet.ElementAt(effectiveIndex) :
                 null;
         }
+
         /// <summary>
         /// Remove all child nodes of the set of matched elements from the DOM.
         /// </summary>
@@ -118,6 +124,7 @@ namespace CsQuery
                 }
             });
         }
+
         /// <summary>
         /// Set the HTML contents of each element in the set of matched elements. 
         /// Any elements without InnerHtml are ignored.
@@ -140,6 +147,7 @@ namespace CsQuery
             }
             return this;
         }
+
         /// <summary>
         /// Get the HTML contents of the first element in the set of matched elements.
         /// </summary>
@@ -148,17 +156,33 @@ namespace CsQuery
         {
             return Length > 0 ? this[0].InnerHTML : String.Empty;
         }
+
+        /// <summary>
+        /// Selects all elements that do not match the given selector.
+        /// </summary>
+        /// <param name="selector">A CSS selector</param>
+        /// <returns>A new CQ object</returns>
         public CQ Not(string selector)
         {
-            CQ csq = new CQ(SelectionSet);
-            csq.SelectionSet.ExceptWith(Select(selector,this));
-            csq.Selectors = Selectors;
-            return csq;
+            var notSelector = new Selector(selector);
+            return new CQ(notSelector.Except(Document, SelectionSet));
         }
+
+        /// <summary>
+        /// Selects all elements that do not match the given selector.
+        /// </summary>
+        /// <param name="selector">A CSS selector</param>
+        /// <returns>A new CQ object</returns>
         public CQ Not(IDomObject element)
         {
             return Not(Objects.Enumerate(element));
         }
+
+        /// <summary>
+        /// Selects all elements that do not match the given selector.
+        /// </summary>
+        /// <param name="selector">A CSS selector</param>
+        /// <returns>A new CQ object</returns>
         public CQ Not(IEnumerable<IDomObject> elements)
         {
             CQ csq = new CQ(SelectionSet);
@@ -166,6 +190,7 @@ namespace CsQuery
             csq.Selectors = Selectors;
             return csq;
         }
+
         /// <summary>
         /// Reduce the set of matched elements to those that have a descendant that matches the selector or DOM element.
         /// </summary>
@@ -184,10 +209,22 @@ namespace CsQuery
             }
             return csq;
         }
+
+        /// <summary>
+        /// Reduce the set of matched elements to those that have a descendant that matches the selector or DOM element.
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns></returns>
         public CQ Has(IDomObject element)
         {
             return Has(Objects.Enumerate(element));
         }
+
+        /// <summary>
+        /// Reduce the set of matched elements to those that have a descendant that matches the selector or DOM element.
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns></returns>
         public CQ Has(IEnumerable<IDomObject> elements)
         {
             var csq = New();
@@ -200,11 +237,12 @@ namespace CsQuery
             }
             return csq;
         }
+
         /// <summary>
         /// Set the content of each element in the set of matched elements to the specified text.
         /// </summary>
         /// <param name="value"></param>
-        /// <returns></returns>
+        /// <returns>The current CQ object</returns>
         public CQ Text(string value)
         {
             foreach (IDomElement obj in Elements)
@@ -220,6 +258,12 @@ namespace CsQuery
             }
             return this;
         }
+
+        /// <summary>
+        /// Set the content of each element in the set of matched elements to the specified text.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns>The current CQ object</returns>
         public CQ Text(Func<object,object,object> func) {
 
             return this;
@@ -228,7 +272,7 @@ namespace CsQuery
         /// <summary>
         /// Get the combined text contents of each element in the set of matched elements, including their descendants.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The text contents of the selection</returns>
         public string Text()
         {
             StringBuilder sb = new StringBuilder();
@@ -254,62 +298,60 @@ namespace CsQuery
             }
             return sb.ToString();
         }
+
+        
         /// <summary>
-        /// Helper for public Text() function to act recursively
-        /// </summary>
-        /// <param name="sb"></param>
-        /// <param name="elements"></param>
-        protected void Text(StringBuilder sb, IEnumerable<IDomObject> elements)
-        {
-            IDomObject lastElement = null;
-            foreach (IDomObject obj in elements)
-            {
-                if (lastElement != null && obj.Index > 0
-                   && obj.PreviousSibling != lastElement)
-                {
-                    sb.Append(" ");
-                }
-                lastElement = obj;
-                switch (obj.NodeType)
-                {
-                    case NodeType.TEXT_NODE:
-                    case NodeType.CDATA_SECTION_NODE:
-                    case NodeType.COMMENT_NODE:
-                        sb.Append(obj.NodeValue);
-                        break;
-                    case NodeType.ELEMENT_NODE:
-                        Text(sb, obj.ChildNodes);
-                        break;
-                }
-            }
-        }
-        /// <summary>
-        /// Add elements to the set of matched elements from a selector or an HTML fragment. Returns a new jQuery object.
+        /// Add elements to the set of matched elements from a selector or an HTML fragment. 
         /// </summary>
         /// <param name="html"></param>
-        /// <returns></returns>
+        /// <returns>A new CQ object.</returns>
         public CQ Add(string selector)
         {
             return Add(Select(selector));
         }
+
+        /// <summary>
+        /// Add elements to the set of matched elements from a selector or an HTML fragment. 
+        /// </summary>
+        /// <param name="html"></param>
+        /// <returns>A new CQ object.</returns>
         public CQ Add(IDomObject element)
         {
             return Add(Objects.Enumerate(element));
         }
+
+        /// <summary>
+        /// Add elements to the set of matched elements from a selector or an HTML fragment. 
+        /// </summary>
+        /// <param name="html"></param>
+        /// <returns>A new CQ object.</returns>
         public CQ Add(IEnumerable<IDomObject> elements)
         {
             CQ res = new CQ(this);
             res.AddSelectionRange(elements);
             return res;
         }
+
+        /// <summary>
+        /// Add elements to the set of matched elements from a selector or an HTML fragment. 
+        /// </summary>
+        /// <param name="html"></param>
+        /// <returns>A new CQ object.</returns>
         public CQ Add(string selector, IEnumerable<IDomObject> context)
         {
             return Add(Select(selector, context));
         }
+
+        /// <summary>
+        /// Add elements to the set of matched elements from a selector or an HTML fragment. 
+        /// </summary>
+        /// <param name="html"></param>
+        /// <returns>A new CQ object.</returns>
         public CQ Add(string selector,IDomObject context)
         {
             return Add(Select(selector,context));
         }
+
         /// <summary>
         /// Adds the specified class(es) to each of the set of matched elements.
         /// </summary>
@@ -323,6 +365,7 @@ namespace CsQuery
             }
             return this;
         }
+
         /// <summary>
         /// Add or remove one or more classes from each element in the set of matched elements, 
         /// depending on either the class's presence.
@@ -347,6 +390,7 @@ namespace CsQuery
             }
             return this;
         }
+
         /// <summary>
         /// Add or remove one or more classes from each element in the set of matched elements, 
         /// depending on the value of the switch argument.
@@ -372,6 +416,7 @@ namespace CsQuery
             }
             return this;
         }
+
         /// <summary>
         /// Determine whether any of the matched elements are assigned the given class.
         /// </summary>
@@ -385,46 +430,38 @@ namespace CsQuery
             return el==null ? false :
                 el.HasClass(className);
         }
+
         /// <summary>
         /// Insert content, specified by the parameter, to the end of each element in the set of matched elements.
         /// </summary>
         /// <param name="content"></param>
-        /// <returns></returns>
+        /// <returns>The current CQ object</returns>
         public CQ Append(params string[] content)
         {
             return Append(mergeContent(content));
         }
+
+        /// <summary>
+        /// Insert content, specified by the parameter, to the end of each element in the set of matched elements.
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns>The current CQ object</returns>
         public CQ Append(IDomObject element)
         {
             return Append(Objects.Enumerate(element));
         }
+
+        /// <summary>
+        /// Insert content, specified by the parameter, to the end of each element in the set of matched elements.
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns>The current CQ object</returns>
         public CQ Append(IEnumerable<IDomObject> elements)
         {
             CQ ignoredOutput;
             return Append(elements, out ignoredOutput);
         }
-        protected CQ Append(IEnumerable<IDomObject> elements, out CQ insertedElements)
-        {
-            insertedElements = New();
-            bool first = true;
-            foreach (var obj in Elements)
-            {
-                // Make sure they didn't really mean to add to a tbody or something
-                IDomElement target = getTrueTarget(obj);
 
-                // must copy the enumerable first, since this can cause
-                // els to be removed from it
-                List<IDomObject> list = new List<IDomObject>(elements);
-                foreach (var e in list)
-                {
-                    IDomObject toInsert = first ? e : e.Clone();
-                    target.AppendChild(toInsert);
-                    insertedElements.SelectionSet.Add(toInsert);
-                }
-                first = false;
-            }
-            return this;
-        }
         /// <summary>
         ///  Insert every element in the set of matched elements to the end of the target.
         /// </summary>
@@ -445,6 +482,7 @@ namespace CsQuery
             EnsureCsQuery(targets).Append(SelectionSet, out output);
             return output;
         }
+
         /// <summary>
         ///
         /// </summary>
@@ -453,7 +491,7 @@ namespace CsQuery
         ///  A function that returns an HTML string to insert at the end of each element in the set of matched elements. 
         /// Receives the index position of the element in the set and the old HTML value of the element as arguments.
         /// </param>
-        /// <returns></returns>
+        /// <returns>The current CQ object</returns>
         public CQ Append(Func<int, string, string> func)
         {
             int index = 0;
@@ -466,6 +504,8 @@ namespace CsQuery
             }
             return this;
         }
+
+
         public CQ Append(Func<int, string, IDomElement> func)
         {
             int index = 0;
@@ -488,26 +528,44 @@ namespace CsQuery
             }
             return this;
         }
+
         /// <summary>
         /// Insert content, specified by the parameter, to the beginning of each element in the set of matched elements.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ Prepend(params IDomObject[] element)
+        /// <param name="elements">One or more elements</param>
+        /// <returns>The current CQ object</returns>
+        public CQ Prepend(params IDomObject[] elements)
         {
-            return Prepend(Objects.Enumerate(element));
+            return Prepend(Objects.Enumerate(elements));
         }
 
+        /// <summary>
+        /// Insert content, specified by the parameter, to the beginning of each element in the set of matched elements.
+        /// </summary>
+        /// <param name="selector">One or more selectors or HTML strings</param>
+        /// <returns>The current CQ object</returns>
         public CQ Prepend(params string[] selector)
         {
             return Prepend(mergeContent(selector));
         }
-       
+
+        /// <summary>
+        /// Insert content, specified by the parameter, to the beginning of each element in the set of matched elements.
+        /// </summary>
+        /// <param name="elements">The elements to be inserted</param>
+        /// <returns>The current CQ object</returns>
         public CQ Prepend(IEnumerable<IDomObject> elements)
         {
             CQ ignoredOutput;
             return Prepend(elements, out ignoredOutput);
         }
+
+        /// <summary>
+        /// Insert content, specified by the parameter, to the beginning of each element in the set of matched elements.
+        /// </summary>
+        /// <param name="elements">The elements to be inserted</param>
+        /// <param name="insertedElements">A CQ object containing all the elements added</param>
+        /// <returns></returns>
         public CQ Prepend(IEnumerable<IDomObject> elements, out CQ insertedElements)
         {
             insertedElements = New();
@@ -529,6 +587,12 @@ namespace CsQuery
             }
             return this;
         }
+
+        /// <summary>
+        /// Insert every element in the set of matched elements to the beginning of the target.
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns>The current CQ object</returns>
         public CQ PrependTo(params string[] selector)
         {
             var target = New();
@@ -546,6 +610,7 @@ namespace CsQuery
             EnsureCsQuery(targets).Prepend(SelectionSet, out output);
             return output;
         }
+
         /// <summary>
         /// Get the value of an attribute for the first element in the set of matched elements.
         /// </summary>
@@ -1299,29 +1364,40 @@ namespace CsQuery
 
         
         /// <summary>
-        /// Get the descendants of each element in the current set of matched elements, filtered by a selector, jQuery object, or element.
+        /// Get the descendants of each element in the current set of matched elements, filtered by a selector
         /// </summary>
         /// <param name="selector"></param>
         /// <returns></returns>
         public CQ Find(string selector)
         {
-            CQ csq = New();
-            Selectors = new SelectorChain(selector);
-            csq.AddSelectionRange(Selectors.Select(Document, Children()));
-            return csq;
+            return FindImpl(new Selector(selector));
         }
+
+        /// <summary>
+        /// Get the descendants of each element in the current set of matched elements, filtered by a sequence of elements or jQuery object
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns></returns>
         public CQ Find(IEnumerable<IDomObject> elements)
         {
-            CQ csq = New();
-            Selectors = new SelectorChain(elements);
-            csq.AddSelectionRange(Selectors.Select(Document, Children()));
-            return csq;
+           return FindImpl(new Selector(elements));
         }
+
+        /// <summary>
+        /// Find an specific element if it is a descentent of the current selection
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns></returns>
         public CQ Find(IDomObject element)
         {
-            CQ csq =New();
-            Selectors = new SelectorChain(element);
-            csq.AddSelectionRange(Selectors.Select(Document, Children()));
+            return FindImpl(new Selector(element));
+        }
+
+        private CQ FindImpl(Selector selector)
+        {
+            CQ csq = New();
+            csq.AddSelectionRange(selector.Select(Document, this));
+            csq.Selectors = selector;
             return csq;
         }
 
@@ -1384,10 +1460,12 @@ namespace CsQuery
         public CQ Select(string selector)
         {
             CQ csq = New();
-            csq.Selectors = new SelectorChain(selector);
+            csq.Selectors = new Selector(selector);
+
             // If the selector is HTML create it as a new fragment so it can be indexed & traversed upon
             // (This comment is a placeholder for implementing document fragments properly)
             // IDomDocument dom = selectors.IsHtml ? new DomFragment(selector.ToCharArray()) : Document;
+            
             csq.AddSelectionRange(csq.Selectors.Select(Document));
             return csq;
         }
@@ -1461,7 +1539,7 @@ namespace CsQuery
         /// <returns></returns>
         public CQ Select(string selector, IDomObject context)
         {
-            var selectors = new SelectorChain(selector);
+            var selectors = new Selector(selector);
             var selection = selectors.Select(Document, context);
 
             CQ csq = new CQ(selection, this);
@@ -1491,7 +1569,7 @@ namespace CsQuery
         /// <returns></returns>
         public CQ Select(string selector, IEnumerable<IDomObject> context)
         {
-            var selectors = new SelectorChain(selector);
+            var selectors = new Selector(selector);
 
             IEnumerable<IDomObject> selection = selectors.Select(Document, context);
 
@@ -1656,28 +1734,13 @@ namespace CsQuery
         {
             return InsertAfter(Select(target));
         }
-        /// <summary>
-        /// Support for InsertAfter and InsertBefore. An offset of 0 will insert before the current element. 1 after.
-        /// </summary>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        protected CQ InsertAtOffset(IDomObject target, int offset)
-        {
-            int index = target.Index;
-            
-            foreach (var item in SelectionSet)
-            {
-                target.ParentNode.ChildNodes.Insert(index+offset,item);
-                index++;
-            }
-            return this;
-        }
+        
 
         /// <summary>
         /// A selector, element, HTML string, or jQuery object; the matched set of elements will be inserted before the element(s) specified by this parameter.
         /// </summary>
         /// <param name="target"></param>
-        /// <returns></returns>
+        /// <returns>The current CQ object</returns>
         public CQ InsertBefore(string selector)
         {
             return InsertBefore(Select(selector));
@@ -1755,54 +1818,8 @@ namespace CsQuery
         {
             return nextPrevUntilImpl(selector, filter, false);
         }
-        protected CQ nextPrevImpl(string selector, bool next)
-        {
-            return filterIfSelector(selector,
-                ForEach(Elements, (input) =>
-                {
-                    return next ? input.NextElementSibling : input.PreviousElementSibling;
-                }), next ? SelectionSetOrder.Ascending:SelectionSetOrder.Descending);
-        }
-        protected CQ nextPrevAllImpl(string filter, bool next)
-        {
-            return filterIfSelector(filter, ForEachMany(Elements, (input) =>
-            {
-                return nextPrevAllImpl(input, next);
-            }),next ? SelectionSetOrder.Ascending:SelectionSetOrder.Descending);
-        }
-        protected CQ nextPrevUntilImpl(string selector, string filter, bool next)
-        {
-            if (string.IsNullOrEmpty(selector))
-            {
-                return next ? NextAll(filter) : PrevAll(filter);
-            }
 
-            HashSet<IDomElement> untilEls = new HashSet<IDomElement>(Select(selector).Elements);
-            return filterIfSelector(filter, ForEachMany(Elements, (input) =>
-            {
-                return nextPrevUntilFilterImpl(input, untilEls, next);
-            }),next ? SelectionSetOrder.Ascending:SelectionSetOrder.Descending);
-        }
-        protected IEnumerable<IDomObject> nextPrevAllImpl(IDomObject input, bool next)
-        {
-            IDomObject item = next ? input.NextElementSibling : input.PreviousElementSibling;
-            while (item != null)
-            {
-                yield return item;
-                item = next ? item.NextElementSibling : item.PreviousElementSibling;
-            }
-        }
-        protected IEnumerable<IDomObject> nextPrevUntilFilterImpl(IDomObject input, HashSet<IDomElement> untilEls, bool next)
-        {
-            foreach (IDomElement el in nextPrevAllImpl(input,next))
-            {
-                if (untilEls.Contains(el))
-                {
-                    break;
-                }
-                yield return el;
-            }
-        }
+       
         /// <summary>
         /// Reduce the set of matched elements to a subset beginning with the index provided
         /// </summary>
@@ -1874,35 +1891,48 @@ namespace CsQuery
         }
         public CQ ParentsUntil(string selector=null, string filter=null)
         {
-            HashSet<IDomElement> match = new HashSet<IDomElement>();
+            
+            CQ output = New();
+            HashSet<IDomElement> targets = new HashSet<IDomElement>();
             if (selector != null)
             {
-                match.AddRange(Select(selector).Elements);
+                targets.AddRange(Select(selector).Elements);
             }
-
-            CQ output = New();
-            output.SelectionSet.AddRange(filterElementsIgnoreNull(parentsImpl(Elements, match),filter));
+            var filtered = filterElementsIgnoreNull(parentsImpl(Elements, targets), filter);
+            output.SelectionSet.Order = SelectionSetOrder.Descending;
+            output.SelectionSet.AddRange(filtered);
+            
             return output;
         }
        
         protected IEnumerable<IDomElement> parentsImpl(IEnumerable<IDomElement> source, HashSet<IDomElement> until)
         {
 
-            HashSet<Tuple<int, int, IDomElement>> results = new HashSet<Tuple<int, int, IDomElement>>();
+            HashSet<IDomElement> alreadyAdded = new HashSet<IDomElement>();
 
-            int index=0;
             foreach (var item in source)
             {
                 int depth = item.Depth;
-                var parent =item.ParentNode;
-                while (parent is IDomElement && !until.Contains(parent))
+                IDomElement parent = item.ParentNode as IDomElement;
+                while (parent != null && !until.Contains(parent))
                 {
-                    results.Add(new Tuple<int, int, IDomElement>(depth--, index++, (IDomElement)parent));
-                    parent = parent.ParentNode;
+                    if (alreadyAdded.Add(parent))
+                    {
+                        yield return parent;
+                    }
+                    else
+                    {
+                        break;
+                    }
+
+                    parent = parent.ParentNode as IDomElement;
                 }
             }
-            var comp = new parentComparer();
-            return results.OrderBy(item=>item,comp).Select(item => item.Item3);
+
+
+            //return results.Select(item => item.Item3);
+            //var comp = new parentComparer();
+            //return results.OrderBy(item=>item,comp).Select(item => item.Item3);
         }
         class parentComparer : IComparer<Tuple<int, int, IDomElement>>
         {
@@ -1996,24 +2026,28 @@ namespace CsQuery
         {
             return Remove(selector);
         }
-        
+
+        public CQ RemoveClass()
+        {
+            Elements.ForEach(item =>
+            {
+                item.ClassName = "";
+            });
+            return this;
+        }
         /// <summary>
         /// Remove a single class, multiple classes, or all classes from each element in the set of matched elements.
         /// </summary>
         /// <param name="className"></param>
         /// <returns></returns>
-        public CQ RemoveClass(string className=null)
+        public CQ RemoveClass(string className)
         {
             
-           foreach (IDomElement e in Elements)
+            foreach (IDomElement e in Elements)
             {
                 if (!String.IsNullOrEmpty(className))
                 {
                     e.RemoveClass(className);
-                }
-                else
-                {
-                    e.ClassName = null;
                 }
             }
            return this;
@@ -2136,24 +2170,7 @@ namespace CsQuery
             }
             return this;
         }
-        // Not used yet, will be for visible selector
-        // Also not correct
-        //protected bool IsVisible()
-        //{
-        //    bool parentHidden = false;
-        //    IDomObject el = e.ParentNode;
-        //    while (el != null)
-        //    {
-        //        string st = el.Style["display"];
-        //        if (st == "none")
-        //        {
-        //            parentHidden = true;
-        //            break;
-        //        }
-        //        el = el.ParentNode;
-        //    }
-        //    return parentHidden;
-        //}
+
         /// <summary>
         /// Get the current value of the first element in the set of matched elements, and try to convert to the specified type
         /// </summary>
@@ -2176,6 +2193,7 @@ namespace CsQuery
                 return (T)Objects.DefaultValue(typeof(T));
             }
         }
+
         /// <summary>
         /// Get the current value of the first element in the set of matched elements.
         /// </summary>
@@ -2247,6 +2265,7 @@ namespace CsQuery
                 return null;
             }
         }
+
         /// <summary>
         /// Set the value of each element in the set of matched elements. If a comma-separated value is passed to a multuple select list, then it
         /// will be treated as an array.
@@ -2296,27 +2315,6 @@ namespace CsQuery
             return this;
         }
  
-        
-
-        /// <summary>
-        /// Set the value of each mutiple select element in the set of matched elements. Any elements not of type &lt;SELECT multiple&gt;&lt;/SELECT&gt; will be ignored.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        //public CsQuery Val(IEnumerable<object> values) {
-        //    string valueString=String.Empty;
-        //    foreach (object val in values) {
-        //        valueString+=(String.IsNullOrEmpty(val.ToString())?String.Empty:",") + val.ToString();
-        //    }
-        //    foreach (IDomElement e in Elements)
-        //    {
-        //        if (e.NodeName == "select" && e.HasAttribute("multiple"))
-        //        {
-        //            Val(valueString);
-        //        }
-        //    }
-        //    return this;
-        //}
         /// <summary>
         /// Set the CSS width of each element in the set of matched elements.
         /// </summary>
@@ -2326,10 +2324,17 @@ namespace CsQuery
         {
             return Width(value.ToString() + "px");
         }
+
+        /// <summary>
+        /// Set the CSS width of each element in the set of matched elements.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public CQ Width(string value)
         {
             return Css("width", value);
         }
+
         /// <summary>
         /// Set the CSS width of each element in the set of matched elements.
         /// </summary>
@@ -2339,6 +2344,12 @@ namespace CsQuery
         {
             return Height(value.ToString() + "px");
         }
+
+        /// <summary>
+        /// Set the CSS height of each element in the set of matched elements.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public CQ Height(string value)
         {
             return Css("height", value);
@@ -2353,18 +2364,156 @@ namespace CsQuery
         {
             return Filter(selector).Length > 0;
         }
+
+        /// <summary>
+        /// Check the current matched set of elements against a selector and return true if at least one of these elements matches the selector.
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns></returns>
         public bool Is(IEnumerable<IDomObject> elements)
         {
             HashSet<IDomObject> els = new HashSet<IDomObject>(elements);
             els.IntersectWith(SelectionSet);
             return els.Count > 0;
         }
+
+        /// <summary>
+        /// Check the current matched set of elements against a selector and return true if at least one of these elements matches the selector.
+        /// </summary>
+        /// <param name="selector"></param>
+        /// <returns></returns>
         public bool Is(IDomObject element)
         {
             return SelectionSet.Contains(element);
         }
 
-      
+        #endregion
+
+        #region private helpers for public methods
+
+        private CQ nextPrevImpl(string selector, bool next)
+        {
+            return filterIfSelector(selector,
+                ForEach(Elements, (input) =>
+                {
+                    return next ? input.NextElementSibling : input.PreviousElementSibling;
+                }), next ? SelectionSetOrder.Ascending : SelectionSetOrder.Descending);
+        }
+        private CQ nextPrevAllImpl(string filter, bool next)
+        {
+            return filterIfSelector(filter, ForEachMany(Elements, (input) =>
+            {
+                return nextPrevAllImpl(input, next);
+            }), next ? SelectionSetOrder.Ascending : SelectionSetOrder.Descending);
+        }
+
+        private CQ nextPrevUntilImpl(string selector, string filter, bool next)
+        {
+            if (string.IsNullOrEmpty(selector))
+            {
+                return next ? NextAll(filter) : PrevAll(filter);
+            }
+
+            HashSet<IDomElement> untilEls = new HashSet<IDomElement>(Select(selector).Elements);
+            return filterIfSelector(filter, ForEachMany(Elements, (input) =>
+            {
+                return nextPrevUntilFilterImpl(input, untilEls, next);
+            }), next ? SelectionSetOrder.Ascending : SelectionSetOrder.Descending);
+        }
+
+        private IEnumerable<IDomObject> nextPrevAllImpl(IDomObject input, bool next)
+        {
+            IDomObject item = next ? input.NextElementSibling : input.PreviousElementSibling;
+            while (item != null)
+            {
+                yield return item;
+                item = next ? item.NextElementSibling : item.PreviousElementSibling;
+            }
+        }
+
+        private IEnumerable<IDomObject> nextPrevUntilFilterImpl(IDomObject input, HashSet<IDomElement> untilEls, bool next)
+        {
+            foreach (IDomElement el in nextPrevAllImpl(input, next))
+            {
+                if (untilEls.Contains(el))
+                {
+                    break;
+                }
+                yield return el;
+            }
+        }
+
+        /// <summary>
+        /// Helper for public Text() function to act recursively
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <param name="elements"></param>
+        private void Text(StringBuilder sb, IEnumerable<IDomObject> elements)
+        {
+            IDomObject lastElement = null;
+            foreach (IDomObject obj in elements)
+            {
+                if (lastElement != null && obj.Index > 0
+                   && obj.PreviousSibling != lastElement)
+                {
+                    sb.Append(" ");
+                }
+                lastElement = obj;
+                switch (obj.NodeType)
+                {
+                    case NodeType.TEXT_NODE:
+                    case NodeType.CDATA_SECTION_NODE:
+                    case NodeType.COMMENT_NODE:
+                        sb.Append(obj.NodeValue);
+                        break;
+                    case NodeType.ELEMENT_NODE:
+                        Text(sb, obj.ChildNodes);
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Support for InsertAfter and InsertBefore. An offset of 0 will insert before the current element. 1 after.
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        private CQ InsertAtOffset(IDomObject target, int offset)
+        {
+            int index = target.Index;
+
+            foreach (var item in SelectionSet)
+            {
+                target.ParentNode.ChildNodes.Insert(index + offset, item);
+                index++;
+            }
+            return this;
+        }
+
+        private CQ Append(IEnumerable<IDomObject> elements, out CQ insertedElements)
+        {
+            insertedElements = New();
+            bool first = true;
+            foreach (var obj in Elements)
+            {
+                // Make sure they didn't really mean to add to a tbody or something
+                IDomElement target = getTrueTarget(obj);
+
+                // must copy the enumerable first, since this can cause
+                // els to be removed from it
+                List<IDomObject> list = new List<IDomObject>(elements);
+                foreach (var e in list)
+                {
+                    IDomObject toInsert = first ? e : e.Clone();
+                    target.AppendChild(toInsert);
+                    insertedElements.SelectionSet.Add(toInsert);
+                }
+                first = false;
+            }
+            return this;
+        }
+        #endregion
+
 
     }
 

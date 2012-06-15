@@ -12,13 +12,14 @@ namespace CsQuery.Engine
         Tag = 2,
         ID = 4,
         Class = 8,
-        Attribute = 16,
-        Contains = 32,
-        PseudoClass = 64,
-        Elements = 128,
-        HTML = 256,
-        SubSelectorHas = 512,
-        SubSelectorNot = 1024
+        AttributeExists = 16,
+        AttributeValue = 32,
+        Contains = 64,
+        PseudoClass = 128,
+        Elements = 256,
+        HTML = 512,
+        None = 1024   // returns no values ever
+
     }
     public enum AttributeSelectorType
     {
@@ -35,12 +36,13 @@ namespace CsQuery.Engine
 
     public enum CombinatorType
     {
-        Cumulative = 1,
-        Chained = 2,
-        Root = 3
+        And = 1,       // This selector clause  and the prior one must match
+        Chained = 2,   // The selector clause is applied to the results of the prior one
+        Root = 3       // The selector clause is applied to the root context of this selector
     }
     public enum TraversalType
     {
+        Incomplete=0,
         All = 1,
         Filter = 2,
         Descendent = 3,
@@ -68,6 +70,8 @@ namespace CsQuery.Engine
         Visible = 10, // jquery
         Hidden = 11, // jquery
         Header = 12, // jquery
+        Has = 13, // jquery
+        Not = 14, // jquery
         FirstChild = 20,
         LastChild = 21,
         NthChild = 22,

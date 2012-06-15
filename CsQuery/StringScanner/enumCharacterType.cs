@@ -26,7 +26,8 @@ namespace CsQuery.StringScanner
         HtmlTagAny=32768,
         HtmlTagNameStart = 65536,
         HtmlTagNameExceptStart = 131072,
-        HtmlIDNameExceptStart = 262144
+        HtmlIDNameExceptStart = 262144,
+        HTMLIDNameSelectorExceptStart=524288
 
     }
 }

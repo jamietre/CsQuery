@@ -1,6 +1,13 @@
 ﻿### Change Log
 
-Added some tests from sizzle
+6/15/2010:
+
+ADDED :input selector (overlooked!)
+
+Added all the Sizzle tests:
+  - bug fixes for :not() and :has() with some selectors
+  - refactored a lot of the CSS engine to solve some problems and remove some exception based logic
+
 Allow escaping characters in ID selectors
 Allow escaping characters in class name selectors
 Allow HTML parser to handle : and . in node names and attribute names

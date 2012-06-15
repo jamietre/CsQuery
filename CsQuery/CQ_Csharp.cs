@@ -15,7 +15,7 @@ namespace CsQuery
     public partial class CQ
     {
         #region private properties
-        protected SelectorChain _Selectors = null;
+        protected Selector _Selectors = null;
         protected IDomDocument _Document = null;
         #endregion
 
@@ -43,7 +43,7 @@ namespace CsQuery
         /// <summary>
         ///  The selector (parsed) used to create this instance
         /// </summary>
-        public SelectorChain Selectors
+        public Selector Selectors
         {
             get
             {

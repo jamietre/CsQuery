@@ -330,11 +330,11 @@ namespace CsQuery.Implementation
         {
             // construct the selector manually so there's no syntax checking
 
-            Selector selector = new Selector();
+            SelectorClause selector = new SelectorClause();
             selector.SelectorType = SelectorType.ID;
             selector.ID = id;
 
-            SelectorChain selectors = new SelectorChain(selector);
+            Selector selectors = new Selector(selector);
             return (IDomElement)selectors.Select(Document).FirstOrDefault();
         }
 
@@ -345,13 +345,13 @@ namespace CsQuery.Implementation
 
         public IList<IDomElement> GetElementsByTagName(string tagName)
         {
-            SelectorChain selectors = new SelectorChain(tagName);
+            Selector selectors = new Selector(tagName);
             return (new List<IDomElement>(OnlyElements(selectors.Select(Document)))).AsReadOnly();
         }
 
         public IList<IDomElement> QuerySelectorAll(string selector)
         {
-            SelectorChain selectors = new SelectorChain(selector);
+            Selector selectors = new Selector(selector);
             return (new List<IDomElement>(OnlyElements(selectors.Select(Document)))).AsReadOnly();
         }
 

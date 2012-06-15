@@ -336,15 +336,8 @@ namespace CsQuery
             }
             else
             {
-                SelectorChain selectors = new SelectorChain(selector);
-                if (selectors.Count > 0)
-                {
-                    selectors.ForEach(item=>item.TraversalType = TraversalType.Filter);
-                }
-                // this is kind of unfortunate but is required to keep the order correct. Probably a more efficient
-                // way to do it but works fine for now
-                
-                return elements.Intersect(selectors.Select(Document, elements));
+                Selector selectors = new Selector(selector);
+                return selectors.Filter(Document,elements);
             }
         }
         /// <summary>

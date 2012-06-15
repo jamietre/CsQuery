@@ -105,7 +105,7 @@
     <Compile Include="jQuery\Sizzle\AttributeSelectors.cs" />
     <Compile Include="jQuery\Sizzle\PseudoChild.cs" />
     <Compile Include="jQuery\Sizzle\IDSelectors.cs" />
-    <Compile Include="jQuery\Sizzle\sizzle.cs" />
+    <Compile Include="jQuery\Sizzle\Element.cs" />
     <Compile Include="jQuery\Sizzle\SizzleTest.cs" />
     <Compile Include="Performance\DomCreation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

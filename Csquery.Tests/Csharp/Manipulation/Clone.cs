@@ -100,20 +100,22 @@ namespace CsqueryTests.Csharp
         {
             var baseDom = TestDom("TestHtml");
 
+            var badges = baseDom["span[title*='badges']"];
+            Assert.AreEqual(2, badges.Length, "Sanity check");
+            
             var dom = baseDom["#hlinks-user"];
 
             Assert.AreEqual(1, dom.Length, "Sanity check");
             var hlinks = dom.Clone();
             Assert.AreEqual("hlinks-user",dom[0].Id,"Cloned element retains ID");
 
-            var badges = baseDom["span[title*='badges']"];
-            Assert.AreEqual(2, badges.Length, "Sanity check");
+            
             hlinks.AddClass("followme");
             badges.Append(hlinks);
             
             var newBadges = badges[".followme"];
             Assert.AreEqual(newBadges.Length, 2, "Appended my clone to two elements");
-            Assert.AreEqual(newBadges.ParentsUntil("#hlinks-user"), badges, "Found my new parents");
+            Assert.AreEqual(newBadges.ParentsUntil("#hlinks-user"), badges.Reverse(), "Found my new parents");
 
             Assert.AreEqual(0, newBadges.Filter("#hlinks-user").Length, "Clones lost their ID when inserted");
             Assert.AreEqual(1, dom["#hlinks-user"].Length, "There's really just one element with that ID");

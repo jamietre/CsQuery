@@ -143,7 +143,7 @@
     <Compile Include="Web\ICsqWebResponse.cs" />
     <Compile Include="Utility\IRangeSortedDictionary.cs" />
     <Compile Include="CQ.cs" />
-    <Compile Include="Engine\Selector.cs" />
+    <Compile Include="Engine\SelectorClause.cs" />
     <Compile Include="CQ_Constructors.cs" />
     <Compile Include="CQ_Csharp.cs" />
     <Compile Include="CQ_StaticMethods.cs" />
@@ -206,7 +206,7 @@
     <Compile Include="Dom\Implementation\NodeList.cs" />
     <Compile Include="Utility\RangeSortedDictionary.cs" />
     <Compile Include="Web\CsQueryHttpContext.cs" />
-    <Compile Include="Engine\SelectorChain.cs" />
+    <Compile Include="Engine\Selector.cs" />
     <Compile Include="Dom\Implementation\DomElement.cs" />
     <Compile Include="HtmlParser\DomElementFactory.cs" />
     <Compile Include="ExtensionMethods\ExtensionMethods.cs" />
@@ -221,6 +221,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Documentation\Changes.md" />
+    <None Include="Documentation\DifferencesFromJQuery.md" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -231,7 +232,7 @@ xcopy $(TargetDir)CsQuery.dll $(SolutionDir)Distribution /Y
 ;
 xcopy $(TargetDir)CsQuery.pdb $(SolutionDir)Distribution /Y
 ;
-xcopy $(TargetDir)CsQuery.xml $(SolutionDir)Distribution /Y
+rem xcopy $(TargetDir)CsQuery.xml $(SolutionDir)Distribution /Y
 ;
 :finished
 </PostBuildEvent>

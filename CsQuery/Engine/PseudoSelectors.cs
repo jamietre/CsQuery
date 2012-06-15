@@ -48,22 +48,17 @@ namespace CsQuery.Engine
 
         private static bool IsNthChildOfTypeImpl(IDomElement obj, string criteria, bool fromLast = false)
         {
-            string onlyNodeName;
-            string formula;
+            
 
             string[] crit = criteria.Split('|');
+            string formula = crit[0];
+            string onlyNodeName = "";
+
             if (crit.Length == 2)
             {
-                onlyNodeName = crit[0].ToUpper();
-                formula = crit[1];
-            }
-            else
-            {
-                onlyNodeName = null;
-                formula = crit[0];
-            }
-            
-            
+                onlyNodeName = crit[1].ToUpper();
+                
+            }            
 
             return NthChildMatcher.IndexMatches(IndexOfTypeOnly(obj,onlyNodeName,fromLast ),formula,onlyNodeName,fromLast);
         }
@@ -135,17 +130,13 @@ namespace CsQuery.Engine
                 {
                     throw new ArgumentOutOfRangeException("Invalid criteria was passed to NthChildsOfType; it must be \"type|equation\"");
                 }
-                
+
+                formula = crit[0];
+
                 if (crit.Length == 2)
                 {
-                    onlyNodeName = crit[0].ToUpper();
-                    formula = crit[1];
+                    onlyNodeName = crit[1].ToUpper();
                 }
-                else
-                {
-                    formula = crit[0];
-                }
-                
             }
             
             return NthChildMatcher.GetMatchingChildren(elm, formula, onlyNodeName, fromLast);
@@ -286,9 +277,14 @@ namespace CsQuery.Engine
 
         public static bool IsOnlyOfType(IDomObject elm)
         {
-            return OnlyOfTypeImpl(elm.ParentNode, elm.TagName)!=null;
+            return OnlyOfTypeImpl(elm.ParentNode, elm.NodeName)!=null;
         }
 
+        /// <summary>
+        /// Return all child elements of parent that are the only children of their type (or a specific type) within parent
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <returns></returns>
         public static IEnumerable<IDomObject> OnlyOfType(IDomObject parent, string type)
         {
             if (!String.IsNullOrEmpty(type))
@@ -329,7 +325,7 @@ namespace CsQuery.Engine
                 throw new ArgumentException("Type must be defined for OnlyOfType.");
             }
             return parent.ChildElements
-                .Where(item=>item.TagName==type)
+                .Where(item=>item.NodeName==type)
                 .SingleOrDefaultAlways();
         }
 
@@ -399,6 +395,33 @@ namespace CsQuery.Engine
                    .Any();
         }
 
+        /// <summary>
+        /// Return all elements of "list" that match selector
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="document"></param>
+        /// <param name="criteria"></param>
+        /// <returns></returns>
+        public static IEnumerable<IDomObject> Has(IEnumerable<IDomObject> list, IDomDocument document, Selector selector)
+        {
+            foreach (IDomObject element in list)
+            {
+                if (selector.Select(document, element).Any()) {
+                    yield return element;
+                }
+            }
+        }
+        public static IEnumerable<IDomObject> Not(IEnumerable<IDomObject> list, IDomDocument document, Selector selector)
+        {
+            foreach (IDomObject element in list)
+            {
+                if (!selector.Select(document, element).Any())
+                {
+                    yield return element;
+                }
+            }
+        }
+        
         #endregion
 
         #region Selection set position pseudoselectors (jQuery additions)

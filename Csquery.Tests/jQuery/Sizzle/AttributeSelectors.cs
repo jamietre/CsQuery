@@ -15,7 +15,7 @@ using CsQuery.Utility;
 namespace CsqueryTests.jQuery.Sizzle
 {
     /// <summary>
-    /// Tests from sizzle.js test suite as of June 13, 2011
+    /// Tests from sizzle.js test suite as of June 13, 2012
     /// https://github.com/jquery/sizzle/tree/master/test
     /// </summary>
     [TestClass, TestFixture]
@@ -104,9 +104,7 @@ namespace CsqueryTests.jQuery.Sizzle
         }
 
 
-        protected bool match(IDomObject el, string selector) {
-            return Dom[selector].Contains(el);
-        }
+
         [Test,TestMethod]
         public void MatchesSizzleSelect() {
 
