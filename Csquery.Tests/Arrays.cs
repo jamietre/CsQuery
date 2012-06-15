@@ -6,6 +6,9 @@ using CsQuery.ExtensionMethods.Internal;
 
 namespace CsqueryTests
 {
+    /// <summary>
+    /// Some simple utility functions to generate arrays
+    /// </summary>
     public class Arrays: IEnumerable<string>
     {
         public static implicit operator Arrays(string members)

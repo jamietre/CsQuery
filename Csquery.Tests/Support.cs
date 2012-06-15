@@ -8,6 +8,9 @@ using System.Reflection;
 
 namespace Jtc.CsQuery.Tests
 {
+    /// <summary>
+    /// Miscellaneous support for use in testing.
+    /// </summary>
     public class Support
     {
         /// <summary>
