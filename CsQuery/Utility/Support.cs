@@ -120,16 +120,11 @@ namespace CsQuery.Utility
             {
                 output = output.Replace("\\\\", "\\");
             }
-            if (Path.IsPathRooted(output))
-            {
-                return output;
-            }
+            //if (Path.IsPathRooted(output))
+            //{
+            //    return output;
+            //}
 
-
-            while (output.LastIndexOf("\\") == output.Length - 1)
-            {
-                output = output.Substring(0, output.Length - 1);
-            }
 
             // parse parents
 
@@ -148,7 +143,10 @@ namespace CsQuery.Utility
                 }
 
             }
-
+            while (output.LastIndexOf("\\") == output.Length - 1)
+            {
+                output = output.Substring(0, output.Length - 1);
+            }
             return output;
         }
         /// <summary>

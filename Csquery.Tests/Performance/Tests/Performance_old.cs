@@ -24,7 +24,7 @@ namespace CsqueryTests.Performance
     /// doesn't test things like complex subselectors, or do much to compare dom creation vs. selector time. 
     /// </summary>
     [TestClass]
-    public class _DomCreationPerformance: CsQueryTest
+    public class _Performance_old: CsQueryTest
     {
         protected int iterationsLoad = 3;
         protected int iterationsSelect = 10;

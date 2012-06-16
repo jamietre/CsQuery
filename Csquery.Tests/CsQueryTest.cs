@@ -25,7 +25,33 @@ namespace CsqueryTests
         /// test project. We can't be sure where this will be relative to the executing folder, so the root of the project is used as a
         /// reference. Copying the files on each build is time consuming because we test against a really big file.
         /// </summary>
-        public static string SolutionDirectory = "CsQuery";
+        static CsQueryTest()
+        {
+            SolutionDirectory = "CsQuery";
+        }
+        private static string _SolutionDirectory;
+
+        /// <summary>
+        /// Path to solution (ending with \")
+        /// </summary>
+        public static string SolutionDirectory
+        {
+            get{
+                return _SolutionDirectory;
+            }
+            set
+            {
+                _SolutionDirectory = Support.CleanFilePath(Support.GetFilePath(value+"\\CsQuery.Tests\\..\\"));
+                TestProjectDirectory = Support.CleanFilePath(Support.GetFilePath(value + "\\CsQuery.Tests\\"));
+            }
+        }
+        /// <summary>
+        /// Path to test project (ending with \")
+        /// </summary>
+        public static string TestProjectDirectory
+        {
+            get; protected set;
+        }
 
         public CsQueryTest()
         {
@@ -157,7 +183,7 @@ namespace CsqueryTests
             string html = Support.GetFile(TestDomPath(name));
             return CQ.Create(html);
         }
-        protected string TestDomPath(string name)
+        public static string TestDomPath(string name)
         {
             string fName = name.EndsWith(".htm") || name.EndsWith(".html") ?
                name :
