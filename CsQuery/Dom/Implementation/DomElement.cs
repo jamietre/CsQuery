@@ -121,13 +121,13 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return DomData.TokenName(nodeNameID).ToUpper();
+                return DomData.TokenName(_NodeNameID).ToUpper();
             }
             set
             {
-                if (nodeNameID < 1)
+                if (_NodeNameID < 1)
                 {
-                    nodeNameID = DomData.TokenID(value, true);
+                    _NodeNameID = DomData.TokenID(value, true);
                 }
                 else
                 {
@@ -204,7 +204,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return DomData.InputNodeId == nodeNameID &&
+                return DomData.InputNodeId == _NodeNameID &&
                     HasAttribute(DomData.ValueAttrId) ?
                     Attributes[DomData.ValueAttrId] :
                     null;
@@ -278,7 +278,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return !DomData.NoInnerHtmlAllowed(nodeNameID);
+                return !DomData.NoInnerHtmlAllowed(_NodeNameID);
 
             }
         }
@@ -286,7 +286,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return DomData.InnerTextAllowed(nodeNameID);
+                return DomData.InnerTextAllowed(_NodeNameID);
             }
         }
         /// <summary>
@@ -294,7 +294,7 @@ namespace CsQuery.Implementation
         /// </summary>
         public override bool Complete
         {
-            get { return nodeNameID >= 0; }
+            get { return _NodeNameID >= 0; }
         }
         /// <summary>
         /// Returns the value of the named attribute
@@ -456,7 +456,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return DomData.IsBlock(nodeNameID);
+                return DomData.IsBlock(_NodeNameID);
             }
         }
 
@@ -508,7 +508,7 @@ namespace CsQuery.Implementation
 
             string path = Path;
             yield return ""+DomData.indexSeparator+path;
-            yield return IndexKey("+",nodeNameID, path);
+            yield return IndexKey("+",_NodeNameID, path);
             string id = Id;
             if (!String.IsNullOrEmpty(id))
             {
@@ -533,7 +533,7 @@ namespace CsQuery.Implementation
         public override DomElement Clone()
         {
             var clone = new DomElement();
-            clone.nodeNameID = nodeNameID;
+            clone._NodeNameID = _NodeNameID;
 
             if (HasAttributes)
             {

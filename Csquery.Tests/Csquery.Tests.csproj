@@ -108,12 +108,13 @@
     <Compile Include="jQuery\Sizzle\Element.cs" />
     <Compile Include="jQuery\Sizzle\SizzleTest.cs" />
     <Compile Include="Performance\PerformanceTest.cs" />
+    <Compile Include="Performance\Tests\Performance_MediumDom.cs" />
+    <Compile Include="Performance\Tests\PerformanceShared.cs" />
     <Compile Include="Performance\Tests\Performance_BigDom.cs" />
     <Compile Include="Performance\Tests\Performance_SmallDom.cs" />
     <Compile Include="Performance\PerfComparison.cs" />
     <Compile Include="Performance\PerfData.cs" />
     <Compile Include="Performance\PerfCompare.cs" />
-    <Compile Include="Performance\Tests\Performance_old.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support.cs" />
     <Compile Include="Csharp\Selectors\Selectors.cs" />

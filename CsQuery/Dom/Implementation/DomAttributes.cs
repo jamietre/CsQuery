@@ -19,20 +19,22 @@ namespace CsQuery.Implementation
         #endregion
 
         #region private properties
+
         protected IDomElement Owner;
-        protected IDictionary<ushort, string> _Attributes;
+        
+        private IDictionary<ushort, string> _Attributes;
 
         protected IDictionary<ushort, string> Attributes 
         {
              get {
-
                  if (_Attributes == null)
                  {
-                     _Attributes = new SmallDictionary<ushort, string>();
+                     _Attributes = new Dictionary<ushort, string>();
                  }
                  return _Attributes;
              }
         }
+
         internal string this[ushort nodeId]
         {
             get

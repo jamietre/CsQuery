@@ -20,19 +20,18 @@ using CsQuery.EquationParser;
 namespace CsqueryTests.Performance
 {
     [TestClass]
-    public class _Performance_SmallDom : PerformanceShared
+    public class _Performance_MediumDom : PerformanceShared
     {
         protected override string DocName
         {
             get
             {
-                return "sizzle";
+                return "wiki-cheese";
             }
         }
-
-        protected override string DocDescription
+                protected override string DocDescription
         {
-            get { return "small document (sizzle, about 11k)"; }
+            get { return "medium document (wiki-cheese, about 170k)"; }
         }
     }
 }

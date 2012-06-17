@@ -20,41 +20,30 @@ using CsQuery.EquationParser;
 namespace CsqueryTests.Performance
 {
     [TestClass]
-    public class _Performance_BigDom : PerformanceTest
+    public class _Performance_BigDom : PerformanceShared
     {
-        public override void FixtureSetUp()
+        protected override string DocName
         {
-            base.FixtureSetUp();
-
-            PerfCompare.LoadBoth("sizzle");
-            PerfCompare.MaxTestTime = TimeSpan.FromSeconds(2);
-        }
-        [TestMethod, Test]
-        public void IDSelectors()
-        {
-            Compare("#body");
-            Compare("#button");
-
-            //Assert.IsTrue(true,"Performance tests completed.");
+            get
+            {
+                return "HTML standard";
+            }
         }
 
-        [TestMethod, Test]
-        public void SubSelectors()
+        protected override string DocDescription
         {
-            Compare("div > span");
-            Compare("div span:first-child");
-            Compare("div span:last-child");
-            Compare("div > span:last-child");
+            get { return "large document (HTML Standard, about 6,000k)"; }
         }
 
-        [TestMethod, Test]
-        public void NthChild()
+        /// <summary>
+        /// For the large test, we need more time since it can take 2 seconds just to load the DOM
+        /// </summary>
+        protected override int TestTimeSeconds
         {
-
-            Compare("div:nth-child(2n+1)");
+            get
+            {
+                return 10;
+            }
         }
-
-
-
     }
 }
