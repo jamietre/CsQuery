@@ -99,10 +99,14 @@ namespace CsQuery.Utility
         // Constants for path encoding functions
 
         private static string defaultPadding;
+        
         // The character set used to generate path IDs
+        // For production use, this is replaced with a string of all ansi characters
+
         private static char[] baseXXchars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".ToArray();
         private static int encodingLength; // set in constructor
         private static int maxPathIndex;
+
         // The length of each path key - this sets an upper limit on the number of subelements
         // that can be added without reindexing the node
 
@@ -122,10 +126,10 @@ namespace CsQuery.Utility
             // values. You'd be hard pressed to exceed this limit on a single web page. Famous last words right? 
 
             #if !DEBUG_PATH
-                baseXXchars = new char[65534];
-                for (ushort i = 0; i < 65534; i++)
+                baseXXchars = new char[65533];
+                for (ushort i = 0; i < 65533; i++)
                 {
-                    baseXXchars[i] = (char)(i+1);
+                    baseXXchars[i] = (char)(i+2);
                 }
             #endif
 

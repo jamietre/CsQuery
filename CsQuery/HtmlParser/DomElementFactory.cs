@@ -118,7 +118,7 @@ namespace CsQuery.HtmlParser
         /// When CsQuery is provided, an initial indexing context can be used
         /// </summary>
         /// <param name="csq"></param>
-        /// <param name="allowLiterals"></param>
+        /// <param name="allowLiterals">When </param>
         /// <returns></returns>
         protected IEnumerable<IDomObject> Parse(bool allowLiterals)
         {

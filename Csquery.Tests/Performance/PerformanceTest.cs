@@ -22,6 +22,7 @@ namespace CsqueryTests.Performance
     [TestClass]
     public class PerformanceTest : CsQueryTest
     {
+        public static bool IsPerformanceTest = false;
 
         private static string OutputPrefix = "perftest_";
         private static string OutputPrefixCsv = "perftest_";
@@ -39,7 +40,6 @@ namespace CsqueryTests.Performance
         [AssemblyInitialize]
         public static void SetupTestRun(TestContext context)
         {
-
             OutputFolder = CsQueryTest.TestProjectDirectory + "\\performance\\output\\";
 
             DateTime dt = DateTime.Now;
@@ -57,25 +57,31 @@ namespace CsqueryTests.Performance
             OutputFileNameCsv = OutputFolder + OutputPrefixCsv + dateStamp + ".csv";
 
 
-
-
             OutputHeaders();
             Debug.WriteLine("");
+
         }
 
 
         [AssemblyCleanup]
         public static void CleanupTestRun()
         {
+            if (!IsPerformanceTest)
+            {
+                return;
+            }
+
             Debug.WriteLine("");
             OutputLineToFile(OutputFileName);
             OutputLineToFile(OutputFileName, "Completed tests " + DateTime.Now.ToLongDateString() + " " + DateTime.Now.ToLongTimeString());
             OutputLineToFile(OutputFileName);
           
+
             File.Copy(OutputFileName, OutputFolder + OutputPrefix + "latest.txt", true);
             File.Copy(OutputFileNameCsv, OutputFolder + OutputPrefix + "latest.csv", true);
 
         }
+
 
 
 
@@ -101,6 +107,9 @@ namespace CsqueryTests.Performance
         public override void FixtureSetUp()
         {
             base.FixtureSetUp();
+
+            IsPerformanceTest = true;
+
             PerfCompare = new PerfCompare();
             PerfCompare.MaxTestTime = TimeSpan.FromSeconds(5);
         }
@@ -122,6 +131,7 @@ namespace CsqueryTests.Performance
                 OutputHeaders();
                 OutputHeadersCsv(comp.Data.Count);
             }
+
             string line = q + comp.TestName + q + ","
                 + q + comp.Context + q + ","
                 + q + comp.Description + q + ","
@@ -149,10 +159,8 @@ namespace CsqueryTests.Performance
             OutputLineToFile(OutputFileNameCsv,line);
 
         }
-        //private static quote(string text) {
 
 
-        //}
         private static void OutputHeaders()
         {
             OutputLineToFile(OutputFileName, "Beginning tests " + DateTime.Now.ToLongDateString() + " " + DateTime.Now.ToLongTimeString());

@@ -741,8 +741,8 @@ namespace CsQuery.Implementation
         }
         public void SetAttribute(ushort tokenId)
         {
-            DomAttributes.SetBoolean(tokenId);
             AttributeAddToIndex(tokenId);
+            DomAttributes.SetBoolean(tokenId);
         }
 
         /// <summary>

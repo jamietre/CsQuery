@@ -396,7 +396,7 @@ namespace CsQuery.Engine
                     default:
 
                         string tag = "";
-                        if (scanner.TryGet(MatchFunctions.HTMLTagSelectorName, out tag))
+                        if (scanner.TryGet(MatchFunctions.HTMLTagSelectorName(), out tag))
                         {
                             AddTagSelector(tag);
                         }

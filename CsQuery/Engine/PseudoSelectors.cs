@@ -60,7 +60,7 @@ namespace CsQuery.Engine
                 
             }            
 
-            return NthChildMatcher.IndexMatches(IndexOfTypeOnly(obj,onlyNodeName,fromLast ),formula,onlyNodeName,fromLast);
+            return NthChildMatcher.IndexMatches(IndexOfTypeOnly(obj,onlyNodeName,fromLast),formula,onlyNodeName,fromLast);
         }
 
         /// <summary>

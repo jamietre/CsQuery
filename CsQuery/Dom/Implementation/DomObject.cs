@@ -600,6 +600,7 @@ namespace CsQuery.Implementation
         //{
         //    return ReferenceEquals(this, obj);
         //}
+
         #endregion
 
         #region interface members

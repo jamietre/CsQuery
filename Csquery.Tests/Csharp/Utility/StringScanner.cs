@@ -102,7 +102,7 @@ namespace CsqueryTests.Csharp
         {
             scanner=@"someSelect[attr-bute= 'this ""is \' a quoted value']";
 
-            var text = scanner.Get(MatchFunctions.HTMLTagSelectorName);
+            var text = scanner.Get(MatchFunctions.HTMLTagSelectorName());
             Assert.AreEqual("someSelect", text, "Got first word");
 
             StringScanner innerScanner = scanner.Get(MatchFunctions.BoundedWithQuotedContent);
@@ -175,7 +175,7 @@ namespace CsqueryTests.Csharp
         public void Selectors()
         {
             scanner = "div:contains('Product')";
-            string text = scanner.Get(MatchFunctions.HTMLTagSelectorName );
+            string text = scanner.Get(MatchFunctions.HTMLTagSelectorName() );
             Assert.AreEqual("div", text, "Got the first part");
             scanner.Expect(":");
             text = scanner.Get(MatchFunctions.PseudoSelector);

@@ -35,16 +35,9 @@ namespace CsQuery.StringScanner
             return new Patterns.HTMLAttributeName();
           
         }
-        public static bool HTMLTagSelectorName(int index, char character)
+        public static IExpectPattern HTMLTagSelectorName()
         {
-            if (index == 0)
-            {
-                return CharacterData.IsType(character, CharacterType.HtmlTagSelectorStart);
-            }
-            else
-            {
-                return CharacterData.IsType(character, CharacterType.HtmlTagSelectorExceptStart);
-            }
+            return new Patterns.HTMLTagSelectorName();
         }
 
         public static IExpectPattern BoundedBy(string boundStart=null, string boundEnd=null, bool honorInnerQuotes=false)

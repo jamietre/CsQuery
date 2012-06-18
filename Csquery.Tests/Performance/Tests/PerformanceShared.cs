@@ -101,14 +101,16 @@ namespace CsqueryTests.Performance
         {
             Compare("div:nth-child(3)");
             Compare("div:nth-child(2n+1)");
+            Compare("div:nth-last-child(3)");
+            Compare("div:nth-last-child(2n+1)");
         }
 
 
         [TestMethod, Test]
-        public void NthLastChild()
+        public  void Miscellanous()
         {
-            Compare("div:nth-last-child(3)");
-            Compare("div:nth-last-child(2n+1)");
+            Compare("*");
+
         }
 
     }

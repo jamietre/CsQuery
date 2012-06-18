@@ -164,10 +164,81 @@ namespace CsQuery
             HtmlParser.DomElementFactory factory = new HtmlParser.DomElementFactory(Document);
             if (html != null)
             {
+
                 foreach (IDomObject obj in factory.CreateObjects())
                 {
                     Document.ChildNodes.AddAlways(obj);
                     AddSelectionRange(Document.ChildNodes);
+                }
+
+                // ignore everything before <html> except text; if found, start adding to <body>
+                // if there's anything before <doctype> then it gets trashed
+
+                IDomElement body = Document.GetElementById("body");
+                if (body != null)
+                {
+
+                    bool textYet = false;
+                    bool anythingYet = false;
+                    int bodyIndex = 0;
+                    int index = 0;
+                    // there should only be DocType & HTML.
+                    while (index < Document.ChildNodes.Count)
+                    {
+                        IDomObject obj = Document.ChildNodes[index];
+                        switch (obj.NodeType)
+                        {
+                            case NodeType.DOCUMENT_TYPE_NODE:
+                                if (!anythingYet)
+                                {
+                                    index++;
+                                }
+                                else
+                                {
+                                    Document.ChildNodes.RemoveAt(index);
+                                }
+                                break;
+                            case NodeType.ELEMENT_NODE:
+                                if (obj.NodeName == "HTML")
+                                {
+                                    bodyIndex = body.ChildNodes.Length;
+                                    index++;
+                                }
+                                else
+                                {
+                                    if (textYet)
+                                    {
+                                        body.ChildNodes.Insert(bodyIndex++, obj);
+                                    }
+                                    continue;
+                                }
+                                break;
+                            case NodeType.TEXT_NODE:
+                                if (!textYet)
+                                {
+                                    // if a node is only whitespace and there has not yet been a non-whitespace text node,
+                                    // then ignore it.
+
+                                    var scanner = StringScanner.Scanner.Create(obj.NodeValue);
+                                    scanner.SkipWhitespace();
+                                    if (scanner.Finished)
+                                    {
+                                        Document.ChildNodes.RemoveAt(index);
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        textYet = true;
+                                    }
+                                }
+
+                                body.ChildNodes.Insert(bodyIndex++, obj);
+                                break;
+                            default:
+                                body.ChildNodes.Insert(bodyIndex++, obj);
+                                break;
+                        }
+                    }
                 }
             }
         }

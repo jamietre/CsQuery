@@ -47,14 +47,31 @@ namespace CsQuery.Engine
         /// <returns></returns>
         public IEnumerable<IDomObject> Select(IEnumerable<IDomObject> context)
         {
+
             if (Selectors == null )
             {
                 throw new ArgumentException("No selectors provided.");
             }
+
             if (Selectors.Count == 0)
             {
                 yield break;
             }
+
+            ActiveSelectors = new List<SelectorClause>(Selectors);
+
+            // First just check if we ended up here with an HTML selector; if so, had it off.
+            var firstSelector = ActiveSelectors[0];
+            if (firstSelector.SelectorType == SelectorType.HTML)
+            {
+                HtmlParser.DomElementFactory factory = new HtmlParser.DomElementFactory(Document);
+
+                foreach (var obj in factory.CreateObjects(firstSelector.Html))
+                {
+                    yield return obj;
+                }
+                yield break;
+            } 
 
             // this holds any results that carried over from the previous loop for chaining
 
@@ -73,15 +90,15 @@ namespace CsQuery.Engine
 
             bool useIndex = context.IsNullOrEmpty() || !context.First().IsDisconnected;
 
-            ActiveSelectors = new List<SelectorClause>(Selectors);
+
 
             for (activeSelectorId = 0; activeSelectorId < ActiveSelectors.Count; activeSelectorId++)
             {
-                // we will alter the selector during each iteration to remove the parts that have already been parsed,
-                // so use a copy.
 
                 var selector = ActiveSelectors[activeSelectorId].Clone();
 
+                // we will alter the selector during each iteration to remove the parts that have already been parsed,
+                // so use a copy.
                 // this is a selector that was chanined with the selector grouping combinator "," -- we always output the results so
                 // far when beginning a new group.
 
@@ -244,7 +261,7 @@ namespace CsQuery.Engine
                     // if there are no temporary results (b/c there was no indexed selector) then use selection source instead
                     // (e.g. start from the same point that the index would have)
 
-                    lastResult.AddRange(GetMatches(result ?? selectionSource ?? Document.ChildNodes, selector));
+                    lastResult.AddRange(GetMatches(result ?? selectionSource ?? Document.ChildElements, selector));
                 }
                 else
                 {
@@ -387,16 +404,6 @@ namespace CsQuery.Engine
             // The unique list has to be reset for each sub-selector
             uniqueElements = new HashSet<IDomObject>();
 
-            if (selector.SelectorType == SelectorType.HTML)
-            {
-                HtmlParser.DomElementFactory factory = new HtmlParser.DomElementFactory(Document);
-
-                foreach (var obj in factory.CreateObjects(selector.Html))
-                {
-                    yield return obj;
-                }
-                yield break;
-            } 
 
             // For the jQuery extensions (which are mapped to the position in the output, not the DOM) we have to enumerate
             // the results first, rather than targeting specific child elements. Handle it here,

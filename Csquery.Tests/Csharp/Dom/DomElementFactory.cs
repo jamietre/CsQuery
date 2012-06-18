@@ -92,5 +92,23 @@ namespace CsqueryTests.Csharp
         {
             return CQ.Create(factory.CreateObjects(html));
         }
+
+        [Test, TestMethod]
+        public void CreationState()
+        {
+            // bug 6/18 -- doctype isn't really supposed to be selectable.
+
+            var dom = TestDom("wiki-cheese");
+            
+
+            Assert.AreEqual(0,dom["\\!doctype"].Length);
+            Assert.IsFalse(dom["*"].Any(item => item.NodeName == "!DOCTYPE"));
+            Assert.IsFalse(dom["*"].Any(item=>item.NodeType == NodeType.DOCUMENT_TYPE_NODE));
+
+            Assert.AreEqual(2,dom.Document.ChildNodes.Count);
+            Assert.AreEqual(NodeType.DOCUMENT_TYPE_NODE,dom.Document.ChildNodes.First().NodeType);
+            Assert.AreEqual("HTML",dom.Document.ChildNodes.Last().NodeName);
+        }
+
     }
 }

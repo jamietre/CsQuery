@@ -117,6 +117,7 @@
     <Compile Include="StringScanner\IValueInfo.cs" />
     <Compile Include="StringScanner\MatchFunctions.cs" />
     <Compile Include="StringScanner\Patterns\Bounded.cs" />
+    <Compile Include="StringScanner\Patterns\HTMLTagSelectorName.cs" />
     <Compile Include="StringScanner\Patterns\HTMLAttributeName.cs" />
     <Compile Include="StringScanner\Patterns\CssClassName.cs" />
     <Compile Include="StringScanner\Patterns\EscapedString.cs" />
