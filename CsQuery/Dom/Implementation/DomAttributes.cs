@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,30 +10,31 @@ using CsQuery.Utility;
 
 namespace CsQuery.Implementation
 {
-    public class DomAttributes: IDictionary<string, string>, IEnumerable<KeyValuePair<string, string>>
+    public class DomAttributes : IDictionary<string, string>, IEnumerable<KeyValuePair<string, string>>
     {
         #region constructors
-        public DomAttributes(IDomElement owner)
+
+        public DomAttributes()
         {
-            Owner = owner;
+
         }
         #endregion
 
         #region private properties
 
-        protected IDomElement Owner;
-        
+
         private IDictionary<ushort, string> _Attributes;
 
         protected IDictionary<ushort, string> Attributes 
         {
-             get {
-                 if (_Attributes == null)
-                 {
-                     _Attributes = new Dictionary<ushort, string>();
-                 }
-                 return _Attributes;
-             }
+            get
+            {
+                if (_Attributes == null)
+                {
+                    _Attributes = new Dictionary<ushort, string>();
+                }
+                return _Attributes;
+            }
         }
 
         internal string this[ushort nodeId]
@@ -46,7 +48,7 @@ namespace CsQuery.Implementation
                 Set(nodeId, value);
             }
         }
-        
+
         #endregion
 
         #region public properties
@@ -64,21 +66,17 @@ namespace CsQuery.Implementation
         }
 
         #endregion
-        
+
         #region public methods
 
         public void Clear()
         {
-            foreach (var attrId in GetAttributeIds())
-            {
-                RemoveFromIndex(attrId);
-            }
             Attributes.Clear();
         }
 
-        public DomAttributes Clone(IDomElement owner)
+        public DomAttributes Clone()
         {
-            DomAttributes clone = new DomAttributes(owner);
+            DomAttributes clone = new DomAttributes();
            
             if (HasAttributes)
             {
@@ -99,7 +97,10 @@ namespace CsQuery.Implementation
         {
             return Unset(name);
         }
-
+        public bool Remove(ushort tokenId)
+        {
+            return Unset(tokenId);
+        }
         public string this[string name]
         {
             get
@@ -151,10 +152,10 @@ namespace CsQuery.Implementation
         }
 
         #endregion
- 
+
         #region private methods
 
-       
+
         protected string Get(string name)
         {
             name = name.CleanUp();
@@ -162,27 +163,21 @@ namespace CsQuery.Implementation
             {
                 return null;
             }
-            return Get(DomData.TokenID(name,true));
+            return Get(DomData.TokenID(name, true));
         }
         protected string Get(ushort tokenId)
         {
             string value;
-            switch (tokenId)
+
+            if (Attributes.TryGetValue(tokenId, out value))
             {
-                case DomData.StyleNodeId:
-                    value = Owner.Style.ToString();
-                    break;
-                case DomData.ClassAttrId:
-                    value = Owner.ClassName;
-                    break;
-                default:
-                    if (!Attributes.TryGetValue(tokenId, out value))
-                    {
-                        value=null;
-                    }
-                        break;
+                return value;
             }
-            return value;
+            else
+            {
+                return null;
+            }
+
         }
         /// <summary>
         /// Adding an attribute implementation
@@ -206,56 +201,21 @@ namespace CsQuery.Implementation
         /// <param name="value"></param>
         protected void Set(ushort tokenId, string value)
         {
-            switch (tokenId)
-            {
-                case DomData.IDAttrId:
-                    Owner.Id = value;
-                    return;
-                case DomData.StyleNodeId:
-                    Owner.Style.SetStyles(value, false);
-                    return;
-                case DomData.ClassAttrId:
-                    Owner.ClassName = value;
-                    return;
-                case DomData.ValueAttrId:
-                    SetRaw(tokenId,value.CleanUp());
-                    break;
-                default:
-                    // Uncheck any other radio buttons
-                    if (tokenId == DomData.CheckedAttrId
-                        && Owner.NodeName == "INPUT" 
-                        && Owner.Type == "radio" 
-                        && !String.IsNullOrEmpty(Owner["name"])
-                        && value!=null
-                        && Owner.Document != null)
-                    {
-                        var radios = Owner.Document.QuerySelectorAll("input[type='radio'][name='" + Owner["name"] + "']:checked");
-                        foreach (var item in radios)
-                        {
-                            item.Checked = false;
-                        }
-                    }
-
-                    SetRaw(tokenId,value);
-                    break;
-            }
+            SetRaw(tokenId, value);
         }
         /// <summary>
         /// Used by DomElement to (finally) set the ID value
         /// </summary>
         /// <param name="tokenId"></param>
         /// <param name="value"></param>
-        internal void SetRaw(ushort tokenId, string value ) {
+        internal void SetRaw(ushort tokenId, string value)
+        {
             if (value == null)
             {
                 Unset(tokenId);
             }
             else
             {
-                if (!Attributes.ContainsKey(tokenId))
-                {
-                    AddToIndex(tokenId);
-                }
                 Attributes[tokenId] = value;
             }
         }
@@ -263,60 +223,36 @@ namespace CsQuery.Implementation
         /// Sets a boolean only attribute having no value
         /// </summary>
         /// <param name="name"></param>
-        internal void SetBooleanAttribute(string name) {
-            ushort tokenId = DomData.TokenID(name,true);
+        public void SetBoolean(string name)
+        {
+            ushort tokenId = DomData.TokenID(name, true);
 
-            if (!Attributes.ContainsKey(tokenId)) 
-            {
-                AddToIndex(tokenId);
-            }
+            SetBoolean(tokenId);
+        }
+        public void SetBoolean(ushort tokenId)
+        {
             Attributes[tokenId] = null;
-        
         }
         /// <summary>
         /// Removing an attribute implementation
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        protected bool Unset(string name)
+        public bool Unset(string name)
         {
             return Unset(DomData.TokenID(name, true));
         }
-        protected bool Unset(ushort tokenId)
+        public bool Unset(ushort tokenId)
         {
             bool result = Attributes.Remove(tokenId);
-            if (result)
-            {
-                RemoveFromIndex(tokenId);
-            }
+            //if (result)
+            //{
+            //    RemoveFromIndex(tokenId);
+            //}
             return result;
         }
-        protected void RemoveFromIndex(ushort attrId)
-        {
-            if (!Owner.IsDisconnected)
-            {
-                Owner.Document.RemoveFromIndex(IndexKey(attrId));
-            }
-        }
-        protected void AddToIndex(ushort attrId)
-        {
-            if (!Owner.IsDisconnected)
-            {
-                Owner.Document.AddToIndex(IndexKey(attrId), Owner);
-            }
-        }
-        public string IndexKey(string attrName)
-        {
-            return IndexKey(DomData.TokenID(attrName,true));
-        }
-        public string IndexKey(ushort attrId)
-        {
-#if DEBUG_PATH
-            return "!" + DomData.TokenName(attrId) + DomData.indexSeparator + Owner.Path;
-#else
-            return "!" + (char)attrId + DomData.indexSeparator + Owner.Path;
-#endif
-        }
+
+
         protected IEnumerable<KeyValuePair<string, string>> GetAttributes()
         {
             foreach (var kvp in Attributes)
@@ -330,7 +266,7 @@ namespace CsQuery.Implementation
         }
 
         #endregion
-        
+
         #region interface implementation
 
 
@@ -347,8 +283,8 @@ namespace CsQuery.Implementation
 
         bool ICollection<KeyValuePair<string, string>>.Contains(KeyValuePair<string, string> item)
         {
-            return ContainsKey(item.Key) 
-                && Attributes[DomData.TokenID(item.Key,true)] == item.Value;
+            return ContainsKey(item.Key)
+                && Attributes[DomData.TokenID(item.Key, true)] == item.Value;
         }
 
         void ICollection<KeyValuePair<string, string>>.CopyTo(KeyValuePair<string, string>[] array, int arrayIndex)
@@ -363,8 +299,8 @@ namespace CsQuery.Implementation
 
         bool ICollection<KeyValuePair<string, string>>.Remove(KeyValuePair<string, string> item)
         {
-            if (ContainsKey(item.Key) 
-                &&  Attributes[DomData.TokenID(item.Key,true)] == item.Value)
+            if (ContainsKey(item.Key)
+                && Attributes[DomData.TokenID(item.Key, true)] == item.Value)
             {
                 return Remove(item.Key);
             }
@@ -389,6 +325,7 @@ namespace CsQuery.Implementation
         {
             return GetEnumerator();
         }
+
         #endregion
     }
 }

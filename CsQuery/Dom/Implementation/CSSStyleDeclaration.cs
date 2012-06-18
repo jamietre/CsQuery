@@ -18,14 +18,14 @@ namespace CsQuery.Implementation
     public class CSSStyleDeclaration : IDictionary<string, string>, IEnumerable<KeyValuePair<string, string>>, ICSSStyleDeclaration
     {
         #region constructors
-        public CSSStyleDeclaration(IDomElement owner)
+        public CSSStyleDeclaration(DomElement owner)
         {
             Owner = owner;
         }
         #endregion
         
         #region private properties
-        protected IDomElement Owner;
+        protected DomElement Owner;
         /// <summary>
         /// Warning: Do not attempt to access _Styles directly from this class or any subclass to determine whether or 
         /// not there are styles, since it also depends on QuickSetStyles. Use HasStyles method instead.
@@ -49,6 +49,7 @@ namespace CsQuery.Implementation
                 return _Styles;
             }
         }
+        
         /// <summary>
         /// For fast DOM creation - since styles are not indexed or validated.
         /// If they are ever accessed by style name, they will be parsed on demand.
@@ -74,7 +75,7 @@ namespace CsQuery.Implementation
         /// </summary>
         /// <param name="owner"></param>
         /// <returns></returns>
-        public CSSStyleDeclaration Clone(IDomElement owner)
+        public CSSStyleDeclaration Clone(DomElement owner)
         {
             CSSStyleDeclaration clone = new CSSStyleDeclaration(owner);
 
@@ -340,7 +341,7 @@ namespace CsQuery.Implementation
         {
             if (!Owner.IsDisconnected)
             {
-                Owner.Document.AddToIndex(Owner.Attributes.IndexKey(DomData.StyleNodeId), Owner);
+                Owner.Document.AddToIndex(Owner.AttributeIndexKey(DomData.tagSTYLE), Owner);
             }
         }
 
@@ -348,7 +349,7 @@ namespace CsQuery.Implementation
         {
             if (!Owner.IsDisconnected)
             {
-                Owner.Document.RemoveFromIndex(Owner.Attributes.IndexKey(DomData.StyleNodeId));
+                Owner.Document.RemoveFromIndex(Owner.AttributeIndexKey(DomData.tagSTYLE));
             }
         }
 

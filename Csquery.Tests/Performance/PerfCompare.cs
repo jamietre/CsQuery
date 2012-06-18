@@ -22,11 +22,11 @@ namespace CsqueryTests.Performance
 
     public class PerfCompare
     {
-
+        public string Context { get; set; }
         public CQ CsqueryDocument { get; set; }
         public HtmlDocument HapDocument { get; set; }
-
         public TimeSpan MaxTestTime { get; set; }
+        
         /// <summary>
         /// Loads both CSQ and HAP documents
         /// </summary>
@@ -52,14 +52,19 @@ namespace CsqueryTests.Performance
 
             string description = String.Format("Selector returning {0} elements.", cqCount);
 
+            bool same = true;
             if (hapCount != cqCount)
             {
                 description += String.Format(" NOTE: HAP returned {0} elements", hapCount);
+                same = false;
             }
+
+            // use Count() for both to ensure that all results are retrieved (e.g. if the engine is lazy)
+
             string testName = "CSS selector: { " + selector + " }";
             Action csq = new Action(() =>
             {
-                int csqLength = CsqueryDocument[selector].Length;
+                int csqLength = CsqueryDocument[selector].Count();
             });
 
             Action hap = new Action(() =>
@@ -67,7 +72,10 @@ namespace CsqueryTests.Performance
                 int hapLength = HapDocument.DocumentNode.QuerySelectorAll(selector).Count();
             });
 
-            return Compare(csq, hap, testName,description);
+            var results = Compare(csq, hap, testName,description);
+            results.SameResults = same;
+            results.Context = Context;
+            return results;
         }
 
         public PerfComparison Compare(Action action1, Action action2, 
@@ -75,7 +83,7 @@ namespace CsqueryTests.Performance
             string description="")
         {
 
-            var comparison = new PerfComparison();
+            var comparison = NewComparison();
 
             var maxTime = MaxTestTime;
             DateTime start = DateTime.Now;
@@ -88,6 +96,8 @@ namespace CsqueryTests.Performance
 
             comparison.Data.Add(csqPerf);
             comparison.Data.Add(hapPerf);
+            comparison.SameResults = true;
+
             return comparison;
         }
 
@@ -159,7 +169,12 @@ namespace CsqueryTests.Performance
             return perfData;
         }
 
-           
+        private PerfComparison NewComparison() {
+            return new PerfComparison
+            {
+                Context = Context
+            };
+        }
         
     }
 }

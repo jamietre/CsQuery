@@ -22,7 +22,14 @@ namespace CsqueryTests.Performance
     [TestClass]
     public class PerformanceTest : CsQueryTest
     {
-        
+
+        private static string OutputPrefix = "perftest_";
+        private static string OutputPrefixCsv = "perftest_";
+        private static string OutputFileName;
+        private static string OutputFileNameCsv;
+        private static string OutputFolder;
+
+        private static bool isHeaderWritten = false;
 
         /// <summary>
         /// Set up this test run - configuration of the file name is done in the static constructor so
@@ -36,21 +43,23 @@ namespace CsqueryTests.Performance
             OutputFolder = CsQueryTest.TestProjectDirectory + "\\performance\\output\\";
 
             DateTime dt = DateTime.Now;
-            OutputFileName = OutputFolder + outputPrefix +
-                String.Format("{0}_{1}_{2}_{3}_{4}_{5}",
+
+            string dateStamp = String.Format("{0}_{1}_{2}_{3}_{4}_{5}",
                     dt.Year,
                     dt.Month,
                     dt.Day,
                     dt.Hour,
                     dt.Minute,
                     dt.Second
-                    ) +
-                    ".txt";
+                    );
+
+            OutputFileName = OutputFolder + OutputPrefix + dateStamp + ".txt";
+            OutputFileNameCsv = OutputFolder + OutputPrefixCsv + dateStamp + ".csv";
 
 
 
-            OutputLine("Beginning tests " + DateTime.Now.ToLongDateString() + " " + DateTime.Now.ToLongTimeString());
-            OutputLine("");
+
+            OutputHeaders();
             Debug.WriteLine("");
         }
 
@@ -59,17 +68,16 @@ namespace CsqueryTests.Performance
         public static void CleanupTestRun()
         {
             Debug.WriteLine("");
-            OutputLine();
-            OutputLine("Completed tests " + DateTime.Now.ToLongDateString() + " " + DateTime.Now.ToLongTimeString());
-            OutputLine();
+            OutputLineToFile(OutputFileName);
+            OutputLineToFile(OutputFileName, "Completed tests " + DateTime.Now.ToLongDateString() + " " + DateTime.Now.ToLongTimeString());
+            OutputLineToFile(OutputFileName);
           
-            File.Copy(OutputFileName, OutputFolder + outputPrefix + "latest.txt", true);
+            File.Copy(OutputFileName, OutputFolder + OutputPrefix + "latest.txt", true);
+            File.Copy(OutputFileNameCsv, OutputFolder + OutputPrefix + "latest.csv", true);
 
         }
 
-        private static string outputPrefix = "perftest_";
-        private static string OutputFileName;
-        private static string OutputFolder;
+
 
         protected PerfCompare PerfCompare;
 
@@ -98,23 +106,97 @@ namespace CsqueryTests.Performance
         }
 
         #region static file output methods
+        private static string q= "\"";
 
         public static void Output(PerfComparison comp)
         {
-            Output(comp.ToString());
-            OutputLine();
-            OutputLine();
+            OutputToFile(OutputFileName, comp.ToString());
+            OutputLineToFile(OutputFileName);
+            OutputLineToFile(OutputFileName);
+
+            // csv
+
+            if (!isHeaderWritten)
+            {
+                isHeaderWritten = true;
+                OutputHeaders();
+                OutputHeadersCsv(comp.Data.Count);
+            }
+            string line = q + comp.TestName + q + ","
+                + q + comp.Context + q + ","
+                + q + comp.Description + q + ","
+                + (comp.SameResults ? 1 : 0).ToString() + ","
+                + q + comp.Best.Source + q + ","
+                + q + comp.HowMuchFaster().ToString() + q + ",";
+
+
+            foreach (var item in comp.Data) {
+                if (String.IsNullOrEmpty(item.ErrorMessage))
+                {
+
+                    line += ",";
+                    line += q + item.Source + q + ","
+                        + item.IterationsPerSecond + ","
+                        + item.Iterations + ","
+                        + item.TimeSeconds;
+                }
+                else
+                {
+                    line += ",,,,";
+
+                }
+            }
+            OutputLineToFile(OutputFileNameCsv,line);
+
+        }
+        //private static quote(string text) {
+
+
+        //}
+        private static void OutputHeaders()
+        {
+            OutputLineToFile(OutputFileName, "Beginning tests " + DateTime.Now.ToLongDateString() + " " + DateTime.Now.ToLongTimeString());
+            OutputLineToFile(OutputFileName);
+
+          
+        }
+        private static void OutputHeadersCsv(int numToCompare)
+        {
+            string line = q + "Test Name" + q + ","
+                + q + "Test Document" + q + ","
+                + q + "Description" + q + ","
+                + q + "Same" + q + ","
+                + q + "Winner" + q + ","
+                + q + "FasterRatio" + q;
+
+            // extra comma for an empty col before the output & between each result
+
+
+            for (int i = 0; i < numToCompare; i++)
+            {
+                line += ",,"+ q + "Source" + q;
+                line += "," + q + "Iterations/Sec" + q + ","
+                + q + "Iterations" + q + ","
+                + q + "Seconds" + q;
+            }
+
+            OutputLineToFile(OutputFileNameCsv, line);
         }
         public static void OutputLine(string text = "")
         {
-            Output(text + System.Environment.NewLine);
+            OutputLineToFile(OutputFileName, text);
         }
 
-        public static void Output(string text)
+        public static void OutputLineToFile(string file,string text = "")
+        {
+            OutputToFile(file,text + System.Environment.NewLine);
+        }
+
+        private static void OutputToFile(string file, string text)
         {
             Debug.WriteLine(text);
 
-            File.AppendAllText(OutputFileName, text);
+            File.AppendAllText(file, text);
         }
 
         #endregion

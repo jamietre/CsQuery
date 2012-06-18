@@ -40,7 +40,8 @@ namespace CsqueryTests.Performance
 
             PerfCompare.LoadBoth(DocName);
             PerfCompare.MaxTestTime = TimeSpan.FromSeconds(TestTimeSeconds);
-
+            PerfCompare.Context = DocDescription;
+            
 
             OutputLine(String.Format("Beginning tests using document \"{0}\"", DocDescription));
             OutputLine();
@@ -54,12 +55,14 @@ namespace CsqueryTests.Performance
             Action csq = new Action(() =>
             {
                 var csqDoc = CQ.Create(html);
+                //var test = csqDoc["*"].Count();
             });
 
             Action hap = new Action(() =>
             {
                 var hapDoc = new HtmlDocument();
-                hapDoc.LoadHtml(html); 
+                hapDoc.LoadHtml(html);
+                //var test = hapDoc.DocumentNode.QuerySelectorAll("*").Count();
             });
             Compare(csq, hap, "Create DOM from html");
 
@@ -69,6 +72,7 @@ namespace CsqueryTests.Performance
         {
             Compare("#body");
             Compare("#button");
+            Compare("#missing");
 
             //Assert.IsTrue(true,"Performance tests completed.");
         }
@@ -80,17 +84,32 @@ namespace CsqueryTests.Performance
             Compare("div span:first-child");
             Compare("div span:last-child");
             Compare("div > span:last-child");
-
             Compare("div span:only-child");
         }
 
         [TestMethod, Test]
+        public void AttributeSelectors()
+        {
+            Compare("[type]");
+            Compare("input[type]");
+            Compare("input[type][checked]");
+        }
+
+
+        [TestMethod, Test]
         public void NthChild()
         {
+            Compare("div:nth-child(3)");
             Compare("div:nth-child(2n+1)");
         }
 
 
+        [TestMethod, Test]
+        public void NthLastChild()
+        {
+            Compare("div:nth-last-child(3)");
+            Compare("div:nth-last-child(2n+1)");
+        }
 
     }
 }

@@ -69,6 +69,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dom\Implementation\DomAttributes.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="EquationParser\enumAssociation.cs" />
     <Compile Include="EquationParser\enumOperationType.cs" />
     <Compile Include="EquationParser\Equations.cs" />
@@ -127,6 +130,7 @@
     <Compile Include="Engine\Enums.cs" />
     <Compile Include="Engine\SelectorParser.cs" />
     <Compile Include="ExtensionMethods\Forms.cs" />
+    <Compile Include="Utility\AttributeDictionary.cs" />
     <Compile Include="Web\WebForms.cs" />
     <Compile Include="OutputFormatters\IOutputFormatter.cs" />
     <Compile Include="OutputFormatters\FormatPlainText.cs" />
@@ -171,7 +175,6 @@
     <Compile Include="Dom\Implementation\DomAttribute.cs" />
     <Compile Include="Dom\Implementation\DomInnerText.cs" />
     <Compile Include="Dom\Implementation\DomFragment.cs" />
-    <Compile Include="Dom\Implementation\DomAttributes.cs" />
     <Compile Include="Dom\Implementation\DomCData.cs" />
     <Compile Include="Dom\Implementation\DomComment.cs" />
     <Compile Include="Dom\Implementation\DomContainer.cs" />

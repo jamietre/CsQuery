@@ -45,10 +45,23 @@ namespace CsQuery.Utility
         public const ushort ClassAttrId = 3;
         public const ushort ValueAttrId=4;
         public const ushort IDAttrId=5;
-        public const ushort ScriptNodeId = 6;
-        public const ushort TextareaNodeId = 7;
-        public const ushort StyleNodeId = 8;
-        public const ushort InputNodeId = 9;
+        
+        public const ushort tagSCRIPT= 6;
+        public const ushort tagTEXTAREA= 7;
+        public const ushort tagSTYLE = 8;
+        public const ushort tagINPUT = 9;
+        public const ushort tagSELECT = 10;
+        public const ushort tagOPTION = 11;
+        public const ushort tagP = 12;
+        public const ushort tagTR=13;
+        public const ushort tagTD = 14;
+        public const ushort tagTH = 15;
+        public const ushort tagHEAD = 16;
+        public const ushort tagBODY = 17;
+        public const ushort tagDT = 18;
+        public const ushort tagCOLGROUP = 19;
+        public const ushort tagDD = 20;
+        public const ushort tagLI = 21;
 
         public static ushort SelectedAttrId;
         public static ushort ReadonlyAttrId;
@@ -74,16 +87,6 @@ namespace CsQuery.Utility
 
         public static HashSet<string> Units = new HashSet<string>(new string[] { "%", "in", "cm", "mm", "em", "ex", "pt", "pc", "px" });
 
-        // Boundaries in the token index for certain kinds of elements
-
-        private static ushort noInnerHtmlIDFirst;
-        private static ushort noInnerHtmlIDLast;
-        private static ushort booleanFirst;
-        private static ushort booleanLast;
-        private static ushort blockFirst;
-        private static ushort blockLast;
-
-
         /// <summary>
         /// Fields used internally
         /// </summary>
@@ -102,6 +105,10 @@ namespace CsQuery.Utility
         private static int maxPathIndex;
         // The length of each path key - this sets an upper limit on the number of subelements
         // that can be added without reindexing the node
+
+        private static HashSet<ushort> TagsNoInnerHtmlAllowed;
+        private static HashSet<ushort> TagsBlockElements;
+        private static HashSet<ushort> TagsBooleanAttributes;
 
         #endregion
 
@@ -153,6 +160,10 @@ namespace CsQuery.Utility
             "scoped", "seamless", "selected", "spellcheck", "truespeed"," visible"
             });
 
+         
+            
+            
+
             TokenIDs = new Dictionary<string, ushort>();
             // where Style used to be
             TokenID("unused",true); //2
@@ -162,7 +173,7 @@ namespace CsQuery.Utility
             TokenID("value",true); //4
             TokenID("id",true); //5
 
-            noInnerHtmlIDFirst = nextID;
+            //noInnerHtmlIDFirst = nextID;
             // the node types that have inner content which is not parsed as HTML ever
             TokenID("script",true); //6
             TokenID("textarea",true); //7
@@ -170,31 +181,44 @@ namespace CsQuery.Utility
 
 
             TokenID("input",true); //9
-            
-            // no inner html allowed
-            
-            foreach (string tag in noInnerHtmlAllowed)
+            TokenID("select", true); //10
+            TokenID("option", true); //11
+
+            TokenID("p", true); //12
+            TokenID("tr", true); //13
+            TokenID("td", true); //14
+            TokenID("th", true); //15
+            TokenID("head", true); //16
+            TokenID("body", true); //17
+            TokenID("dt", true); //18
+            TokenID("colgroup", true); //19
+            TokenID("dd", true); //20
+            TokenID("li", true); //21
+
+
+            if (nextID !=  22)
             {
-                TokenID(tag,true);
+                throw new InvalidOperationException("Something went wrong with the constant map in DomData");
             }
-            noInnerHtmlIDLast = (ushort)(nextID - 1);
-            booleanFirst = (ushort)nextID;
-            foreach (string tag in booleanAttributes)
-            {
-                TokenID(tag,true);
-            }
+            
             SelectedAttrId= TokenID("selected",true); 
             ReadonlyAttrId = TokenID("readonly",true); 
             CheckedAttrId = TokenID("checked",true); 
-            booleanLast = (ushort)(nextID - 1);
-            blockFirst = (ushort)nextID;
-            foreach (string tag in blockElements)
-            {
-                TokenID(tag,true);
-            }
-            blockLast = (ushort)(nextID - 1);
-        }
 
+            TagsNoInnerHtmlAllowed = PopulateTokenHashset(noInnerHtmlAllowed);
+            TagsBooleanAttributes=PopulateTokenHashset(booleanAttributes);
+            TagsBlockElements=PopulateTokenHashset(blockElements);
+
+        }
+        private static HashSet<ushort> PopulateTokenHashset(IEnumerable<string> tokens)
+        {
+            var set = new HashSet<ushort>();
+            foreach (var item in tokens)
+            {
+                set.Add(TokenID(item,true));
+            }
+            return set;
+        }
         #endregion
 
 
@@ -218,8 +242,7 @@ namespace CsQuery.Utility
         /// <returns></returns>
         public static bool NoInnerHtmlAllowed(ushort nodeId)
         {
-            return nodeId >= noInnerHtmlIDFirst &&
-                nodeId <= noInnerHtmlIDLast;
+            return TagsNoInnerHtmlAllowed.Contains(nodeId);
         }
 
         /// <summary>
@@ -239,7 +262,7 @@ namespace CsQuery.Utility
         /// <returns></returns>
         public static bool InnerTextAllowed(ushort nodeId)
         {
-            return nodeId == ScriptNodeId || nodeId == TextareaNodeId ||  nodeId == StyleNodeId || !NoInnerHtmlAllowed(nodeId);
+            return nodeId == tagSCRIPT || nodeId == tagTEXTAREA ||  nodeId == tagSTYLE || !NoInnerHtmlAllowed(nodeId);
         }
         public static bool InnerTextAllowed(string nodeName)
         {
@@ -247,8 +270,7 @@ namespace CsQuery.Utility
         }
         public static bool IsBlock(ushort nodeId)
         {
-            return nodeId >= blockFirst
-                && nodeId <= blockLast;
+            return TagsBlockElements.Contains(nodeId);
         }
         public static bool IsBlock(string nodeName)
         {
@@ -261,7 +283,7 @@ namespace CsQuery.Utility
         /// <returns></returns>
         public static bool IsBoolean(ushort nodeId)
         {
-            return nodeId >= booleanFirst && nodeId <= booleanLast;
+            return TagsBooleanAttributes.Contains(nodeId);
         }
         /// <summary>
         /// The attribute is a boolean type
@@ -282,7 +304,10 @@ namespace CsQuery.Utility
         public static ushort TokenID(string tokenName, bool ignoreCase = false)
         {
             ushort id;
-
+            if (String.IsNullOrEmpty(tokenName))
+            {
+                return 0;
+            }
             if (ignoreCase) {
                 tokenName = tokenName.ToLower();
             }

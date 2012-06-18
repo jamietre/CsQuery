@@ -25,5 +25,7 @@ namespace CsQuery
         IEnumerable<string> Classes { get; }
         string ElementHtml();
         int ElementIndex { get; }
+
+        ushort NodeNameID { get; }
     }
 }

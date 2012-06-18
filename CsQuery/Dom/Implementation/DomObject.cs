@@ -11,7 +11,6 @@ namespace CsQuery.Implementation
     /// </summary>
     public abstract class DomObject: IDomObject
     {
-
         #region private properties
 
         private IDomDocument _Document;
@@ -27,13 +26,12 @@ namespace CsQuery.Implementation
 
         #endregion
         
-
-
         #region public properties
 
         public abstract NodeType NodeType { get; }
         public abstract bool HasChildren { get; }
         public abstract bool InnerHtmlAllowed { get; }
+        public ushort NodeNameID { get { return _NodeNameID; } }
 
         public virtual bool InnerTextAllowed
         {
@@ -289,7 +287,7 @@ namespace CsQuery.Implementation
                 throw new InvalidOperationException("ClassName is not applicable to this node type.");
             }
         }
-        public virtual DomAttributes Attributes
+        public virtual IEnumerable<KeyValuePair<string,string>> Attributes
         {
             get
             {
@@ -482,7 +480,6 @@ namespace CsQuery.Implementation
 
         #endregion
 
-
         #region public methods
 
         public abstract string Render();
@@ -599,10 +596,10 @@ namespace CsQuery.Implementation
         //    return Depth * Index;
         //}
 
-        public override bool Equals(object obj)
-        {
-            return ReferenceEquals(this, obj);
-        }
+        //public override bool Equals(object obj)
+        //{
+        //    return ReferenceEquals(this, obj);
+        //}
         #endregion
 
         #region interface members

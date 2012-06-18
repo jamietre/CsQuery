@@ -2075,7 +2075,7 @@ namespace CsQuery
                 }
                 foreach (string key in toRemove)
                 {
-                    el.Attributes.Remove(key);
+                    el.RemoveAttribute(key);
                 }
             }
             return this;
@@ -2203,10 +2203,10 @@ namespace CsQuery
             if (Length > 0)
             {
                 IDomElement e = this.Elements.First();
-                switch(e.NodeName) {
-                    case "TEXTAREA":
+                switch(e.NodeNameID) {
+                    case DomData.tagTEXTAREA:
                         return e.InnerText;
-                    case "INPUT":
+                    case DomData.tagINPUT:
                         string val = e.GetAttribute("value",String.Empty);
                         switch(e.GetAttribute("type",String.Empty)) {
                             case "radio":
@@ -2220,7 +2220,7 @@ namespace CsQuery
                                 break;
                         }
                         return val;
-                    case "SELECT":
+                    case DomData.tagSELECT:
                         string result = String.Empty;
                         // TODO optgroup handling (just like the setter code)
                         var options =Find("option");
@@ -2253,7 +2253,7 @@ namespace CsQuery
                             result = options[0].GetAttribute("value", String.Empty);
                         }
                         return result;
-                    case "OPTION":
+                    case DomData.tagOPTION:
                         val = e.GetAttribute("value");
                         return val ?? e.InnerText;
                     default:

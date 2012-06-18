@@ -16,9 +16,21 @@ namespace CsQuery.Implementation
     public class DomElement : DomContainer<DomElement>, IDomElement
     {
         #region private fields
-        protected DomAttributes _Attributes;
+        private DomAttributes _DomAttributes;
         protected CSSStyleDeclaration _Style;
         protected List<ushort> _Classes;
+
+        protected DomAttributes DomAttributes
+        {
+            get
+            {
+                if (_DomAttributes == null)
+                {
+                    _DomAttributes = new DomAttributes();
+                }
+                return _DomAttributes;
+            }
+        }
         #endregion
 
         #region constructors
@@ -31,6 +43,13 @@ namespace CsQuery.Implementation
         {
             NodeName = tag;
         }
+        public DomElement(ushort tagId)
+            : base()
+        {
+            _NodeNameID = tagId;
+        }
+
+
         #endregion
         
         #region public properties
@@ -49,27 +68,25 @@ namespace CsQuery.Implementation
                 _Style = value;
             }
         }
-        public override DomAttributes Attributes
+        public override IEnumerable<KeyValuePair<string,string>> Attributes
         {
             get
             {
-                if (_Attributes == null)
+                if (_DomAttributes == null)
                 {
-                    _Attributes = new DomAttributes(this);
+                    _DomAttributes = new DomAttributes();
                 }
-                return _Attributes;
-            }
-            protected set
-            {
-                _Attributes = value;
+                return _DomAttributes;
             }
         }
+
         public override string ClassName
         {
             get
             {
                 if (HasClasses)
                 {
+                    //return String.Join(" ", _Classes.Select(item=>DomData.TokenName(item)));
                     string className = "";
                     foreach (ushort clsId in _Classes)
                     {
@@ -84,7 +101,7 @@ namespace CsQuery.Implementation
             }
             set
             {
-                setClassName(value);
+                SetClassName(value);
             }
         }
         public override string Id
@@ -95,22 +112,18 @@ namespace CsQuery.Implementation
             }
             set
             {
-                // ID is stored as an attribute internally so the index is OK for attribute searches
-                if (Attributes.ContainsKey(DomData.IDAttrId) && !IsDisconnected)
-                {
-                    Document.RemoveFromIndex(IndexKey("#", Attributes[DomData.IDAttrId]));
-                }
-                Attributes.SetRaw(DomData.IDAttrId, value);
                 if (!IsDisconnected)
                 {
+                    if (DomAttributes.ContainsKey(DomData.IDAttrId))
+                    {
+                        Document.RemoveFromIndex(IndexKey("#", DomData.TokenID(Id), Path));
+                    }
                     if (value != null)
                     {
-                        Document.AddToIndex(IndexKey("#", value), this);
-
-                        // Must index the attributes for search just on attribute too
-                        //Document.AddToIndex(Attributes.IndexKey(DomData.IDAttrId), this);
+                        Document.AddToIndex(IndexKey("#", DomData.TokenID(value), Path), this);
                     }
                 }
+                SetAttributeRaw(DomData.IDAttrId, value);
             }
         }
 
@@ -145,12 +158,12 @@ namespace CsQuery.Implementation
             get
             {
                 return NodeName=="INPUT" ?
-                    Attributes["type"].ToLower() :
-                    Attributes["type"];
+                    GetAttribute("type").ToLower() :
+                    GetAttribute("type");
             }
             set
             {
-                Attributes["type"] = value;
+                SetAttribute("type", value);
             }
         }
 
@@ -161,11 +174,11 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return Attributes["name"];
+                return GetAttribute("name");
             }
             set
             {
-                Attributes["name"]= value;
+                SetAttribute("name", value);
             }
         }
         public override string DefaultValue
@@ -173,7 +186,9 @@ namespace CsQuery.Implementation
             get
             {
                 return hasDefaultValue() ?
-                    (NodeName == "TEXTAREA" ? InnerText : Attributes["value"]) :
+                    (NodeName == "TEXTAREA" ? 
+                        InnerText : 
+                        GetAttribute("value")) :
                     base.DefaultValue;
             }
             set
@@ -190,7 +205,7 @@ namespace CsQuery.Implementation
                     }
                     else
                     {
-                        Attributes["value"] = value;
+                        SetAttribute("value",value);
                     }
                 }
             }
@@ -204,10 +219,10 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return DomData.InputNodeId == _NodeNameID &&
+                return DomData.tagINPUT == _NodeNameID &&
                     HasAttribute(DomData.ValueAttrId) ?
-                    Attributes[DomData.ValueAttrId] :
-                    null;
+                        GetAttribute(DomData.ValueAttrId) :
+                        null;
             }
             set
             {
@@ -234,7 +249,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return _Attributes != null && _Attributes.HasAttributes;
+                return _DomAttributes != null && DomAttributes.HasAttributes;
             }
         }
         public override bool HasStyles
@@ -523,7 +538,7 @@ namespace CsQuery.Implementation
             }
             if (HasAttributes)
             {
-                foreach (ushort attrId in Attributes.GetAttributeIds())
+                foreach (ushort attrId in DomAttributes.GetAttributeIds())
                 {
                     yield return IndexKey("!", attrId, path);
                 }
@@ -537,7 +552,7 @@ namespace CsQuery.Implementation
 
             if (HasAttributes)
             {
-                clone.Attributes = Attributes.Clone(clone);
+                clone._DomAttributes = DomAttributes.Clone();
             }
             if (HasClasses)
             {
@@ -576,13 +591,15 @@ namespace CsQuery.Implementation
             return HasClasses 
                 && _Classes.Contains(DomData.TokenID(name));
         }
+
         public bool AddClass(string name)
         {
             bool result=false;
-            bool addedFirstClass = false;
+            bool hadClasses = HasClasses;
 
             foreach (string cls in name.SplitClean())
             {
+                
                 if (!HasClass(cls))
                 {
                     if (_Classes == null)
@@ -590,7 +607,7 @@ namespace CsQuery.Implementation
                         _Classes = new List<ushort>();
                     }
                     ushort tokenId = DomData.TokenID(cls);
-                    addedFirstClass = !HasClasses;
+                    
                     _Classes.Add(tokenId);
                     if (!IsDisconnected)
                     {
@@ -599,17 +616,18 @@ namespace CsQuery.Implementation
                     
                     result = true;
                 }
-                if (addedFirstClass && !IsDisconnected)
-                {
-                    // Must index the attributes for search just on attribute too
-                    Document.AddToIndex(Attributes.IndexKey(DomData.ClassAttrId),this);
-                }
+            }
+            if (result && !hadClasses && !IsDisconnected)
+            {
+                // Must index the attributes for search just on attribute too
+                Document.AddToIndex(AttributeIndexKey(DomData.ClassAttrId), this);
             }
             return result;
         }
         public bool RemoveClass(string name)
         {
             bool result = false;
+            bool hasClasses = HasClasses;
             foreach (string cls in name.SplitClean())
             {
                 if (HasClass(cls))
@@ -619,15 +637,16 @@ namespace CsQuery.Implementation
                     if (!IsDisconnected)
                     {
                         Document.RemoveFromIndex(IndexKey(".",tokenId));
-                        if (!HasClasses)
-                        {
-                            Document.RemoveFromIndex(Attributes.IndexKey(DomData.ClassAttrId));
-                        }
                     }
 
                     result = true;
                 }
             }
+            if (!HasClasses && hasClasses && !IsDisconnected)
+            {
+                Document.RemoveFromIndex(AttributeIndexKey(DomData.ClassAttrId));
+            }
+
             return result;
         }
 
@@ -647,17 +666,22 @@ namespace CsQuery.Implementation
         {
             return _Style != null ? Style.Remove(name) : false;
         }
-        protected bool HasAttribute(ushort nodeId)
+        protected bool HasAttribute(ushort tokenId)
         {
-            string value;
-            return _Attributes != null 
-                && Attributes.TryGetValue(nodeId,out value);
+            switch (tokenId)
+            {
+                case DomData.ClassAttrId:
+                    return HasClasses;
+                case DomData.tagSTYLE:
+                    return HasStyles;
+                default:
+                    return _DomAttributes != null
+                        && DomAttributes.ContainsKey(tokenId);
+            }
         }
         public override bool HasAttribute(string name)
         {
-            string value;
-            return _Attributes != null 
-                && Attributes.TryGetValue(name.ToLower(), out value);
+            return HasAttribute(DomData.TokenID(name, true));
         }
         public void SetStyles(string styles)
         {
@@ -669,19 +693,42 @@ namespace CsQuery.Implementation
         }
         public override void SetAttribute(string name, string value)
         {
-            Attributes[name] = value;
+            SetAttribute(DomData.TokenID(name,true),value);
         }
 
         protected void SetAttribute(ushort tokenId, string value)
         {
-            if (tokenId == DomData.ClassAttrId)
+            switch (tokenId)
             {
-                ClassName = value;
+                case DomData.ClassAttrId:
+                    ClassName = value;
+                    return;
+                case DomData.IDAttrId:
+                    Id = value;
+                    break;
+                case DomData.tagSTYLE:
+                    Style.SetStyles(value, false);
+                    return;
+                default:
+                    // Uncheck any other radio buttons
+                    if (tokenId == DomData.CheckedAttrId
+                        && _NodeNameID == DomData.tagINPUT
+                        && Type == "radio"
+                        && !String.IsNullOrEmpty(Name)
+                        && value != null
+                        && Document != null)
+                    {
+                        var radios = Document.QuerySelectorAll("input[type='radio'][name='" + Name + "']:checked");
+                        foreach (var item in radios)
+                        {
+                            item.Checked = false;
+                        }
+                    }
+                    break;
             }
-            else
-            {
-                Attributes[tokenId] = value;
-            }
+
+            SetAttributeRaw(tokenId, value);
+
         }
         /// <summary>
         /// Sets an attribute with no value
@@ -689,29 +736,89 @@ namespace CsQuery.Implementation
         /// <param name="name"></param>
         public override void SetAttribute(string name)
         {
-            Attributes.SetBooleanAttribute(name);
+            SetAttribute(DomData.TokenID(name, true));
             
         }
         public void SetAttribute(ushort tokenId)
         {
-            SetAttribute(tokenId, String.Empty);
+            DomAttributes.SetBoolean(tokenId);
+            AttributeAddToIndex(tokenId);
         }
-        public override bool RemoveAttribute(string name)
+
+        /// <summary>
+        /// Used by DomElement to (finally) set the ID value
+        /// </summary>
+        /// <param name="tokenId"></param>
+        /// <param name="value"></param>
+        protected void SetAttributeRaw(ushort tokenId, string value)
         {
-            if (_Attributes == null)
+            if (value == null)
             {
-                return false;
-            }
-            ushort tokenId = DomData.TokenID(name,true);
-            if (tokenId == DomData.ClassAttrId)
-            {
-                _Classes = null;
-                return true;
+                DomAttributes.Unset(tokenId);
+                AttributeRemoveFromIndex(tokenId);
             }
             else
             {
-                return Attributes.Remove(name.ToLower());
+                AttributeAddToIndex(tokenId);
+                DomAttributes[tokenId] = value;
             }
+        }
+        public override bool RemoveAttribute(string name)
+        {
+            return RemoveAttribute(DomData.TokenID(name,true));
+
+        }
+        protected bool RemoveAttribute(ushort tokenId)
+        {
+            switch (tokenId)
+            {
+                case DomData.ClassAttrId:
+                    if (HasClasses)
+                    {
+                        SetClassName(null);
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                case DomData.IDAttrId:
+                    if (DomAttributes.ContainsKey(DomData.IDAttrId))
+                    {
+                        Id = null;
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                case DomData.tagSTYLE:
+                    if (HasStyles)
+                    {
+                        foreach (var style in Style.Keys)
+                        {
+                            Style.Remove(style);
+                        }
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+            }
+
+            if (_DomAttributes == null)
+            {
+                return false;
+            }
+
+            bool success = DomAttributes.Remove(tokenId);
+            if (success)
+            {
+                AttributeRemoveFromIndex(tokenId);
+            }
+            return success;
+            
         }
         /// <summary>
         /// Gets an attribute value, or returns null if the value is missing. If a valueless attribute is found, this will also return null. HasAttribute should be used
@@ -722,6 +829,10 @@ namespace CsQuery.Implementation
         public override string GetAttribute(string name)
         {
             return GetAttribute(name, null);
+        }
+        protected string GetAttribute(ushort tokenId)
+        {
+            return GetAttribute(tokenId, null);
         }
         /// <summary>
         /// Returns the value of an attribute or a default value if it could not be found.
@@ -734,14 +845,9 @@ namespace CsQuery.Implementation
         }
         protected string GetAttribute(ushort tokenId, string defaultValue)
         {
-            string value = null;
-            if (tokenId == DomData.ClassAttrId)
-            {
-                return ClassName;
-            }
 
-            if (_Attributes != null
-                && Attributes.TryGetValue(tokenId, out value))
+            string value = null;
+            if (TryGetAttribute(tokenId, out value))
             {
                 //IMPORTANT: Even though we need to distinguish between null and empty string values internally to
                 // render the same way it was brought over (e.g. either "checked" or "checked=''") --- accessing the
@@ -755,22 +861,20 @@ namespace CsQuery.Implementation
         }
         public bool TryGetAttribute(ushort tokenId, out string value)
         {
-            //value = GetNonDictionaryAttribute(name);
-            //bool result = (GetNonDictionaryAttribute(name) != null) 
-            //     || Attributes.TryGetValue(name.ToLower(), out  value);
-            if (tokenId == DomData.ClassAttrId)
+            switch (tokenId)
             {
-                value= ClassName;
-                return true;
-            }
-            if (_Attributes != null)
-            {
-                return Attributes.TryGetValue(tokenId, out value);
-            }
-            else
-            {
-                value = null;
-                return false;
+                case DomData.ClassAttrId:
+                    value = ClassName;
+                    return true;
+                case DomData.tagSTYLE:
+                    value = Style.ToString();
+                    return true;
+                default:
+                    if (_DomAttributes != null) {
+                        return DomAttributes.TryGetValue(tokenId, out value);
+                    }
+                    value = null;
+                    return false;
             }
         }
         public override bool TryGetAttribute(string name, out string value)
@@ -786,26 +890,53 @@ namespace CsQuery.Implementation
         #endregion
 
         #region private methods
-        protected void setClassName(string className)
+
+        public string AttributeIndexKey(string attrName)
         {
+            return AttributeIndexKey(DomData.TokenID(attrName, true));
+        }
+        public string AttributeIndexKey(ushort attrId)
+        {
+#if DEBUG_PATH
+            return "!" + DomData.TokenName(attrId) + DomData.indexSeparator + Owner.Path;
+#else
+            return "!" + (char)attrId + DomData.indexSeparator + Path;
+#endif
+        }
+        protected void AttributeRemoveFromIndex(ushort attrId)
+        {
+            if (!IsDisconnected)
             {
-                if (string.IsNullOrEmpty(className))
+                Document.RemoveFromIndex(AttributeIndexKey(attrId));
+            }
+        }
+        protected void AttributeAddToIndex(ushort attrId)
+        {
+            if (!IsDisconnected && !DomAttributes.ContainsKey(attrId))
+            {
+                
+                Document.AddToIndex(AttributeIndexKey(attrId), this);
+            }
+        }
+
+        protected void SetClassName(string className)
+        {
+            
+            if (HasClasses) {
+                foreach (var cls in Classes.ToList())
                 {
-                    _Classes = null;
-                }
-                else
-                {
-                    _Classes = new List<ushort>();
-                    foreach (var cls in className.SplitClean(' '))
-                    {
-                        AddClass(cls);
-                    }
+                    RemoveClass(cls);
                 }
             }
+            if (!string.IsNullOrEmpty(className)) 
+            {
+                AddClass(className);
+            }
+            
         }
         protected bool hasDefaultValue()
         {
-            return NodeName == "INPUT" || NodeName == "TEXTAREA";
+            return NodeNameID == DomData.tagINPUT || NodeNameID == DomData.tagTEXTAREA;
         }
         internal string IndexKey(string prefix, ushort keyTokenId)
         {
@@ -860,9 +991,9 @@ namespace CsQuery.Implementation
                 sb.Append("\"");
             }
 
-            if (_Attributes != null)
+            if (_DomAttributes != null)
             {
-                foreach (var kvp in _Attributes)
+                foreach (var kvp in _DomAttributes)
                 {
                     if (kvp.Key != "id")
                     {

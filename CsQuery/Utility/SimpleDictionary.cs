@@ -7,7 +7,7 @@ using System.Collections.Specialized;
 namespace CsQuery.Utility
 {
     /// <summary>
-    /// Just convers a NameValueCollection to a disctionary with few methods
+    /// Just convers a NameValueCollection to a dictionary with few methods
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class SimpleDictionary<T> where T : class

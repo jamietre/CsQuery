@@ -190,26 +190,17 @@ namespace CsQuery.HtmlParser
                                 }
 
                                 int tagStartPos = current.Pos;
-                                string newTag;
+                                string newTag=GetTagOpener(current);
                                 
-                                newTag = GetTagOpener(current).ToUpper();
-                                
-                                // when Element exists, it's because a previous iteration created it: it's our parent
-                                string parentTag = String.Empty;
-                                if (current.Parent != null)
-                                {
-                                    parentTag = current.Parent.Element.NodeName;
-                                }
-
                                 if (newTag == String.Empty)
                                 {
                                     // It's a tag closer. Make sure it's the right one.
                                     current.Pos = tagStartPos + 1;
-                                    string closeTag = GetCloseTag(current).ToUpper();
+                                    ushort closeTagId = DomData.TokenID(GetCloseTag(current),true);
 
                                     // Ignore empty tags, or closing tags found when no parent is open
-                                    bool isProperClose = closeTag == parentTag;
-                                    if (closeTag == String.Empty)
+                                    bool isProperClose = closeTagId == ParentTagID(current);
+                                    if (closeTagId == 0)
                                     {
                                         // ignore empty tags
                                         continue;
@@ -222,7 +213,7 @@ namespace CsQuery.HtmlParser
                                         if (!isProperClose)
                                         {
                                             actualParent = current.Parent;
-                                            while (actualParent != null && actualParent.Element.NodeName != closeTag)
+                                            while (actualParent != null && actualParent.Element.NodeNameID != closeTagId)
                                             {
                                                 actualParent = actualParent.Parent;
                                             }
@@ -252,36 +243,17 @@ namespace CsQuery.HtmlParser
                                     }
                                     // already been returned before we added the children
                                     continue;
-                                }
-                                // Before we keep going see if this is an implicit close
-                                if (parentTag != String.Empty)
+                                } 
+                                else if (newTag[0] == '!')
                                 {
-                                    if (TagHasImplicitClose(parentTag,newTag)
-                                        && parentTag == newTag)
-                                    {
-                                        // same tag for a repeater like li occcurred - treat like a close tag
-                                        if (current.Parent.Parent == null)
-                                        {
-                                            yield return current.Parent.Element;
-                                        }
-                                        current.Parent.Reset(tagStartPos);
-                                        current.Finished = true;
-
-                                        continue;
-                                    }
-                                }
-                                // seems to be a new tag. Parse it
-                                
-                                IDomSpecialElement specialElement = null;
-                                
-                                if (newTag[0] == '!')
-                                {
-                                    if (newTag.StartsWith("!DOCTYPE"))
+                                    IDomSpecialElement specialElement = null;
+                                    string newTagUpper = newTag.ToUpper();
+                                    if (newTagUpper.StartsWith("!DOCTYPE"))
                                     {
                                         specialElement = new DomDocumentType();
                                         current.Object = specialElement;
                                     }
-                                    else if (newTag.StartsWith("![CDATA["))
+                                    else if (newTagUpper.StartsWith("![CDATA["))
                                     {
                                         specialElement = new DomCData();
                                         current.Object = specialElement;
@@ -299,26 +271,11 @@ namespace CsQuery.HtmlParser
                                             current.Pos = tagStartPos+1;
                                         }
                                     }
-                                }
-                                else
-                                {
-                                    current.Object = new DomElement(newTag);
 
-                                    if (!current.Element.InnerHtmlAllowed && current.Element.InnerTextAllowed)
-                                    {
-                                        current.ReadTextOnly = true;
-                                        current.Step = 0;
-                                    }
-                                }
-                                
-                                // Handle non-element/text types -- they have data inside the tag construct
-                                
-                                if (current.Object is IDomSpecialElement)
-                                {
                                     string endTag = (current.Object is IDomComment && ((IDomComment)current.Object).IsQuoted) ? "-->" : ">";
 
                                     int tagEndPos = BaseHtml.Seek(endTag, current.Pos);
-                                    if (tagEndPos <0)
+                                    if (tagEndPos < 0)
                                     {
                                         // if a tag is unclosed entirely, then just find a new line.
                                         tagEndPos = BaseHtml.Seek(System.Environment.NewLine, current.Pos);
@@ -331,9 +288,41 @@ namespace CsQuery.HtmlParser
 
                                     specialElement.NonAttributeData = BaseHtml.SubstringBetween(current.Pos, tagEndPos);
                                     current.Pos = tagEndPos;
+
                                 }
                                 else
                                 {
+
+                                    // seems to be a new element tag, parse it.
+
+                                    ushort newTagId = DomData.TokenID(newTag,true);
+                                    current.Object = new DomElement(newTagId);
+
+                                    if (!current.Element.InnerHtmlAllowed && current.Element.InnerTextAllowed)
+                                    {
+                                        current.ReadTextOnly = true;
+                                        current.Step = 0;
+                                    }
+
+                                    // Before we keep going see if this is an implicit close
+                                    ushort parentTagId = ParentTagID(current);
+                                    if (parentTagId != 0)
+                                    {
+                                        if (TagHasImplicitClose(parentTagId, newTagId)
+                                            && parentTagId == newTagId)
+                                        {
+                                            // same tag for a repeater like li occcurred - treat like a close tag
+                                            if (current.Parent.Parent == null)
+                                            {
+                                                yield return current.Parent.Element;
+                                            }
+                                            current.Parent.Reset(tagStartPos);
+                                            current.Finished = true;
+
+                                            continue;
+                                        }
+                                    }
+
                                     // Parse attribute data
                                     while (current.Pos <= EndPos)
                                     {
@@ -364,9 +353,12 @@ namespace CsQuery.HtmlParser
 
                                 stack.Push(current);
 
-                                IterationData subItem = new IterationData();
-                                subItem.Parent = current;
-                                subItem.AllowLiterals = true;
+                                IterationData subItem = new IterationData
+                                {
+                                    Parent = current,
+                                    AllowLiterals = true
+                                };
+
                                 subItem.Reset(current.Pos);
                                 subItem.ReadTextOnly = current.ReadTextOnly;
                                 current = subItem;
@@ -374,6 +366,8 @@ namespace CsQuery.HtmlParser
 
                         }
                     }
+
+
                     // Catchall for unclosed tags -- if there's an "unfinished" carrier here, it's because  top-level tag was unclosed.
                     // THis will wrap up any straggling text and close any open tags after it.
                     if (!current.Finished)
@@ -402,6 +396,13 @@ namespace CsQuery.HtmlParser
                 pos = current.Pos;
             }
 
+        }
+
+        protected ushort ParentTagID(IterationData current)
+        {
+            return current.Parent != null ?
+                current.Parent.Element.NodeNameID:
+                (ushort)0;
         }
         /// <summary>
         /// Returns a literal object for the text between HtmlStart (the last position of the end of a tag) and the current position.
@@ -438,8 +439,8 @@ namespace CsQuery.HtmlParser
              
             if (!current.AllowLiterals)
             {
-                IDomElement wrapper = new DomElement("span");
-                wrapper.AppendChild(lit);
+                DomElement wrapper = new DomElement("span");
+                wrapper.ChildNodes.AddAlways(lit);
                 textObj = wrapper;
             }
             else
@@ -449,7 +450,7 @@ namespace CsQuery.HtmlParser
 
             if (current.Parent != null)
             {
-                current.Parent.Element.AppendChild(textObj);
+                current.Parent.Element.ChildNodes.AddAlways(textObj);
                 current.Reset();
                 return null;
             }
@@ -564,7 +565,7 @@ namespace CsQuery.HtmlParser
                             nameStart = current.Pos;
                             current.Pos++;
                         }
-                        else if (isTagChar(c))
+                        else if (CharacterData.IsType(c, CharacterType.HtmlTagAny))
                         {
                             finished = true;
                         }
@@ -742,12 +743,15 @@ namespace CsQuery.HtmlParser
 
         protected bool isHtmlTagEnd(char c)
         {
-            return c == '/' || c == ' ' || c == '>';
+            //return c == '/' || c == ' ' || c == '>';
+            // ~ 2% speed improvement
+            return CharacterData.IsType(c, CharacterType.HtmlTagEnd);
         }
         protected bool isTagChar(char c)
         {
-           // return CharacterData.IsType(c, CharacterType.HtmlTagAny);
-            return c == '<' || c == '>' || c == '/';
+           return CharacterData.IsType(c, CharacterType.HtmlTagAny);
+            // ~ 2% speed improvement
+            // return c == '<' || c == '>' || c == '/';
         }
 
         /* Some tags have inner HTML but are often not closed properly. There are two possible situations. A tag may not 
@@ -762,50 +766,49 @@ namespace CsQuery.HtmlParser
           
         */
 
-        protected bool TagHasImplicitClose(string tag, string newTag)
+        protected bool TagHasImplicitClose(ushort tagId, ushort newTagId)
         {
-            switch (tag)
+            switch (tagId)
             {
-                case "LI":
-                case "OPTION":
-                case "P":
-                case "TR":
-                case "TD":
-                case "TH":
+                case DomData.tagLI:
+                case DomData.tagOPTION:
+                case DomData.tagP:
+                case DomData.tagTR:
+                case DomData.tagTD:
+                case DomData.tagTH:
 
                     // simple case: repeater-like tags should be closed by another occurence of itself
-                    return tag == newTag;
-                case "HEAD":
-                    return (newTag == "BODY");
-                case "DT":
-                    return tag == newTag || newTag == "DD";
-                case "COLGROUP":
-                    return tag == newTag || newTag == "TR";
+                    return tagId == newTagId;
+                case DomData.tagHEAD:
+                    return (newTagId == DomData.tagBODY);
+                case DomData.tagDT:
+                    return tagId == newTagId || newTagId ==DomData.tagDD;
+                case DomData.tagCOLGROUP:
+                    return tagId == newTagId || newTagId == DomData.tagTR;
                 default:
                     return false;
 
             }
         }
-        int pos;
-        int end;
+        
         protected int CharIndexOf(char[] charArray, char seek, int start)
         {
             //return Array.IndexOf<char>(charArray, seek, start);
 
 
-            pos = start - 1;
-            end = charArray.Length;
-            while (++pos < end && charArray[pos] != seek)
-                ;
-            return pos == end ? -1 : pos;
+            //int pos = start - 1;
+            //int end = charArray.Length;
+            //while (++pos < end && charArray[pos] != seek)
+            //    ;
+            //return pos == end ? -1 : pos;
 
             // This is substantially faster than Array.IndexOf, cut down load time by about 10% on text heavy dom test
 
-            //int pos = start;
-            //int end = charArray.Length;
-            //while (pos < end && charArray[pos++] != seek)
-            //    ;
-            // return pos == end && charArray[end-1] != seek ? -1 : pos-1;
+            int pos = start;
+            int end = charArray.Length;
+            while (pos < end && charArray[pos++] != seek)
+                ;
+            return pos == end && charArray[end - 1] != seek ? -1 : pos - 1;
         
         }
     }

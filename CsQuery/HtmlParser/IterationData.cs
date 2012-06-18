@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CsQuery.Implementation;
 
 namespace CsQuery.HtmlParser
 {
@@ -9,17 +10,17 @@ namespace CsQuery.HtmlParser
     {
         public IterationData Parent;
         public IDomObject Object;
-        public IDomElement Element
+        public DomElement Element
         {
             get
             {
-                return (IDomElement)Object;
+                return (DomElement)Object;
             }
         }
         // when true, the contents will be treated as text until the next close tag
         public bool ReadTextOnly;
         public int Pos;
-        public int Step;
+        public byte Step;
         public bool Finished;
         public bool AllowLiterals;
         public bool Invalid;

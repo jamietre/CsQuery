@@ -24,7 +24,8 @@ namespace CsQuery
         /// </summary>
         string TagName { get; }
 
-        DomAttributes Attributes { get; }
+        IEnumerable<KeyValuePair<string, string>> Attributes { get; }
+        //DomAttributes Attributes { get; }
         CSSStyleDeclaration Style { get; }
         string ClassName { get; set; }
 

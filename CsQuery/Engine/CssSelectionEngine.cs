@@ -164,13 +164,16 @@ namespace CsQuery.Engine
 
                 if (key != String.Empty)
                 {
+                    // This is the main index access point: if we have an index key, we'll get as much as we can from the index.
+                    // Anything else will be handled manually.
+
                     int depth = 0;
                     bool descendants = true;
-                    bool bailOnIndex = false;
+                    
                     switch (selector.TraversalType)
                     {
                         case TraversalType.Child:
-                            depth = selector.ChildDepth; ;
+                            depth = selector.ChildDepth;
                             descendants = false;
                             break;
                         case TraversalType.Filter:
@@ -178,46 +181,40 @@ namespace CsQuery.Engine
                         case TraversalType.Sibling:
                             depth = 0;
                             descendants = false;
-                            bailOnIndex = true;
                             break;
                         case TraversalType.Descendent:
                             depth = 1;
                             descendants = true;
                             break;
-                    }
+                    }                    
 
-                    // This is the main index access point 
-                    // bailOnIndex will skip the index for filter-only selectors which are almost certainly faster
-
-                    if (!bailOnIndex)
+                    if (selectionSource == null)
                     {
-                        if (selectionSource == null)
-                        {
-                            result = Document.QueryIndex(key + DomData.indexSeparator, depth, descendants);
-                        }
-                        else
-                        {
-                            HashSet<IDomObject> elementMatches = new HashSet<IDomObject>();
-                            result = elementMatches;
-                            foreach (IDomObject obj in selectionSource)
-                            {
-                                elementMatches.AddRange(Document.QueryIndex(key + DomData.indexSeparator + obj.Path,
-                                        depth, descendants));
-                            }
-
-                        }
-                        selector.SelectorType &= ~removeSelectorType;
-
-                        // Special case for attribute selectors: when an Exists/Value attribute selector is present, we still need to filter
-                        // for the correct value afterwards. But we need to change the traversal type ONLY if the primary match has already
-                        // been done by the index; otherwise the couple cases where you need to match the value but can't select for "Exists" first
-                        // won't work.
-
-                        if (removeSelectorType == SelectorType.AttributeExists && selector.SelectorType.HasFlag(SelectorType.AttributeValue))
-                        {
-                            selector.TraversalType = TraversalType.Filter;
-                        }
+                        result = Document.QueryIndex(key + DomData.indexSeparator, depth, descendants);
                     }
+                    else
+                    {
+                        HashSet<IDomObject> elementMatches = new HashSet<IDomObject>();
+                        result = elementMatches;
+                        foreach (IDomObject obj in selectionSource)
+                        {
+                            elementMatches.AddRange(Document.QueryIndex(key + DomData.indexSeparator + obj.Path,
+                                    depth, descendants));
+                        }
+
+                    }
+                    selector.SelectorType &= ~removeSelectorType;
+
+                    // Special case for attribute selectors: when an Exists/Value attribute selector is present, we still need to filter
+                    // for the correct value afterwards. But we need to change the traversal type ONLY if the primary match has already
+                    // been done by the index; otherwise the couple cases where you need to match the value but can't select for "Exists" first
+                    // won't work.
+
+                    if (removeSelectorType == SelectorType.AttributeExists && selector.SelectorType.HasFlag(SelectorType.AttributeValue))
+                    {
+                        selector.TraversalType = TraversalType.Filter;
+                    }
+                    
                 }
                 else if (selector.SelectorType.HasFlag(SelectorType.Elements))
                 {

@@ -320,11 +320,11 @@ namespace CsqueryTests.jQuery
             var table = jQuery("#table").Append("<tr><td>cell</td></tr><tr><td>cell</td><td>cell</td></tr><tr><td>cell</td><td>cell</td></tr>");
             var td = table.Find("td:first");
             td.Attr("rowspan", "2");
-            Assert.AreEqual(td[0].Attributes["rowSpan"], "2", "Check rowspan is correctly set");
+            Assert.AreEqual(td[0].GetAttribute("rowSpan"), "2", "Check rowspan is correctly set");
             td.Attr("colspan", "2");
-            Assert.AreEqual(td[0].Attributes["colSpan"], "2", "Check colspan is correctly set");
+            Assert.AreEqual(td[0].GetAttribute("colSpan"), "2", "Check colspan is correctly set");
             table.Attr("cellspacing", "2");
-            Assert.AreEqual(table[0].Attributes["cellSpacing"], "2", "Check cellspacing is correctly set");
+            Assert.AreEqual(table[0].GetAttribute("cellSpacing"), "2", "Check cellspacing is correctly set");
 
             Assert.AreEqual(jQuery("#area1").Attr("value"), "foobar", "Value attribute retrieves the property for backwards compatibility.");
 

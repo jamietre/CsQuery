@@ -26,9 +26,17 @@ namespace CsqueryTests.Performance
         public TimeSpan Time { get; set; }
         public string ErrorMessage { get; set; }
 
+        public double TimeSeconds
+        {
+            get
+            {
+                return Math.Round(Time.TotalSeconds, 1);
+            }
+        }
+
         public double IterationsPerSecond {
             get {
-                return (double)Iterations / ((double)Time.TotalMilliseconds / 1000d);
+                return Math.Round((double)Iterations / ((double)Time.TotalMilliseconds / 1000d),1);
             }
         }
 

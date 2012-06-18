@@ -18,6 +18,7 @@ namespace CsQuery.Utility
     public class SmallDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
         protected List<KeyValuePair<TKey, TValue>> InnerList = new List<KeyValuePair<TKey, TValue>>();
+         
 
         public bool ContainsKey(TKey key)
         {

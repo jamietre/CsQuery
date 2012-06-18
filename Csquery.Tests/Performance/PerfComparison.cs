@@ -25,10 +25,61 @@ namespace CsqueryTests.Performance
         {
             Data = new List<PerfData>();
         }
-        public string TestName { get; set; }
-        public string Description { get; set; }
 
+        private bool statisticsCalculated = false;
+        private PerfData _Best;
+        private PerfData _Worst;
+        private PerfData _NextBest;
+
+        /// <summary>
+        /// Specific name for this test
+        /// </summary>
+        public string TestName { get; set; }
+        /// <summary>
+        /// Any detailed description
+        /// </summary>
+        public string Description { get; set; }
+        /// <summary>
+        /// The source document or context for this comparison
+        /// </summary>
+        public string Context { get; set; }
+        public bool SameResults { get; set; }
         public List<PerfData> Data { get; protected set; }
+
+
+        public PerfData Best
+        {
+            get
+            {
+                EnsureStatisticsCalculated();
+                return _Best;
+            }
+        }
+        public PerfData NextBest
+        {
+            get
+            {
+                EnsureStatisticsCalculated();
+                return _NextBest;
+            }
+        }
+        public PerfData Worst
+        {
+            get
+            {
+                EnsureStatisticsCalculated();
+                return _Worst;
+            }
+        }
+        /// <summary>
+        /// The number x which the winner beat the next best
+        /// </summary>
+        /// <returns></returns>
+        public double HowMuchFaster()
+        {
+            EnsureStatisticsCalculated();
+            return Math.Round(_Best.IterationsPerSecond / _NextBest.IterationsPerSecond, 2);
+        }
         public override string ToString()
         {
             string divider="-----------------------" ;
@@ -40,10 +91,6 @@ namespace CsqueryTests.Performance
                 results += ">>> " + Description + newline;
             }
             results += divider + newline;
-
-            PerfData best=null;
-            PerfData worst=null;
-            PerfData nextBest = null;
 
             foreach (var item in Data)
             {
@@ -61,33 +108,47 @@ namespace CsqueryTests.Performance
                     + newline;
                 }
 
-                if (best == null || item.IterationsPerSecond > best.IterationsPerSecond)
-                {
-                    nextBest = best;
-                    best = item;
-                }
-                else if (nextBest == null || item.IterationsPerSecond > nextBest.IterationsPerSecond)
-                {
-                    nextBest = item;
-                }
-
-                if (worst == null || item.IterationsPerSecond < worst.IterationsPerSecond)
-                {
-                    worst = item;
-                }
-
+                
             }
             results += divider + newline;
 
-            string howMuchFaster = nextBest.Iterations > 0 ?
-                Math.Round(best.IterationsPerSecond / nextBest.IterationsPerSecond, 2).ToString() :
+            string howMuchFaster = NextBest.Iterations > 0 ?
+                HowMuchFaster().ToString() :
                 "--";
             results += String.Format(">>> WINNER: \"{0}\" -- {1} times faster than next best performer ({2})",
-                best.Source, 
+                Best.Source, 
                 howMuchFaster,
-                nextBest.Source);
+                NextBest.Source);
 
             return results;
+        }
+
+        private void EnsureStatisticsCalculated()
+        {
+            if (!statisticsCalculated)
+            {
+                _Best = null;
+                _Worst = null;
+                _NextBest = null;
+
+                foreach (var item in Data)
+                {
+                    if (_Best == null || item.IterationsPerSecond > _Best.IterationsPerSecond)
+                    {
+                        _NextBest = _Best;
+                        _Best = item;
+                    }
+                    else if (_NextBest == null || item.IterationsPerSecond > _NextBest.IterationsPerSecond)
+                    {
+                        _NextBest = item;
+                    }
+
+                    if (_Worst == null || item.IterationsPerSecond < _Worst.IterationsPerSecond)
+                    {
+                        _Worst = item;
+                    }
+                }
+            }
         }
 
     }
