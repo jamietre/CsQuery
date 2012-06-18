@@ -147,7 +147,7 @@ namespace CsQuery.Utility
 
             HashSet<string> noInnerHtmlAllowed = new HashSet<string>(new string[]{
                 "BASE","BASEFONT","FRAME","LINK","META","AREA","COL","HR","PARAM","SCRIPT","TEXTAREA","STYLE",
-                    "IMG","INPUT","BR", "!DOCTYPE","!--"
+                    "IMG","INPUT","BR", "!DOCTYPE","!--", "COMMAND", "EMBED","KEYGEN","SOURCE","TRACK","WBR"
             });
     
             HashSet<string> blockElements = new HashSet<string>(new string[]{"BODY","BR","ADDRESS","BLOCKQUOTE","CENTER","DIV","DIR","FORM","FRAMESET","H1","H2","H3","H4","H5","H6","HR",
