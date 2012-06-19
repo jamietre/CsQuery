@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Text;
 using System.Reflection;
+using System.Diagnostics;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
@@ -18,6 +20,32 @@ namespace CsqueryTests.Csharp
     [TestFixture, TestClass,Description("Misc. tests; from support and bug reports")]
     public class Miscellaneous: CsQueryTest
     {
+        /// <summary>
+        /// REsolve a bug in nth-last type operations
+        /// </summary>
+        [Test, TestMethod]
+        public void BigDomProblems()
+        {
+            var dom = TestDom("HTML Standard");
+
+            var test = dom["div:nth-last-child(3)"];
+            foreach (var item in test) 
+            {
+                Debug.WriteLine("Starting: " + item.ToString());
+
+                var next = item.NextElementSibling;
+                int after = 0;
+                while (next!= null)
+                {
+                    Debug.WriteLine("  "+after+":"+next.ToString());
+                    next = next.NextElementSibling;
+                    after++;
+                }
+                Assert.AreEqual(2, after,"Every result should be followed by 2 elements.");
+                //Debug.WriteLine("");
+
+            }
+        }
         
 
         [Test, TestMethod]

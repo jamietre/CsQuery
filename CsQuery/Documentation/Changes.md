@@ -5,6 +5,7 @@
 
 Revise DOM creation code to treat text like Chrome does. The Document should only have 2 children (DocType & HTML node). Any
 text found outside should be tossed or added to Body. This wouldn't come up much, but causes selectors to be wrong in some cases.
+FIXED bug in nth-last type selectors
 
 6/15/2012:
 

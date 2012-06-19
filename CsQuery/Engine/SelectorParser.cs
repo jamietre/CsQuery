@@ -224,17 +224,16 @@ namespace CsQuery.Engine
                                 // when it's not a filter, we are getting the only one of every type; skip criteria
 
                                 Current.Criteria = scanner.GetBoundedBy('(');
-                                if (Current.TraversalType == TraversalType.Filter)
-                                {
+                                //if (Current.TraversalType == TraversalType.Filter)
+                                //{
                                     Current.Criteria += "|"+ type;
-                                }
+                                //}
                                 break;
                             case "nth-last-child":
-                                type = Current.Tag;
                                 StartNewSelector(SelectorType.PseudoClass);
                                 Current.PseudoClassType = PseudoClassType.NthLastChild;
                                 
-                                Current.Criteria = scanner.GetBoundedBy('(') + "|"+ type;
+                                Current.Criteria = scanner.GetBoundedBy('(');
 
                                 break;
                             case "nth-last-of-type":
@@ -242,10 +241,10 @@ namespace CsQuery.Engine
                                 StartNewSelector(SelectorType.PseudoClass);
                                 Current.PseudoClassType = PseudoClassType.NthLastOfType;
                                 Current.Criteria = scanner.GetBoundedBy('(');
-                                if (Current.TraversalType == TraversalType.Filter)
-                                {
+                                //if (Current.TraversalType == TraversalType.Filter)
+                                //{
                                     Current.Criteria += "|"+ type;
-                                }
+                                //}
                                 break;
                             case "lang":
                                 // The problem with :lang is that it is based on an inherited property value. This messes  with the index since

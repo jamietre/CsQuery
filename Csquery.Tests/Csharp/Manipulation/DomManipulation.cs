@@ -41,7 +41,7 @@ namespace CsqueryTests.CSharp
             {
                 tags += (tags == "" ? "" : ",") + e.NodeName;
             });
-            Assert.AreEqual(12, Dom.Length, "Found correct number of elements in the DOM");
+            Assert.AreEqual(17, Dom.Length, "Found correct number of elements in the DOM");
         }
         [Test,TestMethod]
         public void InputCheckbox()

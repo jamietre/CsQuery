@@ -99,6 +99,8 @@ namespace CsQuery
         // Wrap this node in a CQ object
         CQ Cq();
         new IDomObject Clone();
+
+        ushort NodeNameID { get; }
     }
 
     public interface IDomObject<out T> : IDomObject

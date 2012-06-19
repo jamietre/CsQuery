@@ -110,5 +110,20 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual("HTML",dom.Document.ChildNodes.Last().NodeName);
         }
 
+        [Test, TestMethod]
+        public void ComplicatedComments()
+        {
+            string html = @"<!--
+    Where would document.write() insert?
+    Consider: data:text/xml,<script xmlns=""http://www.w3.org/1999/xhtml""><![CDATA[ document.write('<foo>Test</foo>'); ]]></script>
+    -->";
+            html = "<p><div>" + html + "</div></p>";
+            var dom = CQ.Create(html);
+
+            Assert.AreEqual(1, dom["div"].Contents().Where(item => item.NodeType == NodeType.COMMENT_NODE).Count());
+            Assert.AreEqual(2, dom["*"].Length);
+
+        }
+
     }
 }

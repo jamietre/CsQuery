@@ -202,7 +202,17 @@ namespace CsQuery.Engine
                 return nodeList[index];
             }
         }
-
+        public static int GetEffectiveIndex(INodeList nodeList, int index, bool fromLast)
+        {
+            if (fromLast)
+            {
+                return nodeList.Length - index - 1;
+            }
+            else
+            {
+                return index;
+            }
+        }
         #endregion
 
         #region private methods
@@ -225,7 +235,6 @@ namespace CsQuery.Engine
         {
 
             int index = currentIndex;
-            
 
             var children = parent.ChildNodes;
             int count = children.Count;

@@ -308,8 +308,7 @@ namespace CsQuery.HtmlParser
                                     ushort parentTagId = ParentTagID(current);
                                     if (parentTagId != 0)
                                     {
-                                        if (TagHasImplicitClose(parentTagId, newTagId)
-                                            && parentTagId == newTagId)
+                                        if (TagHasImplicitClose(parentTagId, newTagId))
                                         {
                                             // same tag for a repeater like li occcurred - treat like a close tag
                                             if (current.Parent.Parent == null)
@@ -770,9 +769,11 @@ namespace CsQuery.HtmlParser
         {
             switch (tagId)
             {
+                case DomData.tagP:
+                    // closing "p" tag is optional. Always close when a block element it returned.
+                    return DomData.IsBlock(newTagId);
                 case DomData.tagLI:
                 case DomData.tagOPTION:
-                case DomData.tagP:
                 case DomData.tagTR:
                 case DomData.tagTD:
                 case DomData.tagTH:

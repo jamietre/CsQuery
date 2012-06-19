@@ -26,6 +26,6 @@ namespace CsQuery
         string ElementHtml();
         int ElementIndex { get; }
 
-        ushort NodeNameID { get; }
+
     }
 }
