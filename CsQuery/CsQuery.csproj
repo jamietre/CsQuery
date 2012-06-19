@@ -225,6 +225,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Documentation\Changes.md" />
+    <None Include="Documentation\Todo.md" />
     <None Include="Documentation\DifferencesFromJQuery.md" />
   </ItemGroup>
   <ItemGroup />
