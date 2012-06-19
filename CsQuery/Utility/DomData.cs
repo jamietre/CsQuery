@@ -150,11 +150,17 @@ namespace CsQuery.Utility
                     "IMG","INPUT","BR", "!DOCTYPE","!--", "COMMAND", "EMBED","KEYGEN","SOURCE","TRACK","WBR"
             });
     
+            // these elements will cause certain tags to be closed automatically; this is very important for layout.
+
+            // 6-19-2012: removed "object" - object is inline.
+
             HashSet<string> blockElements = new HashSet<string>(new string[]{"BODY","BR","ADDRESS","BLOCKQUOTE","CENTER","DIV","DIR","FORM","FRAMESET","H1","H2","H3","H4","H5","H6","HR",
-                "ISINDEX","LI","NOFRAMES","NOSCRIPT","OBJECT","OL","P","PRE","TABLE","TR","TEXTAREA","UL",
+                "ISINDEX","LI","NOFRAMES","NOSCRIPT","OL","P","PRE","TABLE","TR","TEXTAREA","UL",
                 // html5 additions
                 "ARTICLE","ASIDE","BUTTON","CANVAS","CAPTION","COL","COLGROUP","DD","DL","DT","EMBED","FIELDSET","FIGCAPTION",
-                "FIGURE","FOOTER","HEADER","HGROUP","OBJECT","PROGRESS","SECTION","TBODY","THEAD","TFOOT","VIDEO"
+                "FIGURE","FOOTER","HEADER","HGROUP","PROGRESS","SECTION","TBODY","THEAD","TFOOT","VIDEO",
+                // random
+                "APPLET","LAYER","LEGEND"
             });
 
             HashSet<string> booleanAttributes = new HashSet<string>(new string[] {
