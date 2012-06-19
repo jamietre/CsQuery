@@ -18,7 +18,7 @@ namespace CsqueryTests.Csharp
 {
 
     [TestFixture, TestClass]
-    public class HTML5Compliance : CsQueryTest
+    public class Html5Compliance : CsQueryTest
     {
 
         [Test, TestMethod]

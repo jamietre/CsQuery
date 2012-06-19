@@ -62,6 +62,14 @@ namespace CsQuery.Utility
         public const ushort tagCOLGROUP = 19;
         public const ushort tagDD = 20;
         public const ushort tagLI = 21;
+        public const ushort tagDL = 22;
+        public const ushort tagTABLE = 23;
+        public const ushort tagOPTGROUP = 24;
+        public const ushort tagUL = 25;
+        public const ushort tagOL = 26;
+        public const ushort tagTBODY = 27;
+        public const ushort tagTFOOT = 28;
+        public const ushort tagTHEAD = 29;
 
         public static ushort SelectedAttrId;
         public static ushort ReadonlyAttrId;
@@ -204,9 +212,16 @@ namespace CsQuery.Utility
             TokenID("colgroup", true); //19
             TokenID("dd", true); //20
             TokenID("li", true); //21
-
-
-            if (nextID !=  22)
+            TokenID("dl", true); //22
+            TokenID("table", true); //23
+            TokenID("optgroup", true); //24
+            TokenID("ul", true); //25
+            TokenID("ol", true); //26
+            TokenID("tbody", true); //27
+            TokenID("tfoot", true); //28
+            TokenID("thead", true); //29
+            
+            if (nextID !=  30)
             {
                 throw new InvalidOperationException("Something went wrong with the constant map in DomData");
             }

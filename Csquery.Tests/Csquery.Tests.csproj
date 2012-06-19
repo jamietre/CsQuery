@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arrays.cs" />
+    <Compile Include="Csharp\Dom\HtmlBigDomTest.cs" />
     <Compile Include="Csharp\Dom\Html5Compliance.cs" />
     <Compile Include="Csharp\Dom\DocType.cs" />
     <Compile Include="Csharp\ExtensionMethods\Forms.cs" />
@@ -84,7 +85,7 @@
     <Compile Include="Csharp\Utility\Expressions.cs" />
     <Compile Include="Csharp\Dom\Rendering.cs" />
     <Compile Include="Csharp\Classes\DictionaryObjects.cs" />
-    <Compile Include="Csharp\Dom\DomElementFactory.cs" />
+    <Compile Include="Csharp\Dom\HtmlParser.cs" />
     <Compile Include="Csharp\Utility\Objects.cs" />
     <Compile Include="Csharp\Manipulation\MovingElements.cs" />
     <Compile Include="Csharp\Utility\Equations.cs" />

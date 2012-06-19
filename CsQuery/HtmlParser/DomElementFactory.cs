@@ -761,10 +761,10 @@ namespace CsQuery.HtmlParser
            Complete list of optional closing tags: -</HTML>- </HEAD> -</BODY> -</P> -</DT> -</DD> -</LI> -</OPTION> -</THEAD> 
            </TH> </TBODY> </TR> </TD> </TFOOT> </COLGROUP>
 
-           body, html will be closed by the document end and are also not required
+           body, html will be closed automatically at the end of parsing and are also not required
           
         */
-
+        
         protected bool TagHasImplicitClose(ushort tagId, ushort newTagId)
         {
             switch (tagId)
@@ -773,19 +773,31 @@ namespace CsQuery.HtmlParser
                     // closing "p" tag is optional. Always close when a block element it returned.
                     return DomData.IsBlock(newTagId);
                 case DomData.tagLI:
-                case DomData.tagOPTION:
+                    return newTagId == DomData.tagLI || newTagId == tagId;
                 case DomData.tagTR:
+                    return newTagId == DomData.tagTR || newTagId == DomData.tagTABLE;
                 case DomData.tagTD:
+                    return newTagId == DomData.tagTD || newTagId == DomData.tagTR;
                 case DomData.tagTH:
+                    return newTagId == DomData.tagTH || newTagId == DomData.tagTR;
+                // simple case: repeater-like tags should be closed by another occurence of itself
+                case DomData.tagTHEAD:
+                case DomData.tagTBODY:
+                case DomData.tagTFOOT:
+                    return newTagId == tagId || newTagId == DomData.tagTABLE;
 
-                    // simple case: repeater-like tags should be closed by another occurence of itself
-                    return tagId == newTagId;
+                case DomData.tagOPTION:
+                    return newTagId == DomData.tagOPTION || newTagId == DomData.tagSELECT;
                 case DomData.tagHEAD:
                     return (newTagId == DomData.tagBODY);
                 case DomData.tagDT:
-                    return tagId == newTagId || newTagId ==DomData.tagDD;
+                case DomData.tagDD:
+                    return newTagId == DomData.tagDT || newTagId ==DomData.tagDD || newTagId == DomData.tagDL;
                 case DomData.tagCOLGROUP:
-                    return tagId == newTagId || newTagId == DomData.tagTR;
+                    return newTagId == DomData.tagCOLGROUP || newTagId == DomData.tagTR || newTagId == DomData.tagTABLE
+                        || newTagId == DomData.tagTHEAD || newTagId == DomData.tagTBODY || newTagId == DomData.tagTFOOT;
+                case DomData.tagOPTGROUP:
+                    return newTagId == DomData.tagOPTGROUP || newTagId == DomData.tagSELECT;
                 default:
                     return false;
 
