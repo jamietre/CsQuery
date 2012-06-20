@@ -140,61 +140,90 @@ namespace CsQuery.EquationParser.Implementation
         #region private methods
         protected IOperand GetOperand<T>() where T: IConvertible
         {
-            string text;
-            IOperand output;
+            string text="";
+            IOperand output=null;
             scanner.SkipWhitespace();
-            if (scanner.Info.NumericExtended)
+            
+            if (scanner.NextChar == '-')
             {
-                text = scanner.Get(MatchFunctions.Number());
-                double num;
-                if (Double.TryParse(text, out num))
-                {
-                    output = IsTyped ? new Literal<T>(num) : new Literal(num);
-                }
-                else
-                {
-                    throw new InvalidCastException("Unable to parse number from '" + text + "'");
-                }
-            }
-            else if (scanner.Info.Alpha)
-            {
-                text = scanner.GetAlpha();
-                if (scanner.NextCharOrEmpty == "(")
-                {
-                    IFunction func= Utils.GetFunction<T>(text);
+                // convert leading - to "-1" if it precedes a variable, otherwise 
+                // just add it to the output stream
 
-                    var inner = scanner.ExpectBoundedBy('(', true).ToNewScanner("{0},");
-                    
-                    while (!inner.Finished)
+                scanner.Next();
+                if (scanner.Finished)
+                {
+                    throw new ArgumentException("Unexpected end of string found, expected an operand (a number or variable name)");
+                }
+                if (CharacterData.IsType(scanner.NextChar,CharacterType.Number)) {
+                    text+="-";
+                } else {
+                    output = new Literal<T>(-1);
+                }
+
+            } 
+            else if (scanner.NextChar == '+')
+            {
+                // ignore leading +
+
+                scanner.Next();
+            }
+
+            if (output==null)
+            {
+                if (scanner.Info.Numeric)
+                {
+                    text += scanner.Get(MatchFunctions.Number());
+                    double num;
+                    if (Double.TryParse(text, out num))
                     {
-                        string parm = inner.Get(MatchFunctions.BoundedBy(boundEnd: ","));
-                        EquationParser innerParser = new EquationParser();
-
-                        IOperand innerOperand = innerParser.Parse<T>(parm);
-                        func.AddOperand(innerOperand);
+                        output = IsTyped ? new Literal<T>(num) : new Literal(num);
                     }
-                    CacheVariables(func);
-                    output = func;
-                    
+                    else
+                    {
+                        throw new InvalidCastException("Unable to parse number from '" + text + "'");
+                    }
+                }
+                else if (scanner.Info.Alpha)
+                {
+                    text += scanner.GetAlpha();
+                    if (scanner.NextCharOrEmpty == "(")
+                    {
+                        IFunction func = Utils.GetFunction<T>(text);
+
+                        var inner = scanner.ExpectBoundedBy('(', true).ToNewScanner("{0},");
+
+                        while (!inner.Finished)
+                        {
+                            string parm = inner.Get(MatchFunctions.BoundedBy(boundEnd: ","));
+                            EquationParser innerParser = new EquationParser();
+
+                            IOperand innerOperand = innerParser.Parse<T>(parm);
+                            func.AddOperand(innerOperand);
+                        }
+                        CacheVariables(func);
+                        output = func;
+
+                    }
+                    else
+                    {
+                        IVariable var = GetVariable<T>(text);
+                        output = var;
+                    }
+                }
+                else if (scanner.NextChar == '(')
+                {
+                    string inner = scanner.Get(MatchFunctions.BoundedBy("("));
+                    var parser = new EquationParser();
+                    parser.Parse<T>(inner);
+                    output = parser.Clause;
+                    CacheVariables(output);
                 }
                 else
                 {
-                    IVariable var = GetVariable<T>(text);
-                    output = var;
+                    throw new ArgumentException("Unexpected character '" + scanner.Match + "' found, expected an operand (a number or variable name)");
                 }
             }
-            else if (scanner.NextChar == '(')
-            {
-                string inner = scanner.Get(MatchFunctions.BoundedBy("("));
-                var parser = new EquationParser();
-                parser.Parse<T>(inner);
-                output = parser.Clause;
-                CacheVariables(output);
-            }
-            else
-            {
-                throw new InvalidOperationException("Unexpected character '" + scanner.Match + "' found, expected an operand (a number or variable name)");
-            }
+
             scanner.SkipWhitespace();
             ParseEnd = scanner.Finished;
 

@@ -60,7 +60,7 @@ namespace CsqueryTests.Csharp
             Assert.IsTrue(IsOnly(charInfo, "numericext,operator"), "only numeric ext & oper");
             
             charInfo.Target = '+';
-            Assert.IsTrue(IsOnly(charInfo, "operator"), "only operator");
+            Assert.IsTrue(IsOnly(charInfo, "numericext,operator"), "only numeric ext & operator");
             
             charInfo.Target = ':';
             Assert.IsTrue(IsOnly(charInfo, ""), "Nothing");
@@ -109,10 +109,10 @@ namespace CsqueryTests.Csharp
             Assert.IsTrue(IsOnly(info, "numericext"), "only numeric ext");
 
             info.Target = "+12.2";
-            Assert.IsTrue(IsOnly(info, ""), "nothing at all");
+            Assert.IsTrue(IsOnly(info, "numericext"), "only numeric ext");
 
             info.Target = "-+";
-            Assert.IsTrue(IsOnly(info, "operator"), "only numeric ext & oper");
+            Assert.IsTrue(IsOnly(info, "operator,numericext"), "only numeric ext & oper");
 
             info.Target = "data-test";
             Assert.IsTrue(IsOnly(info, "attribute,lower"), "only attribute");

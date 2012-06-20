@@ -11,30 +11,11 @@ using CsQuery.EquationParser;
 using CsQuery.EquationParser.Implementation;
 using CsQuery.EquationParser.Implementation.Functions;
 
-namespace CsqueryTests.Csharp
+namespace CsqueryTests.Csharp.EquationParser
 {
     [TestFixture, TestClass, Description("Math Expression Parser")]
     public class Expressions
     {
-        [Test, TestMethod]
-        public void Utility_()
-        {
-            Assert.IsTrue(Utils.IsIntegralType<int>(), "Int is integral");
-            Assert.IsTrue(Utils.IsIntegralType<Int64>(), "Int64 is integral");
-            Assert.IsTrue(Utils.IsIntegralType<ushort>(), "ushort is integral");
-            Assert.IsTrue(Utils.IsIntegralType<bool>(), "Bool is integral");
-            Assert.IsTrue(Utils.IsIntegralType<char>(), "Char is integral");
-            Assert.IsFalse(Utils.IsIntegralType<double>(), "Double is not integral");
-            Assert.IsFalse(Utils.IsIntegralType<string>(), "String is not integral");
-            Assert.IsFalse(Utils.IsIntegralType<DateTime>(), "DateTime is not integral");
-            
-            Assert.IsTrue(Utils.IsIntegralValue(10), "10 is integral");
-            Assert.IsFalse(Utils.IsIntegralValue(10.2), "10.2 is not integral");
-            Assert.IsTrue(Utils.IsIntegralValue(10.0), "10.0 is integral");
-            Assert.IsTrue(Utils.IsIntegralValue((float)10.0), "10.0 is integral");
-            Assert.IsTrue(Utils.IsIntegralValue(false), "boolean value is integral");
-            
-        }
         [Test, TestMethod]
         public void Literal_()
         {
@@ -57,11 +38,6 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual("10.5", litI.ToString(), "ToString works");
         }
 
-        protected void GetVariableValue(object sender, VariableReadEventArgs e)
-        {
-            e.Value = xVal;
-        }
-        protected int xVal = 0;
         
         [Test,TestMethod]
         public void Variable_()
@@ -122,43 +98,14 @@ namespace CsqueryTests.Csharp
 
         }
 
-        [Test, TestMethod]
-        public void Clone_()
+        
+
+
+        protected void GetVariableValue(object sender, VariableReadEventArgs e)
         {
-            
-            //var variable = Equations.CreateVariable<int>("x");
-            var variable = Equations.CreateVariable("x");
-
-            var lit = Equations.CreateLiteral<int>("120");
-            //var clause = Equations.CreateClause<int>(lit, variable, "-");
-            var clause = new Difference(lit, variable);
-
-            var exp = Equations.CreateEquation<int>(clause);
-            exp.SetVariable("x", 5);
-            Assert.AreEqual(115, exp.Value, "Built an equation by hand and it worked");
-
-            //clause.Operator = Equations.CreateOperator("*");
-
-            //Assert.AreEqual(600, exp.Value, "Built an equation by hand and it worked");
-
-            var litClone = lit.Clone();
-            Assert.AreEqual(120,litClone.Value,"Literal cloned ok");
-            var clauseClone=clause.Clone();
-            var cloneVars = clauseClone.Variables.FirstOrDefault();
-
-            Assert.IsTrue(cloneVars!=null,"Clone has variables");
-
-            // 120 - x + 3
-            clauseClone.AddOperand(3);
-            var newExp = Equations.CreateEquation<int>(clauseClone);
-            newExp.SetVariable("x", 2);
-
-            Assert.AreEqual(121, newExp.Value,"Cloned & chained worked");
-            Assert.AreEqual(115, exp.Value, "Original unaffected");
-
-            var exp3 = Equations.CreateEquation<double>("10/(2*x+3-y*1.5*(3+5))+22.5");
-            Assert.AreEqual(10/(2*5+3-3*1.5*(3+5))+22.5,exp3.GetValue(5, 3), "long equation");
+            e.Value = xVal;
         }
+        protected int xVal = 0;
     }
 }
 
