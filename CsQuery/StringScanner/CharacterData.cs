@@ -20,7 +20,7 @@ namespace CsQuery.StringScanner
     {
         private const string charsAlpha="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
         private const string charsNumeric = "0123456789";
-        private const string charsNumber = "0123456789.-";
+        private const string charsNumericExtended = "0123456789.-+";
         private const string charsLower="abcdefghijklmnopqrstuvwxyz";
         private const string charsUpper="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         private const string charsWhitespace="\x0020\x0009\x000A\x000C\x000D\x00A0\x00C0";
@@ -41,7 +41,7 @@ namespace CsQuery.StringScanner
             setBit(charsWhitespace, (uint)CharacterType.Whitespace);
             setBit(charsAlpha, (uint)CharacterType.Alpha);
             setBit(charsNumeric, (uint)CharacterType.Number);
-            setBit(charsNumber, (uint)CharacterType.NumberPart);
+            setBit(charsNumericExtended, (uint)CharacterType.NumberPart);
             setBit(charsLower, (uint)CharacterType.Lower);
             setBit(charsUpper, (uint)CharacterType.Upper);
             setBit(charsQuote, (uint)CharacterType.Quote);
@@ -83,7 +83,7 @@ namespace CsQuery.StringScanner
         private static void SetHtmlIdNameExceptStart(uint hsb)
         {
             SetAlphaISO10646(hsb);
-            setBit(charsNumber, hsb);
+            setBit(charsNumericExtended, hsb);
             setBit("_:.-", hsb);
         }
 

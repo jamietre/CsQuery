@@ -70,6 +70,7 @@
     <Compile Include="Csharp\Dom\HtmlBigDomTest.cs" />
     <Compile Include="Csharp\Dom\Html5Compliance.cs" />
     <Compile Include="Csharp\Dom\DocType.cs" />
+    <Compile Include="Csharp\EquationParser\Utility.cs" />
     <Compile Include="Csharp\ExtensionMethods\Forms.cs" />
     <Compile Include="Csharp\Manipulation\Clone.cs" />
     <Compile Include="Csharp\Css\Css.cs" />
@@ -83,13 +84,13 @@
     <Compile Include="Csharp\Server.cs" />
     <Compile Include="Csharp\Miscellaneous.cs" />
     <Compile Include="Csharp\Utility\JSON\FromDictionary.cs" />
-    <Compile Include="Csharp\Utility\Expressions.cs" />
+    <Compile Include="Csharp\EquationParser\Expressions.cs" />
     <Compile Include="Csharp\Dom\Rendering.cs" />
     <Compile Include="Csharp\Classes\DictionaryObjects.cs" />
     <Compile Include="Csharp\Dom\HtmlParser.cs" />
     <Compile Include="Csharp\Utility\Objects.cs" />
     <Compile Include="Csharp\Manipulation\MovingElements.cs" />
-    <Compile Include="Csharp\Utility\Equations.cs" />
+    <Compile Include="Csharp\EquationParser\Equations.cs" />
     <Compile Include="Csharp\Utility\StringScanner.cs" />
     <Compile Include="Csharp\Utility\ValueInfo.cs" />
     <Compile Include="jQuery\Attribute.cs" />

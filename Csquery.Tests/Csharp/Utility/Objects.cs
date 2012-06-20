@@ -52,35 +52,7 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual(Objects.Coerce("1/1/2010"), DateTime.Parse("1/1/2010"));
 
         }
-        [Test,TestMethod]
-        public void AttributeEncode()
-        {
-            string onlyQuotes = "{\"someprop\": 1, \"someprop2\", \"someval\"}";
-            string onlyApos = "{'someprop': 1, 'someprop2', 'someval'}";
-            string both = "{\"someprop\": 1, \"someprop2\", \"o'brien\"}";
-            string neither= "plain old text";
-
-            string quoteChar;
-
-            string result = HtmlData.AttributeEncode(onlyQuotes,true,out quoteChar);
-            Assert.AreEqual(onlyQuotes,result, "With only quotes, nothing changed");
-            Assert.AreEqual("'", quoteChar, "Quote char was an apostrophe with only quotes");
-
-            result = HtmlData.AttributeEncode(onlyApos, true, out quoteChar);
-            Assert.AreEqual(onlyApos, result, "With only apostrophes, nothing changed");
-            Assert.AreEqual("\"", quoteChar, "Quote char was a quote with only apos");
-
-            result = HtmlData.AttributeEncode(both, true, out quoteChar);
-            string expected = "{\"someprop\": 1, \"someprop2\", \"o&#39;brien\"}";
-            Assert.AreEqual(expected, result, "With both, only apostrophes changed");
-            Assert.AreEqual("'", quoteChar, "Quote char was an apos with both");
-
-            result = HtmlData.AttributeEncode(neither, true, out quoteChar);
-            Assert.AreEqual(neither, result, "With neither, nothing changeed");
-            Assert.AreEqual("\"", quoteChar, "Quote char was a quote with both");
-
-
-        }
+      
         [Test, TestMethod]
         public void ParseJson()
         {

@@ -475,11 +475,28 @@ namespace CsQuery.Engine
 
             int iterator = cacheInfo.NextIterator;
             int val = -1;
-            while (val < lastIndex && iterator <= lastIndex)
+
+            // because of negative-valued n's, we may need to calculate the entire equation set down to zero
+            // so we need to watch if the numbers are descending.
+
+            int lastVal = 999999;
+
+            // the 2nd part of the while expression ensures that we count down to zero for negative values
+
+            while ((val < lastIndex && iterator <= lastIndex+1) ||
+                (lastVal > val && val>0  ))
             {
                 Equation.SetVariable("n", iterator);
+                if (val > 0)
+                {
+                    lastVal = val;
+                }
                 val = Equation.Value;
-                cacheInfo.MatchingIndices.Add(val);
+                // negative results are just ignored.
+                if (val > 0)
+                {
+                    cacheInfo.MatchingIndices.Add(val);
+                }
                 iterator++;
             }
             cacheInfo.MaxIndex = lastIndex;

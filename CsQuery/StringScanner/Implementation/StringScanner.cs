@@ -133,9 +133,10 @@ namespace CsQuery.StringScanner.Implementation
             get;
             set;
         }
+        
         /// <summary>
-        /// <summary>
-        /// The character at the current scanning position
+        /// Return the character at the current scanning position without advancing the pointer. Throw an error
+        /// if the pointer is at the end of the string.
         /// </summary>
         public char NextChar
         {
@@ -144,6 +145,11 @@ namespace CsQuery.StringScanner.Implementation
                 return Text[Pos];
             }
         }
+
+        /// <summary>
+        /// Return the character at the current scanning position without advancing the pointer. If the pointer is
+        /// at the end of the string, return an empty string.
+        /// </summary>
         public string NextCharOrEmpty
         {
             get
@@ -319,7 +325,7 @@ namespace CsQuery.StringScanner.Implementation
         }
         public char Peek()
         {
-            if (Pos < Length - 2)
+            if (Pos < Length - 1)
             {
                 return Text[Pos + 1];
             }
