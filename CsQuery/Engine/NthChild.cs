@@ -23,25 +23,62 @@ namespace CsQuery.Engine
         /// </summary>
         protected class CacheInfo
         {
+            public CacheInfo()
+            {
+                MatchingIndices=new HashSet<int>();
+            }
+            public IEquation<int> Equation;
             public HashSet<int> MatchingIndices;
             public int NextIterator;
             public int MaxIndex;
         }
 
+        // A cache of the set of indices matching a particular nth-child equation, 
+        // so we don't have to do an expensive calculation if it's used again.
+        // We probably need to add a bit of logic to flush this, though it really shouldn't
+        // grow very large unless you've got massive documents and tons of different equations.
+
         private static ConcurrentDictionary<string, CacheInfo> ParsedEquationCache =
             new ConcurrentDictionary<string, CacheInfo>();
+
+        private CacheInfo cacheInfo;
+        private int MatchOnlyIndex;      
+        private IEquation<int> Equation;
+        private bool _IsJustNumber;
+        private string _Text;
+        private string _OnlyNodeName;
         
-        protected CacheInfo cacheInfo;
-        protected bool cached = false;
-        protected IEquation<int> Equation;
-        
-        protected string _Text;
+        // Count results from the last child instead of the first
+        private bool FromLast;
+
+        // Delegates to the functions used for matching
+
+        private Func<int, bool> IndexMatchesImpl;
+        private Func<IDomElement, IEnumerable<IDomObject>> GetMatchingChildrenImpl;
 
         /// <summary>
         /// When true, the current equation is just a number, and the MatchOnlyIndex value should be used directly
         /// </summary>
-        protected bool IsJustNumber;
-        protected int MatchOnlyIndex;
+        protected bool IsJustNumber
+        {
+            get
+            {
+                return _IsJustNumber;
+            }
+            set
+            {
+                _IsJustNumber = value;
+                IndexMatchesImpl = value ?
+                    (Func<int,bool>)IndexMatchesNumber :
+                    (Func<int, bool>)IndexMatchesFormula;
+                GetMatchingChildrenImpl = value ?
+                    (Func<IDomElement, IEnumerable<IDomObject>>)GetMatchingChildrenNumber :
+                    (Func<IDomElement, IEnumerable<IDomObject>>)GetMatchingChildrenFormula;
+            }
+
+
+        }
+
         /// <summary>
         /// Only nodes with this name will be included in the count to determine if an index matches the equation
         /// </summary>
@@ -59,13 +96,7 @@ namespace CsQuery.Engine
             }
 
         }
-        private string _OnlyNodeName;
 
-        protected bool FromLast;
-
-        #endregion
-
-        #region public properties/methods
         /// <summary>
         /// The formula for this nth child selector
         /// </summary>
@@ -78,14 +109,13 @@ namespace CsQuery.Engine
             set
             {
                 _Text = value;
-                CheckForSimpleNumber(value);
-
-                if (!IsJustNumber)
-                {
-                    ParseEquation(value);
-                }
+                ParseEquation(value);
             }
         }
+
+        #endregion
+
+        #region public properties/methods
 
         /// <summary>
         /// Return true if the index matches the formula provided
@@ -104,20 +134,7 @@ namespace CsQuery.Engine
         public bool IndexMatches(int index, string formulaText)
         {
             Text = formulaText;
-            if (IsJustNumber)
-            {
-                return MatchOnlyIndex-1 == index;
-            }
-            else
-            {
-                var matchIndex = index += 1; // nthchild is 1 based indices
-                if (index > cacheInfo.MaxIndex)
-                {
-                    
-                    UpdateCacheInfo( matchIndex);
-                }
-                return cacheInfo.MatchingIndices.Contains(matchIndex);       
-            }
+            return IndexMatchesImpl(index);
                 
         }
 
@@ -181,9 +198,13 @@ namespace CsQuery.Engine
             }
         }
 
+
+
         #endregion
 
         #region public static methods
+        
+        // These methods are exposed because they are used elsewhere
 
         /// <summary>
         /// Return the correct child from a list based on an index, and the fromLast setting
@@ -213,6 +234,7 @@ namespace CsQuery.Engine
                 return index;
             }
         }
+
         #endregion
 
         #region private methods
@@ -271,6 +293,178 @@ namespace CsQuery.Engine
         {
             return GetEffectiveChild(nodeList, index, FromLast);
         }
+       
+
+        /// <summary>
+        /// Parse the equation text into in IEquation, or obtain from the cache if available
+        /// </summary>
+        /// <param name="equationText"></param>
+        protected void ParseEquation(string equationText)
+        {
+            CheckForSimpleNumber(equationText);
+
+            if (IsJustNumber)
+            {
+                return;
+            }
+
+            equationText = CheckForEvenOdd(equationText);
+
+            if (!ParsedEquationCache.TryGetValue(equationText, out cacheInfo))
+            {
+                cacheInfo = new CacheInfo();
+                Equation = cacheInfo.Equation = GetEquation(equationText);
+                ParsedEquationCache.TryAdd(equationText, cacheInfo);
+            }
+            else
+            {
+                Equation = cacheInfo.Equation;
+            }          
+        }
+
+        /// <summary>
+        /// Check if it was just a number passed (not an equation) and assign the correct delegates to matching
+        /// </summary>
+        /// <param name="equation"></param>
+        protected void CheckForSimpleNumber(string equation)
+        {
+            int matchIndex;
+            if (Int32.TryParse(equation, out matchIndex))
+            {
+                MatchOnlyIndex = matchIndex;
+                IsJustNumber = true;
+            }
+            else
+            {
+                IsJustNumber = false;
+            }
+        }
+
+        /// <summary>
+        /// Returns a parsed equation from a string, validating that it appears to be a legitimate nth-child equation
+        /// </summary>
+        /// <param name="equationText"></param>
+        /// <returns></returns>
+        private IEquation<int> GetEquation(string equationText)
+        {
+            IEquation<int> equation;
+            try
+            {
+                equation= Equations.CreateEquation<int>(equationText);
+            }
+            catch (InvalidCastException e)
+            {
+                throw new ArgumentException(String.Format("The equation {{0}} could not be parsed.", equationText), e);
+            }
+
+            IVariable variable;
+            try
+            {
+                variable = equation.Variables.Single();
+            }
+            catch (InvalidOperationException e)
+            {
+                throw new ArgumentException(String.Format("The equation {{0}} must contain a single variable 'n'.", equation), e);
+            }
+
+            if (variable.Name != "n")
+            {
+                throw new ArgumentException(String.Format("The equation {{0}} does not have a variable 'n'.", equation));
+            }
+            return equation;
+
+        }
+
+        /// <summary>
+        /// Replaces _Text with the correct equation for "even" and "odd"
+        /// </summary>
+        /// <param name="equation"></param>
+        /// <returns></returns>
+        protected string CheckForEvenOdd(string equation)
+        {
+            switch (_Text)
+            {
+                case "odd":
+                    return "2n+1";
+                case "even":
+                    return "2n";
+                default:
+                    return equation;
+            }
+        }
+
+        // the two IndexMatches implementations
+
+        protected bool IndexMatchesNumber(int index)
+        {
+            return MatchOnlyIndex - 1 == index;
+
+        }
+        protected bool IndexMatchesFormula(int index)
+        {
+            var matchIndex = index += 1; // nthchild is 1 based indices
+            if (index > cacheInfo.MaxIndex)
+            {
+
+                UpdateCacheInfo(matchIndex);
+            }
+            return cacheInfo.MatchingIndices.Contains(matchIndex);
+
+        }
+
+        // the two GetMatchingChildren implementations
+
+        public IEnumerable<IDomObject> GetMatchingChildrenNumber(IDomElement obj)
+        {
+            if (!obj.HasChildren)
+            {
+                yield break;
+            }
+            else 
+            {
+                IDomElement child = GetNthChild(obj, MatchOnlyIndex);
+
+                if (child != null)
+                {
+                    yield return child;
+                }
+                else
+                {
+                    yield break;
+                }
+            }
+        }
+
+        public IEnumerable<IDomObject> GetMatchingChildrenFormula(IDomElement obj)
+        {
+            if (!obj.HasChildren)
+            {
+                yield break;
+            }
+            else
+            {
+                UpdateCacheInfo(obj.ChildNodes.Count);
+
+                int elementIndex = 1;
+                int newActualIndex = -1;
+
+                IDomElement el = GetNextChild(obj, -1, out newActualIndex);
+                while (newActualIndex >= 0)
+                {
+                    if (cacheInfo.MatchingIndices.Contains(elementIndex))
+                    {
+                        yield return el;
+                    }
+                    el = GetNextChild(obj, newActualIndex, out newActualIndex);
+                    elementIndex++;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get the next matching index using the equation and add it to our cached list of equation results
+        /// </summary>
+        /// <param name="lastIndex"></param>
         protected void UpdateCacheInfo(int lastIndex)
         {
 
@@ -293,77 +487,6 @@ namespace CsQuery.Engine
         }
 
 
-
-        protected void CheckForSimpleNumber(string equation)
-        {
-            int matchIndex;
-            if (Int32.TryParse(equation, out matchIndex))
-            {
-                MatchOnlyIndex = matchIndex;
-                IsJustNumber = true;
-
-            }
-        }
-        /// <summary>
-        /// Replaces _Text with the correct equation for "even" and "odd"
-        /// </summary>
-        /// <param name="equation"></param>
-        /// <returns></returns>
-        protected string  CheckForEvenOdd(string equation)
-        {
-            switch (_Text)
-            {
-                case "odd":
-                    return "2n+1";
-                case "even":
-                    return "2n";
-                default:
-                    return equation;
-            }
-        }
-
-        protected void ParseEquation(string equation)
-        {
-            // TODO: Why do we parse the equation no matter what? Shouldn't the equation itself also be cached?
-
-            equation = CheckForEvenOdd(equation);
-            try
-            {
-                Equation = Equations.CreateEquation<int>(equation);
-            }
-            catch (InvalidCastException e)
-            {
-                throw new ArgumentException(String.Format("The equation {{0}} could not be parsed.", equation),e);
-            }
-
-            IVariable variable;
-            try
-            {
-                variable = Equation.Variables.Single();
-            }
-            catch (InvalidOperationException e)
-            {
-                throw new ArgumentException(String.Format("The equation {{0}} must contain a single variable 'n'.", equation), e);
-            }
-
-            if (variable.Name != "n")
-            {
-                throw new ArgumentException(String.Format("The equation {{0}} does not have a variable 'n'.", equation));
-            }
-
-
-            string cacheKey = (String.IsNullOrEmpty(OnlyNodeName) ? "" : OnlyNodeName + "|") +
-                (FromLast ? "1|" : "0|") +
-                equation;
-
-            if (!ParsedEquationCache.TryGetValue(cacheKey, out cacheInfo))
-            {
-                cacheInfo = new CacheInfo();
-                cacheInfo.MatchingIndices = new HashSet<int>();
-                ParsedEquationCache[equation] = cacheInfo;
-            }
-
-        }
         #endregion
     }
 }

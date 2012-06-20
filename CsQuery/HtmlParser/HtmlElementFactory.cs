@@ -196,7 +196,7 @@ namespace CsQuery.HtmlParser
                                 {
                                     // It's a tag closer. Make sure it's the right one.
                                     current.Pos = tagStartPos + 1;
-                                    ushort closeTagId = HtmlData.TokenID(GetCloseTag(current), true);
+                                    ushort closeTagId = HtmlData.TokenID(GetCloseTag(current));
 
                                     // Ignore empty tags, or closing tags found when no parent is open
                                     bool isProperClose = closeTagId == ParentTagID(current);
@@ -295,7 +295,7 @@ namespace CsQuery.HtmlParser
 
                                     // seems to be a new element tag, parse it.
 
-                                    ushort newTagId = HtmlData.TokenID(newTag, true);
+                                    ushort newTagId = HtmlData.TokenID(newTag);
                                     current.Object = new DomElement(newTagId);
 
                                     if (!current.Element.InnerHtmlAllowed && current.Element.InnerTextAllowed)
@@ -753,18 +753,6 @@ namespace CsQuery.HtmlParser
             // return c == '<' || c == '>' || c == '/';
         }
 
-        /* Some tags have inner HTML but are often not closed properly. There are two possible situations. A tag may not 
-           have a nested instance of itself, and therefore any recurrence of that tag implies the previous one is closed. 
-           Other tag closings are simply optional, but are not repeater tags (e.g. body, html). These should be handled
-           automatically by the logic that bubbles any closing tag to its parent if it doesn't match the current tag. The 
-           exception is <head> which technically does not require a close, but we would not expect to find another close tag
-           Complete list of optional closing tags: -</HTML>- </HEAD> -</BODY> -</P> -</DT> -</DD> -</LI> -</OPTION> -</THEAD> 
-           </TH> </TBODY> </TR> </TD> </TFOOT> </COLGROUP>
-
-           body, html will be closed automatically at the end of parsing and are also not required
-          
-        */
-        
        
         protected int CharIndexOf(char[] charArray, char seek, int start)
         {

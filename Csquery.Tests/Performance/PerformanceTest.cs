@@ -82,12 +82,7 @@ namespace CsqueryTests.Performance
 
         }
 
-
-
-
         protected PerfCompare PerfCompare;
-
-
 
         protected void Compare(string selector)
         {
@@ -102,8 +97,6 @@ namespace CsqueryTests.Performance
             Output(comp);
         }
 
-
-
         public override void FixtureSetUp()
         {
             base.FixtureSetUp();
@@ -115,6 +108,7 @@ namespace CsqueryTests.Performance
         }
 
         #region static file output methods
+
         private static string q= "\"";
 
         public static void Output(PerfComparison comp)
@@ -137,14 +131,14 @@ namespace CsqueryTests.Performance
                 + q + comp.Description + q + ","
                 + (comp.SameResults ? 1 : 0).ToString() + ","
                 + q + comp.Best.Source + q + ","
-                + q + comp.HowMuchFaster().ToString() + q + ",";
+                + q + comp.HowMuchFaster().ToString() + q;
 
 
             foreach (var item in comp.Data) {
                 if (String.IsNullOrEmpty(item.ErrorMessage))
                 {
 
-                    line += ",";
+                    line += ",,";
                     line += q + item.Source + q + ","
                         + item.IterationsPerSecond + ","
                         + item.Iterations + ","
@@ -178,7 +172,6 @@ namespace CsqueryTests.Performance
                 + q + "FasterRatio" + q;
 
             // extra comma for an empty col before the output & between each result
-
 
             for (int i = 0; i < numToCompare; i++)
             {

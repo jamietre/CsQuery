@@ -9,8 +9,9 @@ using System.Diagnostics;
 namespace CsQuery.HtmlParser
 {
     /// <summary>
-    /// Utility functions 
-    /// 
+    /// Reference data about HTML tags and attributes;
+    /// methods to test tokens for certain properties;
+    /// and tokenizer
     /// </summary>
     public static class HtmlData
     {
@@ -117,11 +118,16 @@ namespace CsQuery.HtmlParser
         private static int maxPathIndex;
 
         // This will be a lookup table where each value contains binary flags indicating what
-        // properties are true for that value.
+        // properties are true for that value. We fix a size that's at an even binary boundary
+        // so we can mask it for fast comparisons. If the number of tags with data exceeded 64
+        // this can just increase; anything above the last used slot will just be 0.
 
-        private static ushort[] TokenMetadata;
-        private static ushort LastKnownTokenIndex;
-
+        private static ushort[] TokenMetadata = new ushort[256];
+        
+        // (256 * 256) & ~256
+        // this is the mask to test if an ID is in outside short list
+        private const ushort NonSpecialTokenMask = (ushort)65280;
+        
         #endregion
 
         #region constructor
@@ -131,7 +137,8 @@ namespace CsQuery.HtmlParser
             // For path encoding - when in production mode use a single character value for each path ID. This lets us avoid doing 
             // a division for indexing to determine path depth, and is just faster for a lot of reasons. This should be plenty
             // of tokens: things that are tokenized are tag names style names, class names, attribute names (not values), and ID 
-            // values. You'd be hard pressed to exceed this limit on a single web page. Famous last words right? 
+            // values. You'd be hard pressed to exceed this limit (65k for a single level) on one single web page. 
+            // (Famous last words right?)
 
             #if !DEBUG_PATH
                 baseXXchars = new char[65533];
@@ -213,52 +220,53 @@ namespace CsQuery.HtmlParser
 
             TokenIDs = new Dictionary<string, ushort>();
             // where Style used to be
-            TokenID("unused",true); //2
+            TokenID("unused"); //2
 
-            TokenID("class",true); //3
+            TokenID("class"); //3
             // inner text allowed
-            TokenID("value",true); //4
-            TokenID("id",true); //5
+            TokenID("value"); //4
+            TokenID("id"); //5
 
             //noInnerHtmlIDFirst = nextID;
             // the node types that have inner content which is not parsed as HTML ever
-            TokenID("script",true); //6
-            TokenID("textarea",true); //7
-            TokenID("style",true); //8
+            TokenID("script"); //6
+            TokenID("textarea"); //7
+            TokenID("style"); //8
 
 
-            TokenID("input",true); //9
-            TokenID("select", true); //10
-            TokenID("option", true); //11
+            TokenID("input"); //9
+            TokenID("select"); //10
+            TokenID("option"); //11
 
-            TokenID("p", true); //12
-            TokenID("tr", true); //13
-            TokenID("td", true); //14
-            TokenID("th", true); //15
-            TokenID("head", true); //16
-            TokenID("body", true); //17
-            TokenID("dt", true); //18
-            TokenID("colgroup", true); //19
-            TokenID("dd", true); //20
-            TokenID("li", true); //21
-            TokenID("dl", true); //22
-            TokenID("table", true); //23
-            TokenID("optgroup", true); //24
-            TokenID("ul", true); //25
-            TokenID("ol", true); //26
-            TokenID("tbody", true); //27
-            TokenID("tfoot", true); //28
-            TokenID("thead", true); //29
+            TokenID("p"); //12
+            TokenID("tr"); //13
+            TokenID("td"); //14
+            TokenID("th"); //15
+            TokenID("head"); //16
+            TokenID("body"); //17
+            TokenID("dt"); //18
+            TokenID("colgroup"); //19
+            TokenID("dd"); //20
+            TokenID("li"); //21
+            TokenID("dl"); //22
+            TokenID("table"); //23
+            TokenID("optgroup"); //24
+            TokenID("ul"); //25
+            TokenID("ol"); //26
+            TokenID("tbody"); //27
+            TokenID("tfoot"); //28
+            TokenID("thead"); //29
             
-            TokenID("selected",true); //30
-            TokenID("readonly",true); //31 
-            TokenID("checked",true); //32 
-
+            TokenID("selected"); //30
+            TokenID("readonly"); //31 
+            TokenID("checked"); //32 
 
             if (nextID != maxHardcodedTokenId+1)
             {
                 throw new InvalidOperationException("Something went wrong with the constant map in DomData");
             }
+
+            // create the binary lookup table of tag metadata
 
             PopulateTokenHashset(noChildHtmlAllowed);
             PopulateTokenHashset(noChildrenAllowed);
@@ -266,11 +274,16 @@ namespace CsQuery.HtmlParser
             PopulateTokenHashset(booleanAttributes);
             PopulateTokenHashset(autoClosingTags);
 
-            LastKnownTokenIndex = nextID;
 
-            // configured; now set up jump table
+            // reset nextId to beyond the boundary of the metadata array
+            
+            // Fill out the list of tokens to the boundary of the metadata array so the indices align
 
-            TokenMetadata = new ushort[LastKnownTokenIndex];
+            while (nextID < (ushort)TokenMetadata.Length)
+            {
+                Tokens.Add(null);
+                nextID++;
+            }
 
             // no element children allowed but text children are
 
@@ -280,13 +293,10 @@ namespace CsQuery.HtmlParser
 
             setBit(noChildrenAllowed, TokenProperties.ChildrenNotAllowed | TokenProperties.HtmlChildrenNotAllowed);
 
-            // autoclosing
-            setBit(autoClosingTags, TokenProperties.AutomaticClose);
-
             
+            setBit(autoClosingTags, TokenProperties.AutomaticClose);          
             setBit(blockElements, TokenProperties.BlockElement);
             setBit(booleanAttributes, TokenProperties.BooleanProperty);
-
 
         }
         private static HashSet<ushort> PopulateTokenHashset(IEnumerable<string> tokens)
@@ -294,12 +304,11 @@ namespace CsQuery.HtmlParser
             var set = new HashSet<ushort>();
             foreach (var item in tokens)
             {
-                set.Add(TokenID(item,true));
+                set.Add(TokenID(item));
             }
             return set;
         }
         #endregion
-
 
         #region public methods
 
@@ -321,10 +330,9 @@ namespace CsQuery.HtmlParser
         /// <returns></returns>
         public static bool HtmlChildrenNotAllowed(ushort nodeId)
         {
-            return nodeId < LastKnownTokenIndex &&
+            return (nodeId & NonSpecialTokenMask) == 0 &&
                 (TokenMetadata[nodeId] & (ushort)TokenProperties.HtmlChildrenNotAllowed) > 0;
 
-            //return TagsNoInnerHtmlAllowed.Contains(nodeId);
         }
 
         /// <summary>
@@ -334,7 +342,7 @@ namespace CsQuery.HtmlParser
         /// <returns></returns>
         public static bool HtmlChildrenNotAllowed(string nodeName)
         {
-            return HtmlChildrenNotAllowed(TokenID(nodeName,true));
+            return HtmlChildrenNotAllowed(TokenID(nodeName));
         }
 
         /// <summary>
@@ -344,26 +352,26 @@ namespace CsQuery.HtmlParser
         /// <returns></returns>
         public static bool InnerTextAllowed(ushort nodeId)
         {
-            return nodeId >= LastKnownTokenIndex ||
+            // nodeId & NonSpecialTokenMask returns zero for tokens that are in the short list.
+            // anything outside the short list (or not matching special properties) os ok - 
+            // innertextallowed is the default
+            
+            return (nodeId & NonSpecialTokenMask)!=0 ||
                 (TokenMetadata[nodeId] & (ushort)TokenProperties.ChildrenNotAllowed)== 0;
-
-            //return nodeId == tagSCRIPT || nodeId == tagTEXTAREA ||  nodeId == tagSTYLE || 
-            //   !HtmlChildrenNotAllowed(nodeId);
         }
         public static bool InnerTextAllowed(string nodeName)
         {
-            return InnerTextAllowed(TokenID(nodeName,true));
+            return InnerTextAllowed(TokenID(nodeName));
         }
         public static bool IsBlock(ushort nodeId)
         {
-            return nodeId < LastKnownTokenIndex &&
-                (TokenMetadata[nodeId] & (ushort)TokenProperties.BlockElement) > 0;
-            
-            //return TagsBlockElements.Contains(nodeId);
+
+            return (nodeId & NonSpecialTokenMask)== 0 &&
+                (TokenMetadata[nodeId] & (ushort)TokenProperties.BlockElement) != 0;
         }
         public static bool IsBlock(string nodeName)
         {
-            return IsBlock(TokenID(nodeName,true));
+            return IsBlock(TokenID(nodeName));
         }
         /// <summary>
         /// The attribute is a boolean type
@@ -372,8 +380,8 @@ namespace CsQuery.HtmlParser
         /// <returns></returns>
         public static bool IsBoolean(ushort nodeId)
         {
-            return nodeId < LastKnownTokenIndex &&
-                  (TokenMetadata[nodeId] & (ushort)TokenProperties.BooleanProperty) > 0;
+            return (nodeId & NonSpecialTokenMask) == 0 &&
+                  (TokenMetadata[nodeId] & (ushort)TokenProperties.BooleanProperty) != 0;
         }
         /// <summary>
         /// The attribute is a boolean type
@@ -382,7 +390,35 @@ namespace CsQuery.HtmlParser
         /// <returns></returns>
         public static bool IsBoolean(string nodeName)
         {
-            return IsBoolean(TokenID(nodeName,true));
+            return IsBoolean(TokenID(nodeName));
+        }
+
+
+        public static ushort TokenID(string tokenName)
+        {
+        
+            if (String.IsNullOrEmpty(tokenName))
+            {
+                return 0;
+            }
+            return TokenIDImpl(tokenName.ToLower());
+            
+        }
+
+        /// <summary>
+        /// Return a token ID for a name, adding to the index if it doesn't exist.
+        /// When indexing tags and attributes, ignoreCase should be used
+        /// </summary>
+        /// <param name="tokenName"></param>
+        /// <param name="ignoreCase"></param>
+        /// <returns></returns>
+        public static ushort TokenIDCaseSensitive(string tokenName)
+        {
+            if (String.IsNullOrEmpty(tokenName))
+            {
+                return 0;
+            }
+            return TokenIDImpl(tokenName);
         }
         /// <summary>
         /// Return a token ID for a name, adding to the index if it doesn't exist.
@@ -391,16 +427,9 @@ namespace CsQuery.HtmlParser
         /// <param name="tokenName"></param>
         /// <param name="ignoreCase"></param>
         /// <returns></returns>
-        public static ushort TokenID(string tokenName, bool ignoreCase = false)
+        public static ushort TokenIDImpl(string tokenName)
         {
             ushort id;
-            if (String.IsNullOrEmpty(tokenName))
-            {
-                return 0;
-            }
-            if (ignoreCase) {
-                tokenName = tokenName.ToLower();
-            }
 
             if (!TokenIDs.TryGetValue(tokenName, out id))
             {
@@ -543,10 +572,32 @@ namespace CsQuery.HtmlParser
 
             return result;
         }
+        
+        public static bool TagHasImplicitClose(string tag, string newTag)
+        {
+            return TagHasImplicitClose(TokenID(tag), TokenID(newTag));
+        }
 
+
+        // Some tags have inner HTML but are often not closed properly. There are two possible situations. A tag may not 
+        // have a nested instance of itself, and therefore any recurrence of that tag implies the previous one is closed. 
+        // Other tag closings are simply optional, but are not repeater tags (e.g. body, html). These should be handled
+        // automatically by the logic that bubbles any closing tag to its parent if it doesn't match the current tag. The 
+        // exception is <head> which technically does not require a close, but we would not expect to find another close tag
+        // Complete list of optional closing tags: -</HTML>- </HEAD> -</BODY> -</P> -</DT> -</DD> -</LI> -</OPTION> -</THEAD> 
+        // </TH> </TBODY> </TR> </TD> </TFOOT> </COLGROUP>
+        //
+        //  body, html will be closed automatically at the end of parsing and are also not required        
+
+        /// <summary>
+        /// Return true if open tagId is closed implicitly by an appearance of newTagId
+        /// </summary>
+        /// <param name="tagId"></param>
+        /// <param name="newTagId"></param>
+        /// <returns></returns>
         public static bool TagHasImplicitClose(ushort tagId, ushort newTagId)
         {
-            if (tagId < LastKnownTokenIndex && 
+            if ((tagId & NonSpecialTokenMask) != 0 ||
                 (TokenMetadata[tagId] & (ushort)TokenProperties.AutomaticClose) == 0)
             {
                 return false;
@@ -558,7 +609,7 @@ namespace CsQuery.HtmlParser
                     // closing "p" tag is optional. Always close when a block element it returned.
                     return HtmlData.IsBlock(newTagId);
                 case HtmlData.tagLI:
-                    return newTagId == HtmlData.tagLI || newTagId == tagId;
+                    return newTagId == HtmlData.tagLI;
                 case HtmlData.tagTR:
                     return newTagId == HtmlData.tagTR || newTagId == HtmlData.tagTABLE;
                 case HtmlData.tagTD:
@@ -577,7 +628,7 @@ namespace CsQuery.HtmlParser
                     return (newTagId == HtmlData.tagBODY);
                 case HtmlData.tagDT:
                 case HtmlData.tagDD:
-                    return newTagId == HtmlData.tagDT || newTagId ==HtmlData.tagDD || newTagId == HtmlData.tagDL;
+                    return newTagId == HtmlData.tagDT || newTagId == HtmlData.tagDD || newTagId == HtmlData.tagDL;
                 case HtmlData.tagCOLGROUP:
                     return newTagId == HtmlData.tagCOLGROUP || newTagId == HtmlData.tagTR || newTagId == HtmlData.tagTABLE
                         || newTagId == HtmlData.tagTHEAD || newTagId == HtmlData.tagTBODY || newTagId == HtmlData.tagTFOOT;
@@ -588,6 +639,7 @@ namespace CsQuery.HtmlParser
 
             }
         }
+        
         #endregion
 
         #region private methods
@@ -602,7 +654,7 @@ namespace CsQuery.HtmlParser
         {
             foreach (var token in tokens)
             {
-                setBit(TokenID(token,true), bit);
+                setBit(TokenID(token), bit);
             }
 
         }

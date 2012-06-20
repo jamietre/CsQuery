@@ -71,6 +71,23 @@ namespace CsqueryTests.Csharp
             Assert.IsFalse(HtmlData.HtmlChildrenNotAllowed("random"));
 
         }
+
+        [Test, TestMethod]
+        public void TagHasImplicitClose()
+        {
+            Assert.IsTrue(HtmlData.TagHasImplicitClose("p","div"));
+            Assert.IsFalse(HtmlData.TagHasImplicitClose("p", "b"));
+            Assert.IsFalse(HtmlData.TagHasImplicitClose("p", "random"));
+
+            Assert.IsTrue(HtmlData.TagHasImplicitClose("td", "tr"));
+            Assert.IsFalse(HtmlData.TagHasImplicitClose("td", "div"));
+            
+            Assert.IsTrue(HtmlData.TagHasImplicitClose("li", "li"));
+            Assert.IsFalse(HtmlData.TagHasImplicitClose("li", "ol"));
+
+            Assert.IsFalse(HtmlData.TagHasImplicitClose("random", "random"));
+            Assert.IsFalse(HtmlData.TagHasImplicitClose("div","div"));
+        }
     }
 
     

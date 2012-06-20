@@ -72,7 +72,7 @@ namespace CsQuery.Engine
         {
             // get the index just for this type
             int typeIndex = 0;
-            ushort matchNodeId = HtmlData.TokenID(onlyNodeName,true);
+            ushort matchNodeId = HtmlData.TokenID(onlyNodeName);
             var childNodes = obj.ParentNode.ChildNodes;
             int length = childNodes.Count;
             bool onlyNodes = !String.IsNullOrEmpty(onlyNodeName);

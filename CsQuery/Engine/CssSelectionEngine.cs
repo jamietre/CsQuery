@@ -151,14 +151,14 @@ namespace CsQuery.Engine
 #else
                     if (selector.SelectorType.HasFlag(SelectorType.AttributeExists)) 
                     {
-                        key = "!" + (char)HtmlData.TokenID(selector.AttributeName, true);
+                        key = "!" + (char)HtmlData.TokenID(selector.AttributeName);
 
                         // AttributeValue must still be matched manually - so remove this flag only.
                         removeSelectorType=SelectorType.AttributeExists;
                     }
                     else if (selector.SelectorType.HasFlag(SelectorType.Tag))
                     {
-                        key = "+" + (char)HtmlData.TokenID(selector.Tag, true);
+                        key = "+" + (char)HtmlData.TokenID(selector.Tag);
                         removeSelectorType=SelectorType.Tag;
                     }
                     else if (selector.SelectorType.HasFlag(SelectorType.ID))

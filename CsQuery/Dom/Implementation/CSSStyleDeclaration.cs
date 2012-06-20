@@ -234,7 +234,7 @@ namespace CsQuery.Implementation
         /// <returns></returns>
         public bool Remove(string name)
         {
-            return Styles.Remove(HtmlData.TokenID(name, true));
+            return Styles.Remove(HtmlData.TokenID(name));
         }
         /// <summary>
         /// Add a single style
@@ -263,7 +263,7 @@ namespace CsQuery.Implementation
         /// <returns></returns>
         public bool HasStyle(string styleName)
         {
-            return Styles.ContainsKey(HtmlData.TokenID(styleName, true));
+            return Styles.ContainsKey(HtmlData.TokenID(styleName));
         }
         /// <summary>
         /// Sets style setting with no parsing
@@ -273,12 +273,12 @@ namespace CsQuery.Implementation
         public void SetRaw(string name, string value)
         {
             bool hadStyles = HasStyles;
-            Styles[HtmlData.TokenID(name, true)] = value;
+            Styles[HtmlData.TokenID(name)] = value;
             UpdateIndex(hadStyles);
         }
         public bool TryGetValue(string key, out string value)
         {
-            return Styles.TryGetValue(HtmlData.TokenID(key, true), out value);
+            return Styles.TryGetValue(HtmlData.TokenID(key), out value);
         }
 
         public double? NumberPart(string style)
@@ -357,7 +357,7 @@ namespace CsQuery.Implementation
         protected string Get(string name)
         {
             string value;
-            if (Styles.TryGetValue(HtmlData.TokenID(name, true), out value))
+            if (Styles.TryGetValue(HtmlData.TokenID(name), out value))
             {
                 return value;
             }
@@ -526,7 +526,7 @@ namespace CsQuery.Implementation
         }
         bool IDictionary<string, string>.ContainsKey(string key)
         {
-            return Styles.ContainsKey(HtmlData.TokenID(key, true));
+            return Styles.ContainsKey(HtmlData.TokenID(key));
         }
         void ICollection<KeyValuePair<string, string>>.Add(KeyValuePair<string, string> item)
         {

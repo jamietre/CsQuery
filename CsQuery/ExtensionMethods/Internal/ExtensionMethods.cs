@@ -18,7 +18,6 @@ namespace CsQuery.ExtensionMethods.Internal
     /// </summary>
     public static class ExtensionMethods
     {
-                
         #region Enums
         /// <summary>
         /// Returns true if the enum is any of the parameters in question
@@ -481,7 +480,7 @@ namespace CsQuery.ExtensionMethods.Internal
             return (value ?? String.Empty).Trim();
         }
 
-        private static char[] stringSep = new char[] {' ','\n','\t', '\r'};
+       
 
         /// <summary>
         /// Perform a string split using whitespace demarcators (' ', tab, newline, return) and trimming each result
@@ -490,7 +489,7 @@ namespace CsQuery.ExtensionMethods.Internal
         /// <returns></returns>
         public static IEnumerable<string> SplitClean(this string text)
         {
-            return SplitClean(text, stringSep);
+            return SplitClean(text, HtmlParser.HtmlData.Whitespace);
         }
 
         /// <summary>

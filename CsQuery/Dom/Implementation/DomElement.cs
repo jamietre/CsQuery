@@ -140,7 +140,7 @@ namespace CsQuery.Implementation
             {
                 if (_NodeNameID < 1)
                 {
-                    _NodeNameID = HtmlData.TokenID(value, true);
+                    _NodeNameID = HtmlData.TokenID(value);
                 }
                 else
                 {
@@ -597,7 +597,7 @@ namespace CsQuery.Implementation
             bool result=false;
             bool hadClasses = HasClasses;
 
-            foreach (string cls in name.SplitClean())
+            foreach (string cls in name.SplitClean(HtmlData.Whitespace))
             {
                 
                 if (!HasClass(cls))
@@ -681,7 +681,7 @@ namespace CsQuery.Implementation
         }
         public override bool HasAttribute(string name)
         {
-            return HasAttribute(HtmlData.TokenID(name, true));
+            return HasAttribute(HtmlData.TokenID(name));
         }
         public void SetStyles(string styles)
         {
@@ -693,7 +693,7 @@ namespace CsQuery.Implementation
         }
         public override void SetAttribute(string name, string value)
         {
-            SetAttribute(HtmlData.TokenID(name, true), value);
+            SetAttribute(HtmlData.TokenID(name), value);
         }
 
         protected void SetAttribute(ushort tokenId, string value)
@@ -736,7 +736,7 @@ namespace CsQuery.Implementation
         /// <param name="name"></param>
         public override void SetAttribute(string name)
         {
-            SetAttribute(HtmlData.TokenID(name, true));
+            SetAttribute(HtmlData.TokenID(name));
             
         }
         public void SetAttribute(ushort tokenId)
@@ -765,7 +765,7 @@ namespace CsQuery.Implementation
         }
         public override bool RemoveAttribute(string name)
         {
-            return RemoveAttribute(HtmlData.TokenID(name, true));
+            return RemoveAttribute(HtmlData.TokenID(name));
 
         }
         protected bool RemoveAttribute(ushort tokenId)
@@ -841,7 +841,7 @@ namespace CsQuery.Implementation
         /// <returns></returns>
         public override string GetAttribute(string name, string defaultValue)
         {
-            return GetAttribute(HtmlData.TokenID(name, true), defaultValue);
+            return GetAttribute(HtmlData.TokenID(name), defaultValue);
         }
         protected string GetAttribute(ushort tokenId, string defaultValue)
         {
@@ -879,7 +879,7 @@ namespace CsQuery.Implementation
         }
         public override bool TryGetAttribute(string name, out string value)
         {
-            return TryGetAttribute(HtmlData.TokenID(name, true), out value);
+            return TryGetAttribute(HtmlData.TokenID(name), out value);
         }
 
         public override string ToString()
@@ -893,7 +893,7 @@ namespace CsQuery.Implementation
 
         public string AttributeIndexKey(string attrName)
         {
-            return AttributeIndexKey(HtmlData.TokenID(attrName, true));
+            return AttributeIndexKey(HtmlData.TokenID(attrName));
         }
         public string AttributeIndexKey(ushort attrId)
         {
@@ -951,7 +951,7 @@ namespace CsQuery.Implementation
 #if DEBUG_PATH
             return prefix + key + DomData.indexSeparator + path;
 #else
-            return IndexKey(prefix, HtmlData.TokenID(key, true), path);
+            return IndexKey(prefix, HtmlData.TokenID(key), path);
 #endif
         }
         internal string IndexKey(string prefix, ushort keyTokenId, string path)

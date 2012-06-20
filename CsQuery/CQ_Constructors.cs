@@ -210,6 +210,10 @@ namespace CsQuery
                                     {
                                         body.ChildNodes.Insert(bodyIndex++, obj);
                                     }
+                                    else
+                                    {
+                                        index++;
+                                    }
                                     continue;
                                 }
                                 break;
