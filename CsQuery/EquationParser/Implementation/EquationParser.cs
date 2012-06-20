@@ -117,8 +117,15 @@ namespace CsQuery.EquationParser.Implementation
                             Clause.ReplaceLastOperand(newOp);
                             working = newOp;
                             break;
+                        case AssociationType.Power:
+                            // Similar to Multiplication, but does not change the active chain to the new operation. It can never be added to.
+                            newOp = op.GetFunction();
+
+                            newOp.AddOperand(lastOperand);
+                            newOp.AddOperand(nextOperand, op.IsInverted);
+                            Clause.ReplaceLastOperand(newOp);
+                            break;
                         case AssociationType.Function:
-                            // this includes Pow - anything that operates against
                             // Similar to Multiplication, but does not change the active chain to the new operation. It can never be added to.
                             newOp = op.GetFunction();
                             newOp.AddOperand(nextOperand, op.IsInverted);

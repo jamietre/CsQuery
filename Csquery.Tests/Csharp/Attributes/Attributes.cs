@@ -19,16 +19,6 @@ namespace CsqueryTests.Csharp
     {
         Func<object,object> bareObj = (input) => {return input; };
 
-        [SetUp]
-        public override void FixtureSetUp()
-        {
-            base.FixtureSetUp();
-            ResetDom();
-        }
-        protected void ResetDom()
-        {
-            Dom = TestDom("TestHtml");
-        }
         [TestMethod,Test]
         public void Show()
         {
@@ -66,7 +56,7 @@ namespace CsqueryTests.Csharp
                 style="display: none;"
             });
             Assert.AreEqual("10px", div[0]["width"]);
-            Assert.AreEqual("display:none;", div[0].Style.ToString());
+            Assert.AreEqual("display: none", div[0].Style.ToString());
         }
 
         [Test, TestMethod]
@@ -114,7 +104,7 @@ namespace CsqueryTests.Csharp
 
             div.AttrSet(dict);
             Assert.AreEqual("10px", div[0]["width"]);
-            Assert.AreEqual("display:none;", div[0].Style.ToString());
+            Assert.AreEqual("display: none", div[0].Style.ToString());
         }
         [Test, TestMethod]
         public void FromDictionary()
@@ -143,6 +133,43 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual("10px", div[0]["width"]);
             Assert.AreEqual("20", div[0]["height"]);
         }
+
+        /// <summary>
+        /// Make sure that the IAttributesInterface works, and that class & style are enumerated properly
+        /// </summary>
+        [Test, TestMethod]
+        public void AttributesInterface()
+        {
+            var el = Dom["a:first"].Single();
+
+            Assert.AreEqual(3, el.Attributes.Length);
+            Assert.AreEqual("profile-link", el.Attributes["class"]);
+            Assert.AreEqual("profile-link", el["class"]);
+
+            IList<KeyValuePair<string, string>> attributes = new List<KeyValuePair<string, string>>(el.Attributes);
+            Assert.AreEqual(new KeyValuePair<string, string>("class", "profile-link"), attributes[0]);
+            Assert.AreEqual(new KeyValuePair<string, string>("style", "color: #ff0000"), attributes[1]);
+            Assert.AreEqual(new KeyValuePair<string, string>("href", "/users/480527/jamietre"), attributes[2]);
+
+            el = Dom["span.badgecount"].FirstOrDefault();
+
+            Assert.AreEqual(2, el.Attributes.Length);
+            Assert.AreEqual("badgecount", el.Attributes["class"]);
+            Assert.AreEqual(null,el.Attributes["test"]);
+        }
+
+
+        [SetUp]
+        public override void FixtureSetUp()
+        {
+            base.FixtureSetUp();
+            ResetDom();
+        }
+        protected void ResetDom()
+        {
+            Dom = TestDom("TestHtml");
+        }
+
 
         protected class StylesClass
         {

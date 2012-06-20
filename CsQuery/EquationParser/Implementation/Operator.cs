@@ -29,8 +29,8 @@ namespace CsQuery.EquationParser.Implementation
         #region private members
         // The order must match the enum
 
-        protected static List<string> _Operators = new List<string>(new string[] { "+", "-", "*", "/", "%", "^" }
-        );
+        protected static List<string> _Operators = new List<string>(new string[] { "+", "-", "*", "/", "%", "^" });
+
         public static IEnumerable<string> Operators
         {
             get
@@ -41,9 +41,11 @@ namespace CsQuery.EquationParser.Implementation
         protected static HashSet<string> ValidOperators = new HashSet<string>(Operators);
 
         protected OperationType _OperationType;
+
         #endregion
 
         #region public properties
+
         public bool IsInverted
         {
             get
@@ -66,7 +68,7 @@ namespace CsQuery.EquationParser.Implementation
                         return AssociationType.Multiplicaton;
                     case OperationType.Power:
                     case OperationType.Modulus:
-                        return AssociationType.Function;
+                        return AssociationType.Power;
                     default:
                         throw new NotImplementedException("Unknown operation type, can't determine association");
                 }
@@ -80,6 +82,10 @@ namespace CsQuery.EquationParser.Implementation
         #endregion
 
         #region public methods
+        /// <summary>
+        /// Return the fuction class for this type of operator
+        /// </summary>
+        /// <returns></returns>
         public IOperation GetFunction()
         {
             switch (OperationType)
@@ -90,6 +96,8 @@ namespace CsQuery.EquationParser.Implementation
                 case OperationType.Multiplication:
                 case OperationType.Division:
                     return new Functions.Product();
+                case OperationType.Power:
+                    return new Functions.Power();
                 default:
                     throw new NotImplementedException("Not yet supported");
             }
@@ -139,7 +147,7 @@ namespace CsQuery.EquationParser.Implementation
         }
         public override string ToString()
         {
-            return _Operators[((int)OperationType) - 1];
+            return _Operators[((int)OperationType)-1];
         }
         #endregion
 

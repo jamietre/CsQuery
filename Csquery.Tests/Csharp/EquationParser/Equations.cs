@@ -19,7 +19,7 @@ using CsQuery.EquationParser.Implementation.Functions;
 namespace CsqueryTests.Csharp.EquationParser
 {
     [TestClass]
-    public class EquationParser
+    public class Equations_
     {
 
         [Test,TestMethod]

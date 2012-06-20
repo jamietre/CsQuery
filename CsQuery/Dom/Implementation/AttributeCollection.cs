@@ -10,11 +10,11 @@ using CsQuery.HtmlParser;
 
 namespace CsQuery.Implementation
 {
-    public class DomAttributes : IDictionary<string, string>, IEnumerable<KeyValuePair<string, string>>
+    public class AttributeCollection : IDictionary<string, string>, IEnumerable<KeyValuePair<string, string>>
     {
         #region constructors
 
-        public DomAttributes()
+        public AttributeCollection()
         {
 
         }
@@ -74,9 +74,9 @@ namespace CsQuery.Implementation
             Attributes.Clear();
         }
 
-        public DomAttributes Clone()
+        public AttributeCollection Clone()
         {
-            DomAttributes clone = new DomAttributes();
+            AttributeCollection clone = new AttributeCollection();
            
             if (HasAttributes)
             {

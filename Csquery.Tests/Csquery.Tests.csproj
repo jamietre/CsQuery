@@ -70,6 +70,7 @@
     <Compile Include="Csharp\Dom\HtmlBigDomTest.cs" />
     <Compile Include="Csharp\Dom\Html5Compliance.cs" />
     <Compile Include="Csharp\Dom\DocType.cs" />
+    <Compile Include="Csharp\EquationParser\Functions.cs" />
     <Compile Include="Csharp\EquationParser\Utility.cs" />
     <Compile Include="Csharp\ExtensionMethods\Forms.cs" />
     <Compile Include="Csharp\Manipulation\Clone.cs" />

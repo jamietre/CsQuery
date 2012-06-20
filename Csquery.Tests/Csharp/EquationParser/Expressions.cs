@@ -19,7 +19,8 @@ namespace CsqueryTests.Csharp.EquationParser
         [Test, TestMethod]
         public void Literal_()
         {
-            // test implplicit overload
+            // test implicit overloading
+
             Literal<int> literal = 10;
 
             Assert.AreEqual(10, literal.Value, "Int literal");
@@ -27,7 +28,7 @@ namespace CsqueryTests.Csharp.EquationParser
 
             ILiteral litI = literal;
             litI.Set(10.5);
-            Assert.AreEqual(10, literal.Value, "Int literal converts doublt to int");
+            Assert.AreEqual(10, literal.Value, "Int literal converts double to int");
 
             litI = new Literal<double>();
 

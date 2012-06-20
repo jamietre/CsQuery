@@ -24,7 +24,7 @@ namespace CsQuery.EquationParser.Implementation.Functions
             }
             else
             {
-                return Math.Abs(Convert.ToDecimal(value));
+                return Math.Abs(Convert.ToDouble(value));
             }
         }
        

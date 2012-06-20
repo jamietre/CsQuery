@@ -13,6 +13,7 @@ namespace CsQuery.EquationParser
         AssociationType AssociationType { get; }
         bool IsInverted { get; }
         new IOperator Clone();
+
         IOperation GetFunction();
     }
 }

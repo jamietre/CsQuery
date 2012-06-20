@@ -14,7 +14,19 @@ namespace CsQuery
 
         IDomDocument Document { get; }
         IDomContainer ParentNode { get; }
+
+        /// <summary>
+        /// Return the child node at the specified index
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         IDomObject this[int index] { get; }
+
+        /// <summary>
+        /// Return the named attribute
+        /// </summary>
+        /// <param name="attribute"></param>
+        /// <returns></returns>
         string this[string attribute] { get; set; }
 
         string Id { get; set; }
@@ -24,9 +36,12 @@ namespace CsQuery
         /// </summary>
         string TagName { get; }
 
-        IEnumerable<KeyValuePair<string, string>> Attributes { get; }
-        //DomAttributes Attributes { get; }
+        IAttributeCollection Attributes { get; }
         CSSStyleDeclaration Style { get; }
+
+        /// <summary>
+        /// The full class attribute of the element
+        /// </summary>
         string ClassName { get; set; }
 
         string Value { get; set; }

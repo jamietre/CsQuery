@@ -21,6 +21,7 @@ namespace CsQuery.EquationParser
         IList<IOperand> Operands { get; }
         void AddOperand(IConvertible operand);
         void Compile();
+        //IOperand StealLastOperand();
     }
     /// <summary>
     /// T is the output type of the function.

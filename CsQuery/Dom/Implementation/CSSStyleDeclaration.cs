@@ -309,7 +309,8 @@ namespace CsQuery.Implementation
             {
                 foreach (var kvp in Styles)
                 {
-                    style += HtmlData.TokenName(kvp.Key) + ":" + kvp.Value + ";";
+                    style += (style.Length == 0 ? "" : "; ") +
+                        HtmlData.TokenName(kvp.Key) + ": " + kvp.Value;
                 }
             }
             return style;

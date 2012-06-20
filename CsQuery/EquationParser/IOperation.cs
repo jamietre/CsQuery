@@ -9,6 +9,11 @@ namespace CsQuery.EquationParser
     {
         IList<OperationType> Operators { get; }
         void AddOperand(IConvertible operand, bool invert);
+        /// <summary>
+        /// Replaces the last item 
+        /// </summary>
+        /// <param name="operand"></param>
+        
         void ReplaceLastOperand(IOperand operand);
     }
 

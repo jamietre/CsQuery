@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
@@ -13,20 +14,20 @@ namespace CsQuery.Implementation
     /// <summary>
     /// HTML elements
     /// </summary>
-    public class DomElement : DomContainer<DomElement>, IDomElement
+    public class DomElement : DomContainer<DomElement>, IDomElement, IAttributeCollection
     {
         #region private fields
-        private DomAttributes _DomAttributes;
+        private AttributeCollection _DomAttributes;
         protected CSSStyleDeclaration _Style;
         protected List<ushort> _Classes;
 
-        protected DomAttributes DomAttributes
+        protected AttributeCollection DomAttributes
         {
             get
             {
                 if (_DomAttributes == null)
                 {
-                    _DomAttributes = new DomAttributes();
+                    _DomAttributes = new AttributeCollection();
                 }
                 return _DomAttributes;
             }
@@ -68,15 +69,18 @@ namespace CsQuery.Implementation
                 _Style = value;
             }
         }
-        public override IEnumerable<KeyValuePair<string,string>> Attributes
+
+        /// <summary>
+        /// Access via the IAttributeCollection interface to attributes. We don't actually refer to the inner AttributeCollection object
+        /// here because we cannot allow users to set attributes directly in the object: they must use SetAttribute so that special
+        /// handling for "class" and "style" as well as indexing can be performed. To avoid creating a wrapper object, simply pass bac
+        /// a reference to ourselves.
+        /// </summary>
+        public override IAttributeCollection Attributes
         {
             get
             {
-                if (_DomAttributes == null)
-                {
-                    _DomAttributes = new DomAttributes();
-                }
-                return _DomAttributes;
+                return this;
             }
         }
 
@@ -1058,5 +1062,62 @@ namespace CsQuery.Implementation
             }
         }
         #endregion
+
+        #region explicit members for IAttributesCollection
+
+        string IAttributeCollection.this[string attributeName]
+        {
+            get
+            {
+                return GetAttribute(attributeName);
+            }
+            set
+            {
+                SetAttribute(attributeName, value);
+            }
+        }
+
+        int IAttributeCollection.Length
+        {
+            get {
+                int otherAttributes = (HasClasses ? 1 : 0) + (HasStyles ? 1 : 0);
+
+                return otherAttributes + (!HasAttributes ? 0 :
+                    DomAttributes.Count);
+            }
+        }
+
+        IEnumerator<KeyValuePair<string, string>> IEnumerable<KeyValuePair<string, string>>.GetEnumerator()
+        {
+            return AttributesCollection().GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return AttributesCollection().GetEnumerator() ;
+        }        
+
+        /// <summary>
+        /// Enumerate the attributes + class & style
+        /// </summary>
+        /// <returns></returns>
+        protected IEnumerable<KeyValuePair<string, string>> AttributesCollection()
+        {
+            if (HasClasses)
+            {
+                yield return new KeyValuePair<string, string>("class", ClassName);
+            }
+            if (HasStyles)
+            {
+                yield return new KeyValuePair<string, string>("style", Style.ToString());
+            }
+            foreach (var kvp in DomAttributes)
+            {
+                yield return kvp;
+            }
+        }
+        
+        #endregion
+
     }
 }

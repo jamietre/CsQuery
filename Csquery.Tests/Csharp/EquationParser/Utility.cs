@@ -11,7 +11,7 @@ using CsQuery.EquationParser;
 using CsQuery.EquationParser.Implementation;
 using CsQuery.EquationParser.Implementation.Functions;
 
-namespace CsqueryTests.Csharp
+namespace CsqueryTests.Csharp.EquationParser
 {
     [TestFixture, TestClass, Description("Math Expression Parser")]
     public class Utility

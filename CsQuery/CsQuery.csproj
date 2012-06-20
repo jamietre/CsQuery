@@ -69,9 +69,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dom\Implementation\DomAttributes.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Dom\Implementation\AttributeCollection.cs" />
     <Compile Include="EquationParser\enumAssociation.cs" />
     <Compile Include="EquationParser\enumOperationType.cs" />
     <Compile Include="EquationParser\Equations.cs" />
@@ -84,6 +82,7 @@
     <Compile Include="EquationParser\Implementation\EquationParser.cs" />
     <Compile Include="EquationParser\Implementation\Function.cs" />
     <Compile Include="EquationParser\Implementation\Functions\Abs.cs" />
+    <Compile Include="EquationParser\Implementation\Functions\Power.cs" />
     <Compile Include="EquationParser\Implementation\Functions\Difference.cs" />
     <Compile Include="EquationParser\Implementation\Functions\NativeOperation.cs" />
     <Compile Include="EquationParser\Implementation\Functions\Product.cs" />
@@ -161,7 +160,7 @@
     <Compile Include="Dom\enumNodeType.cs" />
     <Compile Include="Dom\ICssStyle.cs" />
     <Compile Include="Dom\ICSSStyleDeclaration.cs" />
-    <Compile Include="Dom\IDomAttribute.cs" />
+    <Compile Include="Dom\IAttributeCollection.cs" />
     <Compile Include="Dom\IDomCData.cs" />
     <Compile Include="Dom\IDomComment.cs" />
     <Compile Include="Dom\IDomContainer.cs" />

@@ -79,9 +79,6 @@ namespace CsQuery.EquationParser.Implementation
         public void Compile()
         {
             throw new NotImplementedException();
-
-            
-
         }
 
         //public new IFunction<U> CloneAs<U>() where U : IConvertible, IEquatable<U>
@@ -117,6 +114,26 @@ namespace CsQuery.EquationParser.Implementation
 
             return Name + "(" + String.Join(",", Operands) + ")";
         }
+
+        //public IOperand StealLastOperand()
+        //{
+        //    if (Operands.Count == 0)
+        //    {
+        //        throw new InvalidOperationException("There are no operands to steal.");
+        //    }
+            
+        //    int stealIndex = Operands.Count-1;
+        //    IOperand op = _Operands[stealIndex];
+        //    if (op is IFunction)
+        //    {
+        //        IFunction func = (IFunction)op;
+        //        op = func.StealLastOperand();
+        //    }
+        //    Operands.RemoveAt(stealIndex);
+        //    return op;
+
+        //}
+
         #endregion
 
         #region protected methods
@@ -135,6 +152,23 @@ namespace CsQuery.EquationParser.Implementation
                 }
             }
         }
+
+        protected IOperand SecondOperand
+        {
+            get
+            {
+                if (Operands.Count > 1)
+                {
+                    return Operands[1];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+
         #endregion
 
         #region Interface members

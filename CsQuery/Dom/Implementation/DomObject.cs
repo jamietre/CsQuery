@@ -287,7 +287,7 @@ namespace CsQuery.Implementation
                 throw new InvalidOperationException("ClassName is not applicable to this node type.");
             }
         }
-        public virtual IEnumerable<KeyValuePair<string,string>> Attributes
+        public virtual IAttributeCollection Attributes
         {
             get
             {

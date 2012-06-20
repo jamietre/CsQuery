@@ -68,9 +68,26 @@ namespace CsQuery.EquationParser.Implementation.Functions
                 throw new InvalidOperationException("There are no operands to replace.");
             }
 
-            _Operands[Operands.Count - 1] = operand;
+
+            int stealIndex = Operands.Count - 1;
+            
+            NativeOperation op = Operands[stealIndex] as NativeOperation;
+
+            // Check if the "steal" target is itself something that we can steal from, if so, 
+            // recurse. This rule of checkiung association type is a bit confusing, this should
+            // be a property?
+
+            if (op !=null && op.Operands.Count > 1 && op.AssociationType == AssociationType.Multiplicaton)
+            {
+                IOperation func = (IOperation)op;
+                func.ReplaceLastOperand(operand);
+            }
+            else
+            {
+                _Operands[Operands.Count - 1] = operand;
+            }
         }
-       
+        
         public override int RequiredParmCount
         {
             get { return 1; }
@@ -86,7 +103,8 @@ namespace CsQuery.EquationParser.Implementation.Functions
             string output = WrapParenthesis(Operands[0]);
             for (int i = 1; i < Operands.Count; i++)
             {
-                output += OperationTypeName(Operators[i]) + WrapParenthesis(Operands[i]);            }
+                output +=  OperationTypeName(Operators[i]) + WrapParenthesis(Operands[i]);           
+            }
             return output;
         }
 
@@ -98,16 +116,17 @@ namespace CsQuery.EquationParser.Implementation.Functions
         }
         protected double GetValueDouble()
         {
-            double value = Convert.ToDouble(Operands[0].Value);;
+            double value = Convert.ToDouble(Operands[0].Value); ;
             for (var i = 1; i < Operands.Count; i++)
             {
                 double valueN = Convert.ToDouble(Operands[i].Value);
-                switch(Operators[i]) {
+                switch (Operators[i])
+                {
                     case OperationType.Addition:
-                        value+=valueN;
+                        value += valueN;
                         break;
                     case OperationType.Subtraction:
-                        value -=valueN;
+                        value -= valueN;
                         break;
                     case OperationType.Multiplication:
                         value *= valueN;
@@ -116,7 +135,7 @@ namespace CsQuery.EquationParser.Implementation.Functions
                         value /= valueN;
                         break;
                     case OperationType.Power:
-                        value = Math.Pow(value,valueN);
+                        value = Math.Pow(value, valueN);
                         break;
                     case OperationType.Modulus:
                         value %= valueN;
@@ -125,7 +144,8 @@ namespace CsQuery.EquationParser.Implementation.Functions
             }
             return value;
         }
-        protected long GetValueLong() {
+        protected long GetValueLong()
+        {
             long value = Convert.ToInt64(Operands[0].Value); ;
             for (var i = 1; i < Operands.Count; i++)
             {
@@ -168,9 +188,10 @@ namespace CsQuery.EquationParser.Implementation.Functions
             }
         }
 
+
         private string OperationTypeName(OperationType operationType)
         {
-            return "+-*/^%".Substring((int)operationType-1,1).ToString();
+            return "+-*/%^".Substring((int)operationType-1,1).ToString();
         }
         #endregion
     }
