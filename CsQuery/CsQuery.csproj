@@ -105,6 +105,8 @@
     <Compile Include="EquationParser\IOrderedDictionary.cs" />
     <Compile Include="EquationParser\IVariable.cs" />
     <Compile Include="EquationParser\IVariableContainer.cs" />
+    <Compile Include="HtmlParser\HtmlStyles.cs" />
+    <Compile Include="HtmlParser\TokenProperties.cs" />
     <Compile Include="StringScanner\CharacterData.cs" />
     <Compile Include="StringScanner\enumCharacterType.cs" />
     <Compile Include="StringScanner\ExtensionMethods.cs" />
@@ -185,7 +187,7 @@
     <Compile Include="Dom\Implementation\DomObject.cs" />
     <Compile Include="Dom\Implementation\DomObjectT.cs" />
     <Compile Include="Dom\Implementation\DomDocument.cs" />
-    <Compile Include="Utility\DomData.cs" />
+    <Compile Include="HtmlParser\HtmlData.cs" />
     <Compile Include="Dom\Implementation\DomText.cs" />
     <Compile Include="Dom\IDomNode.cs" />
     <Compile Include="Dom\IDomSpecialElement.cs" />
@@ -212,7 +214,7 @@
     <Compile Include="Web\CsQueryHttpContext.cs" />
     <Compile Include="Engine\Selector.cs" />
     <Compile Include="Dom\Implementation\DomElement.cs" />
-    <Compile Include="HtmlParser\DomElementFactory.cs" />
+    <Compile Include="HtmlParser\HtmlElementFactory.cs" />
     <Compile Include="ExtensionMethods\ExtensionMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\Support.cs" />

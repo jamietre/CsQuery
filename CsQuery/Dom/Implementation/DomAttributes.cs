@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
-using CsQuery.Utility;
+using CsQuery.HtmlParser;
 
 namespace CsQuery.Implementation
 {
@@ -114,7 +114,7 @@ namespace CsQuery.Implementation
         }
         public bool ContainsKey(string key)
         {
-            return Attributes.ContainsKey(DomData.TokenID(key, true));
+            return Attributes.ContainsKey(HtmlData.TokenID(key, true));
         }
         public bool ContainsKey(ushort tokenId)
         {
@@ -127,7 +127,7 @@ namespace CsQuery.Implementation
                 List<string> keys = new List<string>();
                 foreach (var id in Attributes.Keys)
                 {
-                    keys.Add(DomData.TokenName(id).ToLower());
+                    keys.Add(HtmlData.TokenName(id).ToLower());
                 }
                 return keys;
             }
@@ -141,7 +141,7 @@ namespace CsQuery.Implementation
             // do not use trygetvalue from dictionary. We need default handling in Get
             value = Get(key);
             return value != null ||
-                Attributes.ContainsKey(DomData.TokenID(key, true));
+                Attributes.ContainsKey(HtmlData.TokenID(key, true));
         }
         public bool TryGetValue(ushort key, out string value)
         {
@@ -163,7 +163,7 @@ namespace CsQuery.Implementation
             {
                 return null;
             }
-            return Get(DomData.TokenID(name, true));
+            return Get(HtmlData.TokenID(name, true));
         }
         protected string Get(ushort tokenId)
         {
@@ -191,7 +191,7 @@ namespace CsQuery.Implementation
                 throw new ArgumentException("Cannot set an attribute with no name.");
             }
             name = name.CleanUp();
-            Set(DomData.TokenID(name, true), value);
+            Set(HtmlData.TokenID(name, true), value);
         }
         /// <summary>
         /// Second to last line of defense -- will call back to owning Element for attempts to set class, style, or ID, which are 
@@ -225,7 +225,7 @@ namespace CsQuery.Implementation
         /// <param name="name"></param>
         public void SetBoolean(string name)
         {
-            ushort tokenId = DomData.TokenID(name, true);
+            ushort tokenId = HtmlData.TokenID(name, true);
 
             SetBoolean(tokenId);
         }
@@ -240,7 +240,7 @@ namespace CsQuery.Implementation
         /// <returns></returns>
         public bool Unset(string name)
         {
-            return Unset(DomData.TokenID(name, true));
+            return Unset(HtmlData.TokenID(name, true));
         }
         public bool Unset(ushort tokenId)
         {
@@ -257,7 +257,7 @@ namespace CsQuery.Implementation
         {
             foreach (var kvp in Attributes)
             {
-                yield return new KeyValuePair<string, string>(DomData.TokenName(kvp.Key).ToLower(), kvp.Value);
+                yield return new KeyValuePair<string, string>(HtmlData.TokenName(kvp.Key).ToLower(), kvp.Value);
             }
         }
         internal IEnumerable<ushort> GetAttributeIds()
@@ -284,7 +284,7 @@ namespace CsQuery.Implementation
         bool ICollection<KeyValuePair<string, string>>.Contains(KeyValuePair<string, string> item)
         {
             return ContainsKey(item.Key)
-                && Attributes[DomData.TokenID(item.Key, true)] == item.Value;
+                && Attributes[HtmlData.TokenID(item.Key, true)] == item.Value;
         }
 
         void ICollection<KeyValuePair<string, string>>.CopyTo(KeyValuePair<string, string>[] array, int arrayIndex)
@@ -293,14 +293,14 @@ namespace CsQuery.Implementation
             int index = 0;
             foreach (var kvp in Attributes)
             {
-                array[index++] = new KeyValuePair<string, string>(DomData.TokenName(kvp.Key), kvp.Value);
+                array[index++] = new KeyValuePair<string, string>(HtmlData.TokenName(kvp.Key), kvp.Value);
             }
         }
 
         bool ICollection<KeyValuePair<string, string>>.Remove(KeyValuePair<string, string> item)
         {
             if (ContainsKey(item.Key)
-                && Attributes[DomData.TokenID(item.Key, true)] == item.Value)
+                && Attributes[HtmlData.TokenID(item.Key, true)] == item.Value)
             {
                 return Remove(item.Key);
             }

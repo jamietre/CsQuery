@@ -7,7 +7,7 @@ using System.Text;
 using System.Web;
 using System.IO;
 using System.Xml;
-using CsQuery.Utility;
+using CsQuery.HtmlParser;
 using CsQuery.StringScanner;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
@@ -39,7 +39,7 @@ namespace CsQuery.Implementation
             {
                 if (_Styles == null)
                 {
-                    _Styles = new SmallDictionary<ushort, string>();
+                    _Styles = new Utility.SmallDictionary<ushort, string>();
                     if (QuickSetValue != null)
                     {
                         AddStyles(QuickSetValue, false);
@@ -117,7 +117,7 @@ namespace CsQuery.Implementation
                 List<string> keys = new List<string>();
                 foreach (var kvp in Styles)
                 {
-                    keys.Add(DomData.TokenName(kvp.Key));
+                    keys.Add(HtmlData.TokenName(kvp.Key));
                 }
                 return keys;
             }
@@ -234,7 +234,7 @@ namespace CsQuery.Implementation
         /// <returns></returns>
         public bool Remove(string name)
         {
-            return Styles.Remove(DomData.TokenID(name, true));
+            return Styles.Remove(HtmlData.TokenID(name, true));
         }
         /// <summary>
         /// Add a single style
@@ -263,7 +263,7 @@ namespace CsQuery.Implementation
         /// <returns></returns>
         public bool HasStyle(string styleName)
         {
-            return Styles.ContainsKey(DomData.TokenID(styleName, true));
+            return Styles.ContainsKey(HtmlData.TokenID(styleName, true));
         }
         /// <summary>
         /// Sets style setting with no parsing
@@ -273,12 +273,12 @@ namespace CsQuery.Implementation
         public void SetRaw(string name, string value)
         {
             bool hadStyles = HasStyles;
-            Styles[DomData.TokenID(name, true)] = value;
+            Styles[HtmlData.TokenID(name, true)] = value;
             UpdateIndex(hadStyles);
         }
         public bool TryGetValue(string key, out string value)
         {
-            return Styles.TryGetValue(DomData.TokenID(key, true), out value);
+            return Styles.TryGetValue(HtmlData.TokenID(key, true), out value);
         }
 
         public double? NumberPart(string style)
@@ -309,7 +309,7 @@ namespace CsQuery.Implementation
             {
                 foreach (var kvp in Styles)
                 {
-                    style += DomData.TokenName(kvp.Key) + ":" + kvp.Value + ";";
+                    style += HtmlData.TokenName(kvp.Key) + ":" + kvp.Value + ";";
                 }
             }
             return style;
@@ -341,7 +341,7 @@ namespace CsQuery.Implementation
         {
             if (!Owner.IsDisconnected)
             {
-                Owner.Document.AddToIndex(Owner.AttributeIndexKey(DomData.tagSTYLE), Owner);
+                Owner.Document.AddToIndex(Owner.AttributeIndexKey(HtmlData.tagSTYLE), Owner);
             }
         }
 
@@ -349,7 +349,7 @@ namespace CsQuery.Implementation
         {
             if (!Owner.IsDisconnected)
             {
-                Owner.Document.RemoveFromIndex(Owner.AttributeIndexKey(DomData.tagSTYLE));
+                Owner.Document.RemoveFromIndex(Owner.AttributeIndexKey(HtmlData.tagSTYLE));
             }
         }
 
@@ -357,7 +357,7 @@ namespace CsQuery.Implementation
         protected string Get(string name)
         {
             string value;
-            if (Styles.TryGetValue(DomData.TokenID(name, true), out value))
+            if (Styles.TryGetValue(HtmlData.TokenID(name, true), out value))
             {
                 return value;
             }
@@ -379,7 +379,7 @@ namespace CsQuery.Implementation
             value = value.Trim().Replace(";", String.Empty);
             name = name.Trim();
             CssStyle style = null;
-            if (!DomStyles.StyleDefs.TryGetValue(name, out style))
+            if (!HtmlStyles.StyleDefs.TryGetValue(name, out style))
             {
                 if (strict)
                 {
@@ -456,7 +456,7 @@ namespace CsQuery.Implementation
             while (pos < len)
             {
                 cur = value[pos];
-                if (!DomData.NumberChars.Contains(cur)) break;
+                if (!HtmlData.NumberChars.Contains(cur)) break;
                 outVal.Append(cur);
                 pos++;
             }
@@ -469,7 +469,7 @@ namespace CsQuery.Implementation
             if (remainder != String.Empty)
             {
 
-                if (DomData.Units.Contains(remainder))
+                if (HtmlData.Units.Contains(remainder))
                 {
                     type = remainder;
                 }
@@ -491,7 +491,7 @@ namespace CsQuery.Implementation
         {
             foreach (var kvp in Styles)
             {
-                yield return new KeyValuePair<string, string>(DomData.TokenName(kvp.Key).ToLower(), kvp.Value);
+                yield return new KeyValuePair<string, string>(HtmlData.TokenName(kvp.Key).ToLower(), kvp.Value);
 
             }
             yield break;
@@ -526,7 +526,7 @@ namespace CsQuery.Implementation
         }
         bool IDictionary<string, string>.ContainsKey(string key)
         {
-            return Styles.ContainsKey(DomData.TokenID(key, true));
+            return Styles.ContainsKey(HtmlData.TokenID(key, true));
         }
         void ICollection<KeyValuePair<string, string>>.Add(KeyValuePair<string, string> item)
         {
@@ -536,7 +536,7 @@ namespace CsQuery.Implementation
 
         bool ICollection<KeyValuePair<string, string>>.Contains(KeyValuePair<string, string> item)
         {
-            return Styles.Contains(new KeyValuePair<ushort, string>(DomData.TokenID(item.Key), item.Value));
+            return Styles.Contains(new KeyValuePair<ushort, string>(HtmlData.TokenID(item.Key), item.Value));
         }
 
         void ICollection<KeyValuePair<string, string>>.CopyTo(KeyValuePair<string, string>[] array, int arrayIndex)
@@ -545,13 +545,13 @@ namespace CsQuery.Implementation
             int index = 0;
             foreach (var kvp in Styles)
             {
-                array[index++] = new KeyValuePair<string, string>(DomData.TokenName(kvp.Key).ToLower(), kvp.Value);
+                array[index++] = new KeyValuePair<string, string>(HtmlData.TokenName(kvp.Key).ToLower(), kvp.Value);
             }
         }
 
         bool ICollection<KeyValuePair<string, string>>.Remove(KeyValuePair<string, string> item)
         {
-            var kvp = new KeyValuePair<ushort, string>(DomData.TokenID(item.Key), item.Value);
+            var kvp = new KeyValuePair<ushort, string>(HtmlData.TokenID(item.Key), item.Value);
             return Styles.Remove(kvp);
         }
 

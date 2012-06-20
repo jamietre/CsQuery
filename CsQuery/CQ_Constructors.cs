@@ -161,7 +161,7 @@ namespace CsQuery
         {
             Clear();
             CreateNewDom(html);
-            HtmlParser.DomElementFactory factory = new HtmlParser.DomElementFactory(Document);
+            HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
             if (html != null)
             {
 

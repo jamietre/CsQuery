@@ -5,7 +5,7 @@ using System.Text;
 using System.Diagnostics;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
-using CsQuery.Utility;
+using CsQuery.HtmlParser;
 
 namespace CsQuery.Engine
 {
@@ -64,7 +64,7 @@ namespace CsQuery.Engine
             var firstSelector = ActiveSelectors[0];
             if (firstSelector.SelectorType == SelectorType.HTML)
             {
-                HtmlParser.DomElementFactory factory = new HtmlParser.DomElementFactory(Document);
+                HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
 
                 foreach (var obj in factory.CreateObjects(firstSelector.Html))
                 {
@@ -151,24 +151,24 @@ namespace CsQuery.Engine
 #else
                     if (selector.SelectorType.HasFlag(SelectorType.AttributeExists)) 
                     {
-                        key = "!" + (char)DomData.TokenID(selector.AttributeName,true);
+                        key = "!" + (char)HtmlData.TokenID(selector.AttributeName, true);
 
                         // AttributeValue must still be matched manually - so remove this flag only.
                         removeSelectorType=SelectorType.AttributeExists;
                     }
                     else if (selector.SelectorType.HasFlag(SelectorType.Tag))
                     {
-                        key = "+" + (char)DomData.TokenID(selector.Tag, true);
+                        key = "+" + (char)HtmlData.TokenID(selector.Tag, true);
                         removeSelectorType=SelectorType.Tag;
                     }
                     else if (selector.SelectorType.HasFlag(SelectorType.ID))
                     {
-                        key = "#" + (char)DomData.TokenID(selector.ID);
+                        key = "#" + (char)HtmlData.TokenID(selector.ID);
                         removeSelectorType=SelectorType.ID;
                     }
                     else if (selector.SelectorType.HasFlag(SelectorType.Class))
                     {
-                        key = "." + (char)DomData.TokenID(selector.Class);
+                        key = "." + (char)HtmlData.TokenID(selector.Class);
                         removeSelectorType=SelectorType.Class;
                     }
 #endif
@@ -207,7 +207,7 @@ namespace CsQuery.Engine
 
                     if (selectionSource == null)
                     {
-                        result = Document.QueryIndex(key + DomData.indexSeparator, depth, descendants);
+                        result = Document.QueryIndex(key + HtmlData.indexSeparator, depth, descendants);
                     }
                     else
                     {
@@ -215,7 +215,7 @@ namespace CsQuery.Engine
                         result = elementMatches;
                         foreach (IDomObject obj in selectionSource)
                         {
-                            elementMatches.AddRange(Document.QueryIndex(key + DomData.indexSeparator + obj.Path,
+                            elementMatches.AddRange(Document.QueryIndex(key + HtmlData.indexSeparator + obj.Path,
                                     depth, descendants));
                         }
 
@@ -240,7 +240,7 @@ namespace CsQuery.Engine
                     foreach (IDomObject obj in GetAllChildOrDescendants(selector.TraversalType,selectionSource))
                     {
 
-                        key = DomData.indexSeparator + obj.Path;
+                        key = HtmlData.indexSeparator + obj.Path;
                         HashSet<IDomObject> srcKeys = new HashSet<IDomObject>(Document.QueryIndex(key));
                         foreach (IDomObject match in selector.SelectElements)
                         {

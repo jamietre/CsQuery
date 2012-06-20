@@ -5,7 +5,7 @@ using System.Web;
 using System.Text;
 using System.Dynamic;
 using CsQuery;
-using CsQuery.Utility;
+using CsQuery.HtmlParser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
@@ -62,20 +62,20 @@ namespace CsqueryTests.Csharp
 
             string quoteChar;
 
-            string result = DomData.AttributeEncode(onlyQuotes,true,out quoteChar);
+            string result = HtmlData.AttributeEncode(onlyQuotes,true,out quoteChar);
             Assert.AreEqual(onlyQuotes,result, "With only quotes, nothing changed");
             Assert.AreEqual("'", quoteChar, "Quote char was an apostrophe with only quotes");
 
-            result = DomData.AttributeEncode(onlyApos, true, out quoteChar);
+            result = HtmlData.AttributeEncode(onlyApos, true, out quoteChar);
             Assert.AreEqual(onlyApos, result, "With only apostrophes, nothing changed");
             Assert.AreEqual("\"", quoteChar, "Quote char was a quote with only apos");
 
-            result = DomData.AttributeEncode(both, true, out quoteChar);
+            result = HtmlData.AttributeEncode(both, true, out quoteChar);
             string expected = "{\"someprop\": 1, \"someprop2\", \"o&#39;brien\"}";
             Assert.AreEqual(expected, result, "With both, only apostrophes changed");
             Assert.AreEqual("'", quoteChar, "Quote char was an apos with both");
 
-            result = DomData.AttributeEncode(neither, true, out quoteChar);
+            result = HtmlData.AttributeEncode(neither, true, out quoteChar);
             Assert.AreEqual(neither, result, "With neither, nothing changeed");
             Assert.AreEqual("\"", quoteChar, "Quote char was a quote with both");
 

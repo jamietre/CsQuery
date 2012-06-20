@@ -10,11 +10,12 @@ using System.Reflection;
 using System.IO;
 using System.Web.Script.Serialization;
 using CsQuery.ExtensionMethods;
-using CsQuery.Utility;
+using CsQuery.HtmlParser;
 using CsQuery.StringScanner;
 using CsQuery.Implementation;
 using CsQuery.Engine;
 using CsQuery.ExtensionMethods.Internal;
+using CsQuery.Utility;
 
 namespace CsQuery
 {
@@ -632,7 +633,7 @@ namespace CsQuery
                     default:
                         if (el.TryGetAttribute(name, out value))
                         {
-                            if (DomData.IsBoolean(name))
+                            if (HtmlData.IsBoolean(name))
                             {
                                 // Pre-1.6 and 1.6.1+ compatibility: always return the name of the attribute if it exists for
                                 // boolean attributes
@@ -685,7 +686,7 @@ namespace CsQuery
             }
             
             // jQuery 1.7 compatibility
-            bool isBoolean = DomData.IsBoolean(name);
+            bool isBoolean = HtmlData.IsBoolean(name);
             if (isBoolean)
             {
                 // Using attr with empty string should set a property to "true. But prop() itself requires a truthy value. Check for this specifically.
@@ -1952,7 +1953,7 @@ namespace CsQuery
         {
             // Prop actually works on things other than boolean - e.g. SelectedIndex. For now though only use prop for booleans
 
-            if (DomData.IsBoolean(name))
+            if (HtmlData.IsBoolean(name))
             {
                 SetProp(name, value);
             }
@@ -1965,7 +1966,8 @@ namespace CsQuery
         public bool Prop(string name)
         {
             name=name.ToLower();
-            if (Length>0 && DomData.IsBoolean(name)) {
+            if (Length > 0 && HtmlData.IsBoolean(name))
+            {
                 bool has = this[0].HasAttribute(name);
                 // if there is nothing with the "selected" attribute, in non-multiple select lists, 
                 // the first one is selected by default by Sizzle. We will return that same information 
@@ -2204,9 +2206,9 @@ namespace CsQuery
             {
                 IDomElement e = this.Elements.First();
                 switch(e.NodeNameID) {
-                    case DomData.tagTEXTAREA:
+                    case HtmlData.tagTEXTAREA:
                         return e.InnerText;
-                    case DomData.tagINPUT:
+                    case HtmlData.tagINPUT:
                         string val = e.GetAttribute("value",String.Empty);
                         switch(e.GetAttribute("type",String.Empty)) {
                             case "radio":
@@ -2220,7 +2222,7 @@ namespace CsQuery
                                 break;
                         }
                         return val;
-                    case DomData.tagSELECT:
+                    case HtmlData.tagSELECT:
                         string result = String.Empty;
                         // TODO optgroup handling (just like the setter code)
                         var options =Find("option");
@@ -2253,7 +2255,7 @@ namespace CsQuery
                             result = options[0].GetAttribute("value", String.Empty);
                         }
                         return result;
-                    case DomData.tagOPTION:
+                    case HtmlData.tagOPTION:
                         val = e.GetAttribute("value");
                         return val ?? e.InnerText;
                     default:

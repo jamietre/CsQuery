@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
-using CsQuery.Utility;
+using CsQuery.HtmlParser;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 
@@ -90,7 +90,7 @@ namespace CsQuery.Implementation
                     string className = "";
                     foreach (ushort clsId in _Classes)
                     {
-                        className += (className == "" ? "" : " ") + DomData.TokenName(clsId);
+                        className += (className == "" ? "" : " ") + HtmlData.TokenName(clsId);
                     }
                     return className;
                 }
@@ -108,22 +108,22 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return GetAttribute(DomData.IDAttrId, String.Empty);
+                return GetAttribute(HtmlData.IDAttrId, String.Empty);
             }
             set
             {
                 if (!IsDisconnected)
                 {
-                    if (DomAttributes.ContainsKey(DomData.IDAttrId))
+                    if (DomAttributes.ContainsKey(HtmlData.IDAttrId))
                     {
-                        Document.RemoveFromIndex(IndexKey("#", DomData.TokenID(Id), Path));
+                        Document.RemoveFromIndex(IndexKey("#", HtmlData.TokenID(Id), Path));
                     }
                     if (value != null)
                     {
-                        Document.AddToIndex(IndexKey("#", DomData.TokenID(value), Path), this);
+                        Document.AddToIndex(IndexKey("#", HtmlData.TokenID(value), Path), this);
                     }
                 }
-                SetAttributeRaw(DomData.IDAttrId, value);
+                SetAttributeRaw(HtmlData.IDAttrId, value);
             }
         }
 
@@ -134,13 +134,13 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return DomData.TokenName(_NodeNameID).ToUpper();
+                return HtmlData.TokenName(_NodeNameID).ToUpper();
             }
             set
             {
                 if (_NodeNameID < 1)
                 {
-                    _NodeNameID = DomData.TokenID(value, true);
+                    _NodeNameID = HtmlData.TokenID(value, true);
                 }
                 else
                 {
@@ -219,14 +219,14 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return DomData.tagINPUT == _NodeNameID &&
-                    HasAttribute(DomData.ValueAttrId) ?
-                        GetAttribute(DomData.ValueAttrId) :
+                return HtmlData.tagINPUT == _NodeNameID &&
+                    HasAttribute(HtmlData.ValueAttrId) ?
+                        GetAttribute(HtmlData.ValueAttrId) :
                         null;
             }
             set
             {
-                SetAttribute(DomData.ValueAttrId, value);
+                SetAttribute(HtmlData.ValueAttrId, value);
             }
         }
         public override NodeType NodeType
@@ -293,7 +293,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return !DomData.NoInnerHtmlAllowed(_NodeNameID);
+                return !HtmlData.HtmlChildrenNotAllowed(_NodeNameID);
 
             }
         }
@@ -301,7 +301,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return DomData.InnerTextAllowed(_NodeNameID);
+                return HtmlData.InnerTextAllowed(_NodeNameID);
             }
         }
         /// <summary>
@@ -339,29 +339,29 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return HasAttribute(DomData.SelectedAttrId);
+                return HasAttribute(HtmlData.SelectedAttrId);
             }
         }
         public override bool Checked
         {
             get
             {
-                return HasAttribute(DomData.CheckedAttrId);
+                return HasAttribute(HtmlData.CheckedAttrId);
             }
             set
             {
-                SetAttribute(DomData.CheckedAttrId, value ? "" : null);
+                SetAttribute(HtmlData.CheckedAttrId, value ? "" : null);
             }
         }
         public override bool ReadOnly
         {
             get
             {
-                return HasAttribute(DomData.ReadonlyAttrId);
+                return HasAttribute(HtmlData.ReadonlyAttrId);
             }
             set
             {
-                SetAttribute(DomData.ReadonlyAttrId, value ? "" : null);
+                SetAttribute(HtmlData.ReadonlyAttrId, value ? "" : null);
             }
         }
         /// <summary>
@@ -471,7 +471,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return DomData.IsBlock(_NodeNameID);
+                return HtmlData.IsBlock(_NodeNameID);
             }
         }
 
@@ -484,7 +484,7 @@ namespace CsQuery.Implementation
             {
                 foreach (var id in _Classes)
                 {
-                    yield return DomData.TokenName(id);
+                    yield return HtmlData.TokenName(id);
                 }
             }
         }
@@ -522,12 +522,12 @@ namespace CsQuery.Implementation
         {
 
             string path = Path;
-            yield return ""+DomData.indexSeparator+path;
+            yield return "" + HtmlData.indexSeparator + path;
             yield return IndexKey("+",_NodeNameID, path);
             string id = Id;
             if (!String.IsNullOrEmpty(id))
             {
-                yield return IndexKey("#" ,DomData.TokenID(id), path);
+                yield return IndexKey("#", HtmlData.TokenID(id), path);
             }
             if (HasClasses)
             {
@@ -588,8 +588,8 @@ namespace CsQuery.Implementation
         }
         public bool HasClass(string name)
         {
-            return HasClasses 
-                && _Classes.Contains(DomData.TokenID(name));
+            return HasClasses
+                && _Classes.Contains(HtmlData.TokenID(name));
         }
 
         public bool AddClass(string name)
@@ -606,7 +606,7 @@ namespace CsQuery.Implementation
                     {
                         _Classes = new List<ushort>();
                     }
-                    ushort tokenId = DomData.TokenID(cls);
+                    ushort tokenId = HtmlData.TokenID(cls);
                     
                     _Classes.Add(tokenId);
                     if (!IsDisconnected)
@@ -620,7 +620,7 @@ namespace CsQuery.Implementation
             if (result && !hadClasses && !IsDisconnected)
             {
                 // Must index the attributes for search just on attribute too
-                Document.AddToIndex(AttributeIndexKey(DomData.ClassAttrId), this);
+                Document.AddToIndex(AttributeIndexKey(HtmlData.ClassAttrId), this);
             }
             return result;
         }
@@ -632,7 +632,7 @@ namespace CsQuery.Implementation
             {
                 if (HasClass(cls))
                 {
-                    ushort tokenId = DomData.TokenID(cls);
+                    ushort tokenId = HtmlData.TokenID(cls);
                     _Classes.Remove(tokenId);
                     if (!IsDisconnected)
                     {
@@ -644,7 +644,7 @@ namespace CsQuery.Implementation
             }
             if (!HasClasses && hasClasses && !IsDisconnected)
             {
-                Document.RemoveFromIndex(AttributeIndexKey(DomData.ClassAttrId));
+                Document.RemoveFromIndex(AttributeIndexKey(HtmlData.ClassAttrId));
             }
 
             return result;
@@ -670,9 +670,9 @@ namespace CsQuery.Implementation
         {
             switch (tokenId)
             {
-                case DomData.ClassAttrId:
+                case HtmlData.ClassAttrId:
                     return HasClasses;
-                case DomData.tagSTYLE:
+                case HtmlData.tagSTYLE:
                     return HasStyles;
                 default:
                     return _DomAttributes != null
@@ -681,7 +681,7 @@ namespace CsQuery.Implementation
         }
         public override bool HasAttribute(string name)
         {
-            return HasAttribute(DomData.TokenID(name, true));
+            return HasAttribute(HtmlData.TokenID(name, true));
         }
         public void SetStyles(string styles)
         {
@@ -693,26 +693,26 @@ namespace CsQuery.Implementation
         }
         public override void SetAttribute(string name, string value)
         {
-            SetAttribute(DomData.TokenID(name,true),value);
+            SetAttribute(HtmlData.TokenID(name, true), value);
         }
 
         protected void SetAttribute(ushort tokenId, string value)
         {
             switch (tokenId)
             {
-                case DomData.ClassAttrId:
+                case HtmlData.ClassAttrId:
                     ClassName = value;
                     return;
-                case DomData.IDAttrId:
+                case HtmlData.IDAttrId:
                     Id = value;
                     break;
-                case DomData.tagSTYLE:
+                case HtmlData.tagSTYLE:
                     Style.SetStyles(value, false);
                     return;
                 default:
                     // Uncheck any other radio buttons
-                    if (tokenId == DomData.CheckedAttrId
-                        && _NodeNameID == DomData.tagINPUT
+                    if (tokenId == HtmlData.CheckedAttrId
+                        && _NodeNameID == HtmlData.tagINPUT
                         && Type == "radio"
                         && !String.IsNullOrEmpty(Name)
                         && value != null
@@ -736,7 +736,7 @@ namespace CsQuery.Implementation
         /// <param name="name"></param>
         public override void SetAttribute(string name)
         {
-            SetAttribute(DomData.TokenID(name, true));
+            SetAttribute(HtmlData.TokenID(name, true));
             
         }
         public void SetAttribute(ushort tokenId)
@@ -765,14 +765,14 @@ namespace CsQuery.Implementation
         }
         public override bool RemoveAttribute(string name)
         {
-            return RemoveAttribute(DomData.TokenID(name,true));
+            return RemoveAttribute(HtmlData.TokenID(name, true));
 
         }
         protected bool RemoveAttribute(ushort tokenId)
         {
             switch (tokenId)
             {
-                case DomData.ClassAttrId:
+                case HtmlData.ClassAttrId:
                     if (HasClasses)
                     {
                         SetClassName(null);
@@ -782,8 +782,8 @@ namespace CsQuery.Implementation
                     {
                         return false;
                     }
-                case DomData.IDAttrId:
-                    if (DomAttributes.ContainsKey(DomData.IDAttrId))
+                case HtmlData.IDAttrId:
+                    if (DomAttributes.ContainsKey(HtmlData.IDAttrId))
                     {
                         Id = null;
                         return true;
@@ -792,7 +792,7 @@ namespace CsQuery.Implementation
                     {
                         return false;
                     }
-                case DomData.tagSTYLE:
+                case HtmlData.tagSTYLE:
                     if (HasStyles)
                     {
                         foreach (var style in Style.Keys)
@@ -841,7 +841,7 @@ namespace CsQuery.Implementation
         /// <returns></returns>
         public override string GetAttribute(string name, string defaultValue)
         {
-            return GetAttribute(DomData.TokenID(name,true),defaultValue);
+            return GetAttribute(HtmlData.TokenID(name, true), defaultValue);
         }
         protected string GetAttribute(ushort tokenId, string defaultValue)
         {
@@ -863,10 +863,10 @@ namespace CsQuery.Implementation
         {
             switch (tokenId)
             {
-                case DomData.ClassAttrId:
+                case HtmlData.ClassAttrId:
                     value = ClassName;
                     return true;
-                case DomData.tagSTYLE:
+                case HtmlData.tagSTYLE:
                     value = Style.ToString();
                     return true;
                 default:
@@ -879,7 +879,7 @@ namespace CsQuery.Implementation
         }
         public override bool TryGetAttribute(string name, out string value)
         {
-            return TryGetAttribute(DomData.TokenID(name,true), out value);
+            return TryGetAttribute(HtmlData.TokenID(name, true), out value);
         }
 
         public override string ToString()
@@ -893,14 +893,14 @@ namespace CsQuery.Implementation
 
         public string AttributeIndexKey(string attrName)
         {
-            return AttributeIndexKey(DomData.TokenID(attrName, true));
+            return AttributeIndexKey(HtmlData.TokenID(attrName, true));
         }
         public string AttributeIndexKey(ushort attrId)
         {
 #if DEBUG_PATH
             return "!" + DomData.TokenName(attrId) + DomData.indexSeparator + Owner.Path;
 #else
-            return "!" + (char)attrId + DomData.indexSeparator + Path;
+            return "!" + (char)attrId + HtmlData.indexSeparator + Path;
 #endif
         }
         protected void AttributeRemoveFromIndex(ushort attrId)
@@ -936,7 +936,7 @@ namespace CsQuery.Implementation
         }
         protected bool hasDefaultValue()
         {
-            return NodeNameID == DomData.tagINPUT || NodeNameID == DomData.tagTEXTAREA;
+            return NodeNameID == HtmlData.tagINPUT || NodeNameID == HtmlData.tagTEXTAREA;
         }
         internal string IndexKey(string prefix, ushort keyTokenId)
         {
@@ -951,7 +951,7 @@ namespace CsQuery.Implementation
 #if DEBUG_PATH
             return prefix + key + DomData.indexSeparator + path;
 #else
-            return IndexKey(prefix, DomData.TokenID(key,true), path);
+            return IndexKey(prefix, HtmlData.TokenID(key, true), path);
 #endif
         }
         internal string IndexKey(string prefix, ushort keyTokenId, string path)
@@ -959,7 +959,7 @@ namespace CsQuery.Implementation
 #if DEBUG_PATH
             return prefix + DomData.TokenName(keyTokenId) + DomData.indexSeparator + path;
 #else
-            return prefix + (char)keyTokenId + DomData.indexSeparator + path;
+            return prefix + (char)keyTokenId + HtmlData.indexSeparator + path;
 #endif
         }
     
@@ -971,7 +971,7 @@ namespace CsQuery.Implementation
             string nodeName = NodeName.ToLower();
             sb.Append(nodeName);
             // put ID first. Must use GetAttribute since the Id property defaults to ""
-            string id = GetAttribute(DomData.IDAttrId,null);
+            string id = GetAttribute(HtmlData.IDAttrId, null);
             
             if (id != null)
             {
@@ -1043,7 +1043,7 @@ namespace CsQuery.Implementation
             if (value != null)
             {
                 string quoteChar;
-                string attrText = DomData.AttributeEncode(value,
+                string attrText = HtmlData.AttributeEncode(value,
                     quoteAll,
                     out quoteChar);
                 sb.Append(name.ToLower());

@@ -11,9 +11,9 @@ using CsQuery.StringScanner;
 
 namespace CsQuery.HtmlParser
 {
-    public class DomElementFactory
+    public class HtmlElementFactory
     {
-        public DomElementFactory(IDomDocument document)
+        public HtmlElementFactory(IDomDocument document)
         {
             Document = document;
         }
@@ -196,7 +196,7 @@ namespace CsQuery.HtmlParser
                                 {
                                     // It's a tag closer. Make sure it's the right one.
                                     current.Pos = tagStartPos + 1;
-                                    ushort closeTagId = DomData.TokenID(GetCloseTag(current),true);
+                                    ushort closeTagId = HtmlData.TokenID(GetCloseTag(current), true);
 
                                     // Ignore empty tags, or closing tags found when no parent is open
                                     bool isProperClose = closeTagId == ParentTagID(current);
@@ -295,7 +295,7 @@ namespace CsQuery.HtmlParser
 
                                     // seems to be a new element tag, parse it.
 
-                                    ushort newTagId = DomData.TokenID(newTag,true);
+                                    ushort newTagId = HtmlData.TokenID(newTag, true);
                                     current.Object = new DomElement(newTagId);
 
                                     if (!current.Element.InnerHtmlAllowed && current.Element.InnerTextAllowed)
@@ -308,7 +308,7 @@ namespace CsQuery.HtmlParser
                                     ushort parentTagId = ParentTagID(current);
                                     if (parentTagId != 0)
                                     {
-                                        if (TagHasImplicitClose(parentTagId, newTagId))
+                                        if (HtmlData.TagHasImplicitClose(parentTagId, newTagId))
                                         {
                                             // same tag for a repeater like li occcurred - treat like a close tag
                                             if (current.Parent.Parent == null)
@@ -433,7 +433,7 @@ namespace CsQuery.HtmlParser
             else
             {
                 string text = BaseHtml.SubstringBetween(current.HtmlStart, current.Pos);
-                lit.NodeValue = DomData.HtmlDecode(text);
+                lit.NodeValue = HtmlData.HtmlDecode(text);
             }
              
             if (!current.AllowLiterals)
@@ -765,45 +765,7 @@ namespace CsQuery.HtmlParser
           
         */
         
-        protected bool TagHasImplicitClose(ushort tagId, ushort newTagId)
-        {
-            switch (tagId)
-            {
-                case DomData.tagP:
-                    // closing "p" tag is optional. Always close when a block element it returned.
-                    return DomData.IsBlock(newTagId);
-                case DomData.tagLI:
-                    return newTagId == DomData.tagLI || newTagId == tagId;
-                case DomData.tagTR:
-                    return newTagId == DomData.tagTR || newTagId == DomData.tagTABLE;
-                case DomData.tagTD:
-                    return newTagId == DomData.tagTD || newTagId == DomData.tagTR;
-                case DomData.tagTH:
-                    return newTagId == DomData.tagTH || newTagId == DomData.tagTR;
-                // simple case: repeater-like tags should be closed by another occurence of itself
-                case DomData.tagTHEAD:
-                case DomData.tagTBODY:
-                case DomData.tagTFOOT:
-                    return newTagId == tagId || newTagId == DomData.tagTABLE;
-
-                case DomData.tagOPTION:
-                    return newTagId == DomData.tagOPTION || newTagId == DomData.tagSELECT;
-                case DomData.tagHEAD:
-                    return (newTagId == DomData.tagBODY);
-                case DomData.tagDT:
-                case DomData.tagDD:
-                    return newTagId == DomData.tagDT || newTagId ==DomData.tagDD || newTagId == DomData.tagDL;
-                case DomData.tagCOLGROUP:
-                    return newTagId == DomData.tagCOLGROUP || newTagId == DomData.tagTR || newTagId == DomData.tagTABLE
-                        || newTagId == DomData.tagTHEAD || newTagId == DomData.tagTBODY || newTagId == DomData.tagTFOOT;
-                case DomData.tagOPTGROUP:
-                    return newTagId == DomData.tagOPTGROUP || newTagId == DomData.tagSELECT;
-                default:
-                    return false;
-
-            }
-        }
-        
+       
         protected int CharIndexOf(char[] charArray, char seek, int start)
         {
             //return Array.IndexOf<char>(charArray, seek, start);

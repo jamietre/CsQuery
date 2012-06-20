@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using CsQuery.Utility;
+using CsQuery.HtmlParser;
 using CsQuery.StringScanner;
 using CsQuery.StringScanner.Patterns;
 using CsQuery.ExtensionMethods.Internal;
@@ -72,7 +72,7 @@ namespace CsQuery.Engine
         {
             // get the index just for this type
             int typeIndex = 0;
-            ushort matchNodeId = DomData.TokenID(onlyNodeName,true);
+            ushort matchNodeId = HtmlData.TokenID(onlyNodeName,true);
             var childNodes = obj.ParentNode.ChildNodes;
             int length = childNodes.Count;
             bool onlyNodes = !String.IsNullOrEmpty(onlyNodeName);

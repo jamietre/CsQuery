@@ -20,7 +20,7 @@ namespace CsqueryTests.Csharp
     [TestFixture, TestClass]
     public class HtmlParser : CsQueryTest
     {
-        DomElementFactory factory;
+        HtmlElementFactory factory;
 
         [SetUp]
         public override void FixtureSetUp()
@@ -28,7 +28,7 @@ namespace CsqueryTests.Csharp
             base.FixtureSetUp();
 
             Dom = TestDom("TestHtml");
-            factory = new DomElementFactory(Dom.Document);
+            factory = new HtmlElementFactory(Dom.Document);
         }
 
         [Test,TestMethod]

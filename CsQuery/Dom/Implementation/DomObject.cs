@@ -588,7 +588,7 @@ namespace CsQuery.Implementation
         protected string PathEncode(int number)
         {
             // return number.ToString().PadLeft(pathIdLength, '0');
-            return Utility.DomData.BaseXXEncode(number);
+            return HtmlParser.HtmlData.BaseXXEncode(number);
         }
 
         //public override int GetHashCode()
