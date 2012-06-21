@@ -24,13 +24,21 @@ namespace CsQuery.HtmlParser
 
         public HtmlElementFactory(char[] html)
         {
+            Initialize();
             SetHtml(html);
             IsBound = false;
+            
         }
         public HtmlElementFactory(string html)
         {
+            Initialize();
             SetHtml(html.ToCharArray());
             IsBound = false;
+        }
+
+        private void Initialize()
+        {
+            IsDocument = false;
         }
         #endregion
 
@@ -42,7 +50,8 @@ namespace CsQuery.HtmlParser
         internal bool IsBound;
         internal char[] Html;
         internal IDomDocument Document;
-
+        private bool _IsDocument;
+        private Func<ushort, ushort, ushort> SpecialTagActionDelegate;
         #endregion
 
         #region public properties
@@ -58,7 +67,21 @@ namespace CsQuery.HtmlParser
         /// <summary>
         /// When true, HTML5 optional elements will be created automatically. This should be false for fragments.
         /// </summary>
-        public bool IsDocument;
+        public bool IsDocument
+        {
+            get
+            {
+                return _IsDocument;
+            }
+            set
+            {
+                _IsDocument = value;
+                SpecialTagActionDelegate = value ?
+                    (Func<ushort,ushort,ushort>)HtmlData.SpecialTagActionForDocument :
+                    (Func<ushort, ushort, ushort>)HtmlData.SpecialTagAction;
+            }
+
+        }
 
         /// <summary>
         /// When true, text nodes that are not the child of another elment will be wrapped in SPAN tags
@@ -333,7 +356,7 @@ namespace CsQuery.HtmlParser
                                     
                                     if (parentTagId != 0)
                                     {
-                                        ushort action = HtmlData.SpecialTagAction(parentTagId, newTagId, IsDocument);
+                                        ushort action = SpecialTagActionDelegate(parentTagId, newTagId);
 
                                         while (action != HtmlData.tagActionNothing)
                                         {
@@ -357,7 +380,7 @@ namespace CsQuery.HtmlParser
 
                                                 if (newNode != null && newNode.Parent != null && newNode.Parent.Element != null)
                                                 {
-                                                    action = HtmlData.SpecialTagAction(newNode.Parent.Element.NodeNameID, newTagId,IsDocument);
+                                                    action = SpecialTagActionDelegate(newNode.Parent.Element.NodeNameID, newTagId);
                                                     if (action != HtmlData.tagActionNothing)
                                                     {
                                                         current = newNode;

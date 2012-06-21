@@ -605,9 +605,18 @@ namespace CsQuery.HtmlParser
             return result;
         }
 
+        /// <summary>
+        /// For testing only - the inline code never uses this version
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <param name="newTag"></param>
+        /// <param name="isDocument"></param>
+        /// <returns></returns>
         public static ushort SpecialTagAction(string tag, string newTag, bool isDocument = true)
         {
-            return SpecialTagAction(TokenID(tag), TokenID(newTag),isDocument);
+            return isDocument ?
+                SpecialTagActionForDocument(TokenID(tag), TokenID(newTag)) :
+                SpecialTagAction(TokenID(tag), TokenID(newTag));
         }
 
 
@@ -622,21 +631,15 @@ namespace CsQuery.HtmlParser
         //  body, html will be closed automatically at the end of parsing and are also not required        
 
         /// <summary>
+        /// Determine a course of action given a new tag, its parent, and whether or not to treat this as a document.
         /// Return 1 to close, 0 to do nothing, or an ID to generate
         /// </summary>
         /// <param name="parentTagId"></param>
         /// <param name="newTagId"></param>
         /// <returns></returns>
-        public static ushort SpecialTagAction(ushort parentTagId, ushort newTagId, bool isDocument)
+        public static ushort SpecialTagActionForDocument(ushort parentTagId, ushort newTagId)
         {
-
-            //if ((parentTagId & NonSpecialTokenMask) != 0 ||
-            //    (TokenMetadata[parentTagId] & (ushort)TokenProperties.AutoOpenOrClose) == 0)
-            //{
-            //    return HtmlData.tagActionNothing;
-            //}
-            
-            switch (parentTagId)
+            if (parentTagId == HtmlData.tagHTML)
             {
 
                 // [html5] An html element's start tag may be omitted if the first thing inside the html element is not a comment.
@@ -647,17 +650,31 @@ namespace CsQuery.HtmlParser
 
                 // [csquery] When a metadata tag appears, we start a head. Otherwise, we start a body. If a body later appears it will be ignored.
 
-                case HtmlData.tagHTML:
-                    return !isDocument ? tagActionNothing :  
-                        (TokenMetadata[newTagId] & (ushort)TokenProperties.MetaDataTags) != 0 ?
+                    return (TokenMetadata[newTagId] & (ushort)TokenProperties.MetaDataTags) != 0 ?
                         HtmlData.tagHEAD :
                             newTagId != HtmlData.tagBODY && 
                             newTagId != HtmlData.tagHEAD ?
                                 HtmlData.tagBODY : tagActionNothing;
+            } else {
+                return SpecialTagAction(parentTagId,newTagId);
+            }
+                
 
+
+        }
+        public static ushort SpecialTagAction(ushort parentTagId, ushort newTagId)
+        {
+
+            //if ((parentTagId & NonSpecialTokenMask) != 0 ||
+            //    (TokenMetadata[parentTagId] & (ushort)TokenProperties.AutoOpenOrClose) == 0)
+            //{
+            //    return HtmlData.tagActionNothing;
+            //}
+            switch(parentTagId) {
                 case HtmlData.tagHEAD:
                     return (TokenMetadata[newTagId] & (ushort)TokenProperties.MetaDataTags) == 0 ?
                         tagActionClose : tagActionNothing;
+
                     
                 // [html5] An li element's end tag may be omitted if the li element is immediately followed by another li element 
                 //         or if there is no more content in the parent element.

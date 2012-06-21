@@ -489,9 +489,10 @@ namespace CsQuery.HtmlParser
         }
 
         /// <summary>
-        ///  Add a new parent of type tagId
+        ///  Add a new parent of type tagId.
         /// </summary>
         /// <param name="tagId"></param>
+        /// /// <param name="pos">The position which the new child should be marked to start parsing.</param>
         /// <returns></returns>
         public IterationData AddNewParent(ushort tagId, int pos)
         {
