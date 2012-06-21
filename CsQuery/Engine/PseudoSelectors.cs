@@ -540,6 +540,11 @@ namespace CsQuery.Engine
 
         private static bool ElementIsItselfHidden(IDomElement el)
         {
+            if (el.NodeNameID == HtmlData.tagINPUT && el.Type == "hidden")
+            {
+                return true;
+            }
+
             if (el.HasStyles)
             {
                 if (el.Style["display"] == "none" || el.Style.NumberPart("opacity")==0)
@@ -558,7 +563,6 @@ namespace CsQuery.Engine
             heightAttr = el.GetAttribute("height");
 
             return widthAttr == "0" || heightAttr == "0";
-
         }
 
         public static bool IsHeader(IDomObject el)

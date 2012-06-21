@@ -14,7 +14,7 @@ using CsQuery;
 using CsQuery.HtmlParser;
 using CsQuery.Utility;
 
-namespace CsqueryTests.Csharp
+namespace CsqueryTests.Csharp.HtmlParser
 {
     
     [TestFixture, TestClass]
@@ -75,18 +75,18 @@ namespace CsqueryTests.Csharp
         [Test, TestMethod]
         public void TagHasImplicitClose()
         {
-            Assert.IsTrue(HtmlData.TagHasImplicitClose("p","div"));
-            Assert.IsFalse(HtmlData.TagHasImplicitClose("p", "b"));
-            Assert.IsFalse(HtmlData.TagHasImplicitClose("p", "random"));
+            Assert.AreEqual(HtmlData.tagActionClose,HtmlData.SpecialTagAction("p","div"));
+            Assert.AreEqual(HtmlData.tagActionNothing, HtmlData.SpecialTagAction("p", "b"));
+            Assert.AreEqual(HtmlData.tagActionNothing, HtmlData.SpecialTagAction("p", "random"));
 
-            Assert.IsTrue(HtmlData.TagHasImplicitClose("td", "tr"));
-            Assert.IsFalse(HtmlData.TagHasImplicitClose("td", "div"));
-            
-            Assert.IsTrue(HtmlData.TagHasImplicitClose("li", "li"));
-            Assert.IsFalse(HtmlData.TagHasImplicitClose("li", "ol"));
+            Assert.AreEqual(HtmlData.tagActionClose, HtmlData.SpecialTagAction("td", "tr"));
+            Assert.AreEqual(HtmlData.tagActionNothing, HtmlData.SpecialTagAction("td", "div"));
 
-            Assert.IsFalse(HtmlData.TagHasImplicitClose("random", "random"));
-            Assert.IsFalse(HtmlData.TagHasImplicitClose("div","div"));
+            Assert.AreEqual(HtmlData.tagActionClose, HtmlData.SpecialTagAction("li", "li"));
+            Assert.AreEqual(HtmlData.tagActionNothing, HtmlData.SpecialTagAction("li", "ol"));
+
+            Assert.AreEqual(HtmlData.tagActionNothing, HtmlData.SpecialTagAction("random", "random"));
+            Assert.AreEqual(HtmlData.tagActionNothing, HtmlData.SpecialTagAction("div", "div"));
         }
     }
 

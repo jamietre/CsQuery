@@ -120,11 +120,11 @@ namespace CsQuery.Implementation
                 {
                     if (DomAttributes.ContainsKey(HtmlData.IDAttrId))
                     {
-                        Document.RemoveFromIndex(IndexKey("#", HtmlData.TokenID(Id), Path));
+                        Document.RemoveFromIndex(IndexKey("#", HtmlData.TokenIDCaseSensitive(Id), Path));
                     }
                     if (value != null)
                     {
-                        Document.AddToIndex(IndexKey("#", HtmlData.TokenID(value), Path), this);
+                        Document.AddToIndex(IndexKey("#", HtmlData.TokenIDCaseSensitive(value), Path), this);
                     }
                 }
                 SetAttributeRaw(HtmlData.IDAttrId, value);
@@ -394,7 +394,7 @@ namespace CsQuery.Implementation
                 }
                 ChildNodes.Clear();
 
-                CQ csq = CQ.Create(value);
+                CQ csq = CQ.CreateFragment(value);
                 ChildNodes.AddRange(csq.Document.ChildNodes);
             }
         }
@@ -531,7 +531,7 @@ namespace CsQuery.Implementation
             string id = Id;
             if (!String.IsNullOrEmpty(id))
             {
-                yield return IndexKey("#", HtmlData.TokenID(id), path);
+                yield return IndexKey("#", HtmlData.TokenIDCaseSensitive(id), path);
             }
             if (HasClasses)
             {
@@ -593,7 +593,7 @@ namespace CsQuery.Implementation
         public bool HasClass(string name)
         {
             return HasClasses
-                && _Classes.Contains(HtmlData.TokenID(name));
+                && _Classes.Contains(HtmlData.TokenIDCaseSensitive(name));
         }
 
         public bool AddClass(string name)
@@ -610,7 +610,7 @@ namespace CsQuery.Implementation
                     {
                         _Classes = new List<ushort>();
                     }
-                    ushort tokenId = HtmlData.TokenID(cls);
+                    ushort tokenId = HtmlData.TokenIDCaseSensitive(cls);
                     
                     _Classes.Add(tokenId);
                     if (!IsDisconnected)
@@ -636,7 +636,7 @@ namespace CsQuery.Implementation
             {
                 if (HasClass(cls))
                 {
-                    ushort tokenId = HtmlData.TokenID(cls);
+                    ushort tokenId = HtmlData.TokenIDCaseSensitive(cls);
                     _Classes.Remove(tokenId);
                     if (!IsDisconnected)
                     {

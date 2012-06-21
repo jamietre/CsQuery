@@ -205,27 +205,41 @@ namespace CsQuery.ExtensionMethods.Internal
             return (text.Substring(startIndex, endIndex - startIndex));
         }
 
-        public static string SubstringBetween(this char[] text, int startIndex, int endIndex)
-        {
-            int len = endIndex - startIndex + 1;
-            string result="";
-            for (int i = startIndex; i < endIndex; i++)
-            {
-                result += text[i];
-            }
-            return result;
-        }
+
+        /// <summary>
+        /// Return a substring from a character array
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="startIndex"></param>
+        /// <returns></returns>
         public static string Substring(this char[] text, int startIndex, int length)
         {
-            
+
             string result = "";
-            for (int i = startIndex; i <startIndex+ length; i++)
+            for (int i = startIndex; i < startIndex + length; i++)
             {
                 result += text[i];
             }
             return result;
         }
 
+        /// <summary>
+        /// Return a substring from a character array
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="startIndex"></param>
+        /// <returns></returns>
+        public static string Substring(this char[] text, int startIndex)
+        {
+
+            string result = "";
+            int i = startIndex;
+            while (i < text.Length)
+            {
+                result += text[i++];
+            }
+            return result;
+        }
 
         /// <summary>
         /// Return the position of the first occurrence of a string in a character array 
@@ -277,6 +291,8 @@ namespace CsQuery.ExtensionMethods.Internal
             }
             return -1;
         }
+
+       
 
         /// <summary>
         /// Remove all whitespace from a string

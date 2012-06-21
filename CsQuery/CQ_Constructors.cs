@@ -126,7 +126,7 @@ namespace CsQuery
         /// <returns></returns>
         public void Load(string html)
         {
-            Load((html ?? "").ToCharArray());
+            LoadDocument((html ?? "").ToCharArray());
         }
 
         #endregion
@@ -157,93 +157,23 @@ namespace CsQuery
 
         #region Internal DOM creation methods
 
-        protected void Load(char[] html)
+        /// <summary>
+        /// Load from an HTML document. This will try to parse it into a valid document using HTML5 rules. The key word is "try" this
+        /// is not completely implemented.
+        /// </summary>
+        /// <param name="html"></param>
+        protected void LoadDocument(char[] html)
         {
             Clear();
-            CreateNewDom(html);
-            HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
+            CreateNewDocument(html);
+            
             if (html != null)
             {
+                HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
+                factory.ParseToDocument();
+                AddSelectionRange(Document.ChildNodes);
 
-                foreach (IDomObject obj in factory.CreateObjects())
-                {
-                    Document.ChildNodes.AddAlways(obj);
-                    AddSelectionRange(Document.ChildNodes);
-                }
-
-                // ignore everything before <html> except text; if found, start adding to <body>
-                // if there's anything before <doctype> then it gets trashed
-
-                IDomElement body = Document.GetElementById("body");
-                if (body != null)
-                {
-
-                    bool textYet = false;
-                    bool anythingYet = false;
-                    int bodyIndex = 0;
-                    int index = 0;
-                    // there should only be DocType & HTML.
-                    while (index < Document.ChildNodes.Count)
-                    {
-                        IDomObject obj = Document.ChildNodes[index];
-                        switch (obj.NodeType)
-                        {
-                            case NodeType.DOCUMENT_TYPE_NODE:
-                                if (!anythingYet)
-                                {
-                                    index++;
-                                }
-                                else
-                                {
-                                    Document.ChildNodes.RemoveAt(index);
-                                }
-                                break;
-                            case NodeType.ELEMENT_NODE:
-                                if (obj.NodeName == "HTML")
-                                {
-                                    bodyIndex = body.ChildNodes.Length;
-                                    index++;
-                                }
-                                else
-                                {
-                                    if (textYet)
-                                    {
-                                        body.ChildNodes.Insert(bodyIndex++, obj);
-                                    }
-                                    else
-                                    {
-                                        index++;
-                                    }
-                                    continue;
-                                }
-                                break;
-                            case NodeType.TEXT_NODE:
-                                if (!textYet)
-                                {
-                                    // if a node is only whitespace and there has not yet been a non-whitespace text node,
-                                    // then ignore it.
-
-                                    var scanner = StringScanner.Scanner.Create(obj.NodeValue);
-                                    scanner.SkipWhitespace();
-                                    if (scanner.Finished)
-                                    {
-                                        Document.ChildNodes.RemoveAt(index);
-                                        continue;
-                                    }
-                                    else
-                                    {
-                                        textYet = true;
-                                    }
-                                }
-
-                                body.ChildNodes.Insert(bodyIndex++, obj);
-                                break;
-                            default:
-                                body.ChildNodes.Insert(bodyIndex++, obj);
-                                break;
-                        }
-                    }
-                }
+               
             }
         }
         /// <summary>
@@ -251,32 +181,62 @@ namespace CsQuery
         /// </summary>
         /// <param name="html"></param>
         /// <returns></returns>
-        protected void Load(IEnumerable<IDomObject> elements)
+        protected void LoadFragment(IEnumerable<IDomObject> elements)
         {
             Clear();
-            CreateNewDom();
+            CreateNewDocument();
             ClearSelections();
             Document.ChildNodes.AddRange(elements);
             AddSelectionRange(Document.ChildNodes);
         }
 
+        protected void LoadFragment(string html)
+        {
+            LoadFragment(html.ToCharArray());
+        }
+        /// <summary>
+        /// Creates a new fragment, e.g. HTML and BODY are not generated
+        /// </summary>
+        /// <param name="html"></param>
+        /// <returns></returns>
+        protected void LoadFragment(char[] html)
+        {
+            Clear();
+            CreateNewFragment(html);
+            HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
+
+            // calling CreateObjects with the parameter html forces it into unbound mode so HTML/BODY tags will not be generated
+
+            foreach (IDomObject obj in factory.ParseAsFragment())
+            {
+                Document.ChildNodes.AddAlways(obj);
+            }
+            AddSelectionRange(Document.ChildNodes);
+
+        }
         /// <summary>
         /// Replace the existing DOM with the html (or empty if no parameter passed)
         /// </summary>
         /// <param name="html"></param>
-        protected void CreateNewDom(char[] html=null)
+        protected void CreateNewDocument(char[] html=null)
         {
-            if (html!=null)
-            {
-                Document = new DomDocument(html);
-            }
-            else
-            {
-                Document = new DomDocument();
-            }
+            
+            Document = new DomDocument(html);
+            FinishCreatingNewDocument();
+        }
+        /// <summary>
+        /// Replace the existing DOM with the html (or empty if no parameter passed)
+        /// </summary>
+        /// <param name="html"></param>
+        protected void CreateNewFragment(char[] html = null)
+        {
+            Document = new DomFragment(html);
+            FinishCreatingNewDocument();
+        }
+        private void FinishCreatingNewDocument()
+        {
             Document.DomRenderingOptions = CQ.DefaultDomRenderingOptions;
         }
-
         #endregion
     }
 }

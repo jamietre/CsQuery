@@ -36,12 +36,11 @@ namespace CsqueryTests.CSharp
         [Test,TestMethod]
         public void BasicDomCreation()
         {
-            string tags = String.Empty;
-            Dom.Each(delegate(IDomObject e)
-            {
-                tags += (tags == "" ? "" : ",") + e.NodeName;
-            });
-            Assert.AreEqual(17, Dom.Length, "Found correct number of elements in the DOM");
+            
+
+            Assert.AreEqual(29, Dom["*"].Length, "Found correct number of elements in the DOM");
+            Assert.AreEqual(26, Dom["body *"].Length, "Found correct number of elements in the DOM");
+            Assert.AreEqual(8, Dom["body > *"].Length, "Found correct number of elements in the DOM");
         }
         [Test,TestMethod]
         public void InputCheckbox()

@@ -9,7 +9,7 @@ using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
 
-namespace CsqueryTests.Csharp
+namespace CsqueryTests.Csharp.HtmlParser
 {
     [TestClass]
     public class DocType_: CsQueryTest 

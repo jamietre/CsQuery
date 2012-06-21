@@ -2,6 +2,12 @@
 
 This is an informal log of changes to the project; major issues will be logged and described on github.
 
+#####6/21/2012
+
+- HTML5 compliance for optional start/end tags
+- Fix <input type="hidden"> & :visible/:hidden bug (Issue#9)
+- Fix class names not case sensitive (Issue#10)
+
 #####6/20/2012
 
 - Correct a problem with equation caching in nth-child; huge performance boost for calculated values

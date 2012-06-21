@@ -64,9 +64,10 @@ namespace CsQuery.Engine
             var firstSelector = ActiveSelectors[0];
             if (firstSelector.SelectorType == SelectorType.HTML)
             {
-                HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
+                
+                HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(firstSelector.Html);
 
-                foreach (var obj in factory.CreateObjects(firstSelector.Html))
+                foreach (var obj in factory.Parse())
                 {
                     yield return obj;
                 }
@@ -163,12 +164,12 @@ namespace CsQuery.Engine
                     }
                     else if (selector.SelectorType.HasFlag(SelectorType.ID))
                     {
-                        key = "#" + (char)HtmlData.TokenID(selector.ID);
+                        key = "#" + (char)HtmlData.TokenIDCaseSensitive(selector.ID);
                         removeSelectorType=SelectorType.ID;
                     }
                     else if (selector.SelectorType.HasFlag(SelectorType.Class))
                     {
-                        key = "." + (char)HtmlData.TokenID(selector.Class);
+                        key = "." + (char)HtmlData.TokenIDCaseSensitive(selector.Class);
                         removeSelectorType=SelectorType.Class;
                     }
 #endif

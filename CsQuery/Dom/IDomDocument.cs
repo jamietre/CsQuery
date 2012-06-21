@@ -29,8 +29,11 @@ namespace CsQuery
         IDomElement CreateElement(string nodeName);
         IDomText CreateTextNode(string text);
         IDomComment CreateComment(string comment);
-        IDomElement GetElementByTagName(string tagName);
+      
+        IDomElement QuerySelector(string tagName);
         IList<IDomElement> QuerySelectorAll(string tagName);
+        
+        IDomElement GetElementByTagName(string tagName);
         IList<IDomElement> GetElementsByTagName(string tagName);
 
         /// <summary>

@@ -7,42 +7,37 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
+using CollectionAssert = NUnit.Framework.CollectionAssert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
 using CsQuery.Utility;
 
-namespace CsqueryTests.Csharp
+namespace CsqueryTests.Csharp.Selectors
 {
     
     [TestFixture, TestClass]
-    public class Selectors: CsQueryTest
+    public class MiscellanousSelectors: CsQueryTest
     {
         
-        public override void FixtureSetUp()
-        {
-            base.FixtureSetUp();
-            Dom = TestDom("TestHtml");
-        }
+      
+        [Test,TestMethod]
+        public void EverythingButFistLast()
+         {
+             var res = Dom["#hlinks-user > :not(:first-child,:last-child)"];
+             IEnumerable<IDomElement> res2 = Dom["#hlinks-user"].Children().Not(":first-child,:last-child").Elements;
+             
+            CollectionAssert.AreEqual(res, res2);
 
-        protected string WriteDOMObject(IDomElement obj)
-        {
-            string result = "";
-            foreach (var kvp in obj.Attributes)
-            {
-                if (kvp.Value != null)
-                {
-                    result += kvp.Key + "=" + kvp.Value + ",";
-                }
-                else
-                {
-                    result += kvp.Value + ",";
-                }
-            }
-            result += "InnerHtml=" + obj.InnerHTML;
-            return result;
-        }
+            var hlinks = Dom["#hlinks-user"][0];
+            var lastEl = hlinks.LastElementChild;
 
+           res2 = hlinks.ChildElements.Skip(1).TakeWhile(item => item != lastEl);
+
+           CollectionAssert.AreEqual(res, res2);
+
+         }
+       
         [Test,TestMethod]
         public void Find()
         {
@@ -86,7 +81,7 @@ namespace CsqueryTests.Csharp
         [Test,TestMethod]
         public void IDSelector()
         {
-            var res = Dom.Find("#reputation_link");
+            var res = Dom["#reputation_link"];
 
             Assert.AreEqual(1, res.Length, "Found " + res.Length + " #reputation_link items");
 
@@ -129,6 +124,30 @@ namespace CsqueryTests.Csharp
             var para = Dom["p:first"];
             para[0].ClassName = "some classes";
             Assert.AreEqual(jQuery("p[class]")[0], para[0], "Selected by class attribute");
+        }
+
+        public override void FixtureSetUp()
+        {
+            base.FixtureSetUp();
+            Dom = TestDom("TestHtml");
+        }
+
+        protected string WriteDOMObject(IDomElement obj)
+        {
+            string result = "";
+            foreach (var kvp in obj.Attributes)
+            {
+                if (kvp.Value != null)
+                {
+                    result += kvp.Key + "=" + kvp.Value + ",";
+                }
+                else
+                {
+                    result += kvp.Value + ",";
+                }
+            }
+            result += "InnerHtml=" + obj.InnerHTML;
+            return result;
         }
     }
 }

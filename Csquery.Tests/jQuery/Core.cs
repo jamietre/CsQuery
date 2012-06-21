@@ -103,8 +103,8 @@ namespace CsqueryTests.jQuery
             //    equals( elem[0].defaultValue, "TEST", "Ensure cached nodes are cloned properly (Bug #6655)" );
 
             // This is different than the original tests - we actually want to PRESERVE whitespace/characters so we can reproduce the DOM (or sections of it) exactly.
-            Assert.AreEqual(3, CQ.Create(" <div/> ").Length, "Make sure whitespace is NOT trimmed.");
-            Assert.AreEqual(3, CQ.Create(" a<div/>b ").Length, "Make sure whitespace and other characters are NOT trimmed.");
+            Assert.AreEqual(3, CQ.CreateFragment(" <div/> ").Length, "Make sure whitespace is NOT trimmed.");
+            Assert.AreEqual(3, CQ.CreateFragment(" a<div/>b ").Length, "Make sure whitespace and other characters are NOT trimmed.");
             
             // Unnecessary
             
@@ -151,7 +151,7 @@ namespace CsqueryTests.jQuery
             Assert.IsTrue(jQuery("<script/>")[0].ParentNode==null, "Create a script");
             Assert.IsTrue(jQuery("<input/>").Attr("type", "hidden").Length>0, "Create an input and set the type.");
 
-            var j = CQ.Create("<span>hi</span> there <!-- mon ami -->");
+            var j = CQ.CreateFragment("<span>hi</span> there <!-- mon ami -->");
             Assert.IsTrue(j.Length ==3 , "Check node,textnode,comment creation (some browsers delete comments [but not csQuery])");
             Assert.AreEqual(NodeType.COMMENT_NODE, j.Get(2).NodeType, "Third node is a comment");
             Assert.IsTrue(!jQuery("<option>test</option>")[0].Selected, "Make sure that options are auto-selected #2050");
@@ -166,7 +166,7 @@ namespace CsqueryTests.jQuery
             }
             sb.Append("</ul>");
 
-            var el = CQ.Create(sb.ToString())[0];
+            var el = CQ.CreateFragment(sb.ToString())[0];
 
             Assert.AreEqual(el.NodeName.ToUpper(), "UL");
             Assert.AreEqual(el.FirstChild.NodeName.ToUpper(), "LI");

@@ -13,7 +13,7 @@ using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
 using CsQuery.Utility;
 
-namespace CsqueryTests.Csharp
+namespace CsqueryTests.Csharp.Selectors
 {
 
     [TestFixture, TestClass]
@@ -31,6 +31,7 @@ namespace CsqueryTests.Csharp
                     <div id='outer4' style='width:0px;'><span id='inner4'>hidden</span></div>
                     <div id='outer5' style='display:block'><span id='inner5'>visible</span></div>
                     <div id='outer6' style='opacity: 0;'>Hidden</div>
+                    <input type='hidden' value='nothing'>
                 </div>
             ");
 
@@ -47,6 +48,22 @@ namespace CsqueryTests.Csharp
             res = dom.Select("span:visible");
             Assert.AreEqual(dom.Select("#inner2,#inner5"), res, "Correct spans are visible");
         }
+        
+
+        /// <summary>
+        /// Issue#11
+        /// </summary>
+        [Test, TestMethod]
+        public void Visible_InputTypeHidden()
+        {
+            var dom = VisibilityTestDom();
+
+            var res = dom["input[type=hidden]"];
+            Assert.IsTrue(dom.Is(":visible"));
+
+            Assert.AreEqual(1, dom["input:hidden"].Length);
+            Assert.AreEqual(0, dom["input:visible"].Length);
+        }
 
         [Test, TestMethod]
         public void Hidden()
@@ -60,7 +77,7 @@ namespace CsqueryTests.Csharp
             Assert.AreEqual(dom.Select("#inner, #inner3, #inner4"), res, "Correct spans are visible");
         }
 
-        
+
 
         [Test, TestMethod]
         public void Odd()

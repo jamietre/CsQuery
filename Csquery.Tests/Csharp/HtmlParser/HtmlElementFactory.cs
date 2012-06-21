@@ -14,13 +14,13 @@ using CsQuery;
 using CsQuery.HtmlParser;
 using CsQuery.Utility;
 
-namespace CsqueryTests.Csharp
+namespace CsqueryTests.Csharp.HtmlParser
 {
     
     [TestFixture, TestClass]
-    public class HtmlParser : CsQueryTest
+    public class HtmlElementFactory : CsQueryTest
     {
-        HtmlElementFactory factory;
+      
 
         [SetUp]
         public override void FixtureSetUp()
@@ -28,7 +28,6 @@ namespace CsqueryTests.Csharp
             base.FixtureSetUp();
 
             Dom = TestDom("TestHtml");
-            factory = new HtmlElementFactory(Dom.Document);
         }
 
         [Test,TestMethod]
@@ -90,7 +89,7 @@ namespace CsqueryTests.Csharp
         }
         protected CQ CreateFromHtml(string html)
         {
-            return CQ.Create(factory.CreateObjects(html));
+            return CQ.CreateFragment(html);
         }
 
         [Test, TestMethod]
@@ -118,7 +117,7 @@ namespace CsqueryTests.Csharp
     Consider: data:text/xml,<script xmlns=""http://www.w3.org/1999/xhtml""><![CDATA[ document.write('<foo>Test</foo>'); ]]></script>
     -->";
             html = "<p><div>" + html + "</div></p>";
-            var dom = CQ.Create(html);
+            var dom = CQ.CreateFragment(html);
 
             Assert.AreEqual(1, dom["div"].Contents().Where(item => item.NodeType == NodeType.COMMENT_NODE).Count());
             Assert.AreEqual(2, dom["*"].Length);

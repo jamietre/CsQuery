@@ -12,7 +12,7 @@ using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
 using CsQuery.Utility;
 
-namespace CsqueryTests.Csharp
+namespace CsqueryTests.Csharp.Selectors
 {
     
     [TestFixture, TestClass]

@@ -40,7 +40,10 @@ namespace CsQuery.Implementation
         /// <param name="html"></param>
         public DomDocument(char[] html)
         {
-            SourceHtml = html;
+            if (html != null && html.Length > 0)
+            {
+                SourceHtml = html;
+            }
         }
 
         #endregion
@@ -340,13 +343,20 @@ namespace CsQuery.Implementation
 
         public IDomElement GetElementByTagName(string tagName)
         {
-            return GetElementsByTagName(tagName).FirstOrDefault();
+            Selector selectors = new Selector(tagName);
+            return (IDomElement)selectors.Select(Document).FirstOrDefault();
         }
 
         public IList<IDomElement> GetElementsByTagName(string tagName)
         {
             Selector selectors = new Selector(tagName);
             return (new List<IDomElement>(OnlyElements(selectors.Select(Document)))).AsReadOnly();
+        }
+
+        public IDomElement QuerySelector(string selector)
+        {
+            Selector selectors = new Selector(selector);
+            return OnlyElements(selectors.Select(Document)).FirstOrDefault();
         }
 
         public IList<IDomElement> QuerySelectorAll(string selector)

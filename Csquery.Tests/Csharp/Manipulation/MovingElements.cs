@@ -28,7 +28,7 @@ namespace CsqueryTests.CSharp
         public void Wrap()
         {
             var el = Dom["#reputation_link"];
-            var wrapper = CQ.Create("<div id=\"wrapper\"><span><div id=\"innerdiv\"></div></span></div><span><ul><li></li></ul></span>");
+            var wrapper = CQ.CreateFragment("<div id=\"wrapper\"><span><div id=\"innerdiv\"></div></span></div><span><ul><li></li></ul></span>");
             int wrapperElementCount = wrapper.Select("*").Length-3;
             int domElementCount = Dom.Select("*").Length;
             el.Wrap(wrapper);

@@ -38,22 +38,26 @@ namespace CsQuery.HtmlParser
         /// </summary>
         public const char indexSeparator = (char)1;
 #endif
-        
+
 
         /// Hardcode some tokens to improve performance when referring to them often
-        
+
+        public const ushort tagActionNothing = 0;
+        public const ushort tagActionClose = 1;
+
         public const ushort ClassAttrId = 3;
-        public const ushort ValueAttrId=4;
-        public const ushort IDAttrId=5;
-        
-        public const ushort tagSCRIPT= 6;
-        public const ushort tagTEXTAREA= 7;
-        public const ushort tagSTYLE = 8;
+        public const ushort ValueAttrId = 4;
+        public const ushort IDAttrId = 5;
+
+        public const ushort SelectedAttrId = 6;
+        public const ushort ReadonlyAttrId = 7;
+        public const ushort CheckedAttrId = 8;
+
         public const ushort tagINPUT = 9;
         public const ushort tagSELECT = 10;
         public const ushort tagOPTION = 11;
         public const ushort tagP = 12;
-        public const ushort tagTR=13;
+        public const ushort tagTR = 13;
         public const ushort tagTD = 14;
         public const ushort tagTH = 15;
         public const ushort tagHEAD = 16;
@@ -70,23 +74,26 @@ namespace CsQuery.HtmlParser
         public const ushort tagTBODY = 27;
         public const ushort tagTFOOT = 28;
         public const ushort tagTHEAD = 29;
+        public const ushort tagRT = 30;
+        public const ushort tagRP = 31;
+        public const ushort tagSCRIPT = 32;
+        public const ushort tagTEXTAREA = 33;
+        public const ushort tagSTYLE = 34;
+        public const ushort tagCOL = 35;
+        public const ushort tagHTML = 36;
 
-        public const ushort SelectedAttrId=30;
-        public const ushort ReadonlyAttrId=31;
-        public const ushort CheckedAttrId=32;
-
-        private const ushort maxHardcodedTokenId = 32;
+        private const ushort maxHardcodedTokenId = 36;
 
         // HTML spec for whitespace
         // U+0020 SPACE, U+0009 CHARACTER TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and U+000D CARRIAGE RETURN (CR).
 
         public static char[] Whitespace = new char[] { '\x0020', '\x0009', '\x000A', '\x000C', '\x000D' };
-        
+
         // U+0022 QUOTATION MARK characters ("), U+0027 APOSTROPHE characters ('), U+003D EQUALS SIGN characters (=), 
         // U+003C LESS-THAN SIGN characters (<), U+003E GREATER-THAN SIGN characters (>), or U+0060 GRAVE ACCENT characters (`),
         // and must not be the empty string.}
-        
-        public static char[] MustBeQuoted = new char[] { '/','\x0022', '\x0027', '\x003D', '\x003C', '\x003E', '\x0060' };
+
+        public static char[] MustBeQuoted = new char[] { '/', '\x0022', '\x0027', '\x003D', '\x003C', '\x003E', '\x0060' };
         public static char[] MustBeQuotedAll;
 
         // Things that can be in a CSS number
@@ -105,11 +112,11 @@ namespace CsQuery.HtmlParser
         private static List<string> Tokens = new List<string>();
         private static Dictionary<string, ushort> TokenIDs;
         private static object locker = new Object();
-        
+
         // Constants for path encoding functions
 
         private static string defaultPadding;
-        
+
         // The character set used to generate path IDs
         // For production use, this is replaced with a string of all ansi characters
 
@@ -123,11 +130,11 @@ namespace CsQuery.HtmlParser
         // this can just increase; anything above the last used slot will just be 0.
 
         private static ushort[] TokenMetadata = new ushort[256];
-        
+
         // (256 * 256) & ~256
         // this is the mask to test if an ID is in outside short list
         private const ushort NonSpecialTokenMask = (ushort)65280;
-        
+
         #endregion
 
         #region constructor
@@ -140,21 +147,21 @@ namespace CsQuery.HtmlParser
             // values. You'd be hard pressed to exceed this limit (65k for a single level) on one single web page. 
             // (Famous last words right?)
 
-            #if !DEBUG_PATH
-                baseXXchars = new char[65533];
-                for (ushort i = 0; i < 65533; i++)
-                {
-                    baseXXchars[i] = (char)(i+2);
-                }
-            #endif
+#if !DEBUG_PATH
+            baseXXchars = new char[65533];
+            for (ushort i = 0; i < 65533; i++)
+            {
+                baseXXchars[i] = (char)(i + 2);
+            }
+#endif
 
             encodingLength = baseXXchars.Length;
-            defaultPadding="";
+            defaultPadding = "";
             for (int i = 1; i < pathIdLength; i++)
             {
-                defaultPadding=defaultPadding+"0";
+                defaultPadding = defaultPadding + "0";
             }
-            maxPathIndex = (int)Math.Pow(encodingLength,pathIdLength) -1;
+            maxPathIndex = (int)Math.Pow(encodingLength, pathIdLength) - 1;
 
             MustBeQuotedAll = new char[Whitespace.Length + MustBeQuoted.Length];
             MustBeQuoted.CopyTo(MustBeQuotedAll, 0);
@@ -174,11 +181,11 @@ namespace CsQuery.HtmlParser
                 "IMG","INPUT","BR", "!DOCTYPE","!--", "COMMAND", "EMBED","KEYGEN","SOURCE","TRACK","WBR"
 
             };
-    
-            
+
+
             // these elements will cause certain tags to be closed automatically; 
             // this is very important for layout.
-               
+
             // 6-19-2012: removed "object" - object is inline.
 
             string[] blockElements = new string[]{
@@ -194,6 +201,12 @@ namespace CsQuery.HtmlParser
                 
                 // really old
                 "APPLET","LAYER","LEGEND"
+            };
+
+
+            string[] paraClosers = new string[]{
+                 "ADDRESS","ARTICLE", "ASIDE", "BLOCKQUOTE", "DIR", "DIV", "DL", "FIELDSET", "FOOTER", "FORM",
+                 "H1", "H2", "H3", "H4", "H5", "H6", "HEADER", "HGROUP", "HR", "MENU", "NAV", "OL", "P", "PRE", "SECTION", "TABLE","UL"
             };
 
             // these elements are boolean; they do not have a value other than present or missing. They
@@ -212,11 +225,15 @@ namespace CsQuery.HtmlParser
             };
 
 
-            string[] autoClosingTags = new string[] {
-                "P","LI","TR","TD","TH","THEAD","TBODY","TFOOT","OPTION","HEAD","DT","DD","COLGROUP","OPTGROUP"
+            string[] autoOpenOrClose = new string[] {
+                "P","LI","TR","TD","TH","THEAD","TBODY","TFOOT","OPTION","HEAD","DT","DD","COLGROUP","OPTGROUP",
+
+                // elements that precede things that can be opened automatically
+
+                "TABLE","HTML"
             };
-            
-            
+
+
 
             TokenIDs = new Dictionary<string, ushort>();
             // where Style used to be
@@ -227,12 +244,12 @@ namespace CsQuery.HtmlParser
             TokenID("value"); //4
             TokenID("id"); //5
 
+            TokenID("selected"); //6
+            TokenID("readonly"); //7 
+            TokenID("checked"); //8 
+
             //noInnerHtmlIDFirst = nextID;
             // the node types that have inner content which is not parsed as HTML ever
-            TokenID("script"); //6
-            TokenID("textarea"); //7
-            TokenID("style"); //8
-
 
             TokenID("input"); //9
             TokenID("select"); //10
@@ -256,12 +273,17 @@ namespace CsQuery.HtmlParser
             TokenID("tbody"); //27
             TokenID("tfoot"); //28
             TokenID("thead"); //29
-            
-            TokenID("selected"); //30
-            TokenID("readonly"); //31 
-            TokenID("checked"); //32 
+            TokenID("rt"); //30
+            TokenID("rp"); //31
+            TokenID("script"); //32
+            TokenID("textarea"); //33
+            TokenID("style"); //34
+            TokenID("col"); //34
+            TokenID("html"); //36
 
-            if (nextID != maxHardcodedTokenId+1)
+
+
+            if (nextID != maxHardcodedTokenId + 1)
             {
                 throw new InvalidOperationException("Something went wrong with the constant map in DomData");
             }
@@ -272,11 +294,12 @@ namespace CsQuery.HtmlParser
             PopulateTokenHashset(noChildrenAllowed);
             PopulateTokenHashset(blockElements);
             PopulateTokenHashset(booleanAttributes);
-            PopulateTokenHashset(autoClosingTags);
+            PopulateTokenHashset(autoOpenOrClose);
+            PopulateTokenHashset(paraClosers);
 
 
             // reset nextId to beyond the boundary of the metadata array
-            
+
             // Fill out the list of tokens to the boundary of the metadata array so the indices align
 
             while (nextID < (ushort)TokenMetadata.Length)
@@ -287,16 +310,17 @@ namespace CsQuery.HtmlParser
 
             // no element children allowed but text children are
 
-            setBit(noChildHtmlAllowed, TokenProperties.HtmlChildrenNotAllowed );
+            setBit(noChildHtmlAllowed, TokenProperties.HtmlChildrenNotAllowed);
 
             // no children whatsoever
 
             setBit(noChildrenAllowed, TokenProperties.ChildrenNotAllowed | TokenProperties.HtmlChildrenNotAllowed);
 
-            
-            setBit(autoClosingTags, TokenProperties.AutomaticClose);          
+
+            setBit(autoOpenOrClose, TokenProperties.AutoOpenOrClose);
             setBit(blockElements, TokenProperties.BlockElement);
             setBit(booleanAttributes, TokenProperties.BooleanProperty);
+            setBit(paraClosers, TokenProperties.ParagraphCloser);
 
         }
         private static HashSet<ushort> PopulateTokenHashset(IEnumerable<string> tokens)
@@ -355,9 +379,9 @@ namespace CsQuery.HtmlParser
             // nodeId & NonSpecialTokenMask returns zero for tokens that are in the short list.
             // anything outside the short list (or not matching special properties) os ok - 
             // innertextallowed is the default
-            
-            return (nodeId & NonSpecialTokenMask)!=0 ||
-                (TokenMetadata[nodeId] & (ushort)TokenProperties.ChildrenNotAllowed)== 0;
+
+            return (nodeId & NonSpecialTokenMask) != 0 ||
+                (TokenMetadata[nodeId] & (ushort)TokenProperties.ChildrenNotAllowed) == 0;
         }
         public static bool InnerTextAllowed(string nodeName)
         {
@@ -366,7 +390,7 @@ namespace CsQuery.HtmlParser
         public static bool IsBlock(ushort nodeId)
         {
 
-            return (nodeId & NonSpecialTokenMask)== 0 &&
+            return (nodeId & NonSpecialTokenMask) == 0 &&
                 (TokenMetadata[nodeId] & (ushort)TokenProperties.BlockElement) != 0;
         }
         public static bool IsBlock(string nodeName)
@@ -396,13 +420,13 @@ namespace CsQuery.HtmlParser
 
         public static ushort TokenID(string tokenName)
         {
-        
+
             if (String.IsNullOrEmpty(tokenName))
             {
                 return 0;
             }
             return TokenIDImpl(tokenName.ToLower());
-            
+
         }
 
         /// <summary>
@@ -433,8 +457,9 @@ namespace CsQuery.HtmlParser
 
             if (!TokenIDs.TryGetValue(tokenName, out id))
             {
-                
-                lock(locker) {
+
+                lock (locker)
+                {
                     if (!TokenIDs.TryGetValue(tokenName, out id))
                     {
                         Tokens.Add(tokenName);
@@ -454,10 +479,10 @@ namespace CsQuery.HtmlParser
         /// <returns></returns>
         public static string TokenName(ushort id)
         {
-            return id <= 0 ? "" : Tokens[id-2];
+            return id <= 0 ? "" : Tokens[id - 2];
         }
 
-       
+
 
         /// <summary>
         /// Encode to base XX (defined in constants)
@@ -472,12 +497,12 @@ namespace CsQuery.HtmlParser
 
             if (number < encodingLength)
             {
-                return defaultPadding +baseXXchars[number];
+                return defaultPadding + baseXXchars[number];
             }
 
             if (number > maxPathIndex)
             {
-                throw new OverflowException("Maximum number of child nodes (" + maxPathIndex + ") exceeded."); 
+                throw new OverflowException("Maximum number of child nodes (" + maxPathIndex + ") exceeded.");
             }
             string sc_result = "";
             int num_to_encode = number;
@@ -487,10 +512,10 @@ namespace CsQuery.HtmlParser
                 i++;
                 sc_result = baseXXchars[(num_to_encode % encodingLength)] + sc_result;
                 num_to_encode = ((num_to_encode - (num_to_encode % encodingLength)) / encodingLength);
-                
+
             }
             while (num_to_encode != 0);
-            
+
             return sc_result.PadLeft(pathIdLength, '0');
         }
 
@@ -523,7 +548,7 @@ namespace CsQuery.HtmlParser
                 out quoteChar);
             return quoteChar + attribute + quoteChar;
         }
-        
+
         /// <summary>
         /// Htmlencode a string, except for double-quotes, so it can be enclosed in single-quotes
         /// </summary>
@@ -572,10 +597,10 @@ namespace CsQuery.HtmlParser
 
             return result;
         }
-        
-        public static bool TagHasImplicitClose(string tag, string newTag)
+
+        public static ushort SpecialTagAction(string tag, string newTag, bool isDocument = true)
         {
-            return TagHasImplicitClose(TokenID(tag), TokenID(newTag));
+            return SpecialTagAction(TokenID(tag), TokenID(newTag),isDocument);
         }
 
 
@@ -590,61 +615,181 @@ namespace CsQuery.HtmlParser
         //  body, html will be closed automatically at the end of parsing and are also not required        
 
         /// <summary>
-        /// Return true if open tagId is closed implicitly by an appearance of newTagId
+        /// Return 1 to close, 0 to do nothing, or an ID to generate
         /// </summary>
-        /// <param name="tagId"></param>
+        /// <param name="parentTagId"></param>
         /// <param name="newTagId"></param>
         /// <returns></returns>
-        public static bool TagHasImplicitClose(ushort tagId, ushort newTagId)
+        public static ushort SpecialTagAction(ushort parentTagId, ushort newTagId, bool isDocument)
         {
-            if ((tagId & NonSpecialTokenMask) != 0 ||
-                (TokenMetadata[tagId] & (ushort)TokenProperties.AutomaticClose) == 0)
+            // [html5] An html element's start tag may be omitted if the first thing inside the html element is not a comment.
+            // [csquery] handled inline
+
+            if ((parentTagId & NonSpecialTokenMask) != 0 ||
+                (TokenMetadata[parentTagId] & (ushort)TokenProperties.AutoOpenOrClose) == 0)
             {
-                return false;
+                return HtmlData.tagActionNothing;
             }
-
-            switch (tagId)
+            
+            switch (parentTagId)
             {
-                case HtmlData.tagP:
-                    // closing "p" tag is optional. Always close when a block element it returned.
-                    return HtmlData.IsBlock(newTagId);
-                case HtmlData.tagLI:
-                    return newTagId == HtmlData.tagLI;
-                case HtmlData.tagTR:
-                    return newTagId == HtmlData.tagTR || newTagId == HtmlData.tagTABLE;
-                case HtmlData.tagTD:
-                    return newTagId == HtmlData.tagTD || newTagId == HtmlData.tagTR;
-                case HtmlData.tagTH:
-                    return newTagId == HtmlData.tagTH || newTagId == HtmlData.tagTR;
-                // simple case: repeater-like tags should be closed by another occurence of itself
-                case HtmlData.tagTHEAD:
-                case HtmlData.tagTBODY:
-                case HtmlData.tagTFOOT:
-                    return newTagId == tagId || newTagId == HtmlData.tagTABLE;
 
-                case HtmlData.tagOPTION:
-                    return newTagId == HtmlData.tagOPTION || newTagId == HtmlData.tagSELECT;
-                case HtmlData.tagHEAD:
-                    return (newTagId == HtmlData.tagBODY);
+                // [html5] An html element's start tag may be omitted if the first thing inside the html element is not a comment.
+
+                case HtmlData.tagHTML:
+                    return isDocument && 
+                            newTagId != HtmlData.tagBODY && 
+                            newTagId != HtmlData.tagHEAD ?
+                                HtmlData.tagBODY : tagActionNothing;
+
+                    
+                // [html5] An li element's end tag may be omitted if the li element is immediately followed by another li element 
+                //         or if there is no more content in the parent element.
+
+                case HtmlData.tagLI:
+                    return newTagId == HtmlData.tagLI ?
+                       tagActionClose : tagActionNothing;
+
+                // [html5] A dt element's end tag may be omitted if the dt element is immediately followed by another dt element or a dd element.
+                // [html5] A dd element's end tag may be omitted if the dd element is immediately followed by another dd element or a dt element, or if there is no more content in the parent element.
+                // [csquery] we more liberally interpret the appearance of a DL as an omitted 
+
                 case HtmlData.tagDT:
                 case HtmlData.tagDD:
-                    return newTagId == HtmlData.tagDT || newTagId == HtmlData.tagDD || newTagId == HtmlData.tagDL;
+                    return newTagId == HtmlData.tagDT || newTagId == HtmlData.tagDD
+                        ? tagActionClose : tagActionNothing;
+
+                // [html5] A p element's end tag may be omitted if the p element is immediately followed by an 
+                //     - address, article, aside, blockquote, dir, div, dl, fieldset, footer, form, h1, h2, h3, h4, h5, h6, header,
+                //     - group, hr, menu, nav, ol, p, pre, section, table, or ul, 
+                //   element, or if there is no more content in the parent element and the parent element is not an a element.
+                // [csquery] I have no idea what "the parent element is not an element" means. Closing an open p whenever we hit one of these elements seems to work.
+
+                case HtmlData.tagP:
+                    //return HtmlData.IsBlock(newTagId);
+                    return (newTagId & NonSpecialTokenMask) == 0
+                        && (TokenMetadata[newTagId] & (ushort)TokenProperties.ParagraphCloser) != 0
+                            ? tagActionClose : tagActionNothing;
+
+
+                // [html5] An rt element's end tag may be omitted if the rt element is immediately followed by an rt or rp element, or if there is no more content in the parent element.
+                // [html5] An rp element's end tag may be omitted if the rp element is immediately followed by an rt or rp element, or if there is no more content in the parent element.
+
+                case HtmlData.tagRT:
+                case HtmlData.tagRP:
+                    return newTagId == HtmlData.tagRT || newTagId == HtmlData.tagRP
+                        ? tagActionClose : tagActionNothing;
+
+                // [html5] An optgroup element's end tag may be omitted if the optgroup element is immediately followed by another 
+                //    optgroup element, or if there is no more content in the parent element.
+
+                case HtmlData.tagOPTGROUP:
+                    return newTagId == HtmlData.tagOPTGROUP
+                        ? tagActionClose : tagActionNothing;
+
+                // [html5] An option element's end tag may be omitted if the option element is immediately followed by another option element, 
+                //     or if it is immediately followed by an optgroup element, or if there is no more content in the parent element.
+
+                case HtmlData.tagOPTION:
+                    return newTagId == HtmlData.tagOPTION
+                        ? tagActionClose : tagActionNothing;
+
+                // [html5] A colgroup element's start tag may be omitted if the first thing inside the colgroup element is a col element, and if the element is not immediately 
+                //     preceded by another colgroup element whose end tag has been omitted. (It can't be omitted if the element is empty.)
+
+
+                // [csquery] This logic is beyond the capability of the parser right now. We close colgroup if we hit something else in the table. In practice this
+                //     should make no difference.
+
                 case HtmlData.tagCOLGROUP:
                     return newTagId == HtmlData.tagCOLGROUP || newTagId == HtmlData.tagTR || newTagId == HtmlData.tagTABLE
-                        || newTagId == HtmlData.tagTHEAD || newTagId == HtmlData.tagTBODY || newTagId == HtmlData.tagTFOOT;
-                case HtmlData.tagOPTGROUP:
-                    return newTagId == HtmlData.tagOPTGROUP || newTagId == HtmlData.tagSELECT;
+                        || newTagId == HtmlData.tagTHEAD || newTagId == HtmlData.tagTBODY || newTagId == HtmlData.tagTFOOT
+                        ? tagActionClose : tagActionNothing;
+
+                // [html5]  A tr element's end tag may be omitted if the tr element is immediately followed by another tr element, or if there is no more content in the parent element.
+                // [csquery] just close it if it's an
+                case HtmlData.tagTR:
+                    return newTagId == HtmlData.tagTR || newTagId == HtmlData.tagTBODY || newTagId == HtmlData.tagTFOOT
+                        ? tagActionClose : tagActionNothing;
+
+                //return newTagId == HtmlData.tagTD || newTagId == HtmlData.tagTR
+                //    ? SpecialParsingActions.CloseParent : 0;
+
+                case HtmlData.tagTD:
+
+                // [html5] A th element's end tag may be omitted if the th element is immediately followed by a td or th element, or if there is no more content in the parent element.
+                // [csquery] we evaluate "no more content" by trying to open another tag type in the table. This can return both a close & create 
+                case HtmlData.tagTH:
+                    return newTagId == HtmlData.tagTBODY || newTagId == HtmlData.tagTFOOT ||
+                            newTagId == HtmlData.tagTH || newTagId == HtmlData.tagTD || newTagId == HtmlData.tagTR
+                        ? tagActionClose : tagActionNothing;
+
+                // simple case: repeater-like tags should be closed by another occurence of itself
+
+                // [html5] A thead element's end tag may be omitted if the thead element is immediately followed by a tbody or tfoot element.
+
+
+
+                //    A tbody element's end tag may be omitted if the tbody element is immediately followed by a tbody or tfoot element, or if there is no more content in the parent element.
+
+
+                case HtmlData.tagTHEAD:
+                case HtmlData.tagTBODY:
+                    return newTagId == HtmlData.tagTBODY || newTagId == HtmlData.tagTFOOT
+                        ? tagActionClose : tagActionNothing;
+
+                // [html5] A tfoot element's end tag may be omitted if the tfoot element is immediately followed by a tbody element, or if there is no more content in the parent element.
+                // [csquery] can't think of any reason not to include THEAD as a closer if they put them in wrong order
+
+                case HtmlData.tagTFOOT:
+                    return newTagId == HtmlData.tagBODY || newTagId == HtmlData.tagTHEAD
+                        ? tagActionClose : tagActionNothing;
+
+
+                case HtmlData.tagHEAD:
+                    return (newTagId == HtmlData.tagBODY)
+                        ? tagActionClose : tagActionNothing;
+
+                // AUTO CREATION
+
+                // [html5] A tbody element's start tag may be omitted if the first thing inside the tbody element is a tr element, and if the element is not immediately 
+                //        preceded by a tbody, thead, or tfoot element whose end tag has been omitted. (It can't be omitted if the element is empty.)
+
+                case HtmlData.tagTABLE:
+                    //return newTagId == HtmlData.tagCOL ?
+                    return newTagId == HtmlData.tagTR ?
+                        HtmlData.tagTBODY : tagActionNothing;
+
                 default:
-                    return false;
+                    return tagActionNothing;
 
             }
+
         }
-        
+
+        /// <summary>
+        /// For tags that may automatically generate a parent, this tells what it is
+        /// </summary>
+        /// <param name="newTagId"></param>
+        /// <returns></returns>
+        public static ushort CreateParentFor(ushort newTagId)
+        {
+            switch (newTagId)
+            {
+                //case HtmlData.tagHTML:
+                case HtmlData.tagTR:
+                    return HtmlData.tagTBODY;
+                //case HtmlData.tagCOL:
+                //return HtmlData.tagCOLGROUP;
+                default:
+                    throw new InvalidOperationException(String.Format("I don't know what to create for child tag '{0}", TokenName(newTagId)));
+            }
+        }
         #endregion
 
         #region private methods
 
-        
+
         /// <summary>
         /// For each value in "tokens" (ignoring case) sets the specified bit in the reference table
         /// </summary>
@@ -666,7 +811,7 @@ namespace CsQuery.HtmlParser
         /// <param name="bit"></param>
         private static void setBit(IEnumerable<ushort> tokens, TokenProperties bit)
         {
-            foreach (var token in tokens) 
+            foreach (var token in tokens)
             {
                 setBit(token, bit);
             }

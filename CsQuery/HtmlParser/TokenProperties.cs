@@ -18,7 +18,7 @@ namespace CsQuery.HtmlParser
         
         // the tag is automatically closing, e.g. 'p'.
 
-        AutomaticClose=4,
+        AutoOpenOrClose=4,
         
         // the tag may not have children
 
@@ -26,6 +26,10 @@ namespace CsQuery.HtmlParser
 
         // the tag may not have HTML children (but could possibly have children)
 
-        HtmlChildrenNotAllowed=16
+        HtmlChildrenNotAllowed=16,
+
+        // this tag causes an open p tag to close
+
+        ParagraphCloser=32
     }
 }

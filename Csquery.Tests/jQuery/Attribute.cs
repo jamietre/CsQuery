@@ -113,7 +113,7 @@ namespace CsqueryTests.jQuery
             Assert.IsTrue(0 == jQuery("#foo").Attr("style", "position:absolute;").Attr("style").IndexOf("position"), "Check style setter");
 
             //    // Check value on button element (#1954)
-            var jbutton = CQ.Create("<button value='foobar'>text</button>").InsertAfter("#button");
+            var jbutton = CQ.CreateFragment("<button value='foobar'>text</button>").InsertAfter("#button");
             Assert.AreEqual(jbutton.Attr("value"), "foobar", "Value retrieval on a button does not return innerHTML");
             Assert.AreEqual(jbutton.Attr("value", "baz").Html(), "text", "Setting the value does not change innerHTML");
 

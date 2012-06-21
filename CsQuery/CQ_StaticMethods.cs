@@ -61,6 +61,18 @@ namespace CsQuery
         }
 
         /// <summary>
+        /// Creeate a new DOM from HTML text
+        /// </summary>
+        /// <param name="html"></param>
+        /// <returns></returns>
+        public static CQ CreateFragment(string html)
+        {
+            CQ csq = new CQ();
+            csq.LoadFragment(html);
+            return csq;
+        }
+
+        /// <summary>
         /// Create a new DOM object from a character array
         /// </summary>
         /// <param name="html"></param>
@@ -68,7 +80,7 @@ namespace CsQuery
         public static CQ Create(char[] html)
         {
             CQ csq = new CQ();
-            csq.Load(html);
+            csq.LoadDocument(html);
             return csq;
         }
 
@@ -113,7 +125,7 @@ namespace CsQuery
         public static CQ Create(IDomObject element)
         {
             CQ csq = new CQ();
-            csq.Load(Objects.Enumerate(element));
+            csq.LoadFragment(Objects.Enumerate(element));
             return csq;
         }
 
@@ -125,7 +137,7 @@ namespace CsQuery
         public static CQ Create(IEnumerable<IDomObject> elements)
         {
             CQ csq = new CQ();
-            csq.Load(elements);
+            csq.LoadFragment(elements);
             return csq;
         }
 

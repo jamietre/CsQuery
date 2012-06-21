@@ -253,8 +253,8 @@ namespace CsqueryTests.jQuery
             Assert.AreEqual(jQuery("<div><p></p></div>").Find("p").Closest("table").Length, 0, "Make sure disconnected closest work." );
 
             // Bug #7369
-            Assert.AreEqual(CQ.Create("<div foo='bar'></div>").Closest("[foo]").Length, 1, "Disconnected nodes with attribute selector");
-            Assert.AreEqual(CQ.Create("<div>text</div>").Closest("[lang]").Length, 0, "Disconnected nodes with text and non-existent attribute selector");
+            Assert.AreEqual(CQ.CreateFragment("<div foo='bar'></div>").Closest("[foo]").Length, 1, "Disconnected nodes with attribute selector");
+            Assert.AreEqual(CQ.CreateFragment("<div>text</div>").Closest("[lang]").Length, 0, "Disconnected nodes with text and non-existent attribute selector");
         }
 
 //test("closest(Array)", function() {

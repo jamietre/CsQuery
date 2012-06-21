@@ -30,7 +30,7 @@ namespace CsQuery
             {
                 if (_Document == null)
                 {
-                    CreateNewDom();
+                    CreateNewDocument();
                 }
                 return _Document;
             }

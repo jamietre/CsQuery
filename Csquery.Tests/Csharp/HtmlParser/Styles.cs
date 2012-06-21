@@ -14,7 +14,7 @@ using CsQuery;
 using CsQuery.HtmlParser;
 using CsQuery.Utility;
 
-namespace CsqueryTests.Csharp
+namespace CsqueryTests.Csharp.HtmlParser
 {
     
     [TestFixture, TestClass,Description("Styles objects")]
