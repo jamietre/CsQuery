@@ -109,7 +109,7 @@ namespace CsqueryTests.Performance
 
         #region static file output methods
 
-        private static string q= "\"";
+        private static string qu= "\"";
 
         public static void Output(PerfComparison comp)
         {
@@ -126,12 +126,12 @@ namespace CsqueryTests.Performance
                 OutputHeadersCsv(comp.Data.Count);
             }
 
-            string line = q + comp.TestName + q + ","
-                + q + comp.Context + q + ","
-                + q + comp.Description + q + ","
+            string line = qu + comp.TestName + qu + ","
+                + qu + comp.Context + qu + ","
+                + qu + comp.Description + qu + ","
                 + (comp.SameResults ? 1 : 0).ToString() + ","
-                + q + comp.Best.Source + q + ","
-                + q + comp.HowMuchFaster().ToString() + q;
+                + qu + comp.Best.Source + qu + ","
+                + qu + comp.HowMuchFaster().ToString() + qu;
 
 
             foreach (var item in comp.Data) {
@@ -139,7 +139,7 @@ namespace CsqueryTests.Performance
                 {
 
                     line += ",,";
-                    line += q + item.Source + q + ","
+                    line += qu + item.Source + qu + ","
                         + item.IterationsPerSecond + ","
                         + item.Iterations + ","
                         + item.TimeSeconds;
@@ -164,21 +164,21 @@ namespace CsqueryTests.Performance
         }
         private static void OutputHeadersCsv(int numToCompare)
         {
-            string line = q + "Test Name" + q + ","
-                + q + "Test Document" + q + ","
-                + q + "Description" + q + ","
-                + q + "Same" + q + ","
-                + q + "Winner" + q + ","
-                + q + "FasterRatio" + q;
+            string line = qu + "Test Name" + qu + ","
+                + qu + "Test Document" + qu + ","
+                + qu + "Description" + qu + ","
+                + qu + "Same" + qu + ","
+                + qu + "Winner" + qu + ","
+                + qu + "FasterRatio" + qu;
 
             // extra comma for an empty col before the output & between each result
 
             for (int i = 0; i < numToCompare; i++)
             {
-                line += ",,"+ q + "Source" + q;
-                line += "," + q + "Iterations/Sec" + q + ","
-                + q + "Iterations" + q + ","
-                + q + "Seconds" + q;
+                line += ",,"+ qu + "Source" + qu;
+                line += "," + qu + "Iterations/Sec" + qu + ","
+                + qu + "Iterations" + qu + ","
+                + qu + "Seconds" + qu;
             }
 
             OutputLineToFile(OutputFileNameCsv, line);

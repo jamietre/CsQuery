@@ -38,7 +38,11 @@ namespace CsQuery.HtmlParser
             }
             return result;
         }
+        public static string AsString(this char[] text)
+        {
+            return String.Join("", text);
 
+        }
 
      
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CsQuery.ExtensionMethods;
+using CsQuery.ExtensionMethods.Internal;
 using CsQuery.Implementation;
 using CsQuery.Engine;
 
@@ -119,16 +120,6 @@ namespace CsQuery
             AddSelectionRange(elements);
         }
 
-        /// <summary>
-        /// Creates a new DOM. This will DESTROY any existing DOM. This is not the same as Select.
-        /// </summary>
-        /// <param name="html"></param>
-        /// <returns></returns>
-        public void Load(string html)
-        {
-            LoadDocument((html ?? "").ToCharArray());
-        }
-
         #endregion
 
         #region implicit constructors
@@ -165,19 +156,42 @@ namespace CsQuery
         protected void LoadDocument(char[] html)
         {
             Clear();
-            CreateNewDocument(html);
+            //CreateNewDocument(html);
             
-            if (html != null)
-            {
-                HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
-                factory.ParseToDocument();
-                AddSelectionRange(Document.ChildNodes);
+            //if (html != null)
+            //{
+            //    HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
+            //    factory.ParseToDocument();
+            //    AddSelectionRange(Document.ChildNodes);
 
                
-            }
+            //}
+            CreateNewDocument(html);
+            ClearSelections();
+            HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
+            factory.ParseToDocument();
+            AddSelectionRange(Document.ChildNodes);
+
         }
+
         /// <summary>
-        /// Creates a new DOM. This will DESTROY any existing DOM. This is not the same as Select.
+        /// Load as if content - tag generation (EXCEPT for html/body) is enabled
+        /// </summary>
+        /// <param name="html"></param>
+        protected void LoadContent(char[] html)
+        {
+            CreateNewFragment(html);
+            ClearSelections();
+            HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
+            factory.GenerateOptionalElements = true;
+            factory.IsDocument = false;
+            Document.AddChildrenAlways(factory.Parse());
+            AddSelectionRange(Document.ChildNodes);
+
+        }
+
+        /// <summary>
+        /// Load as if a fragment - no tag generation whatsoever
         /// </summary>
         /// <param name="html"></param>
         /// <returns></returns>
@@ -186,14 +200,10 @@ namespace CsQuery
             Clear();
             CreateNewDocument();
             ClearSelections();
-            Document.ChildNodes.AddRange(elements);
+            Document.AddChildrenAlways(elements);
             AddSelectionRange(Document.ChildNodes);
         }
 
-        protected void LoadFragment(string html)
-        {
-            LoadFragment(html.ToCharArray());
-        }
         /// <summary>
         /// Creates a new fragment, e.g. HTML and BODY are not generated
         /// </summary>
@@ -204,13 +214,7 @@ namespace CsQuery
             Clear();
             CreateNewFragment(html);
             HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
-
-            // calling CreateObjects with the parameter html forces it into unbound mode so HTML/BODY tags will not be generated
-
-            foreach (IDomObject obj in factory.ParseAsFragment())
-            {
-                Document.ChildNodes.AddAlways(obj);
-            }
+            Document.AddChildrenAlways(factory.ParseAsFragment());
             AddSelectionRange(Document.ChildNodes);
 
         }
@@ -220,7 +224,6 @@ namespace CsQuery
         /// <param name="html"></param>
         protected void CreateNewDocument(char[] html=null)
         {
-            
             Document = new DomDocument(html);
             FinishCreatingNewDocument();
         }

@@ -566,5 +566,13 @@ namespace CsQuery.ExtensionMethods.Internal
             return value==null ? alternate : value;
         }
 
+        public static void AddChildrenAlways(this IDomDocument document, IEnumerable<IDomObject> list)
+        {
+            foreach (var item in list)
+            {
+                document.ChildNodes.AddAlways(item);
+            }
+        }
+
     }
 }

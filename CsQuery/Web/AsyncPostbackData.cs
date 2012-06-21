@@ -57,7 +57,7 @@ namespace CsQuery.Web
             {
                 if (_Dom == null)
                 {
-                    _Dom = CQ.Create(Content);
+                    _Dom = CQ.CreateFragment(Content);
                 }
                 return _Dom;
             }

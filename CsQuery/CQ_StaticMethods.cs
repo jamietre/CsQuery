@@ -56,19 +56,7 @@ namespace CsQuery
         public static CQ Create(string html)
         {
             CQ csq = new CQ();
-            csq.Load(html);
-            return csq;
-        }
-
-        /// <summary>
-        /// Creeate a new DOM from HTML text
-        /// </summary>
-        /// <param name="html"></param>
-        /// <returns></returns>
-        public static CQ CreateFragment(string html)
-        {
-            CQ csq = new CQ();
-            csq.LoadFragment(html);
+            csq.LoadContent(ConvertHtmlString(html));
             return csq;
         }
 
@@ -85,7 +73,7 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Create a new DOM object from html, and use quickSet to create attributes (and/or css)
+        /// Create a new object from html, and use quickSet to create attributes (and/or css)
         /// </summary>
         /// <param name="html">A string of HTML</param>
         /// <param name="quickSet"></param>
@@ -141,6 +129,80 @@ namespace CsQuery
             return csq;
         }
 
+
+        /// <summary>
+        /// Creeate a new fragment from HTML text
+        /// </summary>
+        /// <param name="html"></param>
+        /// <returns></returns>
+        public static CQ CreateFragment(string html)
+        {
+            CQ csq = new CQ();
+            csq.LoadFragment(ConvertHtmlString(html));
+            return csq;
+        }
+
+
+        /// <summary>
+        /// Creeate a new fragment from HTML text
+        /// </summary>
+        /// <param name="html"></param>
+        /// <returns></returns>
+        public static CQ CreateFragment(char[] html)
+        {
+            CQ csq = new CQ();
+            csq.LoadFragment(html);
+            return csq;
+        }
+
+
+        /// <summary>
+        /// Creeate a new DOM from a squence of elements, or another CQ object
+        /// </summary>
+        /// <param name="elements">A sequence of elements</param>
+        /// <returns></returns>
+        public static CQ CreateFragment(IEnumerable<IDomObject> elements)
+        {
+            // this is synonymous with the Create method of the same sig because we definitely
+            // would never autogenerate elements from a sequence of elements
+
+            return Create(elements);
+        }
+
+        /// <summary>
+        /// Creeate a new DOM from HTML text using full HTML5 tag generation
+        /// </summary>
+        /// <param name="html"></param>
+        /// <returns></returns>
+        public static CQ CreateDocument(string html)
+        {
+            CQ csq = new CQ();
+            csq.LoadDocument(ConvertHtmlString(html));
+            return csq;
+        }
+
+        /// <summary>
+        /// Creeate a new DOM from HTML text using full HTML5 tag generation
+        /// </summary>
+        /// <param name="html"></param>
+        /// <returns></returns>
+        public static CQ CreateDocument(char[] html)
+        {
+            CQ csq = new CQ();
+            csq.LoadDocument(html);
+            return csq;
+        }
+
+
+        /// <summary>
+        /// UNTESTED!
+        /// </summary>
+        /// <param name="html"></param>
+        /// <returns></returns>
+        public static CQ CreateDocument(Stream html)
+        {
+            return CreateDocument(StreamToCharArray(html));
+        }
 
         /// <summary>
         /// Creates a new DOM from an HTML file.
@@ -456,6 +518,30 @@ namespace CsQuery
         
         #endregion
 
+        #region private methods
 
+        
+        private static char[] StreamToCharArray(Stream stream)
+        {
+            StreamReader reader = new StreamReader(stream);
+           
+            long len = stream.Length;
+
+            if (len>0 && len < int.MaxValue) {
+                char[] arr = new char[stream.Length];
+                reader.Read(arr,0,Convert.ToInt32(len));
+                return arr;
+            } else {
+                return reader.ReadToEnd().ToCharArray();
+            }
+        }
+
+        private static char[] ConvertHtmlString(string html)
+        {
+            return String.IsNullOrEmpty(html) ?
+                null :
+                html.ToCharArray();
+        }
+        #endregion
     }
 }

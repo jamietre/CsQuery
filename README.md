@@ -80,6 +80,10 @@ jQuery extensions:
 
 ### Release Notes
 
+Version 1.1.2 (unreleased):
+
+Implement tag generation to confirm with HTML5 optional opening & closing specifications
+
 Version 1.1.1:
 
 All tests from jQuery Sizzle project have been migrated; some bugs in complex selectors were revealed during this exercise. All known bugs have been fixed and all tests pass with one exception: leading operators (+ and -) are not allowed in formula CSS selectors. For example, `:nth-child(+2n+1)` will fail, but `:nth-child(2n+1)` will work. This is legal CSS but also a low priority as it is an edge case.
@@ -126,6 +130,24 @@ This is the only formal documentation for CsQuery. When I get time I'll organize
 *Create from a string of HTML*
 
     var dom = CQ.Create(htmlString);
+
+Starting with versions after 1.1.1, there are two more methods for creating content. This reflects changes in the HTML parser to comply with [HTML5 specifications for handling optional tags](http://dev.w3.org/html5/spec/single-page.html#optional-tags). 
+
+The HTML and BODY tags are optional. If you load an HTML fragment in a browser, you'll notice when you look at the markup it its debugger, they have been created. CsQuery now does this, too. This ensures that selectors will return exactly the same results 
+
+    CQ.Create(..)           // Create a content fragment
+
+This method is meant to be used for complete HTML blocks but not documents, for example, a piece of content retrieved from a CMS that will be embedded in another document. Using this method, missing tags will be created according to the HTML5 spec EXCEPT for the `html` and `body` tags. Additionally, stranded text will be wrapped in `span` tags making it safe to insert into nodes that cannot have text directly as children.
+    
+    CQ.CreateDocument(..)   // Create a document. 
+
+This method creates a complete HTML document. If the `html`, `body` or `head` tags are missing, they will be created. Stranded text nodes (e.g. outside of `body`) will be moved inside the body.
+    
+    CQ.CreateFragment(..)   // Create a fragment. 
+
+This method interprets the content as a true fragment that you will use for any purpose. No missing tag parsing will be done. This method is the default handling for creating HTML from a selector, e.g. 
+
+    var fragment = someCsQueryDocument.Select["<div /">];
 
 
 *Load synchronously* 
@@ -264,9 +286,13 @@ There are necessarily some differences in usage because of the language itself a
 
 ##### Creating a new DOM
 
-The static `Create` method is used to create a new DOM from an html string, a sequence of `IDomObject` elements, or another CQ object.
+Static methods are used to create a new DOM from an html string, a sequence of `IDomObject` elements, or another CQ object.
 
-    CQ.Create(..)           // Constructor for new DOM, same as $(...) (when passed HTML or elements)
+    CQ.Create(..)           // Create content. Missing tags will be generated, except for BODY and HTML
+    CQ.CreateDocument(..)   // Create a document. Missing tags will be generated according to HTML5 specs; e.g, if there is no HTML or BODY tag, they will be created.
+    CQ.CreateFragment(..)   // Create a fragment. No missing tag parsing will be done.
+    
+
 
 You don't need to do this in a browser. The "document" is already there. You can, however, create new fragments in jQuery:
 

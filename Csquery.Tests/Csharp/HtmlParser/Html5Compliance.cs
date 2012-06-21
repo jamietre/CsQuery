@@ -31,8 +31,8 @@ namespace CsqueryTests.Csharp.HtmlParser
             Assert.AreEqual(2, div.Classes.Count());
             Assert.IsTrue(div.HasClass("class1"));
             Assert.IsTrue(div.HasClass("class2"));
-            
- 
+
+
         }
 
         [Test, TestMethod]
@@ -61,7 +61,7 @@ namespace CsqueryTests.Csharp.HtmlParser
 
             var dom = CQ.Create(html);
 
-            Assert.AreEqual(1,dom["tbody"].Length);
+            Assert.AreEqual(1, dom["tbody"].Length);
             Assert.AreEqual("TABLE", dom["tbody"][0].ParentNode.NodeName);
         }
         [Test, TestMethod]
@@ -74,15 +74,15 @@ namespace CsqueryTests.Csharp.HtmlParser
         <tr><td><dfn id=dom-uda-protocol title=dom-uda-protocol><code>protocol</code></dfn>
      <td><a href=#url-scheme title=url-scheme>&lt;scheme&gt;</a>
      </tr></table>";
-            var dom = CQ.CreateFragment(html);
+            var dom = CQ.Create(html);
 
             // should not create wrapper
             Assert.AreEqual(0, dom["body"].Length);
             Assert.AreEqual(0, dom["head"].Length);
-            
+
             AutoCreateTests(dom);
 
-            dom = CQ.Create(html);
+            dom = CQ.CreateDocument(html);
 
             // should not create wrapper
             Assert.AreEqual(1, dom["body"].Length);
@@ -92,7 +92,7 @@ namespace CsqueryTests.Csharp.HtmlParser
             Assert.AreEqual(Arrays.Create("HEAD", "BODY"), dom["html > *"].Select(item => item.NodeName));
             AutoCreateTests(dom);
 
-       
+
 
         }
 
@@ -106,11 +106,25 @@ namespace CsqueryTests.Csharp.HtmlParser
             var len = dom["body"].Length > 0 ?
                 dom["body *"].Length : dom["*"].Length;
 
-            Assert.AreEqual(11,len);
+            Assert.AreEqual(11, len);
+        }
 
+        [Test, TestMethod]
+        public void AutoCreateHtmlBody()
+        {
+            string test = @"<html>                <head>              <script type=""text/javascript"">lf={version: 2064750,baseUrl: '/',helpHtml: '<a class=""email"" href=""mailto:xxxxx@xxxcom"">email</a>',prefs: { pageSize: 0}};
+            lf.Scripts={""crypt"":{""path"":""/scripts/thirdp/sha512.min.2009762.js"",""nameSpace"":""Sha512""}};
+            </script><link rel=""icon"" type=""image/x-icon"" href=""/favicon.ico""> 
+                <title>Title</title>            <script type=""text/javascript"" src=""/scripts/thirdp/jquery-1.7.1.min.2009762.js""></script>            <script type=""text/javascript"">var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-xxxxxxx1']);
+            _gaq.push(['_trackPageview']);            </script>
+            </head>
+            <body>
+            <script type=""text/javascript"">            alert('done');
+            </script>";
 
+            var dom = CQ.Create(test);
+            Assert.AreEqual(4, dom["script"].Length);
         }
     }
-
-    
 }

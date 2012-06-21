@@ -150,8 +150,21 @@ namespace CsQuery.HtmlParser
         public IEnumerable<IDomObject> ParseAsFragment()
         {
             IsDocument = false;
-            GenerateOptionalElements = true;
+            GenerateOptionalElements = false;
             WrapRootTextNodes = false;
+            return Parse();
+        }
+
+
+        /// <summary>
+        /// Parse with options for content (generate most optional elements but not document wrapping HTML/BODY)
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<IDomObject> ParseAsContent()
+        {
+            IsDocument = false;
+            GenerateOptionalElements = true;
+            WrapRootTextNodes = true;
             return Parse();
         }
 

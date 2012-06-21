@@ -181,7 +181,7 @@ namespace CsqueryTests
            
 
             string html = Support.GetFile(TestDomPath(name));
-            return CQ.Create(html);
+            return CQ.CreateDocument(html);
         }
         public static string TestDomPath(string name)
         {
