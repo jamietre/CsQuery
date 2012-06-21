@@ -8,6 +8,7 @@ using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
+using CollectionAssert = NUnit.Framework.CollectionAssert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
@@ -123,8 +124,38 @@ namespace CsqueryTests.Csharp.HtmlParser
             <script type=""text/javascript"">            alert('done');
             </script>";
 
-            var dom = CQ.Create(test);
+            var dom = CQ.CreateDocument(test);
             Assert.AreEqual(4, dom["script"].Length);
+        }
+
+        [Test, TestMethod]
+        public void AutoCreateHead()
+        {
+            string test = @"<html>            <script id=script1 type=""text/javascript"" src=""stuff""></script>            <div id=div1>This should be in the body.</div>";
+
+            var dom = CQ.CreateDocument(test);
+            Assert.AreEqual(dom["#script1"][0], dom["head > :first-child"][0]);
+            Assert.AreEqual(dom["#div1"][0], dom["body > :first-child"][0]);
+            CollectionAssert.AreEqual(Arrays.String("HEAD", "BODY"), dom["html"].Children().NodeNames());
+        }
+
+        /// <summary>
+        /// In this test, it's the opposite of AutoCreateHead - b/c the first el is not a metadata tag it should
+        /// cause BODY to be created not head.
+        /// </summary>
+        [Test, TestMethod]
+        public void AutoCreateBody()
+        {
+            string test = @"<html>                <div id=div1>This should be in the body.</div>                <script id=script1 type=""text/javascript"" src=""stuff""></script>";
+
+
+            var dom = CQ.CreateDocument(test);
+
+            Assert.AreEqual(0, dom["head"].Children().Length);
+            Assert.AreEqual(2, dom["body"].Children().Length);
+
+            Assert.AreEqual(dom["#div1"][0], dom["body > :first-child"][0]);
+            CollectionAssert.AreEqual(Arrays.String("HEAD", "BODY"), dom["html"].Children().NodeNames());
         }
     }
 }

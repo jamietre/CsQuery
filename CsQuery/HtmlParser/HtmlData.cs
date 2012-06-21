@@ -233,6 +233,11 @@ namespace CsQuery.HtmlParser
                 "TABLE","HTML"
             };
 
+            string[] metaDataTags = new string[] {
+                "BASE","COMMAND","LINK","META","NOSCRIPT","SCRIPT","STYLE","TITLE"
+
+            };
+
 
 
             TokenIDs = new Dictionary<string, ushort>();
@@ -281,7 +286,7 @@ namespace CsQuery.HtmlParser
             TokenID("col"); //34
             TokenID("html"); //36
 
-
+            
 
             if (nextID != maxHardcodedTokenId + 1)
             {
@@ -293,9 +298,10 @@ namespace CsQuery.HtmlParser
             PopulateTokenHashset(noChildHtmlAllowed);
             PopulateTokenHashset(noChildrenAllowed);
             PopulateTokenHashset(blockElements);
+            PopulateTokenHashset(paraClosers);
             PopulateTokenHashset(booleanAttributes);
             PopulateTokenHashset(autoOpenOrClose);
-            PopulateTokenHashset(paraClosers);
+            PopulateTokenHashset(metaDataTags);
 
 
             // reset nextId to beyond the boundary of the metadata array
@@ -321,6 +327,7 @@ namespace CsQuery.HtmlParser
             setBit(blockElements, TokenProperties.BlockElement);
             setBit(booleanAttributes, TokenProperties.BooleanProperty);
             setBit(paraClosers, TokenProperties.ParagraphCloser);
+            setBit(metaDataTags, TokenProperties.MetaDataTags);
 
         }
         private static HashSet<ushort> PopulateTokenHashset(IEnumerable<string> tokens)
@@ -622,26 +629,35 @@ namespace CsQuery.HtmlParser
         /// <returns></returns>
         public static ushort SpecialTagAction(ushort parentTagId, ushort newTagId, bool isDocument)
         {
-            // [html5] An html element's start tag may be omitted if the first thing inside the html element is not a comment.
-            // [csquery] handled inline
 
-            if ((parentTagId & NonSpecialTokenMask) != 0 ||
-                (TokenMetadata[parentTagId] & (ushort)TokenProperties.AutoOpenOrClose) == 0)
-            {
-                return HtmlData.tagActionNothing;
-            }
+            //if ((parentTagId & NonSpecialTokenMask) != 0 ||
+            //    (TokenMetadata[parentTagId] & (ushort)TokenProperties.AutoOpenOrClose) == 0)
+            //{
+            //    return HtmlData.tagActionNothing;
+            //}
             
             switch (parentTagId)
             {
 
                 // [html5] An html element's start tag may be omitted if the first thing inside the html element is not a comment.
+                // [html5] A body element's start tag may be omitted if the element is empty, or if the first thing inside the body
+                //         element is not a space character or a comment, except if the first thing inside the body element is a 
+                //         script or style element.
+                // [html5] A head element's start tag may be omitted if the element is empty, or if the first thing inside the head element is an element.
+
+                // [csquery] When a metadata tag appears, we start a head. Otherwise, we start a body. If a body later appears it will be ignored.
 
                 case HtmlData.tagHTML:
-                    return isDocument && 
+                    return !isDocument ? tagActionNothing :  
+                        (TokenMetadata[newTagId] & (ushort)TokenProperties.MetaDataTags) != 0 ?
+                        HtmlData.tagHEAD :
                             newTagId != HtmlData.tagBODY && 
                             newTagId != HtmlData.tagHEAD ?
                                 HtmlData.tagBODY : tagActionNothing;
 
+                case HtmlData.tagHEAD:
+                    return (TokenMetadata[newTagId] & (ushort)TokenProperties.MetaDataTags) == 0 ?
+                        tagActionClose : tagActionNothing;
                     
                 // [html5] An li element's end tag may be omitted if the li element is immediately followed by another li element 
                 //         or if there is no more content in the parent element.
@@ -743,11 +759,6 @@ namespace CsQuery.HtmlParser
 
                 case HtmlData.tagTFOOT:
                     return newTagId == HtmlData.tagBODY || newTagId == HtmlData.tagTHEAD
-                        ? tagActionClose : tagActionNothing;
-
-
-                case HtmlData.tagHEAD:
-                    return (newTagId == HtmlData.tagBODY)
                         ? tagActionClose : tagActionNothing;
 
                 // AUTO CREATION

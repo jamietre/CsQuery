@@ -320,7 +320,9 @@ namespace CsQuery.HtmlParser
                                     
                                     // Before we keep going see if this is an implicit close
                                     ushort parentTagId = current.ParentTagID();
-                                    
+
+                                    int lastPos = current.Pos;
+
                                     if (parentTagId ==0 && IsDocument) {
                                         if (newTagId != HtmlData.tagHTML) {
                                             current.Object = new DomElement(HtmlData.tagHTML);
@@ -328,7 +330,7 @@ namespace CsQuery.HtmlParser
                                             parentTagId = HtmlData.tagHTML;
                                         }
                                     }
-
+                                    
                                     if (parentTagId != 0)
                                     {
                                         ushort action = HtmlData.SpecialTagAction(parentTagId, newTagId, IsDocument);
@@ -351,6 +353,7 @@ namespace CsQuery.HtmlParser
                                                 }
 
                                                 current.Finished = true;
+                                                //current.Parent.Reset(tagStartPos);
 
                                                 if (newNode != null && newNode.Parent != null && newNode.Parent.Element != null)
                                                 {
@@ -370,20 +373,21 @@ namespace CsQuery.HtmlParser
                                                 if (GenerateOptionalElements)
                                                 {
                                                     stack.Push(current);
-                                                    current = current.AddNewParent(action);
+                                                    current = current.AddNewParent(action, lastPos);
 
                                                 }
                                                 action = HtmlData.tagActionNothing;
 
                                             }
                                         }
-
                                         if (current.Finished)
                                         {
                                             current.Parent.Reset(tagStartPos);
                                             continue;
                                         }
+
                                     }
+
                                     
                                     current.Object = new DomElement(newTagId);
                                     

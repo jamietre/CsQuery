@@ -493,7 +493,7 @@ namespace CsQuery.HtmlParser
         /// </summary>
         /// <param name="tagId"></param>
         /// <returns></returns>
-        public IterationData AddNewParent(ushort tagId)
+        public IterationData AddNewParent(ushort tagId, int pos)
         {
 
             //ushort generatedTagId = HtmlData.CreateParentFor(tagId);
@@ -503,18 +503,22 @@ namespace CsQuery.HtmlParser
             Object = new DomElement(tagId);
             Parent.Element.ChildNodes.AddAlways(Object);
 
-            return AddNewChild();
+            return AddNewChild(pos);
         }
 
-
-
         public IterationData AddNewChild()
+        {
+            return AddNewChild(Pos);
+
+        }
+
+        public IterationData AddNewChild(int pos)
         {
             IterationData subItem = new IterationData
             {
                 Parent = this,
                 AllowLiterals = true,
-                Pos = Pos,
+                Pos = pos,
                 HtmlStart = Pos,
                 ReadTextOnly = ReadTextOnly
             };

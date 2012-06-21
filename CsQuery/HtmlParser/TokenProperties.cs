@@ -30,6 +30,10 @@ namespace CsQuery.HtmlParser
 
         // this tag causes an open p tag to close
 
-        ParagraphCloser=32
+        ParagraphCloser=32,
+
+        // may appear in HEAD
+
+        MetaDataTags = 64
     }
 }

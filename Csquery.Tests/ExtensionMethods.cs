@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CsQuery;
 
 namespace CsqueryTests
 {
@@ -23,6 +24,11 @@ namespace CsqueryTests
                 break;
             }
             return (result);
+        }
+        public static IEnumerable<string> NodeNames(this IEnumerable<IDomObject> cq)
+        {
+            return cq.Select(item => item.NodeName).ToList();
+
         }
     }
 }
