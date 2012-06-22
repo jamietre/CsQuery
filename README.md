@@ -8,7 +8,7 @@ Release 1.1.1
 
 CsQuery is a jQuery port for .NET 4. It implements all CSS2 & CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) has been ported to C#. 
 
-CsQuery uses a new HTML parser that is oriented towards HTML5 compliance. As of development release after 1.1.1.x, it respects HTML5 rules for optional tags. It will now generate missing (but required) tags such as `<tbody> .. </tbody>` and optional closing tags such as `</p>`. This means you should be able to expect any jQuery selector to return exactly the same results in CsQuery as it does in jQuery running in a web browser. This is a work in progress. Eventually, I hope to include the majority of the HTML5 parsing spec, including rules for handling invalid HTML. Though far from complete, for now it should compare favorably to other existing HTML parsers in .NET in terms of producing HTML that is faithful to the HTML a browser would render.
+CsQuery uses a new HTML parser that is oriented towards HTML5 compliance. As of development release after 1.1.1.x, it respects HTML5 rules for optional tags. It will now generate optional (but structurally required) tags such as `<tbody> .. </tbody>` and optional closing tags such as `</p>`. This means you should be able to expect any jQuery selector to return exactly the same results in CsQuery as it does in jQuery running in a web browser. This is a work in progress. Eventually, I hope to include the majority of the HTML5 parsing spec, including rules for handling invalid HTML. Though far from complete, for now it should compare favorably to other existing HTML parsers in .NET in terms of producing HTML that is faithful to the HTML a browser would render.
 
 The project necessarily includes an object model that represents the browser DOM. The document model uses a subselect-capable index that can perform multipart selectors on large documents in milliseconds.
 
@@ -52,7 +52,7 @@ All CSS2 & CSS3 selectors have been implemented:
 	E+F					Adjacent sibling selector
 	E~F					General sibling selector
 
-All pseudoclasses that do not depend on browser state except "lang" and  are implemented:
+All pseudoclasses that do not depend on browser state except "lang" are implemented:
 
 	:first-child				:last-child					
 	:first-of-type				:last-of-type				
@@ -80,9 +80,11 @@ jQuery extensions:
 
 ### Release Notes
 
-Version 1.1.2 (unreleased):
+Version 1.1.2 (current development code):
 
-Implement tag generation to confirm with HTML5 optional opening & closing specifications
+Implement tag generation to confirm with HTML5 optional opening & closing specifications.
+
+Bugfixes: hidden input fields with :visible pseudoselectors; case not being respected with class names.
 
 Version 1.1.1:
 
