@@ -54,6 +54,7 @@ namespace CsQuery.Implementation
         #endregion
         
         #region public properties
+
         public override CSSStyleDeclaration Style
         {
             get
@@ -668,7 +669,7 @@ namespace CsQuery.Implementation
         }
         public bool RemoveStyle(string name)
         {
-            return _Style != null ? Style.Remove(name) : false;
+            return _Style != null ? _Style.Remove(name) : false;
         }
         protected bool HasAttribute(ushort tokenId)
         {
@@ -982,7 +983,7 @@ namespace CsQuery.Implementation
                 sb.Append(" ");
                 RenderAttribute(sb, "id", id, quoteAll);
             }
-            if (_Style != null && Style.Count > 0)
+            if (HasStyles)
             {
                 sb.Append(" style=\"");
                 sb.Append(Style.ToString());

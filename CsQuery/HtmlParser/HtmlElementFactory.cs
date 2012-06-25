@@ -205,7 +205,7 @@ namespace CsQuery.HtmlParser
                 IterationData current = new IterationData();
                 if (WrapRootTextNodes)
                 {
-                    current.InsertionMode = InsertionMode.Wrapped;
+                    current.WrapLiterals = true;
                 }
                 //current.AllowLiterals = !WrapRootTextNodes;
                 current.Reset(pos);
@@ -270,7 +270,7 @@ namespace CsQuery.HtmlParser
                                         // otherwise always close this and repeat at the same position until the match is found
                                         if (!isProperClose && actualParent == null)
                                         {
-                                            current.InsertionMode |= InsertionMode.Invalid;
+                                            current.InsertionMode = InsertionMode.Invalid;
                                             continue;
                                         }
                                     }
@@ -421,7 +421,7 @@ namespace CsQuery.HtmlParser
 
                                     if (!current.Element.InnerHtmlAllowed && current.Element.InnerTextAllowed)
                                     {
-                                        current.InsertionMode |= InsertionMode.Text;
+                                        current.InsertionMode = InsertionMode.Text;
                                         //ReadTextOnly = true;
                                         current.TokenizerState = TokenizerState.Default;
                                     }
