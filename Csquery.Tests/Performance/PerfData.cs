@@ -36,9 +36,10 @@ namespace CsqueryTests.Performance
 
         public double IterationsPerSecond {
             get {
-                return Math.Round((double)Iterations / ((double)Time.TotalMilliseconds / 1000d),1);
+                return (double)Iterations / ((double)Time.TotalMilliseconds / 1000d);
             }
         }
+        
 
     }
 }

@@ -140,7 +140,7 @@ namespace CsqueryTests.Performance
 
                     line += ",,";
                     line += qu + item.Source + qu + ","
-                        + item.IterationsPerSecond + ","
+                        + Math.Round(item.IterationsPerSecond,2) + ","
                         + item.Iterations + ","
                         + item.TimeSeconds;
                 }

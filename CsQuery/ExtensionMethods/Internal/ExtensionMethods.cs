@@ -574,5 +574,25 @@ namespace CsQuery.ExtensionMethods.Internal
             }
         }
 
+        /// <summary>
+        /// Return the index of item in an array. If count is > 0 then that is conisdered the length of the array
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="arr"></param>
+        /// <param name="item"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static int IndexOf<T>(this T[] arr, T item, int count) {
+            for (int i = 0; i < count; i++)
+            {
+                if ((arr[i]==null && item==null) || arr[i].Equals(item))
+                {
+                    return i;
+                }
+            }
+            return -1;
+
+        }
+
     }
 }

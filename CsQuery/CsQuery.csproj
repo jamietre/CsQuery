@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dom\Implementation\AttributeCollection.cs" />
+    <Compile Include="Dom\Implementation\AttributeCollection2.cs" />
     <Compile Include="EquationParser\enumAssociation.cs" />
     <Compile Include="EquationParser\enumOperationType.cs" />
     <Compile Include="EquationParser\Equations.cs" />
