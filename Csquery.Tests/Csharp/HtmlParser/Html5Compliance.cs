@@ -113,15 +113,29 @@ namespace CsqueryTests.Csharp.HtmlParser
         [Test, TestMethod]
         public void AutoCreateHtmlBody()
         {
-            string test = @"<html>                <head>              <script type=""text/javascript"">lf={version: 2064750,baseUrl: '/',helpHtml: '<a class=""email"" href=""mailto:xxxxx@xxxcom"">email</a>',prefs: { pageSize: 0}};
-            lf.Scripts={""crypt"":{""path"":""/scripts/thirdp/sha512.min.2009762.js"",""nameSpace"":""Sha512""}};
-            </script><link rel=""icon"" type=""image/x-icon"" href=""/favicon.ico""> 
-                <title>Title</title>            <script type=""text/javascript"" src=""/scripts/thirdp/jquery-1.7.1.min.2009762.js""></script>            <script type=""text/javascript"">var _gaq = _gaq || [];
-            _gaq.push(['_setAccount', 'UA-xxxxxxx1']);
-            _gaq.push(['_trackPageview']);            </script>
-            </head>
-            <body>
-            <script type=""text/javascript"">            alert('done');
+            string test = @"<html>
+                <head>  
+            <script type=""text/javascript"">lf={version: 2064750,baseUrl: '/',helpHtml: '<a class=""email"" href=""mailto:xxxxx@xxxcom"">email</a>',prefs: { pageSize: 0}};
+
+            lf.Scripts={""crypt"":{""path"":""/scripts/thirdp/sha512.min.2009762.js"",""nameSpace"":""Sha512""}};
+
+            </script><link rel=""icon"" type=""image/x-icon"" href=""/favicon.ico""> 
+
+                <title>Title</title>
+            <script type=""text/javascript"" src=""/scripts/thirdp/jquery-1.7.1.min.2009762.js""></script>
+            <script type=""text/javascript"">var _gaq = _gaq || [];
+
+            _gaq.push(['_setAccount', 'UA-xxxxxxx1']);
+
+            _gaq.push(['_trackPageview']);
+            </script>
+
+            </head>
+
+            <body>
+
+            <script type=""text/javascript"">
+            alert('done');
             </script>";
 
             var dom = CQ.CreateDocument(test);
@@ -131,7 +145,9 @@ namespace CsqueryTests.Csharp.HtmlParser
         [Test, TestMethod]
         public void AutoCreateHead()
         {
-            string test = @"<html>            <script id=script1 type=""text/javascript"" src=""stuff""></script>            <div id=div1>This should be in the body.</div>";
+            string test = @"<html>
+            <script id=script1 type=""text/javascript"" src=""stuff""></script>
+            <div id=div1>This should be in the body.</div>";
 
             var dom = CQ.CreateDocument(test);
             Assert.AreEqual(dom["#script1"][0], dom["head > :first-child"][0]);
@@ -146,7 +162,9 @@ namespace CsqueryTests.Csharp.HtmlParser
         [Test, TestMethod]
         public void AutoCreateBody()
         {
-            string test = @"<html>                <div id=div1>This should be in the body.</div>                <script id=script1 type=""text/javascript"" src=""stuff""></script>";
+            string test = @"<html>
+                <div id=div1>This should be in the body.</div>
+                <script id=script1 type=""text/javascript"" src=""stuff""></script>";
 
 
             var dom = CQ.CreateDocument(test);

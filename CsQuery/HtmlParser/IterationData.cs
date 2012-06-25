@@ -7,8 +7,27 @@ using CsQuery.StringScanner;
 
 namespace CsQuery.HtmlParser
 {
+    public enum TokenizerState : byte
+    {
+        Default = 0,         // default parsing
+        TagStart = 1,      // We're inside a tag opener
+        Finished = 2
+    }
+
+    [Flags]
+    public enum InsertionMode : byte
+    {
+        Default = 0,
+        Script = 1,
+        Text = 2,
+        Wrapped = 4,   // Special mode to wrap literals
+        Invalid = 8
+    }
     public class IterationData
     {
+        public InsertionMode InsertionMode;
+        public TokenizerState TokenizerState;
+
         public IterationData Parent;
         public IDomObject Object;
         public DomElement Element
@@ -19,12 +38,11 @@ namespace CsQuery.HtmlParser
             }
         }
         // when true, the contents will be treated as text until the next close tag
-        public bool ReadTextOnly;
+        //public bool ReadTextOnly;
         public int Pos;
-        public byte Step;
-        public bool Finished;
-        public bool AllowLiterals;
-        public bool Invalid;
+        //public bool Finished;
+        //public bool AllowLiterals;
+        //public bool Invalid;
         public int HtmlStart;
         
         /// <summary>
@@ -33,9 +51,10 @@ namespace CsQuery.HtmlParser
         /// </summary>
         public void Reset()
         {
-            Step = 0;
+            TokenizerState = TokenizerState.Default;
             HtmlStart = Pos;
-            ReadTextOnly = false;
+            //ReadTextOnly = false;
+            InsertionMode &= ~InsertionMode.Text;
             Object = null;
         }
         public void Reset(int pos)
@@ -50,7 +69,7 @@ namespace CsQuery.HtmlParser
         public void ReadText(char[] html)
         {
             // deal with when we're in a literal block (script/textarea)
-            if (ReadTextOnly)
+            if (InsertionMode.HasFlag(InsertionMode.Text))
             {
                 int endPos = Pos;
                 while (endPos >= 0)
@@ -113,13 +132,14 @@ namespace CsQuery.HtmlParser
             // There's plain text -return it as a literal.
             
             DomText lit;
-            if (Invalid)
+            if (InsertionMode.HasFlag(InsertionMode.Invalid))
             {
                 lit = new DomInvalidElement();
             }
-            else if (ReadTextOnly)
+            else if (InsertionMode.HasFlag(InsertionMode.Text))
             {
-                ReadTextOnly = false;
+                //ReadTextOnly = false;
+                InsertionMode &= ~InsertionMode.Text;
                 lit = new DomInnerText();
             }
             else
@@ -138,7 +158,7 @@ namespace CsQuery.HtmlParser
                 literal.NodeValue = HtmlData.HtmlDecode(text);
             }
 
-            if (!AllowLiterals)
+            if (InsertionMode.HasFlag(InsertionMode.Wrapped))
             {
                 DomElement wrapper = new DomElement("span");
                 wrapper.ChildNodes.AddAlways(literal);
@@ -154,7 +174,7 @@ namespace CsQuery.HtmlParser
             }
             else
             {
-                Finished = true;
+                TokenizerState = TokenizerState.Finished;
                 return true;
             }
         }
@@ -182,7 +202,7 @@ namespace CsQuery.HtmlParser
                     yield return Parent.Element;
                 } 
                 Parent.Reset(Pos);
-                Finished = true;
+                TokenizerState = TokenizerState.Finished;
             }
         }
 
@@ -518,10 +538,11 @@ namespace CsQuery.HtmlParser
             IterationData subItem = new IterationData
             {
                 Parent = this,
-                AllowLiterals = true,
                 Pos = pos,
                 HtmlStart = Pos,
-                ReadTextOnly = ReadTextOnly
+                InsertionMode = (InsertionMode & InsertionMode.Text)
+
+                //,                ReadTextOnly = ReadTextOnly
             };
             return subItem;
 
