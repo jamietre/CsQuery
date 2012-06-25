@@ -203,7 +203,11 @@ namespace CsQuery.HtmlParser
             while (pos <= EndPos)
             {
                 IterationData current = new IterationData();
-                current.AllowLiterals = !WrapRootTextNodes;
+                if (WrapRootTextNodes)
+                {
+                    current.WrapLiterals = true;
+                }
+                //current.AllowLiterals = !WrapRootTextNodes;
                 current.Reset(pos);
                 stack.Push(current);
 
@@ -213,19 +217,19 @@ namespace CsQuery.HtmlParser
                     current = stack.Pop();
                     //Debug.Assert(current.Object == null);
 
-                    while (!current.Finished && current.Pos <= EndPos)
+                    while (current.TokenizerState != TokenizerState.Finished && current.Pos <= EndPos)
                     {
                         char c = Html[current.Pos];
-                        switch (current.Step)
+                        switch (current.TokenizerState)
                         {
-                            case 0:
+                            case TokenizerState.Default:
                                 if (current.FindNextTag(Html)) {
 
                                     // even if we fell through from ReadTextOnly (e.g. was never closed), we should proceeed to finish
-                                    current.Step=1;
+                                    current.TokenizerState = TokenizerState.TagStart;
                                 }
                                 break;
-                            case 1:
+                            case TokenizerState.TagStart:
                                 IDomObject literal;
                                 if (current.TryGetLiteral(this, out literal))
                                 {
@@ -266,7 +270,7 @@ namespace CsQuery.HtmlParser
                                         // otherwise always close this and repeat at the same position until the match is found
                                         if (!isProperClose && actualParent == null)
                                         {
-                                            current.Invalid = true;
+                                            current.InsertionMode = InsertionMode.Invalid;
                                             continue;
                                         }
                                     }
@@ -276,7 +280,7 @@ namespace CsQuery.HtmlParser
                                     {
                                         yield return current.Parent.Element;
                                     }
-                                    current.Finished = true;
+                                    current.TokenizerState = TokenizerState.Finished ;
                                     if (isProperClose)
                                     {
                                         current.Parent.Reset(current.Pos);
@@ -375,7 +379,7 @@ namespace CsQuery.HtmlParser
                                                     yield return current.Parent.Element;
                                                 }
 
-                                                current.Finished = true;
+                                                current.TokenizerState = TokenizerState.Finished;
                                                 //current.Parent.Reset(tagStartPos);
 
                                                 if (newNode != null && newNode.Parent != null && newNode.Parent.Element != null)
@@ -403,7 +407,7 @@ namespace CsQuery.HtmlParser
 
                                             }
                                         }
-                                        if (current.Finished)
+                                        if (current.TokenizerState == TokenizerState.Finished)
                                         {
                                             current.Parent.Reset(tagStartPos);
                                             continue;
@@ -417,8 +421,9 @@ namespace CsQuery.HtmlParser
 
                                     if (!current.Element.InnerHtmlAllowed && current.Element.InnerTextAllowed)
                                     {
-                                        current.ReadTextOnly = true;
-                                        current.Step = 0;
+                                        current.InsertionMode = InsertionMode.Text;
+                                        //ReadTextOnly = true;
+                                        current.TokenizerState = TokenizerState.Default;
                                     }
 
                                     // Parse attribute data
@@ -450,7 +455,7 @@ namespace CsQuery.HtmlParser
                     // Catchall for unclosed tags -- if there's an "unfinished" carrier here, it's because  top-level tag was unclosed.
                     // THis will wrap up any straggling text and close any open tags after it.
 
-                    if (!current.Finished)
+                    if (current.TokenizerState != TokenizerState.Finished)
                     {
                         foreach (var el in current.CloseElement(this)) {
                             yield return el;

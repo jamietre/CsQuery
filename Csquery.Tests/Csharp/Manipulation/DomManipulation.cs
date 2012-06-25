@@ -36,9 +36,10 @@ namespace CsqueryTests.CSharp
         [Test,TestMethod]
         public void BasicDomCreation()
         {
-            
+            // TODO this test doesn't exactly match Chrome. The mismatched closing <p> tag before "first_div" is treated as an empty <p></p> block
+            // by chrome. This is probably a part of the spec we don't yet deal with.
 
-            Assert.AreEqual(29, Dom["*"].Length, "Found correct number of elements in the DOM");
+            Assert.AreEqual(30, Dom["*"].Length, "Found correct number of elements in the DOM");
             Assert.AreEqual(26, Dom["body *"].Length, "Found correct number of elements in the DOM");
             Assert.AreEqual(8, Dom["body > *"].Length, "Found correct number of elements in the DOM");
         }

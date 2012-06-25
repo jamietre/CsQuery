@@ -11,6 +11,7 @@ namespace CsQuery
     /// </summary>
     public interface IDomDocument : IDomContainer
     {
+      
         /// <summary>
         /// The primary selection index
         /// </summary>

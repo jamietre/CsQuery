@@ -7,10 +7,19 @@ using CsQuery.StringScanner;
 
 namespace CsQuery.HtmlParser
 {
+
     public class IterationData
     {
+        public bool WrapLiterals;
+        public InsertionMode InsertionMode;
+        public TokenizerState TokenizerState;
+
         public IterationData Parent;
         public IDomObject Object;
+       
+        public int Pos;
+        public int HtmlStart;
+
         public DomElement Element
         {
             get
@@ -18,24 +27,16 @@ namespace CsQuery.HtmlParser
                 return (DomElement)Object;
             }
         }
-        // when true, the contents will be treated as text until the next close tag
-        public bool ReadTextOnly;
-        public int Pos;
-        public byte Step;
-        public bool Finished;
-        public bool AllowLiterals;
-        public bool Invalid;
-        public int HtmlStart;
-        
+
         /// <summary>
         /// Use this to prepare the iterator object to continue finding siblings. It retains the parent. It just avoids having to recreate
         /// an instance of this object for the next tag.
         /// </summary>
         public void Reset()
         {
-            Step = 0;
+            TokenizerState = TokenizerState.Default;
             HtmlStart = Pos;
-            ReadTextOnly = false;
+            InsertionMode = InsertionMode.Default;
             Object = null;
         }
         public void Reset(int pos)
@@ -50,7 +51,7 @@ namespace CsQuery.HtmlParser
         public void ReadText(char[] html)
         {
             // deal with when we're in a literal block (script/textarea)
-            if (ReadTextOnly)
+            if (InsertionMode==InsertionMode.Text)
             {
                 int endPos = Pos;
                 while (endPos >= 0)
@@ -113,18 +114,17 @@ namespace CsQuery.HtmlParser
             // There's plain text -return it as a literal.
             
             DomText lit;
-            if (Invalid)
-            {
-                lit = new DomInvalidElement();
-            }
-            else if (ReadTextOnly)
-            {
-                ReadTextOnly = false;
-                lit = new DomInnerText();
-            }
-            else
-            {
-                lit = new DomText();
+            switch(InsertionMode) {
+                case InsertionMode.Invalid:
+                    lit = new DomInvalidElement();
+                    break;
+                case InsertionMode.Text:
+                    InsertionMode =InsertionMode.Default;
+                    lit = new DomInnerText();
+                    break;
+                default:
+                    lit = new DomText();
+                    break;
             }
             literal = lit;
 
@@ -138,7 +138,7 @@ namespace CsQuery.HtmlParser
                 literal.NodeValue = HtmlData.HtmlDecode(text);
             }
 
-            if (!AllowLiterals)
+            if (WrapLiterals)
             {
                 DomElement wrapper = new DomElement("span");
                 wrapper.ChildNodes.AddAlways(literal);
@@ -154,7 +154,7 @@ namespace CsQuery.HtmlParser
             }
             else
             {
-                Finished = true;
+                TokenizerState = TokenizerState.Finished;
                 return true;
             }
         }
@@ -182,7 +182,7 @@ namespace CsQuery.HtmlParser
                     yield return Parent.Element;
                 } 
                 Parent.Reset(Pos);
-                Finished = true;
+                TokenizerState = TokenizerState.Finished;
             }
         }
 
@@ -468,8 +468,9 @@ namespace CsQuery.HtmlParser
             {
                 // 12-15-11 - don't replace a valid attribute with a bad one
 
-                var curVal = Element.GetAttribute(aName);
-                if (string.IsNullOrEmpty(curVal))
+                //var curVal = Element.GetAttribute(aName);
+                //if (string.IsNullOrEmpty(curVal))
+                if (!Element.HasAttribute(aName))
                 {
                     if (aValue == null)
                     {
@@ -496,14 +497,8 @@ namespace CsQuery.HtmlParser
         /// <returns></returns>
         public IterationData AddNewParent(ushort tagId, int pos)
         {
-
-            //ushort generatedTagId = HtmlData.CreateParentFor(tagId);
-
-            // this is largely copied from below, can we eliminate duoplication somehow?
-
             Object = new DomElement(tagId);
             Parent.Element.ChildNodes.AddAlways(Object);
-
             return AddNewChild(pos);
         }
 
@@ -518,10 +513,9 @@ namespace CsQuery.HtmlParser
             IterationData subItem = new IterationData
             {
                 Parent = this,
-                AllowLiterals = true,
                 Pos = pos,
                 HtmlStart = Pos,
-                ReadTextOnly = ReadTextOnly
+                InsertionMode = InsertionMode
             };
             return subItem;
 
@@ -556,7 +550,8 @@ namespace CsQuery.HtmlParser
         protected bool isHtmlTagEnd(char c)
         {
             //return c == '/' || c == ' ' || c == '>';
-            // ~ 2% speed improvement
+
+            // ~ 2% speed improvement with bit match function
             return CharacterData.IsType(c, CharacterType.HtmlTagEnd);
         }
 

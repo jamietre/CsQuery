@@ -7,6 +7,7 @@ using System.Text;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 using CsQuery.HtmlParser;
+using CsQuery.Utility;
 
 namespace CsQuery.Implementation
 {
@@ -23,19 +24,19 @@ namespace CsQuery.Implementation
         #region private properties
 
 
-        private IDictionary<ushort, string> _Attributes;
+       // private IDictionary<ushort, string> _Attributes;
 
-        protected IDictionary<ushort, string> Attributes 
-        {
-            get
-            {
-                if (_Attributes == null)
-                {
-                    _Attributes = new Dictionary<ushort, string>();
-                }
-                return _Attributes;
-            }
-        }
+        private IDictionary<ushort, string> Attributes = new Dictionary<ushort, string>();
+        //{
+        //    get
+        //    {
+        //        if (_Attributes == null)
+        //        {
+        //            _Attributes = new SmallDictionary<ushort, string>();
+        //        }
+        //        return _Attributes;
+        //    }
+        //}
 
         internal string this[ushort nodeId]
         {
@@ -56,7 +57,9 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return _Attributes != null && Attributes.Count > 0;
+                return 
+                    //_Attributes != null && 
+                    Attributes.Count > 0;
             }
         }
 
