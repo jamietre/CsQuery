@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>CsQuery</id>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
     <title>CsQuery</title>
     <authors>James Treworgy</authors>
     <owners>James Treworgy</owners>
@@ -10,11 +10,9 @@
     <projectUrl>https://github.com/jamietre/CsQuery/</projectUrl>
     <iconUrl>http://www.outsharked.com/csquery/images/csquery-icon-large.gif</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>CsQuery is C# jQuery port for .NET 4. It implements all CSS2 and CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. It includes a document object model that mimics the browser DOM, and uses a subselect-capable index for very fast operation.</description>
-    <releaseNotes>Version 1.1 is feature-complete and implements all CSS3 selectors that were missing from 1.0.
-
-Version 1.1.1 is a bugfix release.  The tests from Sizzle were migrated and revealed a few problems. This release corrects all known CSS selector bugs.
-        
+    <summary>A complete CSS selector engine and jQuery port for .NET 4 and C#.</summary>
+    <description>CsQuery is a CSS selector engine and jQuery port for .NET 4 and C#. It implements all CSS2 and CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. It includes an HTML parser, a document object model that mimics the browser DOM, and uses a subselect-capable index for fast operation.</description>
+<releaseNotes>Version 1.1.2 features changes to the HTML parser to respect HTML5 rules for optional opening and closing tags. It also includes a number of other minor improvements and bugfixes. Please read the release notes for more information: http://blog.outsharked.com/search/label/csquery
     
     </releaseNotes>
     <copyright>Copyright 2012</copyright>
