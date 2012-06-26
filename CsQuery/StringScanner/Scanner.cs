@@ -9,7 +9,7 @@ namespace CsQuery.StringScanner
     {
         public static IStringScanner Create(string Text)
         {
-            return new Implementation.StringScanner(Text);
+            return new Implementation.StringScannerEngine(Text);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace CsQuery.Implementation
     /// <summary>
     /// HTML elements
     /// </summary>
-    public class DomElement : DomContainer<DomElement>, IDomElement, IAttributeCollection
+    public class DomElement : DomContainer<DomElement>, IDomElement, IAttributeCollection, ICSSStyleDeclaration
     {
         #region private fields
         private AttributeCollection _DomAttributes;
@@ -261,7 +261,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return _Style != null && _Style.Count > 0;
+                return _Style != null && _Style.HasStyles;
             }
         }
         public override bool HasClasses
@@ -586,18 +586,18 @@ namespace CsQuery.Implementation
             }
             yield break;
         }
-        public bool HasStyle(string name)
+        public override bool HasStyle(string name)
         {
             return HasStyles &&
                 Style.HasStyle(name);
         }
-        public bool HasClass(string name)
+        public override bool HasClass(string name)
         {
             return HasClasses
                 && _Classes.Contains(HtmlData.TokenIDCaseSensitive(name));
         }
 
-        public bool AddClass(string name)
+        public override bool AddClass(string name)
         {
             bool result=false;
             bool hadClasses = HasClasses;
@@ -629,7 +629,7 @@ namespace CsQuery.Implementation
             }
             return result;
         }
-        public bool RemoveClass(string name)
+        public override bool RemoveClass(string name)
         {
             bool result = false;
             bool hasClasses = HasClasses;
@@ -655,22 +655,7 @@ namespace CsQuery.Implementation
             return result;
         }
 
-        /// <summary>
-        /// Add a single style in the form "styleName: value"
-        /// </summary>
-        /// <param name="style"></param>
-        public void AddStyle(string style)
-        {
-            AddStyle(style,true);
-        }
-        public void AddStyle(string style,bool strict)
-        {
-            Style.AddStyles(style, strict);
-        }
-        public bool RemoveStyle(string name)
-        {
-            return _Style != null ? _Style.Remove(name) : false;
-        }
+       
         protected bool HasAttribute(ushort tokenId)
         {
             switch (tokenId)
@@ -688,14 +673,7 @@ namespace CsQuery.Implementation
         {
             return HasAttribute(HtmlData.TokenID(name));
         }
-        public void SetStyles(string styles)
-        {
-            SetStyles(styles, true);
-        }
-        public void SetStyles(string styles, bool strict)
-        {
-            Style.SetStyles(styles, strict);
-        }
+        
         public override void SetAttribute(string name, string value)
         {
             SetAttribute(HtmlData.TokenID(name), value);
@@ -890,6 +868,48 @@ namespace CsQuery.Implementation
         public override string ToString()
         {
             return ElementHtml();
+        }
+
+        // ICSSStyleDeclations
+        /// <summary>
+        /// Add a single style in the form "styleName: value"
+        /// </summary>
+        /// <param name="style"></param>
+        public override void AddStyle(string style)
+        {
+            AddStyle(style, true);
+        }
+        public void AddStyle(string style, bool strict)
+        {
+            Style.AddStyles(style, strict);
+        }
+
+        public override bool RemoveStyle(string name)
+        {
+            return _Style != null ? _Style.RemoveStyle(name) : false;
+        }
+        public void SetStyles(string styles)
+        {
+            SetStyles(styles, true);
+        }
+        public void SetStyles(string styles, bool strict)
+        {
+            Style.SetStyles(styles, strict);
+        }
+
+        public void SetStyle(string name, string value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetStyle(string name, string value, bool strict)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetStyle(string name)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
@@ -1119,6 +1139,8 @@ namespace CsQuery.Implementation
         }
         
         #endregion
+
+
 
     }
 }

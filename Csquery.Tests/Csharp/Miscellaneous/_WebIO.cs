@@ -11,7 +11,7 @@ using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using System.Diagnostics;
 
-namespace CsqueryTests.Csharp
+namespace CsQuery.Tests.Csharp.Miscellaneous
 {
     /// <summary>
     /// This test is disabled by default because it accesses public web sites, activate it just to test this feature

@@ -43,16 +43,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\csquery\Csquery.Tests\Csquery.Tests.csproj">
-      <Project>{F8920741-0BB4-4939-A774-0F9059B2B7F0}</Project>
-      <Name>Csquery.Tests</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\csquery\CsQuery\CsQuery.csproj">
-      <Project>{C38DFFE9-321B-4941-B031-29D718AB5C31}</Project>
-      <Name>CsQuery</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

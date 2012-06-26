@@ -13,13 +13,13 @@ using CsQuery.StringScanner;
 using CsQuery.StringScanner.Implementation;
 using CsQuery.StringScanner.Patterns;
 
-namespace CsqueryTests.Csharp
+namespace CsQuery.Tests.Csharp.Utility
 {
     [TestClass]
     public class StringScanner_ : CsQueryTest
     {
 
-        protected StringScanner scanner;
+        protected StringScannerEngine scanner;
 
         [TestMethod]
         public void EquationParsing()
@@ -105,7 +105,7 @@ namespace CsqueryTests.Csharp
             var text = scanner.Get(MatchFunctions.HTMLTagSelectorName());
             Assert.AreEqual("someSelect", text, "Got first word");
 
-            StringScanner innerScanner = scanner.Get(MatchFunctions.BoundedWithQuotedContent);
+            StringScannerEngine innerScanner = scanner.Get(MatchFunctions.BoundedWithQuotedContent);
             Assert.IsTrue(scanner.Finished, "Outer scanner finished");
             Assert.AreEqual(@"attr-bute= 'this ""is \' a quoted value'", innerScanner.Text, "Inner scanner text is right");
 
@@ -130,7 +130,7 @@ namespace CsqueryTests.Csharp
         public void OptionallyQuoted()
         {
             scanner=@"key[value='this ""is \' a quoted value']";
-            StringScanner inner = scanner.ExpectAlpha()
+            StringScannerEngine inner = scanner.ExpectAlpha()
                 .Get(MatchFunctions.Bounded);
 
             scanner.AssertFinished();

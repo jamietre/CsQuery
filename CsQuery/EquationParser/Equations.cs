@@ -21,7 +21,7 @@ namespace CsQuery.EquationParser
         }
         public static Equation<T> CreateEquation<T>(string text) where T : IConvertible
         {
-            IEquationParser parser = new EquationParser.Implementation.EquationParser();
+            IEquationParser parser = new EquationParser.Implementation.EquationParserEngine();
             IOperand operand = parser.Parse<T>(text);
 
             Equation<T> equation = new Equation<T>(operand);
@@ -29,7 +29,7 @@ namespace CsQuery.EquationParser
         }
         public static Equation CreateEquation(string text)
         {
-            IEquationParser parser = new EquationParser.Implementation.EquationParser();
+            IEquationParser parser = new EquationParser.Implementation.EquationParserEngine();
             IOperand operand = parser.Parse(text);
 
             Equation equation = new Equation(operand);
@@ -42,7 +42,7 @@ namespace CsQuery.EquationParser
         /// <returns></returns>
         public static Equation CreateEquationOperand(string text)
         {
-            IEquationParser parser = new EquationParser.Implementation.EquationParser();
+            IEquationParser parser = new EquationParser.Implementation.EquationParserEngine();
             IOperand operand = parser.Parse(text);
 
             Equation equation = new Equation(operand);

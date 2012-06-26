@@ -12,7 +12,7 @@ using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
 using CsQuery.Utility;
 
-namespace CsqueryTests.jQuery.Sizzle
+namespace CsQuery.Tests.jQuery.Sizzle
 {
     /// <summary>
     /// Tests from sizzle.js test suite as of June 13, 2012

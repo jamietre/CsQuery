@@ -13,7 +13,7 @@ using CsQuery;
 using CsQuery.Utility;
 using CsQuery.Promises;
 
-namespace CsqueryTests.Csharp
+namespace CsQuery.Tests.Csharp.Promises
 {
 
     [TestFixture, TestClass]
@@ -24,7 +24,7 @@ namespace CsqueryTests.Csharp
         [Test, TestMethod]
         public void ResolveExisting()
         {
-
+            message = null;
             Deferred test = new Deferred();
 
             test.Then((Action<string>)Resolved);
@@ -44,7 +44,8 @@ namespace CsqueryTests.Csharp
             Deferred test = new Deferred();
 
             string cur = "test2";
-
+            
+            message = null;
             Assert.AreNotEqual(cur, message);
             test.Resolve(cur);
             test.Then((Action<string>)Resolved);
@@ -59,13 +60,14 @@ namespace CsqueryTests.Csharp
             Deferred test = new Deferred();
             Deferred test2 = new Deferred();
 
-            
+             message = null;
             IPromise all = When.All(test, test2)
                 .Then((Action<string>)Resolved);
 
             test.Resolve();
 
             Assert.AreNotEqual("resolved", message);
+            
             test2.Resolve();
             Assert.AreEqual("resolved", message);
 
@@ -80,7 +82,7 @@ namespace CsqueryTests.Csharp
             Deferred test = new Deferred();
             Deferred test2 = new Deferred();
 
-
+            message = null;
             IPromise all = When.All(test, test2)
                 .Then((Action<string>)Resolved, (Action<string>)Rejected);
 
@@ -88,6 +90,7 @@ namespace CsqueryTests.Csharp
 
             Assert.AreNotEqual("resolved", message);
             Assert.AreNotEqual("rejected", message);
+            
             test2.Resolve();
             Assert.AreEqual("rejected", message);
 

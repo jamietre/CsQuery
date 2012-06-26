@@ -12,9 +12,9 @@ using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
 using CsQuery.Utility;
 
-namespace CsqueryTests.Csharp
+namespace CsQuery.Tests.Csharp.Attributes
 {
-    [TestClass,TestFixture, Category("Attributes")]
+    [TestClass,TestFixture]
     public class Attribute : CsQueryTest 
     {
         Func<object,object> bareObj = (input) => {return input; };

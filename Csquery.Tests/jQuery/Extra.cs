@@ -13,7 +13,7 @@ using TestContext = NUnit.Framework.TestContext;
 using CsQuery;
 using CsQuery.Utility;
 
-namespace CsqueryTests.jQuery
+namespace CsQuery.Tests.jQuery
 {
     /// <summary>
     /// Tests added to address specific bug reports

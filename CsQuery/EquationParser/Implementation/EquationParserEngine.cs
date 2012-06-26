@@ -9,9 +9,9 @@ using CsQuery.EquationParser.Implementation.Functions;
 namespace CsQuery.EquationParser.Implementation
 {
 
-    public class EquationParser: IEquationParser
+    public class EquationParserEngine: IEquationParser
     {
-        public EquationParser()
+        public EquationParserEngine()
         {
             
         }
@@ -202,7 +202,7 @@ namespace CsQuery.EquationParser.Implementation
                         while (!inner.Finished)
                         {
                             string parm = inner.Get(MatchFunctions.BoundedBy(boundEnd: ","));
-                            EquationParser innerParser = new EquationParser();
+                            EquationParserEngine innerParser = new EquationParserEngine();
 
                             IOperand innerOperand = innerParser.Parse<T>(parm);
                             func.AddOperand(innerOperand);
@@ -220,7 +220,7 @@ namespace CsQuery.EquationParser.Implementation
                 else if (scanner.NextChar == '(')
                 {
                     string inner = scanner.Get(MatchFunctions.BoundedBy("("));
-                    var parser = new EquationParser();
+                    var parser = new EquationParserEngine();
                     parser.Parse<T>(inner);
                     output = parser.Clause;
                     CacheVariables(output);

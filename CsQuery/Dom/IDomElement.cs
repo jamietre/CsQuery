@@ -11,13 +11,6 @@ namespace CsQuery
     public interface IDomElement : IDomContainer, IDomIndexedNode
     {
 
-        bool HasClass(string className);
-        bool AddClass(string className);
-        bool RemoveClass(string className);
-
-        bool HasStyle(string styleName);
-        void AddStyle(string styleString);
-        bool RemoveStyle(string name);
 
         bool IsBlock { get; }
 

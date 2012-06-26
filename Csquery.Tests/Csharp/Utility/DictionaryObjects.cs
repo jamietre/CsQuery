@@ -15,18 +15,14 @@ using CsQuery.Utility;
 using CsQuery.EquationParser;
 
 
-namespace CsqueryTests.Csharp
+namespace CsQuery.Tests.Csharp.Utility
 {
 
-    [TestFixture, TestClass, Description("Special purpose dictionaries")]
+    [TestFixture, TestClass]
     public class DictionaryObjects_ : CsQueryTest
     {
      
 
-        [TestFixtureSetUp,ClassInitialize]
-        public static void Setup(TestContext context) {
-
-        }
         [Test,TestMethod]
         public void SmallDictionary()
         {

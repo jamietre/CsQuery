@@ -13,7 +13,7 @@ using CsQuery.HtmlParser;
 using CsQuery.Implementation;
 using CsQuery.Utility;
 
-namespace CsqueryTests.CSharp
+namespace CsQuery.Tests.Csharp.Manipulation
 {
 
     [TestFixture, TestClass]

@@ -14,7 +14,7 @@ using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
 using CsQuery.Utility;
 
-namespace CsqueryTests.Csharp
+namespace CsQuery.Tests.Csharp.Miscellaneous
 {
     
     [TestFixture, TestClass,Description("Misc. tests; from support and bug reports")]

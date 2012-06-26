@@ -14,7 +14,7 @@ using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 using CsQuery.StringScanner;
 
-namespace CsqueryTests.Csharp
+namespace CsQuery.Tests.Csharp.Utility
 {
     [TestClass]
     public class ValueInfo_

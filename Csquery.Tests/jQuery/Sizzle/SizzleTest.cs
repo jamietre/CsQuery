@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using CsQuery;
 
-namespace CsqueryTests.jQuery.Sizzle
+namespace CsQuery.Tests.jQuery.Sizzle
 {
     /// <summary>
     /// Tests from sizzle.js test suite as of June 13, 2012

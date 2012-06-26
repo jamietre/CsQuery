@@ -14,10 +14,10 @@ using CsQuery;
 using CsQuery.HtmlParser;
 using CsQuery.Utility;
 
-namespace CsqueryTests.Csharp.HtmlParser
+namespace CsQuery.Tests.Csharp.HtmlParser
 {
     
-    [TestFixture, TestClass,Description("Styles objects")]
+    [TestFixture, TestClass]
     public class Styles_ : CsQueryTest
     {
 
@@ -36,5 +36,31 @@ namespace CsqueryTests.Csharp.HtmlParser
             HashSet<string> expectedOpts = new HashSet<string>(new string[] { "normal", "break-word" });
             Assert.AreEqual(expectedOpts, style.Options, "word-wrap has correct options");
         }
+
+
+        /// <summary>
+        /// Test the Style
+        /// </summary>
+        [Test, TestMethod]
+        public void RenderStyles()
+        {
+            var dom = TestDom("TestHtml");
+            
+            var res = dom["#hidden-div"];
+            Assert.AreEqual("none", res.FirstElement().Style["display"]);
+            Assert.AreEqual("display: none", res.FirstElement().Style.ToString());
+
+            res = dom["#hidden-div > div:first-child"];
+            Assert.AreEqual("100", res.FirstElement().Style["width"]);
+            Assert.AreEqual("200", res.FirstElement().Style["height"]);
+            Assert.AreEqual("width: 100; height: 200;", res.FirstElement().Style.ToString());
+
+            res[0].AddStyle("width: 125");
+            
+            //the 1st will be formatted; the 2nd will be as it was parsed.
+            Assert.AreEqual("width: 125px; height: 200;", res.FirstElement().Style.ToString());
+
+        }
+
     }
 }

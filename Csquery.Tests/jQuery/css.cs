@@ -12,7 +12,7 @@ using CsQuery;
 using CsQuery.Utility;
 using CsQuery.StringScanner;
 
-namespace CsqueryTests.jQuery
+namespace CsQuery.Tests.jQuery
 {
     [TestClass, TestFixture, Category("Attributes")]
     public class Css : CsQueryTest

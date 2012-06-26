@@ -12,9 +12,9 @@ using CsQuery;
 using CsQuery.Utility;
 using CsQuery.StringScanner;
 
-namespace CsqueryTests.Csharp
+namespace CsQuery.Tests.Csharp.Css
 {
-    [TestClass, TestFixture, Category("Attributes")]
+    [TestClass, TestFixture]
     public class Css : CsQueryTest
     {
         [SetUp]

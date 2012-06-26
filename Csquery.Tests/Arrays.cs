@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using CsQuery.ExtensionMethods.Internal;
 
-namespace CsqueryTests
+namespace CsQuery.Tests
 {
     /// <summary>
     /// Some simple utility functions to generate arrays

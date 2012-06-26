@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CsQuery;
 
-namespace CsqueryTests.Csharp.HtmlParser
+namespace CsQuery.Tests.Csharp.HtmlParser
 {
     [TestClass]
     public class Rendering: CsQueryTest 

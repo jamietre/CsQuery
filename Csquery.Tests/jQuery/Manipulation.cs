@@ -12,7 +12,7 @@ using CsQuery;
 using CsQuery.ExtensionMethods;
 using CsQuery.Utility;
 
-namespace CsqueryTests.jQuery
+namespace CsQuery.Tests.jQuery
 {
     [TestClass,TestFixture]
     public class Manipulation : CsQueryTest

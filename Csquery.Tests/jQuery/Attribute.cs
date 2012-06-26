@@ -11,7 +11,7 @@ using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
 using CsQuery.Utility;
 
-namespace CsqueryTests.jQuery
+namespace CsQuery.Tests.jQuery
 {
     [TestClass, TestFixture, Category("Attributes")]
     public class Attribute : CsQueryTest

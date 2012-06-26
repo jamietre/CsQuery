@@ -9,8 +9,8 @@
     <ProjectGuid>{F8920741-0BB4-4939-A774-0F9059B2B7F0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CsqueryTests</RootNamespace>
-    <AssemblyName>CsqueryTests</AssemblyName>
+    <RootNamespace>Csquery.Tests</RootNamespace>
+    <AssemblyName>Csquery.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
@@ -83,12 +83,11 @@
     <Compile Include="Csharp\Selectors\AttributeSelectors.cs" />
     <Compile Include="Csharp\Selectors\PseudoSelectorsJquery.cs" />
     <Compile Include="Csharp\Selectors\PseudoSelectors.cs" />
-    <Compile Include="Csharp\Server.cs" />
-    <Compile Include="Csharp\Miscellaneous.cs" />
+    <Compile Include="Csharp\Miscellaneous\Miscellaneous.cs" />
     <Compile Include="Csharp\Utility\JSON\FromDictionary.cs" />
     <Compile Include="Csharp\EquationParser\Expressions.cs" />
     <Compile Include="Csharp\HtmlParser\Rendering.cs" />
-    <Compile Include="Csharp\Classes\DictionaryObjects.cs" />
+    <Compile Include="Csharp\Utility\DictionaryObjects.cs" />
     <Compile Include="Csharp\HtmlParser\HtmlElementFactory.cs" />
     <Compile Include="Csharp\Utility\Objects.cs" />
     <Compile Include="Csharp\Manipulation\MovingElements.cs" />
@@ -97,7 +96,7 @@
     <Compile Include="Csharp\Utility\ValueInfo.cs" />
     <Compile Include="jQuery\Attribute.cs" />
     <Compile Include="Csharp\Attributes\Attributes.cs" />
-    <Compile Include="Csharp\Classes\JsObject.cs" />
+    <Compile Include="Csharp\Utility\JsObject.cs" />
     <Compile Include="jQuery\Extra.cs" />
     <Compile Include="jQuery\Core.cs" />
     <Compile Include="CsQueryTest.cs" />
@@ -113,6 +112,7 @@
     <Compile Include="jQuery\Sizzle\IDSelectors.cs" />
     <Compile Include="jQuery\Sizzle\Element.cs" />
     <Compile Include="jQuery\Sizzle\SizzleTest.cs" />
+    <Compile Include="TestAssemblyConfig.cs" />
     <Compile Include="Performance\PerformanceTest.cs" />
     <Compile Include="Performance\Tests\Performance_MediumDom.cs" />
     <Compile Include="Performance\Tests\PerformanceShared.cs" />
@@ -128,7 +128,7 @@
     <Compile Include="Csharp\ExtensionMethods\ExtensionMethodTests.cs" />
     <Compile Include="Csharp\Utility\JSON\JSON.cs" />
     <Compile Include="jQuery\Traversing.cs" />
-    <Compile Include="Csharp\_WebIO.cs" />
+    <Compile Include="Csharp\Miscellaneous\_WebIO.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\HTML Standard.htm">

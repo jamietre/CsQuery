@@ -97,9 +97,17 @@ namespace CsQuery.ExtensionMethods.Forms
                 selection.Find(selector);
 
             HashSet<string> keys = new HashSet<string>(postData.AllKeys);
-            foreach (IDomElement e in src.Where(item=>keys.Contains(item.Name)))
+            foreach (IDomElement e in src)
             {
-                RestoreData(e, selection, postData[e.Name]);
+                if (keys.Contains(e.Name))
+                {
+                    RestoreData(e, selection, postData[e.Name]);
+                }
+                else
+                {
+                    // when there is a form field that has no submitted value, then reset it to default
+                    RestoreData(e,selection, null);
+                }
             }
             return selection;
 

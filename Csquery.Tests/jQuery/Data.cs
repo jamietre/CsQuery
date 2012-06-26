@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CsqueryTests.jQuery
+namespace CsQuery.Tests.jQuery
 {
     public class Data
     {

@@ -13,7 +13,7 @@ using CsQuery;
 using CsQuery.Utility;
 using CsQuery.ExtensionMethods;
 
-namespace CsqueryTests.Csharp
+namespace CsQuery.Tests.Csharp
 {
     /// <summary>
     /// Ensure correct handling when mapping creating JSON from a dictionary

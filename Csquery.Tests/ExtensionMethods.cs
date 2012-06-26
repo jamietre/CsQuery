@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using CsQuery;
 
-namespace CsqueryTests
+namespace CsQuery.Tests
 {
     public static class ExtensionMethods
     {

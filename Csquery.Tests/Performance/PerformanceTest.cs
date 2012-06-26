@@ -16,8 +16,9 @@ using HtmlAgilityPack;
 using Fizzler.Systems.HtmlAgilityPack;
 using System.Diagnostics;
 using CsQuery.EquationParser;
+using CsQuery.Tests;
 
-namespace CsqueryTests.Performance
+namespace CsQuery.Tests.Performance
 {
     [TestClass]
     public class PerformanceTest : CsQueryTest
@@ -32,18 +33,7 @@ namespace CsqueryTests.Performance
 
         private static bool isHeaderWritten = false;
 
-        /// <summary>
-        /// Set up this test run - configuration of the file name is done in the static constructor so
-        /// it's not starting a new file for each test fixture.
-        /// </summary>
-
-        [AssemblyInitialize]
-        public static void SetupTestRun(TestContext context)
-        {
-            SetupTestRun();
-
-        }
-
+ 
         public static void SetupTestRun()
         {
             CsQuery.HtmlParser.HtmlData.Touch();
@@ -68,8 +58,6 @@ namespace CsqueryTests.Performance
             Debug.WriteLine("");
         }
 
-
-        [AssemblyCleanup]
         public static void CleanupTestRun()
         {
             if (!IsPerformanceTest)

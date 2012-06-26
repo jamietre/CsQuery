@@ -543,12 +543,12 @@ namespace CsQuery.Implementation
 
         public virtual void SetAttribute(string name)
         {
-            return;
+            throw new InvalidOperationException("You can't set attributes for this element type.");
         }
 
         public virtual void SetAttribute(string name, string value)
         {
-            return;
+            throw new InvalidOperationException("You can't set attributes for this element type.");
         }
 
         public virtual string GetAttribute(string name)
@@ -573,9 +573,39 @@ namespace CsQuery.Implementation
 
         public virtual bool RemoveAttribute(string name)
         {
+            throw new InvalidOperationException("You can't remove attributes from this element type.");
+        }
+
+        public virtual bool HasClass(string className)
+        {
             return false;
         }
-   
+
+        public virtual bool AddClass(string className)
+        {
+            throw new InvalidOperationException("You can't add classes to this element type.");
+        }
+
+        public virtual bool RemoveClass(string className)
+        {
+            throw new InvalidOperationException("You can't remove classes from this element type.");
+        }
+
+        public virtual bool HasStyle(string styleName)
+        {
+            return false;
+        }
+
+        public virtual void AddStyle(string styleString)
+        {
+            throw new InvalidOperationException("You can't add styles to this element type.");
+        }
+
+        public virtual bool RemoveStyle(string name)
+        {
+            throw new InvalidOperationException("You can't remove styles to this element type.");
+        }
+
 
         public override string ToString()
         {
@@ -615,6 +645,9 @@ namespace CsQuery.Implementation
          }
 
         #endregion
+
+
+        
     }
 
 }

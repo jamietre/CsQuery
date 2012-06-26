@@ -16,7 +16,7 @@ using CsQuery.EquationParser;
 using CsQuery.EquationParser.Implementation;
 using CsQuery.EquationParser.Implementation.Functions;
 
-namespace CsqueryTests.Csharp.EquationParser
+namespace CsQuery.Tests.Csharp.EquationParser
 {
     [TestClass]
     public class Equations_

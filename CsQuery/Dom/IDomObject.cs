@@ -72,6 +72,14 @@ namespace CsQuery
         bool HasAttribute(string name);
         bool RemoveAttribute(string name);
 
+        bool HasClass(string className);
+        bool AddClass(string className);
+        bool RemoveClass(string className);
+
+        bool HasStyle(string styleName);
+        void AddStyle(string styleString);
+        bool RemoveStyle(string name);
+
         /// <summary>
         /// Returns true if this node has any attributes
         /// </summary>

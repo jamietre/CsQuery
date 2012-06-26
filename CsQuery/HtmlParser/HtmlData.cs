@@ -657,7 +657,8 @@ namespace CsQuery.HtmlParser
 
                 // [csquery] When a metadata tag appears, we start a head. Otherwise, we start a body. If a body later appears it will be ignored.
 
-                    return (TokenMetadata[newTagId] & (ushort)TokenProperties.MetaDataTags) != 0 ?
+                    return (newTagId & NonSpecialTokenMask) == 0 && 
+                        (TokenMetadata[newTagId] & (ushort)TokenProperties.MetaDataTags) != 0 ?
                         HtmlData.tagHEAD :
                             newTagId != HtmlData.tagBODY && 
                             newTagId != HtmlData.tagHEAD ?
@@ -669,18 +670,21 @@ namespace CsQuery.HtmlParser
 
 
         }
+
+
+
         public static ushort SpecialTagAction(ushort parentTagId, ushort newTagId)
         {
 
-            //if ((parentTagId & NonSpecialTokenMask) != 0 ||
-            //    (TokenMetadata[parentTagId] & (ushort)TokenProperties.AutoOpenOrClose) == 0)
-            //{
-            //    return HtmlData.tagActionNothing;
-            //}
+            if ((parentTagId & NonSpecialTokenMask) != 0)
+            {
+                return HtmlData.tagActionNothing;
+            }
             switch(parentTagId) {
                 case HtmlData.tagHEAD:
-                    return (TokenMetadata[newTagId] & (ushort)TokenProperties.MetaDataTags) == 0 ?
-                        tagActionClose : tagActionNothing;
+                    return  (newTagId & NonSpecialTokenMask) == 0 &&
+                            (TokenMetadata[newTagId] & (ushort)TokenProperties.MetaDataTags) == 0 ?
+                                tagActionClose : tagActionNothing;
 
                     
                 // [html5] An li element's end tag may be omitted if the li element is immediately followed by another li element 
@@ -706,7 +710,6 @@ namespace CsQuery.HtmlParser
                 // [csquery] I have no idea what "the parent element is not an element" means. Closing an open p whenever we hit one of these elements seems to work.
 
                 case HtmlData.tagP:
-                    //return HtmlData.IsBlock(newTagId);
                     return (newTagId & NonSpecialTokenMask) == 0
                         && (TokenMetadata[newTagId] & (ushort)TokenProperties.ParagraphCloser) != 0
                             ? tagActionClose : tagActionNothing;
@@ -823,7 +826,6 @@ namespace CsQuery.HtmlParser
         #endregion
 
         #region private methods
-
 
         /// <summary>
         /// For each value in "tokens" (ignoring case) sets the specified bit in the reference table

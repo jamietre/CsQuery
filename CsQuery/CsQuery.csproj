@@ -80,7 +80,7 @@
     <Compile Include="EquationParser\IFunction.cs" />
     <Compile Include="EquationParser\ILiteral.cs" />
     <Compile Include="EquationParser\Implementation\Equation.cs" />
-    <Compile Include="EquationParser\Implementation\EquationParser.cs" />
+    <Compile Include="EquationParser\Implementation\EquationParserEngine.cs" />
     <Compile Include="EquationParser\Implementation\Function.cs" />
     <Compile Include="EquationParser\Implementation\Functions\Abs.cs" />
     <Compile Include="EquationParser\Implementation\Functions\Power.cs" />
@@ -117,7 +117,7 @@
     <Compile Include="StringScanner\Implementation\CharacterInfo.cs" />
     <Compile Include="StringScanner\Implementation\ExpectPattern.cs" />
     <Compile Include="StringScanner\Implementation\StringInfo.cs" />
-    <Compile Include="StringScanner\Implementation\StringScanner.cs" />
+    <Compile Include="StringScanner\Implementation\StringScannerEngine.cs" />
     <Compile Include="StringScanner\IStringScanner.cs" />
     <Compile Include="StringScanner\IValueInfo.cs" />
     <Compile Include="StringScanner\MatchFunctions.cs" />

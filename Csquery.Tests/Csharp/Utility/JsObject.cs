@@ -13,26 +13,28 @@ using CsQuery;
 using CsQuery.Utility;
 using CsQuery.ExtensionMethods;
 
-namespace CsqueryTests.Csharp
+namespace CsQuery.Tests.Csharp.Utility
 {
 
-    [TestFixture, TestClass, Description("CsQuery Tests (Not from Jquery test suite)")]
+    [TestFixture, TestClass]
     public class JsObject_ : CsQueryTest
     {
         private static IDictionary<string, object> testDict = null;
 
-        [TestFixtureSetUp,ClassInitialize]
-        public static void Setup(TestContext context) {
+        public override void FixtureSetUp()
+        {
+            base.FixtureSetUp();
             testDict = new Dictionary<string, object>();
             testDict.Add("Prop1", "value1");
             testDict.Add("Prop2", 999);
             DateTime timeNow = DateTime.Now;
-            testDict.Add("Prop3", timeNow );
-            IDictionary<string,object> subDict = new Dictionary<string,object>();
+            testDict.Add("Prop3", timeNow);
+            IDictionary<string, object> subDict = new Dictionary<string, object>();
             testDict.Add("Prop4", subDict);
             subDict.Add("subProp1", "sub value 1");
             subDict.Add("subprop2", null);
         }
+
         /// <summary>
         /// This is not possible yet. I leave this here so hopefully some future version of the C# compiler
         /// will permit a DynamicObject to be told about the target type upon gets.

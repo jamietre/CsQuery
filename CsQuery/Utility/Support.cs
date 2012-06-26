@@ -43,13 +43,50 @@ namespace CsQuery.Utility
                 string filePath;
                 string cleanFileName= fileName.Replace("/","\\");
 
-                //string file = "\\" + filePath.AfterLast("\\");
-                string callingAssPath = GetFirstExternalAssembly().Location;
-                filePath = callingAssPath.FindPathTo(cleanFileName);
+                if (cleanFileName.StartsWith(".\\"))
+                {
+                    cleanFileName = cleanFileName.Substring(1);
+                }
+
+                string callingAssPath = AppDomain.CurrentDomain.BaseDirectory;
+                
+                filePath = FindPathTo(callingAssPath,cleanFileName);
                 return filePath;
 
             }
         }
+
+        /// <summary>
+        /// Given a relative path, locates a file in the parent heirarchy by matching parts of the path
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="match"></param>
+        /// <returns></returns>
+        public static string FindPathTo(string currentRootedPath, string find)
+        {
+            List<string> rootedPath = new List<string>(currentRootedPath.ToLower().Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries));
+            List<string> findPath = new List<string>(find.ToLower().Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries));
+
+            int start = rootedPath.IndexOf(findPath[0]);
+            if (start < 0)
+            {
+                return "";
+            }
+            else
+            {
+                int i = 0;
+                while (rootedPath[start++] == findPath[i++] 
+                    && i<findPath.Count
+                    && start< rootedPath.Count)
+                    ;
+
+                return string.Join("\\", rootedPath.GetRange(0, start)) + "\\"
+                    + string.Join("\\", findPath.GetRange(i, findPath.Count - i));
+
+            }
+        }
+
+
         public static Assembly GetFirstExternalAssembly()
         {
             Assembly me = Assembly.GetExecutingAssembly();
@@ -147,35 +184,9 @@ namespace CsQuery.Utility
             {
                 output = output.Substring(0, output.Length - 1);
             }
-            return output;
+            return output+"\\";
         }
-        /// <summary>
-        /// Given a relative path, locates a file in the parent heirarchy by matching parts of the path
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="match"></param>
-        /// <returns></returns>
-        public static string FindPathTo(string currentRootedPath, string find)
-        {
-            List<string> rootedPath = new List<string>(currentRootedPath.ToLower().Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries));
-            List<string> findPath = new List<string>(find.ToLower().Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries));
-
-            int start = rootedPath.IndexOf(findPath[0]);
-            if (start < 0)
-            {
-                return "";
-            }
-            else
-            {
-                int i = 0;
-                while (rootedPath[++start] == findPath[++i])
-                    ;
-
-                return string.Join("\\", rootedPath.GetRange(0, start)) + "\\"
-                    + string.Join("\\", findPath.GetRange(i, findPath.Count - i));
-
-            }
-        }
+       
     }
 
 }

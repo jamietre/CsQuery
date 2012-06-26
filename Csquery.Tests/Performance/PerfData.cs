@@ -17,7 +17,7 @@ using Fizzler.Systems.HtmlAgilityPack;
 using System.Diagnostics;
 using CsQuery.EquationParser;
 
-namespace CsqueryTests.Performance
+namespace CsQuery.Tests.Performance
 {
     public class PerfData
     {

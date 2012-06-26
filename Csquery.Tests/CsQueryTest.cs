@@ -12,7 +12,7 @@ using StringAssert = NUnit.Framework.StringAssert;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using MSClassInitialize = Microsoft.VisualStudio.TestTools.UnitTesting.ClassInitializeAttribute;
 
-namespace CsqueryTests
+namespace CsQuery.Tests
 {
     /// <summary>
     /// Base class for most tests. This incorporates C# versions of some of the shared code from the jQuery test suite.
@@ -20,15 +20,6 @@ namespace CsqueryTests
     [TestClass]
     public class CsQueryTest
     {
-        /// <summary>
-        /// If you keep CsQuery.Tests in a folder named other than CsQuery, change this. The tests need to access things from the Resources folder in the
-        /// test project. We can't be sure where this will be relative to the executing folder, so the root of the project is used as a
-        /// reference. Copying the files on each build is time consuming because we test against a really big file.
-        /// </summary>
-        static CsQueryTest()
-        {
-            SolutionDirectory = "CsQuery";
-        }
         private static string _SolutionDirectory;
 
         /// <summary>
@@ -36,13 +27,14 @@ namespace CsqueryTests
         /// </summary>
         public static string SolutionDirectory
         {
-            get{
+            get
+            {
                 return _SolutionDirectory;
             }
             set
             {
-                _SolutionDirectory = Support.CleanFilePath(Support.GetFilePath(value+"\\CsQuery.Tests\\..\\"));
-                TestProjectDirectory = Support.CleanFilePath(Support.GetFilePath(value + "\\CsQuery.Tests\\"));
+                _SolutionDirectory = Support.CleanFilePath(value);
+                TestProjectDirectory = Support.CleanFilePath(_SolutionDirectory+"CsQuery.Tests/");
             }
         }
         /// <summary>
@@ -52,7 +44,7 @@ namespace CsqueryTests
         {
             get; protected set;
         }
-
+        
         public CsQueryTest()
         {
             FixtureSetUp();
@@ -61,14 +53,22 @@ namespace CsqueryTests
         ~CsQueryTest() {
             FixtureTearDown();
         }
-        public virtual void FixtureTearDown()
-        {
 
-        }
+        // NUnit methods
+
+        [TestFixtureSetUp]
         public virtual void FixtureSetUp()
         {
             CQ.DefaultDocType = DocType.XHTML;
         }
+
+
+        [TestFixtureTearDown]
+        public virtual void FixtureTearDown()
+        {
+            FixtureSetUp();
+        }
+
         
         // for jQuery tests
 

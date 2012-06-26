@@ -6,7 +6,7 @@ using System.Text;
 namespace CsQuery.HtmlParser
 {
     [Flags]
-    public enum TokenProperties
+    public enum TokenProperties: ushort
     {
         // the element is an HTML block-level element
         

@@ -11,20 +11,20 @@ namespace CsQuery.StringScanner.Implementation
 {
     
     // Not implemented - intended to update the scanning code in Selector engine and maybe the HTML parser
-    public class StringScanner: IStringScanner
+    public class StringScannerEngine: IStringScanner
     {
         #region constructors
-        public StringScanner()
+        public StringScannerEngine()
         {
             Init();
         }
-        public StringScanner(string text)
+        public StringScannerEngine(string text)
         {
             Text = text;
             Init();
         }
-        public static implicit operator StringScanner(string text) {
-            return new StringScanner(text);
+        public static implicit operator StringScannerEngine(string text) {
+            return new StringScannerEngine(text);
         }
 
         protected void Init()
@@ -759,7 +759,7 @@ namespace CsQuery.StringScanner.Implementation
         /// </summary>
         /// <param name="validate"></param>
         /// <param name="untilTrue"></param>
-        protected StringScanner ExpectImpl(IExpectPattern pattern, bool untilTrue)
+        protected StringScannerEngine ExpectImpl(IExpectPattern pattern, bool untilTrue)
         {
             AssertNotFinished();
             CachePos();

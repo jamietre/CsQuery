@@ -324,31 +324,6 @@ namespace CsQuery.ExtensionMethods.Internal
         }
 
         /// <summary>
-        /// Given a relative path, locates a file in the parent heirarchy by matching parts of the path
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="match"></param>
-        /// <returns></returns>
-        public static string FindPathTo(this string currentRootedPath, string find)
-        {
-            List<string> rootedPath = new List<string>(currentRootedPath.ToLower().Split('\\'));
-            List<string> findPath =  new List<string>(find.ToLower().Split('\\'));
-
-            int start = rootedPath.IndexOf(findPath[0]);
-            if (start<0) {
-                return "";
-            } else {
-                int i=0;
-                while (rootedPath[++start] == findPath[++i])
-                    ;
-
-                return string.Join("\\",rootedPath.GetRange(0,start)) + "\\" 
-                    + string.Join("\\",findPath.GetRange(i,findPath.Count-i));
-
-            }
-        }
-
-        /// <summary>
         /// Returns the string after the end of the first occurrence of "find"
         /// </summary>
         /// <param name="text"></param>

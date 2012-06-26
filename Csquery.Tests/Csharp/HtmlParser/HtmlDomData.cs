@@ -14,7 +14,7 @@ using CsQuery;
 using CsQuery.HtmlParser;
 using CsQuery.Utility;
 
-namespace CsqueryTests.Csharp.HtmlParser
+namespace CsQuery.Tests.Csharp.HtmlParser
 {
     
     [TestFixture, TestClass]

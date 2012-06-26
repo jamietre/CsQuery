@@ -13,7 +13,7 @@ using TestContext = NUnit.Framework.TestContext;
 using CsQuery;
 using CsQuery.Utility;
 
-namespace CsqueryTests.jQuery
+namespace CsQuery.Tests.jQuery
 {
     [TestClass,TestFixture, Category("Core")]
     public class Core: CsQueryTest 

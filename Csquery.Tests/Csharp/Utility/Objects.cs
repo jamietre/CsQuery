@@ -12,7 +12,7 @@ using Assert = NUnit.Framework.Assert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 
-namespace CsqueryTests.Csharp
+namespace CsQuery.Tests.Csharp.Utility
 {
 
     /// <summary>
@@ -21,10 +21,6 @@ namespace CsqueryTests.Csharp
     [TestFixture, TestClass]
     public class Objects_ : CsQueryTest
     {
-        [TestFixtureSetUp,ClassInitialize]
-        public static void Setup(TestContext context) {
-
-        }
 
         [Test, TestMethod]
         public void Coerce()
