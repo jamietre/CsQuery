@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CsqueryTests;
-using CsqueryTests.Performance;
+using CsQuery.Tests;
+using CsQuery.Tests.Performance;
 
 namespace CsQuerySpeedTest
 {
@@ -12,7 +12,7 @@ namespace CsQuerySpeedTest
         {
             CsQueryTest.SolutionDirectory= "C:\\projects\\csharp\\csquery\\";
 
-            CsqueryTests.Performance.PerformanceTest.SetupTestRun();
+            PerformanceTest.SetupTestRun();
 
             PerformanceShared test = new _Performance_SmallDom();
 
@@ -29,7 +29,7 @@ namespace CsQuerySpeedTest
             test.FixtureSetUp();
             test.LoadingDom();
 
-            CsqueryTests.Performance.PerformanceTest.CleanupTestRun();
+            PerformanceTest.CleanupTestRun();
         }
     }
 }

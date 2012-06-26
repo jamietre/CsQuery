@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsQuery.TestRunner", "CsQuery.TestRunner\CsQuery.TestRunner.csproj", "{4886324B-F88B-435A-B21E-43821B5C4305}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsQuery.Tests.Runner", "CsQuery.Tests.Runner\CsQuery.Tests.Runner.csproj", "{4886324B-F88B-435A-B21E-43821B5C4305}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Csquery.Tests", "..\CsQuery.Tests\Csquery.Tests.csproj", "{F8920741-0BB4-4939-A774-0F9059B2B7F0}"
 EndProject
