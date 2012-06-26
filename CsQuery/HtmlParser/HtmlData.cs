@@ -13,7 +13,7 @@ namespace CsQuery.HtmlParser
     /// methods to test tokens for certain properties;
     /// and tokenizer
     /// </summary>
-    public static class HtmlData
+    public class HtmlData
     {
         #region constants and data
 
@@ -330,6 +330,7 @@ namespace CsQuery.HtmlParser
             setBit(metaDataTags, TokenProperties.MetaDataTags);
 
         }
+
         private static HashSet<ushort> PopulateTokenHashset(IEnumerable<string> tokens)
         {
             var set = new HashSet<ushort>();
@@ -339,6 +340,12 @@ namespace CsQuery.HtmlParser
             }
             return set;
         }
+
+        public static void Touch()
+        {
+            var x =  nextID;
+        }
+
         #endregion
 
         #region public methods

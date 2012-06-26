@@ -40,6 +40,13 @@ namespace CsqueryTests.Performance
         [AssemblyInitialize]
         public static void SetupTestRun(TestContext context)
         {
+            SetupTestRun();
+
+        }
+
+        public static void SetupTestRun()
+        {
+            CsQuery.HtmlParser.HtmlData.Touch();
             OutputFolder = CsQueryTest.TestProjectDirectory + "\\performance\\output\\";
 
             DateTime dt = DateTime.Now;
@@ -59,7 +66,6 @@ namespace CsqueryTests.Performance
 
             OutputHeaders();
             Debug.WriteLine("");
-
         }
 
 
