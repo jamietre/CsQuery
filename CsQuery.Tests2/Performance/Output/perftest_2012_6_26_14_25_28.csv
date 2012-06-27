@@ -1,0 +1,18 @@
+"Test Name","Test Document","Description","Same","Winner","FasterRatio",,"Source","Iterations/Sec","Iterations","Seconds",,"Source","Iterations/Sec","Iterations","Seconds"
+"CSS selector: { [type] }","medium document (wiki-cheese, about 170k)","Selector returning 23 elements.",1,"CsQuery","61.05",,"CsQuery",27350,54700,2,,"Fizzler",447.98,900,2
+"CSS selector: { input[type] }","medium document (wiki-cheese, about 170k)","Selector returning 2 elements.",1,"CsQuery","65.68",,"CsQuery",42334,84668,2,,"Fizzler",644.55,1302,2
+"CSS selector: { input[type][checked] }","medium document (wiki-cheese, about 170k)","Selector returning 0 elements.",1,"CsQuery","57.98",,"CsQuery",35256.5,70513,2,,"Fizzler",608.09,1218,2
+"CSS selector: { #body }","medium document (wiki-cheese, about 170k)","Selector returning 1 elements.",1,"CsQuery","190",,"CsQuery",83051,166102,2,,"Fizzler",437.11,900,2.1
+"CSS selector: { #button }","medium document (wiki-cheese, about 170k)","Selector returning 1 elements.",1,"CsQuery","182.12",,"CsQuery",79524,159048,2,,"Fizzler",436.65,903,2.1
+"CSS selector: { #missing }","medium document (wiki-cheese, about 170k)","Selector returning 0 elements.",1,"CsQuery","248.69",,"CsQuery",108906.5,217813,2,,"Fizzler",437.92,903,2.1
+"Create DOM from html","medium document (wiki-cheese, about 170k)","",1,"Fizzler","2.66",,"CsQuery",23.39,48,2.1,,"Fizzler",62.22,125,2
+"CSS selector: { * }","medium document (wiki-cheese, about 170k)","Selector returning 2297 elements. NOTE: HAP returned 2286 elements",0,"Fizzler","2.23",,"CsQuery",252.28,525,2.1,,"Fizzler",562.59,1155,2.1
+"CSS selector: { div:nth-child(3) }","medium document (wiki-cheese, about 170k)","Selector returning 7 elements.",1,"CsQuery","2.87",,"CsQuery",1629.05,3320,2,,"Fizzler",567.18,1144,2
+"CSS selector: { div:nth-child(2n+1) }","medium document (wiki-cheese, about 170k)","Selector returning 68 elements. NOTE: HAP returned 0 elements",0,"CsQuery","NaN",,"CsQuery",1390.11,2840,2,,,,
+"CSS selector: { div:nth-last-child(3) }","medium document (wiki-cheese, about 170k)","Selector returning 8 elements. NOTE: HAP returned 0 elements",0,"CsQuery","NaN",,"CsQuery",1336.97,2698,2,,,,
+"CSS selector: { div:nth-last-child(2n+1) }","medium document (wiki-cheese, about 170k)","Selector returning 91 elements. NOTE: HAP returned 0 elements",0,"CsQuery","NaN",,"CsQuery",1141.28,2375,2.1,,,,
+"CSS selector: { div > span }","medium document (wiki-cheese, about 170k)","Selector returning 37 elements.",1,"CsQuery","3.43",,"CsQuery",2063.11,4250,2.1,,"Fizzler",602.08,1218,2
+"CSS selector: { div span:first-child }","medium document (wiki-cheese, about 170k)","Selector returning 196 elements.",1,"CsQuery","2.86",,"CsQuery",633.58,1302,2.1,,"Fizzler",221.37,462,2.1
+"CSS selector: { div span:last-child }","medium document (wiki-cheese, about 170k)","Selector returning 190 elements.",1,"CsQuery","2.92",,"CsQuery",644.55,1302,2,,"Fizzler",220.84,462,2.1
+"CSS selector: { div > span:last-child }","medium document (wiki-cheese, about 170k)","Selector returning 5 elements.",1,"CsQuery","3.14",,"CsQuery",1880.79,3818,2,,"Fizzler",598.82,1218,2
+"CSS selector: { div span:only-child }","medium document (wiki-cheese, about 170k)","Selector returning 65 elements.",1,"CsQuery","3.09",,"CsQuery",654.11,1320,2,,"Fizzler",211.64,440,2.1

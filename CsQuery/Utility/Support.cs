@@ -186,7 +186,39 @@ namespace CsQuery.Utility
             }
             return output+"\\";
         }
-       
+
+        /// <summary>
+        /// Get a fully qualified namespaced path to a member
+        /// </summary>
+        /// <param name="mi"></param>
+        /// <returns></returns>
+        public static string MethodPath(MemberInfo mi)
+        {
+            return TypePath(mi.ReflectedType) + "." + mi.Name;
+        }
+
+        /// <summary>
+        /// Get a fully qualified namespaced path to a member
+        /// </summary>
+        /// <param name="mi"></param>
+        /// <returns></returns>
+        public static string MethodPath(Type type, string memberName)
+        {
+            return TypePath(type) + "." + memberName;
+        }
+        /// <summary>
+        /// Get a fully qualified namespaced path to a type
+        /// </summary>
+        /// <param name="mi"></param>
+        /// <returns></returns>
+        public static string TypePath(Type type)
+        {
+            return type.Namespace + "." + type.Name;
+        }
+
+
     }
+
+
 
 }

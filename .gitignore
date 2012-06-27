@@ -5,6 +5,7 @@
 Build/
 TestResults/
 CsQuery.Tests/Performance/Output/
+CsQuery.Tests2/Performance/Output/
 WebSite/
 
 #################

@@ -1,0 +1,34 @@
+Beginning tests Tuesday, June 26, 2012 8:25:10 AM
+
+Beginning tests using document "medium document (wiki-cheese, about 170k)"
+
+>>> Comparison for "Create DOM from html"
+-----------------------
+"CsQuery": 41.9 iterations per second (84 in 2 seconds)
+"Fizzler": 90.3 iterations per second (189 in 2.1 seconds)
+-----------------------
+>>> WINNER: "Fizzler" -- 2.15 times faster than next best performer (CsQuery)
+
+Beginning tests Tuesday, June 26, 2012 8:25:14 AM
+
+Beginning tests using document "small document (sizzle, about 11k)"
+
+>>> Comparison for "Create DOM from html"
+-----------------------
+"CsQuery": 588.7 iterations per second (1188 in 2 seconds)
+"Fizzler": 964.8 iterations per second (1998 in 2.1 seconds)
+-----------------------
+>>> WINNER: "Fizzler" -- 1.64 times faster than next best performer (CsQuery)
+
+Beginning tests using document "large document (HTML Standard, about 6,000k)"
+
+>>> Comparison for "Create DOM from html"
+-----------------------
+"CsQuery": 0.7 iterations per second (7 in 10.3 seconds)
+"Fizzler": 0.8 iterations per second (8 in 10.3 seconds)
+-----------------------
+>>> WINNER: "Fizzler" -- 1.14 times faster than next best performer (CsQuery)
+
+
+Completed tests Tuesday, June 26, 2012 8:25:45 AM
+

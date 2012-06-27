@@ -1,0 +1,15 @@
+"Test Name","Test Document","Description","Same","Winner","FasterRatio",,"Source","Iterations/Sec","Iterations","Seconds",,"Source","Iterations/Sec","Iterations","Seconds"
+"Create DOM from html","medium document (wiki-cheese, about 170k)","",1,"Fizzler","2.32",,"CsQuery",39.71,81,2,,"Fizzler",92.06,189,2.1
+"CSS selector: { div > span }","large document (HTML Standard, about 6,000k)","Selector returning 0 elements.",1,"CsQuery","244.84",,"CsQuery",251.02,2520,10,,"Fizzler",1.03,11,10.7
+"CSS selector: { div span:first-child }","large document (HTML Standard, about 6,000k)","Selector returning 2704 elements. NOTE: HAP returned 2703 elements",0,"CsQuery","126.46",,"CsQuery",69.33,696,10,,"Fizzler",0.55,6,10.9
+"CSS selector: { div span:last-child }","large document (HTML Standard, about 6,000k)","Selector returning 2605 elements. NOTE: HAP returned 2598 elements",0,"CsQuery","122.02",,"CsQuery",67.21,678,10.1,,"Fizzler",0.55,6,10.9
+"CSS selector: { div > span:last-child }","large document (HTML Standard, about 6,000k)","Selector returning 0 elements.",1,"CsQuery","269.45",,"CsQuery",269.42,2726,10.1,,"Fizzler",1,10,10
+"CSS selector: { div span:only-child }","large document (HTML Standard, about 6,000k)","Selector returning 2517 elements.",1,"CsQuery","121.72",,"CsQuery",66.14,665,10.1,,"Fizzler",0.54,6,11
+"CSS selector: { div:nth-child(3) }","medium document (wiki-cheese, about 170k)","Selector returning 7 elements.",1,"CsQuery","2.96",,"CsQuery",2079.21,4200,2,,"Fizzler",701.93,1420,2
+"CSS selector: { div:nth-child(2n+1) }","medium document (wiki-cheese, about 170k)","Selector returning 68 elements. NOTE: HAP returned 0 elements",0,"CsQuery","NaN",,"CsQuery",1890.55,3800,2,,,,
+"CSS selector: { div:nth-last-child(3) }","medium document (wiki-cheese, about 170k)","Selector returning 8 elements. NOTE: HAP returned 0 elements",0,"CsQuery","NaN",,"CsQuery",1974.33,4000,2,,,,
+"CSS selector: { div:nth-last-child(2n+1) }","medium document (wiki-cheese, about 170k)","Selector returning 91 elements. NOTE: HAP returned 0 elements",0,"CsQuery","NaN",,"CsQuery",1656.69,3320,2,,,,
+"CSS selector: { * }","small document (sizzle, about 11k)","Selector returning 219 elements.",1,"Fizzler","1.82",,"CsQuery",4398.83,9000,2,,"Fizzler",7992.01,16000,2
+"CSS selector: { * }","large document (HTML Standard, about 6,000k)","Selector returning 117921 elements. NOTE: HAP returned 117915 elements",0,"CsQuery","4.17",,"CsQuery",3.93,40,10.2,,"Fizzler",0.94,10,10.6
+"CSS selector: { #body }","large document (HTML Standard, about 6,000k)","Selector returning 1 elements.",1,"CsQuery","92721.55",,"CsQuery",85781.8,857818,10,,"Fizzler",0.93,10,10.8
+"CSS selector: { #button }","large document (HTML Standard, about 6,000k)","Selector returning 1 elements.",1,"CsQuery","109323.44",,"CsQuery",100527.3,1005273,10,,"Fizzler",0.92,10,10.9
