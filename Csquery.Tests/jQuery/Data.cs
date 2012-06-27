@@ -2,20 +2,71 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
+using Assert = NUnit.Framework.Assert;
+using Description = Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute;
+using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 
-namespace CsQuery.Tests.jQuery
+namespace CsQuery.Tests.jQuery.Data
 {
-    public class Data
+    [TestClass,TestFixture]
+    public class Data: CsQueryTest
     {
-//        module("data", { teardown: moduleTeardown });
+         [Test,TestMethod]
+        public void DataMethod() 
+        {
+        
+
+            var div = jQuery("#foo");
+             
+             // [CsQuery] was undefined.
+
+            Assert.AreEqual( div.Data("foo"), null, "Make sure that missing result is undefined" );
+            div.Data("test", "success");
+
+            var dataObj = div.Data();
+
+            // TODO: Remove this hack which was introduced in 1.5.1
+            // delete dataObj.toJSON;
+
+            Assert.AreEqual( dataObj, new {test="success"}, "data() get the entire data object" );
+            
+             Assert.AreEqual( div.Data("foo"), null, "Make sure that missing result is still undefined" );
+
+            var nodiv = jQuery("#unfound");
+            Assert.AreEqual( nodiv.Data(), null, "data() on empty set returns null" );
+
+            //var obj = new { foo= "bar" };
+            //jQuery(obj).Data("foo", "baz");
+
+           // dataObj = jQuery.extend(true, {}, jQuery(obj).Data());
+
+            // TODO: Remove this hack which was introduced for 1.5.1
+            //delete dataObj.toJSON;
+
+            //Assert.AreEqual( dataObj, new { foo= "baz" }, "Retrieve data object from a wrapped JS object (#7524)" );
+        }
+
+         public override void FixtureSetUp()
+         {
+             base.FixtureSetUp();
+             Dom = TestDom("jquery-unit-index");
+         }
+        #region non-applicable tests
+
+
+        //        module("data", { teardown: moduleTeardown });
 
 //test("expando", function(){
 //    expect(1);
 
 //    equal("expando" in jQuery, true, "jQuery is exposing the expando");
-//});
+        //});
 
-//function dataTests (elem) {
+       
+
+        //function dataTests (elem) {
 //    // expect(31)
 
 //    function getCacheLength() {
@@ -164,9 +215,10 @@ namespace CsQuery.Tests.jQuery
 
 //    // clean up unattached element
 //    jQuery(div).remove();
-//});
+        //});
 
-//test("jQuery.acceptData", function() {
+        
+        //test("jQuery.acceptData", function() {
 //    expect(7);
 
 //    ok( jQuery.acceptData( document ), "document" );
@@ -182,36 +234,10 @@ namespace CsQuery.Tests.jQuery
 //    var applet = document.createElement("object");
 //    applet.setAttribute("classid", "clsid:8AD9C840-044E-11D1-B3E9-00805F499D93");
 //    ok( !jQuery.acceptData( applet ), "applet" );
-//});
+        //});
 
-//test(".data()", function() {
-//    expect(5);
-
-//    var div = jQuery("#foo");
-//    strictEqual( div.data("foo"), undefined, "Make sure that missing result is undefined" );
-//    div.data("test", "success");
-
-//    var dataObj = div.data();
-
-//    // TODO: Remove this hack which was introduced in 1.5.1
-//    delete dataObj.toJSON;
-
-//    deepEqual( dataObj, {test: "success"}, "data() get the entire data object" );
-//    strictEqual( div.data("foo"), undefined, "Make sure that missing result is still undefined" );
-
-//    var nodiv = jQuery("#unfound");
-//    equal( nodiv.data(), null, "data() on empty set returns null" );
-
-//    var obj = { foo: "bar" };
-//    jQuery(obj).data("foo", "baz");
-
-//    dataObj = jQuery.extend(true, {}, jQuery(obj).data());
-
-//    // TODO: Remove this hack which was introduced for 1.5.1
-//    delete dataObj.toJSON;
-
-//    deepEqual( dataObj, { foo: "baz" }, "Retrieve data object from a wrapped JS object (#7524)" );
-//});
+        #endregion
+        
 
 //test(".data(String) and .data(String, Object)", function() {
 //    expect(29);

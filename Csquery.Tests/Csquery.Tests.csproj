@@ -101,7 +101,7 @@
     <Compile Include="jQuery\Core.cs" />
     <Compile Include="CsQueryTest.cs" />
     <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="jQuery\css.cs" />
+    <Compile Include="jQuery\Css.cs" />
     <Compile Include="jQuery\Data.cs" />
     <Compile Include="jQuery\Manipulation.cs" />
     <Compile Include="jQuery\Sizzle\BrokenSelectors.cs" />

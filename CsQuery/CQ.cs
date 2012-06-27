@@ -1232,19 +1232,21 @@ namespace CsQuery
         /// <returns></returns>
         public IDynamicMetaObjectProvider Data()
         {
-            JsObject data = new JsObject();
+            var dataObj = new JsObject();
+            IDictionary<string, object> data = dataObj;
             IDomElement obj = FirstElement();
             if (obj != null)
             {
+
                 foreach (var item in obj.Attributes)
                 {
                     if (item.Key.StartsWith("data-"))
                     {
-                        Extend(data,item.Value);
+                        data[item.Key.Substring(5)] = CQ.ParseJSON(item.Value);
                     }
                 }
             }
-            return data;
+            return dataObj;
         }
         /// <summary>
         /// Store arbitrary data associated with the specified element. Returns the value that was set.
