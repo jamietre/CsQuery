@@ -26,8 +26,15 @@ namespace CsQuery.Tests
         [SetUp]
         public static void AssemblySetup()
         {
-           
-            CsQueryTest.SolutionDirectory = Support.GetFilePath("./" + SolutionFolderName + "/");
+
+            
+            var solutionFolderTry = Support.GetFilePath("./TestResults/");
+            if (solutionFolderTry == "")
+            {
+                solutionFolderTry = Support.GetFilePath("./CsQuery.Tests/");
+            }
+            //CsQueryTest.SolutionDirectory = Support.GetFilePath("./" + SolutionFolderName + "/");
+            CsQueryTest.SolutionDirectory = Support.CleanFilePath(solutionFolderTry+"/../");
             PerformanceTest.SetupTestRun();
 
         }

@@ -39,6 +39,11 @@ namespace CsQuery.Tests.Performance
             IsPerformanceTest = false;
             CsQuery.HtmlParser.HtmlData.Touch();
             OutputFolder = CsQueryTest.TestProjectDirectory + "\\performance\\output\\";
+            if (!Directory.Exists(OutputFolder))
+            {
+                Directory.CreateDirectory(OutputFolder);
+
+            }
 
             DateTime dt = DateTime.Now;
 
