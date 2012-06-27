@@ -35,6 +35,44 @@ namespace CsQuery.Tests
 
         }
 
+
+        /// <summary>
+        /// Test the extended test method
+        /// </summary>
+        [Test, TestMethod]
+        public void ObjectPropertiesAreEqual()
+        {
+            var obj1 = new { prop1 = "test", prop2 = 2 };
+            
+            dynamic obj2 = new JsObject();
+            obj2.prop1 = "test";
+            obj2.prop2 = 2;
+
+            AssertEx.ObjectPropertiesAreEqual(obj1, obj2);
+
+            obj2.prop2 = 5;
+
+            AssertEx.ObjectPropertiesAreNotEqual(obj1, obj2);
+
+            obj2.prop2 = 2;
+            obj2.thirdProp = "some other property";
+
+            AssertEx.ObjectPropertiesAreNotEqual(obj1, obj2);
+
+            ((IDictionary<string, object>)obj2).Remove("thirdProp");
+
+            AssertEx.ObjectPropertiesAreEqual(obj1, obj2);
+            
+            // make sure it fails correctly too
+            Assert.Throws<AssertionException>(() =>
+            {
+                AssertEx.ObjectPropertiesAreNotEqual(obj1, obj2);
+            });
+
+
+        }
+
+
         // VS first, NUnit 2nd
 
         HashSet<Type> TestClassAttributes = new HashSet<Type> 

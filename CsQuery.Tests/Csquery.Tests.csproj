@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arrays.cs" />
+    <Compile Include="AssertEx.cs" />
     <Compile Include="TestTests.cs" />
     <Compile Include="Csharp\HtmlParser\Classes.cs" />
     <Compile Include="Csharp\HtmlParser\HtmlDomData.cs" />

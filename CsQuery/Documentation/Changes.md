@@ -1,6 +1,12 @@
 ﻿### Change Log
 
 This is an informal log of changes to the project; major issues will be logged and described on github.
+#####6/27/2012
+
+- Fix .Data() method to comply with jquery test
+- Add RemoveData methods
+
+#####6/26/2012 Release 1.1.2
 
 #####6/21/2012
 
@@ -40,7 +46,7 @@ This is an informal log of changes to the project; major issues will be logged a
 - Make property indexer overloads match Select() overloads
 - Enhance compliance with HTML spec for allowable characters in attributes, ids
 
-#####6/12/2012: Version 1.1
+#####6/12/2012 Release 1.1
 
 - ADDED :nth-last-of-type(N), nth-last-child(N) -final outstanding pseudoselectors
 - ADDED IDomObject.Name property
