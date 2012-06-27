@@ -66,6 +66,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arrays.cs" />
+    <Compile Include="AssertEx.cs" />
+    <Compile Include="TestTests.cs" />
     <Compile Include="Csharp\HtmlParser\Classes.cs" />
     <Compile Include="Csharp\HtmlParser\HtmlDomData.cs" />
     <Compile Include="Csharp\HtmlParser\HtmlBigDomTest.cs" />
@@ -101,7 +103,7 @@
     <Compile Include="jQuery\Core.cs" />
     <Compile Include="CsQueryTest.cs" />
     <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="jQuery\css.cs" />
+    <Compile Include="jQuery\Css.cs" />
     <Compile Include="jQuery\Data.cs" />
     <Compile Include="jQuery\Manipulation.cs" />
     <Compile Include="jQuery\Sizzle\BrokenSelectors.cs" />

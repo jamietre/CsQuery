@@ -8,27 +8,50 @@ using System.Threading;
 
 namespace CsQuery.Web
 {
+    /// <summary>
+    /// A class encapsulating the functionality needed to make requests of remote web servers, and return the HTML as a CQ object.
+    /// </summary>
     public class AsyncWebRequest : ICsqWebResponse
     {
+        #region constructor
+
         public AsyncWebRequest(WebRequest request)
         {
             Request = request;
         }
-        protected ManualResetEvent allDone = new ManualResetEvent(false);
-        const int BUFFER_SIZE = 1024;
 
+        #endregion
+
+        #region private properties
+
+        const int BUFFER_SIZE = 1024;
+        protected ManualResetEvent allDone = new ManualResetEvent(false);
         protected StringBuilder HtmlStringbuilder { get; set; }
         protected Stream ResponseStream { get; set; }
-
         
+        #endregion
+
 
         #region public properties
 
+        /// <summary>
+        /// Delegate to invoke upon successful completion of a request
+        /// </summary>
         public Action<ICsqWebResponse> CallbackSuccess { get; set; }
+
+        /// <summary>
+        /// Delegate to invoke when a request fails
+        /// </summary>
         public Action<ICsqWebResponse> CallbackFail { get; set; }
 
+        /// <summary>
+        /// A unique identifier for this request
+        /// </summary>
         public object Id { get; set; }
 
+        /// <summary>
+        /// The URL of the request
+        /// </summary>
         public string Url
         {
             get
@@ -37,20 +60,37 @@ namespace CsQuery.Web
             }
         }
         
+        /// <summary>
+        /// Time, in milliseconds, after which a web request will be aborted.
+        /// </summary>
         public int Timeout
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Get or set the user agent string used when the request is made
+        /// </summary>
         public string UserAgent
         {
             get;
             set;
         }
+
+        /// <summary>
+        /// The time that the async request was initiated.
+        /// </summary>
         public DateTime? Started { get; protected set; }
+
+        /// <summary>
+        /// The time that the async request was completed
+        /// </summary>
         public DateTime? Finished { get; protected set; }
         
+        /// <summary>
+        /// Indicates that an async request has completed.
+        /// </summary>
         public bool Complete
         {
             get
@@ -70,23 +110,34 @@ namespace CsQuery.Web
             }
         }
 
+        /// <summary>
+        /// True if the WebRequest was completed successfully.
+        /// </summary>
         public bool Success
         {
             get;
             protected set;
 
         }
+
+        /// <summary>
+        /// When a request fails, contains the exception raised.
+        /// </summary>
         public WebException WebException
         {
             get;
             protected set;
         }
+
         public WebRequest Request
         {
             get;
             set;
         }
        
+        /// <summary>
+        /// Return the Html response from the request
+        /// </summary>
         public string Html
         {
             get
@@ -94,17 +145,39 @@ namespace CsQuery.Web
                 return HtmlStringbuilder.ToString();
             }
         }
+
+        /// <summary>
+        /// Return a document from the HTML web request result. DEPRECATED. use GetDocument() instead.
+        /// </summary>
         public CQ Dom
         {
             get
             {
-                return CQ.Create(Html);
+                return CQ.CreateDocument(Html);
             }
         }
 
-        #endregion
+        /// <summary>
+        /// Return a CQ object, treating the HTML as a complete document
+        /// </summary>
+        public CQ GetDocument()
+        {
+           return CQ.CreateDocument(Html);
+        }
 
+        /// <summary>
+        /// Return a CQ object, treating the HTML as content
+        /// </summary>
+        /// <returns></returns>
+        public CQ GetContent() 
+        {
+            return CQ.Create(Html);
+        }
 
+        /// <summary>
+        /// Being the async request
+        /// </summary>
+        /// <returns></returns>
         public ManualResetEvent GetAsync()
         {
             Started = DateTime.Now;
@@ -121,6 +194,10 @@ namespace CsQuery.Web
                new AsyncCallback(RespCallback), rs);
             return allDone;
         }
+        #endregion
+
+        #region private methods
+
         private void RespCallback(IAsyncResult ar)
         {
 
@@ -233,8 +310,7 @@ namespace CsQuery.Web
             return;
         }
 
-
-
+        #endregion
 
     }
 }

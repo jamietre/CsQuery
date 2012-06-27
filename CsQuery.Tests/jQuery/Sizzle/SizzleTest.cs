@@ -10,7 +10,7 @@ namespace CsQuery.Tests.jQuery.Sizzle
     /// Tests from sizzle.js test suite as of June 13, 2012
     /// https://github.com/jquery/sizzle/tree/master/test
     /// </summary>
-    public class SizzleTest: CsQueryTest
+    public abstract class SizzleTest: CsQueryTest
     {
         // These functionas may be found in the CsQueryTest class
 

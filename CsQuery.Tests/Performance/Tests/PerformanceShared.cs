@@ -19,7 +19,7 @@ using CsQuery.EquationParser;
 
 namespace CsQuery.Tests.Performance
 {
-    [TestClass]
+    [TestClass,TestFixture, Description("Performance test using large (6 megabyte) HTML document. Can be time consuming.")]
     public abstract class PerformanceShared : PerformanceTest
     {
         protected abstract string DocName {get;}

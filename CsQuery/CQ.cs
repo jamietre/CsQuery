@@ -1232,19 +1232,26 @@ namespace CsQuery
         /// <returns></returns>
         public IDynamicMetaObjectProvider Data()
         {
-            JsObject data = new JsObject();
+            var dataObj = new JsObject();
+            IDictionary<string, object> data = dataObj;
             IDomElement obj = FirstElement();
             if (obj != null)
             {
+
                 foreach (var item in obj.Attributes)
                 {
                     if (item.Key.StartsWith("data-"))
                     {
-                        Extend(data,item.Value);
+                        data[item.Key.Substring(5)] = CQ.ParseJSON(item.Value);
                     }
                 }
+                return dataObj;
             }
-            return data;
+            else
+            {
+                return null;
+            }
+            
         }
         /// <summary>
         /// Store arbitrary data associated with the specified element. Returns the value that was set.
@@ -1256,7 +1263,7 @@ namespace CsQuery
         {
             foreach (IDomElement e in Elements)
             {
-                e.SetAttribute("data-" + key, data);
+                e.SetAttribute("data-" + key, JSON.ToJSON(data));
             }
             return this;
         }
@@ -1297,12 +1304,63 @@ namespace CsQuery
         {
             string data = First().Attr("data-" + element);
             
-            return CQ.ParseJSON(data);
+            return JSON.ParseJSON(data);
         }
         public T Data<T>(string key)
         {
             string data = First().Attr("data-" + key);
-            return CQ.ParseJSON<T>(data);
+            return JSON.ParseJSON<T>(data);
+        }
+
+        /// <summary>
+        /// Remove all data- attributes from the element.
+        /// </summary>
+        /// <returns></returns>
+        public CQ RemoveData()
+        {
+            return RemoveData((string)null);
+        }
+
+       
+        /// <summary>
+        /// Remove a previously-stored piece of data.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        public CQ RemoveData(string key)
+        {
+            foreach (IDomElement el in Elements)
+            {
+                List<string> toRemove = new List<string>();
+                foreach (var kvp in el.Attributes)
+                {
+                    bool match = String.IsNullOrEmpty(key) ?
+                        kvp.Key.StartsWith("data-") :
+                        kvp.Key == "data-" + key;
+                    if (match)
+                    {
+                        toRemove.Add(kvp.Key);
+                    }
+                }
+                foreach (string attr in toRemove)
+                {
+                    el.RemoveAttribute(attr);
+                }
+            }
+            return this;
+        }
+        /// <summary>
+        /// Remove all data from an element.
+        /// </summary>
+        /// <returns></returns>
+        public CQ RemoveData(IEnumerable<string> keys)
+        {
+            foreach (var key in keys)
+            {
+                RemoveData(key);
+
+            }
+            return this;
         }
         /// <summary>
         /// Returns data as a string, with no attempt to decode it
@@ -2055,33 +2113,7 @@ namespace CsQuery
            return this;
         }
 
-        /// <summary>
-        /// Remove a previously-stored piece of data.
-        /// </summary>
-        /// <param name="element"></param>
-        /// <returns></returns>
-        public CQ RemoveData(string dataId=null)
-        {
-            foreach (IDomElement el in Elements)
-            {
-                List<string> toRemove = new List<string>();
-                foreach (var kvp in el.Attributes)
-                {
-                    bool match = String.IsNullOrEmpty(dataId) ?
-                        kvp.Key.StartsWith("data-") :
-                        kvp.Key == "data-" + dataId;
-                    if (match) 
-                    {
-                        toRemove.Add(kvp.Key);
-                    }
-                }
-                foreach (string key in toRemove)
-                {
-                    el.RemoveAttribute(key);
-                }
-            }
-            return this;
-        }
+
         /// <summary>
         /// Determine whether an element has any jQuery data associated with it.
         /// </summary>

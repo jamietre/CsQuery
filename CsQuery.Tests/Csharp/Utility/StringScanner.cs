@@ -21,7 +21,7 @@ namespace CsQuery.Tests.Csharp.Utility
 
         protected StringScannerEngine scanner;
 
-        [TestMethod]
+        [TestMethod,Test]
         public void EquationParsing()
         {
             string test = " 4x+1 = 102.333^2 444 theEnd";
@@ -67,7 +67,7 @@ namespace CsQuery.Tests.Csharp.Utility
             Assert.AreEqual("theEnd", scanner.Match, "Backing up resulted in the previous match");
 
         }
-        [TestMethod]
+        [TestMethod,Test]
         public void StringParsing()
         {
             string test = @"someSelect[attr-bute= 'this is \' a quoted value']";
@@ -97,7 +97,7 @@ namespace CsQuery.Tests.Csharp.Utility
 
         }
 
-        [TestMethod]
+        [TestMethod,Test]
         public void BuiltInSelectors()
         {
             scanner=@"someSelect[attr-bute= 'this ""is \' a quoted value']";
