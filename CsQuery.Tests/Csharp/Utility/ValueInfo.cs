@@ -16,7 +16,7 @@ using CsQuery.StringScanner;
 
 namespace CsQuery.Tests.Csharp.Utility
 {
-    [TestClass]
+    [TestClass,TestFixture]
     public class ValueInfo_
     {
 
@@ -69,7 +69,7 @@ namespace CsQuery.Tests.Csharp.Utility
             Assert.IsTrue(IsOnly(charInfo, ""), "Nothing");
         }
 
-        [TestMethod]
+        [TestMethod,Test]
         public void StringInfo_()
         {
             IStringInfo info;

@@ -16,15 +16,24 @@ namespace CsQuery.Utility
     public static class Support
     {
         /// <summary>
-        /// If unset, will be set when GetFile is called to the guessed path
+        /// Read all text of a file, trying to find it from the execution location if not rooted.
         /// </summary>
-        //public static string RootPath
-        //{ get; set; }
-        // Read a path, or from the calling app root
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         public static string GetFile(string fileName)
         {
            string filePath = GetFilePath(fileName);
            return File.ReadAllText(filePath); 
+        }
+        /// <summary>
+        /// Open a stream for a file, trying to find it from the execution location if not rooted.
+        /// </summary>
+        /// <param name="fileName"></param>
+        public static FileStream GetFileStream(string fileName)
+        {
+            string filePath = GetFilePath(fileName);
+            FileStream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+            return stream;
 
         }
         /// <summary>
@@ -186,7 +195,39 @@ namespace CsQuery.Utility
             }
             return output+"\\";
         }
-       
+
+        /// <summary>
+        /// Get a fully qualified namespaced path to a member
+        /// </summary>
+        /// <param name="mi"></param>
+        /// <returns></returns>
+        public static string MethodPath(MemberInfo mi)
+        {
+            return TypePath(mi.ReflectedType) + "." + mi.Name;
+        }
+
+        /// <summary>
+        /// Get a fully qualified namespaced path to a member
+        /// </summary>
+        /// <param name="mi"></param>
+        /// <returns></returns>
+        public static string MethodPath(Type type, string memberName)
+        {
+            return TypePath(type) + "." + memberName;
+        }
+        /// <summary>
+        /// Get a fully qualified namespaced path to a type
+        /// </summary>
+        /// <param name="mi"></param>
+        /// <returns></returns>
+        public static string TypePath(Type type)
+        {
+            return type.Namespace + "." + type.Name;
+        }
+
+
     }
+
+
 
 }

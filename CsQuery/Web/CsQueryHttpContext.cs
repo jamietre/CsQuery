@@ -19,15 +19,23 @@ namespace CsQuery.Web
     /// </summary>
     public class CsQueryHttpContext
     {
+
+        #region constructor
+
         public CsQueryHttpContext(HttpContext context)
         {
             Context = context;
-
-
         }
-        public Action<HtmlTextWriter> ControlRenderMethod { get; set; }
-        public bool AspNet { get; set; }
-        public CQ Dom { get; protected set; }
+
+        #endregion
+
+        #region private properties
+
+        protected HttpContext _Context;
+        protected HtmlTextWriter _Writer;
+        protected StringBuilder _sb;
+        protected StringWriter _sw;
+
         protected HttpContext Context
         {
             get
@@ -38,11 +46,7 @@ namespace CsQuery.Web
             {
                 _Context = value;
             }
-        } protected HttpContext _Context = null;
-
-
-
-       
+        }
         protected HtmlTextWriter Writer
         {
             get
@@ -56,14 +60,35 @@ namespace CsQuery.Web
                 }
                 return _Writer;
             }
-        } protected HtmlTextWriter _Writer;
-        
-        protected StringBuilder _sb;
-        protected StringWriter _sw;
+        } 
 
+        #endregion
 
+        #region public properties
+
+        /// <summary>
+        /// A delegate to the Render method of a WebForms Page object
+        /// </summary>
+        public Action<HtmlTextWriter> ControlRenderMethod { get; set; }
+
+        /// <summary>
+        /// The CQ object representing the output from the Render method
+        /// </summary>
+        public CQ Dom { get; protected set; }
+
+        /// <summary>
+        /// A reference to the HtmlTextWriter passed into the Render method
+        /// </summary>
         public HtmlTextWriter RealWriter { get; set; }
+        
+        /// <summary>
+        /// The ASP.NET WebForms Page object bound to this context
+        /// </summary>
         public Page Page { get; set; }
+
+        #endregion
+
+        #region public methods
 
         public void Create()
         {
@@ -127,6 +152,8 @@ namespace CsQuery.Web
             }
         }
 
+        #endregion
+
         protected StringBuilder UserOutput
         {
             get
@@ -172,6 +199,10 @@ namespace CsQuery.Web
                 }
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public void Render()
         {
             if (_AsyncPostbackData != null)

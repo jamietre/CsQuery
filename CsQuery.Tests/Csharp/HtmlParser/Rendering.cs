@@ -3,19 +3,21 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
+using Assert = NUnit.Framework.Assert;
+using Description = NUnit.Framework.DescriptionAttribute;
+using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
 
 namespace CsQuery.Tests.Csharp.HtmlParser
 {
     [TestClass]
     public class Rendering: CsQueryTest 
-     {
+    {
 
         protected string node = "<div class='a b c c' attr1='{\"somejson\": \"someval\"}'";
 
-
-
-        [TestMethod]
+        [TestMethod, Test]
         public void HtmlCleanup()
         {
             var dom = CQ.CreateFragment(node);
@@ -28,13 +30,13 @@ namespace CsQuery.Tests.Csharp.HtmlParser
             // Doctype options
 
         }
-        [TestMethod]
+        [TestMethod,Test]
         public void AttributeQuoting()
         {
 
 
         }
-        [TestMethod]
+        [TestMethod,Test]
         public void AttributeHandling()
         {
             string test1html = "<input type=\"text\" id=\"\" checked custom=\"sometext\">";

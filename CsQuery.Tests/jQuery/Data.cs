@@ -2,20 +2,180 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
+using Assert = NUnit.Framework.Assert;
+using Description = Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute;
+using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 
-namespace CsQuery.Tests.jQuery
+namespace CsQuery.Tests.jQuery.Data
 {
-    public class Data
+    [TestClass,TestFixture]
+    public class Data: CsQueryTest
     {
-//        module("data", { teardown: moduleTeardown });
+         [Test,TestMethod]
+        public void DataMethod() 
+        {
+        
+
+            var div = jQuery("#foo");
+             
+             // [CsQuery] was undefined.
+
+            Assert.AreEqual( div.Data("foo"), null, "Make sure that missing result is undefined" );
+            div.Data("test", "success");
+
+            var dataObj = div.Data();
+
+            // TODO: Remove this hack which was introduced in 1.5.1
+            // delete dataObj.toJSON;
+
+             AssertEx.ObjectPropertiesAreEqual( dataObj, new {test="success"}, "data() get the entire data object" );
+            
+             Assert.AreEqual( div.Data("foo"), null, "Make sure that missing result is still undefined" );
+
+            var nodiv = jQuery("#unfound");
+            Assert.AreEqual( nodiv.Data(), null, "data() on empty set returns null" );
+
+            //var obj = new { foo= "bar" };
+            //jQuery(obj).Data("foo", "baz");
+
+           // dataObj = jQuery.extend(true, {}, jQuery(obj).Data());
+
+            // TODO: Remove this hack which was introduced for 1.5.1
+            //delete dataObj.toJSON;
+
+            //Assert.AreEqual( dataObj, new { foo= "baz" }, "Retrieve data object from a wrapped JS object (#7524)" );
+        }
+
+        // This test is excluded for now because we don't support namespaces in data
+        //[Test,TestMethod]
+        public void DataStringAndObject() {
+            var parent = jQuery("<div><div></div></div>");
+            var div = parent.Children();
+
+            //parent
+            //    .bind("getData", function(){ ok( false, "getData bubbled." ) })
+            //    .bind("setData", function(){ ok( false, "setData bubbled." ) })
+            //    .bind("changeData", function(){ ok( false, "changeData bubbled." ) });
+
+            Assert.IsTrue( div.Data("test") == null, "Check for no data exists" );
+
+            div.Data("test", "success");
+            Assert.AreEqual( div.Data("test"), "success", "Check for added data" );
+
+            div.Data("test", "overwritten");
+            Assert.AreEqual( div.Data("test"), "overwritten", "Check for overwritten data" );
+
+            // [CsQuery] N/a - no such thing as undefined
+            //equal( div.data("test", undefined).data("test"), "overwritten", "Check that .data('key',undefined) does nothing but is chainable (#5571)");
+
+            div.Data("test", null);
+            Assert.IsTrue( div.Data("test") == null, "Check for null data");
+
+            Assert.IsTrue( div.Data("notexist") == null, "Check for no data exists" );
+
+            div.Data("test", "overwritten");
+            var hits = new {test=0};
+            
+            object nullValue = null;
+
+            var gets = new {test=0};
+
+            //dynamic changes = new JsObject();
+            //changes.test = 0;
+            //changes.value = null;
+
+
+             //function logChangeData(e,key,value) {
+             //    var dataKey = key;
+             //    if ( e.namespace ) {
+             //        dataKey = dataKey + "." + e.namespace;
+             //    }
+             //    changes[key] += value;
+             //    changes.value = jQuery.Data(e.target, dataKey);
+             //}
+
+             //div
+             //    .bind("setData",function(e,key,value){ hits[key] += value; })
+             //    .bind("setData.foo",function(e,key,value){ hits[key] += value; })
+             //    .bind("changeData",logChangeData)
+             //    .bind("changeData.foo",logChangeData)
+             //    .bind("getData",function(e,key){ gets[key] += 1; })
+             //    .bind("getData.foo",function(e,key){ gets[key] += 3; });
+
+             div.Data("test.foo", 2);
+             Assert.AreEqual( div.Data("test"), "overwritten", "Check for original data" );
+            
+            Assert.AreEqual( div.Data("test.foo"), 2, "Check for namespaced data" );
+            Assert.AreEqual( div.Data("test.bar"), "overwritten", "Check for unmatched namespace" );
+
+
+             // NO EVENTS
+             //Assert.AreEqual( hits.test, 2, "Check triggered setter functions" );
+             //Assert.AreEqual( gets.test, 5, "Check triggered getter functions" );
+             //Assert.AreEqual( changes.test, 2, "Check sets raise changeData");
+             //Assert.AreEqual( changes.value, 2, "Check changeData after data has been set" );
+
+             //hits.test = 0;
+             //gets.test = 0;
+             //changes.test = 0;
+             //changes.value = null;
+
+             div.Data("test", 1);
+             Assert.AreEqual( div.Data("test"), 1, "Check for original data" );
+             Assert.AreEqual( div.Data("test.foo"), 2, "Check for namespaced data" );
+             Assert.AreEqual( div.Data("test.bar"), 1, "Check for unmatched namespace" );
+             //Assert.AreEqual( hits.test, 1, "Check triggered setter functions" );
+             //Assert.AreEqual( gets.test, 5, "Check triggered getter functions" );
+             //Assert.AreEqual( changes.test, 1, "Check sets raise changeData" );
+             //Assert.AreEqual( changes.value, 1, "Check changeData after data has been set" );
+
+             //div
+             //    .bind("getData",function(e,key){ return key + "root"; })
+             //    .bind("getData.foo",function(e,key){ return key + "foo"; });
+
+             Assert.AreEqual( div.Data("test"), "testroot", "Check for original data" );
+             Assert.AreEqual( div.Data("test.foo"), "testfoo", "Check for namespaced data" );
+             Assert.AreEqual( div.Data("test.bar"), "testroot", "Check for unmatched namespace" );
+
+
+            // [CsQuery] we don't do data on objects
+             //// #3748
+             //var elem = jQuery(new {exists=true});
+             //Assert.AreEqual( elem.Data("nothing"), null, "Non-existent data returns undefined");
+             //Assert.AreEqual( elem.Data("null", null).Data("null"), null, "null's are preserved");
+             //Assert.AreEqual( elem.Data("emptyString", "").Data("emptyString"), "", "Empty strings are preserved");
+             //Assert.AreEqual( elem.Data("false", false).Data("false"), false, "false's are preserved");
+             //Assert.AreEqual( elem.Data("exists"), null, "Existing data is not returned" );
+
+             // Clean up
+             //elem.RemoveData();
+             //Assert.AreEqual( elem[0], new {exists=true}, "removeData does not clear the object" );
+
+             // manually clean up detached elements
+             parent.Remove();
+         }
+
+         public override void FixtureSetUp()
+         {
+             base.FixtureSetUp();
+             Dom = TestDom("jquery-unit-index");
+         }
+        #region non-applicable tests
+
+
+        //        module("data", { teardown: moduleTeardown });
 
 //test("expando", function(){
 //    expect(1);
 
 //    equal("expando" in jQuery, true, "jQuery is exposing the expando");
-//});
+        //});
 
-//function dataTests (elem) {
+       
+
+        //function dataTests (elem) {
 //    // expect(31)
 
 //    function getCacheLength() {
@@ -164,9 +324,10 @@ namespace CsQuery.Tests.jQuery
 
 //    // clean up unattached element
 //    jQuery(div).remove();
-//});
+        //});
 
-//test("jQuery.acceptData", function() {
+        
+        //test("jQuery.acceptData", function() {
 //    expect(7);
 
 //    ok( jQuery.acceptData( document ), "document" );
@@ -182,130 +343,11 @@ namespace CsQuery.Tests.jQuery
 //    var applet = document.createElement("object");
 //    applet.setAttribute("classid", "clsid:8AD9C840-044E-11D1-B3E9-00805F499D93");
 //    ok( !jQuery.acceptData( applet ), "applet" );
-//});
+        //});
 
-//test(".data()", function() {
-//    expect(5);
+        #endregion
+        
 
-//    var div = jQuery("#foo");
-//    strictEqual( div.data("foo"), undefined, "Make sure that missing result is undefined" );
-//    div.data("test", "success");
-
-//    var dataObj = div.data();
-
-//    // TODO: Remove this hack which was introduced in 1.5.1
-//    delete dataObj.toJSON;
-
-//    deepEqual( dataObj, {test: "success"}, "data() get the entire data object" );
-//    strictEqual( div.data("foo"), undefined, "Make sure that missing result is still undefined" );
-
-//    var nodiv = jQuery("#unfound");
-//    equal( nodiv.data(), null, "data() on empty set returns null" );
-
-//    var obj = { foo: "bar" };
-//    jQuery(obj).data("foo", "baz");
-
-//    dataObj = jQuery.extend(true, {}, jQuery(obj).data());
-
-//    // TODO: Remove this hack which was introduced for 1.5.1
-//    delete dataObj.toJSON;
-
-//    deepEqual( dataObj, { foo: "baz" }, "Retrieve data object from a wrapped JS object (#7524)" );
-//});
-
-//test(".data(String) and .data(String, Object)", function() {
-//    expect(29);
-//    var parent = jQuery("<div><div></div></div>"),
-//        div = parent.children();
-
-//    parent
-//        .bind("getData", function(){ ok( false, "getData bubbled." ) })
-//        .bind("setData", function(){ ok( false, "setData bubbled." ) })
-//        .bind("changeData", function(){ ok( false, "changeData bubbled." ) });
-
-//    ok( div.data("test") === undefined, "Check for no data exists" );
-
-//    div.data("test", "success");
-//    equal( div.data("test"), "success", "Check for added data" );
-
-//    div.data("test", "overwritten");
-//    equal( div.data("test"), "overwritten", "Check for overwritten data" );
-
-//    div.data("test", undefined);
-//    equal( div.data("test"), "overwritten", "Check that data wasn't removed");
-
-//    div.data("test", null);
-//    ok( div.data("test") === null, "Check for null data");
-
-//    ok( div.data("notexist") === undefined, "Check for no data exists" );
-
-//    div.data("test", "overwritten");
-//    var hits = {test:0}, gets = {test:0}, changes = {test:0, value:null};
-
-
-//    function logChangeData(e,key,value) {
-//        var dataKey = key;
-//        if ( e.namespace ) {
-//            dataKey = dataKey + "." + e.namespace;
-//        }
-//        changes[key] += value;
-//        changes.value = jQuery.data(e.target, dataKey);
-//    }
-
-//    div
-//        .bind("setData",function(e,key,value){ hits[key] += value; })
-//        .bind("setData.foo",function(e,key,value){ hits[key] += value; })
-//        .bind("changeData",logChangeData)
-//        .bind("changeData.foo",logChangeData)
-//        .bind("getData",function(e,key){ gets[key] += 1; })
-//        .bind("getData.foo",function(e,key){ gets[key] += 3; });
-
-//    div.data("test.foo", 2);
-//    equal( div.data("test"), "overwritten", "Check for original data" );
-//    equal( div.data("test.foo"), 2, "Check for namespaced data" );
-//    equal( div.data("test.bar"), "overwritten", "Check for unmatched namespace" );
-//    equal( hits.test, 2, "Check triggered setter functions" );
-//    equal( gets.test, 5, "Check triggered getter functions" );
-//    equal( changes.test, 2, "Check sets raise changeData");
-//    equal( changes.value, 2, "Check changeData after data has been set" );
-
-//    hits.test = 0;
-//    gets.test = 0;
-//    changes.test = 0;
-//    changes.value = null;
-
-//    div.data("test", 1);
-//    equal( div.data("test"), 1, "Check for original data" );
-//    equal( div.data("test.foo"), 2, "Check for namespaced data" );
-//    equal( div.data("test.bar"), 1, "Check for unmatched namespace" );
-//    equal( hits.test, 1, "Check triggered setter functions" );
-//    equal( gets.test, 5, "Check triggered getter functions" );
-//    equal( changes.test, 1, "Check sets raise changeData" );
-//    equal( changes.value, 1, "Check changeData after data has been set" );
-
-//    div
-//        .bind("getData",function(e,key){ return key + "root"; })
-//        .bind("getData.foo",function(e,key){ return key + "foo"; });
-
-//    equal( div.data("test"), "testroot", "Check for original data" );
-//    equal( div.data("test.foo"), "testfoo", "Check for namespaced data" );
-//    equal( div.data("test.bar"), "testroot", "Check for unmatched namespace" );
-
-//    // #3748
-//    var $elem = jQuery({exists:true});
-//    equal( $elem.data("nothing"), undefined, "Non-existent data returns undefined");
-//    equal( $elem.data("null", null).data("null"), null, "null's are preserved");
-//    equal( $elem.data("emptyString", "").data("emptyString"), "", "Empty strings are preserved");
-//    equal( $elem.data("false", false).data("false"), false, "false's are preserved");
-//    equal( $elem.data("exists"), undefined, "Existing data is not returned" );
-
-//    // Clean up
-//    $elem.removeData();
-//    deepEqual( $elem[0], {exists:true}, "removeData does not clear the object" );
-
-//    // manually clean up detached elements
-//    parent.remove();
-//});
 
 //test("data-* attributes", function() {
 //    expect(37);

@@ -18,7 +18,7 @@ using CsQuery.EquationParser.Implementation.Functions;
 
 namespace CsQuery.Tests.Csharp.EquationParser
 {
-    [TestClass]
+    [TestClass,TestFixture]
     public class Functions
     {
         [Test,TestMethod]

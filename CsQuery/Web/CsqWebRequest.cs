@@ -25,10 +25,6 @@ namespace CsQuery.Web
         public int Timeout { get; set; }
         public object Id {get;set;}
 
-        //public string Get(string url) {
-        //    Url=url;
-        //    return Get();
-        //}
         public string Html
         {
             get;set;
