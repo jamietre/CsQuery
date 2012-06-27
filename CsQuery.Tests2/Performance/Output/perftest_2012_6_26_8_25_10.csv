@@ -1,4 +1,0 @@
-"Test Name","Test Document","Description","Same","Winner","FasterRatio",,"Source","Iterations/Sec","Iterations","Seconds",,"Source","Iterations/Sec","Iterations","Seconds"
-"Create DOM from html","medium document (wiki-cheese, about 170k)","",1,"Fizzler","2.15",,"CsQuery",41.92,84,2,,"Fizzler",90.3,189,2.1
-"Create DOM from html","small document (sizzle, about 11k)","",1,"Fizzler","1.64",,"CsQuery",588.7,1188,2,,"Fizzler",964.75,1998,2.1
-"Create DOM from html","large document (HTML Standard, about 6,000k)","",1,"Fizzler","1.14",,"CsQuery",0.68,7,10.3,,"Fizzler",0.78,8,10.3

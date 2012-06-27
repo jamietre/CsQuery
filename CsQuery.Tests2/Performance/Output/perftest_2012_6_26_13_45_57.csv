@@ -1,2 +1,0 @@
-"Test Name","Test Document","Description","Same","Winner","FasterRatio",,"Source","Iterations/Sec","Iterations","Seconds",,"Source","Iterations/Sec","Iterations","Seconds"
-"CSS selector: { [type] }","large document (HTML Standard, about 6,000k)","Selector returning 2 elements.",1,"CsQuery","83919.11",,"CsQuery",57631.1,576311,10,,"Fizzler",0.69,7,10.2
