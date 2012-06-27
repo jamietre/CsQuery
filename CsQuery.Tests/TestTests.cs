@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using Description = Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute;
+using NDescription = NUnit.Framework.DescriptionAttribute;
 using MsTestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using TestContext = NUnit.Framework.TestContext;
 using CsQuery;
@@ -20,8 +21,8 @@ namespace CsQuery.Tests
     /// Ensures that all methods are marked properly for both Visual Studio and NUnit. If anything is marked for one but not the other,
     /// the test will fail.
     /// </summary>
-    [TestClass,TestFixture]
-    public class _ValidateTestConfig
+    [TestClass,TestFixture,NDescription("Ensure that all tests are configured properly for both NUnit and VS frameworks")]
+    public class TestTests
     {
         [Test, TestMethod]
         public void AnalyzeAndVerify()

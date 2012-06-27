@@ -18,7 +18,7 @@ namespace CsQuery.Tests
     /// Base class for most tests. This incorporates C# versions of some of the shared code from the jQuery test suite.
     /// </summary>
     [TestClass,TestFixture]
-    public class CsQueryTest
+    public abstract class CsQueryTest
     {
         private static string _SolutionDirectory;
 

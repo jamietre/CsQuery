@@ -92,67 +92,6 @@ namespace CsQuery.HtmlParser
 
         #region public methods
 
-
-        
-        /// <summary>
-        /// returns a single element, any html is discarded after that
-        /// </summary>
-        /// <param name="html"></param>
-        /// <returns></returns>
-        //public IDomElement CreateElement(string html)
-        //{
-        //    SetBaseHtml(html);
-        //    return (IDomElement)Parse(false).First();
-        //}
-        /// <summary>
-        /// Returns a list of unbound elements created by parsing the string. Even if Document is set, this will not return bound elements.
-        /// </summary>
-        /// <param name="html"></param>
-        /// <param name="allowLiterals"></param>
-        /// <returns></returns>
-        //public IEnumerable<IDomObject> CreateObjects(string html)
-        //{
-        //    isBound = false;
-        //    return CreateObjectsImpl(html, true);
-        //}
-        /// <summary>
-        /// Returns a list of unbound elements created by parsing the string. Even if Document is set, this will not return bound elements.
-        /// </summary>
-        /// <param name="html"></param>
-        /// <param name="allowLiterals"></param>
-        ///// <returns></returns>
-        //public IEnumerable<IDomObject> CreateObjects(char[] html)
-        //{
-        //    isBound = false;
-        //    return CreateObjectsImpl(html, true);
-        //}
-        /// <summary>
-        /// Returns a list of elements from the bound Document
-        /// </summary>
-        /// <returns></returns>
-        //public IEnumerable<IDomObject> CreateObjects()
-        //{
-        //    if (Document == null)
-        //    {
-        //        throw new InvalidOperationException("This method requires Document be set");
-        //    }
-        //    isBound = true;
-
-        //    return CreateObjectsImpl(Document.SourceHtml,true);
-        //}
-
-        //protected IEnumerable<IDomObject> CreateObjectsImpl(string html, bool allowLiterals)
-        //{
-        //    SetBaseHtml(html);
-        //    return Parse(allowLiterals);
-        ////}
-        //protected IEnumerable<IDomObject> CreateObjectsImpl(char[] html, bool allowLiterals)
-        //{
-
-        //    SetBaseHtml(html);
-        //    return Parse(allowLiterals);
-        //}
-
         /// <summary>
         /// Parse with options for a full HTML document. Not that this method WILL NOT handle stranded text nodes (outside
         /// Body) right now. This only works with ParseToDocument.
@@ -207,7 +146,7 @@ namespace CsQuery.HtmlParser
                 {
                     current.WrapLiterals = true;
                 }
-                //current.AllowLiterals = !WrapRootTextNodes;
+
                 current.Reset(pos);
                 stack.Push(current);
 
@@ -215,7 +154,6 @@ namespace CsQuery.HtmlParser
                 {
 
                     current = stack.Pop();
-                    //Debug.Assert(current.Object == null);
 
                     while (current.TokenizerState != TokenizerState.Finished && current.Pos <= EndPos)
                     {
@@ -422,7 +360,6 @@ namespace CsQuery.HtmlParser
                                     if (!current.Element.InnerHtmlAllowed && current.Element.InnerTextAllowed)
                                     {
                                         current.InsertionMode = InsertionMode.Text;
-                                        //ReadTextOnly = true;
                                         current.TokenizerState = TokenizerState.Default;
                                     }
 

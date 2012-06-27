@@ -21,7 +21,7 @@ using CsQuery.Tests;
 namespace CsQuery.Tests.Performance
 {
     [TestClass]
-    public class PerformanceTest : CsQueryTest
+    public abstract class PerformanceTest : CsQueryTest
     {
         public static bool IsPerformanceTest = false;
 
@@ -36,6 +36,7 @@ namespace CsQuery.Tests.Performance
  
         public static void SetupTestRun()
         {
+            IsPerformanceTest = false;
             CsQuery.HtmlParser.HtmlData.Touch();
             OutputFolder = CsQueryTest.TestProjectDirectory + "\\performance\\output\\";
 

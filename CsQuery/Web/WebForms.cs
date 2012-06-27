@@ -10,6 +10,13 @@ namespace CsQuery.Web
 {
     public static class WebForms
     {
+        /// <summary>
+        /// Creates a new CsQueryHttpContext object bound to an ASP.NET WebForms page
+        /// </summary>
+        /// <param name="page">The current System.Web.UI.Page</param>
+        /// <param name="renderMethod">The delegate to the base render method</param>
+        /// <param name="writer">The HtmlTextWriter to output the final stream (the parameter passed to the Render method)</param>
+        /// <returns>A context which can be used to complete the Render after any manipulation with CsQuery</returns>
         public static CsQueryHttpContext CreateFromRender(Page page, Action<HtmlTextWriter> renderMethod, HtmlTextWriter writer)
         {
             return CreateFromRender(page, renderMethod, writer, HttpContext.Current);
@@ -23,6 +30,7 @@ namespace CsQuery.Web
         /// <param name="page">The current System.Web.UI.Page</param>
         /// <param name="renderMethod">The delegate to the base render method</param>
         /// <param name="writer">The HtmlTextWriter to output the final stream (the parameter passed to the Render method)</param>
+        /// <returns>A context which can be used to complete the Render after any manipulation with CsQuery</returns>
         public static CsQueryHttpContext CreateFromRender(
             Page page,
             Action<HtmlTextWriter> renderMethod,

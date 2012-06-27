@@ -42,14 +42,18 @@ namespace CsQuery
         
         #endregion
 
-        #region Create methods - returns a new DOM
+        #region Create methods: return a new CQ object from HTML or other elements
 
+        /// <summary>
+        /// Create an empty CQ object
+        /// </summary>
+        /// <returns></returns>
         public static CQ Create()
         {
             return new CQ();
         }
         /// <summary>
-        /// Creeate a new DOM from HTML text
+        /// Creeate a new CQ object from an HTML string
         /// </summary>
         /// <param name="html"></param>
         /// <returns></returns>
@@ -61,7 +65,7 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Create a new DOM object from a character array
+        /// Create a new CQ object from an HTML character array 
         /// </summary>
         /// <param name="html"></param>
         /// <returns></returns>
@@ -73,17 +77,16 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Create a new object from html, and use quickSet to create attributes (and/or css)
+        /// Create a new CQ from an HTML fragment, and use quickSet to create attributes (and/or css)
         /// </summary>
         /// <param name="html">A string of HTML</param>
-        /// <param name="quickSet"></param>
+        /// <param name="quickSet">an object containing CSS properties and attributes to be applied to the resulting fragment</param>
         /// <returns></returns>
         public static CQ Create(string html, object quickSet)
         {
-            CQ csq = CQ.Create(html);
+            CQ csq = CQ.CreateFragment(html);
             return csq.AttrSet(quickSet, true);
         }
-
 
         /// <summary>
         /// Create a new CQ object from an existing context, bound to the same domain.
@@ -106,7 +109,7 @@ namespace CsQuery
 
 
         /// <summary>
-        /// Create a new DOM from a single element
+        /// Create a new CQ object from a single element
         /// </summary>
         /// <param name="element"></param>
         /// <returns></returns>
@@ -118,7 +121,7 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Creeate a new DOM from a squence of elements, or another CQ object
+        /// Creeate a new CQ object from a squence of elements, or another CQ object
         /// </summary>
         /// <param name="elements">A sequence of elements</param>
         /// <returns></returns>
@@ -129,6 +132,15 @@ namespace CsQuery
             return csq;
         }
 
+        /// <summary>
+        /// Create a new CQ object from a stream of HTML, treating the HTML as a content document
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        public static CQ Create(Stream stream)
+        {
+            return Create(StreamToCharArray(stream));
+        }
 
         /// <summary>
         /// Creeate a new fragment from HTML text
@@ -144,7 +156,7 @@ namespace CsQuery
 
 
         /// <summary>
-        /// Creeate a new fragment from HTML text
+        /// Create a new fragment from HTML text
         /// </summary>
         /// <param name="html"></param>
         /// <returns></returns>
@@ -155,9 +167,18 @@ namespace CsQuery
             return csq;
         }
 
+        /// <summary>
+        /// Create a new fragment from a stream of HTML text
+        /// </summary>
+        /// <param name="html"></param>
+        /// <returns></returns>
+        public static CQ CreateFragment(Stream html)
+        {
+            return CreateFragment(StreamToCharArray(html));
+        }
 
         /// <summary>
-        /// Creeate a new DOM from a squence of elements, or another CQ object
+        /// Creeate a new CQ object from a squence of elements, or another CQ object
         /// </summary>
         /// <param name="elements">A sequence of elements</param>
         /// <returns></returns>
@@ -203,6 +224,15 @@ namespace CsQuery
         {
             return CreateDocument(StreamToCharArray(html));
         }
+        /// <summary>
+        /// Creates a new DOM from an HTML file.
+        /// </summary>
+        /// <param name="htmlFile"></param>
+        /// <returns></returns>
+        public static CQ CreateDocumentFromFile(string htmlFile)
+        {
+            return CQ.CreateDocument(Support.GetFileStream(htmlFile));
+        }
 
         /// <summary>
         /// Creates a new DOM from an HTML file.
@@ -211,7 +241,7 @@ namespace CsQuery
         /// <returns></returns>
         public static CQ CreateFromFile(string htmlFile)
         {
-            return CQ.Create(Support.GetFile(htmlFile));
+            return CQ.Create(Support.GetFileStream(htmlFile));
         }
 
         /// <summary>
@@ -234,9 +264,9 @@ namespace CsQuery
             }
             con.Get();
 
-            return CQ.Create(con.Html);
+            return CQ.CreateDocument(con.Html);
         }
-
+        
         /// <summary>
         /// Start an asynchronous request to an HTTP server, returning a promise that will resolve when the request is completed or rejected
         /// </summary>
