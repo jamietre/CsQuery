@@ -140,14 +140,16 @@ The HTML and BODY tags are optional. If you load an HTML fragment in a browser, 
     CQ.Create(..)           // Create a content block
 
 This method is meant to be used for complete HTML blocks but not documents, for example, a piece of content retrieved from a CMS that will be embedded in another document. Using this method, missing tags will be created according to the HTML5 spec EXCEPT for the `html` and `body` tags. Additionally, stranded text will be wrapped in `span` tags making it safe to insert into nodes that cannot have text directly as children.
-    
+
+This method is the most general in purpose. It will work fine for fragments too -- though it may insert TBODY tags in tables. It will work fine for complete documents -- but it won't fill in missing HTML/BODY tags. It will basically not assume any particular purpose for the HTML, but still try to return complete markup.
+   
     CQ.CreateDocument(..)   // Create a document. 
 
 This method creates a complete HTML document. If the `html`, `body` or `head` tags are missing, they will be created. Stranded text nodes (e.g. outside of `body`) will be moved inside the body.
     
     CQ.CreateFragment(..)   // Create a fragment. 
 
-This method interprets the content as a true fragment that you will use for any purpose. No missing tag parsing will be done. This method is the default handling for creating HTML from a selector, e.g. 
+This method interprets the content as a true fragment that you will use for any purpose. No attempt will be made to identify and create missing opening tags. Missing close tag rules still apply, though, since it's impossible to create a CQ document that is "incomplete." This method is the default handling for creating HTML from a selector, e.g. 
 
     var fragment = someCsQueryDocument.Select["<div /">];
 
