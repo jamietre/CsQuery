@@ -163,7 +163,7 @@ namespace CsQuery.Implementation
             get
             {
                 return NodeName=="INPUT" ?
-                    GetAttribute("type").ToLower() :
+                    GetAttribute("type","text").ToLower() :
                     GetAttribute("type");
             }
             set
