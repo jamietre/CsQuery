@@ -15,9 +15,6 @@ Next, replace the default Razor engine with the CsQuery implementation, just add
     ViewEngines.Engines.Clear();
     ViewEngines.Engines.Add(new CsQueryViewEngine());
 
-If for some reason the layout is not found under `Views\Shared\_Layout.cshtml` you will need to let the view engine know it's path in `Application_Start()` too. (This is the default; you don't need this unless it's different.)
-
-    CsQuery.Mvc.CsQueryController.LayoutViewName =  "ASP._Page_Views_Home_Index_cshtml";
 
 ####Using It
 
@@ -29,7 +26,7 @@ To create a controller that can use CsQuery, just inherit `CsQuery.Mvc.CsQueryCo
         {
             ViewBag.Message = "Welcome to ASP.NET MVC!";
 
-            SetCqHandler(finishRendering);
+            SetCqHandler(FinishRendering);
 
             return View();
         }
