@@ -1929,18 +1929,17 @@
         </member>
         <member name="M:CsQuery.CQ.Slice(System.Int32)">
             <summary>
-            Reduce the set of matched elements to a subset beginning with the index provided
+            Reduce the set of matched elements to a subset beginning with the 0-based index provided
             </summary>
-            <param name="start"></param>
-            <param name="end"></param>
+            <param name="start">The 0-based index at which to begin selecting</param>
             <returns></returns>
         </member>
         <member name="M:CsQuery.CQ.Slice(System.Int32,System.Int32)">
             <summary>
-            Reduce the set of matched elements to a subset specified by a range of indices.
+            Reduce the set of matched elements to a subset specified by a range of indices. 
             </summary>
-            <param name="start"></param>
-            <param name="end"></param>
+            <param name="start">The 0-based index at which to begin selecting</param>
+            <param name="end">The 0-based index at which to stop selecting (up to but not including this index)</param>
             <returns></returns>
         </member>
         <member name="M:CsQuery.CQ.Parent(System.String)">

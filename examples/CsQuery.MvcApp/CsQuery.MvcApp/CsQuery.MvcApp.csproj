@@ -36,8 +36,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CsQuery">
-      <HintPath>..\packages\CsQuery.1.1.2\lib\net40\CsQuery.dll</HintPath>
+    <Reference Include="CsQuery, Version=1.1.2.22634, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\CsQuery.1.1.2.1\lib\net40\CsQuery.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data.Entity" />
