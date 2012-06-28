@@ -1,0 +1,27 @@
+﻿@{
+    ViewBag.Title = "About Us";
+}
+
+<h2>About CsQuery/MVC</h2>
+<p>
+    This page demonstrates manipulating content using CsQuery on the server. The About action alters the CSS for every <code>div</code> element on the
+    page to include a red border; and changes the text of the LOG IN link. The code used to change the LOG IN link is shown so you can see
+    how to configure this to work only against a specific partial view. In practice, this should rarely be necessary: instead of 
+    setting up different handlers for partial views, just have a single handler for the whole view, and use selectors to identify content
+    anywhere. 
+</p>
+<p>
+That is, instead of binding a handler for the rendering of "_LogOnPartial", address the target directly in the general handler:
+</p>
+<pre>
+    doc["#auth-section a"].Text("NEW LOG ON!");
+</pre>
+
+<p>
+   The select list below was generated in codebehind using CsQuery (jQuery) methods, rather than using an HTML helper.
+</p><p>
+    <select id="select-list"></select>
+</p>
+<p>
+This will all make sense if you look at the "HomeController.cs" class; that's where it all happens.
+</p>

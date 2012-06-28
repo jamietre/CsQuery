@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F8920741-0BB4-4939-A774-0F9059B2B7F0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CsQuery.Tests</RootNamespace>
+    <AssemblyName>CsQuery.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Fizzler.Systems.HtmlAgilityPack, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>redist\Fizzler.Systems.HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.3.0.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>redist\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="nunit.framework, Version=2.5.10.11092, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>redist\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Arrays.cs" />
+    <Compile Include="AssertEx.cs" />
+    <Compile Include="Csharp\Methods\Slice.cs" />
+    <Compile Include="TestTests.cs" />
+    <Compile Include="Csharp\HtmlParser\Classes.cs" />
+    <Compile Include="Csharp\HtmlParser\HtmlDomData.cs" />
+    <Compile Include="Csharp\HtmlParser\HtmlBigDomTest.cs" />
+    <Compile Include="Csharp\HtmlParser\Html5Compliance.cs" />
+    <Compile Include="Csharp\HtmlParser\DocType.cs" />
+    <Compile Include="Csharp\EquationParser\Functions.cs" />
+    <Compile Include="Csharp\EquationParser\Utility.cs" />
+    <Compile Include="Csharp\ExtensionMethods\Forms.cs" />
+    <Compile Include="Csharp\Manipulation\Clone.cs" />
+    <Compile Include="Csharp\Css\Css.cs" />
+    <Compile Include="Csharp\HtmlParser\Styles.cs" />
+    <Compile Include="Csharp\Methods\End.cs" />
+    <Compile Include="Csharp\Promises\Promises.cs" />
+    <Compile Include="Csharp\Selectors\Combinators.cs" />
+    <Compile Include="Csharp\Selectors\AttributeSelectors.cs" />
+    <Compile Include="Csharp\Selectors\PseudoSelectorsJquery.cs" />
+    <Compile Include="Csharp\Selectors\PseudoSelectors.cs" />
+    <Compile Include="Csharp\Miscellaneous\Miscellaneous.cs" />
+    <Compile Include="Csharp\Utility\JSON\FromDictionary.cs" />
+    <Compile Include="Csharp\EquationParser\Expressions.cs" />
+    <Compile Include="Csharp\HtmlParser\Rendering.cs" />
+    <Compile Include="Csharp\Utility\DictionaryObjects.cs" />
+    <Compile Include="Csharp\HtmlParser\HtmlElementFactory.cs" />
+    <Compile Include="Csharp\Utility\Objects.cs" />
+    <Compile Include="Csharp\Manipulation\MovingElements.cs" />
+    <Compile Include="Csharp\EquationParser\Equations.cs" />
+    <Compile Include="Csharp\Utility\StringScanner.cs" />
+    <Compile Include="Csharp\Utility\ValueInfo.cs" />
+    <Compile Include="jQuery\Attribute.cs" />
+    <Compile Include="Csharp\Attributes\Attributes.cs" />
+    <Compile Include="Csharp\Utility\JsObject.cs" />
+    <Compile Include="jQuery\Extra.cs" />
+    <Compile Include="jQuery\Core.cs" />
+    <Compile Include="CsQueryTest.cs" />
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="jQuery\Css.cs" />
+    <Compile Include="jQuery\Data.cs" />
+    <Compile Include="jQuery\Manipulation.cs" />
+    <Compile Include="jQuery\Sizzle\BrokenSelectors.cs" />
+    <Compile Include="jQuery\Sizzle\ClassSelectors.cs" />
+    <Compile Include="jQuery\Sizzle\ChildAndAdjacentSelectors.cs" />
+    <Compile Include="jQuery\Sizzle\AttributeSelectors.cs" />
+    <Compile Include="jQuery\Sizzle\PseudoChild.cs" />
+    <Compile Include="jQuery\Sizzle\IDSelectors.cs" />
+    <Compile Include="jQuery\Sizzle\Element.cs" />
+    <Compile Include="jQuery\Sizzle\SizzleTest.cs" />
+    <Compile Include="TestAssemblyConfig.cs" />
+    <Compile Include="Performance\PerformanceTest.cs" />
+    <Compile Include="Performance\Tests\Performance_MediumDom.cs" />
+    <Compile Include="Performance\Tests\PerformanceShared.cs" />
+    <Compile Include="Performance\Tests\Performance_BigDom.cs" />
+    <Compile Include="Performance\Tests\Performance_SmallDom.cs" />
+    <Compile Include="Performance\PerfComparison.cs" />
+    <Compile Include="Performance\PerfData.cs" />
+    <Compile Include="Performance\PerfCompare.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Support.cs" />
+    <Compile Include="Csharp\Selectors\MiscellaneousSelectors.cs" />
+    <Compile Include="Csharp\Manipulation\DomManipulation.cs" />
+    <Compile Include="Csharp\ExtensionMethods\ExtensionMethodTests.cs" />
+    <Compile Include="Csharp\Utility\JSON\JSON.cs" />
+    <Compile Include="jQuery\Traversing.cs" />
+    <Compile Include="Csharp\Miscellaneous\_WebIO.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\HTML Standard.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\jquery-unit-index.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\sizzle.htm" />
+    <Content Include="Resources\TestHtml.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\TestHtml2.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\wiki-cheese.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CsQuery\CsQuery.csproj">
+      <Project>{C38DFFE9-321B-4941-B031-29D718AB5C31}</Project>
+      <Name>CsQuery</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Performance\Output\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
