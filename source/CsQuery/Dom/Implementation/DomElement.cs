@@ -187,12 +187,14 @@ namespace CsQuery.Implementation
                 SetAttribute("name", value);
             }
         }
+
+
         public override string DefaultValue
         {
             get
             {
                 return hasDefaultValue() ?
-                    (NodeName == "TEXTAREA" ? 
+                    (NodeNameID == HtmlData.tagTEXTAREA ? 
                         InnerText : 
                         GetAttribute("value")) :
                     base.DefaultValue;
@@ -205,7 +207,7 @@ namespace CsQuery.Implementation
                 }
                 else
                 {
-                    if (NodeName == "TEXTAREA")
+                    if (NodeNameID == HtmlData.tagTEXTAREA)
                     {
                         InnerText = value;
                     }
@@ -219,7 +221,7 @@ namespace CsQuery.Implementation
 
         
         /// <summary>
-        /// Value property for some node types (input,textarea)
+        /// Value property for input node types
         /// </summary>
         public override string Value
         {
@@ -317,16 +319,12 @@ namespace CsQuery.Implementation
         {
             get { return _NodeNameID >= 0; }
         }
-        /// <summary>
-        /// Returns the value of the named attribute
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
+
+        /// <inheritdoc />
         public override string this[string attribute]
         {
             get
             {
-
                 return GetAttribute(attribute);
             }
             set
@@ -334,6 +332,8 @@ namespace CsQuery.Implementation
                 SetAttribute(attribute, value);
             }
         }
+
+        
         public override IDomObject this[int index]
         {
             get
@@ -819,14 +819,23 @@ namespace CsQuery.Implementation
             return GetAttribute(tokenId, null);
         }
         /// <summary>
-        /// Returns the value of an attribute or a default value if it could not be found.
+        /// Return an attribute value identified by name. If it doesn't exist, return the provided
+        /// default value.
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="name">The attribute name</param>
         /// <returns></returns>
         public override string GetAttribute(string name, string defaultValue)
         {
             return GetAttribute(HtmlData.TokenID(name), defaultValue);
         }
+
+        /// <summary>
+        /// Return an attribute value identified by a token ID. If it doesn't exist, return the provided
+        /// default value.
+        /// </summary>
+        /// <param name="tokenId"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
         protected string GetAttribute(ushort tokenId, string defaultValue)
         {
 
@@ -957,9 +966,10 @@ namespace CsQuery.Implementation
             if (!string.IsNullOrEmpty(className)) 
             {
                 AddClass(className);
-            }
-            
+            }    
         }
+
+
         protected bool hasDefaultValue()
         {
             return NodeNameID == HtmlData.tagINPUT || NodeNameID == HtmlData.tagTEXTAREA;

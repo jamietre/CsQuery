@@ -930,7 +930,7 @@ namespace CsQuery.Tests.jQuery
             
             foreach (var tag in cloneTags) {
                 var j = jQuery(tag);
-                Assert.AreEqual( j[0].TagName, j.Clone()[0].TagName, "Clone a " + tag);
+                Assert.AreEqual( j[0].NodeName, j.Clone()[0].NodeName, "Clone a " + tag);
             }
 
             // using contents will get comments regular, text, and comment nodes

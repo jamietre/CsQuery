@@ -276,6 +276,8 @@ namespace CsQuery.Implementation
                 throw new InvalidOperationException("Cannot set value for this node type.");
             }
         }
+
+        /// <inheritdoc />
         public virtual string ClassName
         {
             get
@@ -287,6 +289,18 @@ namespace CsQuery.Implementation
                 throw new InvalidOperationException("ClassName is not applicable to this node type.");
             }
         }
+
+        /// <inheritdoc />
+        public IEnumerable<string> Classes
+        {
+            get
+            {
+                yield break;
+            }
+
+        }
+
+
         public virtual IAttributeCollection Attributes
         {
             get
@@ -323,13 +337,7 @@ namespace CsQuery.Implementation
                 throw new InvalidOperationException("You can't change the node name.");
             }
         }
-        public virtual string TagName
-        {
-            get
-            {
-                return NodeName;
-            }
-        }
+
 
         public virtual IDomObject FirstChild
         {
@@ -645,8 +653,6 @@ namespace CsQuery.Implementation
          }
 
         #endregion
-
-
         
     }
 

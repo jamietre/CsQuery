@@ -5,6 +5,7 @@ This is an informal log of changes to the project; major issues will be logged a
 #####6/28/2012
 
 - Fix & test Slice method
+- Correct whitespace analysis in HTML parser inside tag opening blogs to match HTML5 spec
 
 #####6/27/2012
 
