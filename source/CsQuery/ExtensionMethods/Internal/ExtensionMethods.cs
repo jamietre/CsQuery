@@ -9,6 +9,7 @@ using System.Text;
 using System.Reflection;
 using System.Diagnostics;
 using CsQuery;
+using CsQuery.StringScanner;
 
 namespace CsQuery.ExtensionMethods.Internal
 {
@@ -480,7 +481,7 @@ namespace CsQuery.ExtensionMethods.Internal
         /// <returns></returns>
         public static IEnumerable<string> SplitClean(this string text)
         {
-            return SplitClean(text, HtmlParser.HtmlData.Whitespace);
+            return SplitClean(text,CharacterData.charsHtmlSpaceArray);
         }
 
         /// <summary>

@@ -11,24 +11,39 @@ namespace CsQuery.StringScanner
     /// <summary>
     /// A static class to provide attribute information about characters, e.g. determining whether or not it
     /// belongs to a number of predefined classes. This creates an array of every possible character with a 
-    /// unit that is a bitmap (of up to 32 possible values)
+    /// uint that is a bitmap (of up to 32 possible values)
     /// This permits very fast access to this information since it only needs to be looked up
     /// via an index. Uses an array of 65536 uints = 256K of memory
     /// 
     /// </summary>
     public static class CharacterData
     {
-        private const string charsAlpha="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        private const string charsNumeric = "0123456789";
-        private const string charsNumericExtended = "0123456789.-+";
-        private const string charsLower="abcdefghijklmnopqrstuvwxyz";
-        private const string charsUpper="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        private const string charsWhitespace="\x0020\x0009\x000A\x000C\x000D\x00A0\x00C0";
-        private const string charsQuote = "\"'";
-        private const string charsOperator= "!+-*/%<>^=~";
-        private const string charsEnclosing="()[]{}<>`´“”«»";
-        private const string charsEscape="\\";
-        private const string charsSeparators = ", |";
+        // HTML spec for a space: http://www.w3.org/TR/html-markup/terminology.html#space
+        //
+        // U+0020 SPACE
+        // U+0009 CHARACTER TABULATION (tab)
+        // U+000A LINE FEED (LF)
+        // U+000C FORM FEED (FF)
+        // U+000D CARRIAGE RETURN (CR).
+
+        public const string charsHtmlSpace = "\x0020\x0009\x000A\x000C\x000D";
+        public static char[] charsHtmlSpaceArray = {
+            '\x0020','\x0009','\x000A','\x000C','\x000D'
+        };
+
+        // Add a couple more for non-HTML spec whitespace
+        public const string charsWhitespace = charsHtmlSpace + "\x00A0\x00C0";
+
+        public const string charsNumeric = "0123456789";
+        public const string charsNumericExtended = "0123456789.-+";
+        public const string charsLower = "abcdefghijklmnopqrstuvwxyz";
+        public const string charsUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        public const string charsAlpha = charsLower + charsUpper;
+        public const string charsQuote = "\"'";
+        public const string charsOperator = "!+-*/%<>^=~";
+        public const string charsEnclosing = "()[]{}<>`´“”«»";
+        public const string charsEscape = "\\";
+        public const string charsSeparators = ", |";
 
 
         private static uint[] characterFlags;
@@ -37,6 +52,7 @@ namespace CsQuery.StringScanner
         /// </summary>
         static CharacterData()
         {
+
             characterFlags = new uint[65536];
             setBit(charsWhitespace, (uint)CharacterType.Whitespace);
             setBit(charsAlpha, (uint)CharacterType.Alpha);
@@ -49,6 +65,8 @@ namespace CsQuery.StringScanner
             setBit(charsEnclosing, (uint)CharacterType.Enclosing);
             setBit(charsEscape, (uint)CharacterType.Escape);
             setBit(charsSeparators, (uint)CharacterType.Separator);
+            setBit(charsHtmlSpace, (uint)CharacterType.HtmlSpace);
+
             // html tag start
 
             SetHtmlTagNameStart((uint)CharacterType.HtmlTagNameStart);
@@ -60,7 +78,8 @@ namespace CsQuery.StringScanner
             SetHtmlIdNameExceptStart((uint)CharacterType.HtmlIDNameExceptStart);
 
             // html tag end
-            setBit(" />", (uint)CharacterType.HtmlTagEnd);
+            setBit(charsHtmlSpace + "/>", (uint)CharacterType.HtmlTagOpenerEnd);
+
             // html tag any
             setBit("<>/", (uint)CharacterType.HtmlTagAny);
 

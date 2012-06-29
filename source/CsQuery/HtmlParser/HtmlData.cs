@@ -5,13 +5,14 @@ using System.Text;
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using CsQuery.StringScanner;
 
 namespace CsQuery.HtmlParser
 {
     /// <summary>
     /// Reference data about HTML tags and attributes;
     /// methods to test tokens for certain properties;
-    /// and tokenizer
+    /// and the tokenizer
     /// </summary>
     public class HtmlData
     {
@@ -84,25 +85,39 @@ namespace CsQuery.HtmlParser
 
         private const ushort maxHardcodedTokenId = 36;
 
-        // HTML spec for whitespace
-        // U+0020 SPACE, U+0009 CHARACTER TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and U+000D CARRIAGE RETURN (CR).
 
-        public static char[] Whitespace = new char[] { '\x0020', '\x0009', '\x000A', '\x000C', '\x000D' };
 
-        // U+0022 QUOTATION MARK characters ("), U+0027 APOSTROPHE characters ('), U+003D EQUALS SIGN characters (=), 
-        // U+003C LESS-THAN SIGN characters (<), U+003E GREATER-THAN SIGN characters (>), or U+0060 GRAVE ACCENT characters (`),
+        // Unquoted attribute value syntax: http://dev.w3.org/html5/spec-LC/syntax.html#attributes-0
+        // 
+        // U+0022 QUOTATION MARK characters (")
+        // U+0027 APOSTROPHE characters (')
+        // U+003D EQUALS SIGN characters (=)
+        // U+003C LESS-THAN SIGN characters (<)
+        // U+003E GREATER-THAN SIGN characters (>)
+        // or U+0060 GRAVE ACCENT characters (`),
         // and must not be the empty string.}
 
         public static char[] MustBeQuoted = new char[] { '/', '\x0022', '\x0027', '\x003D', '\x003C', '\x003E', '\x0060' };
         public static char[] MustBeQuotedAll;
 
         // Things that can be in a CSS number
-
+        
         public static HashSet<char> NumberChars = new HashSet<char>("-+0123456789.,");
 
         // Things that are allowable unit strings in a CSS style.
-
-        public static HashSet<string> Units = new HashSet<string>(new string[] { "%", "in", "cm", "mm", "em", "ex", "pt", "pc", "px" });
+        // http://www.w3.org/TR/css3-values/#relative-lengths
+        //
+        // TODO: validate in context - we only check that it's legit, not in context. Many units apply only
+        // to a specific type
+        
+        public static HashSet<string> Units = new HashSet<string>(new string[] { 
+            "%", "cm", "mm", "in", "px", "pc", "pt",  
+            "em",  "ex",  "vmin", "vw", "rem","vh",
+            "deg", "rad", "grad", "turn",
+            "s", "ms",
+            "Hz", "KHz",
+            "dpi","dpcm","dppx"
+        });
 
         /// <summary>
         /// Fields used internally
@@ -163,23 +178,24 @@ namespace CsQuery.HtmlParser
             }
             maxPathIndex = (int)Math.Pow(encodingLength, pathIdLength) - 1;
 
-            MustBeQuotedAll = new char[Whitespace.Length + MustBeQuoted.Length];
+            MustBeQuotedAll = new char[CharacterData.charsHtmlSpace.Length + MustBeQuoted.Length];
             MustBeQuoted.CopyTo(MustBeQuotedAll, 0);
-            Whitespace.CopyTo(MustBeQuotedAll, MustBeQuoted.Length);
+            CharacterData.charsHtmlSpace.ToCharArray().CopyTo(MustBeQuotedAll, MustBeQuoted.Length);
 
             // these elements can never have html children.
 
-            string[] noChildHtmlAllowed = new string[]{
+            string[] noChildHtmlAllowed = new string[] {
                 // may have text content
 
                 "SCRIPT","TEXTAREA","STYLE"
 
             };
 
-            string[] noChildrenAllowed = new string[] {
+            // "void elements - these elements can't have any children ever
+
+            string[] voidElements = new string[] {
                 "BASE","BASEFONT","FRAME","LINK","META","AREA","COL","HR","PARAM",
                 "IMG","INPUT","BR", "!DOCTYPE","!--", "COMMAND", "EMBED","KEYGEN","SOURCE","TRACK","WBR"
-
             };
 
 
@@ -225,6 +241,8 @@ namespace CsQuery.HtmlParser
             };
 
 
+            // these tags may be closed automatically
+
             string[] autoOpenOrClose = new string[] {
                 "P","LI","TR","TD","TH","THEAD","TBODY","TFOOT","OPTION","HEAD","DT","DD","COLGROUP","OPTGROUP",
 
@@ -233,29 +251,27 @@ namespace CsQuery.HtmlParser
                 "TABLE","HTML"
             };
 
+            // only these can appear in HEAD
+
             string[] metaDataTags = new string[] {
                 "BASE","COMMAND","LINK","META","NOSCRIPT","SCRIPT","STYLE","TITLE"
-
             };
 
 
 
             TokenIDs = new Dictionary<string, ushort>();
-            // where Style used to be
+
+            // keep a placeholder open before real tags start
+
             TokenID("unused"); //2
 
             TokenID("class"); //3
-            // inner text allowed
             TokenID("value"); //4
             TokenID("id"); //5
 
             TokenID("selected"); //6
             TokenID("readonly"); //7 
-            TokenID("checked"); //8 
-
-            //noInnerHtmlIDFirst = nextID;
-            // the node types that have inner content which is not parsed as HTML ever
-
+            TokenID("checked"); //8
             TokenID("input"); //9
             TokenID("select"); //10
             TokenID("option"); //11
@@ -286,8 +302,8 @@ namespace CsQuery.HtmlParser
             TokenID("col"); //34
             TokenID("html"); //36
 
+            // all this hardcoding makes me nervous, sanity check
             
-
             if (nextID != maxHardcodedTokenId + 1)
             {
                 throw new InvalidOperationException("Something went wrong with the constant map in DomData");
@@ -296,15 +312,12 @@ namespace CsQuery.HtmlParser
             // create the binary lookup table of tag metadata
 
             PopulateTokenHashset(noChildHtmlAllowed);
-            PopulateTokenHashset(noChildrenAllowed);
+            PopulateTokenHashset(voidElements);
             PopulateTokenHashset(blockElements);
             PopulateTokenHashset(paraClosers);
             PopulateTokenHashset(booleanAttributes);
             PopulateTokenHashset(autoOpenOrClose);
             PopulateTokenHashset(metaDataTags);
-
-
-            // reset nextId to beyond the boundary of the metadata array
 
             // Fill out the list of tokens to the boundary of the metadata array so the indices align
 
@@ -320,7 +333,7 @@ namespace CsQuery.HtmlParser
 
             // no children whatsoever
 
-            setBit(noChildrenAllowed, TokenProperties.ChildrenNotAllowed | TokenProperties.HtmlChildrenNotAllowed);
+            setBit(voidElements, TokenProperties.ChildrenNotAllowed | TokenProperties.HtmlChildrenNotAllowed);
 
 
             setBit(autoOpenOrClose, TokenProperties.AutoOpenOrClose);

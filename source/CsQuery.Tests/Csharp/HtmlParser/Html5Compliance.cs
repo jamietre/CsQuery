@@ -175,5 +175,23 @@ namespace CsQuery.Tests.Csharp.HtmlParser
             Assert.AreEqual(dom["#div1"][0], dom["body > :first-child"][0]);
             CollectionAssert.AreEqual(Arrays.String("HEAD", "BODY"), dom["html"].Children().NodeNames());
         }
+
+        /// <summary>
+        /// Issue #16: odd results with non-space whitespace in tag openers
+        /// </summary>
+        [Test, TestMethod]
+        public void NewLinesInTags()
+        {
+            string test = @"<table 
+                border
+                =0 cellspacing=
+                ""2"" cellpadding=""2"" width=""100%""><span"+(char)10+"id=test></span></table>";
+            var dom = CQ.CreateFragment(test);
+
+            var output = dom.Render();
+            Assert.AreEqual(
+                @"<table border=""0"" cellspacing=""2"" cellpadding=""2"" width=""100%""><span id=""test""></span></table>",
+                output);
+        }
     }
 }

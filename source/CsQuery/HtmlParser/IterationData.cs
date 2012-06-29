@@ -252,7 +252,10 @@ namespace CsQuery.HtmlParser
                         Pos++;
                         break;
                     case 1:
-                        // skip whitespace between opening caret and text -- probably not allowed but can't hurt to do this
+                        // skip a space between opening caret and text
+                        // this is not part of the spec but it seems reaonsable to be lax about this.
+                        // TODO: verify browser behavior
+
                         if (c == ' ')
                         {
                             Pos++;
@@ -263,7 +266,7 @@ namespace CsQuery.HtmlParser
                         }
                         break;
                     case 2:
-                        if (isHtmlTagEnd(c))
+                        if (CharacterData.IsType(c, CharacterType.HtmlTagOpenerEnd))
                         {
                             return html.SubstringBetween(tagStart, Pos).Trim();
                         }
@@ -404,50 +407,54 @@ namespace CsQuery.HtmlParser
                         }
                         break;
                     case 2: // find value
-                        switch (c)
+                        if (CharacterData.IsType(c, CharacterType.HtmlSpace))
                         {
-                            case '=':
-                                step = 3;
-                                Pos++;
-                                break;
-                            case ' ':
-                                Pos++;
-                                break;
-                            default:
-                                // anything else means new attribute
-                                finished = true;
-                                break;
+                            Pos++;
+                            break;
+                        }
+                        else if (c == '=')
+                        {
+                            step = 3;
+                            Pos++;
+                        } else {
+                            // anything else means new attribute
+                            finished = true;
+                            break;
                         }
                         break;
                     case 3: // find quote start
-                        switch (c)
+                        if (CharacterData.IsType(c, CharacterType.HtmlSpace))
                         {
-                            case '\\':
-                            case '>':
-                                finished = true;
-                                break;
-                            case ' ':
-                                Pos++;
-                                break;
-                            case '"':
-                            case '\'':
-                                isQuoted = true;
-                                valStart = Pos + 1;
-                                Pos++;
-                                quoteChar = c;
-                                step = 4;
-                                break;
-                            default:
-                                valStart = Pos;
-                                step = 4;
-                                break;
+                            Pos++;
+                            break;
                         }
-                        // any non-whitespace is part of the attribute   
+                        else
+                        {
+                            switch (c)
+                            {
+                                case '\\':
+                                case '>':
+                                    finished = true;
+                                    break;
+                                case '"':
+                                case '\'':
+                                    isQuoted = true;
+                                    valStart = Pos + 1;
+                                    Pos++;
+                                    quoteChar = c;
+                                    step = 4;
+                                    break;
+                                default:
+                                    valStart = Pos;
+                                    step = 4;
+                                    break;
+                            }
+                        }
 
                         break;
                     case 4: // parse the attribute until whitespace or closing quote
                         if ((isQuoted && c == quoteChar) ||
-                            (!isQuoted && isHtmlTagEnd(c)))
+                            (!isQuoted && CharacterData.IsType(c, CharacterType.HtmlTagOpenerEnd)))
                         {
                             aValue = html.SubstringBetween(valStart, Pos);
                             if (isQuoted)
@@ -547,15 +554,8 @@ namespace CsQuery.HtmlParser
             }
 
         }
-        protected bool isHtmlTagEnd(char c)
-        {
-            //return c == '/' || c == ' ' || c == '>';
 
-            // ~ 2% speed improvement with bit match function
-            return CharacterData.IsType(c, CharacterType.HtmlTagEnd);
-        }
-
-        public  ushort ParentTagID()
+        public ushort ParentTagID()
         {
             return Parent != null ?
                 Parent.Element.NodeNameID:

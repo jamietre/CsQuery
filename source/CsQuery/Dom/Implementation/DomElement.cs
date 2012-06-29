@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using CsQuery.StringScanner;
 using CsQuery.HtmlParser;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
@@ -602,7 +603,7 @@ namespace CsQuery.Implementation
             bool result=false;
             bool hadClasses = HasClasses;
 
-            foreach (string cls in name.SplitClean(HtmlData.Whitespace))
+            foreach (string cls in name.SplitClean(CharacterData.charsHtmlSpaceArray))
             {
                 
                 if (!HasClass(cls))
