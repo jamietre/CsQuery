@@ -74,7 +74,7 @@ namespace CsQuery.Implementation
         /// Create a clone of this CSSStyleDeclaration object bound to the owner passed
         /// </summary>
         /// <param name="owner"></param>
-        /// <returns></returns>
+        /// <returns>CSSStyleDeclaration</returns>
         public CSSStyleDeclaration Clone(DomElement owner)
         {
             CSSStyleDeclaration clone = new CSSStyleDeclaration(owner);

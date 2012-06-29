@@ -6,18 +6,37 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.Security;
 using CsQuery.MvcApp.Models;
+using CsQuery.Mvc;
 
 namespace CsQuery.MvcApp.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : CsQueryController
     {
 
-        //
+        
         // GET: /Account/LogOn
 
         public ActionResult LogOn()
         {
+           
             return View();
+            
+        }
+
+        public void Cq_LogOn()
+        {
+            // Not doing anything useful here, but just showing how easy it is to manipulate HTML.
+
+            var loginForm = Doc["#login-form"];
+
+            loginForm.Parent().Append("<div>").Append("<b>The login form was duplicated from code in the LogOn controller.</b><br />");
+
+            loginForm.Parent().Append(loginForm.Clone());
+
+            // call a shared method that does some common configuration
+
+            //FinishPage(doc);
+
         }
 
         //
@@ -149,6 +168,12 @@ namespace CsQuery.MvcApp.Controllers
         {
             return View();
         }
+
+        /// <summary>
+        /// Do some configuration
+        /// </summary>
+        /// <param name="doc"></param>
+
 
         #region Status Codes
         private static string ErrorCodeToString(MembershipCreateStatus createStatus)

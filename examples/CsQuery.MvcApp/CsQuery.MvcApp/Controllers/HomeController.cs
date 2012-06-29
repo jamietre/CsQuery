@@ -8,7 +8,7 @@ namespace CsQuery.MvcApp.Controllers
 {
     public class HomeController : CsQueryController
     {
-        
+
 
         public ActionResult Index()
         {
@@ -20,35 +20,35 @@ namespace CsQuery.MvcApp.Controllers
        
         public ActionResult About()
         {
+             return View();
+        }
 
+        #region CsQuery methods
+
+        public void Cq_Start()
+        {
+            Doc["div"].Css("border", "1px solid red;");
+        }
+
+        public void Cq_About()
+        {
             var list = new KeyValuePair<string, string>[] {
                 new KeyValuePair<string,string>("1","Item 1"),
                 new KeyValuePair<string,string>("2","Item 2"),
                 new KeyValuePair<string,string>("3","Item 3")
             };
 
-            // [CsQuery] An inline/anonymous function for handling the general page rendering
-
-            SetCqHandler((doc) =>
-            {
-                doc["div"].Css("border", "1px solid red;");
-                MakePickList(doc["#select-list"], list);
-            });
-
-            // [CsQuery] Bind a handler targeted only to the LogOnPartial view
-            SetCqHandler(OnlyLogOnHandler, "LogOnPartial");
-
-            return View();
+            MakePickList(Doc["#select-list"], list);
         }
 
-        /// <summary>
-        /// [CsQuery] Handler that will be called only after rendering LogOnPartial view
-        /// </summary>
-        /// <param name="doc"></param>
-        private void OnlyLogOnHandler(CQ doc)
+        public void Cq_End()
         {
-            doc["a"].Text("NEW LOG ON!");
+            Doc["#auth-section a"].Text("NEW LOG ON!");
         }
+
+
+        #endregion
+
 
         /// <summary>
         /// [CsQuery] A simple function to turn a sequence of Key/Value pairs into a pick list

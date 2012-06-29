@@ -148,6 +148,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Controllers\Shared\" />
+    <Folder Include="Controllers\Sub\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

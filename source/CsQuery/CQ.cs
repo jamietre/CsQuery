@@ -19,7 +19,17 @@ using CsQuery.Utility;
 
 namespace CsQuery
 {
+
     /// <summary>
+    /// The CQ object is analogus to the basic jQuery object. It has instance methods that mirror the methods
+    /// of a jQuery object, and static methods that mirror utility methods such as "$.map".
+    /// 
+    /// Most methods return a new jQuery object that is bound to the same document, but a different selection 
+    /// set. In a web browser, you genally only have a single context (the browser DOM). Here, you could have
+    /// many, though most of the time you will only be working with one.
+    /// </summary>
+    /// <remarks>
+    /// 
     /// Document is an IDomDocument object, referred to sometimes as the "DOM", and represents the DOM that this 
     /// CsQuery objects applies to. When CQ methods are run, the resulting CQ object will refer to the same 
     /// Document as the original. Selectors always run against this DOM. 
@@ -38,15 +48,16 @@ namespace CsQuery
     /// 
     /// The static Create() methods create new DOMs. To create a CsQuery object based on an existing dom, 
     /// use new CQ() (similar to jQuery() methods).
-    /// </summary>
-    
+    /// </remarks>
     public partial class CQ : IEnumerable<IDomObject>
     {
         #region public properties
 
         /// <summary>
-        /// The number of elements in the CsQuery object
+        /// The number of elements in the CQ object
         /// </summary>
+        /// <returntype>int</returntype>
+        /// <jquery>http://api.jquery.com/length/</jquery>
         public int Length
         {
             get
@@ -62,7 +73,9 @@ namespace CsQuery
         /// <summary>
         /// Add the previous set of elements on the stack to the current set.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A new CQ object</returns>
+        /// <returntype>CQ</returntype>
+        /// <jquery></jquery>http://api.jquery.com/andSelf/</jquery>
         public CQ AndSelf()
         {
             var csq = new CQ(this);
@@ -83,7 +96,10 @@ namespace CsQuery
         /// End the most recent filtering operation in the current chain and return the set of matched elements 
         /// to its previous state
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The CQ object at the root of the current chain, or a new, empty selection if this
+        /// CQ object is the direct result of a Create()
+        /// </returns>
+        /// <returntype>CQ</returntype>
         public CQ End()
         {
             return CsQueryParent ?? New();
@@ -93,6 +109,7 @@ namespace CsQuery
         /// Return the active selection set
         /// </summary>
         /// <returns></returns>
+        /// <returntype>IEnumerable&lt;IDomObject&gt;</returntype>
         public IEnumerable<IDomObject> Get()
         {
             return SelectionSet;
@@ -174,6 +191,7 @@ namespace CsQuery
         /// </summary>
         /// <param name="selector">A CSS selector</param>
         /// <returns>A new CQ object</returns>
+        /// <jquery>http://api.jquery.com/not/</jquery>
         public CQ Not(IDomObject element)
         {
             return Not(Objects.Enumerate(element));
