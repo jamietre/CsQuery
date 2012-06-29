@@ -3,9 +3,10 @@
 #################
 
 Build/
-TestResults/
-CsQuery.Tests/Performance/Output/
 WebSite/
+source/TestResults/
+source/CsQuery.Tests/Performance/Output/
+*.nupkg
 
 #################
 ## Visual Studio
