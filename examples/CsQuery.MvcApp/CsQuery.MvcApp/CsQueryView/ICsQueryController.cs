@@ -3,22 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
-using System.Web.Security;
-using CsQuery.MvcApp.Models;
-using CsQuery;
 
 namespace CsQuery.Mvc
 {
     /// <summary>
-    /// Implementation of CsQuery controller
+    /// An interface that identfies a controller as a target for CsQuery HTML processing
     /// </summary>
-    public class CsQueryController : Controller, ICsQueryController
+    public interface ICsQueryController
     {
         /// <summary>
         /// The CsQuery representation of the HTML before rendering.
         /// </summary>
-        public CQ Doc { get; set; }
-
+        CQ Doc { get; }
     }
 }

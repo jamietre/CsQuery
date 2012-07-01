@@ -22,6 +22,10 @@ namespace CsQuery.Web
         public bool Async { get; set; }
         public bool Complete { get; protected set; }
         public CQ Dom { get; protected set; }
+
+        /// <summary>
+        /// The time, in milliseconds, after which to abort an incomplete request.
+        /// </summary>
         public int Timeout { get; set; }
         public object Id {get;set;}
 

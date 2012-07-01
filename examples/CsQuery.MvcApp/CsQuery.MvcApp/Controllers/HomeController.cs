@@ -43,10 +43,23 @@ namespace CsQuery.MvcApp.Controllers
 
         public void Cq_End()
         {
-            Doc["#auth-section a"].Text("NEW LOG ON!");
+            Doc["option"].Css("font-weight", "bold");
         }
 
+        /// <summary>   Cq log on partial. </summary>
+        ///
+        /// <remarks>   James Treworgy, 7/1/2012. </remarks>
 
+        public void Cq__LogOnPartial(CQ doc)
+        {
+            doc["a"].Text("Link Text Always");
+        }
+
+        public void Cq_About__LogOnPartial(CQ doc)
+        {
+            doc["a"].Text("Link Text About Only");
+
+        }
         #endregion
 
 

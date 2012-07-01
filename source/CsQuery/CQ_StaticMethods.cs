@@ -25,11 +25,6 @@ namespace CsQuery
         public static DomRenderingOptions DefaultDomRenderingOptions = DomRenderingOptions.QuoteAllAttributes;
 
         /// <summary>
-        /// The default settings used when making remote requests
-        /// </summary>
-        public static ServerConfig DefaultServerConfig = new ServerConfig();
-
-        /// <summary>
         /// The default rendering type. This mostly controls the header and how tags are closed. UNIMPLEMENTED right now.
         /// </summary>
         public static DocType DefaultDocType = DocType.HTML5;
@@ -251,20 +246,13 @@ namespace CsQuery
         /// <returns></returns>
         public static CQ CreateFromUrl(string url, ServerConfig options=null)
         {
-            ServerConfig config = ServerConfig.Merge(options);
-             
-            CsqWebRequest con = new CsqWebRequest(url);
             
-            if (config.UserAgent!=null) {
-                con.UserAgent = config.UserAgent;
-            }
-            if (config.Timeout != null)
-            {
-                con.Timeout = (int)config.Timeout;
-            }
-            con.Get();
+            CsqWebRequest request = new CsqWebRequest(url);
+            ServerConfig.Apply(options, request);
 
-            return CQ.CreateDocument(con.Html);
+            request.Get();
+
+            return CQ.CreateDocument(request.Html);
         }
         
         /// <summary>
@@ -275,7 +263,6 @@ namespace CsQuery
         /// <param name="callbackFail"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-
         public static IPromise<ICsqWebResponse> CreateFromUrlAsync(string url, ServerConfig options = null)
         {
             var deferred = When.Deferred<ICsqWebResponse>();
@@ -305,7 +292,6 @@ namespace CsQuery
         /// <param name="callbackFail"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-
         public static void CreateFromUrlAsync(string url, int id, Action<ICsqWebResponse> callbackSuccess, Action<ICsqWebResponse> callbackFail = null, ServerConfig options = null)
         {
             AsyncWebRequestManager.StartAsyncWebRequest(url, callbackSuccess, callbackFail,id, options);
@@ -313,12 +299,13 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Block this thread until all pending asynchronous web requests have completed.
+        /// Waits until all async events have completed. Use for testing primarily as a web app should not stop normally.
         /// </summary>
-        /// <param name="timeout"></param>
-        public static void WaitForAsyncEvents(int timeout = -1)
+        /// <param name="millisecondsTimeout">The maximum number of milliseconds to wait</param>
+        /// <returns>true if all events were cleared in the allotted time, false if not</returns>
+        public static bool WaitForAsyncEvents(int timeout = -1)
         {
-            AsyncWebRequestManager.WaitForAsyncEvents(timeout);
+            return AsyncWebRequestManager.WaitForAsyncEvents(timeout);
         }
 
         /// <summary>

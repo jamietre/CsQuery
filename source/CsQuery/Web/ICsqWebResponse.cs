@@ -13,6 +13,9 @@ namespace CsQuery.Web
         DateTime? Started { get; }
         DateTime? Finished { get; }
         bool Success { get; }
+        int HttpStatus { get; }
+        string HttpStatusDescription { get; }
+        string Error { get; }
         WebException WebException { get; }
     }
 }

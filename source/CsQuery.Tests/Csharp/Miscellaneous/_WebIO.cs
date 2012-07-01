@@ -22,9 +22,10 @@ namespace CsQuery.Tests.Csharp.Miscellaneous
         public override void FixtureSetUp()
         {
             base.FixtureSetUp();
-            CQ.DefaultServerConfig.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2";
+            ServerConfig.Default.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2";
         }
-        //[Test,TestMethod]
+        
+        [Test,TestMethod]
         public void GetHtml()
         {
             

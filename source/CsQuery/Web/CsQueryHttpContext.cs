@@ -90,6 +90,7 @@ namespace CsQuery.Web
 
         #region public methods
 
+        
         public void Create()
         {
             ControlRenderMethod(Writer);
@@ -148,7 +149,7 @@ namespace CsQuery.Web
             }
             else
             {
-                Dom = CQ.Create(_sb.ToString());
+                Dom = CQ.CreateDocument(_sb.ToString());
             }
         }
 
@@ -178,6 +179,14 @@ namespace CsQuery.Web
 
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this object is asynchronous.
+        /// </summary>
+        ///
+        /// <value>
+        /// true if this object is asynchronous, false if not.
+        /// </value>
+
         public bool IsAsync
         {
             get
@@ -201,7 +210,7 @@ namespace CsQuery.Web
         }
 
         /// <summary>
-        /// 
+        /// Renders the DOM to the bound TextWriter.
         /// </summary>
         public void Render()
         {

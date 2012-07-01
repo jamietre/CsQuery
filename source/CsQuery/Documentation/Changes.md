@@ -2,6 +2,12 @@
 
 This is an informal log of changes to the project; major issues will be logged and described on github.
 
+#####6/30/2012
+
+- Move default server config settings to ServerConfig.Default, decoupling it from the CQ object
+- Fix handling of settings (they weren't being applied)
+- Add more properties to web response
+
 #####6/28/2012
 
 - Fix & test Slice method

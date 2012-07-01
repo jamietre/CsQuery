@@ -69,6 +69,7 @@
     <Compile Include="AssertEx.cs" />
     <Compile Include="Csharp\Dom\DomElement.cs" />
     <Compile Include="Csharp\Methods\Slice.cs" />
+    <Compile Include="Csharp\Miscellaneous\Stress.cs" />
     <Compile Include="TestTests.cs" />
     <Compile Include="Csharp\HtmlParser\Classes.cs" />
     <Compile Include="Csharp\HtmlParser\HtmlDomData.cs" />
