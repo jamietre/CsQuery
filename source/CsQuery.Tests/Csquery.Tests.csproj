@@ -67,9 +67,11 @@
   <ItemGroup>
     <Compile Include="Arrays.cs" />
     <Compile Include="AssertEx.cs" />
+    <Compile Include="Csharp\Dom\DomDocument.cs" />
+    <Compile Include="Csharp\Dom\DomFragment.cs" />
     <Compile Include="Csharp\Dom\DomElement.cs" />
     <Compile Include="Csharp\Methods\Slice.cs" />
-    <Compile Include="Csharp\Miscellaneous\Stress.cs" />
+    <Compile Include="WebIO\StressTests.cs" />
     <Compile Include="TestTests.cs" />
     <Compile Include="Csharp\HtmlParser\Classes.cs" />
     <Compile Include="Csharp\HtmlParser\HtmlDomData.cs" />
@@ -133,7 +135,7 @@
     <Compile Include="Csharp\ExtensionMethods\ExtensionMethodTests.cs" />
     <Compile Include="Csharp\Utility\JSON\JSON.cs" />
     <Compile Include="jQuery\Traversing.cs" />
-    <Compile Include="Csharp\Miscellaneous\_WebIO.cs" />
+    <Compile Include="WebIO\QueryRemoteServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\HTML Standard.htm">

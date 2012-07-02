@@ -18,7 +18,11 @@ using System.Diagnostics;
 using CsQuery.EquationParser;
 using CsQuery.Tests;
 
-namespace CsQuery.Tests.Performance
+// namespace: CsQuery.Tests._Performance
+//
+// summary:	Underscored to keep this test (which you won't want to run very often) at the top of lists..
+
+namespace CsQuery.Tests._Performance
 {
     [TestClass]
     public abstract class PerformanceTest : CsQueryTest

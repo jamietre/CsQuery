@@ -89,7 +89,8 @@ namespace CsQuery.Engine
 
             // Disable the index if there is no context (e.g. disconnected elements)
 
-            bool useIndex = context.IsNullOrEmpty() || !context.First().IsDisconnected;
+
+            bool useIndex = (context.IsNullOrEmpty() || !context.First().IsDisconnected) && Document.IsIndexed;
 
 
 

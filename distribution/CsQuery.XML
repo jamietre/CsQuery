@@ -86,6 +86,36 @@
             Data about a web request
             </summary>
         </member>
+        <member name="P:CsQuery.Web.ICsqWebRequestMetadata.Timeout">
+            <summary>
+            The time, in milliseconds, after which to abort an incompete request.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Web.ICsqWebRequestMetadata.UserAgent">
+            <summary>
+            The UserAgent string to present to the remote server
+            </summary>
+        </member>
+        <member name="P:CsQuery.Web.ICsqWebRequest.Url">
+            <summary>
+            The url to load
+            </summary>
+        </member>
+        <member name="P:CsQuery.Web.ICsqWebRequest.Dom">
+            <summary>
+            The CQ object representing the contents of the URL
+            </summary>
+        </member>
+        <member name="P:CsQuery.Web.ICsqWebRequest.Complete">
+            <summary>
+            Returns true when this request has finished processing
+            </summary>
+        </member>
+        <member name="P:CsQuery.Web.ICsqWebRequest.Id">
+            <summary>
+            A unique ID for this request. This will be automatically generated if not assigned.
+            </summary>
+        </member>
         <member name="M:CsQuery.Web.CsqWebRequest.Get">
             <summary>
             Initiate an http GET request
@@ -98,6 +128,11 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="P:CsQuery.Web.CsqWebRequest.Timeout">
+            <summary>
+            The time, in milliseconds, after which to abort an incomplete request.
+            </summary>
+        </member>
         <member name="T:CsQuery.Implementation.DomObject`1">
             <summary>
             Base class for anything that exists in the DOM
@@ -106,7 +141,9 @@
         </member>
         <member name="T:CsQuery.Implementation.DomObject">
             <summary>
-            Something that appears in the DOM (e.g., not an attribute, DomDocument, and so on)
+            Something that appears in the DOM. This is essentially the same as a Node in the browser DOM,
+            but IDomObject represents only things that may appear in the DOM (e.g. not an attribute,
+            document, doctype)
             </summary>
         </member>
         <member name="T:CsQuery.IDomObject">
@@ -122,45 +159,472 @@
             need to cast frequently, for example, when accessing the results of a jQuery object by index.
             </summary>
         </member>
-        <member name="P:CsQuery.IDomNode.NodeName">
+        <member name="M:CsQuery.IDomNode.Render">
+             <summary>
+             Renders the complete HTML for this element, including its children.
+             </summary>
+            
+             <returns>
+             a string of HTML
+             </returns>
+        </member>
+        <member name="M:CsQuery.IDomNode.Render(System.Text.StringBuilder)">
+             <summary>
+             Renders the complete HTML for this element to a StringBuilder
+             </summary>
+            
+             <param name="sb">
+             An existing StringBuilder instance to append this element's HTML.
+             </param>
+        </member>
+        <member name="M:CsQuery.IDomNode.Render(System.Text.StringBuilder,CsQuery.DomRenderingOptions)">
+             <summary>
+             Renders the complete HTML for this element to a StringBuilder using specified options.
+             </summary>
+            
+             <param name="sb">
+             An existing StringBuilder instance to append this element's HTML.
+             </param>
+             <param name="options">
+             Options for controlling the operation.
+             </param>
+        </member>
+        <member name="M:CsQuery.IDomNode.Remove">
             <summary>
-            The node (tag) name, in upper case 
+            Removes this object from it's parent, and consequently the Document, if any, to which it belongs.
             </summary>
+        </member>
+        <member name="M:CsQuery.IDomNode.Clone">
+             <summary>
+             Makes a deep copy of this object.
+             </summary>
+            
+             <returns>
+             A copy of this object.
+             </returns>
+        </member>
+        <member name="P:CsQuery.IDomNode.NodeName">
+             <summary>
+             The node (tag) name, in upper case.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Node.nodeName
+             </url>
+        </member>
+        <member name="P:CsQuery.IDomNode.NodeValue">
+             <summary>
+             Gets or sets the value of this node.
+             </summary>
+            
+             <remarks>
+             For the document itself, nodeValue returns null. For text, comment, and CDATA nodes,
+             nodeValue returns the content of the node.
+             </remarks>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Node.nodeValue
+             </url>
+        </member>
+        <member name="P:CsQuery.IDomNode.HasChildren">
+             <summary>
+             Gets a value indicating whether this object has any children. For node types that cannot have
+             children, it will always return false. To determine if a node is allowed to have children,
+             use the ChildrenAllowed property.
+             </summary>
+            
+             <seealso cref="!:ChildrenAllowed"/>
+        </member>
+        <member name="P:CsQuery.IDomNode.ChildNodes">
+            <summary>
+            Return an INodeList of the direct children of this node.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IDomNode.ChildElements">
+            <summary>
+            Return a sequence containing only the element children of this node (e.g. no text, cdata, comments)
+            </summary>
+        </member>
+        <member name="P:CsQuery.IDomNode.Complete">
+            <summary>
+            Gets a value indicating whether this node is complete. This is for internal use. During DOM
+            construction it is possible for a node object to exist but not be properly configured.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IDomNode.IsIndexed">
+            <summary>
+            Gets a value indicating whether this node should be is indexed. Generally, this is true for IDomElement
+            nodes that are within an IDomDocument and false otherwise.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IDomNode.IsDisconnected">
+             <summary>
+             Gets a value indicating whether this object belongs to a Document or not.
+             </summary>
+            
+             <remarks>
+             When an object is cloned, it becomes disconnected, and is not bound to any IDomDocument or
+             IDomFragment. The only substantive difference between disconnected elements and elements
+             belonging to a Document is that they are not indexed.
+             </remarks>
         </member>
         <member name="M:CsQuery.IDomObject.AppendChild(CsQuery.IDomObject)">
-            <summary>
-            Adds a node to the end of the list of children of a specified parent node. 
-            If the node already exists it is removed from current parent node, then added to new parent node.
-            </summary>
-            <param name="element"></param>
-            <href>https://developer.mozilla.org/en/DOM/Node.appendChild</href>
+             <summary>
+             Adds a node to the end of the list of children of a specified parent node. If the node
+             already exists it is removed from current parent node, then added to new parent node.
+             </summary>
+            
+             <param name="element">
+             The element to append.
+             </param>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Node.appendChild
+             </url>
         </member>
         <member name="M:CsQuery.IDomObject.RemoveChild(CsQuery.IDomObject)">
-            <summary>
-            Removes a child node from the DOM. Returns removed node.
-            </summary>
-            <param name="element"></param>
-            <href>https://developer.mozilla.org/En/DOM/Node.removeChild</href>
+             <summary>
+             Removes a child node from the DOM. Returns removed node.
+             </summary>
+            
+             <param name="element">
+             The element to remove.
+             </param>
+            
+             <url>
+             https://developer.mozilla.org/En/DOM/Node.removeChild
+             </url>
         </member>
         <member name="M:CsQuery.IDomObject.InsertBefore(CsQuery.IDomObject,CsQuery.IDomObject)">
-            <summary>
-            Inserts the specified node before a reference element as a child of the current node.
-            </summary>
-            <param name="newNode"></param>
-            <param name="referenceNode"></param>
-            <href>https://developer.mozilla.org/en/DOM/Node.insertBefore</href>
+             <summary>
+             Inserts the specified node before a reference element as a child of the current node.
+             </summary>
+            
+             <param name="newNode">
+             The node to insert.
+             </param>
+             <param name="referenceNode">
+             The node before which the new node will be inserted.
+             </param>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Node.insertBefore
+             </url>
         </member>
         <member name="M:CsQuery.IDomObject.InsertAfter(CsQuery.IDomObject,CsQuery.IDomObject)">
-            <summary>
-            Inserts the specified node after a reference element as a child of the current node.
+             <summary>
+             Inserts the specified node after a reference element as a child of the current node.
+             </summary>
             
-            </summary>
-            <remarks>
-            This method is not part of the core DOM spec.
-            </remarks>
-            <param name="newNode"></param>
-            <param name="referenceNode"></param>
-            <href>https://developer.mozilla.org/en/DOM/Node.insertBefore</href>
+             <remarks>
+             This is a CsQuery extension.
+             </remarks>
+            
+             <param name="newNode">
+             The new node to be inserted.
+             </param>
+             <param name="referenceNode">
+             The node after which the new node will be inserted.
+             </param>
+        </member>
+        <member name="M:CsQuery.IDomObject.SetAttribute(System.String)">
+             <summary>
+             Adds a new boolean attribute or sets its value to true.
+             </summary>
+            
+             <remarks>
+             In HTML, some element attributes can be specified without a value, such as "checked" or
+             "multiple." These are not really attributes but rather the default values for element boolean
+             properties. CsQuery does not distinguish between properties and attributes since the DOM is
+             stateless, it only reflects the actual markup it represents. The real DOM, to the contrary,
+             can be changed through javascript. It would be possible for an element's property to be
+             different from the default value that is specified by its markup.
+             
+             Because of this, we treat properties and attributes the same. A property is simply an
+             attribute with no specific value, it either exists or does not exist. This overload of
+             SetAttribute allows you to set a boolean attribute. You can use RemoveAttribute to unset it.
+             
+             It is also possible to set an attribute to an empty string, e.g. with markup like  
+                 &lt;div someAttr=""&gt;
+                 
+             
+             </remarks>
+            
+             <param name="name">
+             The attribute name.
+             </param>
+        </member>
+        <member name="M:CsQuery.IDomObject.SetAttribute(System.String,System.String)">
+             <summary>
+             Adds a new attribute or changes the value of an existing attribute on the specified element.
+             </summary>
+            
+             <remarks>
+             Setting an attribute to null is the equivalent of using RemoveAttribute. Setting an attribute
+             to an empty string will cause it to be rendered as an empty value, e.g.
+             
+                 &lt;div someAttr=""&gt;
+             
+             If you want to set a boolean attribute that renders just as the attribute name, use
+             SetAttribute(name) overload. When using GetAttribute to inspect an attribute value, note that
+             both boolean and empty-string attributes will return an empty string. There is no way to determine
+             using GetAttribute if the atttribute was set as a boolean property, or an empty string.
+             </remarks>
+            
+             <param name="name">
+             The attribute name.
+             </param>
+             <param name="value">
+             For input elements, the "value" property of this element. Returns null for other element
+             types.
+             </param>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/element.setAttribute
+             </url>
+        </member>
+        <member name="M:CsQuery.IDomObject.GetAttribute(System.String)">
+             <summary>
+             Returns the value of the named attribute on the specified element. If the named attribute
+             does not exist, the value returned will either be null or "" (the empty string)
+             </summary>
+            
+             <remarks>
+             If an attribute does not exist, this returns null. If an attribute was set as a boolean
+             property attribute, or the attribute has an empty string value, an empty string will be
+             returned. Note that an empty-string value for GetAttribute could result in an attribute
+             rendering as either a property, or an empty string value, e.g.
+             
+             &amp;ltdiv someAttr&gt;
+             &amp;ltdiv someAttr=""&gt;
+             
+             There is no way to determine whether an attribute was set as a property or empty string other
+             than rendering. The internal data will match the way it was parsed from HTML, or the way it
+             was set. When set using  <code>SetAttribute(name)</code> it will be displayed as a boolean
+             property; when set using <code>SetAttribute(name,"")</code> it will be displayed as an empty
+             string.
+             </remarks>
+            
+             <param name="name">
+             The attribute name.
+             </param>
+            
+             <returns>
+             The attribute value string.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/element.getAttribute
+             </url>
+        </member>
+        <member name="M:CsQuery.IDomObject.GetAttribute(System.String,System.String)">
+             <summary>
+             Returns the value of the named attribute on the specified element. If the named attribute
+             does not exist, the value returned will either be the provide "defaultValue".
+             </summary>
+            
+             <remarks>
+             This overload is a CsQuery extension.
+             </remarks>
+            
+             <param name="name">
+             The attribute name.
+             </param>
+             <param name="defaultValue">
+             A string to return if the attribute does not exist.
+             </param>
+            
+             <returns>
+             The attribute value string.
+             </returns>
+            
+             <seealso cref="!:GetAttribute(string name)"/>
+        </member>
+        <member name="M:CsQuery.IDomObject.TryGetAttribute(System.String,System.String@)">
+             <summary>
+             Try to get a named attribute.
+             </summary>
+            
+             <remarks>
+             This overload is a CsQuery extension.
+             </remarks>
+            
+             <param name="name">
+             The attribute name.
+             </param>
+             <param name="value">
+             The attribute value, or null if the named attribute does not exist.
+             </param>
+            
+             <returns>
+             true if the attribute exists, false if it does not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.IDomObject.HasAttribute(System.String)">
+             <summary>
+             Returns a boolean value indicating whether the specified element has the specified attribute or not.
+             </summary>
+            
+             <param name="name">
+             The attribute name.
+             </param>
+            
+             <returns>
+             true if the named attribute exists, false if not.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/element.hasAttribute
+             </url>
+        </member>
+        <member name="M:CsQuery.IDomObject.RemoveAttribute(System.String)">
+             <summary>
+             Removes an attribute from the specified element.
+             </summary>
+            
+             <param name="name">
+             The attribute name.
+             </param>
+            
+             <returns>
+             true if it the attribute exists, false if the attribute did not exist. If the attribute
+             exists it will always be removed, that is, it is not possible for this method to fail unless
+             the attribute does not exist.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/element.removeAttribute
+             </url>
+        </member>
+        <member name="M:CsQuery.IDomObject.HasClass(System.String)">
+             <summary>
+             Returns a boolean value indicating whether the named class exists on this element.
+             </summary>
+            
+             <param name="className">
+             The class name for which to test.
+             </param>
+            
+             <returns>
+             true if the class is a member of this elements classes, false if not.
+             </returns>
+             <remarks>This is a CsQuery extension.</remarks>
+        </member>
+        <member name="M:CsQuery.IDomObject.AddClass(System.String)">
+             <summary>
+             Adds the class.
+             </summary>
+            
+             <param name="className">
+             The class name for which to test.
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.IDomObject.RemoveClass(System.String)">
+             <summary>
+             Removes the named class from the classes defined for this element.
+             </summary>
+            
+             <remarks>
+             This method is a CsQuery extension.
+             </remarks>
+            
+             <param name="className">
+             The class name to remove.
+             </param>
+            
+             <returns>
+             true if the class exists and was removed from this element, false if the class did not exist.
+             If the class exists it will always be removed, that is, it is not possible for this method to
+             fail if the class exists.
+             </returns>
+        </member>
+        <member name="M:CsQuery.IDomObject.HasStyle(System.String)">
+             <summary>
+             Returns a boolean value indicating whether the named style is defined in the styles for this
+             element.
+             </summary>
+            
+             <param name="styleName">
+             Name of the style to test.
+             </param>
+            
+             <returns>
+             true if the style is explicitly defined on this element, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.IDomObject.AddStyle(System.String)">
+             <summary>
+             Adds a style descriptor to this element, validating the style name and value against the CSS3
+             ruleset. The string should be of the form "styleName: styleDef;", e.g.
+             
+                 "width: 10px;"
+             
+             The trailing semicolon is optional.
+             
+             </summary>
+            
+             <param name="styleString">
+             The style string.
+             </param>
+        </member>
+        <member name="M:CsQuery.IDomObject.AddStyle(System.String,System.Boolean)">
+             <summary>
+             Adds a style descriptor to this element, optionally validating against the CSS3 ruleset. The
+             default method always validates; this overload should be used if validation is not desired.
+             </summary>
+            
+             <param name="style">
+             An object encapsulating the Styles associated with this element.
+             </param>
+             <param name="strict">
+             true to enforce validation of CSS3 styles.
+             </param>
+        </member>
+        <member name="M:CsQuery.IDomObject.RemoveStyle(System.String)">
+             <summary>
+             Removes the named style from this element.
+             </summary>
+            
+             <param name="name">
+             The style name.
+             </param>
+            
+             <returns>
+             true if the style exists and is removed, false if the style did not exist.
+             </returns>
+        </member>
+        <member name="M:CsQuery.IDomObject.DescendantCount">
+             <summary>
+             Return the total number of descendants of this element
+             </summary>
+            
+             <returns>
+             int, the total number of descendants
+             </returns>
+        </member>
+        <member name="M:CsQuery.IDomObject.Cq">
+             <summary>
+             Wrap this element in a CQ object. This is the CsQuery equivalent of the common jQuery
+             construct $(el). Since there is no default method in C# that we can use to create a similar
+             syntax, this method serves the same purpose.
+             </summary>
+            
+             <returns>
+             A new CQ object wrapping this element.
+             </returns>
+        </member>
+        <member name="M:CsQuery.IDomObject.Clone">
+             <summary>
+             Clone this element.
+             </summary>
+            
+             <returns>
+             A copy of this element that is not bound to the original.
+             </returns>
         </member>
         <member name="P:CsQuery.IDomObject.Document">
             <summary>
@@ -173,140 +637,1070 @@
             </summary>
         </member>
         <member name="P:CsQuery.IDomObject.Item(System.Int32)">
-            <summary>
-            The child node at the specified index
-            </summary>
-            <param name="index"></param>
-            <returns></returns>
+             <summary>
+             The child node at the specified index.
+             </summary>
+            
+             <param name="index">
+             The zero-based index of the child node to access.
+             </param>
+            
+             <returns>
+             IDomObject, the element at the specified index within this node's children.
+             </returns>
         </member>
         <member name="P:CsQuery.IDomObject.Item(System.String)">
-            <summary>
-            Get or set the value of the named attribute
-            </summary>
-            <param name="attribute">The attribute name</param>
-            <returns>An attribute value</returns>
-            <returntype>string</returntype>
+             <summary>
+             Get or set the value of the named attribute on this element.
+             </summary>
+            
+             <param name="attribute">
+             The attribute name.
+             </param>
+            
+             <returns>
+             An attribute value.
+             </returns>
         </member>
         <member name="P:CsQuery.IDomObject.Id">
             <summary>
-            Get or set value of the id attribute
+            Get or set value of the id attribute.
             </summary>
         </member>
         <member name="P:CsQuery.IDomObject.Attributes">
             <summary>
-            An interface to access the attributes collection of this element
+            An interface to access the attributes collection of this element.
             </summary>
         </member>
         <member name="P:CsQuery.IDomObject.Style">
             <summary>
-            An object encapsulating the Styles associated with this element
+            An object encapsulating the Styles associated with this element.
             </summary>
         </member>
         <member name="P:CsQuery.IDomObject.ClassName">
-            <summary>
-            gets and sets the value of the class attribute of the specified element.
-            </summary>
-            <href>https://developer.mozilla.org/en/DOM/element.className</href>
+             <summary>
+             gets and sets the value of the class attribute of the specified element.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/element.className
+             </url>
         </member>
         <member name="P:CsQuery.IDomObject.Classes">
             <summary>
-            A sequence of all the unique class names applied to this object
+            A sequence of all the unique class names applied to this object.
             </summary>
         </member>
         <member name="P:CsQuery.IDomObject.Value">
             <summary>
-            For input elements, the "value" property of this element. Returns null for other element types.
+            For input elements, the "value" property of this element. Returns null for other element
+            types.
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:CsQuery.IDomObject.DefaultValue" -->
-        <member name="P:CsQuery.IDomObject.InnerHTML">
+        <member name="P:CsQuery.IDomObject.DefaultValue">
             <summary>
-            Sets or gets the HTML of an elements descendants
+            The value of an input element, or the text of a textarea element.
             </summary>
-            <href>https://developer.mozilla.org/en/DOM/element.innerHTML</href>
+        </member>
+        <member name="P:CsQuery.IDomObject.InnerHTML">
+             <summary>
+             Gets or sets or gets the HTML of an elements descendants.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/element.innerHTML
+             </url>
         </member>
         <member name="P:CsQuery.IDomObject.InnerText">
-            <summary>
-            Gets or sets the text content of a node and its descendants.
-            </summary>
-            <href>https://developer.mozilla.org/en/DOM/Node.textContent</href>
+             <summary>
+             Gets or sets the text content of a node and its descendants.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Node.textContent
+             </url>
+        </member>
+        <member name="P:CsQuery.IDomObject.FirstChild">
+             <summary>
+             Returns the node's first child in the tree, or null if the node is childless. If the node is a Document, it returns the first node in the list of its direct children.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/element.firstChild
+             </url>
+        </member>
+        <member name="P:CsQuery.IDomObject.FirstElementChild">
+             <summary>
+             Returns the element's first child element or null if there are no child elements.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Element.firstElementChild
+             </url>
+        </member>
+        <member name="P:CsQuery.IDomObject.LastChild">
+             <summary>
+             Returns the last child of a node.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Node.lastChild
+             </url>
+        </member>
+        <member name="P:CsQuery.IDomObject.LastElementChild">
+             <summary>
+             Returns the element's last child element or null if there are no child elements.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Element.lastElementChild
+             </url>
+        </member>
+        <member name="P:CsQuery.IDomObject.NextSibling">
+             <summary>
+             Returns the node immediately following the specified one in its parent's childNodes list, or
+             null if the specified node is the last node in that list.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Node.nextSibling
+             </url>
+        </member>
+        <member name="P:CsQuery.IDomObject.PreviousSibling">
+             <summary>
+             Returns the node immediately preceding the specified one in its parent's childNodes list,
+             null if the specified node is the first in that list.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Node.previousSibling
+             </url>
+        </member>
+        <member name="P:CsQuery.IDomObject.NextElementSibling">
+             <summary>
+             Returns the element immediately following the specified one in its parent's children list,
+             or null if the specified element is the last one in the list.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Element.nextElementSibling
+             </url>
+        </member>
+        <member name="P:CsQuery.IDomObject.PreviousElementSibling">
+             <summary>
+             Returns the element immediately prior to the specified one in its parent's children list, or
+             null if the specified element is the first one in the list.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Element.previousElementSibling
+             </url>
         </member>
         <member name="P:CsQuery.IDomObject.HasAttributes">
             <summary>
-            Returns true if this node has any attributes
+            Returns true if this node has any attributes.
             </summary>
         </member>
         <member name="P:CsQuery.IDomObject.HasClasses">
             <summary>
-            Returns true if this node has CSS classes
+            Returns true if this node has CSS classes.
             </summary>
         </member>
         <member name="P:CsQuery.IDomObject.HasStyles">
             <summary>
-            Returns true if this node has styles
+            Returns true if this node has any styles defined.
             </summary>
+        </member>
+        <member name="P:CsQuery.IDomObject.Selected">
+             <summary>
+             Indicates whether the element is selected or not. This value is read-only. To change the
+             selection, set either the selectedIndex or selectedItem property of the containing element.
+             </summary>
+            
+             <remarks>
+             In CsQuery, this property simply indicates the presence of a "selected" attribute. The
+             accompanying "SelectedIndex" and "SelectedItem" properties have not been implemented as of
+             this writing.
+             </remarks>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Attribute/selected
+             </url>
+        </member>
+        <member name="P:CsQuery.IDomObject.Checked">
+             <summary>
+             Gets or sets a value indicating whether the element is checked.
+             </summary>
+            
+             <remarks>
+             In CsQuery, this property simply indicates the presence of a "checked" attribute.
+             </remarks>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Property/checked
+             </url>
+        </member>
+        <member name="P:CsQuery.IDomObject.ReadOnly">
+             <summary>
+             Gets or sets a value indicating whether the only should be read.
+             </summary>
+            
+             <remarks>
+             In CsQuery, this property simply indicates the presence of a "readonly" attribute.
+             </remarks>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Property/readOnly
+             </url>
         </member>
         <member name="P:CsQuery.IDomObject.Type">
-            <summary>
-            The type of attribute
-            </summary>
+             <summary>
+             The value of the "type" attribute. For input elements, this property always returns a
+             lowercase value and defaults to "text" if there is no type attribute. For other element types,
+             it simply returns the value of the "type" attribute.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Property/type
+             </url>
         </member>
         <member name="P:CsQuery.IDomObject.Name">
+             <summary>
+             Gets or sets the name attribute of an DOM object, it only applies to the following elements:
+             &lt;a&gt; , &lt;applet&gt; , &lt;form&gt; , &lt;frame&gt; , &lt;iframe&gt; , &lt;img&gt; ,
+             &lt;input&gt; , &lt;map&gt; , &lt;meta&gt; , &lt;object&gt; , &lt;option&gt; , &lt;param&gt; ,
+             &lt;select&gt; , and &lt;textarea&gt; .
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/element.name
+             </url>
+        </member>
+        <member name="P:CsQuery.IDomObject.InnerHtmlAllowed">
             <summary>
-            For input elements, the name
+            Gets a value indicating whether HTML is allowed as a child of this element. It is possible
+            for this value to be false but InnerTextAllowed to be true for elements which can have inner
+            content, but no child HTML markup, such as &lt;textarea&gt; and &lt;script&gt;
             </summary>
+        </member>
+        <member name="P:CsQuery.IDomObject.InnerTextAllowed">
+            <summary>
+            Gets a value indicating whether text content is allowed as a child of this element. 
+            DEPRECATED 7-1-2012, PLEASE USE ChildrenAllowed(). This will be removed in a future release.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IDomObject.ChildrenAllowed">
+            <summary>
+            Gets a value indicating whether this element may have children. When false, it means this is
+            a void element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IDomObject.Depth">
+            <summary>
+            Gets the depth of this node relative to the Document node, which has depth zero.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IDomObject.Index">
+            <summary>
+            Gets zero-based index of this object relative to its siblings including all node types.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IDomObject.PathID">
+            <summary>
+            Gets a unique ID for this element among its siblings
+            </summary>
+        </member>
+        <member name="P:CsQuery.IDomObject.Path">
+            <summary>
+            Gets the unique path to this element from the root of the heirarchy. This is generally only
+            used for internal purposes.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IDomObject.NodeNameID">
+            <summary>
+            The internal token ID for this element's node name. 
+            </summary>
+        </member>
+        <member name="F:CsQuery.Implementation.DomObject._Document">
+            <summary>
+            The document.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Implementation.DomObject._Index">
+            <summary>
+            Backink property for index.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Implementation.DomObject._PathID">
+            <summary>
+            This must be accessd by overriding PathID implemenetation in DomElement.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.CloneImplementation">
+             <summary>
+             The implementation for Clone.
+             </summary>
+            
+             <returns>
+             A clone of this object.
+             </returns>
+        </member>
+        <member name="F:CsQuery.Implementation.DomObject._ParentNode">
+            <summary>
+            The parent node. Do not expose this. _ParentNode should only be managed by the ParentNode
+            property.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.Render">
+             <summary>
+             Renders the complete HTML for this element, including its children.
+             </summary>
+            
+             <returns>
+             a string of HTML
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.Render(System.Text.StringBuilder)">
+             <summary>
+             Renders the complete HTML for this element to a StringBuilder.
+             </summary>
+            
+             <param name="sb">
+             An existing StringBuilder instance to append this element's HTML.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.Render(System.Text.StringBuilder,CsQuery.DomRenderingOptions)">
+             <summary>
+             Renders the complete HTML for this element to a StringBuilder using specified options.
+             </summary>
+            
+             <param name="sb">
+             An existing StringBuilder instance to append this element's HTML.
+             </param>
+             <param name="options">
+             Options for controlling the operation.
+             </param>
         </member>
         <member name="M:CsQuery.Implementation.DomObject.Cq">
-            <summary>
-            Wraps the element in a CsQuery object
-            </summary>
-            <returns></returns>
+             <summary>
+             Wrap this element in a CQ object. This is the CsQuery equivalent of the common jQuery
+             construct $(el). Since there is no default method in C# that we can use to create a similar
+             syntax, this method serves the same purpose.
+             </summary>
+            
+             <returns>
+             A new CQ object wrapping this element.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.Clone">
+             <summary>
+             Clone this element.
+             </summary>
+            
+             <returns>
+             A copy of this element that is not bound to the original.
+             </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomObject.Remove">
+             <summary>
+             Removes this object from it's parent, and consequently the Document, if any, to which it
+             belongs.
+             </summary>
+            
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the requested operation is invalid.
+             </exception>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.DescendantCount">
+             <summary>
+             Return the total number of descendants of this element.
+             </summary>
+            
+             <returns>
+             int, the total number of descendants.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.AppendChild(CsQuery.IDomObject)">
+             <summary>
+             Adds a node to the end of the list of children of a specified parent node. If the node
+             already exists it is removed from current parent node, then added to new parent node.
+             </summary>
+            
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the requested operation is invalid.
+             </exception>
+            
+             <param name="element">
+             The element to append.
+             </param>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Node.appendChild
+             </url>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.RemoveChild(CsQuery.IDomObject)">
+             <summary>
+             Removes a child node from the DOM. Returns removed node.
+             </summary>
+            
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the requested operation is invalid.
+             </exception>
+            
+             <param name="element">
+             The element to remove.
+             </param>
+            
+             <url>
+             https://developer.mozilla.org/En/DOM/Node.removeChild
+             </url>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.InsertBefore(CsQuery.IDomObject,CsQuery.IDomObject)">
+             <summary>
+             Inserts the specified node before a reference element as a child of the current node.
+             </summary>
+            
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the requested operation is invalid.
+             </exception>
+            
+             <param name="newNode">
+             The node to insert.
+             </param>
+             <param name="referenceNode">
+             The node before which the new node will be inserted.
+             </param>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Node.insertBefore
+             </url>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.InsertAfter(CsQuery.IDomObject,CsQuery.IDomObject)">
+             <summary>
+             Inserts the specified node after a reference element as a child of the current node.
+             </summary>
+            
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the requested operation is invalid.
+             </exception>
+            
+             <param name="newNode">
+             The new node to be inserted.
+             </param>
+             <param name="referenceNode">
+             The node after which the new node will be inserted.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.SetAttribute(System.String)">
+             <summary>
+             Adds a new boolean attribute or sets its value to true.
+             </summary>
+            
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the requested operation is invalid.
+             </exception>
+            
+             <param name="name">
+             The attribute name.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.SetAttribute(System.String,System.String)">
+             <summary>
+             Adds a new attribute or changes the value of an existing attribute on the specified element.
+             </summary>
+            
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the requested operation is invalid.
+             </exception>
+            
+             <param name="name">
+             The attribute name.
+             </param>
+             <param name="value">
+             For input elements, the "value" property of this element. Returns null for other element
+             types.
+             </param>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/element.setAttribute
+             </url>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.GetAttribute(System.String)">
+             <summary>
+             Returns the value of the named attribute on the specified element. If the named attribute
+             does not exist, the value returned will either be null or "" (the empty string)
+             </summary>
+            
+             <param name="name">
+             The attribute name.
+             </param>
+            
+             <returns>
+             The attribute value string.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/element.getAttribute
+             </url>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.GetAttribute(System.String,System.String)">
+             <summary>
+             Returns the value of the named attribute on the specified element. If the named attribute
+             does not exist, the value returned will either be the provide "defaultValue".
+             </summary>
+            
+             <param name="name">
+             The attribute name.
+             </param>
+             <param name="defaultValue">
+             A string to return if the attribute does not exist.
+             </param>
+            
+             <returns>
+             The attribute value string.
+             </returns>
+            
+             <seealso cref="!:GetAttribute(string name)"/>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.TryGetAttribute(System.String,System.String@)">
+             <summary>
+             Try to get a named attribute.
+             </summary>
+            
+             <param name="name">
+             The attribute name.
+             </param>
+             <param name="value">
+             The attribute value, or null if the named attribute does not exist.
+             </param>
+            
+             <returns>
+             true if the attribute exists, false if it does not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.HasAttribute(System.String)">
+             <summary>
+             Returns a boolean value indicating whether the specified element has the specified attribute
+             or not.
+             </summary>
+            
+             <param name="name">
+             The attribute name.
+             </param>
+            
+             <returns>
+             true if the named attribute exists, false if not.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/element.hasAttribute
+             </url>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.RemoveAttribute(System.String)">
+             <summary>
+             Removes an attribute from the specified element.
+             </summary>
+            
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the requested operation is invalid.
+             </exception>
+            
+             <param name="name">
+             The attribute name.
+             </param>
+            
+             <returns>
+             true if it the attribute exists, false if the attribute did not exist. If the attribute
+             exists it will always be removed, that is, it is not possible for this method to fail unless
+             the attribute does not exist.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/element.removeAttribute
+             </url>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.HasClass(System.String)">
+             <summary>
+             Returns a boolean value indicating whether the named class exists on this element.
+             </summary>
+            
+             <param name="className">
+             The class name for which to test.
+             </param>
+            
+             <returns>
+             true if the class is a member of this elements classes, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.AddClass(System.String)">
+             <summary>
+             Adds the class.
+             </summary>
+            
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the requested operation is invalid.
+             </exception>
+            
+             <param name="className">
+             The class name for which to test.
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.RemoveClass(System.String)">
+             <summary>
+             Removes the named class from the classes defined for this element.
+             </summary>
+            
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the requested operation is invalid.
+             </exception>
+            
+             <param name="className">
+             The class name to remove.
+             </param>
+            
+             <returns>
+             true if the class exists and was removed from this element, false if the class did not exist.
+             If the class exists it will always be removed, that is, it is not possible for this method to
+             fail if the class exists.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.HasStyle(System.String)">
+             <summary>
+             Returns a boolean value indicating whether the named style is defined in the styles for this
+             element.
+             </summary>
+            
+             <param name="styleName">
+             Name of the style to test.
+             </param>
+            
+             <returns>
+             true if the style is explicitly defined on this element, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.AddStyle(System.String)">
+             <summary>
+             Adds a style descriptor to this element, validating the style name and value against the CSS3
+             ruleset. The string should be of the form "styleName: styleDef;", e.g.
+             
+                 "width: 10px;"
+             
+             The trailing semicolon is optional.
+             </summary>
+            
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the requested operation is invalid.
+             </exception>
+            
+             <param name="styleString">
+             The style string.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.AddStyle(System.String,System.Boolean)">
+             <summary>
+             Adds a style descriptor to this element, optionally validating against the CSS3 ruleset. The
+             default method always validates; this overload should be used if validation is not desired.
+             </summary>
+            
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the requested operation is invalid.
+             </exception>
+            
+             <param name="styleString">
+             An object encapsulating the Styles associated with this element.
+             </param>
+             <param name="strict">
+             true to enforce validation of CSS3 styles.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.RemoveStyle(System.String)">
+             <summary>
+             Removes the named style from this element.
+             </summary>
+            
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the requested operation is invalid.
+             </exception>
+            
+             <param name="name">
+             The style name.
+             </param>
+            
+             <returns>
+             true if the style exists and is removed, false if the style did not exist.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.ToString">
+             <summary>
+             The ToString() override for an object depends on the type of element.
+             </summary>
+            
+             <returns>
+             A <see cref="T:System.String" /> that represents the current IDomObject.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.PathEncode(System.Int32)">
+             <summary>
+             Converts a number to a compact representation that can be used to create a unique path to
+             this element in the DOM herarchy.
+             </summary>
+            
+             <param name="number">
+             Number of.
+             </param>
+            
+             <returns>
+             .
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.CsQuery#IDomNode#Clone">
+             <summary>
+             Makes a deep copy of this object.
+             </summary>
+            
+             <returns>
+             A copy of this object.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.System#ICloneable#Clone">
+             <summary>
+             Makes a deep copy of this object.
+             </summary>
+            
+             <returns>
+             A copy of this object.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.NodeType">
             <summary>
-            Remove this element from the DOM
+            Gets the type of the node.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.HasChildren">
+            <summary>
+            Gets a value indicating whether this object has children.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.InnerHtmlAllowed">
+            <summary>
+            Gets a value indicating whether HTML is allowed as a child of this element. It is possible
+            for this value to be false but InnerTextAllowed to be true for elements which can have inner
+            content, but no child HTML markup, such as &lt;textarea&gt; and &lt;script&gt;
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.NodeNameID">
+            <summary>
+            Gets the identifier of the node name.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.InnerTextAllowed">
+            <summary>
+            Gets a value indicating whether text content is allowed as a child of this element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.ChildrenAllowed">
+            <summary>
+            Gets a value indicating whether this element may have children. When false, it means this is
+            a void element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.Complete">
+            <summary>
+            When false, this element is not configured properly. (Internal use.)
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.IsIndexed">
+            <summary>
+            Gets a value indicating whether this object type should be indexed.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomObject.Path">
             <summary>
-            The full path to this node. This is calculated by requesting the parent path and adding its own ID.
+            The full path to this node. This is calculated by requesting the parent path and adding its
+            own ID.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomObject.Document">
             <summary>
-            The DOM for this object. This is obtained by looking at its parents value until it finds a non-null
-            Document in a parent. The value is cached locally as long as the current value of Parent remains the same.
+            The DOM for this object. This is obtained by looking at its parents value until it finds a
+            non-null Document in a parent. The value is cached locally as long as the current value of
+            Parent remains the same.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.InnerText">
+            <summary>
+            Gets or sets the text content of a node and its descendants.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.InnerHTML">
+            <summary>
+            Gets or sets or gets the HTML of an elements descendants.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.ChildNodes">
+            <summary>
+            Gets the child nodes.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.ParentNode">
+            <summary>
+            The direct parent of this node.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomObject.IsDisconnected">
             <summary>
-            The element is not associated with an IDomDocument
+            The element is not associated with an IDomDocument.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomObject.PathID">
             <summary>
-            Unique ID assigned when added to a dom. This is not the full path but just the ID at this level. The full
-            path is never stored with each node to prevent having to regenerate if node trees are moved. 
+            Unique ID assigned when added to a dom. This is not the full path but just the ID at this
+            level. The full path is never stored with each node to prevent having to regenerate if node
+            trees are moved.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.Depth">
+            <summary>
+            Gets the depth.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.ChildElements">
+            <summary>
+            Gets the child elements.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomObject.Index">
             <summary>
-            The element's absolute index among its siblings
+            The element's absolute index among its siblings.
             </summary>
-            <returns></returns>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.DefaultValue">
+            <summary>
+            The value of an input element, or the text of a textarea element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.NodeValue">
+            <summary>
+            Gets or sets the node value.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.Type">
+             <summary>
+             The value of the "type" attribute. For input elements, this property always returns a
+             lowercase value and defaults to "text" if there is no type attribute. For other element types,
+             it simply returns the value of the "type" attribute.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Property/type
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.Name">
+             <summary>
+             Gets or sets the name attribute of an DOM object, it only applies to the following elements:
+             &lt;a&gt; , &lt;applet&gt; , &lt;form&gt; , &lt;frame&gt; , &lt;iframe&gt; , &lt;img&gt; ,
+             &lt;input&gt; , &lt;map&gt; , &lt;meta&gt; , &lt;object&gt; , &lt;option&gt; , &lt;param&gt; ,
+             &lt;select&gt; , and &lt;textarea&gt; .
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/element.name
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.Id">
+            <summary>
+            Get or set value of the id attribute.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.Value">
+            <summary>
+            For input elements, the "value" property of this element. Returns null for other element
+            types.
+            </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomObject.ClassName">
-            <inheritdoc />
+            <summary>
+            gets and sets the value of the class attribute of the specified element.
+            </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomObject.Classes">
-            <inheritdoc />
+            <summary>
+            A sequence of all unique class names defined on this element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.Attributes">
+            <summary>
+            An interface to access the attributes collection of this element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.Style">
+            <summary>
+            An object encapsulating the Styles associated with this element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.NodeName">
+            <summary>
+            The node (tag) name, in upper case.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.FirstChild">
+             <summary>
+             Returns the node's first child in the tree, or null if the node is childless. If the node is
+             a Document, it returns the first node in the list of its direct children.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/element.firstChild
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.LastChild">
+             <summary>
+             Returns the last child of a node.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Node.lastChild
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.FirstElementChild">
+             <summary>
+             Returns the element's first child element or null if there are no child elements.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Element.firstElementChild
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.LastElementChild">
+             <summary>
+             Returns the element's last child element or null if there are no child elements.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Element.lastElementChild
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.HasAttributes">
+            <summary>
+            Returns true if this node has any attributes.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.HasClasses">
+            <summary>
+            Returns true if this node has CSS classes.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.HasStyles">
+            <summary>
+            Returns true if this node has any styles defined.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.Selected">
+             <summary>
+             Indicates whether the element is selected or not. This value is read-only. To change the
+             selection, set either the selectedIndex or selectedItem property of the containing element.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Attribute/selected
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.Checked">
+             <summary>
+             Gets or sets a value indicating whether the element is checked.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Property/checked
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.ReadOnly">
+             <summary>
+             Gets or sets a value indicating whether the only should be read.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Property/readOnly
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.NextSibling">
+             <summary>
+             Returns the node immediately following the specified one in its parent's childNodes list, or
+             null if the specified node is the last node in that list.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Node.nextSibling
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.PreviousSibling">
+             <summary>
+             Returns the node immediately preceding the specified one in its parent's childNodes list,
+             null if the specified node is the first in that list.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Node.previousSibling
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.NextElementSibling">
+             <summary>
+             Returns the element immediately following the specified one in its parent's children list, or
+             null if the specified element is the last one in the list.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Element.nextElementSibling
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.PreviousElementSibling">
+             <summary>
+             Returns the element immediately prior to the specified one in its parent's children list, or
+             null if the specified element is the first one in the list.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Element.previousElementSibling
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.Item(System.Int32)">
+             <summary>
+             The child node at the specified index.
+             </summary>
+            
+             <param name="index">
+             The zero-based index of the child node to access.
+             </param>
+            
+             <returns>
+             IDomObject, the element at the specified index within this node's children.
+             </returns>
         </member>
         <member name="P:CsQuery.Implementation.DomObject.Item(System.String)">
-            <summary>
-            Returns the value of the named attribute
-            </summary>
-            <param name="name"></param>
-            <returns></returns>
+             <summary>
+             The child node at the specified index.
+             </summary>
+            
+             <param name="attribute">
+             The zero-based index of the child node to access.
+             </param>
+            
+             <returns>
+             IDomObject, the element at the specified index within this node's children.
+             </returns>
+        </member>
+        <member name="M:CsQuery.IDomObject`1.Clone">
+             <summary>
+             Clone this element.
+             </summary>
+            
+             <returns>
+             A copy of this element that is not bound to the original.
+             </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomObject`1.CloneImplementation">
             <summary>
@@ -632,24 +2026,23 @@
             <param name="apparentTarget"></param>
             <returns></returns>
         </member>
-        <member name="M:CsQuery.CQ.AndSelf">
-            <summary>
-            Add the previous set of elements on the stack to the current set.
-            </summary>
-            <returns></returns>
-        </member>
+        <!-- Badly formed XML comment ignored for member "M:CsQuery.CQ.AndSelf" -->
         <member name="M:CsQuery.CQ.End">
             <summary>
             End the most recent filtering operation in the current chain and return the set of matched elements 
             to its previous state
             </summary>
-            <returns></returns>
+            <returns>The CQ object at the root of the current chain, or a new, empty selection if this
+            CQ object is the direct result of a Create()
+            </returns>
+            <returntype>CQ</returntype>
         </member>
         <member name="M:CsQuery.CQ.Get">
             <summary>
             Return the active selection set
             </summary>
             <returns></returns>
+            <returntype>IEnumerable&lt;IDomObject&gt;</returntype>
         </member>
         <member name="M:CsQuery.CQ.Get(System.Int32)">
             <summary>
@@ -691,6 +2084,7 @@
             </summary>
             <param name="selector">A CSS selector</param>
             <returns>A new CQ object</returns>
+            <jquery>http://api.jquery.com/not/</jquery>
         </member>
         <member name="M:CsQuery.CQ.Not(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
             <summary>
@@ -1495,11 +2889,6 @@
             Rendering option flags
             </summary>
         </member>
-        <member name="F:CsQuery.CQ.DefaultServerConfig">
-            <summary>
-            The default settings used when making remote requests
-            </summary>
-        </member>
         <member name="F:CsQuery.CQ.DefaultDocType">
             <summary>
             The default rendering type. This mostly controls the header and how tags are closed. UNIMPLEMENTED right now.
@@ -1663,9 +3052,10 @@
         </member>
         <member name="M:CsQuery.CQ.WaitForAsyncEvents(System.Int32)">
             <summary>
-            Block this thread until all pending asynchronous web requests have completed.
+            Waits until all async events have completed. Use for testing primarily as a web app should not stop normally.
             </summary>
-            <param name="timeout"></param>
+            <param name="millisecondsTimeout">The maximum number of milliseconds to wait</param>
+            <returns>true if all events were cleared in the allotted time, false if not</returns>
         </member>
         <member name="M:CsQuery.CQ.WhenAll(CsQuery.Promises.IPromise[])">
             <summary>
@@ -1797,8 +3187,10 @@
         </member>
         <member name="P:CsQuery.CQ.Length">
             <summary>
-            The number of elements in the CsQuery object
+            The number of elements in the CQ object
             </summary>
+            <returntype>int</returntype>
+            <jquery>http://api.jquery.com/length/</jquery>
         </member>
         <member name="P:CsQuery.CQ.Item(System.Int32)">
             <summary>
@@ -2202,6 +3594,11 @@
             Gets the DocType for this node. This can be changed through the DomDocument
             </summary>
         </member>
+        <member name="P:CsQuery.Implementation.DomFragment.IsIndexed">
+            <summary>
+            Gets a value indicating whether this object is indexed. 
+            </summary>
+        </member>
         <member name="T:CsQuery.IDomDocumentType">
             <summary>
             DOCTYPE node
@@ -2220,6 +3617,13 @@
         <member name="M:CsQuery.Web.AsyncWebRequestManager.WaitForAsyncEvents(System.Int32)">
             <summary>
             Waits until all async events have completed. Use for testing primarily as a web app should not stop normally.
+            </summary>
+            <param name="millisecondsTimeout">The maximum number of milliseconds to wait</param>
+            <returns>true if all events were cleared in the allotted time, false if not</returns>
+        </member>
+        <member name="M:CsQuery.Web.AsyncWebRequestManager.CancelAsyncEvents">
+            <summary>
+            Cancel all outstanding async events
             </summary>
         </member>
         <member name="M:CsQuery.StringScanner.Patterns.HTMLTagSelectorName.IsValidTagName(System.Int32,System.Char)">
@@ -2499,13 +3903,33 @@
             <param name="name"></param>
             <returns></returns>
         </member>
+        <member name="M:CsQuery.INodeList.AddRange(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+             <summary>
+             Adds a sequence of elements to the end of this INodeList
+             </summary>
+            
+             <param name="elements">
+             An IEnumerable&lt;IDomObject&gt; of items to append to this.
+             </param>
+        </member>
         <member name="M:CsQuery.INodeList.AddAlways(CsQuery.IDomObject)">
+             <summary>
+             Add a node but do not attempt to clean up duplicate IDs or remove it from an existing DOM.
+             This is required for the parser, but normally when you are using "Add" you want it to removed
+             the ID from disconnected elements. This can also result in nodes appearing in more than one
+             place in the DOM and should generally not be used by clients.
+             
+             This may be used by end users, but should be used with caution.
+             </summary>
+            
+             <param name="item">
+             The object to add to this INodeList
+             </param>
+        </member>
+        <member name="P:CsQuery.INodeList.Length">
             <summary>
-            Add a node but do not attempt to clean up duplicate IDs or remove it from an existing DOM. This is required for the parser, but normally
-            when you are using "Add" you want it to removed the ID from disconnected elements. This can also result in nodes appearing in more than
-            one place in the DOM and should generally not be used by clients.
+            The number of nodes in this INodeList
             </summary>
-            <param name="item"></param>
         </member>
         <member name="T:CsQuery.HtmlParser.HtmlData">
             <summary>
@@ -2550,9 +3974,9 @@
             <param name="nodeId"></param>
             <returns></returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.HtmlData.InnerTextAllowed(System.UInt16)">
+        <member name="M:CsQuery.HtmlParser.HtmlData.ChildrenAllowed(System.UInt16)">
             <summary>
-            Text is allowed within this node type. Is includes all types that also permit HTML.
+            This element may have children
             </summary>
             <param name="nodeId"></param>
             <returns></returns>
@@ -2728,7 +4152,7 @@
             Create a clone of this CSSStyleDeclaration object bound to the owner passed
             </summary>
             <param name="owner"></param>
-            <returns></returns>
+            <returns>CSSStyleDeclaration</returns>
         </member>
         <member name="M:CsQuery.Implementation.CSSStyleDeclaration.SetStyles(System.String)">
             <summary>
@@ -2964,7 +4388,7 @@
         </member>
         <member name="T:CsQuery.Implementation.DomElement">
             <summary>
-            HTML elements
+            HTML elements.
             </summary>
         </member>
         <member name="T:CsQuery.IDomElement">
@@ -2986,143 +4410,924 @@
             <returntype>bool</returntype>
         </member>
         <!-- Badly formed XML comment ignored for member "P:CsQuery.IDomElement.ElementIndex" -->
-        <member name="M:CsQuery.Implementation.DomElement.Render(System.Text.StringBuilder,CsQuery.DomRenderingOptions)">
+        <member name="F:CsQuery.Implementation.DomElement._DomAttributes">
             <summary>
-            Returns the completel HTML for this element and its children
+            The dom attributes.
             </summary>
+        </member>
+        <member name="F:CsQuery.Implementation.DomElement._Style">
+            <summary>
+            Backing field for _Style.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Implementation.DomElement._Classes">
+            <summary>
+            Backing field for _Classes.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Implementation.DomElement._NodeNameID">
+            <summary>
+            Backing field for NodeNameID property.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.#ctor(System.String)">
+             <summary>
+             Create a new DOM element of a specified nodeName.
+             </summary>
+            
+             <exception cref="T:System.ArgumentException">
+             Thrown when a missing or empty nodeName is passed.
+             </exception>
+            
+             <param name="nodeName">
+             The NodeName for the element (upper case).
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.#ctor(System.UInt16)">
+             <summary>
+             Create a new DomElement node of a nodeTipe determined by a token ID.
+             </summary>
+            
+             <param name="tokenId">
+             Token represnting an existing tokenized node type.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.Reindex">
+            <summary>
+            Reindexes this object. It is not necessary for end-users to call this method; all DOM
+            manipulation will cause elements to be reindexed when necessary.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.Render(System.Text.StringBuilder,CsQuery.DomRenderingOptions)">
+             <summary>
+             Renders this object.
+             </summary>
+            
+             <param name="sb">
+             The sb.
+             </param>
+             <param name="options">
+             Options for controlling the operation.
+             </param>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.ElementHtml">
-            <summary>
-            Returns the HTML for this element, but ignoring children/innerHTML
-            </summary>
+             <summary>
+             Returns the HTML for this element, but ignoring children/innerHTML.
+             </summary>
+            
+             <returns>
+             .
+             </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.IndexKeys">
-            <summary>
-            Returns all the keys that should be in the index for this item (keys for class, tag, attributes, and id)
-            </summary>
-            <returns></returns>
+             <summary>
+             Returns all the keys that should be in the index for this item (keys for class, tag,
+             attributes, and id)
+             </summary>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process index keys in this collection.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.Clone">
+             <summary>
+             Makes a deep copy of this object.
+             </summary>
+            
+             <returns>
+             A copy of this object.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.CloneChildren">
+             <summary>
+             Enumerates clone children in this collection.
+             </summary>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process clone children in this collection.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.HasStyle(System.String)">
+             <summary>
+             Query if 'name' has style.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+            
+             <returns>
+             true if style, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.HasClass(System.String)">
+             <summary>
+             Query if 'name' has class.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+            
+             <returns>
+             true if class, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.AddClass(System.String)">
+             <summary>
+             Adds the class.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.RemoveClass(System.String)">
+             <summary>
+             Removes the class described by name.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.HasAttribute(System.UInt16)">
+             <summary>
+             Query if 'tokenId' has attribute.
+             </summary>
+            
+             <param name="tokenId">
+             .
+             </param>
+            
+             <returns>
+             true if attribute, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.HasAttribute(System.String)">
+             <summary>
+             Query if 'tokenId' has attribute.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+            
+             <returns>
+             true if attribute, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.SetAttribute(System.String,System.String)">
+             <summary>
+             Set the value of a named attribute.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+             <param name="value">
+             .
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.SetAttribute(System.UInt16,System.String)">
+             <summary>
+             Set the value of a named attribute.
+             </summary>
+            
+             <param name="tokenId">
+             .
+             </param>
+             <param name="value">
+             .
+             </param>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.SetAttribute(System.String)">
-            <summary>
-            Sets an attribute with no value
-            </summary>
-            <param name="name"></param>
+             <summary>
+             Sets an attribute with no value.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.SetAttribute(System.UInt16)">
+             <summary>
+             Sets an attribute with no value.
+             </summary>
+            
+             <param name="tokenId">
+             .
+             </param>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.SetAttributeRaw(System.UInt16,System.String)">
-            <summary>
-            Used by DomElement to (finally) set the ID value
-            </summary>
-            <param name="tokenId"></param>
-            <param name="value"></param>
+             <summary>
+             Used by DomElement to (finally) set the ID value.
+             </summary>
+            
+             <param name="tokenId">
+             .
+             </param>
+             <param name="value">
+             .
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.RemoveAttribute(System.String)">
+             <summary>
+             Removes the attribute described by name.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.RemoveAttribute(System.UInt16)">
+             <summary>
+             Removes the attribute described by name.
+             </summary>
+            
+             <param name="tokenId">
+             .
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.GetAttribute(System.String)">
-            <summary>
-            Gets an attribute value, or returns null if the value is missing. If a valueless attribute is found, this will also return null. HasAttribute should be used
-            to test for such attributes. Attributes with an empty string value will return String.Empty.
-            </summary>
-            <param name="name"></param>
-            <returns></returns>
+             <summary>
+             Gets an attribute value, or returns null if the value is missing. If a valueless attribute is
+             found, this will also return null. HasAttribute should be used to test for such attributes.
+             Attributes with an empty string value will return String.Empty.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+            
+             <returns>
+             The attribute.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.GetAttribute(System.UInt16)">
+             <summary>
+             Gets an attribute value, or returns null if the value is missing. If a valueless attribute is
+             found, this will also return null. HasAttribute should be used to test for such attributes.
+             Attributes with an empty string value will return String.Empty.
+             </summary>
+            
+             <param name="tokenId">
+             .
+             </param>
+            
+             <returns>
+             The attribute.
+             </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.GetAttribute(System.String,System.String)">
-            <summary>
-            Return an attribute value identified by name. If it doesn't exist, return the provided
-            default value.
-            </summary>
-            <param name="name">The attribute name</param>
-            <returns></returns>
+             <summary>
+             Return an attribute value identified by name. If it doesn't exist, return the provided
+             default value.
+             </summary>
+            
+             <param name="name">
+             The attribute name.
+             </param>
+             <param name="defaultValue">
+             .
+             </param>
+            
+             <returns>
+             The attribute.
+             </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.GetAttribute(System.UInt16,System.String)">
-            <summary>
-            Return an attribute value identified by a token ID. If it doesn't exist, return the provided
-            default value.
-            </summary>
-            <param name="tokenId"></param>
-            <param name="defaultValue"></param>
-            <returns></returns>
+             <summary>
+             Return an attribute value identified by a token ID. If it doesn't exist, return the provided
+             default value.
+             </summary>
+            
+             <param name="tokenId">
+             .
+             </param>
+             <param name="defaultValue">
+             .
+             </param>
+            
+             <returns>
+             The attribute.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.TryGetAttribute(System.UInt16,System.String@)">
+             <summary>
+             Try get attribute.
+             </summary>
+            
+             <param name="tokenId">
+             .
+             </param>
+             <param name="value">
+             .
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.TryGetAttribute(System.String,System.String@)">
+             <summary>
+             Try get attribute.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+             <param name="value">
+             .
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.ToString">
+             <summary>
+             Convert this object into a string representation.
+             </summary>
+            
+             <returns>
+             This object as a string.
+             </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.AddStyle(System.String)">
-            <summary>
-            Add a single style in the form "styleName: value"
-            </summary>
-            <param name="style"></param>
+             <summary>
+             Add a single style in the form "styleName: value".
+             </summary>
+            
+             <param name="style">
+             .
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.AddStyle(System.String,System.Boolean)">
+             <summary>
+             Add a single style in the form "styleName: value".
+             </summary>
+            
+             <param name="style">
+             .
+             </param>
+             <param name="strict">
+             true to strict.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.RemoveStyle(System.String)">
+             <summary>
+             Removes the style described by name.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.SetStyles(System.String)">
+             <summary>
+             Sets the styles.
+             </summary>
+            
+             <param name="styles">
+             The styles.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.SetStyles(System.String,System.Boolean)">
+             <summary>
+             Sets the styles.
+             </summary>
+            
+             <param name="styles">
+             The styles.
+             </param>
+             <param name="strict">
+             true to strict.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.SetStyle(System.String,System.String)">
+             <summary>
+             Sets a style.
+             </summary>
+            
+             <exception cref="T:System.NotImplementedException">
+             Thrown when the requested operation is unimplemented.
+             </exception>
+            
+             <param name="name">
+             .
+             </param>
+             <param name="value">
+             .
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.SetStyle(System.String,System.String,System.Boolean)">
+             <summary>
+             Sets a style.
+             </summary>
+            
+             <exception cref="T:System.NotImplementedException">
+             Thrown when the requested operation is unimplemented.
+             </exception>
+            
+             <param name="name">
+             .
+             </param>
+             <param name="value">
+             .
+             </param>
+             <param name="strict">
+             true to strict.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.GetStyle(System.String)">
+             <summary>
+             Gets a style.
+             </summary>
+            
+             <exception cref="T:System.NotImplementedException">
+             Thrown when the requested operation is unimplemented.
+             </exception>
+            
+             <param name="name">
+             .
+             </param>
+            
+             <returns>
+             The style.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.AttributeIndexKey(System.String)">
+             <summary>
+             Attribute index key.
+             </summary>
+            
+             <param name="attrName">
+             Name of the attribute.
+             </param>
+            
+             <returns>
+             .
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.AttributeIndexKey(System.UInt16)">
+             <summary>
+             Attribute index key.
+             </summary>
+            
+             <param name="attrId">
+             Identifier for the attribute.
+             </param>
+            
+             <returns>
+             .
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.AttributeRemoveFromIndex(System.UInt16)">
+             <summary>
+             Attribute remove from index.
+             </summary>
+            
+             <param name="attrId">
+             Identifier for the attribute.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.AttributeAddToIndex(System.UInt16)">
+             <summary>
+             Attribute add to index.
+             </summary>
+            
+             <param name="attrId">
+             Identifier for the attribute.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.SetClassName(System.String)">
+             <summary>
+             Sets the class name.
+             </summary>
+            
+             <param name="className">
+             And sets the value of the class attribute of the specified element.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.hasDefaultValue">
+             <summary>
+             Query if this object has default value.
+             </summary>
+            
+             <returns>
+             true if default value, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.String,System.UInt16)">
+             <summary>
+             Index key.
+             </summary>
+            
+             <param name="prefix">
+             The prefix.
+             </param>
+             <param name="keyTokenId">
+             Identifier for the key token.
+             </param>
+            
+             <returns>
+             .
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.String,System.String)">
+             <summary>
+             Index key.
+             </summary>
+            
+             <param name="prefix">
+             The prefix.
+             </param>
+             <param name="key">
+             The key.
+             </param>
+            
+             <returns>
+             .
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.String,System.String,System.String)">
+             <summary>
+             Index key.
+             </summary>
+            
+             <param name="prefix">
+             The prefix.
+             </param>
+             <param name="key">
+             The key.
+             </param>
+             <param name="path">
+             Full pathname of the file.
+             </param>
+            
+             <returns>
+             .
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.String,System.UInt16,System.String)">
+             <summary>
+             Index key.
+             </summary>
+            
+             <param name="prefix">
+             The prefix.
+             </param>
+             <param name="keyTokenId">
+             Identifier for the key token.
+             </param>
+             <param name="path">
+             Full pathname of the file.
+             </param>
+            
+             <returns>
+             .
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.GetHtml(CsQuery.DomRenderingOptions,System.Text.StringBuilder,System.Boolean)">
+             <summary>
+             Gets a HTML.
+             </summary>
+            
+             <param name="options">
+             Options for controlling the operation.
+             </param>
+             <param name="sb">
+             The sb.
+             </param>
+             <param name="includeChildren">
+             true to include, false to exclude the children.
+             </param>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.RenderAttribute(System.Text.StringBuilder,System.String,System.String,System.Boolean)">
-            <summary>
-            TODO this really should be in Attributes
-            </summary>
-            <param name="name"></param>
-            <param name="value"></param>
-            <returns></returns>
+             <summary>
+             TODO this really should be in Attributes.
+             </summary>
+            
+             <param name="sb">
+             The sb.
+             </param>
+             <param name="name">
+             .
+             </param>
+             <param name="value">
+             .
+             </param>
+             <param name="quoteAll">
+             true to quote all.
+             </param>
+            
+             ### <returns>
+             .
+             </returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:CsQuery.Implementation.DomElement.AttributesCollection" -->
-        <member name="P:CsQuery.Implementation.DomElement.Attributes">
+        <member name="M:CsQuery.Implementation.DomElement.System#Collections#Generic#IEnumerable{System#Collections#Generic#KeyValuePair{System#String@System#String}}#GetEnumerator">
+             <summary>
+             Gets the enumerator.
+             </summary>
+            
+             <typeparam name="string">
+             Type of the string.
+             </typeparam>
+             <typeparam name="string">
+             Type of the string.
+             </typeparam>
+            
+             <returns>
+             The enumerator.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.System#Collections#IEnumerable#GetEnumerator">
+             <summary>
+             Gets the enumerator.
+             </summary>
+            
+             <returns>
+             The enumerator.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.AttributesCollection">
+             <summary>
+             Enumerate the attributes + class &amp; style.
+             </summary>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process attributes collection in this
+             collection.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.DomAttributes">
             <summary>
-            Access via the IAttributeCollection interface to attributes. We don't actually refer to the inner AttributeCollection object
-            here because we cannot allow users to set attributes directly in the object: they must use SetAttribute so that special
-            handling for "class" and "style" as well as indexing can be performed. To avoid creating a wrapper object, simply pass bac
-            a reference to ourselves.
+            Gets the dom attributes.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.Style">
+            <summary>
+            An object encapsulating the Styles associated with this element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.Attributes">
+             <summary>
+             Access to the IAttributeCollection interface for this element's attributes.
+             </summary>
+            
+             <implementation>
+             We don't actually refer to the inner AttributeCollection object here because we cannot allow
+             users to set attributes directly in the object: they must use SetAttribute so that special
+             handling for "class" and "style" as well as indexing can be performed. To avoid creating a
+             wrapper object,.
+             </implementation>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.ClassName">
+            <summary>
+            gets and sets the value of the "class" attribute of the specified element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.Id">
+            <summary>
+            Get or set value of the "id" attribute.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomElement.NodeName">
             <summary>
-            The NodeName for the element (upper case).
+            The NodeName for the element. This always returns the name in upper case.
+            </summary>11
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.NodeNameID">
+            <summary>
+            Gets the token that represents this element's NodeName
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomElement.Type">
-            <summary>
-            TODO: in HTML5 type can be used on OL attributes (and maybe others?) and its value is
-            case sensitive. The Type of input elements is always lower case, though. This behavior
-            needs to be verified against the spec
-            </summary>
+             <summary>
+             The value of the "type" attribute. For input elements, this property always returns a
+             lowercase value and defaults to "text" if there is no type attribute. For other element types,
+             it simply returns the value of the "type" attribute.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Property/type
+             </url>
+            
+             <implementation>
+             TODO: in HTML5 type can be used on OL attributes (and maybe others?) and its value is case
+             sensitive. The Type of input elements is always lower case, though. This behavior needs to be
+             verified against the spec.
+             </implementation>
         </member>
         <member name="P:CsQuery.Implementation.DomElement.Name">
+            <implementation>
+            TODO: Verify that the attribute is applicable to this node type and return null otherwise.
+            </implementation>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.DefaultValue">
             <summary>
-            For certain elements, the Name. TODO: Verify attribute is applicable.
+            The value of an input element, or the text of a textarea element.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomElement.Value">
             <summary>
-            Value property for input node types
+            For input elements, the "value" property of this element. Returns null for other element
+            types.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.NodeType">
+            <summary>
+            Gets the type of the node.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.ParentNode">
+            <summary>
+            The direct parent of this node.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.HasAttributes">
+            <summary>
+            Returns true if this node has any attributes.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.HasStyles">
+            <summary>
+            Returns true if this node has any styles defined.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.HasClasses">
+            <summary>
+            Returns true if this node has CSS classes.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.PathID">
+            <summary>
+            Unique ID assigned when added to a dom. This is not the full path but just the ID at this
+            level. The full path is never stored with each node to prevent having to regenerate if node
+            trees are moved.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.IsIndexed">
+            <summary>
+            Gets a value indicating whether this object type should be indexed.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomElement.InnerHtmlAllowed">
             <summary>
-            This object type can have inner HTML.
+            Gets a value indicating whether HTML is allowed as a child of this element. It is possible
+            for this value to be false but InnerTextAllowed to be true for elements which can have inner
+            content, but no child HTML markup, such as &lt;textarea&gt; and &lt;script&gt;
             </summary>
-            <returns></returns>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.InnerTextAllowed">
+            <summary>
+            Gets a value indicating whether text content is allowed as a child of this element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.ChildrenAllowed">
+            <summary>
+            Gets a value indicating whether this element may have children. When false, it means this is
+            a void element.
+            </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomElement.Complete">
             <summary>
-            True if this element is valid (it needs a tag only)
+            When false, this element has not had a tag name assigned yet. Normally you should not create
+            elements like this, however, during DOM construction this could be true.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomElement.Item(System.String)">
-            <inheritdoc />
+             <summary>
+             The child node at the specified index.
+             </summary>
+            
+             <param name="attribute">
+             The zero-based index of the child node to access.
+             </param>
+            
+             <returns>
+             IDomObject, the element at the specified index within this node's children.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.Item(System.Int32)">
+             <summary>
+             The child node at the specified index.
+             </summary>
+            
+             <param name="index">
+             The zero-based index of the child node to access.
+             </param>
+            
+             <returns>
+             IDomObject, the element at the specified index within this node's children.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.Selected">
+             <summary>
+             Indicates whether the element is selected or not. This value is read-only. To change the
+             selection, set either the selectedIndex or selectedItem property of the containing element.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Attribute/selected
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.Checked">
+             <summary>
+             Gets or sets a value indicating whether the element is checked.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Property/checked
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.ReadOnly">
+             <summary>
+             Gets or sets a value indicating whether the only should be read.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Property/readOnly
+             </url>
         </member>
         <member name="P:CsQuery.Implementation.DomElement.InnerHTML">
             <summary>
             Returns text of the inner HTML. When setting, any children will be removed.
             </summary>
         </member>
+        <member name="P:CsQuery.Implementation.DomElement.InnerText">
+            <summary>
+            Gets or sets the text content of a node and its descendants.
+            </summary>
+        </member>
         <member name="P:CsQuery.Implementation.DomElement.ElementIndex">
             <summary>
-            The index excluding text nodes
+            The index excluding text nodes.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomElement.IndexReference">
             <summary>
-            The object to which this index refers
+            The object to which this index refers.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomElement.IsBlock">
             <summary>
-            Returns true if this element is a block-trpe element
+            Returns true if this element is a block-type element.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomElement.Classes">
             <summary>
-            All class names present for this element
+            A sequence of all unique class names defined on this element.
             </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.CsQuery#IAttributeCollection#Item(System.String)">
+             <summary>
+             The child node at the specified index.
+             </summary>
+            
+             <param name="attributeName">
+             .
+             </param>
+            
+             <returns>
+             The indexed item.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.CsQuery#IAttributeCollection#Length">
+             <summary>
+             The number of attributes in this attribute collection. This includes special attributes such
+             as "class", "id", and "style".
+             </summary>
+            
+             <returntype>
+             int
+             </returntype>
         </member>
         <!-- Badly formed XML comment ignored for member "T:CsQuery.IDomInnerText" -->
         <member name="T:CsQuery.Engine.SelectorClause">
@@ -3269,6 +5474,29 @@
         <member name="T:CsQuery.Web.ServerConfig">
             <summary>
             Configuration opttions used when accessing remote resources
+            </summary>
+        </member>
+        <member name="M:CsQuery.Web.ServerConfig.#cctor">
+            <summary>
+            Configure the "default default" settings
+            </summary>
+        </member>
+        <member name="M:CsQuery.Web.ServerConfig.Merge(CsQuery.Web.ServerConfig)">
+            <summary>
+            Merge any non-null options into a new options object. 
+            </summary>
+            <param name="options"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.Web.ServerConfig.Apply(CsQuery.Web.ServerConfig,CsQuery.Web.CsqWebRequest)">
+            <summary>
+            Apply these options to a web request
+            </summary>
+            <param name="request"></param>
+        </member>
+        <member name="P:CsQuery.Web.ServerConfig.Default">
+            <summary>
+            The default settings used when making remote requests
             </summary>
         </member>
         <member name="T:CsQuery.Web.AsyncWebRequest">
@@ -3611,25 +5839,26 @@
             external sources
             </summary>
         </member>
+        <member name="M:CsQuery.Web.CsQueryHttpContext.Render">
+            <summary>
+            Renders the DOM to the bound TextWriter.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Web.CsQueryHttpContext.Create">
+             <summary>
+             Create a context from the bound method information
+             </summary>
+            
+        </member>
         <member name="M:CsQuery.Web.CsQueryHttpContext.WriteJson(System.String,System.Object)">
             <summary>
             Write json data to a global variable
             </summary>
             <param name="data"></param>
         </member>
-        <member name="M:CsQuery.Web.CsQueryHttpContext.Render">
-            <summary>
-            
-            </summary>
-        </member>
         <member name="P:CsQuery.Web.CsQueryHttpContext.ControlRenderMethod">
             <summary>
             A delegate to the Render method of a WebForms Page object
-            </summary>
-        </member>
-        <member name="P:CsQuery.Web.CsQueryHttpContext.Dom">
-            <summary>
-            The CQ object representing the output from the Render method
             </summary>
         </member>
         <member name="P:CsQuery.Web.CsQueryHttpContext.RealWriter">
@@ -3641,6 +5870,30 @@
             <summary>
             The ASP.NET WebForms Page object bound to this context
             </summary>
+        </member>
+        <member name="P:CsQuery.Web.CsQueryHttpContext.Dom">
+            <summary>
+            The CQ object representing the output from the Render method
+            </summary>
+        </member>
+        <member name="P:CsQuery.Web.CsQueryHttpContext.IsAsync">
+             <summary>
+             Gets a value indicating whether this is an asynchronous get (e.g., an UpdatePanel).
+             </summary>
+            
+             <value>
+             true if this object is asynchronous, false if not.
+             </value>
+        </member>
+        <member name="P:CsQuery.Web.CsQueryHttpContext.AsyncPostbackData">
+             <summary>
+             Sequence of AsyncPostbackData objects representing the HTML and metadata for each UpdatePanel
+             that is part of the response
+             </summary>
+            
+             <value>
+             Object encapsulating the UpdatePanel data.
+             </value>
         </member>
         <member name="T:CsQuery.Utility.SmallDictionary`2">
             <summary>

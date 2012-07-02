@@ -30,7 +30,18 @@ namespace CsQuery.Implementation
         {
             get { return  NodeType.DOCUMENT_FRAGMENT_NODE; }
         }
-        
+
+        /// <summary>
+        /// Gets a value indicating whether this object is indexed. 
+        /// </summary>
+
+        public override bool IsIndexed
+        {
+            get
+            {
+                return true;
+            }
+        }
     }
     
 }

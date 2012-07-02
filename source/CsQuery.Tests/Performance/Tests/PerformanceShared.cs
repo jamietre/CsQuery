@@ -17,7 +17,7 @@ using Fizzler.Systems.HtmlAgilityPack;
 using System.Diagnostics;
 using CsQuery.EquationParser;
 
-namespace CsQuery.Tests.Performance
+namespace CsQuery.Tests._Performance
 {
     [TestClass,TestFixture, Description("Performance test using large (6 megabyte) HTML document. Can be time consuming.")]
     public abstract class PerformanceShared : PerformanceTest

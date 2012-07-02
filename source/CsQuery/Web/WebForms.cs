@@ -37,12 +37,7 @@ namespace CsQuery.Web
             HtmlTextWriter writer,
             HttpContext context)
         {
-            CsQueryHttpContext csqContext = new CsQueryHttpContext(context);
-            csqContext.RealWriter = writer;
-            csqContext.Page = page;
-            csqContext.ControlRenderMethod = renderMethod;
-            csqContext.Create();
-            return csqContext;
+            return new CsQueryHttpContext(context, page, writer, renderMethod);
 
         }
     }

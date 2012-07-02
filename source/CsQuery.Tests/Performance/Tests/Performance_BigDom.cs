@@ -17,7 +17,7 @@ using Fizzler.Systems.HtmlAgilityPack;
 using System.Diagnostics;
 using CsQuery.EquationParser;
 
-namespace CsQuery.Tests.Performance
+namespace CsQuery.Tests._Performance
 {
     [TestClass]
     public class _Performance_BigDom : PerformanceShared

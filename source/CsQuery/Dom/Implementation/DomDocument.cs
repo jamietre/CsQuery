@@ -23,6 +23,7 @@ namespace CsQuery.Implementation
         public DomDocument()
             : base()
         {
+            InitializeDomDocument();
         }
 
         /// <summary>
@@ -32,8 +33,10 @@ namespace CsQuery.Implementation
         public DomDocument(IEnumerable<IDomObject> elements): base()
         {
             ChildNodes.AddRange(elements);
+            InitializeDomDocument();
         }
 
+        
         /// <summary>
         /// Create a new document from a character array of html
         /// </summary>
@@ -44,20 +47,25 @@ namespace CsQuery.Implementation
             {
                 SourceHtml = html;
             }
+            InitializeDomDocument();
+        }
+
+        private void InitializeDomDocument()
+        {
+            OriginalStrings = new List<Tuple<int, int>>();
         }
 
         #endregion
 
         #region private properties
 
-        private List<Tuple<int, int>> OriginalStrings = new List<Tuple<int, int>>();
-        private bool _settingDocType = false;
+        private List<Tuple<int, int>> OriginalStrings;
+        private bool _settingDocType;
         private IDictionary<string, object> _Data;
 
-        protected CQ _Owner = null;
-        protected DocType _DocType = 0;
-        protected Lazy<RangeSortedDictionary<IDomObject>> _SelectorXref =
-            new Lazy<RangeSortedDictionary<IDomObject>>();
+        protected CQ _Owner;
+        protected DocType _DocType;
+        protected RangeSortedDictionary<IDomObject> _SelectorXref;
 
         #endregion
 
@@ -70,7 +78,11 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return _SelectorXref.Value;
+                if (_SelectorXref == null)
+                {
+                    _SelectorXref = new RangeSortedDictionary<IDomObject>();
+                }
+                return _SelectorXref;
             }
         }
 
@@ -226,6 +238,14 @@ namespace CsQuery.Implementation
             get
             {
                 return this.QuerySelectorAll("body").FirstOrDefault();
+            }
+        }
+
+        public override bool IsIndexed
+        {
+            get
+            {
+                return true;
             }
         }
 

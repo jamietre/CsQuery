@@ -22,19 +22,25 @@ namespace CsQuery.Web
 
         #region constructor
 
-        public CsQueryHttpContext(HttpContext context)
+        public CsQueryHttpContext(HttpContext context, Page page, HtmlTextWriter writer, Action<HtmlTextWriter> renderMethod)
         {
             Context = context;
+            RealWriter = writer;
+            ControlRenderMethod = renderMethod;
+            Page = page;
+
+            Create();
         }
 
         #endregion
 
         #region private properties
 
-        protected HttpContext _Context;
-        protected HtmlTextWriter _Writer;
-        protected StringBuilder _sb;
-        protected StringWriter _sw;
+        private HttpContext _Context;
+        private HtmlTextWriter _Writer;
+        private StringBuilder _sb;
+        private StringWriter _sw;
+        private List<AsyncPostbackData> _AsyncPostbackData;
 
         protected HttpContext Context
         {
@@ -60,41 +66,114 @@ namespace CsQuery.Web
                 }
                 return _Writer;
             }
-        } 
+        }
+
+        /// <summary>
+        /// A delegate to the Render method of a WebForms Page object
+        /// </summary>
+        protected Action<HtmlTextWriter> ControlRenderMethod { get; set; }
+
+        /// <summary>
+        /// A reference to the HtmlTextWriter passed into the Render method
+        /// </summary>
+        protected HtmlTextWriter RealWriter { get; set; }
+
+        /// <summary>
+        /// The ASP.NET WebForms Page object bound to this context
+        /// </summary>
+        protected Page Page { get; set; }
 
         #endregion
 
         #region public properties
 
-        /// <summary>
-        /// A delegate to the Render method of a WebForms Page object
-        /// </summary>
-        public Action<HtmlTextWriter> ControlRenderMethod { get; set; }
-
+      
         /// <summary>
         /// The CQ object representing the output from the Render method
         /// </summary>
         public CQ Dom { get; protected set; }
 
         /// <summary>
-        /// A reference to the HtmlTextWriter passed into the Render method
+        /// Gets a value indicating whether this is an asynchronous get (e.g., an UpdatePanel).
         /// </summary>
-        public HtmlTextWriter RealWriter { get; set; }
-        
+        ///
+        /// <value>
+        /// true if this object is asynchronous, false if not.
+        /// </value>
+
+        public bool IsAsync
+        {
+            get
+            {
+                return _AsyncPostbackData != null;
+            }
+        }
+
         /// <summary>
-        /// The ASP.NET WebForms Page object bound to this context
+        /// Sequence of AsyncPostbackData objects representing the HTML and metadata for each UpdatePanel
+        /// that is part of the response
         /// </summary>
-        public Page Page { get; set; }
+        ///
+        /// <value>
+        /// Object encapsulating the UpdatePanel data.
+        /// </value>
+
+        public IEnumerable<AsyncPostbackData> AsyncPostbackData
+        {
+            get
+            {
+                foreach (AsyncPostbackData data in _AsyncPostbackData)
+                {
+                    if (data.DataType.ToLower() == "updatepanel")
+                    {
+                        yield return data;
+                    }
+                }
+            }
+        }
 
         #endregion
 
         #region public methods
 
+       
+
+        /// <summary>
+        /// Renders the DOM to the bound TextWriter.
+        /// </summary>
+        public void Render()
+        {
+            if (_AsyncPostbackData != null)
+            {
+                foreach (var data in _AsyncPostbackData)
+                {
+                    RealWriter.Write(data.Render());
+                }
+            }
+            else
+            {
+                string content = Dom.Render();
+                if (_UserOutput != null)
+                {
+                    content += "<script type=\"text/javascript\">" + System.Environment.NewLine + UserOutput.ToString() + "</script>";
+                }
+                RealWriter.Write(content);
+            }
+        }
+
+        #endregion
+
+        #region private methods
+
+        /// <summary>
+        /// Create a context from the bound method information
+        /// </summary>
+        ///
         
         public void Create()
         {
             ControlRenderMethod(Writer);
- 
+
             ScriptManager mgr = ScriptManager.GetCurrent(Page);
 
             // Asp.Net async postbacks structure data like:
@@ -179,58 +258,10 @@ namespace CsQuery.Web
 
         }
 
-        /// <summary>
-        /// Gets a value indicating whether this object is asynchronous.
-        /// </summary>
-        ///
-        /// <value>
-        /// true if this object is asynchronous, false if not.
-        /// </value>
-
-        public bool IsAsync
-        {
-            get
-            {
-                return _AsyncPostbackData != null;
-            }
-        }
-        protected List<AsyncPostbackData> _AsyncPostbackData;
-        public IEnumerable<AsyncPostbackData> AsyncPostbackData
-        {
-            get
-            {
-                foreach (AsyncPostbackData data in _AsyncPostbackData)
-                {
-                    if (data.DataType.ToLower() == "updatepanel")
-                    {
-                        yield return data;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Renders the DOM to the bound TextWriter.
-        /// </summary>
-        public void Render()
-        {
-            if (_AsyncPostbackData != null)
-            {
-                foreach (var data in _AsyncPostbackData)
-                {
-                    RealWriter.Write(data.Render());
-                }
-            }
-            else
-            {
-                string content = Dom.Render();
-                if (_UserOutput != null)
-                {
-                    content += "<script type=\"text/javascript\">" + System.Environment.NewLine + UserOutput.ToString() + "</script>";
-                }
-                RealWriter.Write(content);
-            }
-        }
+      
+        
+       
+        
 
         internal static string JsonStringDef(string target, object data)
         {

@@ -12,7 +12,7 @@ using CsQuery;
 using CsQuery.Web;
 using CsQuery.Promises;
 
-namespace CsQuery.Tests.Csharp.Miscellaneous
+namespace CsQuery.Tests._WebIO
 {
     /// <summary>
     /// This test is disabled by default because it accesses public web sites.
@@ -21,7 +21,7 @@ namespace CsQuery.Tests.Csharp.Miscellaneous
     /// don't have any way to verify that it's returning the correct results.
     /// </summary>
     [TestFixture, TestClass]
-    public class _Stress: CsQueryTest
+    public class _WebIO_StressTests: CsQueryTest
     {
         private const int simultaneousThreads = 5;
         private const int totalTests = 100;

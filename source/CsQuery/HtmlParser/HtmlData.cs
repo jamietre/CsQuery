@@ -397,11 +397,11 @@ namespace CsQuery.HtmlParser
         }
 
         /// <summary>
-        /// Text is allowed within this node type. Is includes all types that also permit HTML.
+        /// This element may have children
         /// </summary>
         /// <param name="nodeId"></param>
         /// <returns></returns>
-        public static bool InnerTextAllowed(ushort nodeId)
+        public static bool ChildrenAllowed(ushort nodeId)
         {
             // nodeId & NonSpecialTokenMask returns zero for tokens that are in the short list.
             // anything outside the short list (or not matching special properties) os ok - 
@@ -412,7 +412,7 @@ namespace CsQuery.HtmlParser
         }
         public static bool InnerTextAllowed(string nodeName)
         {
-            return InnerTextAllowed(TokenID(nodeName));
+            return ChildrenAllowed(TokenID(nodeName));
         }
         public static bool IsBlock(ushort nodeId)
         {

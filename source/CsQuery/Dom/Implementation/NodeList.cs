@@ -29,7 +29,7 @@ namespace CsQuery.Implementation
         {
             if (element.ParentNode != null)
             {
-                if (!element.IsDisconnected && element is IDomIndexedNode)
+                if ( !element.IsDisconnected && element.IsIndexed)
                 {
                     element.Document.RemoveFromIndex((IDomIndexedNode)element);
                 }
@@ -43,7 +43,7 @@ namespace CsQuery.Implementation
             DomObject item = (DomObject)element;
             item.ParentNode = Owner;
             item.Index = index;
-            if (element is IDomIndexedNode && !element.IsDisconnected)
+            if (!element.IsDisconnected && element.IsIndexed)
             {
                 element.Document.AddToIndex((IDomIndexedNode)element);
             }
