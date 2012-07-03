@@ -9,7 +9,7 @@ namespace CsQuery.Utility
 {
     /// <summary>
     /// TODO: This class needs some help. While not thrilled about the idea of writing another JSON serializer,
-    /// CsQuery does some unique handling for serialization &  deserialization, e.g. mapping sub-objects to expando objects. 
+    /// CsQuery does some unique handling for serialization &amp;  deserialization, e.g. mapping sub-objects to expando objects. 
     /// 
     /// We can do a post-op parsing from 
     /// any other JSON serializer (such as we are doing now) but this doubles the overhead required. Look at a customized implementation from 

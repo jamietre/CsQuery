@@ -9,23 +9,52 @@ using CsQuery.StringScanner.ExtensionMethods;
 
 namespace CsQuery.StringScanner.Implementation
 {
-    
-    // Not implemented - intended to update the scanning code in Selector engine and maybe the HTML parser
+    /// <summary>
+    /// String scanner engine. A lexical scanner to match complex patterns.
+    /// </summary>
+
     public class StringScannerEngine: IStringScanner
     {
         #region constructors
+
+        /// <summary>
+        /// Create a new StringScannerEngine with no configuration
+        /// </summary>
+
         public StringScannerEngine()
         {
             Init();
         }
+
+        /// <summary>
+        /// Create a new StringScannerEngine for a string
+        /// </summary>
+        ///
+        /// <param name="text">
+        /// The string to scan
+        /// </param>
+
         public StringScannerEngine(string text)
         {
             Text = text;
             Init();
         }
+
+        /// <summary>
+        /// Create a new StringScannerEngine for a string
+        /// </summary>
+        ///
+        /// <param name="text">
+        /// The string to scan.
+        /// </param>
+
         public static implicit operator StringScannerEngine(string text) {
             return new StringScannerEngine(text);
         }
+
+        /// <summary>
+        /// Common configuration tasks for all constructors.
+        /// </summary>
 
         protected void Init()
         {
@@ -40,6 +69,7 @@ namespace CsQuery.StringScanner.Implementation
         private string _LastMatch;
         
         protected CharacterInfo _characterInfo;
+        
         #endregion
         
         #region protected properties
@@ -648,7 +678,7 @@ namespace CsQuery.StringScanner.Implementation
 
         public string Get(IExpectPattern pattern)
         {
-            ExpectImpl(pattern, true);
+            ExpectImpl(pattern);
             return Match;
         }
         public bool TryGet(IExpectPattern pattern, out string result)
@@ -670,7 +700,7 @@ namespace CsQuery.StringScanner.Implementation
         /// </param>
         public IStringScanner Expect(IExpectPattern pattern)
         {
-            ExpectImpl(pattern, true);
+            ExpectImpl(pattern);
             return this;
         }
         public string Get(Func<int, char, bool> validate)
@@ -685,10 +715,19 @@ namespace CsQuery.StringScanner.Implementation
                 Expect(validate);
             }, out result);
         }
+
         /// <summary>
-        /// Continue seeking as long as the delegate returns True
+        /// Continue seeking as long as the delegate returns True.
         /// </summary>
-        /// <param name="del"></param>
+        ///
+        /// <param name="validate">
+        /// A pattern matching function
+        /// </param>
+        ///
+        /// <returns>
+        /// This IStringScanner instance
+        /// </returns>
+
         public IStringScanner Expect(Func<int, char, bool> validate)
         {
             AssertNotFinished();
@@ -712,6 +751,28 @@ namespace CsQuery.StringScanner.Implementation
             }
             return this;
         }
+
+        /// <summary>
+        /// Expects a string bounded by the character at the current postion. If the current character is
+        /// a bounding character, then the pattern will match until the matching closing bound character
+        /// is found, e.g. () [] {} &lt;&gt;. For non-bounding characters, the pattern will match until
+        /// the same character is found again.
+        /// </summary>
+        ///
+        /// <param name="start">
+        /// The position to start scanning.
+        /// </param>
+        /// <param name="end">
+        /// The last position.
+        /// </param>
+        /// <param name="allowQuoting">
+        /// (optional) the allow quoting.
+        /// </param>
+        ///
+        /// <returns>
+        /// The bounded by.
+        /// </returns>
+
         public string GetBoundedBy(string start, string end, bool allowQuoting=false)
         {
             ExpectBoundedBy(start, end);
@@ -754,12 +815,19 @@ namespace CsQuery.StringScanner.Implementation
         }
 
         /// <summary>
-        /// The implementation - if the 2nd parm is false, it is the opposite (seek until the match condition is met)
-        /// 2nd parm NOT IMPLEMENTED
+        /// Implementation of Expect
         /// </summary>
-        /// <param name="validate"></param>
-        /// <param name="untilTrue"></param>
-        protected StringScannerEngine ExpectImpl(IExpectPattern pattern, bool untilTrue)
+        ///
+        /// <param name="pattern">
+        /// .
+        /// </param>
+        ///
+        /// <returns>
+        /// .
+        /// </returns>
+
+
+        protected StringScannerEngine ExpectImpl(IExpectPattern pattern)
         {
             AssertNotFinished();
             CachePos();

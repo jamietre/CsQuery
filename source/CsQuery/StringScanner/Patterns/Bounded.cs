@@ -9,7 +9,7 @@ namespace CsQuery.StringScanner.Patterns
 {
     
     /// <summary>
-    /// Matches anything that is bounded by acceped bounding characters
+    /// Matches anything that is bounded by accepted bounding characters
     /// </summary>
     public class Bounded: ExpectPattern
     {

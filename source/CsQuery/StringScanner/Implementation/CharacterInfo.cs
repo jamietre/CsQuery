@@ -6,12 +6,29 @@ using System.Text;
 
 namespace CsQuery.StringScanner.Implementation
 {
+    /// <summary>
+    /// A class that provides methods with metadata about a character.
+    /// </summary>
+
     public class CharacterInfo : ICharacterInfo
     {
+        /// <summary>
+        /// Create a new unbound CharacterInfo class
+        /// </summary>
+
         public CharacterInfo()
         {
 
         }
+
+        /// <summary>
+        /// Create a new CharacterInfo class bound to a character.
+        /// </summary>
+        ///
+        /// <param name="character">
+        /// The character.
+        /// </param>
+
         public CharacterInfo(char character)
         {
             Target = character;
