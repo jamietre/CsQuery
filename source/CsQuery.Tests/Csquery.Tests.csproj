@@ -70,6 +70,8 @@
     <Compile Include="Csharp\Dom\DomDocument.cs" />
     <Compile Include="Csharp\Dom\DomFragment.cs" />
     <Compile Include="Csharp\Dom\DomElement.cs" />
+    <Compile Include="Csharp\Methods\Each.cs" />
+    <Compile Include="Csharp\Methods\Text.cs" />
     <Compile Include="Csharp\Methods\Slice.cs" />
     <Compile Include="WebIO\StressTests.cs" />
     <Compile Include="TestTests.cs" />

@@ -15,15 +15,18 @@ namespace CsQuery
     public partial class CQ
     {
         #region private properties
-        protected Selector _Selectors = null;
-        protected IDomDocument _Document = null;
+
+        private Selector _Selectors = null;
+        private IDomDocument _Document = null;
+
         #endregion
 
         #region public properties
 
         /// <summary>
-        /// Represents the full, parsed DOM for an object created with an HTML parameter
+        /// Represents the full, parsed DOM for an object created with an HTML parameter.
         /// </summary>
+
         public IDomDocument Document
         {
             get
@@ -41,8 +44,9 @@ namespace CsQuery
         }
 
         /// <summary>
-        ///  The selector (parsed) used to create this instance
+        /// The selector (parsed) used to create this instance.
         /// </summary>
+
         public Selector Selectors
         {
             get
@@ -55,11 +59,11 @@ namespace CsQuery
             }
         }
 
-
         /// <summary>
-        /// The entire selection set as an enumerable, same as enumerting on the object itself (though this may
-        /// allow you to more easily use extension methods)
+        /// The entire selection set as an enumerable, same as enumerting on the object itself (though
+        /// this may allow you to more easily use extension methods)
         /// </summary>
+
         public IEnumerable<IDomObject> Selection
         {
             get
@@ -71,6 +75,7 @@ namespace CsQuery
         /// <summary>
         /// Returns just IDomElements from the selection list.
         /// </summary>
+
         public IEnumerable<IDomElement> Elements
         {
             get
@@ -78,6 +83,12 @@ namespace CsQuery
                 return onlyElements(SelectionSet);
             }
         }
+
+        /// <summary>
+        /// Gets or sets the order in which the selection set is returned. Usually, this is the order
+        /// that elements appear in the DOM. Some operations could result in a selection set that's in an
+        /// arbitrary order, though.
+        /// </summary>
 
         public SelectionSetOrder Order
         {
@@ -91,14 +102,49 @@ namespace CsQuery
             }
         }
 
+      
+
+        #endregion
+
+        #region public methods
+
         /// <summary>
-        /// Returns the HTML for all selected documents, separated by commas. No inner html or children are included.
+        /// Returns the HTML for all selected documents, separated by commas. No inner html or children
+        /// are included.
         /// </summary>
-        /// 
+        ///
+        /// <remarks>
+        /// This method does not return valid HTML, but rather a single string containing an abbreviated
+        /// version of the markup for only documents in the selection set, separated by commas. This is
+        /// intended for inspecting a selection set, for example while debugging.
+        /// </remarks>
+        ///
+        /// <returns>
+        /// A string of HTML.
+        /// </returns>
+
         public string SelectionHtml()
         {
             return SelectionHtml(false);
         }
+
+        /// <summary>
+        /// Returns the HTML for all selected documents, separated by commas.
+        /// </summary>
+        ///
+        /// <remarks>
+        /// This method does not return valid HTML, but rather a single string containing an abbreviated
+        /// version of the markup for only documents in the selection set, separated by commas. This is
+        /// intended for inspecting a selection set, for example while debugging.
+        /// </remarks>
+        ///
+        /// <param name="includeInner">
+        /// When true, the complete HTML (e.g. including children) is included for each element.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string of HTML.
+        /// </returns>
 
         public string SelectionHtml(bool includeInner)
         {
@@ -112,16 +158,19 @@ namespace CsQuery
             return sb.ToString();
         }
 
-        #endregion
-
-        #region public methods
-
-
-
         /// <summary>
         /// Renders just the selection set completely.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <remarks>
+        /// This method will only render the HTML for elements in the current selection set. To render
+        /// the entire document for output, use the Render method.
+        /// </remarks>
+        ///
+        /// <returns>
+        /// A string of HTML.
+        /// </returns>
+
         public string RenderSelection()
         {
             StringBuilder sb = new StringBuilder();
@@ -131,43 +180,127 @@ namespace CsQuery
             }
             return sb.ToString();
         }
+
         /// <summary>
-        /// Renders the DOM to a string
+        /// Renders the document to a string.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <remarks>
+        /// This method renders the entire document, regardless of the current selection. This is the
+        /// primary method used for rendering the final HTML of a document after manipulation; it
+        /// includes the &lt;doctype&gt; and &lt;html&gt; nodes.
+        /// </remarks>
+        ///
+        /// <returns>
+        /// A string of HTML.
+        /// </returns>
+
         public string Render()
         {
             return Document.Render();
         }
 
+        /// <summary>
+        /// Render the entire document, parsed through a formatter passed using the parameter.
+        /// </summary>
+        ///
+        /// <remarks>
+        /// CsQuery by default does not format the output at all, but rather returns exactly the same
+        /// contents of each element from the source, including all extra whitespace. If you want to
+        /// produce output that is formatted in a specific way, you can create an OutputFormatter for
+        /// this purpose. The included <see cref="T:CsQuery.OutputFormatters.FormatPlainText"/> does some
+        /// basic formatting by removing extra whitespace and adding newlines in a few useful places.
+        /// (This formatter is pretty basic). A formatter to perform indenting to create human-readable
+        /// output would be useful and will be included in some future release.
+        /// </remarks>
+        ///
+        /// <param name="format">
+        /// An object that parses a CQ object and returns a string of HTML.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string of HTML.
+        /// </returns>
+
         public string Render(IOutputFormatter format)
         {
             return format.Format(this);
         }
+
         /// <summary>
-        /// Render the complete DOM with specific options
+        /// Render the complete DOM with specific options.
         /// </summary>
-        /// <param name="renderingOptions"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="renderingOptions">
+        /// The options flags in effect.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string of HTML
+        /// </returns>
+
         public string Render(DomRenderingOptions renderingOptions)
         {
             Document.DomRenderingOptions = renderingOptions;
             return Render();
         }
+
         /// <summary>
-        /// Returns a new empty CsQuery object bound to this domain
+        /// Render the entire document, parsed through a formatter passed using the parameter, with the
+        /// specified options.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <param name="formatter">
+        /// The formatter.
+        /// </param>
+        /// <param name="renderingOptions">
+        /// The options flags in effect.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string of HTML.
+        /// </returns>
+
+        public string Render(IOutputFormatter formatter, DomRenderingOptions renderingOptions)
+        {
+            Document.DomRenderingOptions = renderingOptions;
+            return Render(formatter);
+        }
+
+        /// <summary>
+        /// Create a new, empty CsQuery object bound to this domain.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+
         public CQ New()
         {
             CQ csq = new CQ();
             csq.CsQueryParent = this;
             return csq;
         }
+
         /// <summary>
-        /// Returns a new empty CsQuery object bound to this domain, whose results are returned in the specified order
+        /// Returns a new empty CsQuery object bound to this domain, whose results are returned in the
+        /// specified order.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <remarks>
+        /// Usually, CQ objects return the elements in their selection set in the order that they appear
+        /// in the DOM. Some operations could result in a selection set that's in an arbitrary order,
+        /// though.
+        /// </remarks>
+        ///
+        /// <param name="order">
+        /// The order in which the selection set is returned.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+
         public CQ New(SelectionSetOrder order)
         {
             CQ csq = new CQ();
@@ -175,20 +308,35 @@ namespace CsQuery
             csq.Order = order;
             return csq;
         }
+
         /// <summary>
-        /// Return a CsQuery object wrapping the enumerable passed, or the object itself if 
-        /// already a CsQuery obect. Unlike CsQuery(context), this will not create a new CsQuery object from 
-        /// an existing one.
+        /// Return a CsQuery object wrapping the enumerable passed, or the object itself if it's already
+        /// a CsQuery obect. Unlike CsQuery(context), this will not create a new CsQuery object from an
+        /// existing one.
         /// </summary>
-        /// <param name="elements"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="elements">
+        /// A sequence of IDomObject elements.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object when the source is disconnect elements, or the CQ object passed.
+        /// </returns>
+
         public CQ EnsureCsQuery(IEnumerable<IDomObject> elements)
         {
             return elements is CQ ? (CQ)elements : new CQ(elements);
         }
+
         /// <summary>
         /// The first IDomElement (e.g. not text/special nodes) in the selection set, or null if none
+        /// exists.
         /// </summary>
+        ///
+        /// <returns>
+        /// An IDomElement object.
+        /// </returns>
+
         public IDomElement FirstElement()
         {
 
@@ -204,26 +352,76 @@ namespace CsQuery
                 }
             }
         }
+
         /// <summary>
-        /// Removes one of two selectors/objects based on the value of the first parameter. The remaining one is
-        /// explicitly shown. True keeps the first, false keeps the 2nd.
+        /// Given two selectors, shows the content of one, and removes the content of the other, based on
+        /// the boolean parameter.
         /// </summary>
-        /// <param name="?"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="which">
+        /// A boolean value to indicate whether the first or second selector should be used to determine
+        /// the elements that are kept. When true, the first is kept and the 2nd removed. When false, the
+        /// opposite happens.
+        /// </param>
+        /// <param name="trueSelector">
+        /// The true selector.
+        /// </param>
+        /// <param name="falseSelector">
+        /// The false selector.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+
         public CQ KeepOne(bool which, string trueSelector, string falseSelector)
         {
             return KeepOne(which ? 0 : 1, trueSelector, falseSelector);
         }
+
+        /// <summary>
+        /// Given two CQ objects, shows the one, and removes the the other from the document, based on
+        /// the boolean parameter.
+        /// </summary>
+        ///
+        /// <param name="which">
+        /// A boolean value to indicate whether the first or second selector should be used to determine
+        /// the elements that are kept. When true, the first is kept and the 2nd removed. When false, the
+        /// opposite happens.
+        /// </param>
+        /// <param name="trueContent">
+        /// The true content.
+        /// </param>
+        /// <param name="falseContent">
+        /// The false content.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+
         public CQ KeepOne(bool which, CQ trueContent, CQ falseContent)
         {
             return KeepOne(which ? 0 : 1, trueContent, falseContent);
         }
+
         /// <summary>
-        /// Removes all but one of a list selectors/objects based on the value of the first parameter. The remaining one is
-        /// explicitly shown. The value of which is zero-based.
+        /// Removes all but one of a list selectors/objects based on the zero-based index of the first
+        /// parameter. The remaining one is explicitly shown.
         /// </summary>
-        /// <param name="?"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="which">
+        /// An integer representing the zero-based index of the content from the list of items passed
+        /// which should be kept and shown.
+        /// </param>
+        /// <param name="content">
+        /// A variable-length parameters list containing content.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object
+        /// </returns>
+
         public CQ KeepOne(int which, params string[] content)
         {
             CQ[] arr = new CQ[content.Length];
@@ -233,6 +431,24 @@ namespace CsQuery
             }
             return KeepOne(which, arr);
         }
+
+        /// <summary>
+        /// Removes all but one of a list selectors/objects based on the zero-based index of the first
+        /// parameter. The remaining one is explicitly shown.
+        /// </summary>
+        ///
+        /// <param name="which">
+        /// An integer representing the zero-based index of the content from the list of items passed
+        /// which should be kept and shown.
+        /// </param>
+        /// <param name="content">
+        /// A variable-length parameters list containing content.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+
         public CQ KeepOne(int which, params CQ[] content)
         {
             for (int i = 0; i < content.Length; i++)
@@ -248,11 +464,20 @@ namespace CsQuery
             }
             return this;
         }
+
         /// <summary>
-        /// Conditionally includes a selection. This is the equivalent of calling Remove() only when "include" is false
-        /// (extension of jQuery API)
+        /// Conditionally includes a selection. This is the equivalent of calling Remove() only when
+        /// "include" is false.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <param name="include">
+        /// true to include, false to exclude.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object
+        /// </returns>
+
         public CQ IncludeWhen(bool include)
         {
             if (!include)
@@ -261,12 +486,23 @@ namespace CsQuery
             }
             return this;
         }
+
         /// <summary>
-        /// Set a specific item of a named option group selected
+        /// Set a specific item, identified by the 2nd parameter, of a named option group, identified by
+        /// the first parameter, as selected.
         /// </summary>
-        /// <param name="groupName"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="groupName">
+        /// The value of the name attribute identifying this option group.
+        /// </param>
+        /// <param name="value">
+        /// The option value to set as selected
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object
+        /// </returns>
+
         public CQ SetSelected(string groupName, IConvertible value)
         {
             var group = this.Find("input[name='" + groupName + "']");
@@ -305,10 +541,14 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Given a table header or cell, returns all members of the columm.
+        /// Given a table header or cell, returns all members of the column in the table. This will most
+        /// likely not work as you would expect if there are colspan cells.
         /// </summary>
-        /// <param name="columnMember"></param>
-        /// <returns></returns>
+        ///
+        /// <returns>
+        /// A new CQ object containing all the th and td cells in the specified column.
+        /// </returns>
+
         public CQ GetTableColumn()
         {
             var els = this.Filter("th,td");
@@ -317,44 +557,97 @@ namespace CsQuery
             {
                 var elCq = el.Cq();
                 int colIndex = elCq.Index();
-                result.AddSelectionRange(elCq.Closest("table").GetTableColumn(colIndex));
+                result.AddSelection(elCq.Closest("table").GetTableColumn(colIndex));
             }
             return result;
         }
+
         /// <summary>
-        /// Selects then zero-based nth th and td cells from all rows in any matched tables.
-        /// DOES NOT ACCOUNT FOR COLSPAN. If you have inconsistent numbers of columns, you will get inconsistent results.
+        /// Selects then zero-based nth cells  (th and td) from all rows in any matched tables. This will
+        /// most likely no do what you expect if the table has colspan cells.
         /// </summary>
-        /// <param name="column"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="column">
+        /// The zero-based index of the column to target.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object containing all the th and td cells in the specified column.
+        /// </returns>
+
         public CQ GetTableColumn(int column)
         {
             CQ result = New();
             foreach (var el in filterElements(this, "table"))
             {
 
-                result.AddSelectionRange(el.Cq().Find(String.Format("tr>th:eq({0}), tr>td:eq({0})", column)));
+                result.AddSelection(el.Cq().Find(String.Format("tr>th:eq({0}), tr>td:eq({0})", column)));
 
             }
             return result;
         }
 
+        /// <summary>
+        /// Perform a substring replace on the contents of the named attribute in each item in the
+        /// selection set.
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The attribute name.
+        /// </param>
+        /// <param name="replaceWhat">
+        /// The string to match.
+        /// </param>
+        /// <param name="replaceWith">
+        /// The value to replace each occurrence with.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+
+        public CQ AttrReplace(string name, string replaceWhat, string replaceWith)
+        {
+            foreach (IDomElement item in SelectionSet)
+            {
+                string val = item[name];
+                if (val != null)
+                {
+                    item[name] = val.Replace(replaceWhat, replaceWith);
+                }
+            }
+            return this;
+        }
 
         /// <summary>
-        /// The current selection set will become the DOM. This is destructive.
+        /// The current selection set will become the only members of the document in this object. This
+        /// is a destructive method that will completely replace the document.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <returns>
+        /// The current CQ object
+        /// </returns>
+
         public CQ MakeRoot()
         {
             Document.ChildNodes.Clear();
             Document.ChildNodes.AddRange(Elements);
             return this;
         }
+
         /// <summary>
-        /// Conver the results of the selection into the DOM. This is destructive.
+        /// The elements identified by the selector will become the only members of the document in this
+        /// object. This is a destructive method that will completely replace the document.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="selector">
+        /// A selector that determines which elements will become the new document.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object
+        /// </returns>
+
         public CQ MakeRoot(string selector)
         {
             return Select(selector).MakeRoot();

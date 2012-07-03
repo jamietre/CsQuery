@@ -117,7 +117,7 @@ namespace CsQuery
         public CQ(IEnumerable<IDomObject> elements, CQ context)
         {
             CsQueryParent = context;
-            AddSelectionRange(elements);
+            AddSelection(elements);
         }
 
         #endregion
@@ -170,7 +170,7 @@ namespace CsQuery
             ClearSelections();
             HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
             factory.ParseToDocument();
-            AddSelectionRange(Document.ChildNodes);
+            AddSelection(Document.ChildNodes);
 
         }
 
@@ -186,7 +186,7 @@ namespace CsQuery
             factory.GenerateOptionalElements = true;
             factory.IsDocument = false;
             Document.AddChildrenAlways(factory.Parse());
-            AddSelectionRange(Document.ChildNodes);
+            AddSelection(Document.ChildNodes);
 
         }
 
@@ -201,7 +201,7 @@ namespace CsQuery
             CreateNewDocument();
             ClearSelections();
             Document.AddChildrenAlways(elements);
-            AddSelectionRange(Document.ChildNodes);
+            AddSelection(Document.ChildNodes);
         }
 
         /// <summary>
@@ -215,7 +215,7 @@ namespace CsQuery
             CreateNewFragment(html);
             HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
             Document.AddChildrenAlways(factory.ParseAsFragment());
-            AddSelectionRange(Document.ChildNodes);
+            AddSelection(Document.ChildNodes);
 
         }
         /// <summary>

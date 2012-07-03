@@ -387,7 +387,7 @@ namespace CsQuery
         /// The attribute value string.
         /// </returns>
         ///
-        /// <seealso cref="GetAttribute(string name)"/>
+        /// <seealso cref="T:CsQuery.IDomObject.GetAttribute"/>
 
         string GetAttribute(string name, string defaultValue);
 

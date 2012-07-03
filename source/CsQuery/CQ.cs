@@ -19,45 +19,49 @@ using CsQuery.Utility;
 
 namespace CsQuery
 {
-
     /// <summary>
-    /// The CQ object is analogus to the basic jQuery object. It has instance methods that mirror the methods
-    /// of a jQuery object, and static methods that mirror utility methods such as "$.map".
+    /// The CQ object is analogus to the basic jQuery object. It has instance methods that mirror the
+    /// methods of a jQuery object, and static methods that mirror utility methods such as "$.map".
     /// 
-    /// Most methods return a new jQuery object that is bound to the same document, but a different selection 
-    /// set. In a web browser, you genally only have a single context (the browser DOM). Here, you could have
-    /// many, though most of the time you will only be working with one.
+    /// Most methods return a new jQuery object that is bound to the same document, but a different
+    /// selection set. In a web browser, you genally only have a single context (the browser DOM).
+    /// Here, you could have many, though most of the time you will only be working with one.
     /// </summary>
+    ///
     /// <remarks>
+    /// Document is an IDomDocument object, referred to sometimes as the "DOM", and represents the
+    /// DOM that this CsQuery objects applies to. When CQ methods are run, the resulting CQ object
+    /// will refer to the same Document as the original. Selectors always run against this DOM.
     /// 
-    /// Document is an IDomDocument object, referred to sometimes as the "DOM", and represents the DOM that this 
-    /// CsQuery objects applies to. When CQ methods are run, the resulting CQ object will refer to the same 
-    /// Document as the original. Selectors always run against this DOM. 
+    /// Creating a CQ object from something that is not bound to a DOM (such as an HTML string, or an
+    /// unbound IDomObject or IDomElement object) will result in a new Document being created, that
+    /// is unrelated to any other active objects you may have. Adding unbound elements using methods
+    /// such as Append will cause them to become part of the target DOM. They will be removed from
+    /// whatever DOM they previously belonged to. (Elements cannot be part of more than one DOM). If
+    /// you don't want to remove something while adding to a CQ object from a different DOM, then you
+    /// should clone the elements.
     /// 
-    /// Creating a CQ object from something that is not bound to a DOM (such as an HTML string, or an unbound
-    /// IDomObject or IDomElement object) will result in a new Document being created, that is unrelated to any
-    /// other active objects you may have. Adding unbound elements using methods such as Append will cause them
-    /// to become part of the target DOM. They will be removed from whatever DOM they previously belonged to.
-    /// (Elements cannot be part of more than one DOM). If you don't want to remove something while adding to
-    /// a CQ object from a different DOM, then you should clone the elements.
+    /// Selection is a set of DOM nodes matching the selector.
     /// 
-    /// Selection is a set of DOM nodes matching the selector. 
+    /// Elements is a set of IDomElement nodes matching the selector. This is a subset of Selection -
+    /// it excludes non-Element nodes.
     /// 
-    /// Elements is a set of IDomElement nodes matching the selector. This is a subset of Selection - it 
-    /// excludes non-Element nodes.
-    /// 
-    /// The static Create() methods create new DOMs. To create a CsQuery object based on an existing dom, 
-    /// use new CQ() (similar to jQuery() methods).
+    /// The static Create() methods create new DOMs. To create a CsQuery object based on an existing
+    /// dom, use new CQ() (similar to jQuery() methods).
     /// </remarks>
+
     public partial class CQ : IEnumerable<IDomObject>
     {
         #region public properties
 
         /// <summary>
-        /// The number of elements in the CQ object
+        /// The number of elements in the CQ object.
         /// </summary>
-        /// <returntype>int</returntype>
-        /// <jquery>http://api.jquery.com/length/</jquery>
+        ///
+        /// <url>
+        /// http://api.jquery.com/length/
+        /// </url>
+
         public int Length
         {
             get
@@ -73,9 +77,15 @@ namespace CsQuery
         /// <summary>
         /// Add the previous set of elements on the stack to the current set.
         /// </summary>
-        /// <returns>A new CQ object</returns>
-        /// <returntype>CQ</returntype>
-        /// <jquery></jquery>http://api.jquery.com/andSelf/</jquery>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/andself/
+        /// </url>
+
         public CQ AndSelf()
         {
             var csq = new CQ(this);
@@ -93,33 +103,57 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// End the most recent filtering operation in the current chain and return the set of matched elements 
-        /// to its previous state
+        /// End the most recent filtering operation in the current chain and return the set of matched
+        /// elements to its previous state.
         /// </summary>
-        /// <returns>The CQ object at the root of the current chain, or a new, empty selection if this
-        /// CQ object is the direct result of a Create()
+        ///
+        /// <returns>
+        /// The CQ object at the root of the current chain, or a new, empty selection if this CQ object
+        /// is the direct result of a Create()
         /// </returns>
-        /// <returntype>CQ</returntype>
+        ///
+        /// <url>
+        /// http://api.jquery.com/end/
+        /// </url>
+
         public CQ End()
         {
             return CsQueryParent ?? New();
         }
 
         /// <summary>
-        /// Return the active selection set
+        /// Return the active selection set.
         /// </summary>
-        /// <returns></returns>
-        /// <returntype>IEnumerable&lt;IDomObject&gt;</returntype>
+        ///
+        /// <returns>
+        /// An sequence of IDomObject elements representing the current selection set.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/get/
+        /// </url>
+
         public IEnumerable<IDomObject> Get()
         {
             return SelectionSet;
         }
 
         /// <summary>
-        /// Return a specific element from the selection set
+        /// Return a specific element from the selection set.
         /// </summary>
-        /// <param name="index">The zero-based index of the element to be returned</param>
-        /// <returns></returns>
+        ///
+        /// <param name="index">
+        /// The zero-based index of the element to be returned.
+        /// </param>
+        ///
+        /// <returns>
+        /// An IDomObject.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/get/
+        /// </url>
+        
         public IDomObject Get(int index)
         {
             int effectiveIndex = index < 0 ? SelectionSet.Count+index-1 : index;
@@ -131,7 +165,15 @@ namespace CsQuery
         /// <summary>
         /// Remove all child nodes of the set of matched elements from the DOM.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/empty/
+        /// </url>
+
         public CQ Empty()
         {
             
@@ -144,11 +186,39 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Set the HTML contents of each element in the set of matched elements. 
-        /// Any elements without InnerHtml are ignored.
+        /// Get the HTML contents of the first element in the set of matched elements.
         /// </summary>
-        /// <param name="html"></param>
-        /// <returns></returns>
+        ///
+        /// <returns>
+        /// A string of HTML.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/html/#html1
+        /// </url>
+
+        public string Html()
+        {
+            return Length > 0 ? this[0].InnerHTML : String.Empty;
+        }
+
+        /// <summary>
+        /// Set the HTML contents of each element in the set of matched elements. Any elements without
+        /// InnerHtml are ignored.
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// One or more strings of HTML markup.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/html/#html2
+        /// </url>
+
         public CQ Html(params string[] html)
         {
             CQ htmlElements = EnsureCsQuery(mergeContent(html));
@@ -167,19 +237,21 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Get the HTML contents of the first element in the set of matched elements.
-        /// </summary>
-        /// <returns></returns>
-        public string Html()
-        {
-            return Length > 0 ? this[0].InnerHTML : String.Empty;
-        }
-
-        /// <summary>
         /// Selects all elements that do not match the given selector.
         /// </summary>
-        /// <param name="selector">A CSS selector</param>
-        /// <returns>A new CQ object</returns>
+        ///
+        /// <param name="selector">
+        /// A CSS selector.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/not/
+        /// </url>
+
         public CQ Not(string selector)
         {
             var notSelector = new Selector(selector);
@@ -187,21 +259,42 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Selects all elements that do not match the given selector.
+        /// Selects all elements except the element passed as a parameter.
         /// </summary>
-        /// <param name="selector">A CSS selector</param>
-        /// <returns>A new CQ object</returns>
-        /// <jquery>http://api.jquery.com/not/</jquery>
+        ///
+        /// <param name="element">
+        /// The element to exclude.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/not/
+        /// </url>
+
         public CQ Not(IDomObject element)
         {
             return Not(Objects.Enumerate(element));
         }
 
         /// <summary>
-        /// Selects all elements that do not match the given selector.
+        /// Selects all elements except those passed as a parameter.
         /// </summary>
-        /// <param name="selector">A CSS selector</param>
-        /// <returns>A new CQ object</returns>
+        ///
+        /// <param name="elements">
+        /// The elements to be excluded.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/not/
+        /// </url>
+
         public CQ Not(IEnumerable<IDomObject> elements)
         {
             CQ csq = new CQ(SelectionSet);
@@ -211,10 +304,22 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Reduce the set of matched elements to those that have a descendant that matches the selector or DOM element.
+        /// Reduce the set of matched elements to those that have a descendant that matches the selector
+        /// or DOM element.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="selector">
+        /// A valid CSS/jQuery selector.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/has/
+        /// </url>
+
         public CQ Has(string selector)
         {
             var csq = New();
@@ -230,20 +335,42 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Reduce the set of matched elements to those that have a descendant that matches the selector or DOM element.
+        /// Reduce the set of matched elements to those that have the element passed as a descendant.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="element">
+        /// The element to match.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/has/
+        /// </url>
+
         public CQ Has(IDomObject element)
         {
             return Has(Objects.Enumerate(element));
         }
 
         /// <summary>
-        /// Reduce the set of matched elements to those that have a descendant that matches the selector or DOM element.
+        /// Reduce the set of matched elements to those that have each of the elements passed as a descendant.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="elements">
+        /// The elements to be excluded.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/has/
+        /// </url>
+
         public CQ Has(IEnumerable<IDomObject> elements)
         {
             var csq = New();
@@ -258,124 +385,222 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Set the content of each element in the set of matched elements to the specified text.
+        /// Get the combined text contents of each element in the set of matched elements, including
+        /// their descendants.
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns>The current CQ object</returns>
-        public CQ Text(string value)
-        {
-            foreach (IDomElement obj in Elements)
-            {
-                if (obj.InnerTextAllowed)
-                {
-                    obj.ChildNodes.Clear();
-                    // Element types that cannot have HTML contents should not have the value encoded.
-                    //string textValue = obj.InnerHtmlAllowed ? Objects.HtmlEncode(value) : value;
-                    IDomText text = obj.InnerHtmlAllowed  ? new DomText(value) : new DomInnerText(value);
-                    obj.ChildNodes.Add(text);
-                }
-            }
-            return this;
-        }
+        ///
+        /// <returns>
+        /// A string containing the text contents of the selection.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/text/#text1
+        /// </url>
 
-        /// <summary>
-        /// Set the content of each element in the set of matched elements to the specified text.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns>The current CQ object</returns>
-        public CQ Text(Func<object,object,object> func) {
-
-            return this;
-        }
-
-        /// <summary>
-        /// Get the combined text contents of each element in the set of matched elements, including their descendants.
-        /// </summary>
-        /// <returns>The text contents of the selection</returns>
         public string Text()
         {
             StringBuilder sb = new StringBuilder();
 
-            IDomObject lastElement = null;
-            foreach (IDomObject obj in SelectionSet)
-            {
-                // Add a space between noncontiguous elements in the selection
-                //if (lastElement != null && obj.Index > 0
-                //    && obj.PreviousSibling != lastElement)
-                //{
-                //    sb.Append(" ");
-                //}
-                lastElement = obj;
-                if (obj.NodeType == NodeType.TEXT_NODE)
-                {
-                    sb.Append(obj.NodeValue);
-                }
-                else
-                {
-                    Text(sb, obj.Cq().Contents());
-                }
-            }
+            Text(sb, SelectionSet);
+            
             return sb.ToString();
         }
 
-        
         /// <summary>
-        /// Add elements to the set of matched elements from a selector or an HTML fragment. 
+        /// Set the content of each element in the set of matched elements to the specified text.
         /// </summary>
-        /// <param name="html"></param>
-        /// <returns>A new CQ object.</returns>
+        ///
+        /// <param name="value">
+        /// A string of text.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/text/#text2
+        /// </url>
+
+        public CQ Text(string value)
+        {
+            foreach (IDomElement obj in Elements)
+            {
+                SetChildText(obj, value);
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Set the content of each element in the set of matched elements to the text returned by the
+        /// specified function delegate.
+        /// </summary>
+        ///
+        /// <param name="func">
+        /// A delegate to a function that returns an HTML string to insert at the end of each element in
+        /// the set of matched elements. Receives the index position of the element in the set and the
+        /// old HTML value of the element as arguments. The function can return any data type, if it is not
+        /// a string, it's ToString() method will be used to convert it to a string.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/text/#text2
+        /// </url>
+
+        public CQ Text(Func<int,string,object> func) {
+
+            int count=0;
+            foreach (IDomElement obj in Elements)
+            {
+                string oldText = Text(obj);
+                string newText = func(count, oldText).ToString();
+                if (oldText != newText)
+                {
+                    SetChildText(obj, newText);
+                }
+                count++;
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Add elements to the set of matched elements from a selector or an HTML fragment.
+        /// </summary>
+        ///
+        /// <param name="selector">
+        /// A CSS selector.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/add/
+        /// </url>
+
         public CQ Add(string selector)
         {
             return Add(Select(selector));
         }
 
         /// <summary>
-        /// Add elements to the set of matched elements from a selector or an HTML fragment. 
+        /// Add an element to the set of matched elements.
         /// </summary>
-        /// <param name="html"></param>
-        /// <returns>A new CQ object.</returns>
+        ///
+        /// <param name="element">
+        /// The element to add.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/add/
+        /// </url>
+
         public CQ Add(IDomObject element)
         {
             return Add(Objects.Enumerate(element));
         }
 
         /// <summary>
-        /// Add elements to the set of matched elements from a selector or an HTML fragment. 
+        /// Add elements to the set of matched elements.
         /// </summary>
-        /// <param name="html"></param>
-        /// <returns>A new CQ object.</returns>
+        ///
+        /// <param name="elements">
+        /// The elements to add.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/add/
+        /// </url>
+
         public CQ Add(IEnumerable<IDomObject> elements)
         {
             CQ res = new CQ(this);
-            res.AddSelectionRange(elements);
+            res.AddSelection(elements);
             return res;
         }
 
         /// <summary>
-        /// Add elements to the set of matched elements from a selector or an HTML fragment. 
+        /// Add elements to the set of matched elements from a selector or an HTML fragment.
         /// </summary>
-        /// <param name="html"></param>
-        /// <returns>A new CQ object.</returns>
+        ///
+        /// <param name="selector">
+        /// A string representing a selector expression to find additional elements to add to the set of
+        /// matched elements.
+        /// </param>
+        /// <param name="context">
+        /// The point in the document at which the selector should begin matching; similar to the context
+        /// argument of the $(selector, context) method.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/add/
+        /// </url>
+
         public CQ Add(string selector, IEnumerable<IDomObject> context)
         {
             return Add(Select(selector, context));
         }
 
         /// <summary>
-        /// Add elements to the set of matched elements from a selector or an HTML fragment. 
+        /// Add elements to the set of matched elements from a selector or an HTML fragment.
         /// </summary>
-        /// <param name="html"></param>
-        /// <returns>A new CQ object.</returns>
+        ///
+        /// <param name="selector">
+        /// A string representing a selector expression to find additional elements to add to the set of
+        /// matched elements.
+        /// </param>
+        /// <param name="context">
+        /// The point in the document at which the selector should begin matching; similar to the context
+        /// argument of the $(selector, context) method.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/add/
+        /// </url>
+
         public CQ Add(string selector,IDomObject context)
         {
             return Add(Select(selector,context));
         }
 
         /// <summary>
-        /// Adds the specified class(es) to each of the set of matched elements.
+        /// Adds the specified class, or each class in a space-separated list, to each of the set of
+        /// matched elements.
         /// </summary>
-        /// <param name="className"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="className">
+        /// One or more class names to be added to the class attribute of each matched element.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/addclass/
+        /// </url>
+
         public CQ AddClass(string className)
         {
             foreach (var item in Elements)
@@ -386,11 +611,23 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Add or remove one or more classes from each element in the set of matched elements, 
-        /// depending on either the class's presence.
+        /// Add or remove one or more classes from each element in the set of matched elements, depending
+        /// on either the class's presence.
         /// </summary>
-        /// <param name="className"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="classes">
+        /// One or more class names (separated by spaces) to be toggled for each element in the matched
+        /// set.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/toggleClass/
+        /// </url>
+
         public CQ ToggleClass(string classes)
         {
             IEnumerable<string> classList = classes.SplitClean(' ');
@@ -411,11 +648,26 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Add or remove one or more classes from each element in the set of matched elements, 
-        /// depending on the value of the switch argument.
+        /// Add or remove one or more classes from each element in the set of matched elements, depending
+        /// on the value of the switch argument.
         /// </summary>
-        /// <param name="className"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="classes">
+        /// One or more class names (separated by spaces) to be toggled for each element in the matched
+        /// set.
+        /// </param>
+        /// <param name="addRemoveSwitch">
+        /// a boolean value that determine whether the class should be added (true) or removed (false).
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/toggleClass/
+        /// </url>
+
         public CQ ToggleClass(string classes, bool addRemoveSwitch)
         {
             IEnumerable<string> classList = classes.SplitClean(' ');
@@ -436,11 +688,27 @@ namespace CsQuery
             return this;
         }
 
+        //public CQ ToggleClass(bool addRemoveSwitch)
+        //{
+
+        //}
+
         /// <summary>
         /// Determine whether any of the matched elements are assigned the given class.
         /// </summary>
-        /// <param name="className"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="className">
+        /// The class name to search for.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the class exists on any of the elements, false if not.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/hasclass/
+        /// </url>
+
         public bool HasClass(string className)
         {
             
@@ -451,30 +719,66 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Insert content, specified by the parameter, to the end of each element in the set of matched elements.
+        /// Insert content, specified by the parameter, to the end of each element in the set of matched
+        /// elements.
         /// </summary>
-        /// <param name="content"></param>
-        /// <returns>The current CQ object</returns>
+        ///
+        /// <param name="content">
+        /// One or more HTML strings to append.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/append/
+        /// </url>
+
         public CQ Append(params string[] content)
         {
             return Append(mergeContent(content));
         }
 
         /// <summary>
-        /// Insert content, specified by the parameter, to the end of each element in the set of matched elements.
+        /// Insert the element, specified by the parameter, to the end of each element in the set of
+        /// matched elements.
         /// </summary>
-        /// <param name="content"></param>
-        /// <returns>The current CQ object</returns>
+        ///
+        /// <param name="element">
+        /// The element to exclude.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/append/
+        /// </url>
+
         public CQ Append(IDomObject element)
         {
             return Append(Objects.Enumerate(element));
         }
 
         /// <summary>
-        /// Insert content, specified by the parameter, to the end of each element in the set of matched elements.
+        /// Insert the sequence of elements, specified by the parameter, to the end of each element in
+        /// the set of matched elements.
         /// </summary>
-        /// <param name="content"></param>
-        /// <returns>The current CQ object</returns>
+        ///
+        /// <param name="elements">
+        /// The elements to be excluded.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/append/
+        /// </url>
+
         public CQ Append(IEnumerable<IDomObject> elements)
         {
             CQ ignoredOutput;
@@ -482,35 +786,24 @@ namespace CsQuery
         }
 
         /// <summary>
-        ///  Insert every element in the set of matched elements to the end of the target.
+        /// Appends a func.
         /// </summary>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        public CQ AppendTo(string target)
-        {
-            return AppendTo(Select(target));
-
-        }
-        public CQ AppendTo(IDomObject target)
-        {
-            return AppendTo(Objects.Enumerate(target));
-        }
-        public CQ AppendTo(IEnumerable<IDomObject> targets)
-        {
-            CQ output;
-            EnsureCsQuery(targets).Append(SelectionSet, out output);
-            return output;
-        }
-
-        /// <summary>
         ///
-        /// </summary>
         /// <param name="func">
-        /// delegate(int index, string html) 
-        ///  A function that returns an HTML string to insert at the end of each element in the set of matched elements. 
-        /// Receives the index position of the element in the set and the old HTML value of the element as arguments.
+        /// A delegate to a function that returns an HTML string to insert at the end
+        /// of each element in the set of matched elements. Receives the index position of the element in
+        /// the set and the old HTML value of the element as arguments. Within the function, this refers
+        /// to the current element in the set.
         /// </param>
-        /// <returns>The current CQ object</returns>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/append/
+        /// </url>
+
         public CQ Append(Func<int, string, string> func)
         {
             int index = 0;
@@ -524,6 +817,25 @@ namespace CsQuery
             return this;
         }
 
+        /// <summary>
+        /// Insert content, specified by the parameter, to the end of each element in the set of matched
+        /// elements.
+        /// </summary>
+        ///
+        /// <param name="func">
+        /// A delegate to a function that returns an IDomElement to insert at the end of each element in
+        /// the set of matched elements. Receives the index position of the element in the set and the
+        /// old HTML value of the element as arguments. Within the function, this refers to the current
+        /// element in the set.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/append/
+        /// </url>
 
         public CQ Append(Func<int, string, IDomElement> func)
         {
@@ -536,6 +848,27 @@ namespace CsQuery
             }
             return this;
         }
+
+        /// <summary>
+        /// Insert content, specified by the parameter, to the end of each element in the set of matched
+        /// elements.
+        /// </summary>
+        ///
+        /// <param name="func">
+        /// A delegate to a function that returns a sequence of IDomElement objects to insert at the end
+        /// of each element in the set of matched elements. Receives the index position of the element in
+        /// the set and the old HTML value of the element as arguments. Within the function, this refers
+        /// to the current element in the set.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/append/
+        /// </url>
+
         public CQ Append(Func<int, string, IEnumerable<IDomElement>> func)
         {
             int index = 0;
@@ -549,30 +882,143 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Insert content, specified by the parameter, to the beginning of each element in the set of matched elements.
+        /// Insert every element in the set of matched elements to the end of each element in the targets.
         /// </summary>
-        /// <param name="elements">One or more elements</param>
-        /// <returns>The current CQ object</returns>
+        ///
+        /// <remarks>
+        /// The .Append() and .appendTo() methods perform the same task. The major difference is in the
+        /// syntax-specifically, in the placement of the content and target. With .Append(), the selector
+        /// expression preceding the method is the container into which the content is inserted. With
+        /// .AppendTo(), on the other hand, the content precedes the method, either as a selector
+        /// expression or as markup created on the fly, and it is inserted into the target container.
+        /// </remarks>
+        ///
+        /// <param name="target">
+        /// A selector that results in HTML to which the selection set will be appended.
+        /// </param>
+        ///
+        /// <returns>
+        ///  A CQ object containing all the elements added
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/appendTo/
+        /// </url>
+
+        public CQ AppendTo(params string[] target)
+        {
+            CQ output;
+            new CQ(mergeSelections(target)).Append(SelectionSet,out output);
+
+            return output;
+
+        }
+
+        /// <summary>
+        /// Insert every element in the set of matched elements to the end of the target.
+        /// </summary>
+        ///
+        /// <param name="target">
+        /// The element to which the elements in the current selection set should be appended.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object containing the target elements.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/appendTo/
+        /// </url>
+
+        public CQ AppendTo(IDomObject target)
+        {
+            return AppendTo(Objects.Enumerate(target));
+        }
+
+        /// <summary>
+        /// Insert every element in the set of matched elements to the end of the target.
+        /// </summary>
+        ///
+        /// <param name="targets">
+        /// The targets to which the current selection will be appended.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object containing the target elements.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/appendTo/
+        /// </url>
+
+        public CQ AppendTo(IEnumerable<IDomObject> targets)
+        {
+            CQ output;
+            EnsureCsQuery(targets).Append(SelectionSet, out output);
+            return output;
+        }
+
+        /// <summary>
+        /// Insert content, specified by the parameter, to the beginning of each element in the set of
+        /// matched elements.
+        /// </summary>
+        ///
+        /// <param name="elements">
+        /// One or more elements.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object representing the inserte content.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/prepend/
+        /// </url>
+
         public CQ Prepend(params IDomObject[] elements)
         {
             return Prepend(Objects.Enumerate(elements));
         }
 
         /// <summary>
-        /// Insert content, specified by the parameter, to the beginning of each element in the set of matched elements.
+        /// Insert content, specified by the parameter, to the beginning of each element in the set of
+        /// matched elements.
         /// </summary>
-        /// <param name="selector">One or more selectors or HTML strings</param>
-        /// <returns>The current CQ object</returns>
+        ///
+        /// <param name="selector">
+        /// One or more selectors or HTML strings.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/prepend/
+        /// </url>
+
         public CQ Prepend(params string[] selector)
         {
             return Prepend(mergeContent(selector));
         }
 
         /// <summary>
-        /// Insert content, specified by the parameter, to the beginning of each element in the set of matched elements.
+        /// Insert content, specified by the parameter, to the beginning of each element in the set of
+        /// matched elements.
         /// </summary>
-        /// <param name="elements">The elements to be inserted</param>
-        /// <returns>The current CQ object</returns>
+        ///
+        /// <param name="elements">
+        /// The elements to be inserted.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/prepend/
+        /// </url>
+
         public CQ Prepend(IEnumerable<IDomObject> elements)
         {
             CQ ignoredOutput;
@@ -580,11 +1026,25 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Insert content, specified by the parameter, to the beginning of each element in the set of matched elements.
+        /// Insert content, specified by the parameter, to the beginning of each element in the set of
+        /// matched elements.
         /// </summary>
-        /// <param name="elements">The elements to be inserted</param>
-        /// <param name="insertedElements">A CQ object containing all the elements added</param>
-        /// <returns></returns>
+        ///
+        /// <param name="elements">
+        /// The elements to be inserted.
+        /// </param>
+        /// <param name="insertedElements">
+        /// A CQ object containing all the elements added.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/prepend/
+        /// </url>
+
         public CQ Prepend(IEnumerable<IDomObject> elements, out CQ insertedElements)
         {
             insertedElements = New();
@@ -592,8 +1052,15 @@ namespace CsQuery
             
             foreach (var target in Elements)
             {
+                /// <summary>
+                /// For the first iteration, the elements can be moved. For successive iterations, a clone
+                /// must be insterted.
+                /// </summary>
+
                 IEnumerable<IDomObject> content =
-                    first ? elements : EnsureCsQuery(onlyElements(elements)).Clone().SelectionSet;
+                    first ? 
+                        elements : 
+                        EnsureCsQuery(onlyElements(elements)).Clone().SelectionSet;
 
 
                 int index = 0;
@@ -610,19 +1077,44 @@ namespace CsQuery
         /// <summary>
         /// Insert every element in the set of matched elements to the beginning of the target.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <returns>The current CQ object</returns>
-        public CQ PrependTo(params string[] selector)
+        ///
+        /// <param name="target">
+        /// One or more HTML strings that will be targeted.
+        /// </param>
+        ///
+        /// <returns>
+        /// A CQ object containing all the elements added
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/prependTo/
+        /// </url>
+
+        public CQ PrependTo(params string[] target)
         {
-            var target = New();
-            Each(selector, item => target.SelectionSet.AddRange(Select(item)));
-            target.Prepend(SelectionSet);
-            return this;
+
+            CQ output;
+            new CQ(mergeSelections(target)).Prepend(SelectionSet, out output);
+
+            return output;
         }
-        public CQ PrependTo(params IDomObject[] element)
-        {
-            return PrependTo(element);
-        }
+
+        /// <summary>
+        /// Insert every element in the set of matched elements to the beginning of the target.
+        /// </summary>
+        ///
+        /// <param name="targets">
+        /// The targets to which the current selection will be appended.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object representing the target elements.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/prependTo/
+        /// </url>
+
         public CQ PrependTo(IEnumerable<IDomObject> targets)
         {
             CQ output;
@@ -633,8 +1125,19 @@ namespace CsQuery
         /// <summary>
         /// Get the value of an attribute for the first element in the set of matched elements.
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="name">
+        /// The name of the attribute to get.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string of the attribute value.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/attr/#attr1
+        /// </url>
+
         public string Attr(string name)
         {
             name= name.ToLower();
@@ -674,11 +1177,28 @@ namespace CsQuery
             }
             return null;
         }
+
         /// <summary>
-        /// Returns an attribute value as a nullable integer, or null if not an integer
+        /// Get the value of an attribute for the first element in the set of matched elements.
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        ///
+        /// <remarks>
+        /// This is a CsQuery extension. Attribute values are always stored as strings internally, in
+        /// line with their being created and represented as HTML string data. This method simplifies
+        /// converting to another type such as integer for attributes that represent strongly-type values.
+        /// </remarks>
+        ///
+        /// <typeparam name="T">
+        /// Type to which the attribute value should be converted.
+        /// </typeparam>
+        /// <param name="name">
+        /// The name of the attribute to get.
+        /// </param>
+        ///
+        /// <returns>
+        /// A strongly-typed value representing the attribute.
+        /// </returns>
+
         public T Attr<T>(string name)
         {
             string value;
@@ -688,12 +1208,26 @@ namespace CsQuery
             }
             return default(T);
         }
+
         /// <summary>
         /// Set one or more attributes for the set of matched elements.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        ///
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when attemting to change the type of an INPUT element that already exists on the DOM.
+        /// </exception>
+        ///
+        /// <param name="name">
+        /// THe attribute name.
+        /// </param>
+        /// <param name="value">
+        /// The value to set.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+
         public CQ Attr(string name, IConvertible value)
         {
 
@@ -737,35 +1271,68 @@ namespace CsQuery
             }
             return this;
         }
-        
+
         /// <summary>
-        /// Map an object to attributes.
+        /// Map an object to a set of attributes name/values and set those attributes on each object in
+        /// the selection set.
         /// </summary>
-        /// <param name="attributes"></param>
-        /// <returns></returns>
-        public CQ AttrSet(object attributes)
+        ///
+        /// <remarks>
+        /// The jQuery API uses the same method "Attr" for a wide variety of purposes. For Attr and Css
+        /// methods, the overloads that we would like to use to match all the ways the method is used in
+        /// the jQuery API don't work out in the strongly-typed world of C#. To resolved this, the
+        /// methods AttrSet and CssSet were created for methods where an object or a string of JSON are
+        /// passed (a map) to set multiple methods.
+        /// </remarks>
+        ///
+        /// <param name="map">
+        /// An object whose properties names represent attribute names, or a string that is valid JSON
+        /// data that represents an object of attribute names/values.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/attr/#attr2
+        /// </url>
+
+        public CQ AttrSet(object map)
         {
-            return AttrSet(attributes, false);
+            return AttrSet(map, false);
         }
 
-
         /// <summary>
-        /// Map an object to attributes. If quickSet is true, treat give special treamtent to "css", "html", "text", "width" and "height" properties.
+        /// Map an object to attributes, optionally using "quickSet" to set other properties in addition
+        /// to the attributes.
         /// </summary>
-        /// <param name="attributes"></param>
-        /// <returns></returns>
-        public CQ AttrSet(object attributes, bool quickSet=false)
+        ///
+        /// <param name="map">
+        /// An object whose properties names represent attribute names, or a string that is valid JSON
+        /// data that represents an object of attribute names/values.
+        /// </param>
+        /// <param name="quickSet">
+        /// If true, set any css from a sub-map object passed with "css", html from "html", inner text
+        /// from "text", and css from "width" and "height" properties.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+
+        public CQ AttrSet(object map, bool quickSet=false)
         {
             IDictionary<string, object> dict;
 
-            string cssString = attributes as string;
+            string cssString = map as string;
             if (cssString != null && Objects.IsJson((cssString)))
             {
                 dict = ParseJSON<IDictionary<string, object>>(cssString);
             }
             else
             {
-                dict = Objects.ToExpando(attributes);
+                dict = Objects.ToExpando(map);
             }
 
             foreach (IDomElement el in Elements)
@@ -804,30 +1371,23 @@ namespace CsQuery
             }
             return this;
         }
-        /// <summary>
-        /// Perform a substring replace on the contents of the named attribute in each item in the selection set. 
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="replaceWhat"></param>
-        /// <param name="replaceWith"></param>
-        /// <returns></returns>
-        public CQ AttrReplace(string name, string replaceWhat, string replaceWith)
-        {
-            foreach (IDomElement item in SelectionSet)
-            {
-                string val = item[name];
-                if (val != null)
-                {
-                    item[name] = val.Replace(replaceWhat, replaceWith);
-                }
-            }
-            return this;
-        }
+
         /// <summary>
         /// Remove an attribute from each element in the set of matched elements.
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="name">
+        /// The attribute name to remove.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/removeAttr/
+        /// </url>
+
         public CQ RemoveAttr(string name)
         {
             foreach (IDomElement e in Elements)
@@ -847,71 +1407,182 @@ namespace CsQuery
             }
             return this;
         }
+
         /// <summary>
-        ///  Remove a property for the set of matched elements.
+        /// Remove a property from the set of matched elements.
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        ///
+        /// <remarks>
+        /// In CsQuery, there is no distinction between an attribute and a property. In a real browser
+        /// DOM, this method will actually remove a property from an element, causing consequences such
+        /// as the inability to set it later. In CsQuery, the DOM is stateless and is simply a
+        /// representation of the HTML that created it. This method is included for compatibility, but
+        /// causes no special behavior.
+        /// </remarks>
+        ///
+        /// <param name="name">
+        /// The property (attribute) name to remove.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/removeProp/
+        /// </url>
+
         public CQ RemoveProp(string name)
         {
             return RemoveAttr(name);
         }
+
         /// <summary>
-        /// Insert content, specified by the parameter, before each element in the set of matched elements.
+        /// Insert content, specified by the parameter, before each element in the set of matched
+        /// elements.
         /// </summary>
-        /// <param name="?"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="selector">
+        /// A CSS selector that determines the elements to insert.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/before/
+        /// </url>
+
         public CQ Before(string selector)
         {
             return Before(Select(selector));
         }
+
+        /// <summary>
+        /// Insert the element, specified by the parameter, before each element in the set of matched
+        /// elements.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to insert.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/before/
+        /// </url>
+
         public CQ Before(IDomObject element)
         {
             return Before(Objects.Enumerate(element));
         }
+
         /// <summary>
-        /// Insert content, specified by the parameter, before each element in the set of matched elements.
+        /// Insert each element, specified by the parameter, before each element in the set of matched
+        /// elements.
         /// </summary>
-        public CQ Before(IEnumerable<IDomObject> selection)
+        ///
+        /// <param name="elements">
+        /// The elements to insert.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/before/
+        /// </url>
+
+        public CQ Before(IEnumerable<IDomObject> elements)
         {
-            EnsureCsQuery(selection).InsertAtOffset(SelectionSet, 0);
+            EnsureCsQuery(elements).InsertAtOffset(SelectionSet, 0);
             return this;
         }
+
         /// <summary>
-        ///  Insert content, specified by the parameter, after each element in the set of matched elements.
+        /// Insert content, specified by the parameter, after each element in the set of matched elements.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="selector">
+        /// A CSS selector that determines the elements to insert.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/after/
+        /// </url>
+
         public CQ After(string selector)
         {
             return After(Select(selector));
         }
+
         /// <summary>
-        ///  Insert content, specified by the parameter, after each element in the set of matched elements.
+        /// Insert an element, specified by the parameter, after each element in the set of matched
+        /// elements.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="element">
+        /// The element to insert.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/after/
+        /// </url>
+
         public CQ After(IDomObject element)
         {
             return After(Objects.Enumerate(element));
         }
+
         /// <summary>
-        ///  Insert content, specified by the parameter, after each element in the set of matched elements.
+        /// Insert elements, specified by the parameter, after each element in the set of matched
+        /// elements.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ After(IEnumerable<IDomObject> selection)
+        ///
+        /// <param name="elements">
+        /// The elements to insert.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/after/
+        /// </url>
+
+        public CQ After(IEnumerable<IDomObject> elements)
         {
-            EnsureCsQuery(selection).InsertAtOffset(SelectionSet, 1);
+            EnsureCsQuery(elements).InsertAtOffset(SelectionSet, 1);
             return this;
-            
         }
 
         /// <summary>
-        /// Remove the parents of the set of matched elements from the DOM, 
-        /// leaving the matched elements in their place.
+        /// Remove the parents of the set of matched elements from the DOM, leaving the matched elements
+        /// in their place.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/unwrap/
+        /// </url>
+
         public CQ Unwrap()
         {
             HashSet<IDomObject> parents = new HashSet<IDomObject>();
@@ -919,6 +1590,7 @@ namespace CsQuery
             // Start with a unique list of parents instead of working with the siblings
             // to avoid repetition and unwrapping more than once for multiple siblings from
             // a single parent
+            
             foreach (IDomObject obj in SelectionSet)
             {
                 if (obj.ParentNode != null) {
@@ -933,31 +1605,139 @@ namespace CsQuery
             //Order = SelectionSetOrder.Ascending;
             return this;
         }
+
+        /// <summary>
+        /// Wrap an HTML structure around each element in the set of matched elements.
+        /// </summary>
+        ///
+        /// <param name="wrappingSelector">
+        /// A string that is either a selector or a string of HTML that defines the structure to wrap
+        /// around the set of matched elements.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/wrap/
+        /// </url>
+
         public CQ Wrap(string wrappingSelector)
         {
             return Wrap(Select(wrappingSelector));
         }
+
+        /// <summary>
+        /// Wrap an HTML structure around each element in the set of matched elements.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// An element which is the structure to wrap around the selection set.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/wrap/
+        /// </url>
+
         public CQ Wrap(IDomObject element)
         {
             return Wrap(Objects.Enumerate(element));
         }
+
+        /// <summary>
+        /// Wrap an HTML structure around each element in the set of matched elements.
+        /// </summary>
+        ///
+        /// <param name="wrapper">
+        /// A sequence of elements that is the structure to wrap around the selection set. There may be
+        /// multiple elements but there should be only one innermost element in the sequence.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/wrap/
+        /// </url>
+
         public CQ Wrap(IEnumerable<IDomObject> wrapper)
         {
             return Wrap(wrapper, false);
         }
+
+        /// <summary>
+        /// Wrap an HTML structure around all elements in the set of matched elements.
+        /// </summary>
+        ///
+        /// <param name="wrappingSelector">
+        /// A string that is either a selector or a string of HTML that defines the structure to wrap
+        /// around the set of matched elements.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/wrapall/
+        /// </url>
+
         public CQ WrapAll(string wrappingSelector)
         {
             return WrapAll(Select(wrappingSelector));
         }
+
+        /// <summary>
+        /// Wrap an HTML structure around all elements in the set of matched elements.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// An element which is the structure to wrap around the selection set.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/wrapall/
+        /// </url>
+
         public CQ WrapAll(IDomObject element)
         {
             return WrapAll(Objects.Enumerate(element));
         }
+
+        /// <summary>
+        /// Wrap an HTML structure around all elements in the set of matched elements.
+        /// </summary>
+        ///
+        /// <param name="wrapper">
+        /// A sequence of elements that is the structure to wrap around each element in the selection
+        /// set. There may be multiple elements but there should be only one innermost element in the
+        /// sequence.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/wrapall/
+        /// </url>
+
         public CQ WrapAll(IEnumerable<IDomObject> wrapper)
         {
             return Wrap(wrapper, true);
         }
-        protected CQ Wrap(IEnumerable<IDomObject> wrapper, bool keepSiblingsTogether)
+
+        private CQ Wrap(IEnumerable<IDomObject> wrapper, bool keepSiblingsTogether)
         {
             // get innermost structure
             CQ wrapperTemplate = EnsureCsQuery(wrapper);
@@ -993,29 +1773,68 @@ namespace CsQuery
             }
             return this;
         }
+
         /// <summary>
         /// Wrap an HTML structure around the content of each element in the set of matched elements.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="selector">
+        /// An HTML snippet or elector expression specifying the structure to wrap around the content of
+        /// the matched elements.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/wrapinner/
+        /// </url>
+
         public CQ WrapInner(string selector)
         {
             return WrapInner(Select(selector));
         }
+
         /// <summary>
         /// Wrap an HTML structure around the content of each element in the set of matched elements.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="wrapper">
+        /// A sequence of elements that is the structure to wrap around the content of the selection set.
+        /// There may be multiple elements but there should be only one innermost element in the sequence.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/wrapinner/
+        /// </url>
+
         public CQ WrapInner(IDomObject wrapper)
         {
             return WrapInner(Objects.Enumerate(wrapper));
         }
-        // <summary>
+
+        /// <summary>
         /// Wrap an HTML structure around the content of each element in the set of matched elements.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="wrapper">
+        /// A sequence of elements that is the structure to wrap around the content of the selection set.
+        /// There may be multiple elements but there should be only one innermost element in the sequence.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/wrapinner/
+        /// </url>
+
         public CQ WrapInner(IEnumerable<IDomObject> wrapper) {
             foreach (var el in Elements)
             {
@@ -1032,19 +1851,46 @@ namespace CsQuery
             }
             return this;
         }
-        //protected 
+
         /// <summary>
-        /// Get the children of each element in the set of matched elements, optionally filtered by a selector.
+        /// Get the children of each element in the set of matched elements, optionally filtered by a
+        /// selector.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <param name="filter">
+        /// A selector that must match each element returned.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/children/
+        /// </url>
+
         public CQ Children(string filter=null)
         {
             return filterIfSelector(filter, SelectionChildren());
         }
+
         /// <summary>
-        /// Description: Get the siblings of each element in the set of matched elements, optionally filtered by a selector.
+        /// Description: Get the siblings of each element in the set of matched elements, optionally
+        /// filtered by a selector.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <param name="selector">
+        /// A selector used to filter the siblings.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/siblings/
+        /// </url>
+
         public CQ Siblings(string selector=null)
         {
             SelectionSet<IDomElement> siblings = new SelectionSet<IDomElement>();
@@ -1063,11 +1909,19 @@ namespace CsQuery
             }
             return filterIfSelector(selector,siblings, SelectionSetOrder.Ascending);
         }
+
         /// <summary>
         /// Create a deep copy of the set of matched elements.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        ///
+        /// <returns>
+        /// A new CQ object that contains a clone of each element in the original selection set.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/clone/
+        /// </url>
+
         public CQ Clone()
         {
             CQ csq = new CQ();
@@ -1093,19 +1947,70 @@ namespace CsQuery
             }
             return csq;
         }
+
         /// <summary>
-        /// Get the first ancestor element that matches the selector, beginning at the current element and progressing up through the DOM tree.
+        /// Get the first ancestor element that matches the selector, beginning at the current element
+        /// and progressing up through the DOM tree.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <param name="selector">
+        /// A CSS selector.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/closest/#closest1
+        /// </url>
+
         public CQ Closest(string selector)
         {
             CQ matchTo = Select(selector);
             return Closest(matchTo);
         }
+
+        /// <summary>
+        /// Return the element passed by parameter, if it is an ancestor of any elements in the selection
+        /// set.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to target.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/closest/#closest1
+        /// </url>
+
         public CQ Closest(IDomObject element)
         {
             return Closest(Objects.Enumerate(element));
         }
+
+        /// <summary>
+        /// Get the first ancestor element of any element in the seleciton set that is also one of the
+        /// elements in the sequence passed by parameter, beginning at the current element and
+        /// progressing up through the DOM tree.
+        /// </summary>
+        ///
+        /// <param name="elements">
+        /// The elements to target.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/closest/#closest1
+        /// </url>
+
         public CQ Closest(IEnumerable<IDomObject> elements)
         {
             // Use a hashset to operate faster - since we already haveone for the selection set anyway
@@ -1138,10 +2043,20 @@ namespace CsQuery
             return csq;
 
         }
+
         /// <summary>
-        /// Get the children of each element in the set of matched elements, including text and comment nodes.
+        /// Get the children of each element in the set of matched elements, including text and comment
+        /// nodes.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/contents/
+        /// </url>
+
         public CQ Contents()
         {
 
@@ -1156,23 +2071,34 @@ namespace CsQuery
 
             return new CQ(list, this);
         }
-        
 
         /// <summary>
-        ///  Set one or more CSS properties for the set of matched elements from JSON data
+        /// Set one or more CSS properties for the set of matched elements from JSON data.
         /// </summary>
-        /// <param name="cssJson"></param>
-        /// <returns></returns>
-        public CQ CssSet(object css)
+        ///
+        /// <param name="map">
+        /// An object whose properties names represent css property names, or a string that is valid JSON
+        /// data that represents an object of css style names/values.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/css/#css2
+        /// </url>
+
+        public CQ CssSet(object map)
         {
             IDictionary<string, object> dict;
-            if (Objects.IsJson(css))
+            if (Objects.IsJson(map))
             {
-                dict = ParseJSON<IDictionary<string, object>>((string)css);
+                dict = ParseJSON<IDictionary<string, object>>((string)map);
             }
             else
             {
-                dict = Objects.ToExpando(css);
+                dict = Objects.ToExpando(map);
             }
             foreach (IDomElement e in Elements) 
             {
@@ -1185,11 +2111,30 @@ namespace CsQuery
         }
 
         /// <summary>
-        ///  Set one or more CSS properties for the set of matched elements.
+        /// Set one or more CSS properties for the set of matched elements.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        ///
+        /// <remarks>
+        /// By default, this method will validate that the CSS style name and value are valid CSS3. To
+        /// assing a style without validatoin, use the overload of this method and set the "strict"
+        /// parameter to false.
+        /// </remarks>
+        ///
+        /// <param name="name">
+        /// The name of the style.
+        /// </param>
+        /// <param name="value">
+        /// The value of the style.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/css/#css2
+        /// </url>
+
         public CQ Css(string name, IConvertible value)
         {
             string style = String.Empty;
@@ -1202,12 +2147,27 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Get the value of a style property for the first element in the set of matched elements,
-        /// and converts to type T
+        /// Get the value of a style property for the first element in the set of matched elements, and
+        /// converts to a numeric type T. Any numeric type strings are ignored when converting to numeric
+        /// values.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="style"></param>
-        /// <returns></returns>
+        ///
+        /// <typeparam name="T">
+        /// The type. This should probably be a numeric type, but the method will attempt to convert to
+        /// any IConvertible type passed.
+        /// </typeparam>
+        /// <param name="style">
+        /// The name of the CSS style to retrieve.
+        /// </param>
+        ///
+        /// <returns>
+        /// A value of type T.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/css/#css1
+        /// </url>
+
         public T Css<T>(String style) where T: IConvertible 
         {
             IDomElement el =FirstElement();
@@ -1215,22 +2175,37 @@ namespace CsQuery
                 return default(T);
             }
 
-            IStringScanner scanner = Scanner.Create(el.Style[style] ?? "");
+            
+            if (Objects.IsNumericType(typeof(T)))
+            {IStringScanner scanner = Scanner.Create(el.Style[style] ?? "");
             T num;
-            if (scanner.TryGetNumber<T>(out num))
-            {
-                return num;
+                if (scanner.TryGetNumber<T>(out num))
+                {
+                    return num;
+                }
+                else
+                {
+                    return default(T);
+                }
             }
             else
             {
-                return default(T);
+                return (T)Objects.ChangeType(el.Style[style] ?? "", typeof(T));
             }
         }
+
         /// <summary>
-        /// Get the value of a style property for the first element in the set of matched elements
+        /// Get the value of a style property for the first element in the set of matched elements.
         /// </summary>
-        /// <param name="style"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="style">
+        /// The name of the CSS style.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string of the value of the named CSS style.
+        /// </returns>
+
         public string Css(string style)
         {
             IDomElement el = FirstElement();
@@ -1256,11 +2231,26 @@ namespace CsQuery
             return def;
             
         }
+
         /// <summary>
-        /// Returns all values at named data store for the first element in the jQuery collection, as set by data(name, value).
-        /// (Any attributes starting with data-)
+        /// Returns all values at named data store for the first element in the jQuery collection, as set
+        /// by data(name, value). Put another way, this method constructs an object based on the names
+        /// and values of any attributes starting with "data-".
         /// </summary>
-        /// <returns></returns>
+        ///
+
+        /// <summary>
+        /// Gets the data.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A dynamic object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/data/#data2
+        /// </url>
+
         public IDynamicMetaObjectProvider Data()
         {
             var dataObj = new JsObject();
@@ -1284,12 +2274,27 @@ namespace CsQuery
             }
             
         }
+
         /// <summary>
-        /// Store arbitrary data associated with the specified element. Returns the value that was set.
+        /// Store arbitrary data associated with the specified element, and render it as JSON on the
+        /// element in a format that can be read by the jQuery "Data()" methods.
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="jsonData"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="key">
+        /// The name of the key to associate with this data object.
+        /// </param>
+        /// <param name="data">
+        /// An string to be associated with the key.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/data/#data1
+        /// </url>
+
         public CQ Data(string key,string data)
         {
             foreach (IDomElement e in Elements)
@@ -1298,12 +2303,41 @@ namespace CsQuery
             }
             return this;
         }
+
         /// <summary>
-        /// Convert an object to JSON and store as data
+        /// Store arbitrary data associated with the specified element, and render it as JSON on the
+        /// element in a format that can be read by the jQuery "Data()" methods.
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        ///
+        /// <remarks>
+        /// Though the jQuery "Data" methods are designed to read the HTML5 "data-" attributes like the
+        /// CsQuery version, jQuery Data keeps its data in an internal data store that is unrelated to
+        /// the element attributes. This is not particularly necessary when working in C# since you have
+        /// many other framwork options for managing data. Rather, this method has been implemented to
+        /// simplify passing data back and forth between the client and server. You should be able to use
+        /// CsQuery's Data methods to set arbitrary objects as data, and read them directly from the
+        /// client using the jQuery data method. Bear and mind that because CsQuery intends to write
+        /// every object you assign using "Data" as a JSON string on a "data-" attribute, there's a lot
+        /// of conversion going on which will probably have imperfect results if you just try to use it
+        /// as a way to attach an object to an element. It's therefore advised that you think of it as a
+        /// way to get data to the client primarily.
+        /// </remarks>
+        ///
+        /// <param name="key">
+        /// The name of the key to associate with this data object.
+        /// </param>
+        /// <param name="data">
+        /// An string containing properties to be mapped to JSON data.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/data/#data1
+        /// </url>
+
         public CQ Data(string key, object data)
         {
             string json = CQ.ToJSON(data);
@@ -1313,12 +2347,40 @@ namespace CsQuery
             }
             return this;
         }
+
         /// <summary>
-        /// Convert an object to JSON and stores each named property as a data element
+        /// Convert an object to JSON and stores each named property as a data element.
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        ///
+        /// <remarks>
+        /// Because of conflicts with the overloaded signatures compared to the jQuery API, the general
+        /// Data method that maps an entire object has been implemented as DataSet.
+        /// 
+        /// Though the jQuery "Data" methods are designed to read the HTML5 "data-" attributes like the
+        /// CsQuery version, jQuery Data keeps its data in an internal data store that is unrelated to
+        /// the element attributes. This is not particularly necessary when working in C# since you have
+        /// many other framwork options for managing data. Rather, this method has been implemented to
+        /// simplify passing data back and forth between the client and server. You should be able to use
+        /// CsQuery's Data methods to set arbitrary objects as data, and read them directly from the
+        /// client using the jQuery data method. Bear and mind that because CsQuery intends to write
+        /// every object you assign using "Data" as a JSON string on a "data-" attribute, there's a lot
+        /// of conversion going on which will probably have imperfect results if you just try to use it
+        /// as a way to attach an object to an element. It's therefore advised that you think of it as a
+        /// way to get data to the client primarily.
+        /// </remarks>
+        ///
+        /// <param name="data">
+        /// An object containing properties which will be mapped to data attributes.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/data/#data1
+        /// </url>
+
         public CQ DataSet(object data)
         {
             JsObject obj = CQ.ToExpando(data);
@@ -1328,15 +2390,54 @@ namespace CsQuery
             }
             return this;
         }
+
         /// <summary>
-        /// Returns value at named data store for the first element in the jQuery collection, as set by data(name, value).
+        /// Returns an object or value at named data store for the first element in the jQuery collection,
+        /// as set by data(name, value).
         /// </summary>
-        public object Data(string element)
+        ///
+        /// <param name="key">
+        /// The named key to identify the data, resulting in access to an attribute named "data-{key}".
+        /// </param>
+        ///
+        /// <returns>
+        /// An object representing the stored data. This could be a value type, or a POCO with properties
+        /// each containing other objects or values, depending on the data that was initially set.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/data/#data2
+        /// </url>
+
+        public object Data(string key)
         {
-            string data = First().Attr("data-" + element);
+            string data = First().Attr("data-" + key);
             
             return JSON.ParseJSON(data);
         }
+
+        /// <summary>
+        /// Returns an object or value at named data store for the first element in the jQuery collection,
+        /// as set by data(name, value).
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// The type to which to cast the data. This type should match the type used when setting the
+        /// data initially, or be a type that is compatible with the JSON data structure stored in the
+        /// data attribute.
+        /// </typeparam>
+        /// <param name="key">
+        /// The name of the key to associate with this data object.
+        /// </param>
+        ///
+        /// <returns>
+        /// An object of type T.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/data/#data2
+        /// </url>
+
         public T Data<T>(string key)
         {
             string data = First().Attr("data-" + key);
@@ -1346,18 +2447,37 @@ namespace CsQuery
         /// <summary>
         /// Remove all data- attributes from the element.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/removeData/
+        /// </url>
+
         public CQ RemoveData()
         {
             return RemoveData((string)null);
         }
 
-       
         /// <summary>
-        /// Remove a previously-stored piece of data.
+        /// Remove a previously-stored piece of data identified by a key.
         /// </summary>
-        /// <param name="element"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="key">
+        /// A string naming the piece of data to delete, or pieces of data if the string has multiple
+        /// values separated by spaces.
+        /// </param>
+        ///
+        /// <returns>
+        /// THe current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/removeData/
+        /// </url>
+
         public CQ RemoveData(string key)
         {
             foreach (IDomElement el in Elements)
@@ -1380,10 +2500,23 @@ namespace CsQuery
             }
             return this;
         }
+
         /// <summary>
         /// Remove all data from an element.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <param name="keys">
+        /// An array or space-separated string naming the pieces of data to delete.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/removeData/
+        /// </url>
+
         public CQ RemoveData(IEnumerable<string> keys)
         {
             foreach (var key in keys)
@@ -1393,35 +2526,117 @@ namespace CsQuery
             }
             return this;
         }
+
         /// <summary>
-        /// Returns data as a string, with no attempt to decode it
+        /// Returns data as a string, with no attempt to parse it from JSON. This is the equivalent of
+        /// using the Attr("data-{key}") method.
         /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="key">
+        /// The key identifying the data.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string.
+        /// </returns>
+
         public string DataRaw(string key)
         {
             return First().Attr("data-" + key);
         }
+
         /// <summary>
-        /// Iterate over each matched element.
+        /// Iterate over each matched element, calling the delegate passed by parameter for each element.
+        /// If the delegate returns false, the iteration is stopped.
         /// </summary>
-        /// <param name="func"></param>
-        /// <returns></returns>
-        public CQ Each(Action<int, IDomObject> func)
+        ///
+        /// <remarks>
+        /// The overloads of Each the inspect the return value have a different method name (EachUntil)
+        /// because the C# compiler will not choose the best-matchine method when passing method groups.
+        /// See: http://stackoverflow.com/questions/2057146/compiler-ambiguous-invocation-error-anonymous-
+        /// method-and-method-group-with-fun.
+        /// </remarks>
+        ///
+        /// <param name="func">
+        /// A function delegate returning a boolean, and accepting an integer and an IDomObject
+        /// parameter. The integer is the zero-based index of the current iteration, and the IDomObject
+        /// is the current element.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/each/
+        /// </url>
+
+        public CQ EachUntil(Func<int, IDomObject, bool> func)
         {
             int index = 0;
             foreach (IDomObject obj in Selection)
             {
-                func(index, obj);
+                if (!func(index++, obj))
+                {
+                    break;
+                }
+
             }
             return this;
         }
 
         /// <summary>
-        /// Iterate over each matched element.
+        /// Iterate over each matched element, calling the delegate passed by parameter for each element.
+        /// If the delegate returns false, the iteration is stopped.
         /// </summary>
-        /// <param name="func"></param>
-        /// <returns></returns>
+        ///
+        /// <remarks>
+        /// The overloads of Each the inspect the return value have a different method name (EachUntil)
+        /// because the C# compiler will not choose the best-matchine method when passing method groups.
+        /// See: http://stackoverflow.com/questions/2057146/compiler-ambiguous-invocation-error-anonymous-
+        /// method-and-method-group-with-fun.
+        /// </remarks>
+        ///
+        /// <param name="func">
+        /// A function delegate returning a boolean.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/each/
+        /// </url>
+
+        public CQ EachUntil(Func<IDomObject, bool> func)
+        {
+
+            foreach (IDomObject obj in Selection)
+            {
+                if (!func(obj))
+                {
+                    break;
+                }
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Iterate over each matched element, calling the delegate passed by parameter for each element
+        /// </summary>
+        ///
+        /// <param name="func">
+        /// A delegate accepting a single IDomObject paremeter
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/each/
+        /// </url>
 
         public CQ Each(Action<IDomObject> func)
         {
@@ -1431,11 +2646,50 @@ namespace CsQuery
             }
             return this;
         }
+
+        /// <summary>
+        /// Iterate over each matched element, calling the delegate passed by parameter for each element.
+        /// </summary>
+        ///
+        /// <param name="func">
+        /// A delegate accepting an integer parameter, and an IDomObject paremeter. The integer is the
+        /// zero-based index of the current iteration.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/each/
+        /// </url>
+
+        public CQ Each(Action<int,IDomObject> func)
+        {
+            int index = 0;
+            foreach (IDomObject obj in Selection)
+            {
+                func(index++,obj);
+            }
+            return this;
+        }
+
         /// <summary>
         /// Reduce the set of matched elements to the one at the specified index.
         /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="index">
+        /// The zero-based index within the current selection set to match.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/eq/
+        /// </url>
+
         public CQ Eq(int index)
         {
             if (index < 0)
@@ -1452,32 +2706,66 @@ namespace CsQuery
             }
         }
 
-        
         /// <summary>
-        /// Get the descendants of each element in the current set of matched elements, filtered by a selector
+        /// Get the descendants of each element in the current set of matched elements, filtered by a
+        /// selector.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="selector">
+        /// A string containing a selector expression to match elements against.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/find/
+        /// </url>
+
         public CQ Find(string selector)
         {
             return FindImpl(new Selector(selector));
         }
 
         /// <summary>
-        /// Get the descendants of each element in the current set of matched elements, filtered by a sequence of elements or jQuery object
+        /// Get the descendants of each element in the current set of matched elements, filtered by a
+        /// sequence of elements or CQ object.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="elements">
+        /// The elements to match against.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/find/
+        /// </url>
+
         public CQ Find(IEnumerable<IDomObject> elements)
         {
            return FindImpl(new Selector(elements));
         }
 
         /// <summary>
-        /// Find an specific element if it is a descentent of the current selection
+        /// Get a single element, if it is a descendant of the current selection set.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="element">
+        /// The element to matc.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/find/
+        /// </url>
+
         public CQ Find(IDomObject element)
         {
             return FindImpl(new Selector(element));
@@ -1486,24 +2774,99 @@ namespace CsQuery
         private CQ FindImpl(Selector selector)
         {
             CQ csq = New();
-            csq.AddSelectionRange(selector.Select(Document, this));
+            csq.AddSelection(selector.Select(Document, this));
             csq.Selectors = selector;
             return csq;
         }
+
+        /// <summary>
+        /// Reduce the set of matched elements to those that match the selector or pass the function's
+        /// test.
+        /// </summary>
+        ///
+        /// <param name="selector">
+        /// A string containing a selector expression to match the current set of elements against.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/filter/
+        /// </url>
 
         public CQ Filter(string selector)
         {
             return new CQ(filterElements(SelectionSet, selector));
 
         }
+
+        /// <summary>
+        /// Reduce the set of matched elements to those that matching the element passed by parameter.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to match.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/filter/
+        /// </url>
+        
         public CQ Filter(IDomObject element) {
             return Filter(Objects.Enumerate(element));
         }
+
+        /// <summary>
+        /// Reduce the set of matched elements to those matching any of the elements in a sequence passed
+        /// by parameter.
+        /// </summary>
+        ///
+        /// <param name="elements">
+        /// The elements to match.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/filter/
+        /// </url>
+        
         public CQ Filter(IEnumerable<IDomObject> elements) {
             CQ filtered = new CQ(this);
             filtered.SelectionSet.IntersectWith(elements);
             return filtered;            
         }
+
+        /// <summary>
+        /// Reduce the set of matched elements to those that match the selector or pass the function's
+        /// test.
+        /// </summary>
+        ///
+        /// <remarks>
+        /// This method doesn't offer anything that can't easily be accomplished with a LINQ "where"
+        /// query but is included for completeness.
+        /// </remarks>
+        ///
+        /// <param name="function">
+        /// A function used as a test for each element in the set.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/filter/
+        /// </url>
+
         public CQ Filter(Func<IDomObject, bool> function)
         {
             CQ result = New();
@@ -1515,6 +2878,29 @@ namespace CsQuery
             }
             return result;
         }
+
+        /// <summary>
+        /// Reduce the set of matched elements to those that match the selector or pass the function's
+        /// test.
+        /// </summary>
+        ///
+        /// <remarks>
+        /// This method doesn't offer anything that can't easily be accomplished with a LINQ "where"
+        /// query but is included for completeness.
+        /// </remarks>
+        ///
+        /// <param name="function">
+        /// A function used as a test for each element in the set.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/filter/
+        /// </url>
+
         public CQ Filter(Func<IDomObject, int, bool> function)
         {
             CQ result = New();
@@ -1530,10 +2916,21 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Return matched element. 
+        /// Return a specific element from the selection set.
         /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="index">
+        /// The zero-based index of the element to be returned.
+        /// </param>
+        ///
+        /// <returns>
+        /// An IDomObject.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/get/.
+        /// </url>
+
         public IDomObject this[int index]
         {
             get
@@ -1543,10 +2940,27 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Select elements and return a new CSQuery object 
+        /// Select elements and return a new CSQuery object.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
+        ///
+        /// <remarks>
+        /// The "Select" method is the default CsQuery method. It's overloads are identical to the
+        /// overloads of the CQ object's property indexer (the square-bracket notation) and it functions
+        /// the same way. This is analogous to the default jQuery method, e.g. $(...).
+        /// </remarks>
+        ///
+        /// <param name="selector">
+        /// A string containing a selector expression.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/jQuery/#jQuery1
+        /// </url>
+
         public CQ Select(string selector)
         {
             CQ csq = New();
@@ -1556,15 +2970,32 @@ namespace CsQuery
             // (This comment is a placeholder for implementing document fragments properly)
             // IDomDocument dom = selectors.IsHtml ? new DomFragment(selector.ToCharArray()) : Document;
             
-            csq.AddSelectionRange(csq.Selectors.Select(Document));
+            csq.AddSelection(csq.Selectors.Select(Document));
             return csq;
         }
 
         /// <summary>
-        /// Select elements and return a new CSQuery object 
+        /// Select elements and return a new CSQuery object.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
+        ///
+        /// <remarks>
+        /// The "Select" method is the default CsQuery method. It's overloads are identical to the
+        /// overloads of the CQ object's property indexer and it functions the same way. This is
+        /// analogous to the default jQuery method, e.g. $(...).
+        /// </remarks>
+        ///
+        /// <param name="selector">
+        /// A string containing a selector expression.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/jQuery/#jQuery1
+        /// </url>
+
         public CQ this[string selector]
         {
             get
@@ -1574,10 +3005,21 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Return element wrapped in a new CQ
+        /// Return a new CQ object wrapping an element.
         /// </summary>
-        /// <param name="element"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="element">
+        /// The element to wrap.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/jQuery/#jQuery1
+        /// </url>
+
         public CQ Select(IDomObject element)
         {
             CQ csq = new CQ(element,this);
@@ -1585,10 +3027,21 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Return element wrapped in a new CQ
+        /// Return a new CQ object wrapping an element.
         /// </summary>
-        /// <param name="element"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="element">
+        /// The element to wrap.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/jQuery/#jQuery1
+        /// </url>
+
         public CQ this[IDomObject element]
         {
             get
@@ -1598,10 +3051,21 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Return a sequence of elements wrapped in a new CQ
+        /// Return a new CQ object wrapping a sequence of elements.
         /// </summary>
-        /// <param name="element"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="elements">
+        /// The elements to wrap
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/jQuery/#jQuery1
+        /// </url>
+        
         public CQ Select(IEnumerable<IDomObject> elements)
         {
             CQ csq = new CQ(elements,this);
@@ -1609,10 +3073,21 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Return a sequence of elements wrapped in a new CQ
+        /// Return a new CQ object wrapping a sequence of elements.
         /// </summary>
-        /// <param name="element"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="element">
+        /// The elements to wrap.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/jQuery/#jQuery1
+        /// </url>
+
         public CQ this[IEnumerable<IDomObject> element]
         {
             get
@@ -1622,11 +3097,25 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Select elements from within a context
+        /// Select elements from within a context.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="selector">
+        /// A string containing a selector expression.
+        /// </param>
+        /// <param name="context">
+        /// The point in the document at which the selector should begin matching; similar to the context
+        /// argument of the CQ.Create(selector, context) method.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/jQuery/#jQuery1
+        /// </url>
+
         public CQ Select(string selector, IDomObject context)
         {
             var selectors = new Selector(selector);
@@ -1638,11 +3127,25 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Select elements from within a context
+        /// Select elements from within a context.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="selector">
+        /// A string containing a selector expression.
+        /// </param>
+        /// <param name="context">
+        /// The point in the document at which the selector should begin matching; similar to the context
+        /// argument of the CQ.Create(selector, context) method.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/jQuery/#jQuery1
+        /// </url>
+
         public CQ this[string selector, IDomObject context]
         {
             get
@@ -1652,11 +3155,26 @@ namespace CsQuery
         }
 
         /// <summary>
-        ///  Select elements from within a context
+        /// Select elements from within a context.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="selector">
+        /// A string containing a selector expression.
+        /// </param>
+        /// <param name="context">
+        /// The points in the document at which the selector should begin matching; similar to the
+        /// context argument of the CQ.Create(selector, context) method. Only elements found below the
+        /// members of the sequence in the document can be matched.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/jQuery/#jQuery1
+        /// </url>
+
         public CQ Select(string selector, IEnumerable<IDomObject> context)
         {
             var selectors = new Selector(selector);
@@ -1667,13 +3185,28 @@ namespace CsQuery
             csq.Selectors = selectors;
             return csq;
         }
-       
+
         /// <summary>
-        ///  Select elements from within a context
+        /// Select elements from within a context.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="selector">
+        /// A string containing a selector expression.
+        /// </param>
+        /// <param name="context">
+        /// The points in the document at which the selector should begin matching; similar to the
+        /// context argument of the CQ.Create(selector, context) method. Only elements found below the
+        /// members of the sequence in the document can be matched.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/jQuery/#jQuery1
+        /// </url>
+
         public CQ this[string selector, IEnumerable<IDomObject> context]
         {
             get
@@ -1685,15 +3218,34 @@ namespace CsQuery
         /// <summary>
         /// Reduce the set of matched elements to the first in the set.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <returns>
+        /// A new CQ object containing the first element in the set, or no elements if the source was
+        /// empty.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/first/
+        /// </url>
+
         public CQ First()
         {
             return Eq(0);
         }
+
         /// <summary>
         /// Reduce the set of matched elements to the last in the set.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <returns>
+        /// A new CQ object containing the last element in the set, or no elements if the source was
+        /// empty.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/last/
+        /// </url>
+
         public CQ Last()
         {
             if (SelectionSet.Count == 0)
@@ -1705,10 +3257,34 @@ namespace CsQuery
                 return Eq(SelectionSet.Count - 1);
             }
         }
+
         /// <summary>
         /// Hide the matched elements.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <remarks>
+        /// The jQuery docs say "This is roughly equivalent to calling .css('display', 'none')." With
+        /// CsQuery, it is exactly equivalent. Unlike jQuery, CsQuery does not store the current value of
+        /// the "display" style and restore it, because there is no concept of "effective style" in
+        /// CsQuery. We don't attempt to calculate the actual style that would be in effect since we
+        /// don't do any style sheet parsing. Instead, this method really just sets display: none. When
+        /// showing again, any "display" style is removed.
+        /// 
+        /// This means if you were to assign a non-default value for "display" such as "inline" to a div,
+        /// then Hide(), then Show(), it would no longer be displayed inline, as it would in jQuery.
+        /// Since CsQuery is not used interactively (yet, anyway), this sequence of events seems unlikely,
+        /// and supporting it exactly as jQuery does seems unnecessary. This functionality could
+        /// certainly be added in the future.
+        /// </remarks>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/hide/
+        /// </url>
+
         public CQ Hide()
         {
             foreach (IDomElement e in Elements)
@@ -1718,10 +3294,48 @@ namespace CsQuery
             return this;
 
         }
+
         /// <summary>
-        /// Toggle the visiblity state of the matched elements.
+        /// Display the matched elements.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <remarks>
+        /// This method simply removes the "display: none" css style, if present. See
+        /// <see cref="T:CsQuery.CQ.Hide"/> for an explanation of how this differs from jQuery.
+        /// </remarks>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/show/
+        /// </url>
+
+        public CQ Show()
+        {
+            foreach (IDomElement e in Elements)
+            {
+                if (e.Style["display"] == "none")
+                {
+                    e.RemoveStyle("display");
+                }
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Display or hide the matched elements.
+        /// </summary>
+        ///
+        /// <returns>
+        /// The curren CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/toggle/
+        /// </url>
+
         public CQ Toggle()
         {
            foreach (IDomElement e in Elements)
@@ -1732,29 +3346,42 @@ namespace CsQuery
             }
            return this;
         }
+
         /// <summary>
-        /// Display or hide the matched elements.
+        /// Display or hide the matched elements based on the value of the parameter.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <param name="isVisible">
+        /// true to show the matched elements, or false to hide them.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/toggle/
+        /// </url>
+
         public CQ Toggle(bool isVisible)
         {
-            foreach (IDomElement e in Elements)
-            {
-                if (isVisible)
-                {
-                    e.RemoveStyle("display");
-                }
-                else
-                {
-                    e.Style["display"] = "none";
-                }
-            }
-            return this;
+            return isVisible ?
+                Show() :
+                Hide();
         }
+
         /// <summary>
         /// Search for a given element from among the matched elements.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <returns>
+        /// The index of the element, or -1 if it was not found.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/index/
+        /// </url>
+
         public int Index()
         {
             IDomObject el = SelectionSet.FirstOrDefault();
@@ -1764,32 +3391,57 @@ namespace CsQuery
             }
             return -1;
         }
+
         /// <summary>
-        /// Returns the position of the current selection within the new selection defined by "selector"
+        /// Returns the position of the current selection within the new selection defined by "selector".
         /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="selector">
+        /// The selector string.
+        /// </param>
+        ///
+        /// <returns>
+        /// The zero-based index of the selection within the new selection
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/index/
+        /// </url>
+
         public int Index(string selector)
         {
             var selection = Select(selector);
             return selection.Index(SelectionSet);
         }
-        public int Index(IDomObject elements)
+
+        /// <summary>
+        /// Returns the position of the element passed in within the selection set.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to exclude.
+        /// </param>
+        ///
+        /// <returns>
+        /// The zero-based index of "element" within the selection set, or -1 if it was not a member of
+        /// the current selection.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/index/
+        /// </url>
+
+        public int Index(IDomObject element)
         {
-            return Index(Objects.Enumerate(elements));
-        }
-        public int Index(IEnumerable<IDomObject> elements)
-        {
-            IDomObject find = elements.FirstOrDefault();
             int index = -1;
-            if (find != null)
+            if (element != null)
             {
                 int count = 0;
                 foreach (IDomObject el in SelectionSet)
                 {
-                    if (ReferenceEquals(el, find))
+                    if (ReferenceEquals(el, element))
                     {
-                        index=count;
+                        index = count;
                         break;
                     }
                     count++;
@@ -1799,49 +3451,193 @@ namespace CsQuery
         }
 
         /// <summary>
+        /// Returns the position of the first element in the sequence passed by parameter within the
+        /// current selection set..
+        /// </summary>
+        ///
+        /// <param name="elements">
+        /// The element to look for.
+        /// </param>
+        ///
+        /// <returns>
+        /// The zero-based index of the first element in the sequence within the selection.
+        /// </returns>
+
+        public int Index(IEnumerable<IDomObject> elements)
+        {
+            return Index(elements.FirstOrDefault());
+            
+        }
+
+        /// <summary>
         /// Insert every element in the set of matched elements after the target.
         /// </summary>
-        /// <param name="target"></param>
-        /// <returns></returns>
+        ///
+        /// <summary>
+        /// Inserts an after described by target.
+        /// </summary>
+        ///
+        /// <param name="target">
+        /// The target to insert after.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/insertAfter/
+        /// </url>
+
         public CQ InsertAfter(IDomObject target)
         {
             return InsertAtOffset(target,1);
         }
-        /// <summary>
-        /// Insert every element in the set of matched elements after the target.
-        /// </summary>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        public CQ InsertAfter(IEnumerable<IDomObject> target) {
-            return InsertAtOffset(target, 1);
-        }
-        /// <summary>
-        /// Insert every element in the set of matched elements after the target.
-        /// </summary>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        public CQ InsertAfter(string target)
-        {
-            return InsertAfter(Select(target));
-        }
-        
 
         /// <summary>
-        /// A selector, element, HTML string, or jQuery object; the matched set of elements will be inserted before the element(s) specified by this parameter.
+        /// Insert every element in the set of matched elements after each element in the target sequence.
         /// </summary>
-        /// <param name="target"></param>
-        /// <returns>The current CQ object</returns>
+        ///
+        /// <remarks>
+        /// If there is a single element in the target, the elements in the selection set will be moved
+        /// before the target (not cloned). If there is more than one target element, however, cloned
+        /// copies of the inserted element will be created for each target after the first, and that new
+        /// set (the original element plus clones) is returned.
+        /// </remarks>
+        ///
+        /// <param name="target">
+        /// A sequence of elements or a CQ object.
+        /// </param>
+        ///
+        /// <returns>
+        /// The set of elements inserted, including the original elements and any clones made if there
+        /// was more than one target.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/insertAfter/
+        /// </url>
+
+        public CQ InsertAfter(IEnumerable<IDomObject> target) {
+            CQ output;
+            InsertAtOffset(target, 1, out output);
+            return output;
+        }
+
+        /// <summary>
+        /// Insert every element in the set of matched elements after the target.
+        /// </summary>
+        ///
+        /// <remarks>
+        /// If there is a single element in the resulting set of the selection created by the parameter
+        /// selector, then the original elements in this object's selection set will be moved before it.
+        /// If there is more than one target element, however, cloned copies of the inserted element will
+        /// be created for each target after the first, and that new set (the original element plus
+        /// clones) is returned.
+        /// </remarks>
+        ///
+        /// <param name="selectorTarget">
+        /// A selector identifying the target elements after which each element in the current set will
+        /// be inserted.
+        /// </param>
+        ///
+        /// <returns>
+        /// The set of elements inserted, including the original elements and any clones made if there
+        /// was more than one target.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/insertAfter/
+        /// </url>
+
+        public CQ InsertAfter(string selectorTarget)
+        {
+            return InsertAfter(Select(selectorTarget));
+        }
+
+        /// <summary>
+        /// Insert every element in the set of matched elements before each elemeent in the selection set
+        /// created from the target selector.
+        /// </summary>
+        ///
+        /// <remarks>
+        /// If there is a single element in the resulting set of the selection created by the parameter
+        /// selector, then the original elements in this object's selection set will be moved before it.
+        /// If there is more than one target element, however, cloned copies of the inserted element will
+        /// be created for each target after the first, and that new set (the original element plus
+        /// clones) is returned.
+        /// </remarks>
+        ///
+        /// <param name="selector">
+        /// A selector. The matched set of elements will be inserted before the element(s) specified by
+        /// this selector.
+        /// </param>
+        ///
+        /// <returns>
+        /// The set of elements inserted, including the original elements and any clones made if there
+        /// was more than one target.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/insertBefore/
+        /// </url>
+
         public CQ InsertBefore(string selector)
         {
             return InsertBefore(Select(selector));
         }
+
+        /// <summary>
+        /// Insert every element in the set of matched elements before the target.
+        /// </summary>
+        ///
+        /// <param name="target">
+        /// The element to which the elements in the current selection set should inserted after.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/insertBefore/
+        /// </url>
+
         public CQ InsertBefore(IDomObject target)
         {
             return InsertAtOffset(target, 0);
         }
+
+        /// <summary>
+        /// Insert every element in the set of matched elements before the target.
+        /// </summary>
+        ///
+        /// <remarks>
+        /// If there is a single element in the target, the elements in the selection set will be moved
+        /// before the target (not cloned). If there is more than one target element, however, cloned
+        /// copies of the inserted element will be created for each target after the first, and that new
+        /// set (the original element plus clones) is returned.
+        /// </remarks>
+        ///
+        /// <param name="target">
+        /// A sequence of elements or a CQ object that is the target; each element in the selection set
+        /// will be inserted after each element in the target.
+        /// </param>
+        ///
+        /// <returns>
+        /// The set of elements inserted, including the original elements and any clones made if there
+        /// was more than one target.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/insertBefore/
+        /// </url>
+
         public CQ InsertBefore(IEnumerable<IDomObject> target)
         {
-            return InsertAtOffset(target, 0);
+            CQ output;
+            InsertAtOffset(target, 0, out output);
+            return output;
         }
 
         /// <summary>
@@ -2226,14 +4022,7 @@ namespace CsQuery
         {
             return EnsureCsQuery(targets).ReplaceWith(SelectionSet);
         }
-        public CQ Show()
-        {
-            foreach (IDomElement e in Elements)
-            {
-                e.RemoveStyle("display");
-            }
-            return this;
-        }
+
 
         /// <summary>
         /// Get the current value of the first element in the set of matched elements, and try to convert to the specified type
@@ -2508,33 +4297,95 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Helper for public Text() function to act recursively
+        /// Helper for public Text() function to act recursively.
         /// </summary>
-        /// <param name="sb"></param>
-        /// <param name="elements"></param>
+        ///
+        /// <param name="sb">
+        /// .
+        /// </param>
+        /// <param name="elements">
+        /// .
+        /// </param>
+
         private void Text(StringBuilder sb, IEnumerable<IDomObject> elements)
         {
             IDomObject lastElement = null;
             foreach (IDomObject obj in elements)
             {
+                string text = Text(obj);
+                
                 if (lastElement != null && obj.Index > 0
-                   && obj.PreviousSibling != lastElement)
+                   && obj.PreviousSibling != lastElement 
+                    && text.Trim()!="")
                 {
                     sb.Append(" ");
                 }
+                sb.Append(Text(obj));
                 lastElement = obj;
-                switch (obj.NodeType)
-                {
-                    case NodeType.TEXT_NODE:
-                    case NodeType.CDATA_SECTION_NODE:
-                    case NodeType.COMMENT_NODE:
-                        sb.Append(obj.NodeValue);
-                        break;
-                    case NodeType.ELEMENT_NODE:
-                        Text(sb, obj.ChildNodes);
-                        break;
-                }
+                
             }
+        }
+
+        /// <summary>
+        /// Get the combined text contents of this and all child elements
+        /// </summary>
+        ///
+        /// <param name="obj">
+        /// The object.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string containing the text contents of the selection.
+        /// </returns>
+        private string Text(IDomObject obj)
+        {
+            switch (obj.NodeType)
+            {
+                case NodeType.TEXT_NODE:
+                case NodeType.CDATA_SECTION_NODE:
+                case NodeType.COMMENT_NODE:
+                    return obj.NodeValue;
+                    
+                case NodeType.ELEMENT_NODE:
+                case NodeType.DOCUMENT_FRAGMENT_NODE:
+                case NodeType.DOCUMENT_NODE:
+                    StringBuilder sb = new StringBuilder();
+                    Text(sb, obj.ChildNodes);
+                    return sb.ToString();
+                case NodeType.DOCUMENT_TYPE_NODE:
+                    return "";
+                default: 
+                    return "";
+            }
+        }
+
+        /// <summary>
+        /// Sets a child text for this element, using the text node type appropriate for this element's type
+        /// </summary>
+        ///
+        /// <param name="el">
+        /// The element to add text to
+        /// </param>
+        /// <param name="text">
+        /// The text.
+        /// </param>
+
+        private void SetChildText(IDomElement el, string text)
+        {
+            if (el.ChildrenAllowed)
+            {
+                el.ChildNodes.Clear();
+
+                // Element types that cannot have HTML contents should not have the value encoded.
+                // use DomInnerText node for those node types to preserve the raw text value
+
+                IDomText textEl = el.InnerHtmlAllowed ?
+                    new DomText(text) :
+                    new DomInnerText(text);
+
+                el.ChildNodes.Add(textEl);
+            }
+
         }
 
         /// <summary>
@@ -2553,6 +4404,22 @@ namespace CsQuery
             }
             return this;
         }
+
+        /// <summary>
+        /// Append each element passed by parameter to each element in the selection set. The inserted
+        /// elements are returned.
+        /// </summary>
+        ///
+        /// <param name="elements">
+        /// The elements to be excluded.
+        /// </param>
+        /// <param name="insertedElements">
+        /// A CQ object containing all the elements added.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
 
         private CQ Append(IEnumerable<IDomObject> elements, out CQ insertedElements)
         {

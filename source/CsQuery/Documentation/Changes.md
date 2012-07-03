@@ -2,6 +2,13 @@
 
 This is an informal log of changes to the project; major issues will be logged and described on github.
 
+#####7/2/2012
+
+- Extensive updates to XML documentation covering most common API methods
+- Added Each overloads that can be exited by returning false from the delegate
+- Fixed return values for InsertAfter(multiple) and InsertBefore(multiple) - should return the elements that were inserted, not the original object
+
+
 #####6/30/2012
 
 - Move default server config settings to ServerConfig.Default, decoupling it from the CQ object

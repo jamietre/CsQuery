@@ -14,8 +14,8 @@ namespace CsQuery
     {
         #region private properties
 
-        protected CQ _CsQueryParent;
-        protected SelectionSet<IDomObject> _Selection;
+        private CQ _CsQueryParent;
+        private SelectionSet<IDomObject> _Selection;
         
         /// <summary>
         /// The object from which this CsQuery was created
@@ -63,6 +63,9 @@ namespace CsQuery
         #endregion
 
         #region private methods
+
+       
+
         /// <summary>
         /// Clear the entire object
         /// </summary>
@@ -214,7 +217,7 @@ namespace CsQuery
         /// </summary>
         /// <param name="elements"></param>
         /// <returns></returns>
-        protected bool AddSelectionRange(IEnumerable<IDomObject> elements)
+        protected bool AddSelection(IEnumerable<IDomObject> elements)
         {
             bool result = false;
             foreach (IDomObject elm in elements)
@@ -409,7 +412,11 @@ namespace CsQuery
             return depth;
         }
 
-
+        protected CQ InsertAtOffset(IEnumerable<IDomObject> target, int offset)
+        {
+            CQ ignore;
+            return InsertAtOffset(target, offset, out ignore);
+        }
         /// <summary>
         /// Insert every element in the selection at or after the index of each target (adding offset to the index).
         /// If there is more than one target, the a clone is made of the selection for the 2nd and later targets.
@@ -417,7 +424,7 @@ namespace CsQuery
         /// <param name="target"></param>
         /// <param name="offset"></param>
         /// <returns></returns>
-        protected CQ InsertAtOffset(IEnumerable<IDomObject> target, int offset)
+        protected CQ InsertAtOffset(IEnumerable<IDomObject> target, int offset, out CQ insertedElements)
         {
             SelectionSet<IDomObject> sel = target as SelectionSet<IDomObject>;
             bool isCsQuery = sel != null;
@@ -427,10 +434,13 @@ namespace CsQuery
             // Copy the target list: it could change otherwise
             List<IDomObject> targets = new List<IDomObject>(target);
 
+            insertedElements = new CQ();
+
             if (isCsQuery && sel.Count == 0)
             {
                 // If appending items to an empty selection, just add them to the selection set
                 sel.AddRange(SelectionSet);
+                insertedElements.AddSelection(SelectionSet);
             }
             else
             {
@@ -448,6 +458,7 @@ namespace CsQuery
                         {
                             sel.Insert(index + offset, item);
                         }
+                        insertedElements.AddSelection(SelectionSet);
                     }
                     else
                     {
@@ -455,10 +466,13 @@ namespace CsQuery
                         {
                             InsertAtOffset(el, offset);
                             isFirst = false;
+                            insertedElements.AddSelection(SelectionSet);
                         }
                         else
                         {
-                            Clone().InsertAtOffset(el, offset);
+                            var clone = Clone();
+                            clone.InsertAtOffset(el, offset);
+                            insertedElements.AddSelection(clone);
                         }
                     }
                 }

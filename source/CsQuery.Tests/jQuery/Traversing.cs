@@ -139,7 +139,7 @@ namespace CsQuery.Tests.jQuery
         {
 
             // switched out Window with Body, no concept of Window here
-            var window = jQuery("body");
+            var window = jQuery("body")[0];
             var elements = jQuery(document).Add(window);
 
             var inputElements = jQuery("#radio1,#radio2,#check1,#check2");

@@ -438,7 +438,7 @@
              The attribute value string.
              </returns>
             
-             <seealso cref="!:GetAttribute(string name)"/>
+             <seealso cref="T:CsQuery.IDomObject.GetAttribute"/>
         </member>
         <member name="M:CsQuery.IDomObject.TryGetAttribute(System.String,System.String@)">
              <summary>
@@ -1160,7 +1160,7 @@
              The attribute value string.
              </returns>
             
-             <seealso cref="!:GetAttribute(string name)"/>
+             <seealso cref="T:CsQuery.IDomObject.GetAttribute"/>
         </member>
         <member name="M:CsQuery.Implementation.DomObject.TryGetAttribute(System.String,System.String@)">
              <summary>
@@ -2026,113 +2026,262 @@
             <param name="apparentTarget"></param>
             <returns></returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:CsQuery.CQ.AndSelf" -->
+        <member name="M:CsQuery.CQ.AndSelf">
+             <summary>
+             Add the previous set of elements on the stack to the current set.
+             </summary>
+            
+             <returns>
+             A new CQ object.
+             </returns>
+            
+             <url>
+             http://api.jquery.com/andself/
+             </url>
+        </member>
         <member name="M:CsQuery.CQ.End">
-            <summary>
-            End the most recent filtering operation in the current chain and return the set of matched elements 
-            to its previous state
-            </summary>
-            <returns>The CQ object at the root of the current chain, or a new, empty selection if this
-            CQ object is the direct result of a Create()
-            </returns>
-            <returntype>CQ</returntype>
+             <summary>
+             End the most recent filtering operation in the current chain and return the set of matched
+             elements to its previous state.
+             </summary>
+            
+             <returns>
+             The CQ object at the root of the current chain, or a new, empty selection if this CQ object
+             is the direct result of a Create()
+             </returns>
+            
+             <url>
+             http://api.jquery.com/end/
+             </url>
         </member>
         <member name="M:CsQuery.CQ.Get">
-            <summary>
-            Return the active selection set
-            </summary>
-            <returns></returns>
-            <returntype>IEnumerable&lt;IDomObject&gt;</returntype>
+             <summary>
+             Return the active selection set.
+             </summary>
+            
+             <returns>
+             An sequence of IDomObject elements representing the current selection set.
+             </returns>
+            
+             <url>
+             http://api.jquery.com/get/
+             </url>
         </member>
         <member name="M:CsQuery.CQ.Get(System.Int32)">
-            <summary>
-            Return a specific element from the selection set
-            </summary>
-            <param name="index">The zero-based index of the element to be returned</param>
-            <returns></returns>
+             <summary>
+             Return a specific element from the selection set.
+             </summary>
+            
+             <param name="index">
+             The zero-based index of the element to be returned.
+             </param>
+            
+             <returns>
+             An IDomObject.
+             </returns>
+            
+             <url>
+             http://api.jquery.com/get/
+             </url>
         </member>
         <member name="M:CsQuery.CQ.Empty">
-            <summary>
-            Remove all child nodes of the set of matched elements from the DOM.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.Html(System.String[])">
-            <summary>
-            Set the HTML contents of each element in the set of matched elements. 
-            Any elements without InnerHtml are ignored.
-            </summary>
-            <param name="html"></param>
-            <returns></returns>
+             <summary>
+             Remove all child nodes of the set of matched elements from the DOM.
+             </summary>
+            
+             <returns>
+             The current CQ object.
+             </returns>
+            
+             <url>
+             http://api.jquery.com/empty/
+             </url>
         </member>
         <member name="M:CsQuery.CQ.Html">
-            <summary>
-            Get the HTML contents of the first element in the set of matched elements.
-            </summary>
-            <returns></returns>
+             <summary>
+             Get the HTML contents of the first element in the set of matched elements.
+             </summary>
+            
+             <returns>
+             A string of HTML.
+             </returns>
+            
+             <url>
+             http://api.jquery.com/html/#html1
+             </url>
+        </member>
+        <member name="M:CsQuery.CQ.Html(System.String[])">
+             <summary>
+             Set the HTML contents of each element in the set of matched elements. Any elements without
+             InnerHtml are ignored.
+             </summary>
+            
+             <param name="html">
+             One or more strings of HTML markup.
+             </param>
+            
+             <returns>
+             The current CQ object.
+             </returns>
+            
+             <url>
+             http://api.jquery.com/html/#html2
+             </url>
         </member>
         <member name="M:CsQuery.CQ.Not(System.String)">
-            <summary>
-            Selects all elements that do not match the given selector.
-            </summary>
-            <param name="selector">A CSS selector</param>
-            <returns>A new CQ object</returns>
+             <summary>
+             Selects all elements that do not match the given selector.
+             </summary>
+            
+             <param name="selector">
+             A CSS selector.
+             </param>
+            
+             <returns>
+             A new CQ object.
+             </returns>
+            
+             <url>
+             http://api.jquery.com/not/
+             </url>
         </member>
         <member name="M:CsQuery.CQ.Not(CsQuery.IDomObject)">
-            <summary>
-            Selects all elements that do not match the given selector.
-            </summary>
-            <param name="selector">A CSS selector</param>
-            <returns>A new CQ object</returns>
-            <jquery>http://api.jquery.com/not/</jquery>
+             <summary>
+             Selects all elements except the element passed as a parameter.
+             </summary>
+            
+             <param name="element">
+             The element to exclude.
+             </param>
+            
+             <returns>
+             A new CQ object.
+             </returns>
+            
+             <url>
+             http://api.jquery.com/not/
+             </url>
         </member>
         <member name="M:CsQuery.CQ.Not(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
-            <summary>
-            Selects all elements that do not match the given selector.
-            </summary>
-            <param name="selector">A CSS selector</param>
-            <returns>A new CQ object</returns>
+             <summary>
+             Selects all elements except those passed as a parameter.
+             </summary>
+            
+             <param name="elements">
+             The elements to be excluded.
+             </param>
+            
+             <returns>
+             A new CQ object.
+             </returns>
+            
+             <url>
+             http://api.jquery.com/not/
+             </url>
         </member>
         <member name="M:CsQuery.CQ.Has(System.String)">
-            <summary>
-            Reduce the set of matched elements to those that have a descendant that matches the selector or DOM element.
-            </summary>
-            <param name="selector"></param>
-            <returns></returns>
+             <summary>
+             Reduce the set of matched elements to those that have a descendant that matches the selector
+             or DOM element.
+             </summary>
+            
+             <param name="selector">
+             A valid CSS/jQuery selector.
+             </param>
+            
+             <returns>
+             A new CQ object.
+             </returns>
+            
+             <url>
+             http://api.jquery.com/has/
+             </url>
         </member>
         <member name="M:CsQuery.CQ.Has(CsQuery.IDomObject)">
-            <summary>
-            Reduce the set of matched elements to those that have a descendant that matches the selector or DOM element.
-            </summary>
-            <param name="selector"></param>
-            <returns></returns>
+             <summary>
+             Reduce the set of matched elements to those that have the element passed as a descendant.
+             </summary>
+            
+             <param name="element">
+             The element to match.
+             </param>
+            
+             <returns>
+             A new CQ object.
+             </returns>
+            
+             <url>
+             http://api.jquery.com/has/
+             </url>
         </member>
         <member name="M:CsQuery.CQ.Has(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
-            <summary>
-            Reduce the set of matched elements to those that have a descendant that matches the selector or DOM element.
-            </summary>
-            <param name="selector"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.Text(System.String)">
-            <summary>
-            Set the content of each element in the set of matched elements to the specified text.
-            </summary>
-            <param name="value"></param>
-            <returns>The current CQ object</returns>
-        </member>
-        <member name="M:CsQuery.CQ.Text(System.Func{System.Object,System.Object,System.Object})">
-            <summary>
-            Set the content of each element in the set of matched elements to the specified text.
-            </summary>
-            <param name="value"></param>
-            <returns>The current CQ object</returns>
+             <summary>
+             Reduce the set of matched elements to those that have each of the elements passed as a descendant.
+             </summary>
+            
+             <param name="elements">
+             The elements to be excluded.
+             </param>
+            
+             <returns>
+             A new CQ object
+             </returns>
+            
+             <url>
+             http://api.jquery.com/has/
+             </url>
         </member>
         <member name="M:CsQuery.CQ.Text">
-            <summary>
-            Get the combined text contents of each element in the set of matched elements, including their descendants.
-            </summary>
-            <returns>The text contents of the selection</returns>
+             <summary>
+             Get the combined text contents of each element in the set of matched elements, including
+             their descendants.
+             </summary>
+            
+             <returns>
+             A string containing the text contents of the selection.
+             </returns>
+            
+             <url>
+             http://api.jquery.com/text/#text1
+             </url>
+        </member>
+        <member name="M:CsQuery.CQ.Text(System.String)">
+             <summary>
+             Set the content of each element in the set of matched elements to the specified text.
+             </summary>
+            
+             <param name="value">
+             A string of text.
+             </param>
+            
+             <returns>
+             The current CQ object.
+             </returns>
+            
+             <url>
+             http://api.jquery.com/text/#text2
+             </url>
+        </member>
+        <member name="M:CsQuery.CQ.Text(System.Func{System.Int32,System.String,System.Object})">
+             <summary>
+             Set the content of each element in the set of matched elements to the text returned by the
+             specified function delegate.
+             </summary>
+            
+             <param name="func">
+             delegate(int index, string html)
+             A function that returns an HTML string to insert at the end of each element in the set of
+             matched elements. Receives the index position of the element in the set and the old HTML
+             value of the element as arguments.
+             </param>
+            
+             <returns>
+             The current CQ object.
+             </returns>
+            
+             <url>
+             http://api.jquery.com/text/#text2
+             </url>
         </member>
         <member name="M:CsQuery.CQ.Add(System.String)">
             <summary>
@@ -2193,18 +2342,31 @@
             <returns></returns>
         </member>
         <member name="M:CsQuery.CQ.HasClass(System.String)">
-            <summary>
-            Determine whether any of the matched elements are assigned the given class.
-            </summary>
-            <param name="className"></param>
-            <returns></returns>
+             <summary>
+             Determine whether any of the matched elements are assigned the given class.
+             </summary>
+            
+             <param name="className">
+             The class name to append
+             </param>
+            
+             <returns>
+             true if class, false if not.
+             </returns>
         </member>
         <member name="M:CsQuery.CQ.Append(System.String[])">
-            <summary>
-            Insert content, specified by the parameter, to the end of each element in the set of matched elements.
-            </summary>
-            <param name="content"></param>
-            <returns>The current CQ object</returns>
+             <summary>
+             Insert content, specified by the parameter, to the end of each element in the set of matched
+             elements.
+             </summary>
+            
+             <param name="content">
+             One or more HTML strings to append
+             </param>
+            
+             <returns>
+             The current CQ object.
+             </returns>
         </member>
         <member name="M:CsQuery.CQ.Append(CsQuery.IDomObject)">
             <summary>
@@ -2229,14 +2391,20 @@
         </member>
         <member name="M:CsQuery.CQ.Append(System.Func{System.Int32,System.String,System.String})">
              <summary>
-            
+             Appends a func.
              </summary>
+            
              <param name="func">
-             delegate(int index, string html) 
-              A function that returns an HTML string to insert at the end of each element in the set of matched elements. 
-             Receives the index position of the element in the set and the old HTML value of the element as arguments.
+             delegate(int index, string html)
+              A function that returns an HTML string to insert at the end of each element in the set of
+              matched elements.
+             Receives the index position of the element in the set and the old HTML value of the element
+             as arguments.
              </param>
-             <returns>The current CQ object</returns>
+            
+             <returns>
+             The current CQ object.
+             </returns>
         </member>
         <member name="M:CsQuery.CQ.Prepend(CsQuery.IDomObject[])">
             <summary>
@@ -3186,11 +3354,13 @@
             </summary>
         </member>
         <member name="P:CsQuery.CQ.Length">
-            <summary>
-            The number of elements in the CQ object
-            </summary>
-            <returntype>int</returntype>
-            <jquery>http://api.jquery.com/length/</jquery>
+             <summary>
+             The number of elements in the CQ object.
+             </summary>
+            
+             <url>
+             http://api.jquery.com/length/
+             </url>
         </member>
         <member name="P:CsQuery.CQ.Item(System.Int32)">
             <summary>

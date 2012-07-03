@@ -162,18 +162,19 @@ namespace CsQuery.ExtensionMethods
         /// <param name="obj"></param>
         /// <param name="propertyName"></param>
         /// <returns></returns>
-        public static bool HasProperty(this ExpandoObject obj, string propertyName)
+        public static bool HasProperty(this DynamicObject obj, string propertyName)
         {
             return ((IDictionary<string, object>)obj).ContainsKey(propertyName);
         }
+
         /// <summary>
-        /// Return a yped value from an ExpandoObject
+        /// Return a typed value from a dynamic object
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static T Get<T>(this ExpandoObject obj, string name)
+        public static T Get<T>(this DynamicObject obj, string name)
         {
             if (obj == null)
             {

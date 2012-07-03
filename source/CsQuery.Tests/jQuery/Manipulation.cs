@@ -414,8 +414,10 @@ namespace CsQuery.Tests.jQuery
             var input = jQuery("<input />").AttrSet("{ type: 'checkbox', checked: true }").AppendTo("#testForm");
             Assert.AreEqual( input[0].Checked, true, "A checked checkbox that is appended stays checked" );
 
-            //TODO don't understand this test
+
             var radios = jQuery("input:radio[name='R1']");
+            
+            
             var radioNot = jQuery("<input type='radio' name='R1' checked='checked'/>").InsertAfter( radios );
             var radio = radios.Eq(1);
 
