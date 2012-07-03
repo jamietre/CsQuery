@@ -5,7 +5,7 @@ The CsQuery source is C# targeting .NET4. There are no dependencies.
 Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/README.md) for usage information. This document is mostly a change log.
 
 
-### Release Notes
+### Change Log
 
 Version 1.1.2.2:
 

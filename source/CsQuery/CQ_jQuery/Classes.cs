@@ -13,7 +13,22 @@ namespace CsQuery
 {
     public partial class CQ
     {
-
+        /// <summary>
+        /// Adds the specified class, or each class in a space-separated list, to each of the set of
+        /// matched elements.
+        /// </summary>
+        ///
+        /// <param name="className">
+        /// One or more class names to be added to the class attribute of each matched element.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object.
+        /// </returns>
+        ///
+        /// <url>
+        /// http://api.jquery.com/addclass/
+        /// </url>
 
         public CQ AddClass(string className)
         {

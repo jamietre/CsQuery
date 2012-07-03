@@ -103,11 +103,6 @@ namespace CsQuery.ExtensionMethods.Forms
                 {
                     RestoreData(e, selection, postData[e.Name]);
                 }
-                else
-                {
-                    // when there is a form field that has no submitted value, then reset it to default
-                    RestoreData(e,selection, null);
-                }
             }
             return selection;
 

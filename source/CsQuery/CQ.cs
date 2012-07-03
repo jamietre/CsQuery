@@ -51,8 +51,8 @@ namespace CsQuery
     /// </remarks>
     ///
     /// <implementation>
-    /// This file only contains the single CQ property, "Length". Each method is implemented in a
-    /// separate partial class fule under CqMethods.
+    /// Most of the jQuery methods are implemented in separate files under the "CQ_jQuery" folder. 
+    /// Methods which are not part of the jQuery API are found under the "CQ_CsQuery" folder.
     /// </implementation>
 
     public partial class CQ : IEnumerable<IDomObject>
@@ -638,7 +638,4 @@ namespace CsQuery
         #endregion
         
     }
-
-
-    
 }

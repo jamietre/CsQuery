@@ -7,7 +7,8 @@ This is an informal log of changes to the project; major issues will be logged a
 - Extensive updates to XML documentation covering most common API methods
 - Added Each overloads that can be exited by returning false from the delegate
 - Fixed return values for InsertAfter(multiple) and InsertBefore(multiple) - should return the elements that were inserted, not the original object
-
+- Changed name of "Selectors" object to "Selector" (this was a mistake)
+- Split the part of the IDomDocument API related only to indexing into a separate interface; these methods should not be exposed to end-users.
 
 #####6/30/2012
 
