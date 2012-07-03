@@ -202,11 +202,11 @@ namespace CsQuery.Implementation
                 {
                     if (DomAttributes.ContainsKey(HtmlData.IDAttrId))
                     {
-                        Document.RemoveFromIndex(IndexKey("#", HtmlData.TokenIDCaseSensitive(Id), Path));
+                        Document.DocumentIndex.RemoveFromIndex(IndexKey("#", HtmlData.TokenIDCaseSensitive(Id), Path));
                     }
                     if (value != null)
                     {
-                        Document.AddToIndex(IndexKey("#", HtmlData.TokenIDCaseSensitive(value), Path), this);
+                        Document.DocumentIndex.AddToIndex(IndexKey("#", HtmlData.TokenIDCaseSensitive(value), Path), this);
                     }
                 }
                 SetAttributeRaw(HtmlData.IDAttrId, value);
@@ -936,7 +936,7 @@ namespace CsQuery.Implementation
                     _Classes.Add(tokenId);
                     if (!IsDisconnected)
                     {
-                        Document.AddToIndex(IndexKey(".",tokenId), this);
+                        Document.DocumentIndex.AddToIndex(IndexKey(".", tokenId), this);
                     }
                     
                     result = true;
@@ -945,7 +945,7 @@ namespace CsQuery.Implementation
             if (result && !hadClasses && !IsDisconnected)
             {
                 // Must index the attributes for search just on attribute too
-                Document.AddToIndex(AttributeIndexKey(HtmlData.ClassAttrId), this);
+                Document.DocumentIndex.AddToIndex(AttributeIndexKey(HtmlData.ClassAttrId), this);
             }
             return result;
         }
@@ -974,7 +974,7 @@ namespace CsQuery.Implementation
                     _Classes.Remove(tokenId);
                     if (!IsDisconnected)
                     {
-                        Document.RemoveFromIndex(IndexKey(".",tokenId));
+                        Document.DocumentIndex.RemoveFromIndex(IndexKey(".",tokenId));
                     }
 
                     result = true;
@@ -982,7 +982,7 @@ namespace CsQuery.Implementation
             }
             if (!HasClasses && hasClasses && !IsDisconnected)
             {
-                Document.RemoveFromIndex(AttributeIndexKey(HtmlData.ClassAttrId));
+                Document.DocumentIndex.RemoveFromIndex(AttributeIndexKey(HtmlData.ClassAttrId));
             }
 
             return result;
@@ -1583,7 +1583,7 @@ namespace CsQuery.Implementation
         {
             if (!IsDisconnected)
             {
-                Document.RemoveFromIndex(AttributeIndexKey(attrId));
+                Document.DocumentIndex.RemoveFromIndex(AttributeIndexKey(attrId));
             }
         }
 
@@ -1599,8 +1599,8 @@ namespace CsQuery.Implementation
         {
             if (!IsDisconnected && !DomAttributes.ContainsKey(attrId))
             {
-                
-                Document.AddToIndex(AttributeIndexKey(attrId), this);
+
+                Document.DocumentIndex.AddToIndex(AttributeIndexKey(attrId), this);
             }
         }
 

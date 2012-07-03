@@ -209,7 +209,7 @@ namespace CsQuery.Engine
 
                     if (selectionSource == null)
                     {
-                        result = Document.QueryIndex(key + HtmlData.indexSeparator, depth, descendants);
+                        result = Document.DocumentIndex.QueryIndex(key + HtmlData.indexSeparator, depth, descendants);
                     }
                     else
                     {
@@ -217,7 +217,7 @@ namespace CsQuery.Engine
                         result = elementMatches;
                         foreach (IDomObject obj in selectionSource)
                         {
-                            elementMatches.AddRange(Document.QueryIndex(key + HtmlData.indexSeparator + obj.Path,
+                            elementMatches.AddRange(Document.DocumentIndex.QueryIndex(key + HtmlData.indexSeparator + obj.Path,
                                     depth, descendants));
                         }
 
@@ -243,7 +243,7 @@ namespace CsQuery.Engine
                     {
 
                         key = HtmlData.indexSeparator + obj.Path;
-                        HashSet<IDomObject> srcKeys = new HashSet<IDomObject>(Document.QueryIndex(key));
+                        HashSet<IDomObject> srcKeys = new HashSet<IDomObject>(Document.DocumentIndex.QueryIndex(key));
                         foreach (IDomObject match in selector.SelectElements)
                         {
                             if (srcKeys.Contains(match))

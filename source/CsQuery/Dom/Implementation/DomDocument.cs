@@ -13,7 +13,7 @@ namespace CsQuery.Implementation
     /// <summary>
     /// Special node type to represent the DOM.
     /// </summary>
-    public class DomDocument : DomContainer<DomDocument>, IDomDocument
+    public class DomDocument : DomContainer<DomDocument>, IDomDocument, IDomIndex
     {
         #region constructors
 
@@ -70,6 +70,19 @@ namespace CsQuery.Implementation
         #endregion
 
         #region public properties
+
+
+        /// <summary>
+        /// Exposes the Document as an IDomIndex object
+        /// </summary>
+
+        public IDomIndex DocumentIndex
+        {
+            get
+            {
+                return (IDomIndex)this;
+            }
+        }
 
         /// <summary>
         /// The index

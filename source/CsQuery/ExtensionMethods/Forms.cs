@@ -92,7 +92,7 @@ namespace CsQuery.ExtensionMethods.Forms
         public static CQ RestorePost(this CQ selection, NameValueCollection postData)
         {
             string selector = "input[name], select[name], button[name], textarea";
-            CQ src = selection.Selectors == null ?
+            CQ src = selection.Selector == null ?
                 selection.Select(selector) :
                 selection.Find(selector);
 

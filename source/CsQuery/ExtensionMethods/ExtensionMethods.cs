@@ -191,6 +191,79 @@ namespace CsQuery.ExtensionMethods
                 return default(T);
             }
         }
+
+        /// <summary>
+        /// Reduce the set of matched elements to a subset beginning with the 0-based index provided.
+        /// </summary>
+        ///
+        /// <param name="array">
+        /// The array to act on.
+        /// </param>
+        /// <param name="start">
+        /// The 0-based index at which to begin selecting.
+        /// </param>
+        /// <param name="end">
+        /// The 0-based index of the element at which to stop selecting. The actual element at this
+        /// position is not included in the result.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new array of the same type as the original.
+        /// </returns>
+
+        public static Array Slice(this Array array, int start, int end)
+        {
+            // handle negative values
+
+            if (start < 0)
+            {
+                start = array.Length + start;
+                if (start < 0) { start = 0; }
+            }
+            if (end < 0)
+            {
+                end = array.Length + end;
+                if (end < 0) { end = 0; }
+            }
+            if (end >= array.Length)
+            {
+                end = array.Length;
+            }
+
+
+            int length = end - start;
+
+            Type arrayType = array.GetType().GetElementType();
+            Array output =  Array.CreateInstance(arrayType,length);
+
+            int newIndex = 0;
+            for (int i=start;i<end;i++) {
+                output.SetValue(array.GetValue(i), newIndex++);
+            }
+
+            return output;
+        
+        }
+
+        /// <summary>
+        /// Reduce the set of matched elements to a subset beginning with the 0-based index provided.
+        /// </summary>
+        ///
+        /// <param name="array">
+        /// The array to act on.
+        /// </param>
+        /// <param name="start">
+        /// The 0-based index at which to begin selecting.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new array of the same type as the original.
+        /// </returns>
+
+        public static Array Slice(this Array array, int start)
+        {
+            return Slice(array, start, array.Length);
+        }
     }
     
 }

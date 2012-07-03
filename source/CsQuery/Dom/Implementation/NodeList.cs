@@ -29,9 +29,10 @@ namespace CsQuery.Implementation
         {
             if (element.ParentNode != null)
             {
+                DomObject item = element as DomObject;
                 if ( !element.IsDisconnected && element.IsIndexed)
                 {
-                    element.Document.RemoveFromIndex((IDomIndexedNode)element);
+                    item.Document.DocumentIndex.RemoveFromIndex((IDomIndexedNode)element);
                 }
                 ((DomObject)element).ParentNode = null;
             }
@@ -40,12 +41,13 @@ namespace CsQuery.Implementation
         }
         protected void AddParent(IDomObject element, int index)
         {
-            DomObject item = (DomObject)element;
+            DomObject item = element as DomObject;
+
             item.ParentNode = Owner;
             item.Index = index;
             if (!element.IsDisconnected && element.IsIndexed)
             {
-                element.Document.AddToIndex((IDomIndexedNode)element);
+                item.Document.DocumentIndex.AddToIndex((IDomIndexedNode)element);
             }
         }
         #region IList<T> Members
@@ -153,9 +155,10 @@ namespace CsQuery.Implementation
                         var el = (DomElement)InnerList[i];
 
                         // This would get assigned anyway but this is much faster since we already know the index
-                        Owner.Document.RemoveFromIndex(el);
+                        el.Document.DocumentIndex.RemoveFromIndex(el);
                         el.Index = i;
-                        Owner.Document.AddToIndex(el);
+
+                        Owner.Document.DocumentIndex.AddToIndex(el);
                     }
                     else
                     {

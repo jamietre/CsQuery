@@ -27,7 +27,7 @@ namespace CsQuery.Implementation
             get
             {
                 return textIndex >= 0 ?
-                    stringRef.GetTokenizedString(textIndex)
+                    stringRef.DocumentIndex.GetTokenizedString(textIndex)
                         : unboundText;
             }
         }

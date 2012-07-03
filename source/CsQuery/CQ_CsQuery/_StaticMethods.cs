@@ -97,8 +97,8 @@ namespace CsQuery
 
             if (!String.IsNullOrEmpty(selector))
             {
-                Selectors = new Selector(selector);
-                AddSelection(Selectors.Select(Document, context));
+                Selector = new Selector(selector);
+                AddSelection(Selector.Select(Document, context));
             }
         }
 

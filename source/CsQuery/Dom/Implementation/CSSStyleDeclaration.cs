@@ -453,7 +453,7 @@ namespace CsQuery.Implementation
         {
             if (!Owner.IsDisconnected)
             {
-                Owner.Document.AddToIndex(Owner.AttributeIndexKey(HtmlData.tagSTYLE), Owner);
+                Owner.Document.DocumentIndex.AddToIndex(Owner.AttributeIndexKey(HtmlData.tagSTYLE), Owner);
             }
         }
 
@@ -461,7 +461,7 @@ namespace CsQuery.Implementation
         {
             if (!Owner.IsDisconnected)
             {
-                Owner.Document.RemoveFromIndex(Owner.AttributeIndexKey(HtmlData.tagSTYLE));
+                Owner.Document.DocumentIndex.RemoveFromIndex(Owner.AttributeIndexKey(HtmlData.tagSTYLE));
             }
         }
 

@@ -18,7 +18,7 @@ namespace CsQuery.HtmlParser
         public HtmlElementFactory(IDomDocument document)
         {
             Document = document;
-            SetHtml(document.SourceHtml);
+            SetHtml(document.DocumentIndex.SourceHtml);
             IsBound = true;
         }
 
@@ -430,15 +430,15 @@ namespace CsQuery.HtmlParser
             // ignore everything before <html> except text; if found, start adding to <body>
             // if there's anything before <doctype> then it gets trashed
 
-            IDomElement html = Document.GetElementByTagName("html");
+            IDomElement html = Document.GetElementsByTagName("html").FirstOrDefault();
 
-            if (html!= null && Document.GetElementByTagName("head") == null)
+            if (html != null && Document.GetElementsByTagName("head").FirstOrDefault() == null)
             {
                 html.ChildNodes.Insert(0,Document.CreateElement("head"));
             }
 
 
-            IDomElement body = Document.GetElementByTagName("body");
+            IDomElement body = Document.GetElementsByTagName("body").FirstOrDefault();
             if (body != null)
             {
 
