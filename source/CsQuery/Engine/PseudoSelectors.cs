@@ -20,7 +20,56 @@ namespace CsQuery.Engine
                 return new NthChild();
             }
         }
-        
+
+        private static IDictionary<string, Func<IDomObject, string, bool>> _Extensions;
+        private static string LastExtensionName;
+        private static Func<IDomObject, string, bool> LastExtension;
+        private static Func<IDomObject, string, bool> GetExtension(string name)
+        {
+            if (LastExtensionName == name)
+            {
+                return LastExtension;
+            }
+            else
+            {
+                Func<IDomObject,  string, bool> extension;
+                if (Extensions.TryGetValue(name, out extension))
+                {
+                    return extension;
+                }
+                else
+                {
+                    throw new InvalidOperationException(String.Format("Attempt to use nonexistent extension pseudoselector :{0}", name));
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// A dictionary of pseudoselector extensions
+        /// </summary>
+        ///
+        /// <value>
+        /// Contains a map of names to functions.
+        /// </value>
+
+        #endregion
+
+        #region public properties
+
+        public static IDictionary<string, Func<IDomObject,  string, bool>> Extensions
+        {
+            get
+            {
+                if (_Extensions == null)
+                {
+                    _Extensions = new Dictionary<string, Func<IDomObject, string, bool>>();
+                }
+                return _Extensions;
+            }
+
+        }
+
         #endregion
 
         #region CSS3 pseudoselectors
@@ -427,6 +476,27 @@ namespace CsQuery.Engine
         #endregion
 
         #region Selection set position pseudoselectors (jQuery additions)
+
+        public static IEnumerable<IDomObject> Extension(IDomObject obj, int index, string data) {
+            var childs = obj.ChildNodes;
+            for (int i=0;i<childs.Count;i++) {
+                if (IsExtension(childs[i],i,data)) {
+                    yield return childs[i];
+                }
+            }
+        }
+
+        public static bool IsExtension(IDomObject obj, int index, string data)
+        {
+
+            string[] parms = data.Split('|');
+            string args = parms.Length ==1 ? 
+                null : 
+                parms[1];
+            
+            var func = GetExtension(parms[0]);
+            return func(obj, args);
+        }
 
         public static IEnumerable<IDomObject> OddElements(IEnumerable<IDomObject> list)
         {

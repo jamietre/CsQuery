@@ -22,6 +22,7 @@ namespace CsQuery.Engine
         TraversalType NextTraversalType = TraversalType.All;
         CombinatorType NextCombinatorType = CombinatorType.Root;
 
+
         protected SelectorClause Current
         {
             get
@@ -202,10 +203,10 @@ namespace CsQuery.Engine
                                 Current.PseudoClassType = PseudoClassType.OnlyOfType;
                                 
                                 // when it's not a filter, we are getting the only one of every type; skip criteria
-                                if (Current.TraversalType == TraversalType.Filter)
-                                {
+                                //if (Current.TraversalType == TraversalType.Filter)
+                                //{
                                     Current.Criteria = type;
-                                }
+                                //}
                                 break;
                             case "header":
                                 StartNewSelector(SelectorType.PseudoClass);
@@ -220,14 +221,10 @@ namespace CsQuery.Engine
                                 type = Current.Tag;
                                 StartNewSelector(SelectorType.PseudoClass);
                                 Current.PseudoClassType = PseudoClassType.NthOfType;
-                                
-                                // when it's not a filter, we are getting the only one of every type; skip criteria
 
                                 Current.Criteria = scanner.GetBoundedBy('(');
-                                //if (Current.TraversalType == TraversalType.Filter)
-                                //{
-                                    Current.Criteria += "|"+ type;
-                                //}
+                                Current.Criteria += "|"+ type;
+                                
                                 break;
                             case "nth-last-child":
                                 StartNewSelector(SelectorType.PseudoClass);
@@ -241,10 +238,7 @@ namespace CsQuery.Engine
                                 StartNewSelector(SelectorType.PseudoClass);
                                 Current.PseudoClassType = PseudoClassType.NthLastOfType;
                                 Current.Criteria = scanner.GetBoundedBy('(');
-                                //if (Current.TraversalType == TraversalType.Filter)
-                                //{
-                                    Current.Criteria += "|"+ type;
-                                //}
+                                Current.Criteria += "|"+ type;
                                 break;
                             case "lang":
                                 // The problem with :lang is that it is based on an inherited property value. This messes  with the index since
@@ -275,7 +269,23 @@ namespace CsQuery.Engine
                                 throw new NotImplementedException("Pseudoclasses that require a browser aren't implemented.");
 
                             default:
-                                throw new ArgumentException("Unknown pseudo-class :\"" + key + "\". If this is a valid CSS or jQuery selector, please let us know.");
+                                
+                                if (PseudoSelectors.Extensions.ContainsKey(key))
+                                {
+                                    StartNewSelector(SelectorType.PseudoClass);
+                                    Current.PseudoClassType = PseudoClassType.Extension;
+                                    string criteria = key;
+                                    if (!scanner.Finished && scanner.NextChar == '(')
+                                    {
+                                        criteria += "|" + scanner.GetBoundedBy('(');
+                                    }
+                                    Current.Criteria = criteria;
+                                }
+                                else
+                                {
+                                    throw new ArgumentException("Unknown pseudo-class :\"" + key + "\". If this is a valid CSS or jQuery selector, please let us know.");
+                                }
+                                break;
                         }
                         break;
                     case '.':

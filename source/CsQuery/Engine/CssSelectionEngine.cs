@@ -774,6 +774,9 @@ namespace CsQuery.Engine
                 case PseudoClassType.All:
                     results=elm.ChildElements;
                     break;
+                case PseudoClassType.Extension:
+                    results =PseudoSelectors.Extension(elm, -1, selector.Criteria);
+                    break;
                 default:
                     throw new NotImplementedException("Unimplemented position type selector");
             }
@@ -847,6 +850,9 @@ namespace CsQuery.Engine
                     return PseudoSelectors.IsHeader(elm);
                 case PseudoClassType.All:
                     return true;
+                case PseudoClassType.Extension:
+                    return PseudoSelectors.IsExtension(elm, -1, clause.Criteria);
+
                 default:
                     throw new NotImplementedException("Unimplemented position type selector");
             }

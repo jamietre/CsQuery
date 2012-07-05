@@ -40,14 +40,5 @@ namespace CsQuery.Tests.Csharp.HtmlParser
             Assert.AreEqual(expected, ta.Val());
 
         }
-
-        [Test, TestMethod]
-        public void Parsing2()
-        {
-            var dom = TestDom("textarea-problem");
-            var ta = dom["textarea"];
-
-
-        }
     }
 }

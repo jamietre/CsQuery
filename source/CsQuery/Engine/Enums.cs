@@ -82,7 +82,8 @@ namespace CsQuery.Engine
         NthLastOfType = 27,
         OnlyChild = 28,
         OnlyOfType = 29,
-        Empty = 30
+        Empty = 30,
+        Extension=99
         
     }
 
