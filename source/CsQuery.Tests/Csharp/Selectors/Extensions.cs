@@ -20,18 +20,18 @@ namespace CsQuery.Tests.Csharp.Selectors
     {
         
 
-        [Test,TestMethod]
-        public void SimpleExtension()
-        {
-            var dom = TestDom("TestHtml");
-            CsQuery.Engine.PseudoSelectors.Extensions.Add("isnumeric",ContentIsNumeric);
+        //[Test,TestMethod]
+        //public void SimpleExtension()
+        //{
+        //    var dom = TestDom("TestHtml");
+        //    CsQuery.Engine.PseudoSelectors.Extensions.Add("isnumeric",ContentIsNumeric);
 
-            CQ res = dom.Select("span :isnumeric");            
-            Assert.AreEqual(3, res.Length);
+        //    CQ res = dom.Select("span :isnumeric");            
+        //    Assert.AreEqual(3, res.Length);
 
-            res = dom.Select("span:has(:isnumeric)");
-            Assert.AreEqual(6, res.Length);
-        }
+        //    res = dom.Select("span:has(:isnumeric)");
+        //    Assert.AreEqual(6, res.Length);
+        //}
 
         //[Test, TestMethod]
         //public void ParameterizedExtension()

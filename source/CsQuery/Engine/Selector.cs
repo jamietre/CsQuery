@@ -77,6 +77,27 @@ namespace CsQuery.Engine
 
         }
 
+        /// <summary>
+        /// Sets the traversal type for all CombinatorType.Root child selectors. This is useful for
+        /// subselectors; you may not want them to default to a filter.
+        /// </summary>
+        ///
+        /// <param name="type">
+        /// The type.
+        /// </param>
+
+        public Selector SetTraversalType(TraversalType type)
+        {
+            foreach (var sel in Clauses)
+            {
+                if (sel.CombinatorType == CombinatorType.Root)
+                {
+                    sel.TraversalType = type;
+                }
+            }
+            return this;
+        }
+
         #endregion
 
         #region private properties

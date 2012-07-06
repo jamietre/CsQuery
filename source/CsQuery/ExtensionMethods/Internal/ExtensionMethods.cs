@@ -570,5 +570,52 @@ namespace CsQuery.ExtensionMethods.Internal
 
         }
 
+        /// <summary>
+        /// Convert a single character to lower case
+        /// </summary>
+        ///
+        /// <param name="character">
+        /// The character to act on.
+        /// </param>
+        ///
+        /// <returns>
+        /// The lowercased character
+        /// </returns>
+
+        public static char ToLower(this char character)
+        {
+            if (character >= 'A' && character <= 'Z')
+            {
+                return (char)(character + 32);
+            }
+            else
+            {
+                return character;
+            }
+        }
+
+        /// <summary>
+        /// Convert a single character to upper case
+        /// </summary>
+        ///
+        /// <param name="character">
+        /// The character to act on.
+        /// </param>
+        ///
+        /// <returns>
+        /// The uppercased character
+        /// </returns>
+
+        public static char ToUpper(this char character)
+        {
+            if (character >= 'a' && character <= 'z')
+            {
+                return (char)(character - 32);
+            }
+            else
+            {
+                return character;
+            }
+        }
     }
 }

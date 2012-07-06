@@ -156,16 +156,7 @@ namespace CsQuery
         protected void LoadDocument(char[] html)
         {
             Clear();
-            //CreateNewDocument(html);
-            
-            //if (html != null)
-            //{
-            //    HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
-            //    factory.ParseToDocument();
-            //    AddSelectionRange(Document.ChildNodes);
 
-               
-            //}
             CreateNewDocument(html);
             ClearSelections();
             HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);

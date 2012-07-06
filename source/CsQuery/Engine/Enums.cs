@@ -14,7 +14,7 @@ namespace CsQuery.Engine
         Class = 8,
         AttributeExists = 16,
         AttributeValue = 32,
-        Contains = 64,
+        //Contains = 64,
         PseudoClass = 128,
         Elements = 256,
         HTML = 512,

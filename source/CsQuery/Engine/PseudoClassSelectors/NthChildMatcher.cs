@@ -5,13 +5,15 @@ using System.Linq;
 using System.Text;
 using CsQuery.ExtensionMethods;
 using CsQuery.EquationParser;
+using CsQuery.HtmlParser;
+
 namespace CsQuery.Engine
 {
 
     /// <summary>
     /// Figure out if an index matches an Nth Child, or return a list of all matching elements from a list.
     /// </summary>
-    public class NthChild
+    public class NthChildMatcher
     {
         #region private properties
 
@@ -118,6 +120,78 @@ namespace CsQuery.Engine
         #region public properties/methods
 
         /// <summary>
+        /// General purpose method for various nth-child selectors. 
+        /// </summary>
+        ///
+        /// <param name="obj">
+        /// .
+        /// </param>
+        /// <param name="criteria">
+        /// The criteria.
+        /// </param>
+        /// <param name="fromLast">
+        /// Count from the last element instead of the first.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if nth child of type implementation, false if not.
+        /// </returns>
+
+        public bool IsNthChildOfType(IDomElement obj, string formula, bool fromLast = false)
+        {
+
+            return IndexMatches(IndexOf(obj,true, fromLast), formula, fromLast);
+        }
+
+        public bool IsNthChild(IDomElement obj, string formula, bool fromLast = false)
+        {
+            return IndexMatches(IndexOf(obj, false, fromLast), formula,fromLast);
+        }
+
+        public IEnumerable<IDomObject> NthChildsOfTypeImpl(IDomElement elm, string formula, bool fromLast = false)
+        {
+            
+            return GetMatchingChildren(elm, formula, null, fromLast);
+        }
+
+        public IEnumerable<IDomObject> NthChilds(IDomElement elm, string formula, bool fromLast = false)
+        {
+            return GetMatchingChildren(elm, formula, null, fromLast);
+        }
+
+        /// <summary>
+        /// Return the index of obj within its siblings, including only elements with the same node name
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        private int IndexOf(IDomElement obj, bool onlyOfSameType, bool fromLast = false)
+        {
+            // get the index just for this type
+            int typeIndex = 0;
+            
+            var childNodes = obj.ParentNode.ChildNodes;
+            int length = childNodes.Count;
+
+            for (int index = 0; index < length; index++)
+            {
+                var el = NthChildMatcher.GetEffectiveChild(childNodes, index, fromLast);
+                if (el.NodeType == NodeType.ELEMENT_NODE)
+                {
+                    if (!onlyOfSameType || el.NodeNameID == obj.NodeNameID)
+                    {
+                        if (ReferenceEquals(el, obj))
+                        {
+                            return typeIndex;
+                        }
+                        typeIndex++;
+                    }
+                }
+            }
+            return -1;
+        }
+
+
+        /// <summary>
         /// Return true if the index matches the formula provided
         /// </summary>
         /// <param name="index"></param>
@@ -125,9 +199,8 @@ namespace CsQuery.Engine
         /// <param name="onlyNodeName">Only include nodes of this type</param>
         /// <param name="fromLast">Count from the last element instead of the first</param>
         /// <returns></returns>
-        public bool IndexMatches(int index, string formulaText, string onlyNodeName=null, bool fromLast=false)
+        public bool IndexMatches(int index, string formulaText, bool fromLast=false)
         {
-            OnlyNodeName = onlyNodeName;
             FromLast = fromLast;
             return IndexMatches(index, formulaText);
         }

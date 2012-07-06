@@ -123,7 +123,10 @@ namespace CsQuery.StringScanner
         {
             return CharacterData.IsType(character, CharacterType.Quote); 
         }
-
+        public static bool QuoteChar(int index, char character)
+        {
+            return CharacterData.IsType(character, CharacterType.Quote);
+        }
         public static bool BoundChar(int index, char character)
         {
             return CharacterData.IsType(character, CharacterType.Enclosing | CharacterType.Quote); 

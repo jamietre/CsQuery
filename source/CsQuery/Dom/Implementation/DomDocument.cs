@@ -156,9 +156,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return GetElementById("html") == null
-                    ? NodeType.DOCUMENT_FRAGMENT_NODE :
-                NodeType.DOCUMENT_NODE;
+                return NodeType.DOCUMENT_NODE;
             }
         }
 

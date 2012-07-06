@@ -15,9 +15,10 @@ namespace CsQuery.Engine
     {
         #region private properties
 
-        protected IStringScanner scanner;
         
-        protected  Selector Selectors;
+
+        private IStringScanner scanner;
+        private Selector Selectors;
         private SelectorClause _Current;
         TraversalType NextTraversalType = TraversalType.All;
         CombinatorType NextCombinatorType = CombinatorType.Root;
@@ -107,80 +108,80 @@ namespace CsQuery.Engine
                                 Current.AttributeSelectorType = AttributeSelectorType.NotExists;
                                 Current.AttributeName = "disabled";
                                 break;
-                            case "contains":
+                            //case "contains":
 
-                                StartNewSelector(SelectorType.Contains);
-                                IStringScanner inner = scanner.ExpectBoundedBy('(', true).ToNewScanner();
-                                Current.Criteria = inner.Get(MatchFunctions.OptionallyQuoted);
-                                break;
-                            case "eq":
-                            case "gt":
-                            case "lt":
-                                StartNewSelector(SelectorType.PseudoClass);
-                                switch (key)
-                                {
-                                    case "eq": Current.PseudoClassType = PseudoClassType.IndexEquals; break;
-                                    case "lt": Current.PseudoClassType = PseudoClassType.IndexLessThan; break;
-                                    case "gt": Current.PseudoClassType = PseudoClassType.IndexGreaterThan; break;
-                                }
+                            //    StartNewSelector(SelectorType.Contains);
+                            //    IStringScanner inner = scanner.ExpectBoundedBy('(', true).ToNewScanner();
+                            //    Current.Criteria = inner.Get(MatchFunctions.OptionallyQuoted);
+                            //    break;
+                            //case "eq":
+                            //case "gt":
+                            //case "lt":
+                            //    StartNewSelector(SelectorType.PseudoClass);
+                            //    switch (key)
+                            //    {
+                            //        case "eq": Current.PseudoClassType = PseudoClassType.IndexEquals; break;
+                            //        case "lt": Current.PseudoClassType = PseudoClassType.IndexLessThan; break;
+                            //        case "gt": Current.PseudoClassType = PseudoClassType.IndexGreaterThan; break;
+                            //    }
 
-                                scanner.ExpectChar('(');
-                                Current.PositionIndex = Convert.ToInt32(scanner.GetNumber());
-                                scanner.ExpectChar(')');
+                            //    scanner.ExpectChar('(');
+                            //    Current.PositionIndex = Convert.ToInt32(scanner.GetNumber());
+                            //    scanner.ExpectChar(')');
 
-                                break;
-                            case "even":
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.Even;
-                                break;
-                            case "odd":
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.Odd;
-                                break;
-                            case "first":
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.First;
-                                break;
-                            case "last":
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.Last;
-                                break;
-                            case "last-child":
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.LastChild;
-                                break;
-                            case "first-child":
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.FirstChild;
-                                break;
-                            case "first-of-type":
-                                string type = Current.Tag;
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.FirstOfType;
-                                Current.Criteria = type;
-                                break;
-                            case "last-of-type":
-                                type = Current.Tag;
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.LastOfType;
-                                Current.Criteria = type;
-                                break;
-                            case "only-child":
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.OnlyChild;
-                                break;                                
-                            case "has":
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.Has;
-                                Current.Criteria = scanner.GetBoundedBy('(', true);
-                                break;
-                            case "not":
-                                //StartNewSelector(key == "has" ? SelectorType.SubSelectorHas : SelectorType.SubSelectorNot);
-                                //string criteria = Current.Criteria = scanner.GetBoundedBy('(', true);
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.Not;
-                                Current.Criteria = scanner.GetBoundedBy('(', true);
-                                break;
+                            //    break;
+                            //case "even":
+                            //    StartNewSelector(SelectorType.PseudoClass);
+                            //    Current.PseudoClassType = PseudoClassType.Even;
+                            //    break;
+                            //case "odd":
+                            //    StartNewSelector(SelectorType.PseudoClass);
+                            //    Current.PseudoClassType = PseudoClassType.Odd;
+                            //    break;
+                            //case "first":
+                            //    StartNewSelector(SelectorType.PseudoClass);
+                            //    Current.PseudoClassType = PseudoClassType.First;
+                            //    break;
+                            //case "last":
+                            //    StartNewSelector(SelectorType.PseudoClass);
+                            //    Current.PseudoClassType = PseudoClassType.Last;
+                            //    break;
+                            //case "last-child":
+                            //    StartNewSelector(SelectorType.PseudoClass);
+                            //    Current.PseudoClassType = PseudoClassType.LastChild;
+                            //    break;
+                            //case "first-child":
+                            //    StartNewSelector(SelectorType.PseudoClass);
+                            //    Current.PseudoClassType = PseudoClassType.FirstChild;
+                            //    break;
+                            //case "first-of-type":
+                            //    string type = Current.Tag;
+                            //    StartNewSelector(SelectorType.PseudoClass);
+                            //    Current.PseudoClassType = PseudoClassType.FirstOfType;
+                            //    Current.Criteria = type;
+                            //    break;
+                            //case "last-of-type":
+                            //    type = Current.Tag;
+                            //    StartNewSelector(SelectorType.PseudoClass);
+                            //    Current.PseudoClassType = PseudoClassType.LastOfType;
+                            //    Current.Criteria = type;
+                            //    break;
+                            //case "only-child":
+                            //    StartNewSelector(SelectorType.PseudoClass);
+                            //    Current.PseudoClassType = PseudoClassType.OnlyChild;
+                            //    break;                                
+                            //case "has":
+                            //    StartNewSelector(SelectorType.PseudoClass);
+                            //    Current.PseudoClassType = PseudoClassType.Has;
+                            //    Current.Criteria = scanner.GetBoundedBy('(', true);
+                            //    break;
+                            //case "not":
+                            //    //StartNewSelector(key == "has" ? SelectorType.SubSelectorHas : SelectorType.SubSelectorNot);
+                            //    //string criteria = Current.Criteria = scanner.GetBoundedBy('(', true);
+                            //    StartNewSelector(SelectorType.PseudoClass);
+                            //    Current.PseudoClassType = PseudoClassType.Not;
+                            //    Current.Criteria = scanner.GetBoundedBy('(', true);
+                            //    break;
                             case "visible":
                                 StartNewSelector(SelectorType.PseudoClass);
                                 Current.PseudoClassType = PseudoClassType.Visible;
@@ -189,57 +190,57 @@ namespace CsQuery.Engine
                                 StartNewSelector(SelectorType.PseudoClass);
                                 Current.PseudoClassType = PseudoClassType.Hidden;
                                 break;
-                            case "empty":
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.Empty;
-                                break;
-                            case "parent":
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.Parent;
-                                break;
-                            case "only-of-type":
-                                type = Current.Tag;
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.OnlyOfType;
+                            //case "empty":
+                                //StartNewSelector(SelectorType.PseudoClass);
+                                //Current.PseudoClassType = PseudoClassType.Empty;
+                                //break;
+                            //case "parent":
+                            //    StartNewSelector(SelectorType.PseudoClass);
+                            //    Current.PseudoClassType = PseudoClassType.Parent;
+                            //    break;
+                            //case "only-of-type":
+                            //    type = Current.Tag;
+                            //    StartNewSelector(SelectorType.PseudoClass);
+                            //    Current.PseudoClassType = PseudoClassType.OnlyOfType;
                                 
-                                // when it's not a filter, we are getting the only one of every type; skip criteria
-                                //if (Current.TraversalType == TraversalType.Filter)
-                                //{
-                                    Current.Criteria = type;
-                                //}
-                                break;
-                            case "header":
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.Header;
-                                break;
-                            case "nth-child":
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.NthChild;
-                                Current.Criteria = scanner.GetBoundedBy('(');
-                                break;
-                            case "nth-of-type":
-                                type = Current.Tag;
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.NthOfType;
+                            //    // when it's not a filter, we are getting the only one of every type; skip criteria
+                            //    if (Current.TraversalType == TraversalType.Filter)
+                            //    {
+                            //        Current.Criteria = type;
+                            //    }
+                            //    break;
+                            //case "header":
+                            //    StartNewSelector(SelectorType.PseudoClass);
+                            //    Current.PseudoClassType = PseudoClassType.Header;
+                            //    break;
+                            //case "nth-child":
+                            //    StartNewSelector(SelectorType.PseudoClass);
+                            //    Current.PseudoClassType = PseudoClassType.NthChild;
+                            //    Current.Criteria = scanner.GetBoundedBy('(');
+                            //    break;
+                            //case "nth-of-type":
+                            //    type = Current.Tag;
+                            //    StartNewSelector(SelectorType.PseudoClass);
+                            //    Current.PseudoClassType = PseudoClassType.NthOfType;
 
-                                Current.Criteria = scanner.GetBoundedBy('(');
-                                Current.Criteria += "|"+ type;
+                            //    Current.Criteria = scanner.GetBoundedBy('(');
+                            //    Current.Criteria += "|"+ type;
                                 
-                                break;
-                            case "nth-last-child":
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.NthLastChild;
+                            //    break;
+                            //case "nth-last-child":
+                            //    StartNewSelector(SelectorType.PseudoClass);
+                            //    Current.PseudoClassType = PseudoClassType.NthLastChild;
                                 
-                                Current.Criteria = scanner.GetBoundedBy('(');
+                            //    Current.Criteria = scanner.GetBoundedBy('(');
 
-                                break;
-                            case "nth-last-of-type":
-                                type = Current.Tag;
-                                StartNewSelector(SelectorType.PseudoClass);
-                                Current.PseudoClassType = PseudoClassType.NthLastOfType;
-                                Current.Criteria = scanner.GetBoundedBy('(');
-                                Current.Criteria += "|"+ type;
-                                break;
+                            //    break;
+                            //case "nth-last-of-type":
+                            //    type = Current.Tag;
+                            //    StartNewSelector(SelectorType.PseudoClass);
+                            //    Current.PseudoClassType = PseudoClassType.NthLastOfType;
+                            //    Current.Criteria = scanner.GetBoundedBy('(');
+                            //    Current.Criteria += "|"+ type;
+                            //    break;
                             case "lang":
                                 // The problem with :lang is that it is based on an inherited property value. This messes  with the index since
                                 // elements will be pre-filtered by an attribute selector. This could probably be implemented using a pseudoclass
@@ -269,17 +270,20 @@ namespace CsQuery.Engine
                                 throw new NotImplementedException("Pseudoclasses that require a browser aren't implemented.");
 
                             default:
-                                
-                                if (PseudoSelectors.Extensions.ContainsKey(key))
+                                IPseudoSelector pseudoSel;
+                                if (PseudoSelectors.Items.TryGetInstance(key, out pseudoSel))
                                 {
                                     StartNewSelector(SelectorType.PseudoClass);
                                     Current.PseudoClassType = PseudoClassType.Extension;
-                                    string criteria = key;
+                                    Current.PseudoSelector = pseudoSel;
+
+
                                     if (!scanner.Finished && scanner.NextChar == '(')
                                     {
-                                        criteria += "|" + scanner.GetBoundedBy('(');
+                                        pseudoSel.Arguments = scanner.GetBoundedBy('(', true);
+
                                     }
-                                    Current.Criteria = criteria;
+                                    pseudoSel.Initialize();
                                 }
                                 else
                                 {
@@ -456,7 +460,7 @@ namespace CsQuery.Engine
             if (!combineWithPrevious) {
                 StartNewSelector(SelectorType.Tag);
             } else {
-                 StartNewSelector(SelectorType.Tag,CombinatorType.And,Current.TraversalType);
+                StartNewSelector(SelectorType.Tag,CombinatorType.And,Current.TraversalType);
             }
             Current.Tag = tagName;
         }

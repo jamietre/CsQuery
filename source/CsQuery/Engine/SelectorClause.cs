@@ -56,6 +56,16 @@ namespace CsQuery.Engine
         public AttributeSelectorType AttributeSelectorType { get; set; }
 
         /// <summary>
+        /// When this is a pseudoselector, the implementation.
+        /// </summary>
+        ///
+        /// <value>
+        /// The pseudo selector.
+        /// </value>
+
+        public IPseudoSelector PseudoSelector { get; set; }
+
+        /// <summary>
         /// Selection tag name
         /// </summary>
         public string Tag
@@ -132,6 +142,8 @@ namespace CsQuery.Engine
                 }
                 switch (PseudoClassType)
                 {
+                    case PseudoClassType.Extension:
+                        return PseudoSelector is IPseudoSelectorFilter;
                     case PseudoClassType.Even:
                     case PseudoClassType.Odd:
                     case PseudoClassType.Last:
@@ -234,6 +246,7 @@ namespace CsQuery.Engine
             clone.PositionIndex = PositionIndex;
             clone.SelectElements = SelectElements;
             clone.Tag = Tag;
+            clone.PseudoSelector = PseudoSelector;
 
             return clone;
         }
@@ -329,17 +342,30 @@ namespace CsQuery.Engine
             }
             if (SelectorType.HasFlag(SelectorType.PseudoClass))
             {
-                output += ":" + PseudoClassType.ToString();
-                if (IsFunction)
+                if (PseudoClassType == PseudoClassType.Extension)
                 {
-                    output += "(" + Criteria + ")";
+                    output += ":" + PseudoSelector.Name;
+                    if (PseudoSelector.Arguments != null && PseudoSelector.Arguments.Length > 0)
+                    {
+                        output += "("+String.Join(",",PseudoSelector.Arguments)+")";
+                    }
                 }
-               
+                else
+                {
+                    output += ":" + PseudoClassType.ToString();
+
+                    if (IsFunction)
+                    {
+                        output += "(" + Criteria + ")";
+                    }
+                }
+              
+              
             }
-            if (SelectorType.HasFlag(SelectorType.Contains))
-            {
-                output += ":contains(" + Criteria + ")";
-            }
+            //if (SelectorType.HasFlag(SelectorType.Contains))
+            //{
+            //    output += ":contains(" + Criteria + ")";
+            //}
 
 
             return output;

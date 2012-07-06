@@ -427,6 +427,14 @@ namespace CsQuery.HtmlParser
         /// </summary>
         private void ReorganizeStrandedTextNodes()
         {
+            // add a doctype node
+            if (Document.DocTypeNode == null)
+            {
+                var docType = new DomDocumentType(DocType.HTML5);
+                Document.ChildNodes.Insert(0, docType);
+
+            }
+
             // ignore everything before <html> except text; if found, start adding to <body>
             // if there's anything before <doctype> then it gets trashed
 
@@ -436,6 +444,7 @@ namespace CsQuery.HtmlParser
             {
                 html.ChildNodes.Insert(0,Document.CreateElement("head"));
             }
+
 
 
             IDomElement body = Document.GetElementsByTagName("body").FirstOrDefault();

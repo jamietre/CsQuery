@@ -8,17 +8,46 @@ namespace CsQuery.Engine
     public interface IPseudoSelector
     {
         /// <summary>
+        /// This method is called before any validations are called against this selector. This gives the
+        /// developer an opportunity to throw errors based on the configuration outside of the validation
+        /// methods.
+        /// </summary>
+
+        void Initialize();
+
+        /// <summary>
         /// Gets or sets criteria (or parameter) data passed with the pseudoselector
         /// </summary>
 
-        public string Criteria {get;set;}
+        string Arguments { get; set; }
 
         /// <summary>
-        /// Gets or sets zero-based index of this object.T
+        /// The minimum number of parameters that this selector requires. If there are no parameters, return 0
+        /// </summary>
+        ///
+        /// <value>
+        /// An integer
+        /// </value>
+
+        int MinimumParameterCount { get; }
+
+        /// <summary>
+        /// The maximum number of parameters that this selector can accept. If there is no limit, return -1.
+        /// </summary>
+        ///
+        /// <value>
+        /// An integer
+        /// </value>
+
+        int MaximumParameterCount { get; }
+
+        /// <summary>
+        /// Gets CSS name of the pseudoselector
         /// </summary>
 
-        public int Index { get; set; }
+        string Name { get; }
 
-        public bool Matches(IDomObject obj); 
+
     }
+
 }
