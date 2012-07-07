@@ -32,37 +32,82 @@ namespace CsQuery.Engine.PseudoClassSelectors
                 _Arguments = value;
                 if (MaximumParameterCount > 1 || MaximumParameterCount < 0)
                 {
-                    Parameters = ParseParms(value);
+                    Parameters = ParseArgs(value);
                 }
                 else
                 {
-                    Parameters = new string[] { value };
+                    Parameters = new string[] {ParseSingleArg(value)};
                 }
             }
         }
 
-        protected string[] ParseParms(string value)
-        {
+        /// <summary>
+        /// Parse the arguments using the rules returned by the ParameterQuoted method.
+        /// </summary>
+        ///
+        /// <param name="value">
+        /// The arguments
+        /// </param>
+        ///
+        /// <returns>
+        /// An array of strings
+        /// </returns>
 
+        protected string[] ParseArgs(string value)
+        {
             List<string> parms = new List<string>();
             int index = 0;
 
 
             IStringScanner scanner = Scanner.Create(value);
-            OptionallyQuoted pattern = (OptionallyQuoted)MatchFunctions.OptionallyQuoted;
-            pattern.Terminators = ",";
-
-            while (!scanner.Finished) {
-                if (ParameterQuoted(index)==null) {
-                    parms.Add(scanner.Get(MatchFunctions.OptionallyQuoted));
-                } else if (ParameterQuoted(index)==true) {
-                    parms.Add(scanner.Get(MatchFunctions.Quoted));
-                } else {
-                    scanner.
+           
+            while (!scanner.Finished)
+            {
+                if (ParameterQuoted(index) == null)
+                {
+                    scanner.Expect(MatchFunctions.OptionallyQuoted(","));
                 }
+                else if (ParameterQuoted(index) == true)
+                {
+                    scanner.Expect(MatchFunctions.Quoted());
+                }
+                else
+                {
+                    scanner.Seek(',', true);
+                    scanner.Next();
+                }
+                parms.Add(scanner.Match);
+                index++;
+            }
+            return parms.ToArray();
+        }
 
-
-
+        protected string ParseSingleArg(string value)
+        {
+            IStringScanner scanner = Scanner.Create(value);
+                   
+            if (ParameterQuoted(1) == null)
+            {
+                scanner.Expect(MatchFunctions.OptionallyQuoted());
+                if (!scanner.Finished)
+                {
+                    throw new ArgumentException(InvalidArgumentsError());
+                }
+                return scanner.Match;
+            }
+            else if (ParameterQuoted(1) == true)
+            {
+                scanner.Expect(MatchFunctions.Quoted());
+                if (!scanner.Finished)
+                {
+                    throw new ArgumentException(InvalidArgumentsError());
+                }
+                return scanner.Match;
+            }
+            else
+            {
+                return value;
+            }
         }
 
         public virtual void Initialize() {
@@ -118,10 +163,31 @@ namespace CsQuery.Engine.PseudoClassSelectors
             }
         }
 
+        /// <summary>
+        /// A value to determine how to parse the string for a parameter at a specific index.
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// Zero-based index of the parameter.
+        /// </param>
+        ///
+        /// <returns>
+        /// null to accept a string that can (but does not have to be) quoted, true to require a quoted
+        /// parameter, false to only accept an unqouted parameter.
+        /// </returns>
+
         protected virtual bool? ParameterQuoted(int index)
         {
             return false;
         }
+
+        /// <summary>
+        /// Gets a string describing a parameter count mismatch
+        /// </summary>
+        ///
+        /// <returns>
+        /// A string to throw as an error
+        /// </returns>
 
         protected string ParameterCountMismatchError()
         {
@@ -153,6 +219,13 @@ namespace CsQuery.Engine.PseudoClassSelectors
                      MaximumParameterCount);
             }
         }
+
+        protected string InvalidArgumentsError()
+        {
+            return String.Format("The :{0} pseudoselector has some invalid arguments.",
+                        Name);
+        }
+        
     }
 
 }

@@ -132,6 +132,8 @@
     <Compile Include="Dom\Implementation\AttributeCollection.cs" />
     <Compile Include="Dom\Implementation\AttributeCollection2.cs" />
     <Compile Include="Engine\PseudoClassSelectors\Contains.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\jQuery\Hidden.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\jQuery\Visible.cs" />
     <Compile Include="Engine\PseudoClassSelectors\LastOfType.cs" />
     <Compile Include="Engine\PseudoClassSelectors\FirstOfType.cs" />
     <Compile Include="Engine\PseudoClassSelectors\OnlyChild.cs" />
@@ -213,7 +215,6 @@
     <Compile Include="StringScanner\IValueInfo.cs" />
     <Compile Include="StringScanner\MatchFunctions.cs" />
     <Compile Include="StringScanner\Patterns\Bounded.cs" />
-    <Compile Include="StringScanner\Patterns\Seek.cs" />
     <Compile Include="StringScanner\Patterns\HTMLTagSelectorName.cs" />
     <Compile Include="StringScanner\Patterns\HTMLAttributeName.cs" />
     <Compile Include="StringScanner\Patterns\CssClassName.cs" />

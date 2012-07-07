@@ -22,7 +22,7 @@ namespace CsQuery.Engine.PseudoClassSelectors
         {
             foreach (IDomObject el in selection)
             {
-                if (ContainsText((IDomElement)el, Arguments))
+                if (ContainsText((IDomElement)el, Parameters[0]))
                 {
                     yield return el;
                 }
@@ -66,9 +66,24 @@ namespace CsQuery.Engine.PseudoClassSelectors
                 return 1;
             }
         }
-        public override bool? ParameterQuoted(int index)
+
+        /// <summary>
+        /// A value to determine how to parse the string for a parameter at a specific index.
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// Zero-based index of the parameter.
+        /// </param>
+        ///
+        /// <returns>
+        /// null to accept a string that can (but does not have to be) quoted, true to require a quoted
+        /// parameter, false to only accept an unqouted parameter.
+        /// </returns>
+
+        protected override bool? ParameterQuoted(int index)
         {
             return null;
         }
+        
     }
 }

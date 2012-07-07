@@ -558,10 +558,11 @@ namespace CsQuery.ExtensionMethods.Internal
         /// <param name="item"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        public static int IndexOf<T>(this T[] arr, T item, int count) {
+        public static int IndexOf<T>(this T[] arr, T item, int count)
+        {
             for (int i = 0; i < count; i++)
             {
-                if ((arr[i]==null && item==null) || arr[i].Equals(item))
+                if ((arr[i] == null && item == null) || arr[i].Equals(item))
                 {
                     return i;
                 }

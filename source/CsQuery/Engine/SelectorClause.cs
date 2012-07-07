@@ -23,7 +23,6 @@ namespace CsQuery.Engine
             AttributeSelectorType = AttributeSelectorType.Equals;
             CombinatorType = CombinatorType.Root;
             TraversalType = TraversalType.All;
-            PseudoClassType = PseudoClassType.All;
         }
 
         #endregion
@@ -52,7 +51,7 @@ namespace CsQuery.Engine
         }
         public CombinatorType CombinatorType { get; set; }
         public TraversalType TraversalType { get; set; }
-        public PseudoClassType PseudoClassType { get; set; }
+        
         public AttributeSelectorType AttributeSelectorType { get; set; }
 
         /// <summary>
@@ -139,21 +138,8 @@ namespace CsQuery.Engine
                 if (SelectorType != SelectorType.PseudoClass)
                 {
                     return false;
-                }
-                switch (PseudoClassType)
-                {
-                    case PseudoClassType.Extension:
-                        return PseudoSelector is IPseudoSelectorFilter;
-                    case PseudoClassType.Even:
-                    case PseudoClassType.Odd:
-                    case PseudoClassType.Last:
-                    case PseudoClassType.First:
-                    case PseudoClassType.IndexEquals:
-                    case PseudoClassType.IndexGreaterThan:
-                    case PseudoClassType.IndexLessThan:
-                        return true;
-                    default:
-                        return false;
+                } else {
+                    return PseudoSelector is IPseudoSelectorFilter;
                 }
             }
         }
@@ -161,21 +147,8 @@ namespace CsQuery.Engine
         {
             get
             {
-                switch (PseudoClassType)
-                {
-                    case PseudoClassType.IndexEquals:
-                    case PseudoClassType.IndexGreaterThan:
-                    case PseudoClassType.IndexLessThan:
-                    case PseudoClassType.NthChild:
-                    case PseudoClassType.NthLastChild:
-                    case PseudoClassType.NthLastOfType:
-                    case PseudoClassType.NthOfType:
-                    case PseudoClassType.Has:
-                    case PseudoClassType.Not:
-                        return true;
-                    default:
-                        return false;
-                }
+                return PseudoSelector.MaximumParameterCount != 0;
+                
             }
         }
 
@@ -233,7 +206,7 @@ namespace CsQuery.Engine
             clone.SelectorType = SelectorType;
             clone.TraversalType = TraversalType;
             clone.CombinatorType = CombinatorType;
-            clone.PseudoClassType = PseudoClassType;
+         
             clone.AttributeName = AttributeName;
             clone.AttributeSelectorType = AttributeSelectorType;
             clone.AttributeValue = AttributeValue;
@@ -254,7 +227,7 @@ namespace CsQuery.Engine
         public override int GetHashCode()
         {
             return GetHash(SelectorType) + GetHash(TraversalType) + GetHash(CombinatorType) +
-                GetHash(PseudoClassType) + GetHash(AttributeName) + GetHash(AttributeSelectorType) +
+                GetHash(AttributeName) + GetHash(AttributeSelectorType) +
                 GetHash(AttributeValue) + GetHash(Class) + GetHash(Criteria) + GetHash(Html) +
                 GetHash(ID) + GetHash(NoIndex) + GetHash(PositionIndex) + GetHash(SelectElements) +
                 GetHash(Tag);
@@ -267,7 +240,6 @@ namespace CsQuery.Engine
                 other.SelectorType == SelectorType &&
                 other.TraversalType == TraversalType &&
                 other.CombinatorType == CombinatorType &&
-                other.PseudoClassType == PseudoClassType &&
                 other.AttributeName == AttributeName &&
                 other.AttributeSelectorType == AttributeSelectorType &&
                 other.AttributeValue == AttributeValue &&
@@ -323,7 +295,9 @@ namespace CsQuery.Engine
                 output += "#" + ID;
             }
             
-            if (SelectorType.HasFlag(SelectorType.AttributeValue) || SelectorType.HasFlag(SelectorType.AttributeExists))
+            if (SelectorType.HasFlag(SelectorType.AttributeValue) 
+                //|| SelectorType.HasFlag(SelectorType.AttributeExists)
+                )
             {
                 output += "[" + AttributeName;
                 if (!String.IsNullOrEmpty(AttributeValue))
@@ -342,23 +316,12 @@ namespace CsQuery.Engine
             }
             if (SelectorType.HasFlag(SelectorType.PseudoClass))
             {
-                if (PseudoClassType == PseudoClassType.Extension)
+                output += ":" + PseudoSelector.Name;
+                if (PseudoSelector.Arguments != null && PseudoSelector.Arguments.Length > 0)
                 {
-                    output += ":" + PseudoSelector.Name;
-                    if (PseudoSelector.Arguments != null && PseudoSelector.Arguments.Length > 0)
-                    {
-                        output += "("+String.Join(",",PseudoSelector.Arguments)+")";
-                    }
+                    output += "("+String.Join(",",PseudoSelector.Arguments)+")";
                 }
-                else
-                {
-                    output += ":" + PseudoClassType.ToString();
-
-                    if (IsFunction)
-                    {
-                        output += "(" + Criteria + ")";
-                    }
-                }
+                
               
               
             }

@@ -150,12 +150,21 @@ namespace CsQuery.Engine
                     }
 
 #else
-                    if (selector.SelectorType.HasFlag(SelectorType.AttributeExists)) 
+                    // We don't want to use the index for "NotEquals" selectors because a missing attribute
+                    // is considered a valid match
+                    
+                    if (selector.SelectorType.HasFlag(SelectorType.AttributeValue) 
+                        && selector.AttributeSelectorType != AttributeSelectorType.NotEquals)
                     {
                         key = "!" + (char)HtmlData.TokenID(selector.AttributeName);
 
-                        // AttributeValue must still be matched manually - so remove this flag only.
-                        removeSelectorType=SelectorType.AttributeExists;
+                        // AttributeValue must still be matched manually - so remove this flag only if the
+                        // selector is conclusive without further checking
+                        
+                        if (selector.AttributeSelectorType == AttributeSelectorType.Exists)
+                        {
+                            removeSelectorType = SelectorType.AttributeValue;
+                        }
                     }
                     else if (selector.SelectorType.HasFlag(SelectorType.Tag))
                     {
@@ -228,7 +237,9 @@ namespace CsQuery.Engine
                     // been done by the index; otherwise the couple cases where you need to match the value but can't select for "Exists" first
                     // won't work.
 
-                    if (removeSelectorType == SelectorType.AttributeExists && selector.SelectorType.HasFlag(SelectorType.AttributeValue))
+                    //if (removeSelectorType == SelectorType.AttributeExists 
+                    //    && selector.SelectorType.HasFlag(SelectorType.AttributeValue))
+                    if (selector.SelectorType.HasFlag(SelectorType.AttributeValue))
                     {
                         selector.TraversalType = TraversalType.Filter;
                     }
@@ -419,25 +430,7 @@ namespace CsQuery.Engine
                     }
                     yield break;
                 } 
-                //else if (selector.PseudoClassType == PseudoClassType.Not) {
-                //    var subSelector = new Selector(selector.Criteria);
-                //    foreach (var obj in subSelector.Except(Document,GetAllChildOrDescendants(selector.TraversalType,curList))) {
-                //        yield return obj;
-                //    }
-                //    yield break;
-                //}
-                //else if (selector.PseudoClassType == PseudoClassType.Has)
-                //{
-                //    var subSelector = new Selector(selector.Criteria);
-                //    foreach (var obj in GetAllChildOrDescendants(selector.TraversalType, curList))
-                //    {
-                //        if (Has(subSelector, obj))
-                //        {
-                //            yield return obj;
-                //        }
-                //    }
-                //    yield break;
-                //}
+                
             }
             else if (selector.SelectorType.HasFlag(SelectorType.All))
             {
@@ -524,21 +517,6 @@ namespace CsQuery.Engine
             yield break;
         }
 
-
-
-        /// <summary>
-        /// Returns true if the element contains items matching the selector
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="element"></param>
-        /// <returns></returns>
-        //public bool Has(Selector selector, IDomObject element)
-        //{
-        //    selector[0].TraversalType = TraversalType.Descendent;
-        //    return selector.Select(Document, element).Any();
-        //}
-
-
         /// <summary>
         /// Return all elements that match the selector
         /// </summary>
@@ -614,7 +592,6 @@ namespace CsQuery.Engine
                     // This engine at some point should be reworked so that the "And" combinator is just a subselector, this logic has 
                     // become too brittle.
 
-                   // if (depth == 0 && selector.SelectorType != SelectorType.AttributeValue)
                     if (depth == 0)
                     {
                         return false;
@@ -629,8 +606,7 @@ namespace CsQuery.Engine
 
             if (selector.SelectorType.HasFlag(SelectorType.PseudoClass))
             {
-                return //selector.TraversalType == TraversalType.Filter && 
-                    MatchesPseudoClass(obj, selector);
+                return MatchesPseudoClass(obj, selector);
             }
 
             if (obj.NodeType != NodeType.ELEMENT_NODE)
@@ -650,6 +626,7 @@ namespace CsQuery.Engine
             {
                 return false;
             }
+
             if (selector.SelectorType.HasFlag(SelectorType.Tag) &&
                 !String.Equals(obj.NodeName, selector.Tag, StringComparison.CurrentCultureIgnoreCase))
             {
@@ -657,17 +634,12 @@ namespace CsQuery.Engine
             }
 
             
-            if ((selector.SelectorType & (SelectorType.AttributeExists | SelectorType.AttributeValue))>0)
+            if ((selector.SelectorType & (
+                //SelectorType.AttributeExists | 
+                SelectorType.AttributeValue))>0)
             {
-                return AttributeSelectors.MatchesAttribute(selector, (IDomElement)obj);
+                return AttributeSelectors.Matches((IDomElement)obj,selector);
             }
-
-           
-            //if (selector.SelectorType.HasFlag(SelectorType.Contains) &&
-            //    !ContainsText((IDomElement)obj, selector.Criteria))
-            //{
-            //    return false;
-            //}
 
             if (selector.SelectorType == SelectorType.None)
             {
@@ -689,30 +661,8 @@ namespace CsQuery.Engine
 
             var sourceList = GetAllChildOrDescendants(selector.TraversalType, list);
 
-            switch (selector.PseudoClassType)
-            {
-                case PseudoClassType.Extension:
-                    return ((IPseudoSelectorFilter)selector.PseudoSelector).Filter(sourceList);
-                //case PseudoClassType.Odd:
-                //    return PseudoSelectors.OddElements(sourceList);
-                //case PseudoClassType.Even:
-                //    return PseudoSelectors.EvenElements(sourceList);
-                //case PseudoClassType.First:
-                //    return PseudoSelectors.Enumerate(sourceList.FirstOrDefault());
-                //case PseudoClassType.Last:
-                //    return PseudoSelectors.Enumerate(sourceList.LastOrDefault());
-                //case PseudoClassType.IndexEquals:
-                //    return PseudoSelectors.Enumerate(PseudoSelectors.ElementAtIndex(sourceList, selector.PositionIndex));
-                //case PseudoClassType.IndexGreaterThan:
-                //    return PseudoSelectors.IndexGreaterThan(sourceList, selector.PositionIndex);
-                //case PseudoClassType.IndexLessThan:
-                //    return PseudoSelectors.IndexLessThan(sourceList, selector.PositionIndex);
-                case PseudoClassType.All:
-                    return sourceList;
-                default:
-                    throw new NotImplementedException("Unimplemented result position type selector");
-
-            }
+            return ((IPseudoSelectorFilter)selector.PseudoSelector).Filter(sourceList);
+           
         }
 
         
@@ -725,69 +675,8 @@ namespace CsQuery.Engine
         protected IEnumerable<IDomObject> GetPseudoClassMatches(IDomElement elm, SelectorClause selector)
         {
             IEnumerable<IDomObject> results;
-            switch (selector.PseudoClassType)
-            {
-                case PseudoClassType.Extension:
-                    results = ((IPseudoSelectorElement)selector.PseudoSelector).ChildMatches(elm);
-                    break;
-                //case PseudoClassType.Has:
-                //    var subSelector = new Selector(selector.Criteria);
-                //    results = Has(subSelector, elm.ChildElements);
-                //    break;
-                //case PseudoClassType.Not:
-                //    subSelector = new Selector(selector.Criteria);
-                //    results = NotMatches(subSelector, elm.ChildElements);
-                //    break;
-                //case PseudoClassType.NthChild:
-                //case PseudoClassType.NthOfType:
-                //    results= PseudoSelectors.NthChilds(elm,selector.Criteria);
-                //    break;
-                //case PseudoClassType.NthLastChild:
-                //case PseudoClassType.NthLastOfType:
-                //    results = PseudoSelectors.NthLastChilds(elm, selector.Criteria);
-                //    break;
-                //case PseudoClassType.FirstOfType:
-                //    results=PseudoSelectors.FirstOfType(elm, selector.Criteria);
-                //    break;
-                //case PseudoClassType.LastOfType:
-                //    results=PseudoSelectors.LastOfType(elm, selector.Criteria);
-                //    break;
-                //case PseudoClassType.FirstChild:
-                //    results=PseudoSelectors.Enumerate(PseudoSelectors.FirstChild(elm));
-                //    break;
-                //case PseudoClassType.LastChild:
-                //    results=PseudoSelectors.Enumerate(PseudoSelectors.LastChild(elm));
-                //    break;
-                //case PseudoClassType.OnlyChild:
-                //    results = PseudoSelectors.Enumerate(PseudoSelectors.OnlyChild(elm));
-                //    break;
-                //case PseudoClassType.OnlyOfType:
-                //    results = PseudoSelectors.OnlyOfType(elm, selector.Criteria);
-                //    break;
-                ////case PseudoClassType.Empty:
-                //    results= PseudoSelectors.Empty(elm.ChildElements);
-                //    break;
-                //case PseudoClassType.Parent:
-                //    results = PseudoSelectors.Parent(elm.ChildElements);
-                //    break;
-                case PseudoClassType.Visible:
-                    results = PseudoSelectors.Visible(elm.ChildElements);
-                    break;
-                case PseudoClassType.Hidden:
-                    results = PseudoSelectors.Hidden(elm.ChildElements);
-                    break;
-                //case PseudoClassType.Header:
-                //    results = PseudoSelectors.Headers(elm.ChildElements);
-                //    break;
-                case PseudoClassType.All:
-                    results=elm.ChildElements;
-                    break;
-                //case PseudoClassType.Extension:
-                //    results =PseudoSelectors.Extension(elm, -1, selector.Criteria);
-                //    break;
-                default:
-                    throw new NotImplementedException("Unimplemented position type selector");
-            }
+           
+            results = ((IPseudoSelectorElement)selector.PseudoSelector).ChildMatches(elm);
 
             foreach (var item in results)
             {
@@ -810,62 +699,24 @@ namespace CsQuery.Engine
           
         }    
 
-      
         /// <summary>
-        /// Return true if an element matches a specific filter
+        /// Return true if an element matches a specific filter.
         /// </summary>
-        /// <param name="elm"></param>
-        /// <param name="type"></param>
-        /// <param name="criteria"></param>
-        /// <returns></returns>
-        protected bool MatchesPseudoClass(IDomElement elm, SelectorClause selector)
-        {
-            switch (selector.PseudoClassType)
-            {
-                case PseudoClassType.Extension:
-                    return ((IPseudoSelectorElement)selector.PseudoSelector).Matches(elm);
-                //case PseudoClassType.Has:
-                //    var subSelector = new Selector(selector.Criteria);
-                //    return Has(subSelector, elm);
-                //case PseudoClassType.Not:
-                //    subSelector = new Selector(selector.Criteria);
-                //    return !subSelector.Matches(Document, elm);
-                //case PseudoClassType.NthChild:
-                //case PseudoClassType.NthOfType:
-                //    return PseudoSelectors.IsNthChild(elm, selector.Criteria);
-                //case PseudoClassType.NthLastChild:
-                //case PseudoClassType.NthLastOfType:
-                //    return PseudoSelectors.IsNthLastChild(elm, selector.Criteria);
-                //case PseudoClassType.FirstOfType:
-                //    return PseudoSelectors.IsFirstOfType(elm, selector.Criteria);
-                //case PseudoClassType.LastOfType:
-                //    return PseudoSelectors.IsLastOfType(elm, selector.Criteria);
-                //case PseudoClassType.FirstChild:
-                //    return elm.PreviousElementSibling == null;
-                //case PseudoClassType.LastChild:
-                //    return elm.NextElementSibling == null;
-                //case PseudoClassType.OnlyChild:
-                //    return PseudoSelectors.IsOnlyChild(elm);
-                //case PseudoClassType.OnlyOfType:
-                //    return PseudoSelectors.IsOnlyOfType(elm);
-                //case PseudoClassType.Empty:
-                //    return PseudoSelectors.IsEmpty(elm);
-                //case PseudoClassType.Parent:
-                //    return PseudoSelectors.IsParent(elm);
-                case PseudoClassType.Visible:
-                    return PseudoSelectors.IsVisible(elm);
-                case PseudoClassType.Hidden:
-                    return !PseudoSelectors.IsVisible(elm);
-                //case PseudoClassType.Header:
-                //    return PseudoSelectors.IsHeader(elm);
-                case PseudoClassType.All:
-                    return true;
-                //case PseudoClassType.Extension:
-                //    return PseudoSelectors.IsExtension(elm, -1, clause.Criteria);
+        ///
+        /// <param name="element">
+        /// The element to test
+        /// </param>
+        /// <param name="selector">
+        /// A selector clause
+        /// </param>
+        ///
+        /// <returns>
+        /// true if matches pseudo class, false if not.matches the selector, false if not
+        /// </returns>
 
-                default:
-                    throw new NotImplementedException("Unimplemented position type selector");
-            }
+        protected bool MatchesPseudoClass(IDomElement element, SelectorClause selector)
+        {
+            return ((IPseudoSelectorElement)selector.PseudoSelector).Matches(element);       
         }
 
  

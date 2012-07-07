@@ -69,7 +69,7 @@ namespace CsQuery.Engine.PseudoClassSelectors
         {
             get
             {
-                return -1;
+                return 1;
             }
         }
         public override int MinimumParameterCount

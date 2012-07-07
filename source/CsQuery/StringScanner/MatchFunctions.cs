@@ -123,21 +123,15 @@ namespace CsQuery.StringScanner
         {
             return CharacterData.IsType(character, CharacterType.Quote); 
         }
-        public static bool QuoteChar(int index, char character)
-        {
-            return CharacterData.IsType(character, CharacterType.Quote);
-        }
+
         public static bool BoundChar(int index, char character)
         {
             return CharacterData.IsType(character, CharacterType.Enclosing | CharacterType.Quote); 
         }
 
-        public static IExpectPattern Quoted
+        public static IExpectPattern Quoted()
         {
-            get
-            {
                 return new Patterns.Quoted();
-            }
         }
 
         /// <summary>
@@ -176,12 +170,9 @@ namespace CsQuery.StringScanner
                 return new Patterns.CssClassName();
             }
         }
-        public static IExpectPattern OptionallyQuoted
+        public static IExpectPattern OptionallyQuoted(string terminators=null)
         {
-            get
-            {
-                return new Patterns.OptionallyQuoted();
-            }
+            return new Patterns.OptionallyQuoted(terminators);
         }
         public static bool Operator(int index, char character)
         {
