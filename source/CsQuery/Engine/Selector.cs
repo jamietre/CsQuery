@@ -10,6 +10,10 @@ using CsQuery.Engine;
 
 namespace CsQuery.Engine
 {
+    /// <summary>
+    /// A parsed selector, consisting of one or more SelectorClauses.
+    /// </summary>
+
     public class Selector : IEnumerable<SelectorClause>
     {
         #region constructors
@@ -102,17 +106,31 @@ namespace CsQuery.Engine
 
         #region private properties
 
-        protected CssSelectionEngine _Engine;
-        protected SelectorParser _selectorParser;
-        protected List<SelectorClause> _Clauses;
+        private List<SelectorClause> _Clauses;
 
-        protected CssSelectionEngine GetEngine(IDomDocument document)
+        /// <summary>
+        /// Gets a new selection engine for this selector
+        /// </summary>
+        ///
+        /// <param name="document">
+        /// The document that's the root for the selector engine
+        /// </param>
+        ///
+        /// <returns>
+        /// The new engine.
+        /// </returns>
+
+        private SelectorEngine GetEngine(IDomDocument document)
         {
             
-            var engine = new CssSelectionEngine(document);
-            engine.Selectors = this;
+            var engine = new SelectorEngine(document,this);
             return engine;
         }
+
+        /// <summary>
+        /// Gets a list of clauses in this selector
+        /// </summary>
+
         protected List<SelectorClause> Clauses
         {
             get
@@ -124,15 +142,16 @@ namespace CsQuery.Engine
                 return _Clauses;
             }
         } 
-        protected IEnumerable<SelectorClause> SelectorsClone
+
+        protected IEnumerable<SelectorClause> ClausesClone
         {
             get
             {
                 if (Count > 0)
                 {
-                    foreach (var selector in Clauses)
+                    foreach (var clause in Clauses)
                     {
-                        yield return selector.Clone();
+                        yield return clause.Clone();
                     }
                 }
                 else
@@ -274,7 +293,7 @@ namespace CsQuery.Engine
         /// <returns></returns>
         public Selector Clone()
         {
-            Selector clone = new Selector(SelectorsClone);
+            Selector clone = new Selector(ClausesClone);
             return clone;
         }
         public override string ToString()

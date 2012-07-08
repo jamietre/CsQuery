@@ -13,12 +13,6 @@ namespace CsQuery.Engine
         /// methods.
         /// </summary>
 
-        void Initialize();
-
-        /// <summary>
-        /// Gets or sets criteria (or parameter) data passed with the pseudoselector
-        /// </summary>
-
         string Arguments { get; set; }
 
         /// <summary>
@@ -46,8 +40,6 @@ namespace CsQuery.Engine
         /// </summary>
 
         string Name { get; }
-
-
     }
 
 }

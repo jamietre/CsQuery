@@ -45,7 +45,7 @@ namespace CsQuery.Implementation
 
             item.ParentNode = Owner;
             item.Index = index;
-            if (!element.IsDisconnected && element.IsIndexed)
+            if (element.IsIndexed)
             {
                 item.Document.DocumentIndex.AddToIndex((IDomIndexedNode)element);
             }
@@ -70,7 +70,7 @@ namespace CsQuery.Implementation
 
             // Ensure ID uniqueness - remove ID if same-named object already exists
             if (!String.IsNullOrEmpty(item.Id)
-                && !Owner.IsDisconnected
+                && !Owner.IsFragment
                 && Owner.Document.GetElementById(item.Id) != null)
             {
                 item.Id = null;
@@ -146,7 +146,6 @@ namespace CsQuery.Implementation
             if (index < InnerList.Count)
             {
                 bool isDisconnected = Owner.IsDisconnected;
-                //bool oldIsDisconnected = InnerList[index].IsDisconnected;
 
                 for (int i = index; i < InnerList.Count; i++)
                 {
@@ -246,14 +245,8 @@ namespace CsQuery.Implementation
 
         #endregion
 
-        #region IEnumerable<T> Members
+      
 
-        public IEnumerator<IDomObject> GetEnumerator()
-        {
-            return InnerList.GetEnumerator();
-        }
-
-        #endregion
 
         #region IEnumerable Members
 
@@ -269,6 +262,11 @@ namespace CsQuery.Implementation
         IEnumerator<IDomObject> IEnumerable<IDomObject>.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public IEnumerator<IDomObject> GetEnumerator()
+        {
+            return InnerList.GetEnumerator();
         }
 
         #endregion

@@ -38,7 +38,8 @@ namespace CsQuery
 
             // We need to copy first because selection can change
             List<IDomObject> removeList = new List<IDomObject>(list);
-            List<bool> disconnected = list.Select(item => item.IsDisconnected).ToList();
+            List<bool> disconnected = list.Select(item => item.IsDisconnected ||
+                item.Document != Document).ToList();
 
             for (int index = 0; index < list.Count; index++)
             {

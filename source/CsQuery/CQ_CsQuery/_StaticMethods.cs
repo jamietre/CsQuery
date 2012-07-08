@@ -12,6 +12,7 @@ using CsQuery.Utility;
 using CsQuery.Engine;
 using CsQuery.Web;
 using CsQuery.Promises;
+using CsQuery.HtmlParser;
 
 namespace CsQuery
 {
@@ -54,9 +55,7 @@ namespace CsQuery
         /// <returns></returns>
         public static CQ Create(string html)
         {
-            CQ csq = new CQ();
-            csq.LoadContent(ConvertHtmlString(html));
-            return csq;
+            return CQ.Create(ConvertHtmlString(html));
         }
 
         /// <summary>
@@ -67,7 +66,7 @@ namespace CsQuery
         public static CQ Create(char[] html)
         {
             CQ csq = new CQ();
-            csq.LoadDocument(html);
+            csq.CreateNewFragment(html, HtmlParsingMode.Content);
             return csq;
         }
 
@@ -79,7 +78,7 @@ namespace CsQuery
         /// <returns></returns>
         public static CQ Create(string html, object quickSet)
         {
-            CQ csq = CQ.CreateFragment(html);
+            var csq = Create(html);
             return csq.AttrSet(quickSet, true);
         }
 
@@ -111,7 +110,7 @@ namespace CsQuery
         public static CQ Create(IDomObject element)
         {
             CQ csq = new CQ();
-            csq.LoadFragment(Objects.Enumerate(element));
+            csq.CreateNewFragment(Objects.Enumerate(element));
             return csq;
         }
 
@@ -123,7 +122,8 @@ namespace CsQuery
         public static CQ Create(IEnumerable<IDomObject> elements)
         {
             CQ csq = new CQ();
-            csq.LoadFragment(elements);
+            //csq.LoadFragment(elements);
+            csq.CreateNewFragment(elements);
             return csq;
         }
 
@@ -144,9 +144,7 @@ namespace CsQuery
         /// <returns></returns>
         public static CQ CreateFragment(string html)
         {
-            CQ csq = new CQ();
-            csq.LoadFragment(ConvertHtmlString(html));
-            return csq;
+            return CQ.CreateFragment(ConvertHtmlString(html));
         }
 
 
@@ -158,7 +156,8 @@ namespace CsQuery
         public static CQ CreateFragment(char[] html)
         {
             CQ csq = new CQ();
-            csq.LoadFragment(html);
+            //csq.LoadFragment(html);
+            csq.CreateNewFragment(html, HtmlParsingMode.Fragment);
             return csq;
         }
 
@@ -192,9 +191,8 @@ namespace CsQuery
         /// <returns></returns>
         public static CQ CreateDocument(string html)
         {
-            CQ csq = new CQ();
-            csq.LoadDocument(ConvertHtmlString(html));
-            return csq;
+
+            return CreateDocument(ConvertHtmlString(html));
         }
 
         /// <summary>
@@ -205,7 +203,9 @@ namespace CsQuery
         public static CQ CreateDocument(char[] html)
         {
             CQ csq = new CQ();
-            csq.LoadDocument(html);
+            //html.csq.LoadDocument(html);
+            csq.CreateNewDocument(html, HtmlParsingMode.Document);
+            
             return csq;
         }
 

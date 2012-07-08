@@ -264,7 +264,7 @@ namespace CsQuery.Utility
             return type.Namespace + "." + type.Name;
         }
 
-
+        
     }
 
 

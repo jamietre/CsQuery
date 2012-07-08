@@ -40,7 +40,14 @@ namespace CsQuery.Engine.PseudoClassSelectors
             {
                 return parent.ChildElements.SingleOrDefaultAlways();
             }
-            
+        }
+
+        public override bool IsReusable
+        {
+            get
+            {
+                return false;
+            }
         }
     }
 }

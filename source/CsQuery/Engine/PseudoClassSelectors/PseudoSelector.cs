@@ -21,7 +21,7 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
         protected virtual string[] Parameters {get;set;}
 
-        public string Arguments
+        public virtual string Arguments
         {
             get
             {
@@ -29,15 +29,25 @@ namespace CsQuery.Engine.PseudoClassSelectors
             }
             set
             {
+
+                string[] parms=null;
+                if (!String.IsNullOrEmpty(value))
+                {
+                    if (MaximumParameterCount > 1 || MaximumParameterCount < 0)
+                    {
+                        parms = ParseArgs(value);
+                    }
+                    else
+                    {
+                        parms = new string[] { ParseSingleArg(value) };
+                    }
+
+                    
+                }
+                ValidateParameters(parms);
                 _Arguments = value;
-                if (MaximumParameterCount > 1 || MaximumParameterCount < 0)
-                {
-                    Parameters = ParseArgs(value);
-                }
-                else
-                {
-                    Parameters = new string[] {ParseSingleArg(value)};
-                }
+                Parameters = parms;
+                
             }
         }
 
@@ -110,9 +120,21 @@ namespace CsQuery.Engine.PseudoClassSelectors
             }
         }
 
-        public virtual void Initialize() {
+        /// <summary>
+        /// Validates a parameter array against the expected number of parameters.
+        /// </summary>
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown when the wrong number of parameters is passed.
+        /// </exception>
+        ///
+        /// <param name="parameters">
+        /// Criteria (or parameter) data passed with the pseudoselector.
+        /// </param>
 
-            if (Parameters == null)
+        protected virtual void ValidateParameters(string[] parameters) {
+
+            if (parameters == null)
             {
                  if (MinimumParameterCount != 0) {
                      throw new ArgumentException(ParameterCountMismatchError());
@@ -121,9 +143,9 @@ namespace CsQuery.Engine.PseudoClassSelectors
                  }
             }
 
-            if ((Parameters.Length < MinimumParameterCount ||
+            if ((parameters.Length < MinimumParameterCount ||
                     (MaximumParameterCount >= 0 &&
-                        (Parameters.Length > MaximumParameterCount))))
+                        (parameters.Length > MaximumParameterCount))))
             {
                 throw new ArgumentException(ParameterCountMismatchError());
             }
@@ -225,7 +247,13 @@ namespace CsQuery.Engine.PseudoClassSelectors
             return String.Format("The :{0} pseudoselector has some invalid arguments.",
                         Name);
         }
-        
+
+
+
+        public virtual bool IsReusable
+        {
+            get { return false; }
+        }
     }
 
 }

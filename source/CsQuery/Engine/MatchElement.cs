@@ -8,7 +8,7 @@ namespace CsQuery.Engine
      ///<summary>
      /// Wrapper class used by the engine to store info on the selector stack.
      ///</summary>
-    public class MatchElement
+    internal class MatchElement
     {
         public MatchElement(IDomElement  element)
         {

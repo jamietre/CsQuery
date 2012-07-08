@@ -131,15 +131,16 @@
     <Compile Include="Dom\IDomObjectT.cs" />
     <Compile Include="Dom\Implementation\AttributeCollection.cs" />
     <Compile Include="Dom\Implementation\AttributeCollection2.cs" />
-    <Compile Include="Engine\PseudoClassSelectors\Contains.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\Css\Contains.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\jQuery\Lang.cs" />
     <Compile Include="Engine\PseudoClassSelectors\jQuery\Hidden.cs" />
     <Compile Include="Engine\PseudoClassSelectors\jQuery\Visible.cs" />
-    <Compile Include="Engine\PseudoClassSelectors\LastOfType.cs" />
-    <Compile Include="Engine\PseudoClassSelectors\FirstOfType.cs" />
-    <Compile Include="Engine\PseudoClassSelectors\OnlyChild.cs" />
-    <Compile Include="Engine\PseudoClassSelectors\FirstChild.cs" />
-    <Compile Include="Engine\PseudoClassSelectors\LastChild.cs" />
-    <Compile Include="Engine\PseudoClassSelectors\Not.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\Css\LastOfType.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\Css\FirstOfType.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\Css\OnlyChild.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\Css\FirstChild.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\Css\LastChild.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\Css\Not.cs" />
     <Compile Include="Engine\PseudoClassSelectors\jQuery\Has.cs" />
     <Compile Include="Engine\PseudoClassSelectors\jQuery\Last.cs" />
     <Compile Include="Engine\PseudoClassSelectors\jQuery\First.cs" />
@@ -149,16 +150,16 @@
     <Compile Include="Engine\PseudoClassSelectors\jQuery\Gt.cs" />
     <Compile Include="Engine\PseudoClassSelectors\jQuery\Lt.cs" />
     <Compile Include="Engine\PseudoClassSelectors\jQuery\Eq.cs" />
-    <Compile Include="Engine\PseudoClassSelectors\OnlyOfType.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\Css\OnlyOfType.cs" />
     <Compile Include="Engine\PseudoClassSelectors\PseudoSelectorElement.cs" />
     <Compile Include="Engine\PseudoClassSelectors\jQuery\Header.cs" />
     <Compile Include="Engine\PseudoClassSelectors\jQuery\Parent.cs" />
     <Compile Include="Engine\PseudoClassSelectors\jQuery\Empty.cs" />
-    <Compile Include="Engine\PseudoClassSelectors\NthLastOfType.cs" />
-    <Compile Include="Engine\PseudoClassSelectors\NthChildSelector.cs" />
-    <Compile Include="Engine\PseudoClassSelectors\NthLastChild.cs" />
-    <Compile Include="Engine\PseudoClassSelectors\NthOfType.cs" />
-    <Compile Include="Engine\PseudoClassSelectors\NthChild.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\Css\NthLastOfType.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\Css\NthChildSelector.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\Css\NthLastChild.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\Css\NthOfType.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\Css\NthChild.cs" />
     <Compile Include="Engine\PseudoClassSelectors\PseudoSelector.cs" />
     <Compile Include="Engine\IPseudoSelectorElement.cs" />
     <Compile Include="Engine\IPseudoSelectorFilter.cs" />
@@ -197,6 +198,7 @@
     <Compile Include="EquationParser\IOrderedDictionary.cs" />
     <Compile Include="EquationParser\IVariable.cs" />
     <Compile Include="EquationParser\IVariableContainer.cs" />
+    <Compile Include="HtmlParser\enumHtmlParsingMode.cs" />
     <Compile Include="HtmlParser\enumInsertionMode.cs" />
     <Compile Include="HtmlParser\enumTokenizerState.cs" />
     <Compile Include="HtmlParser\ExtensionMethods.cs" />
@@ -230,6 +232,7 @@
     <Compile Include="Engine\SelectorParser.cs" />
     <Compile Include="ExtensionMethods\Forms.cs" />
     <Compile Include="Utility\AttributeDictionary.cs" />
+    <Compile Include="Utility\ObjectActivator.cs" />
     <Compile Include="Web\WebForms.cs" />
     <Compile Include="OutputFormatters\IOutputFormatter.cs" />
     <Compile Include="OutputFormatters\FormatPlainText.cs" />
@@ -287,8 +290,8 @@
     <Compile Include="Dom\IDomSpecialElement.cs" />
     <Compile Include="Dom\INodeList.cs" />
     <Compile Include="Engine\MatchElement.cs" />
-    <Compile Include="Engine\PseudoClassSelectors\NthChildMatcher.cs" />
-    <Compile Include="Engine\CssSelectionEngine.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\Css\NthChildMatcher.cs" />
+    <Compile Include="Engine\SelectorEngine.cs" />
     <Compile Include="ExtensionMethods\Internal\ExtensionMethods.cs" />
     <Compile Include="HtmlParser\IterationData.cs" />
     <Compile Include="Utility\SmallDictionary.cs" />
@@ -321,6 +324,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Documentation\Changes.md" />
+    <None Include="Documentation\Architecture.md" />
     <None Include="Documentation\Todo.md" />
     <None Include="Documentation\DifferencesFromJQuery.md" />
   </ItemGroup>

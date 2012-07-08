@@ -384,16 +384,16 @@ namespace CsQuery.Tests.jQuery
 
 
             var jcheck = jQuery("<input />");
-            thrown = true;
+            thrown = false;
             try
             {
                 jcheck.Attr("type", "checkbox");
             }
             catch
             {
-                thrown = false;
+                thrown = true;
             }
-            Assert.IsTrue(thrown, "Exception thrown when trying to change type property");
+            Assert.IsFalse(thrown, "No exception thrown when trying to change type property");
             Assert.AreEqual("checkbox", jcheck.Attr("type"), "Verify that you can change the type of an input element that isn't in the DOM");
 
             var button = jQuery("#button");

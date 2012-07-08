@@ -63,15 +63,12 @@ namespace CsQuery
 
         public CQ Select(string selector)
         {
+
             CQ csq = New();
             csq.Selector = new Selector(selector);
-
-            // If the selector is HTML create it as a new fragment so it can be indexed & traversed upon
-            // (This comment is a placeholder for implementing document fragments properly)
-            // IDomDocument dom = selectors.IsHtml ? new DomFragment(selector.ToCharArray()) : Document;
-
             csq.AddSelection(csq.Selector.Select(Document));
             return csq;
+            
         }
 
         /// <summary>

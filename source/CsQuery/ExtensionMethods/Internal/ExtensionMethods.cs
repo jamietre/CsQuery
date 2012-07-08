@@ -542,14 +542,6 @@ namespace CsQuery.ExtensionMethods.Internal
             return value==null ? alternate : value;
         }
 
-        public static void AddChildrenAlways(this IDomDocument document, IEnumerable<IDomObject> list)
-        {
-            foreach (var item in list)
-            {
-                document.ChildNodes.AddAlways(item);
-            }
-        }
-
         /// <summary>
         /// Return the index of item in an array. If count is > 0 then that is conisdered the length of the array
         /// </summary>

@@ -6,6 +6,7 @@ using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 using CsQuery.Implementation;
 using CsQuery.Engine;
+using CsQuery.HtmlParser;
 
 namespace CsQuery
 {
@@ -153,78 +154,96 @@ namespace CsQuery
         /// is not completely implemented.
         /// </summary>
         /// <param name="html"></param>
-        protected void LoadDocument(char[] html)
-        {
-            Clear();
+        //protected void LoadDocument(char[] html)
+        //{
+        //    Clear();
 
-            CreateNewDocument(html);
-            ClearSelections();
-            HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
-            factory.ParseToDocument();
-            AddSelection(Document.ChildNodes);
+        //    CreateNewDocument(html);
+        //    ClearSelections();
+        //    HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
+        //    factory.ParseToDocument();
+        //    AddSelection(Document.ChildNodes);
 
-        }
+        //}
 
         /// <summary>
         /// Load as if content - tag generation (EXCEPT for html/body) is enabled
         /// </summary>
         /// <param name="html"></param>
-        protected void LoadContent(char[] html)
-        {
-            CreateNewFragment(html);
-            ClearSelections();
-            HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
-            factory.GenerateOptionalElements = true;
-            factory.IsDocument = false;
-            Document.AddChildrenAlways(factory.Parse());
-            AddSelection(Document.ChildNodes);
+        //protected void LoadContent(char[] html)
+        //{
+        //    CreateNewFragment(html);
+        //    ClearSelections();
+        //    HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
+        //    factory.GenerateOptionalElements = true;
+        //    factory.IsDocument = false;
+        //    Document.Populate(factory.Parse());
+        //    AddSelection(Document.ChildNodes);
 
-        }
+        //}
 
         /// <summary>
         /// Load as if a fragment - no tag generation whatsoever
         /// </summary>
         /// <param name="html"></param>
         /// <returns></returns>
-        protected void LoadFragment(IEnumerable<IDomObject> elements)
-        {
-            Clear();
-            CreateNewDocument();
-            ClearSelections();
-            Document.AddChildrenAlways(elements);
-            AddSelection(Document.ChildNodes);
-        }
+        //protected void LoadFragment(IEnumerable<IDomObject> elements)
+        //{
+        //    Clear();
+        //    CreateNewDocument();
+        //    ClearSelections();
+        //    Document.Populate(elements);
+        //    AddSelection(Document.ChildNodes);
+        //}
 
         /// <summary>
         /// Creates a new fragment, e.g. HTML and BODY are not generated
         /// </summary>
         /// <param name="html"></param>
         /// <returns></returns>
-        protected void LoadFragment(char[] html)
-        {
-            Clear();
-            CreateNewFragment(html);
-            HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
-            Document.AddChildrenAlways(factory.ParseAsFragment());
-            AddSelection(Document.ChildNodes);
+        //protected void LoadFragment(char[] html)
+        //{
+        //    Clear();
+        //    CreateNewFragment(html, HtmlParsingMode.Fragment);
+        //    AddSelection(Document.ChildNodes);
+        //}
 
+        protected void CreateNewDocument()
+        {
+            Document = new DomDocument();
+            FinishCreatingNewDocument();
         }
-        /// <summary>
+        protected void CreateNewFragment()
+        {
+            Document = new DomFragment();
+            FinishCreatingNewDocument();
+        }
+
+        protected void CreateNewFragment(IEnumerable<IDomObject> elements)
+        {
+            Document = new DomFragment(elements);
+            AddSelection(Document.ChildNodes);
+            FinishCreatingNewDocument();
+        }
+        /// <summary> 
         /// Replace the existing DOM with the html (or empty if no parameter passed)
         /// </summary>
         /// <param name="html"></param>
-        protected void CreateNewDocument(char[] html=null)
+        protected void CreateNewDocument(char[] html, HtmlParsingMode htmlParsingMode)
         {
-            Document = new DomDocument(html);
+            Document = new DomDocument(html,htmlParsingMode);
+            HtmlElementFactory.ReorganizeStrandedTextNodes(Document);
+            AddSelection(Document.ChildNodes);
             FinishCreatingNewDocument();
         }
         /// <summary>
         /// Replace the existing DOM with the html (or empty if no parameter passed)
         /// </summary>
         /// <param name="html"></param>
-        protected void CreateNewFragment(char[] html = null)
+        protected void CreateNewFragment(char[] html, HtmlParsingMode htmlParsingMode)
         {
-            Document = new DomFragment(html);
+            Document = new DomFragment(html,htmlParsingMode);
+            AddSelection(Document.ChildNodes);
             FinishCreatingNewDocument();
         }
         private void FinishCreatingNewDocument()

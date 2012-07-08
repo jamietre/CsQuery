@@ -66,7 +66,7 @@ namespace CsQuery.Tests
         [TestFixtureTearDown]
         public virtual void FixtureTearDown()
         {
-            FixtureSetUp();
+          
         }
 
         

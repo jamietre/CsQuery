@@ -121,6 +121,8 @@ namespace CsQuery
 
         bool IsDisconnected { get; }
 
+        bool IsFragment { get; }
+
         /// <summary>
         /// Makes a deep copy of this object.
         /// </summary>

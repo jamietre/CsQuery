@@ -13,11 +13,17 @@ namespace CsQuery.Engine.PseudoClassSelectors
     public class Has : PseudoSelector, IPseudoSelectorFilter
     {
 
-        public override void Initialize()
+        public override string Arguments
         {
-            base.Initialize();
-            ChildSelector = new Selector(String.Join(",", Parameters));
-            //Cache = new HashSet<IDomObject>();
+            get
+            {
+                return base.Arguments;
+            }
+            set
+            {
+                base.Arguments = value;
+                ChildSelector = new Selector(String.Join(",", Parameters));
+            }
         }
 
         protected Selector ChildSelector;

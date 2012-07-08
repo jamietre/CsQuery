@@ -93,8 +93,7 @@ namespace CsQuery.HtmlParser
         #region public methods
 
         /// <summary>
-        /// Parse with options for a full HTML document. Not that this method WILL NOT handle stranded text nodes (outside
-        /// Body) right now. This only works with ParseToDocument.
+        /// Parse with options for a full HTML document. 
         /// </summary>
         /// <returns></returns>
         public IEnumerable<IDomObject> ParseAsDocument()
@@ -103,6 +102,7 @@ namespace CsQuery.HtmlParser
             GenerateOptionalElements = true;
             WrapRootTextNodes = false;
             return Parse();
+
         }
 
         /// <summary>
@@ -126,10 +126,25 @@ namespace CsQuery.HtmlParser
         {
             IsDocument = false;
             GenerateOptionalElements = true;
-            WrapRootTextNodes = true;
+            WrapRootTextNodes = false;
             return Parse();
         }
 
+        public IEnumerable<IDomObject> Parse(HtmlParsingMode htmlParsingMode)
+        {
+            switch (htmlParsingMode)
+            {
+                case HtmlParsingMode.Content:
+                    return ParseAsContent();
+                case HtmlParsingMode.Document:
+                    return ParseAsDocument();
+                case HtmlParsingMode.Fragment:
+                    return ParseAsFragment();
+                default:
+                    throw new NotImplementedException("Unknown HTML parsing mode");
+            }
+
+        }
         /// <summary>
         /// Parse the HTML, and return it, based on options set.
         /// </summary>
@@ -408,14 +423,14 @@ namespace CsQuery.HtmlParser
         /// <summary>
         /// Parse the HTML into the bound document
         /// </summary>
-        public void ParseToDocument()
-        {
-            foreach (IDomObject obj in ParseAsDocument())
-            {
-                Document.ChildNodes.AddAlways(obj);
-            }
-            ReorganizeStrandedTextNodes();
-        }
+        //public void ParseToDocument()
+        //{
+        //    foreach (IDomObject obj in ParseAsDocument())
+        //    {
+        //        Document.ChildNodes.AddAlways(obj);
+        //    }
+        //    ReorganizeStrandedTextNodes();
+        //}
 
         #endregion
 
@@ -425,29 +440,29 @@ namespace CsQuery.HtmlParser
         /// <summary>
         /// In the future I will update the parser to do this directly, since this requires binding to a Document to work.
         /// </summary>
-        private void ReorganizeStrandedTextNodes()
+        public static void  ReorganizeStrandedTextNodes(IDomDocument document)
         {
-            // add a doctype node
-            if (Document.DocTypeNode == null)
+
+            if (document.DocTypeNode == null)
             {
                 var docType = new DomDocumentType(DocType.HTML5);
-                Document.ChildNodes.Insert(0, docType);
+                document.ChildNodes.Insert(0, docType);
 
             }
 
             // ignore everything before <html> except text; if found, start adding to <body>
             // if there's anything before <doctype> then it gets trashed
 
-            IDomElement html = Document.GetElementsByTagName("html").FirstOrDefault();
+            IDomElement html = document.GetElementsByTagName("html").FirstOrDefault();
 
-            if (html != null && Document.GetElementsByTagName("head").FirstOrDefault() == null)
+            if (html != null && document.GetElementsByTagName("head").FirstOrDefault() == null)
             {
-                html.ChildNodes.Insert(0,Document.CreateElement("head"));
+                html.ChildNodes.Insert(0, document.CreateElement("head"));
             }
 
 
 
-            IDomElement body = Document.GetElementsByTagName("body").FirstOrDefault();
+            IDomElement body = document.GetElementsByTagName("body").FirstOrDefault();
             if (body != null)
             {
 
@@ -456,9 +471,9 @@ namespace CsQuery.HtmlParser
                 int bodyIndex = 0;
                 int index = 0;
                 // there should only be DocType & HTML.
-                while (index < Document.ChildNodes.Count)
+                while (index < document.ChildNodes.Count)
                 {
-                    IDomObject obj = Document.ChildNodes[index];
+                    IDomObject obj = document.ChildNodes[index];
                     switch (obj.NodeType)
                     {
                         case NodeType.DOCUMENT_TYPE_NODE:
@@ -468,7 +483,7 @@ namespace CsQuery.HtmlParser
                             }
                             else
                             {
-                                Document.ChildNodes.RemoveAt(index);
+                                document.ChildNodes.RemoveAt(index);
                             }
                             break;
                         case NodeType.ELEMENT_NODE:
@@ -500,7 +515,7 @@ namespace CsQuery.HtmlParser
                                 scanner.SkipWhitespace();
                                 if (scanner.Finished)
                                 {
-                                    Document.ChildNodes.RemoveAt(index);
+                                    document.ChildNodes.RemoveAt(index);
                                     continue;
                                 }
                                 else

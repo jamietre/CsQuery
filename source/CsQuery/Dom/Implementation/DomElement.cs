@@ -198,7 +198,7 @@ namespace CsQuery.Implementation
             }
             set
             {
-                if (!IsDisconnected)
+                if (!IsFragment)
                 {
                     if (DomAttributes.ContainsKey(HtmlData.IDAttrId))
                     {
@@ -444,7 +444,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return Document.IsIndexed;
+                return !IsDisconnected && Document.IsIndexed;
             }
         }
 
@@ -934,7 +934,7 @@ namespace CsQuery.Implementation
                     ushort tokenId = HtmlData.TokenIDCaseSensitive(cls);
                     
                     _Classes.Add(tokenId);
-                    if (!IsDisconnected)
+                    if (IsIndexed)
                     {
                         Document.DocumentIndex.AddToIndex(IndexKey(".", tokenId), this);
                     }

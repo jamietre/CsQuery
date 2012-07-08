@@ -23,7 +23,7 @@ namespace CsQuery.Tests.Csharp.Dom
             var frag = TestFragment();
 
             var concreteFrag = (Implementation.DomFragment)frag[0].Document;
-            Assert.IsFalse(concreteFrag.IsDisconnected);
+            Assert.IsTrue(concreteFrag.IsFragment);
             Assert.IsTrue(concreteFrag.IsIndexed);
             Assert.AreNotEqual(0, concreteFrag.SelectorXref.Count);
         }

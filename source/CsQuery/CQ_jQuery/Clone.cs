@@ -32,14 +32,16 @@ namespace CsQuery
             // TODO: The type of document needs to be implemented as a factory. THere are certainly other places
             // where this choice should be made.
 
-            if (Document is IDomFragment)
-            {
-                csq.CreateNewFragment();
-            }
-            else
-            {
-                csq.CreateNewDocument();
-            }
+            //if (Document is IDomFragment)
+            //{
+            //    csq.CreateNewFragment();
+            //}
+            //else
+            //{
+            //    csq.CreateNewDocument();
+            //}
+
+            csq.Document = Document.CreateNew<IDomFragment>();
 
             foreach (IDomObject elm in SelectionSet)
             {

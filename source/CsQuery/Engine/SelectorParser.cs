@@ -15,14 +15,11 @@ namespace CsQuery.Engine
     {
         #region private properties
 
-        
-
         private IStringScanner scanner;
         private Selector Selectors;
         private SelectorClause _Current;
         TraversalType NextTraversalType = TraversalType.All;
         CombinatorType NextCombinatorType = CombinatorType.Root;
-
 
         protected SelectorClause Current
         {
@@ -99,7 +96,6 @@ namespace CsQuery.Engine
                             case "checked":
                             case "selected":
                             case "disabled":
-                                //StartNewSelector(SelectorType.AttributeExists);
                                 StartNewSelector(SelectorType.AttributeValue);
                                 Current.AttributeSelectorType = AttributeSelectorType.Exists;
                                 Current.AttributeName = key;
@@ -109,22 +105,7 @@ namespace CsQuery.Engine
                                 Current.AttributeSelectorType = AttributeSelectorType.NotExists;
                                 Current.AttributeName = "disabled";
                                 break;
-                            
-                            case "lang":
-                                // The problem with :lang is that it is based on an inherited property value. This messes  with the index since
-                                // elements will be pre-filtered by an attribute selector. This could probably be implemented using a pseudoclass
-                                // type construct instead, e.g. as "visible", but since this is a low priority it's excluded for now.
-
-                                //StartNewSelector(SelectorType.Attribute);
-                                //Current.AttributeSelectorType = AttributeSelectorType.StartsWithOrHyphen;
-                                //Current.TraversalType = TraversalType.Inherited;
-                                //Current.AttributeName = "lang";
-
-                                //Current.Criteria = scanner.GetBoundedBy('(', false);
-                                //break;
-                                throw new NotImplementedException(":lang is not currently supported.");
-                                
-
+                        
                             case "first-letter":
                             case "first-line":
                             case "before":
@@ -139,22 +120,8 @@ namespace CsQuery.Engine
                                 throw new NotImplementedException("Pseudoclasses that require a browser aren't implemented.");
 
                             default:
-                                IPseudoSelector pseudoSel;
-                                if (PseudoSelectors.Items.TryGetInstance(key, out pseudoSel))
-                                {
-                                    StartNewSelector(SelectorType.PseudoClass);
-                                    Current.PseudoSelector = pseudoSel;
-
-
-                                    if (!scanner.Finished && scanner.Current == '(')
-                                    {
-                                        pseudoSel.Arguments = scanner.GetBoundedBy('(', true);
-
-                                    }
-                                    pseudoSel.Initialize();
-                                }
-                                else
-                                {
+                                if (!AddPseudoSelector(key)) {
+                                
                                     throw new ArgumentException("Unknown pseudo-class :\"" + key + "\". If this is a valid CSS or jQuery selector, please let us know.");
                                 }
                                 break;
@@ -176,7 +143,6 @@ namespace CsQuery.Engine
 
                         break;
                     case '[':
-                        //StartNewSelector(SelectorType.AttributeExists);
                         StartNewSelector(SelectorType.AttributeValue);
 
                         IStringScanner innerScanner = scanner.ExpectBoundedBy('[', true).ToNewScanner();
@@ -229,8 +195,6 @@ namespace CsQuery.Engine
                                         Current.AttributeSelectorType = AttributeSelectorType.EndsWith;
                                         break;
                                     case "!=":
-                                        Current.SelectorType |= SelectorType.AttributeValue;
-                                        //Current.SelectorType &= ~SelectorType.AttributeExists;
                                         Current.AttributeSelectorType = AttributeSelectorType.NotEquals;
                                         // must matched manually - missing also validates as notEquals
                                         
@@ -273,7 +237,6 @@ namespace CsQuery.Engine
                         // if a ">" or "," is later found, it will be overridden.
                         scanner.NextNonWhitespace();
                         NextTraversalType = TraversalType.Descendent;
-                        //StartNewSelector(TraversalType.Descendent);
                         break;
                     default:
 
@@ -317,6 +280,42 @@ namespace CsQuery.Engine
         #endregion
 
         #region private methods
+
+        /// <summary>
+        /// Adds a named pseudo selector from the pseudoselector library.
+        /// </summary>
+        ///
+        /// <param name="key">
+        /// The pseudoselector name
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
+        private bool AddPseudoSelector(string key)
+        {
+            IPseudoSelector pseudoSel;
+            if (PseudoSelectors.Items.TryGetInstance(key, out pseudoSel))
+            {
+                StartNewSelector(SelectorType.PseudoClass);
+                Current.PseudoSelector = pseudoSel;
+
+                if (!scanner.Finished && scanner.Current == '(')
+                {
+                    pseudoSel.Arguments = scanner.GetBoundedBy('(', true);
+                }
+                else
+                {
+                    pseudoSel.Arguments = null;
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         /*
          * The "And" combinator is used to create groups of selectors that are kept in the context of an active subselector.

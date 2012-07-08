@@ -148,7 +148,9 @@ namespace CsQuery.Tests.jQuery
         public void Html_Create()
         {
             Assert.IsTrue(jQuery("<link rel='stylesheet'/>").Length>0, "Creating a link");
-            Assert.IsTrue(jQuery("<script/>")[0].ParentNode==null, "Create a script");
+
+            Assert.AreEqual(jQuery("<script/>")[0].ParentNode,null,"Create a script");
+            
             Assert.IsTrue(jQuery("<input/>").Attr("type", "hidden").Length>0, "Create an input and set the type.");
 
             var j = CQ.CreateFragment("<span>hi</span> there <!-- mon ami -->");

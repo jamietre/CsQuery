@@ -59,8 +59,8 @@ namespace CsQuery
     {
         #region private properties
 
-        private Selector _Selector = null;
-        private IDomDocument _Document = null;
+        private Selector _Selector;
+        private IDomDocument _Document;
 
         #endregion
 
