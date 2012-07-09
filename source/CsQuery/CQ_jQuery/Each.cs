@@ -142,6 +142,19 @@ namespace CsQuery
             return this;
         }
 
+        /// <summary>
+        /// Iterate over each element in a sequence, and call a delegate for each element
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="func"></param>
+        public static void Each<T>(IEnumerable<T> list, Action<T> func)
+        {
+            foreach (var obj in list)
+            {
+                func(obj);
+            }
+        }
         
 
     }

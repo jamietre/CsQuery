@@ -9,24 +9,24 @@ using CsQuery.HtmlParser;
 
 namespace CsQuery.Engine
 {
-    public class CssSelectionEngine
+    internal class SelectorEngine
     {
         #region constructor
         
-        public CssSelectionEngine(IDomDocument document)
+        public SelectorEngine(IDomDocument document, Selector selector)
         {
-
             Document = document;
+            Selector = selector;
         }
 
         #endregion
 
         #region private properties
 
-
-        protected IDomDocument Document;
-        protected List<SelectorClause> ActiveSelectors;
-        protected int activeSelectorId;
+        //private static OutputSetComparer outputSetComparer = new OutputSetComparer();
+        
+        private List<SelectorClause> ActiveSelectors;
+        private int activeSelectorId;
 
         #endregion
 
@@ -35,7 +35,14 @@ namespace CsQuery.Engine
         /// The current selection list being acted on
         /// </summary>
 
-        public Selector Selectors { get; set; }
+        public Selector Selector { get; protected set; }
+
+        /// <summary>
+        /// The Document bound to this engine instance
+        /// </summary>
+
+        public IDomDocument Document { get; protected set; }
+
         #endregion
 
         #region public methods
@@ -45,42 +52,42 @@ namespace CsQuery.Engine
         /// </summary>
         /// <param name="document"></param>
         /// <returns></returns>
-        public IEnumerable<IDomObject> Select(IEnumerable<IDomObject> context)
+        public List<IDomObject> Select(IEnumerable<IDomObject> context)
         {
+            // this holds the final output
 
-            if (Selectors == null )
+            HashSet<IDomObject> output = new HashSet<IDomObject>();
+
+            if (Selector == null )
             {
                 throw new ArgumentException("No selectors provided.");
             }
 
-            if (Selectors.Count == 0)
+            if (Selector.Count == 0)
             {
-                yield break;
+                return EmptyEnumerable().ToList();
             }
 
-            ActiveSelectors = new List<SelectorClause>(Selectors);
+            ActiveSelectors = new List<SelectorClause>(Selector);
 
             // First just check if we ended up here with an HTML selector; if so, had it off.
             var firstSelector = ActiveSelectors[0];
             if (firstSelector.SelectorType == SelectorType.HTML)
             {
-                
-                HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(firstSelector.Html);
 
-                foreach (var obj in factory.Parse())
-                {
-                    yield return obj;
-                }
-                yield break;
+                HtmlParser.HtmlElementFactory factory = 
+                    new HtmlParser.HtmlElementFactory(firstSelector.Html);
+
+                // Return the factory ouptut as a list because otherwise the enumerator could end up
+                // as the actual source of the selection, meaning it would get re-parsed each time
+                // 
+                return factory.ParseAsFragment();
             } 
 
             // this holds any results that carried over from the previous loop for chaining
 
-            HashSet<IDomObject> lastResult = new HashSet<IDomObject>();
+            IEnumerable<IDomObject> lastResult = null;
 
-            // this holds the final output
-
-            HashSet<IDomObject> output = new HashSet<IDomObject>();
 
             // this is the source  from which selections are made in a given iteration; it could be the DOM root, a context,
             // or the previous result set.
@@ -88,10 +95,13 @@ namespace CsQuery.Engine
             IEnumerable<IDomObject> selectionSource=null;
 
             // Disable the index if there is no context (e.g. disconnected elements)
+            // or if the first element is not indexed. It is possible for a context to have a Document, but
+            // be disconnected from it (e.g. belong to a root DomDisconnectedFragment). These elements are
+            // not indexed by the Document element. 
 
 
-            bool useIndex = (context.IsNullOrEmpty() || !context.First().IsDisconnected) && Document.IsIndexed;
-
+            bool useIndex = context.IsNullOrEmpty() || 
+                (!context.First().IsDisconnected && context.First().IsIndexed);
 
 
             for (activeSelectorId = 0; activeSelectorId < ActiveSelectors.Count; activeSelectorId++)
@@ -99,26 +109,30 @@ namespace CsQuery.Engine
 
                 var selector = ActiveSelectors[activeSelectorId].Clone();
 
-                // we will alter the selector during each iteration to remove the parts that have already been parsed,
-                // so use a copy.
-                // this is a selector that was chanined with the selector grouping combinator "," -- we always output the results so
-                // far when beginning a new group.
-
-                if (selector.CombinatorType == CombinatorType.Root && lastResult.Count>0)
+                if (lastResult != null)
                 {
-                    output.AddRange(lastResult);
-                    lastResult.Clear();
-                }
+                    // we will alter the selector during each iteration to remove the parts that have already been parsed,
+                    // so use a copy.
+                    // this is a selector that was chanined with the selector grouping combinator "," -- we always output the results so
+                    // far when beginning a new group.
 
-                // For "and" combinator types, we want to leave everything as it was -- the results of this selector should compound
-                // with the prior.
+                    if (selector.CombinatorType == CombinatorType.Root && lastResult != null)
+                    {
+                        output.AddRange(lastResult);
+                        lastResult = null;
+
+                    }
+
+                }
+                // For "and" combinator types, we want to leave everything as it was -- the results of this
+                // selector should compound with the prior. 
 
                 if (selector.CombinatorType != CombinatorType.And)
                 {
                     selectionSource = GetSelectionSource(selector, context, lastResult);
-                    lastResult.Clear();
+                    lastResult = null;
                 }
-
+                
                 
 
                 string key = "";
@@ -129,10 +143,18 @@ namespace CsQuery.Engine
 
 #if DEBUG_PATH
 
-                    if (type.HasFlag(SelectorType.AttributeExists))
+                     if (selector.SelectorType.HasFlag(SelectorType.AttributeValue) 
+                        && selector.AttributeSelectorType != AttributeSelectorType.NotEquals)
                     {
                         key = "!" + selector.AttributeName;
-                        removeSelectorType=SelectorType.AttributeExists;
+
+                        // AttributeValue must still be matched manually - so remove this flag only if the
+                        // selector is conclusive without further checking
+                        
+                        if (selector.AttributeSelectorType == AttributeSelectorType.Exists)
+                        {
+                            removeSelectorType = SelectorType.AttributeValue;
+                        }
                     } 
                     else if (type.HasFlag(SelectorType.Tag))
                     {
@@ -151,12 +173,21 @@ namespace CsQuery.Engine
                     }
 
 #else
-                    if (selector.SelectorType.HasFlag(SelectorType.AttributeExists)) 
+                    // We don't want to use the index for "NotEquals" selectors because a missing attribute
+                    // is considered a valid match
+                    
+                    if (selector.SelectorType.HasFlag(SelectorType.AttributeValue) 
+                        && selector.AttributeSelectorType != AttributeSelectorType.NotEquals)
                     {
                         key = "!" + (char)HtmlData.TokenID(selector.AttributeName);
 
-                        // AttributeValue must still be matched manually - so remove this flag only.
-                        removeSelectorType=SelectorType.AttributeExists;
+                        // AttributeValue must still be matched manually - so remove this flag only if the
+                        // selector is conclusive without further checking
+                        
+                        if (selector.AttributeSelectorType == AttributeSelectorType.Exists)
+                        {
+                            removeSelectorType = SelectorType.AttributeValue;
+                        }
                     }
                     else if (selector.SelectorType.HasFlag(SelectorType.Tag))
                     {
@@ -215,6 +246,7 @@ namespace CsQuery.Engine
                     {
                         HashSet<IDomObject> elementMatches = new HashSet<IDomObject>();
                         result = elementMatches;
+
                         foreach (IDomObject obj in selectionSource)
                         {
                             elementMatches.AddRange(Document.DocumentIndex.QueryIndex(key + HtmlData.indexSeparator + obj.Path,
@@ -224,12 +256,11 @@ namespace CsQuery.Engine
                     }
                     selector.SelectorType &= ~removeSelectorType;
 
-                    // Special case for attribute selectors: when an Exists/Value attribute selector is present, we still need to filter
-                    // for the correct value afterwards. But we need to change the traversal type ONLY if the primary match has already
-                    // been done by the index; otherwise the couple cases where you need to match the value but can't select for "Exists" first
-                    // won't work.
-
-                    if (removeSelectorType == SelectorType.AttributeExists && selector.SelectorType.HasFlag(SelectorType.AttributeValue))
+                    // Special case for attribute selectors: when Attribute Value attribute selector is present, we
+                    // still need to filter for the correct value afterwards. But we need to change the traversal
+                    // type because any nodes with the correct attribute type have already been selected. 
+                    
+                    if (selector.SelectorType.HasFlag(SelectorType.AttributeValue))
                     {
                         selector.TraversalType = TraversalType.Filter;
                     }
@@ -257,45 +288,43 @@ namespace CsQuery.Engine
                 }
 
                 // If any selectors were not handled via the index, match them manually
+                
                 if (selector.SelectorType != 0)
                 {
       
-                    // if there are no temporary results (b/c there was no indexed selector) then use selection source instead
-                    // (e.g. start from the same point that the index would have)
+                    // if there are no temporary results (b/c there was no indexed selector) then use selection
+                    // source instead (e.g. start from the same point that the index would have) 
 
-                    lastResult.AddRange(GetMatches(result ?? selectionSource ?? Document.ChildElements, selector));
+                    result = GetMatches(result ?? selectionSource ?? Document.ChildElements, selector);
                 }
-                else
-                {
-                    if (result != null)
-                    {
-                        lastResult.AddRange(result);
-                    }
-                }
+                
+                lastResult = lastResult == null ?
+                    result : lastResult.Append(result); 
+                
             }
 
             // After the loop has finished, output any results from the last iteration.
 
-            if (lastResult.Count>0)
-            {
-                output.AddRange(lastResult);
-            }
+            output.AddRange(lastResult);
 
-            if (output.IsNullOrEmpty())
-            {
-                yield break;
-            }
-            else
-            {
-                // Selectors always return in DOM order. Selections may end up in a different order but
-                // we always sort here.
+            // Return the results as a list so that any user will not cause the selector to be run again
+            
+            return output.OrderBy(item => item.Path, StringComparer.Ordinal).ToList();
 
-                foreach (IDomObject item in output.OrderBy(item => item.Path, StringComparer.Ordinal))
+        }
+
+        protected IEnumerable<IDomObject> Join(params IEnumerable<IDomObject>[] lists)
+        {
+            foreach (var list in lists)
+            {
+                if (list != null)
                 {
-                    yield return item;
+                    foreach (var item in list)
+                    {
+                        yield return item;
+                    }
                 }
             }
-            ActiveSelectors.Clear();
         }
 
        
@@ -311,7 +340,8 @@ namespace CsQuery.Engine
         /// <param name="lastResult"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        protected IEnumerable<IDomObject> GetSelectionSource(SelectorClause selector, IEnumerable<IDomObject> context, IEnumerable<IDomObject> lastResult)
+        protected IEnumerable<IDomObject> GetSelectionSource(SelectorClause selector,
+            IEnumerable<IDomObject> context, IEnumerable<IDomObject> lastResult)
         {
             IEnumerable<IDomObject> selectionSource=null;
             switch (selector.CombinatorType)
@@ -412,65 +442,39 @@ namespace CsQuery.Engine
 
             if (selector.SelectorType.HasFlag(SelectorType.PseudoClass))
             {
-                if ( selector.IsResultListPosition) {
-
-                    foreach (var obj in GetResultPositionMatches(curList, selector))
-                    {
-                        yield return obj;
-                    }
-                    yield break;
-                } else if (selector.PseudoClassType == PseudoClassType.Not) {
-                    var subSelector = new Selector(selector.Criteria);
-                    foreach (var obj in subSelector.Except(Document,GetAllChildOrDescendants(selector.TraversalType,curList))) {
-                        yield return obj;
-                    }
-                    yield break;
-                }
-                else if (selector.PseudoClassType == PseudoClassType.Has)
-                {
-                    var subSelector = new Selector(selector.Criteria);
-                    foreach (var obj in GetAllChildOrDescendants(selector.TraversalType, curList))
-                    {
-                        if (Has(subSelector, obj))
-                        {
-                            yield return obj;
-                        }
-                    }
-                    yield break;
-                }
+                if (selector.IsResultListPosition) {
+                    return GetResultPositionMatches(curList, selector);
+                } 
+                
             }
             else if (selector.SelectorType.HasFlag(SelectorType.All))
             {
-                // special case for all, just recurse
-                foreach (var item in GetAllChildOrDescendants(selector.TraversalType,curList))
-                {
-                    yield return item;
-                }
-                yield break;
+                return GetAllChildOrDescendants(selector.TraversalType, curList);
             } 
 
             // Otherwise, try to match each element individually
             
             stack = new Stack<MatchElement>();
 
-            foreach (var e in curList)
+            foreach (var obj in curList)
             {
                 // We must check everything again when looking for specific depth of children
                 // otherwise - no point - skip em
-
-                if (selector.TraversalType != TraversalType.Child && uniqueElements.Contains(e))
+                // 
+                IDomElement el = obj as IDomElement;
+                if (el == null || selector.TraversalType != TraversalType.Child && uniqueElements.Contains(el))
                 {
                     continue;
                 }
-                stack.Push(new MatchElement(e, 0));
+                stack.Push(new MatchElement(el, 0));
                 int matchIndex = 0;
                 while (stack.Count != 0)
                 {
                     var current = stack.Pop();
 
-                    if (Matches(selector, current.Object, current.Depth))
+                    if (Matches(selector, current.Element, current.Depth))
                     {
-                        temporaryResults.Add(current.Object);
+                        temporaryResults.Add(current.Element);
                         matchIndex++;
                     }
                     // Add children to stack (in reverse order, so they are processed in the correct order when popped)
@@ -480,7 +484,6 @@ namespace CsQuery.Engine
                     // causing it to be ignored.
 
                     if (selector.TraversalType != TraversalType.Filter &&
-                        current.Object is IDomElement &&
                         (selector.TraversalType != TraversalType.Child || selector.ChildDepth > current.Depth))
                     {
                         SelectorType selectorType = selector.SelectorType;
@@ -502,92 +505,24 @@ namespace CsQuery.Engine
 
                         for (int j = elm.ChildNodes.Count - 1; j >= 0; j--)
                         {
-                            IDomObject obj = elm[j];
-                            if (selector.TraversalType == TraversalType.Child && !uniqueElements.Add(obj))
+                            IDomElement child = elm[j] as IDomElement;
+
+                            if (child==null || !uniqueElements.Add(child))
                             {
                                 continue;
                             }
-                            if (obj.NodeType == NodeType.ELEMENT_NODE)
+                            if (child.NodeType == NodeType.ELEMENT_NODE)
                             {
-                                stack.Push(new MatchElement(obj, current.Depth + 1));
+                                stack.Push(new MatchElement(child, current.Depth + 1));
                             }
                         }
                     }
                 }
 
             }
-
-            foreach (var obj in temporaryResults)
-            {
-                yield return obj;
-            }
-            yield break;
+            return temporaryResults;
         }
 
-
-
-        /// <summary>
-        /// Returns true if the element contains items matching the selector
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="element"></param>
-        /// <returns></returns>
-        public bool Has(Selector selector, IDomObject element)
-        {
-            selector[0].TraversalType = TraversalType.Descendent;
-            return selector.Select(Document, element).Any();
-        }
-
-
-        /// <summary>
-        /// Return all elements that match the selector
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="element"></param>
-        /// <returns></returns>
-        public IEnumerable<IDomObject> Matches(Selector selector, IEnumerable<IDomObject> elements)
-        {
-            HashSet<IDomObject> matches = new HashSet<IDomObject>(selector.Select(Document, elements));
-
-            foreach (var item in elements)
-            {
-                if (matches.Contains(item))
-                {
-                    yield return item;
-                }
-            }
-        }
-
-        public IEnumerable<IDomObject> NotMatches(Selector selector, IEnumerable<IDomObject> elements)
-        {
-            HashSet<IDomObject> matches = new HashSet<IDomObject>(selector.Select(Document, elements));
-            foreach (var item in elements)
-            {
-                if (!matches.Contains(item))
-                {
-                    yield return item;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Return true if the element matches the selector. Anything other than "all" or filter-type selectors will return false.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="element"></param>
-        /// <returns></returns>
-        public bool Matches(SelectorClause selector, IDomObject element)
-        {
-            switch (selector.TraversalType)
-            {
-                case TraversalType.All:
-                    return true;
-                case TraversalType.Filter:
-                    return Matches(selector, element, 0);
-                default:
-                    return false;
-            }
-        }
 
         /// <summary>
         /// Return true if an object matches a specific selector. If the selector has a desecendant or child traversal type, it must also
@@ -597,7 +532,7 @@ namespace CsQuery.Engine
         /// <param name="obj">The target object</param>
         /// <param name="depth">The depth at which the target must appear for descendant or child selectors</param>
         /// <returns></returns>
-        protected bool Matches(SelectorClause selector, IDomObject obj, int depth)
+        protected bool Matches(SelectorClause selector, IDomElement obj, int depth)
         {
             switch (selector.TraversalType)
             {
@@ -614,7 +549,6 @@ namespace CsQuery.Engine
                     // This engine at some point should be reworked so that the "And" combinator is just a subselector, this logic has 
                     // become too brittle.
 
-                   // if (depth == 0 && selector.SelectorType != SelectorType.AttributeValue)
                     if (depth == 0)
                     {
                         return false;
@@ -626,50 +560,47 @@ namespace CsQuery.Engine
             {
                 return true;
             }
-            if (!(obj is IDomElement))
+
+            if (selector.SelectorType.HasFlag(SelectorType.PseudoClass))
+            {
+                return MatchesPseudoClass(obj, selector);
+            }
+
+            if (obj.NodeType != NodeType.ELEMENT_NODE)
             {
                 return false;
             }
-            IDomElement elm = (IDomElement)obj;
+            
             // Check each selector from easier/more specific to harder. e.g. ID is going to eliminate a lot of things.
 
             if (selector.SelectorType.HasFlag(SelectorType.ID) &&
-                selector.ID != elm.Id)
+                selector.ID != obj.Id)
             {
                 return false;
             }
             if (selector.SelectorType.HasFlag(SelectorType.Class) &&
-                !elm.HasClass(selector.Class))
+                !obj.HasClass(selector.Class))
             {
                 return false;
             }
+
             if (selector.SelectorType.HasFlag(SelectorType.Tag) &&
-                !String.Equals(elm.NodeName, selector.Tag, StringComparison.CurrentCultureIgnoreCase))
+                !String.Equals(obj.NodeName, selector.Tag, StringComparison.CurrentCultureIgnoreCase))
             {
                 return false;
             }
 
             
-            if ((selector.SelectorType & (SelectorType.AttributeExists | SelectorType.AttributeValue))>0)
+            if ((selector.SelectorType & SelectorType.AttributeValue)>0)
             {
-                return AttributeSelectors.MatchesAttribute(selector, elm);
-            }
-
-            if (selector.SelectorType.HasFlag(SelectorType.PseudoClass)) {
-                return //selector.TraversalType == TraversalType.Filter && 
-                    MatchesPseudoClass(elm, selector);
-            }
-
-            if (selector.SelectorType.HasFlag(SelectorType.Contains) &&
-                !ContainsText(elm, selector.Criteria))
-            {
-                return false;
+                return AttributeSelectors.Matches((IDomElement)obj,selector);
             }
 
             if (selector.SelectorType == SelectorType.None)
             {
                 return false;
             }
+
             return true;
         }
 
@@ -686,28 +617,8 @@ namespace CsQuery.Engine
 
             var sourceList = GetAllChildOrDescendants(selector.TraversalType, list);
 
-            switch (selector.PseudoClassType)
-            {
-                case PseudoClassType.Odd:
-                    return PseudoSelectors.OddElements(sourceList);
-                case PseudoClassType.Even:
-                    return PseudoSelectors.EvenElements(sourceList);
-                case PseudoClassType.First:
-                    return PseudoSelectors.Enumerate(sourceList.FirstOrDefault());
-                case PseudoClassType.Last:
-                    return PseudoSelectors.Enumerate(sourceList.LastOrDefault());
-                case PseudoClassType.IndexEquals:
-                    return PseudoSelectors.Enumerate(PseudoSelectors.ElementAtIndex(sourceList, selector.PositionIndex));
-                case PseudoClassType.IndexGreaterThan:
-                    return PseudoSelectors.IndexGreaterThan(sourceList, selector.PositionIndex);
-                case PseudoClassType.IndexLessThan:
-                    return PseudoSelectors.IndexLessThan(sourceList, selector.PositionIndex);
-                case PseudoClassType.All:
-                    return sourceList;
-                default:
-                    throw new NotImplementedException("Unimplemented result position type selector");
-
-            }
+            return ((IPseudoSelectorFilter)selector.PseudoSelector).Filter(sourceList);
+           
         }
 
         
@@ -720,66 +631,8 @@ namespace CsQuery.Engine
         protected IEnumerable<IDomObject> GetPseudoClassMatches(IDomElement elm, SelectorClause selector)
         {
             IEnumerable<IDomObject> results;
-            switch (selector.PseudoClassType)
-            {
-                //case PseudoClassType.Has:
-                //    var subSelector = new Selector(selector.Criteria);
-                //    results = Has(subSelector, elm.ChildElements);
-                //    break;
-                //case PseudoClassType.Not:
-                //    subSelector = new Selector(selector.Criteria);
-                //    results = NotMatches(subSelector, elm.ChildElements);
-                //    break;
-                case PseudoClassType.NthChild:
-                case PseudoClassType.NthOfType:
-                    results= PseudoSelectors.NthChilds(elm,selector.Criteria);
-                    break;
-                case PseudoClassType.NthLastChild:
-                case PseudoClassType.NthLastOfType:
-                    results = PseudoSelectors.NthLastChilds(elm, selector.Criteria);
-                    break;
-                case PseudoClassType.FirstOfType:
-                    results=PseudoSelectors.FirstOfType(elm, selector.Criteria);
-                    break;
-                case PseudoClassType.LastOfType:
-                    results=PseudoSelectors.LastOfType(elm, selector.Criteria);
-                    break;
-                case PseudoClassType.FirstChild:
-                    results=PseudoSelectors.Enumerate(PseudoSelectors.FirstChild(elm));
-                    break;
-                case PseudoClassType.LastChild:
-                    results=PseudoSelectors.Enumerate(PseudoSelectors.LastChild(elm));
-                    break;
-                case PseudoClassType.OnlyChild:
-                    results = PseudoSelectors.Enumerate(PseudoSelectors.OnlyChild(elm));
-                    break;
-                case PseudoClassType.OnlyOfType:
-                    results = PseudoSelectors.OnlyOfType(elm, selector.Criteria);
-                    break;
-                case PseudoClassType.Empty:
-                    results= PseudoSelectors.Empty(elm.ChildElements);
-                    break;
-                case PseudoClassType.Parent:
-                    results = PseudoSelectors.Parent(elm.ChildElements);
-                    break;
-                case PseudoClassType.Visible:
-                    results = PseudoSelectors.Visible(elm.ChildElements);
-                    break;
-                case PseudoClassType.Hidden:
-                    results = PseudoSelectors.Hidden(elm.ChildElements);
-                    break;
-                case PseudoClassType.Header:
-                    results = PseudoSelectors.Headers(elm.ChildElements);
-                    break;
-                case PseudoClassType.All:
-                    results=elm.ChildElements;
-                    break;
-                case PseudoClassType.Extension:
-                    results =PseudoSelectors.Extension(elm, -1, selector.Criteria);
-                    break;
-                default:
-                    throw new NotImplementedException("Unimplemented position type selector");
-            }
+           
+            results = ((IPseudoSelectorChild)selector.PseudoSelector).ChildMatches(elm);
 
             foreach (var item in results)
             {
@@ -802,66 +655,35 @@ namespace CsQuery.Engine
           
         }    
 
-      
         /// <summary>
-        /// Return true if an element matches a specific DOM position-type filter
+        /// Return true if an element matches a specific filter.
         /// </summary>
-        /// <param name="elm"></param>
-        /// <param name="type"></param>
-        /// <param name="criteria"></param>
-        /// <returns></returns>
-        protected bool MatchesPseudoClass(IDomElement elm, SelectorClause clause)
-        {
-            switch (clause.PseudoClassType)
-            {
-                case PseudoClassType.Has:
-                    var subSelector = new Selector(clause.Criteria);
-                    return Has(subSelector, elm);
-                case PseudoClassType.Not:
-                    subSelector = new Selector(clause.Criteria);
-                    return !subSelector.Matches(Document, elm);
-                case PseudoClassType.NthChild:
-                case PseudoClassType.NthOfType:
-                    return PseudoSelectors.IsNthChild(elm, clause.Criteria);
-                case PseudoClassType.NthLastChild:
-                case PseudoClassType.NthLastOfType:
-                    return PseudoSelectors.IsNthLastChild(elm, clause.Criteria);
-                case PseudoClassType.FirstOfType:
-                    return PseudoSelectors.IsFirstOfType(elm, clause.Criteria);
-                case PseudoClassType.LastOfType:
-                    return PseudoSelectors.IsLastOfType(elm, clause.Criteria);
-                case PseudoClassType.FirstChild:
-                    return elm.PreviousElementSibling == null;
-                case PseudoClassType.LastChild:
-                    return elm.NextElementSibling == null;
-                case PseudoClassType.OnlyChild:
-                    return PseudoSelectors.IsOnlyChild(elm);
-                case PseudoClassType.OnlyOfType:
-                    return PseudoSelectors.IsOnlyOfType(elm);
-                case PseudoClassType.Empty:
-                    return PseudoSelectors.IsEmpty(elm);
-                case PseudoClassType.Parent:
-                    return PseudoSelectors.IsParent(elm);
-                case PseudoClassType.Visible:
-                    return PseudoSelectors.IsVisible(elm);
-                case PseudoClassType.Hidden:
-                    return !PseudoSelectors.IsVisible(elm);
-                case PseudoClassType.Header:
-                    return PseudoSelectors.IsHeader(elm);
-                case PseudoClassType.All:
-                    return true;
-                case PseudoClassType.Extension:
-                    return PseudoSelectors.IsExtension(elm, -1, clause.Criteria);
+        ///
+        /// <param name="element">
+        /// The element to test
+        /// </param>
+        /// <param name="selector">
+        /// A selector clause
+        /// </param>
+        ///
+        /// <returns>
+        /// true if matches pseudo class, false if not.matches the selector, false if not
+        /// </returns>
 
-                default:
-                    throw new NotImplementedException("Unimplemented position type selector");
-            }
+        protected bool MatchesPseudoClass(IDomElement element, SelectorClause selector)
+        {
+            return ((IPseudoSelectorChild)selector.PseudoSelector).Matches(element);       
         }
 
  
         #endregion
 
         #region private methods
+
+        private IEnumerable<IDomObject> EmptyEnumerable()
+        {
+            yield break;
+        }
 
         /// <summary>
         /// Map a list to its siblings or adjacent elements if needed. Ignore other traversal types.
@@ -907,44 +729,34 @@ namespace CsQuery.Engine
         /// <returns></returns>
         protected IEnumerable<IDomObject> GetAllChildOrDescendants(TraversalType traversalType, IEnumerable<IDomObject> list)
         {
-            IEnumerable<IDomObject> sourceList;
             switch (traversalType)
             {
                 case TraversalType.All:
-                    sourceList = GetAllElements(list);
-                    break;
+                    return GetAllElements(list);
                 case TraversalType.Child:
-                    sourceList = GetChildElements(list);
-                    break;
+                    return GetChildElements(list);
                 case TraversalType.Descendent:
-                    sourceList = GetDescendantElements(list);
-                    break;
+                    return GetDescendantElements(list);
                 default:
-                    sourceList = list;
-                    break;
+                    return list;
             }
-            return sourceList;
         }
 
 
         protected IEnumerable<IDomObject> GetTraversalTargetElements(TraversalType traversalType, IEnumerable<IDomObject> list)
         {
-            IEnumerable<IDomObject> sourceList;
             switch (traversalType)
             {
                 case TraversalType.Filter:
-                    sourceList = list;
-                    break;
+                    return list;
                 case TraversalType.Child:
 
-                    sourceList = GetChildElements(list);
-                    break;
+                    return GetChildElements(list);
                 case TraversalType.Adjacent:
-                    sourceList = GetAdjacentElements(list);
-                    break;
+                    return GetAdjacentElements(list);
                 case TraversalType.Sibling:
-                    sourceList = GetSiblings(list);
-                    break;
+                    return GetSiblings(list);
+  
                 case TraversalType.Descendent:
                     throw new InvalidOperationException("TraversalType.Descendant should not be found at this point.");
                 case TraversalType.All:
@@ -952,7 +764,6 @@ namespace CsQuery.Engine
                 default:
                     throw new NotImplementedException("Unimplemented traversal type.");
             }
-            return sourceList;
         }
 
         /// <summary>
@@ -1030,59 +841,21 @@ namespace CsQuery.Engine
             }
         }
         
-        /// <summary>
-        /// Return true if any text node descendant of the source element contains the specified text
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        protected bool ContainsText(IDomElement source, string text)
-        {
-            foreach (IDomObject e in source.ChildNodes)
-            {
-                if (e.NodeType == NodeType.TEXT_NODE)
-                {
-                    if (((IDomText)e).NodeValue.IndexOf(text) >= 0)
-                    {
-                        return true;
-                    }
-                }
-                else if (e.NodeType == NodeType.ELEMENT_NODE)
-                {
-                    if (ContainsText((IDomElement)e, text))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
 
-        /// <summary>
-        /// Adds a new selector for just the attribute value. Used to chain with the indexed attribute exists selector.
-        /// </summary>
-        /// <param name="selector"></param>
-        //protected void InsertAttributeValueSelector(SelectorClause fromSelector)
+
+        #endregion
+
+        #region private classes
+
+        //class OutputSetComparer : IComparer<IDomObject>
         //{
-        //    SelectorClause newSel = new SelectorClause();
-        //    newSel.TraversalType = TraversalType.Filter;
-        //    newSel.SelectorType = SelectorType.Attribute;
-        //    newSel.AttributeName = fromSelector.AttributeName;
-        //    newSel.AttributeValue = fromSelector.AttributeValue;
-        //    newSel.AttributeSelectorType = fromSelector.AttributeSelectorType;
-        //    newSel.CombinatorType = CombinatorType.Chained;
-        //    newSel.NoIndex = true;
-        //    int insertAt = activeSelectorId + 1;
-        //    if (insertAt >= ActiveSelectors.Count)
+
+
+        //    public int Compare(IDomObject x, IDomObject y)
         //    {
-        //        ActiveSelectors.Add(newSel);
-        //    }
-        //    else
-        //    {
-        //        ActiveSelectors.Insert(insertAt, newSel);
+        //        return String.Compare(x.Path, y.Path, StringComparison.Ordinal);
         //    }
         //}
-
 
         #endregion
     }

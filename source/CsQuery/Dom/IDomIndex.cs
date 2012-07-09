@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using CsQuery.Utility;
+using CsQuery.Implementation;
 
 namespace CsQuery
 {

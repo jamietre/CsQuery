@@ -151,7 +151,7 @@ namespace CsQuery.EquationParser.Implementation
             IOperand output=null;
             scanner.SkipWhitespace();
             
-            if (scanner.NextChar == '-')
+            if (scanner.Current == '-')
             {
                 // convert leading - to "-1" if it precedes a variable, otherwise 
                 // just add it to the output stream
@@ -161,14 +161,14 @@ namespace CsQuery.EquationParser.Implementation
                 {
                     throw new ArgumentException("Unexpected end of string found, expected an operand (a number or variable name)");
                 }
-                if (CharacterData.IsType(scanner.NextChar,CharacterType.Number)) {
+                if (CharacterData.IsType(scanner.Current,CharacterType.Number)) {
                     text+="-";
                 } else {
                     output = new Literal<T>(-1);
                 }
 
             } 
-            else if (scanner.NextChar == '+')
+            else if (scanner.Current == '+')
             {
                 // ignore leading +
 
@@ -193,7 +193,7 @@ namespace CsQuery.EquationParser.Implementation
                 else if (scanner.Info.Alpha)
                 {
                     text += scanner.GetAlpha();
-                    if (scanner.NextCharOrEmpty == "(")
+                    if (scanner.CurrentOrEmpty == "(")
                     {
                         IFunction func = Utils.GetFunction<T>(text);
 
@@ -217,7 +217,7 @@ namespace CsQuery.EquationParser.Implementation
                         output = var;
                     }
                 }
-                else if (scanner.NextChar == '(')
+                else if (scanner.Current == '(')
                 {
                     string inner = scanner.Get(MatchFunctions.BoundedBy("("));
                     var parser = new EquationParserEngine();
@@ -242,7 +242,7 @@ namespace CsQuery.EquationParser.Implementation
         {
 
             IOperator output;
-            if (scanner.Info.Alpha || scanner.NextChar == '(')
+            if (scanner.Info.Alpha || scanner.Current == '(')
             {
                 output = new Operator("*");
             }

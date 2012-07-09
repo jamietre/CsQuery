@@ -117,7 +117,7 @@ namespace CsQuery.Tests.jQuery
             //    CsQuery has no idea where to look for "#button" other than the fragment. The test was altered to reference the original
             //    Document to get the target for InsertAfter
             
-            var jbutton = CQ.CreateFragment("<button value='foobar'>text</button>").InsertAfter(jQuery("#button"));
+            var jbutton = jQuery("<button value='foobar'>text</button>").InsertAfter(jQuery("#button"));
             Assert.AreEqual(jbutton.Attr("value"), "foobar", "Value retrieval on a button does not return innerHTML");
             Assert.AreEqual(jbutton.Attr("value", "baz").Html(), "text", "Setting the value does not change innerHTML");
 
@@ -384,16 +384,16 @@ namespace CsQuery.Tests.jQuery
 
 
             var jcheck = jQuery("<input />");
-            thrown = true;
+            thrown = false;
             try
             {
                 jcheck.Attr("type", "checkbox");
             }
             catch
             {
-                thrown = false;
+                thrown = true;
             }
-            Assert.IsTrue(thrown, "Exception thrown when trying to change type property");
+            Assert.IsFalse(thrown, "No exception thrown when trying to change type property");
             Assert.AreEqual("checkbox", jcheck.Attr("type"), "Verify that you can change the type of an input element that isn't in the DOM");
 
             var button = jQuery("#button");

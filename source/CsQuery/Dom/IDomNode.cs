@@ -17,7 +17,7 @@ namespace CsQuery
         /// https://developer.mozilla.org/en/DOM/Node.nodeName
         /// </url>
 
-        string NodeName { get; set; }
+        string NodeName { get; }
 
         /// <summary>
         /// Gets or sets the value of this node.
@@ -120,6 +120,8 @@ namespace CsQuery
         /// </remarks>
 
         bool IsDisconnected { get; }
+
+        bool IsFragment { get; }
 
         /// <summary>
         /// Makes a deep copy of this object.

@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CsQuery.Utility;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 using CsQuery.Implementation;
 using CsQuery.Engine;
+using CsQuery.HtmlParser;
 
 namespace CsQuery
 {
@@ -14,11 +16,81 @@ namespace CsQuery
         #region regular constructors
 
         /// <summary>
-        /// Creates a new, empty jQuery object.
+        /// Creates a new, empty CQ object.
         /// </summary>
+
         public CQ()
         {
 
+        }
+
+        /// <summary>
+        /// Create a new CQ object from an HTML character array. Synonymous with
+        /// <see cref="CsQuery.Create(char[])"/>
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// The html of the new document.
+        /// </param>
+
+        public CQ(char[] html)
+        {
+            CreateNewFragment(html, HtmlParsingMode.Content);
+        }
+
+        /// <summary>
+        /// Create a new CQ object wrapping a single element.
+        /// </summary>
+        /// 
+        /// <remarks>
+        /// This differs from the <see cref="CsQuery.Create"/> method in that this document is still
+        /// related to its owning document; this is the same as if the element had just been selected.
+        /// The Create method, conversely, creates an entirely new Document context contining a single
+        /// element (a clone of this element).
+        /// </remarks>
+        ///
+        /// <param name="element">
+        /// The element.
+        /// </param>
+
+        public CQ(IDomObject element)
+        {
+            Document = element.Document;
+            AddSelection(element);
+        }
+
+        /// <summary>
+        /// Create a new CQ object wrapping a single DOM element, in the context of another CQ object.
+        /// </summary>
+        ///
+        /// <remarks>
+        /// This differs from the overload accepting a single IDomObject parameter in that it associates
+        /// the new object with a previous object, as if it were part of a selector chain. In practice
+        /// this will rarely make a difference, but some methods such as <see cref="CsQuery.End"/> use
+        /// this information.
+        /// </remarks>
+        ///
+        /// <param name="element">
+        /// The element to wrap.
+        /// </param>
+        /// <param name="context">
+        /// The context.
+        /// </param>
+
+        public CQ(IDomObject element, CQ context)
+        {
+            CsQueryParent = context;
+            SetSelection(element,SelectionSetOrder.OrderAdded);
+        }
+        
+        /// <summary>
+        /// Create a new CQ object from an HTML character array 
+        /// </summary>
+        /// <param name="html"></param>
+        /// <returns></returns>
+        public CQ(string html)
+        {
+            CreateNewFragment(Support.StringToCharArray(html), HtmlParsingMode.Content);
         }
 
         /// <summary>
@@ -29,18 +101,22 @@ namespace CsQuery
         /// <param name="context">The context</param>
         public CQ(string selector, CQ context)
         {
-            Create(selector, context);
+            _CQ(selector,context);
         }
 
-        /// <summary>
-        /// Create a new CsQuery object using an existing instance and a selector. if the selector is null or missing, then
-        /// it will contain no selection results.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="context"></param>
-        public CQ(string selector, IDomElement context)
-        {
-            Create(selector, context);
+        private void _CQ(string selector, CQ context) {
+             CsQueryParent = context;
+
+            if (!String.IsNullOrEmpty(selector))
+            {
+                Selector = new Selector(selector);
+
+                SetSelection(Selector.Select(Document, context),
+                    Selector.IsHmtl ?
+                        SelectionSetOrder.OrderAdded :
+                        SelectionSetOrder.Ascending);
+            }
+            
         }
 
         /// <summary>
@@ -50,7 +126,7 @@ namespace CsQuery
         /// <param name="context"></param>
         public CQ(string selector, string cssJson, CQ context)
         {
-            Create(selector, context);
+            _CQ(selector, context);
             AttrSet(cssJson);
         }
         /// <summary>
@@ -60,27 +136,12 @@ namespace CsQuery
         /// <param name="context"></param>
         public CQ(string selector, object css, CQ context)
         {
-            Create(selector, context);
+            _CQ(selector, context);
             AttrSet(css);
         }
         
-        /// Create a new CsQuery from a single elemement, using the element's context
-        /// </summary>
-        /// <param name="element"></param>
-        public CQ(IDomObject element)
-        {
-            Document = element.Document;
-            AddSelection(element);
-        }
-        /// <summary>
-        /// Create a new CsQuery from a single DOM element
-        /// </summary>
-        /// <param name="element"></param>
-        public CQ(IDomObject element, CQ context)
-        {
-            CsQueryParent = context;
-            AddSelection(element);
-        }
+
+
         /// <summary>
         /// Create a new CsQuery object from an existing CsQuery object (or any set of DOM elements).
         /// If the source is a unassociated list of DOM elements, the context of the first element will become
@@ -89,31 +150,39 @@ namespace CsQuery
         /// <param name="elements"></param>
         public CQ(IEnumerable<IDomObject> elements)
         {
-            //List<IDomObject> elList = new List<IDomObject>(elements);
-            
-            bool first = true;
+            var list = elements.ToList();
+
             if (elements is CQ)
             {
-                CsQueryParent = (CQ)elements;
-                first = false;
+                CQ asCq = (CQ)elements;
+                CsQueryParent = asCq;
+                Document = asCq.Document;
             }
- 
-            foreach (IDomObject el in elements)
+            else
             {
-                if (first)
+                // not actually a CQ object, we can get the Document the els are bound to from one of the
+                // elements. 
+
+                var el = elements.FirstOrDefault();
+                if (el != null)
                 {
                     Document = el.Document;
-                    first = false;
                 }
-                SelectionSet.Add(el);
             }
-            
+            SetSelection(list, SelectionSetOrder.OrderAdded);
         }
 
         /// <summary>
-        /// Create a new CsQuery object from a set of DOM elements, using the DOM from context
+        /// Create a new CsQuery object from a set of DOM elements, assigning the 2nd parameter as a context for this object.
         /// </summary>
-        /// <param name="elements"></param>
+        ///
+        /// <param name="elements">
+        /// The elements that make up the selection set in the new object
+        /// </param>
+        /// <param name="context">
+        /// A CQ object that will be assigned as the context for this one.
+        /// </param>
+
         public CQ(IEnumerable<IDomObject> elements, CQ context)
         {
             CsQueryParent = context;
@@ -124,122 +193,83 @@ namespace CsQuery
 
         #region implicit constructors
 
-        /// <summary>
-        /// Create a new CQ object from html
-        /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        public static implicit operator CQ(string html)
-        {
-            return CQ.Create(html);
-        }
+        ///// <summary>
+        ///// Create a new CQ object from html
+        ///// </summary>
+        ///// <param name="text"></param>
+        ///// <returns></returns>
+        //public static implicit operator CQ(string html)
+        //{
+        //    return CQ.Create(html);
+        //}
 
-        /// <summary>
-        /// Create a new CQ object from an element
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public static implicit operator CQ(DomObject obj)
-        {
-            return CQ.Create(obj);
-        }
+        ///// <summary>
+        ///// Create a new CQ object from html
+        ///// </summary>
+        ///// <param name="text"></param>
+        ///// <returns></returns>
+        //public static implicit operator CQ(char[] html)
+        //{
+        //    return CQ.Create(html);
+        //}
+
+        ///// <summary>
+        ///// Create a new CQ object from an element
+        ///// </summary>
+        ///// <param name="obj"></param>
+        ///// <returns></returns>
+        //public static implicit operator CQ(DomObject obj)
+        //{
+        //    return CQ.Create(obj);
+        //}
 
         #endregion
 
         #region Internal DOM creation methods
 
-        /// <summary>
-        /// Load from an HTML document. This will try to parse it into a valid document using HTML5 rules. The key word is "try" this
-        /// is not completely implemented.
-        /// </summary>
-        /// <param name="html"></param>
-        protected void LoadDocument(char[] html)
+        protected void CreateNewDocument()
         {
-            Clear();
-            //CreateNewDocument(html);
-            
-            //if (html != null)
-            //{
-            //    HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
-            //    factory.ParseToDocument();
-            //    AddSelectionRange(Document.ChildNodes);
-
-               
-            //}
-            CreateNewDocument(html);
-            ClearSelections();
-            HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
-            factory.ParseToDocument();
-            AddSelection(Document.ChildNodes);
-
+            Document = new DomDocument();
+            FinishCreatingNewDocument();
+        }
+        protected void CreateNewFragment()
+        {
+            Document = new DomFragment();
+            FinishCreatingNewDocument();
         }
 
-        /// <summary>
-        /// Load as if content - tag generation (EXCEPT for html/body) is enabled
-        /// </summary>
-        /// <param name="html"></param>
-        protected void LoadContent(char[] html)
+        protected void CreateNewFragment(IEnumerable<IDomObject> elements)
         {
-            CreateNewFragment(html);
-            ClearSelections();
-            HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
-            factory.GenerateOptionalElements = true;
-            factory.IsDocument = false;
-            Document.AddChildrenAlways(factory.Parse());
+            Document = new DomFragment(elements.Clone());
             AddSelection(Document.ChildNodes);
-
+            FinishCreatingNewDocument();
         }
-
-        /// <summary>
-        /// Load as if a fragment - no tag generation whatsoever
-        /// </summary>
-        /// <param name="html"></param>
-        /// <returns></returns>
-        protected void LoadFragment(IEnumerable<IDomObject> elements)
-        {
-            Clear();
-            CreateNewDocument();
-            ClearSelections();
-            Document.AddChildrenAlways(elements);
-            AddSelection(Document.ChildNodes);
-        }
-
-        /// <summary>
-        /// Creates a new fragment, e.g. HTML and BODY are not generated
-        /// </summary>
-        /// <param name="html"></param>
-        /// <returns></returns>
-        protected void LoadFragment(char[] html)
-        {
-            Clear();
-            CreateNewFragment(html);
-            HtmlParser.HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(Document);
-            Document.AddChildrenAlways(factory.ParseAsFragment());
-            AddSelection(Document.ChildNodes);
-
-        }
-        /// <summary>
+        /// <summary> 
         /// Replace the existing DOM with the html (or empty if no parameter passed)
         /// </summary>
         /// <param name="html"></param>
-        protected void CreateNewDocument(char[] html=null)
+        protected void CreateNewDocument(char[] html, HtmlParsingMode htmlParsingMode)
         {
-            Document = new DomDocument(html);
+            Document = new DomDocument(html,htmlParsingMode);
+            HtmlElementFactory.ReorganizeStrandedTextNodes(Document);
+            AddSelection(Document.ChildNodes);
             FinishCreatingNewDocument();
         }
         /// <summary>
         /// Replace the existing DOM with the html (or empty if no parameter passed)
         /// </summary>
         /// <param name="html"></param>
-        protected void CreateNewFragment(char[] html = null)
+        protected void CreateNewFragment(char[] html, HtmlParsingMode htmlParsingMode)
         {
-            Document = new DomFragment(html);
+            Document = new DomFragment(html,htmlParsingMode);
+            SetSelection(Document.ChildNodes,SelectionSetOrder.Ascending);
             FinishCreatingNewDocument();
         }
         private void FinishCreatingNewDocument()
         {
             Document.DomRenderingOptions = CQ.DefaultDomRenderingOptions;
         }
+        
         #endregion
     }
 }

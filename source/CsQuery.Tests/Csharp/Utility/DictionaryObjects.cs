@@ -11,7 +11,7 @@ using Assert = NUnit.Framework.Assert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
-using CsQuery.Utility;
+using CsQuery.Implementation;
 using CsQuery.EquationParser;
 
 

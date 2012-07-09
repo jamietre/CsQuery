@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CsQuery.Utility;
+using CsQuery.HtmlParser;
 
 namespace CsQuery
 {
@@ -179,6 +180,43 @@ namespace CsQuery
         /// </summary>
 
         IDomElement Body { get; }
+
+        /// <summary>
+        /// Creates an IDomDocument that is derived from this one. The new type can also be a derived
+        /// type, such as IDomFragment. The new object will inherit DomRenderingOptions from this one.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// The type of object to create that is IDomDocument
+        /// </typeparam>
+        ///
+        /// <returns>
+        /// A new, empty concrete class that is represented by the interface T, configured with the same
+        /// options as the current object.
+        /// </returns>
+
+        IDomDocument CreateNew<T>() where T : IDomDocument;
+        IDomDocument CreateNew();
+
+        /// <summary>
+        /// Populate this instance from a character string. This is destructive; any prior contents are destroyed.
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// The HTML.
+        /// </param>
+
+        //void Populate(char[] html, HtmlParsingMode htmlParsingMode );
+
+        /// <summary>
+        /// Populate this instance from a sequence of elements. This is destructive; any prior contents are destroyed.
+        /// </summary>
+        ///
+        /// <param name="elements">
+        /// The elements.
+        /// </param>
+
+        //void Populate(IEnumerable<IDomObject> elements);
 
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Collections.Specialized;
 
-namespace CsQuery.Utility
+namespace CsQuery.Implementation
 {
     /// <summary>
     /// Just convers a NameValueCollection to a dictionary with few methods

@@ -32,15 +32,18 @@ namespace CsQuery
 
         public CQ Remove(string selector = null)
         {
-            SelectionSet<IDomObject> list = !String.IsNullOrEmpty(selector) ?
+            var list = !String.IsNullOrEmpty(selector) ?
                 Filter(selector).SelectionSet :
                 SelectionSet;
 
             // We need to copy first because selection can change
-            List<IDomObject> removeList = new List<IDomObject>(list);
-            List<bool> disconnected = list.Select(item => item.IsDisconnected).ToList();
+            List<IDomObject> removeList = list.ToList();
 
-            for (int index = 0; index < list.Count; index++)
+            List<bool> disconnected = list.Select(item => item.IsDisconnected ||
+                item.Document != Document).ToList();
+
+            
+            for (int index = 0; index < removeList.Count; index++)
             {
                 var el = removeList[index];
                 if (disconnected[index])

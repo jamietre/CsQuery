@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CsQuery.Utility
+namespace CsQuery.Implementation
 {
     /// <summary>
     /// A sorted dictionary that allows lookup by range.

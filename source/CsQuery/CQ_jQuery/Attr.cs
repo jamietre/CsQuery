@@ -161,7 +161,7 @@ namespace CsQuery
             foreach (IDomElement e in Elements)
             {
                 if ((e.NodeName == "INPUT" || e.NodeName == "BUTTON") && name == "type"
-                    && !e.IsDisconnected)
+                    && !e.IsFragment)
                 {
                     throw new InvalidOperationException("Can't change type of \"input\" elements that have already been added to a DOM");
                 }
