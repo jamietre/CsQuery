@@ -96,7 +96,7 @@ namespace CsQuery.Implementation
             {
                 throw new ArgumentException("You must provide a NodeName when creating a DomElement.");
             }
-            NodeName = nodeName;
+            SetNodeName(nodeName);
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace CsQuery.Implementation
             }
             set
             {
-                if (!IsDisconnected)
+                if (!IsFragment)
                 {
                     if (DomAttributes.ContainsKey(HtmlData.IDAttrId))
                     {
@@ -223,17 +223,7 @@ namespace CsQuery.Implementation
             {
                 return HtmlData.TokenName(_NodeNameID).ToUpper();
             }
-            set
-            {
-                if (_NodeNameID < 1)
-                {
-                    _NodeNameID = HtmlData.TokenID(value);
-                }
-                else
-                {
-                    throw new InvalidOperationException("You can't change the tag of an element once it has been created.");
-                }
-            }
+            
         }
 
         /// <summary>
@@ -444,7 +434,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return Document.IsIndexed;
+                return !IsDisconnected && Document.IsIndexed;
             }
         }
 
@@ -934,7 +924,7 @@ namespace CsQuery.Implementation
                     ushort tokenId = HtmlData.TokenIDCaseSensitive(cls);
                     
                     _Classes.Add(tokenId);
-                    if (!IsDisconnected)
+                    if (IsIndexed)
                     {
                         Document.DocumentIndex.AddToIndex(IndexKey(".", tokenId), this);
                     }
@@ -1532,6 +1522,19 @@ namespace CsQuery.Implementation
         #endregion
 
         #region private methods
+
+        private void SetNodeName(string nodeName)
+        {
+            if (_NodeNameID < 1)
+            {
+                _NodeNameID = HtmlData.TokenID(nodeName);
+            }
+            else
+            {
+                throw new InvalidOperationException("You can't change the tag of an element once it has been created.");
+            }
+
+        }
 
         /// <summary>
         /// Attribute index key.

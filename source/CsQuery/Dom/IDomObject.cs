@@ -731,6 +731,4 @@ namespace CsQuery
 
         ushort NodeNameID { get; }
     }
-
-
 }

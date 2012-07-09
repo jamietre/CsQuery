@@ -78,17 +78,10 @@ namespace CsQuery
 
         public CQ Closest(IEnumerable<IDomObject> elements)
         {
-            // Use a hashset to operate faster - since we already haveone for the selection set anyway
-            SelectionSet<IDomObject> selectionSet;
-            if (elements is CQ)
-            {
-                selectionSet = ((CQ)elements).SelectionSet;
-            }
-            else
-            {
-                selectionSet = new SelectionSet<IDomObject>();
-                selectionSet.AddRange(elements);
-            }
+            // Use a hashset to operate faster - since we already have one for the selection set anyway
+            // 
+            HashSet<IDomObject> elementSet = new HashSet<IDomObject>(elements); 
+
             CQ csq = New();
 
             foreach (var el in SelectionSet)
@@ -96,19 +89,14 @@ namespace CsQuery
                 var search = el;
                 while (search != null)
                 {
-                    if (selectionSet.Contains(search))
+                    if (elementSet.Contains(search))
                     {
-                        csq.AddSelection(search);
-                        return csq;
+                        return csq.SetSelection(search);
                     }
                     search = search.ParentNode;
                 }
-
             }
             return csq;
-
         }
-        
-
     }
 }

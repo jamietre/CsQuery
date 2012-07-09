@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using CsQuery.ExtensionMethods;
 
-namespace CsQuery.Utility
+namespace CsQuery.Implementation
 {
     /// <summary>
     /// A dictionary that is substring-lookup capable. This is the data structure used to index HTML documents for selectors.

@@ -68,7 +68,7 @@ namespace CsQuery.Tests.Csharp.HtmlParser
         [Test, TestMethod]
         public void AutoCreateTableTags()
         {
-            var html = @" <table id=table-uda>
+            var html = @"<table id=table-uda>
         <tr>
             <th>Attribute
              <th>Setter Condition
@@ -85,7 +85,7 @@ namespace CsQuery.Tests.Csharp.HtmlParser
 
             dom = CQ.CreateDocument(html);
 
-            // should not create wrapper
+            // should create wrapper
             Assert.AreEqual(1, dom["body"].Length);
             Assert.AreEqual(1, dom["html"].Length);
             Assert.AreEqual(1, dom["head"].Length);

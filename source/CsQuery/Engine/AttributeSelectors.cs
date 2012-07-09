@@ -11,19 +11,16 @@ namespace CsQuery.Engine
 {
     public static class AttributeSelectors
     {
-
-
-        public static bool MatchesAttribute(SelectorClause selector, IDomElement elm)
+        public static bool Matches(IDomElement elm, 
+            AttributeSelectorType matchType, 
+            string attributeName, 
+            string matchValue=null)
         {
-            bool match = elm.HasAttribute(selector.AttributeName);
-            
+            bool match = elm.HasAttribute(attributeName);
+
             if (!match)
             {
-                if (selector.SelectorType.HasFlag(SelectorType.AttributeExists))
-                {
-                    return false;
-                }
-                switch (selector.AttributeSelectorType)
+                switch (matchType)
                 {
                     case AttributeSelectorType.Exists:
                         return false;
@@ -35,31 +32,31 @@ namespace CsQuery.Engine
             }
             else
             {
-                string value = elm[selector.AttributeName];
+                string value = elm[attributeName];
 
-                switch (selector.AttributeSelectorType)
+                switch (matchType)
                 {
                     case AttributeSelectorType.Exists:
                         return true;
                     case AttributeSelectorType.Equals:
-                        return selector.AttributeValue == value;
+                        return matchValue == value;
                     case AttributeSelectorType.StartsWith:
                         return value != null &&
-                            value.Length >= selector.AttributeValue.Length &&
-                            value.Substring(0, selector.AttributeValue.Length) == selector.AttributeValue;
+                            value.Length >= matchValue.Length &&
+                            value.Substring(0, matchValue.Length) == matchValue;
                     case AttributeSelectorType.Contains:
-                        return value != null && value.IndexOf(selector.AttributeValue) >= 0;
+                        return value != null && value.IndexOf(matchValue) >= 0;
 
                     case AttributeSelectorType.ContainsWord:
-                        return value != null && ContainsWord(value, selector.AttributeValue);
+                        return value != null && ContainsWord(value, matchValue);
                     case AttributeSelectorType.NotEquals:
-                        return !selector.AttributeValue.Equals(value);
+                        return !matchValue.Equals(value);
                     case AttributeSelectorType.NotExists:
                         return false;
                     case AttributeSelectorType.EndsWith:
-                        int len = selector.AttributeValue.Length;
-                        return value!=null && value.Length >= len &&
-                            value.Substring(value.Length - len) == selector.AttributeValue;
+                        int len = matchValue.Length;
+                        return value != null && value.Length >= len &&
+                            value.Substring(value.Length - len) == matchValue;
                     case AttributeSelectorType.StartsWithOrHyphen:
                         if (value == null)
                         {
@@ -74,13 +71,18 @@ namespace CsQuery.Engine
                             beforeDash = value.Substring(0, dashPos);
                         }
 
-                        return selector.AttributeValue == beforeDash || selector.AttributeValue == value;
+                        return matchValue == beforeDash || matchValue == value;
                     default:
                         throw new InvalidOperationException("No AttributeSelectorType set");
 
                 }
 
             }
+        }
+
+        public static bool Matches(IDomElement element,SelectorClause selector )
+        {
+            return Matches(element, selector.AttributeSelectorType, selector.AttributeName, selector.AttributeValue);
         }
 
         private static bool ContainsWord(string text, string word)

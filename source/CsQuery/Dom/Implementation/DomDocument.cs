@@ -6,6 +6,7 @@ using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 using CsQuery.Utility;
 using CsQuery.Engine;
+using CsQuery.HtmlParser;
 
 namespace CsQuery.Implementation
 {
@@ -32,8 +33,8 @@ namespace CsQuery.Implementation
         /// <param name="elements"></param>
         public DomDocument(IEnumerable<IDomObject> elements): base()
         {
-            ChildNodes.AddRange(elements);
             InitializeDomDocument();
+            Populate(elements);
         }
 
         
@@ -41,17 +42,38 @@ namespace CsQuery.Implementation
         /// Create a new document from a character array of html
         /// </summary>
         /// <param name="html"></param>
-        public DomDocument(char[] html)
+        public DomDocument(char[] html, HtmlParsingMode htmlParsingMode)
         {
+            InitializeDomDocument();
+            Populate(html, htmlParsingMode);
+        }
+
+        private void Populate(char[] html, HtmlParsingMode htmlParsingMode)
+        {
+
             if (html != null && html.Length > 0)
             {
                 SourceHtml = html;
             }
-            InitializeDomDocument();
+
+            HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(this);
+            Populate(factory.Parse(htmlParsingMode));
+
+        }
+
+        private void Populate(IEnumerable<IDomObject> elements)
+        {
+            foreach (var item in elements)
+            {
+                ChildNodes.AddAlways(item);
+            }
+  
         }
 
         private void InitializeDomDocument()
         {
+            ChildNodes.Clear();
+            SelectorXref.Clear();
             OriginalStrings = new List<Tuple<int, int>>();
         }
 
@@ -156,9 +178,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return GetElementById("html") == null
-                    ? NodeType.DOCUMENT_FRAGMENT_NODE :
-                NodeType.DOCUMENT_NODE;
+                return NodeType.DOCUMENT_NODE;
             }
         }
 
@@ -458,6 +478,133 @@ namespace CsQuery.Implementation
 
         #endregion
 
+
+        public IDomDocument CreateNew<T>() where T : IDomDocument
+        {
+            return CreateNew(typeof(T));
+        }
+
+        private IDomDocument CreateNew(Type t) 
+        {
+            IDomDocument newDoc;
+            if (t == typeof(IDomDocument))
+            {
+                newDoc = new DomDocument();
+
+            }
+            else if (t == typeof(IDomFragment))
+            {
+                newDoc = new DomFragment();
+            }
+            
+            else
+            {
+                throw new ArgumentException(String.Format("I don't know about an IDomDocument subclass \"{1}\"",
+                    t.ToString()));
+            }
+
+            FinishConfiguringNew(newDoc);
+            return newDoc;
+        }
+
+        public virtual IDomDocument CreateNew()
+        {
+            return CreateNew<IDomDocument>();
+        }
+
+        /// <summary>
+        /// Creates an IDomDocument that is derived from this one. The new type can also be a derived
+        /// type, such as IDomFragment. The new object will inherit DomRenderingOptions from this one.
+        /// </summary>
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown when one or more arguments have unsupported or illegal values.
+        /// </exception>
+        ///
+        /// <typeparam name="T">
+        /// The type of object to create that is IDomDocument.
+        /// </typeparam>
+        /// <param name="html">
+        /// The HTML source for the new document.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new, empty concrete class that is represented by the interface T, configured with the same
+        /// options as the current object.
+        /// </returns>
+
+  
+         public IDomDocument CreateNew<T>(char[] html, HtmlParsingMode htmlParsingMode) where T : IDomDocument
+         {
+            IDomDocument newDoc;
+            if (typeof(T) == typeof(IDomDocument))
+            {
+                newDoc = new DomDocument(html, htmlParsingMode);
+
+            }
+            else if (typeof(T) == typeof(IDomFragment))
+            {
+                newDoc = new DomFragment(html, htmlParsingMode);
+            }
+           
+            else
+            {
+                throw new ArgumentException(String.Format("I don't know about an IDomDocument subclass \"{1}\"",
+                    typeof(T).ToString()));
+            }
+
+            FinishConfiguringNew(newDoc);
+            return newDoc;
+        }
+
+        /// <summary>
+        /// Creates an IDomDocument that is derived from this one. The new type can also be a derived
+        /// type, such as IDomFragment. The new object will inherit DomRenderingOptions from this one.
+        /// </summary>
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown when one or more arguments have unsupported or illegal values.
+        /// </exception>
+        ///
+        /// <typeparam name="T">
+        /// The type of object to create that is IDomDocument.
+        /// </typeparam>
+        /// <param name="elements">
+        /// The elements that are the source for the new document.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new, empty concrete class that is represented by the interface T, configured with the same
+        /// options as the current object.
+        /// </returns>
+
+        public IDomDocument CreateNew<T>(IEnumerable<IDomObject> elements) where T : IDomDocument
+        {
+            IDomDocument newDoc;
+            if (typeof(T) == typeof(IDomDocument))
+            {
+                newDoc = new DomDocument(elements);
+
+            }
+            else if (typeof(T) == typeof(IDomFragment))
+            {
+                newDoc = new DomFragment(elements);
+            }
+           
+            else
+            {
+                throw new ArgumentException(String.Format("I don't know about an IDomDocument subclass \"{1}\"",
+                    typeof(T).ToString()));
+            }
+
+            FinishConfiguringNew(newDoc);
+            return newDoc;
+        }
+
+        private void FinishConfiguringNew(IDomDocument newDoc)
+        {
+            newDoc.DomRenderingOptions = DomRenderingOptions;
+        }
     }
     
 }

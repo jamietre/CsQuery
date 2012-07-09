@@ -106,15 +106,17 @@ namespace CsQuery
 
         public CQ Filter(Func<IDomObject, bool> function)
         {
-            CQ result = New();
+            CQ output = New();
+
+            List<IDomObject> filteredList = new List<IDomObject>();
             foreach (IDomObject obj in SelectionSet)
             {
                 if (function(obj))
                 {
-                    result.AddSelection(obj);
+                    filteredList.Add(obj);
                 }
             }
-            return result;
+            return output.SetSelection(filteredList, Order);
         }
 
         /// <summary>
@@ -141,16 +143,19 @@ namespace CsQuery
 
         public CQ Filter(Func<IDomObject, int, bool> function)
         {
-            CQ result = New();
+            CQ output = New();
+            List<IDomObject> filteredList = new List<IDomObject>();
+
             int index = 0;
             foreach (IDomObject obj in SelectionSet)
             {
                 if (function(obj, index++))
                 {
-                    result.AddSelection(obj);
+                    filteredList.Add(obj);
                 }
             }
-            return result;
+
+            return output.SetSelection(filteredList, Order);
         }
         
 

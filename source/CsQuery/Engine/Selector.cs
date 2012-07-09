@@ -10,6 +10,10 @@ using CsQuery.Engine;
 
 namespace CsQuery.Engine
 {
+    /// <summary>
+    /// A parsed selector, consisting of one or more SelectorClauses.
+    /// </summary>
+
     public class Selector : IEnumerable<SelectorClause>
     {
         #region constructors
@@ -60,6 +64,49 @@ namespace CsQuery.Engine
 
         #endregion
 
+        #region public properties
+
+        /// <summary>
+        /// The number of clauses in this selector
+        /// </summary>
+
+        public int Count
+        {
+            get
+            {
+                return Clauses.Count;
+            }
+        }
+
+        /// <summary>
+        /// Indexer to get clauses of this selector by index.
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// Zero-based index of the entry to access.
+        /// </param>
+        ///
+        /// <returns>
+        /// The selector clause at the index specified
+        /// </returns>
+
+        public SelectorClause this[int index]
+        {
+            get
+            {
+                return Clauses[index];
+            }
+        }
+
+        public bool IsHmtl
+        {
+            get
+            {
+                return Count == 1 && Clauses[0].SelectorType == SelectorType.HTML;
+            }
+        }
+        #endregion
+
         #region public methods
 
         public void Add(SelectorClause clause)
@@ -77,21 +124,56 @@ namespace CsQuery.Engine
 
         }
 
+        /// <summary>
+        /// Sets the traversal type for all CombinatorType.Root child selectors. This is useful for
+        /// subselectors; you may not want them to default to a filter.
+        /// </summary>
+        ///
+        /// <param name="type">
+        /// The type.
+        /// </param>
+
+        public Selector SetTraversalType(TraversalType type)
+        {
+            foreach (var sel in Clauses)
+            {
+                if (sel.CombinatorType == CombinatorType.Root)
+                {
+                    sel.TraversalType = type;
+                }
+            }
+            return this;
+        }
+
         #endregion
 
         #region private properties
 
-        protected CssSelectionEngine _Engine;
-        protected SelectorParser _selectorParser;
-        protected List<SelectorClause> _Clauses;
+        private List<SelectorClause> _Clauses;
 
-        protected CssSelectionEngine GetEngine(IDomDocument document)
+        /// <summary>
+        /// Gets a new selection engine for this selector
+        /// </summary>
+        ///
+        /// <param name="document">
+        /// The document that's the root for the selector engine
+        /// </param>
+        ///
+        /// <returns>
+        /// The new engine.
+        /// </returns>
+
+        private SelectorEngine GetEngine(IDomDocument document)
         {
             
-            var engine = new CssSelectionEngine(document);
-            engine.Selectors = this;
+            var engine = new SelectorEngine(document,this);
             return engine;
         }
+
+        /// <summary>
+        /// Gets a list of clauses in this selector
+        /// </summary>
+
         protected List<SelectorClause> Clauses
         {
             get
@@ -103,15 +185,16 @@ namespace CsQuery.Engine
                 return _Clauses;
             }
         } 
-        protected IEnumerable<SelectorClause> SelectorsClone
+
+        protected IEnumerable<SelectorClause> ClausesClone
         {
             get
             {
                 if (Count > 0)
                 {
-                    foreach (var selector in Clauses)
+                    foreach (var clause in Clauses)
                     {
-                        yield return selector.Clone();
+                        yield return clause.Clone();
                     }
                 }
                 else
@@ -121,23 +204,6 @@ namespace CsQuery.Engine
             }
         }
 
-        #endregion
-
-        #region public properties
-        public int Count
-        {
-            get
-            {
-                return Clauses.Count;
-            }
-        }
-        public SelectorClause this[int index]
-        {
-            get
-            {
-                return Clauses[index];
-            }
-        }
         #endregion
 
         #region public methods
@@ -253,7 +319,7 @@ namespace CsQuery.Engine
         /// <returns></returns>
         public Selector Clone()
         {
-            Selector clone = new Selector(SelectorsClone);
+            Selector clone = new Selector(ClausesClone);
             return clone;
         }
         public override string ToString()

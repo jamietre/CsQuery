@@ -2,6 +2,11 @@
 
 This is an informal log of changes to the project; major issues will be logged and described on github.
 
+#####7/9/2012
+
+- Refactored pseudoclass selector engine into a type dictionary to permit user defined classes
+- Add "CsQuery.Config" static class to centralize configuration
+
 #####7/2/2012
 
 - Extensive updates to XML documentation covering most common API methods

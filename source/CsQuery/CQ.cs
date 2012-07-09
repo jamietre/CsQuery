@@ -59,8 +59,8 @@ namespace CsQuery
     {
         #region private properties
 
-        private Selector _Selector = null;
-        private IDomDocument _Document = null;
+        private Selector _Selector;
+        private IDomDocument _Document;
 
         #endregion
 
@@ -101,7 +101,7 @@ namespace CsQuery
             {
                 if (_Document == null)
                 {
-                    CreateNewDocument();
+                    CreateNewFragment();
                 }
                 return _Document;
             }
@@ -168,11 +168,11 @@ namespace CsQuery
         {
             get
             {
-                return SelectionSet.Order;
+                return SelectionSet.OutputOrder;
             }
             set
             {
-                SelectionSet.Order = value;
+                SelectionSet.OutputOrder= value;
             }
         }
 
@@ -244,16 +244,20 @@ namespace CsQuery
             {
                 if (_Selection == null)
                 {
-                    _Selection = new SelectionSet<IDomObject>();
-                    _Selection.Order = SelectionSetOrder.OrderAdded;
+                    _Selection = new SelectionSet<IDomObject>(SelectionSetOrder.OrderAdded);
                 }
                 return _Selection;
+            }
+            set
+            {
+                _Selection = value;
             }
         }
 
         #endregion
 
         #region private methods
+
 
         /// <summary>
         /// Clear the entire object.
@@ -274,6 +278,63 @@ namespace CsQuery
         {
             SelectionSet.Clear();
         }
+
+        /// <summary>
+        /// Sets the selection set for this object, and asserts that the order in which it as assigned is
+        /// the order passed. This allows most operations to return the original set directly; if it is
+        /// requested in a different order then it will be sorted.
+        /// </summary>
+        ///
+        /// <param name="selectionSet">
+        /// The current selection set including all node types.
+        /// </param>
+        /// <param name="inputOrder">
+        /// The order in which the elements appear in selectionSet. If omitted, Ascending is the default.
+        /// </param>
+        /// <param name="outputOrder">
+        /// The default output order, if different from the inputOrder. If omitted, the same as the input
+        /// order is the default.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object
+        /// </returns>
+
+        protected CQ SetSelection(IEnumerable<IDomObject> selectionSet, 
+
+            /// <summary>
+            /// The output order.
+            /// </summary>
+
+            SelectionSetOrder inputOrder = SelectionSetOrder.Ascending, 
+            SelectionSetOrder outputOrder=0)
+        {
+            SelectionSet = new SelectionSet<IDomObject>(selectionSet, inputOrder, outputOrder);
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the selection set for this object to a single element..
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to add.
+        /// </param>
+        /// <param name="outputOrder">
+        /// The default output order. If omitted, Ascending (DOM) order is the default.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object
+        /// </returns>
+
+        protected CQ SetSelection(IDomObject element,
+            SelectionSetOrder outputOrder = SelectionSetOrder.Ascending)
+        {
+            SelectionSet = new SelectionSet<IDomObject>(Objects.Enumerate(element), outputOrder,outputOrder);
+            return this;
+        }
+
 
         /// <summary>
         /// Map a CSV or enumerable object to a hashset.
@@ -474,7 +535,8 @@ namespace CsQuery
 
         protected IEnumerable<IDomObject> MergeSelections(IEnumerable<string> selectors)
         {
-            SelectionSet<IDomObject> allContent = new SelectionSet<IDomObject>();
+            SelectionSet<IDomObject> allContent = new SelectionSet<IDomObject>(SelectionSetOrder.Ascending);
+
             Each(selectors, item => allContent.AddRange(Select(item)));
             return allContent;
         }

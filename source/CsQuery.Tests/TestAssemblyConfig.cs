@@ -26,10 +26,8 @@ namespace CsQuery.Tests
             {
                 solutionFolderTry = Support.GetFilePath("./CsQuery.Tests/");
             }
-            //CsQueryTest.SolutionDirectory = Support.GetFilePath("./" + SolutionFolderName + "/");
-            CsQueryTest.SolutionDirectory = Support.CleanFilePath(solutionFolderTry+"/../");
-            PerformanceTest.SetupTestRun();
 
+            CsQueryTest.SolutionDirectory = Support.CleanFilePath(solutionFolderTry+"/../");
         }
         
         [TearDown]

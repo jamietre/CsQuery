@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CsQuery.Utility
+namespace CsQuery.Implementation
 {
     /// <summary>
     /// A comparer to ensure that items are returned from a selection set in DOM order, e.g. by comparing their

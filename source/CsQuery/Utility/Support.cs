@@ -264,7 +264,54 @@ namespace CsQuery.Utility
             return type.Namespace + "." + type.Name;
         }
 
+        /// <summary>
+        /// Conver a stream to a character array.
+        /// </summary>
+        ///
+        /// <param name="stream">
+        /// The stream.
+        /// </param>
+        ///
+        /// <returns>
+        /// A character array.
+        /// </returns>
 
+        public static char[] StreamToCharArray(Stream stream)
+        {
+            StreamReader reader = new StreamReader(stream);
+
+            long len = stream.Length;
+
+            if (len > 0 && len < int.MaxValue)
+            {
+                char[] arr = new char[stream.Length];
+                reader.Read(arr, 0, Convert.ToInt32(len));
+                return arr;
+            }
+            else
+            {
+                return reader.ReadToEnd().ToCharArray();
+            }
+        }
+
+        /// <summary>
+        /// Convert a string to a char array, if not null.
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// The string.
+        /// </param>
+        ///
+        /// <returns>
+        /// The converted string, or null
+        /// </returns>
+
+        public static char[] StringToCharArray(string html)
+        {
+            return String.IsNullOrEmpty(html) ?
+                null :
+                html.ToCharArray();
+        }
     }
 
 

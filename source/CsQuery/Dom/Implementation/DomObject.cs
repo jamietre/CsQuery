@@ -241,11 +241,19 @@ namespace CsQuery.Implementation
         /// The element is not associated with an IDomDocument.
         /// </summary>
 
+        public bool IsFragment
+        {
+            get
+            {
+                return IsDisconnected || Document.NodeType == NodeType.DOCUMENT_FRAGMENT_NODE;
+            }
+        }
+
         public bool IsDisconnected
         {
             get
             {
-                return Document == null;
+                return Document==null;
             }
         }
 
@@ -502,10 +510,6 @@ namespace CsQuery.Implementation
             get
             {
                 return null;
-            }
-            set
-            {
-                throw new InvalidOperationException("You can't change the node name.");
             }
         }
 
