@@ -17,7 +17,9 @@ namespace CsQuery
     /// 2) Allows case-insensitivity
     /// 
     /// </summary>
-    public class JsObject  : DynamicObject, IDictionary<string, object>, IEnumerable<KeyValuePair<string, object>>, IEnumerable
+    public class JsObject  : DynamicObject, 
+        IDictionary<string, object>, 
+        IEnumerable<KeyValuePair<string, object>>, IEnumerable
     {
         public JsObject()
         {
@@ -41,7 +43,7 @@ namespace CsQuery
         }
         public IEnumerable<T> Enumerate<T>()
         {
-            return CQ.EnumerateProperties<T>(this);
+            return Objects.EnumerateProperties<T>(this);
         }
         protected bool AllowMissingProperties
         {

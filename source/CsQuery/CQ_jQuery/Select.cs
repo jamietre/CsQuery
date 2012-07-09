@@ -66,7 +66,10 @@ namespace CsQuery
 
             CQ csq = New();
             csq.Selector = new Selector(selector);
-            csq.AddSelection(csq.Selector.Select(Document));
+            csq.SetSelection(csq.Selector.Select(Document),
+                csq.Selector.IsHmtl ?
+                    SelectionSetOrder.OrderAdded :
+                    SelectionSetOrder.Ascending);
             return csq;
             
         }

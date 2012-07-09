@@ -32,22 +32,27 @@ namespace CsQuery
 
         public CQ Siblings(string selector = null)
         {
-            SelectionSet<IDomElement> siblings = new SelectionSet<IDomElement>();
 
             // Add siblings of each item in the selection except the item itself for that iteration.
             // If two siblings are in the selection set, then all children of their mutual parent should
             // be returned. Otherwise, all children except the item iteself.
-            foreach (var item in SelectionSet)
+
+            return FilterIfSelector(selector, GetSiblings(SelectionSet), SelectionSetOrder.Ascending);
+        }
+
+        protected IEnumerable<IDomObject> GetSiblings(IEnumerable<IDomObject> elements)
+        {
+            foreach (var item in elements)
             {
                 foreach (var child in item.ParentNode.ChildElements)
                 {
                     if (!ReferenceEquals(child, item))
                     {
-                        siblings.Add(child);
+                        yield return child;
                     }
                 }
             }
-            return FilterIfSelector(selector, siblings, SelectionSetOrder.Ascending);
+
         }
 
     }

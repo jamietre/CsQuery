@@ -117,7 +117,7 @@ namespace CsQuery.Tests.jQuery
             //    CsQuery has no idea where to look for "#button" other than the fragment. The test was altered to reference the original
             //    Document to get the target for InsertAfter
             
-            var jbutton = CQ.CreateFragment("<button value='foobar'>text</button>").InsertAfter(jQuery("#button"));
+            var jbutton = jQuery("<button value='foobar'>text</button>").InsertAfter(jQuery("#button"));
             Assert.AreEqual(jbutton.Attr("value"), "foobar", "Value retrieval on a button does not return innerHTML");
             Assert.AreEqual(jbutton.Attr("value", "baz").Html(), "text", "Setting the value does not change innerHTML");
 

@@ -206,7 +206,7 @@ namespace CsQuery
         /// The HTML.
         /// </param>
 
-        void Populate(char[] html, HtmlParsingMode htmlParsingMode );
+        //void Populate(char[] html, HtmlParsingMode htmlParsingMode );
 
         /// <summary>
         /// Populate this instance from a sequence of elements. This is destructive; any prior contents are destroyed.
@@ -216,7 +216,7 @@ namespace CsQuery
         /// The elements.
         /// </param>
 
-        void Populate(IEnumerable<IDomObject> elements);
+        //void Populate(IEnumerable<IDomObject> elements);
 
     }
 }

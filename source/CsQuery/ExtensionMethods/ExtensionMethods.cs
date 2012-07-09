@@ -20,54 +20,7 @@ namespace CsQuery.ExtensionMethods
     /// </summary>
     public static class ExtensionMethods
     {
-        #region IEnumerable<T> extension methods
-
-        public static void AddRange<T>(this ICollection<T> baseList, IEnumerable<T> list)
-        {
-            foreach (T obj in list)
-            {
-                baseList.Add(obj);
-            }
-        }
-
-        /// <summary>
-        /// Append the contents of a second sequence to the end of a sequence
-        /// </summary>
-        ///
-        /// <typeparam name="T">
-        /// The type of objects in the sequences
-        /// </typeparam>
-        /// <param name="list">
-        /// The list to act on.
-        /// </param>
-        /// <param name="otherList">
-        /// List of others.
-        /// </param>
-        ///
-        /// <returns>
-        /// The combined sequence
-        /// </returns>
-
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> list, IEnumerable<T> otherList)
-        {
-            if (list != null)
-            {
-                foreach (var item in list)
-                {
-                    yield return item;
-                }
-            }
-
-            if (otherList != null)
-            {
-                foreach (var item in otherList)
-                {
-                    yield return item;
-                }
-            }
-        }
-
-        #endregion
+       
 
         #region string extension methods
         

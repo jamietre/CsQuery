@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using CsQuery.Utility;
+using CsQuery.Implementation;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 using CsQuery.Engine;
@@ -70,8 +70,10 @@ namespace CsQuery
             HashSet<IDomElement> targets = new HashSet<IDomElement>(elements);
 
             var filtered = FilterElementsIgnoreNull(parentsImpl(Elements, targets), filter);
-            output.SelectionSet.Order = SelectionSetOrder.Descending;
-            output.SelectionSet.AddRange(filtered);
+            
+            output.SetSelection(filtered,
+                SelectionSetOrder.OrderAdded,
+                SelectionSetOrder.Descending);
 
             return output;
         }

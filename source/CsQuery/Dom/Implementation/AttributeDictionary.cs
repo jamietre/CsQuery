@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CsQuery.Utility
+namespace CsQuery.Implementation
 {
     /// <summary>
     /// Alternate implementation of the IDictionary for attributes that uses no objects to see if this is important for performance.

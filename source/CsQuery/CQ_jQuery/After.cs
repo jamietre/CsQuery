@@ -142,6 +142,9 @@ namespace CsQuery
                             throw new InvalidOperationException("You can't add elements to a disconnected element list, it must be in a selection set");
                         }
                         int index = sel.IndexOf(el);
+
+                        sel.OutputOrder = SelectionSetOrder.OrderAdded;
+        
                         foreach (var item in SelectionSet)
                         {
                             sel.Insert(index + offset, item);

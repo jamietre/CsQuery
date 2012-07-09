@@ -202,7 +202,9 @@ namespace CsQuery
         {
             int index = target.Index;
 
-            foreach (var item in SelectionSet)
+            // must enumerate the list since it can be altered by the loop
+            var list = SelectionSet.ToList();
+            foreach (var item in list)
             {
                 target.ParentNode.ChildNodes.Insert(index + offset, item);
                 index++;

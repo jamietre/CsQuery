@@ -64,6 +64,49 @@ namespace CsQuery.Engine
 
         #endregion
 
+        #region public properties
+
+        /// <summary>
+        /// The number of clauses in this selector
+        /// </summary>
+
+        public int Count
+        {
+            get
+            {
+                return Clauses.Count;
+            }
+        }
+
+        /// <summary>
+        /// Indexer to get clauses of this selector by index.
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// Zero-based index of the entry to access.
+        /// </param>
+        ///
+        /// <returns>
+        /// The selector clause at the index specified
+        /// </returns>
+
+        public SelectorClause this[int index]
+        {
+            get
+            {
+                return Clauses[index];
+            }
+        }
+
+        public bool IsHmtl
+        {
+            get
+            {
+                return Count == 1 && Clauses[0].SelectorType == SelectorType.HTML;
+            }
+        }
+        #endregion
+
         #region public methods
 
         public void Add(SelectorClause clause)
@@ -163,22 +206,7 @@ namespace CsQuery.Engine
 
         #endregion
 
-        #region public properties
-        public int Count
-        {
-            get
-            {
-                return Clauses.Count;
-            }
-        }
-        public SelectorClause this[int index]
-        {
-            get
-            {
-                return Clauses[index];
-            }
-        }
-        #endregion
+       
 
         #region public methods
 

@@ -67,6 +67,10 @@ namespace CsQuery.Implementation
             {
                 item.Remove();
             }
+            //if (item.Document != Owner.Document)
+            //{
+            //    ((DomObject)item).Document = null;
+            //}
 
             // Ensure ID uniqueness - remove ID if same-named object already exists
             if (!String.IsNullOrEmpty(item.Id)

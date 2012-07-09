@@ -69,6 +69,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CQ_CsQuery\AttrReplace.cs" />
+    <Compile Include="CQ_CsQuery\CreateFromUrl.cs" />
+    <Compile Include="CQ_CsQuery\Create.cs" />
     <Compile Include="CQ_CsQuery\Save.cs" />
     <Compile Include="CQ_CsQuery\MakeRoot.cs" />
     <Compile Include="CQ_CsQuery\GetTableColumn.cs" />
@@ -92,6 +94,8 @@
     <Compile Include="CQ_jQuery\Children.cs" />
     <Compile Include="CQ_jQuery\Clone.cs" />
     <Compile Include="CQ_jQuery\Contents.cs" />
+    <Compile Include="CQ_jQuery\Extend.cs" />
+    <Compile Include="CQ_jQuery\Map.cs" />
     <Compile Include="CQ_jQuery\ParentsUntil.cs" />
     <Compile Include="CQ_jQuery\Copy of _empty.cs" />
     <Compile Include="CQ_jQuery\FirstLast.cs" />
@@ -231,7 +235,7 @@
     <Compile Include="Engine\Enums.cs" />
     <Compile Include="Engine\SelectorParser.cs" />
     <Compile Include="ExtensionMethods\Forms.cs" />
-    <Compile Include="Utility\AttributeDictionary.cs" />
+    <Compile Include="Dom\Implementation\AttributeDictionary.cs" />
     <Compile Include="Utility\ObjectActivator.cs" />
     <Compile Include="Web\WebForms.cs" />
     <Compile Include="OutputFormatters\IOutputFormatter.cs" />
@@ -244,10 +248,10 @@
     <Compile Include="Utility\Browser.cs" />
     <Compile Include="Utility\JsonSerializer\IJsonSerializer.cs" />
     <Compile Include="Utility\JsonSerializer\JsonSerializer.cs" />
-    <Compile Include="Utility\SelectionSetComparer.cs" />
+    <Compile Include="Implementation\SelectionSetComparer.cs" />
     <Compile Include="Web\AsyncWebRequestManager.cs" />
     <Compile Include="Web\ICsqWebResponse.cs" />
-    <Compile Include="Utility\IRangeSortedDictionary.cs" />
+    <Compile Include="Implementation\IRangeSortedDictionary.cs" />
     <Compile Include="CQ.cs" />
     <Compile Include="Engine\SelectorClause.cs" />
     <Compile Include="CQ_CsQuery\_Constructors.cs" />
@@ -294,20 +298,20 @@
     <Compile Include="Engine\SelectorEngine.cs" />
     <Compile Include="ExtensionMethods\Internal\ExtensionMethods.cs" />
     <Compile Include="HtmlParser\IterationData.cs" />
-    <Compile Include="Utility\SmallDictionary.cs" />
+    <Compile Include="Implementation\SmallDictionary.cs" />
     <Compile Include="Web\AsyncPostbackData.cs" />
     <Compile Include="Web\IAsyncRequestQueue.cs" />
     <Compile Include="Web\ICsqWebRequest.cs" />
     <Compile Include="Web\IWebRequestInfo.cs" />
     <Compile Include="Web\CsqWebRequest.cs" />
     <Compile Include="Web\AsyncWebRequest.cs" />
-    <Compile Include="Utility\SimpleDictionary.cs" />
+    <Compile Include="Implementation\SimpleDictionary.cs" />
     <Compile Include="Web\ServerConfig.cs" />
     <Compile Include="Web\WebRequestState.cs" />
-    <Compile Include="Utility\SelectionSet.cs" />
-    <Compile Include="Utility\JsObject.cs" />
+    <Compile Include="Implementation\SelectionSet.cs" />
+    <Compile Include="JsObject.cs" />
     <Compile Include="Dom\Implementation\NodeList.cs" />
-    <Compile Include="Utility\RangeSortedDictionary.cs" />
+    <Compile Include="Implementation\RangeSortedDictionary.cs" />
     <Compile Include="Web\CsQueryHttpContext.cs" />
     <Compile Include="Engine\Selector.cs" />
     <Compile Include="Dom\Implementation\DomElement.cs" />
@@ -317,7 +321,6 @@
     <Compile Include="Utility\Support.cs" />
     <Compile Include="Utility\Objects.cs" />
     <Compile Include="Utility\JSON.cs" />
-    <Compile Include="Utility\DomStyles.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\css3.xml" />
@@ -328,7 +331,9 @@
     <None Include="Documentation\Todo.md" />
     <None Include="Documentation\DifferencesFromJQuery.md" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Compile Include="Implementation\enumSelectionSetOrder.cs" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if not $(ConfigurationName) ==Release GOTO finished

@@ -498,7 +498,59 @@ namespace CsQuery
         #endregion
 
         #region Other methods
+        /// <summary>
+        /// Enumerate the values of the properties of an object to a sequence of type T
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> EnumerateProperties<T>(object obj)
+        {
+            return EnumerateProperties<T>(obj, new Type[] { typeof(ScriptIgnoreAttribute) });
+        }
 
+        /// <summary>
+        /// Enumerate the values of the properties of an object to a sequence of type T
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <param name="ignoreAttributes">All properties with an attribute of these types will be ignored</param>
+        /// <returns></returns>
+        public static IEnumerable<T> EnumerateProperties<T>(object obj, IEnumerable<Type> ignoreAttributes)
+        {
+            HashSet<Type> IgnoreList = new HashSet<Type>();
+            if (ignoreAttributes != null)
+            {
+                IgnoreList.AddRange(ignoreAttributes);
+            }
+
+            IDictionary<string, object> source;
+
+            if (obj is IDictionary<string, object>)
+            {
+                source = (IDictionary<string, object>)obj;
+            }
+            else
+            {
+                source = Objects.ToExpando<JsObject>(obj, false, ignoreAttributes);
+            }
+            foreach (KeyValuePair<string, object> kvp in source)
+            {
+                if (typeof(T) == typeof(KeyValuePair<string, object>))
+                {
+                    yield return (T)(object)(new KeyValuePair<string, object>(kvp.Key,
+                         kvp.Value is IDictionary<string, object> ?
+                            ToExpando((IDictionary<string, object>)kvp.Value) :
+                            kvp.Value));
+
+                }
+                else
+                {
+                    yield return Objects.Convert<T>(kvp.Value);
+                }
+            }
+
+        }
         /// <summary>
         /// Given a string, convert each uppercase letter to a "-" followed by the lower case letter.
         /// E.g. "fontSize" becomes "font-size".

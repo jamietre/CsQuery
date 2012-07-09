@@ -30,9 +30,9 @@ namespace CsQuery.Tests.Csharp.Dom
             
             // just try out no closing tag, for fun.
 
-            dom["<div>"].Css("display", "none").Append(dom);
+            var newDom = dom["<div>"].Css("display", "none").Append(dom);
 
-            Assert.IsTrue(dom.Is(":hidden"));
+            Assert.IsTrue(newDom.Is(":hidden"));
 
             dom = CQ.CreateFragment(@"<input name='domContent' type='HIDDEN' value='' />");
             Assert.AreEqual("hidden", dom[0].Type);

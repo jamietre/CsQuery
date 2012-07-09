@@ -33,6 +33,7 @@ namespace CsQuery.Implementation
         /// <param name="elements"></param>
         public DomDocument(IEnumerable<IDomObject> elements): base()
         {
+            InitializeDomDocument();
             Populate(elements);
         }
 
@@ -43,12 +44,13 @@ namespace CsQuery.Implementation
         /// <param name="html"></param>
         public DomDocument(char[] html, HtmlParsingMode htmlParsingMode)
         {
+            InitializeDomDocument();
             Populate(html, htmlParsingMode);
         }
 
-        public void Populate(char[] html, HtmlParsingMode htmlParsingMode)
+        private void Populate(char[] html, HtmlParsingMode htmlParsingMode)
         {
-            InitializeDomDocument();
+
             if (html != null && html.Length > 0)
             {
                 SourceHtml = html;
@@ -59,9 +61,8 @@ namespace CsQuery.Implementation
 
         }
 
-        public void Populate(IEnumerable<IDomObject> elements)
+        private void Populate(IEnumerable<IDomObject> elements)
         {
-            InitializeDomDocument();
             foreach (var item in elements)
             {
                 ChildNodes.AddAlways(item);

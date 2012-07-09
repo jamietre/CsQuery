@@ -52,7 +52,7 @@ namespace CsQuery.Engine
         /// </summary>
         /// <param name="document"></param>
         /// <returns></returns>
-        public IEnumerable<IDomObject> Select(IEnumerable<IDomObject> context)
+        public List<IDomObject> Select(IEnumerable<IDomObject> context)
         {
             // this holds the final output
 
@@ -65,7 +65,7 @@ namespace CsQuery.Engine
 
             if (Selector.Count == 0)
             {
-                return EmptyEnumerable();
+                return EmptyEnumerable().ToList();
             }
 
             ActiveSelectors = new List<SelectorClause>(Selector);
@@ -78,6 +78,9 @@ namespace CsQuery.Engine
                 HtmlParser.HtmlElementFactory factory = 
                     new HtmlParser.HtmlElementFactory(firstSelector.Html);
 
+                // Return the factory ouptut as a list because otherwise the enumerator could end up
+                // as the actual source of the selection, meaning it would get re-parsed each time
+                // 
                 return factory.ParseAsFragment();
             } 
 
@@ -113,22 +116,23 @@ namespace CsQuery.Engine
                     // this is a selector that was chanined with the selector grouping combinator "," -- we always output the results so
                     // far when beginning a new group.
 
-                    if (selector.CombinatorType == CombinatorType.Root)
+                    if (selector.CombinatorType == CombinatorType.Root && lastResult != null)
                     {
                         output.AddRange(lastResult);
                         lastResult = null;
 
                     }
 
-                    // For "and" combinator types, we want to leave everything as it was -- the results of this
-                    // selector should compound with the prior. So for everything else, clear out last result. 
-
-                    else if (selector.CombinatorType != CombinatorType.And)
-                    {
-                        selectionSource = GetSelectionSource(selector, context, lastResult);
-                        lastResult = null;
-                    }
                 }
+                // For "and" combinator types, we want to leave everything as it was -- the results of this
+                // selector should compound with the prior. 
+
+                if (selector.CombinatorType != CombinatorType.And)
+                {
+                    selectionSource = GetSelectionSource(selector, context, lastResult);
+                    lastResult = null;
+                }
+                
                 
 
                 string key = "";
@@ -264,7 +268,7 @@ namespace CsQuery.Engine
                 }
                 else if (selector.SelectorType.HasFlag(SelectorType.Elements))
                 {
-                     HashSet<IDomObject> elementMatches = new HashSet<IDomObject>();
+                    HashSet<IDomObject> elementMatches = new HashSet<IDomObject>();
                     result = elementMatches;
                     foreach (IDomObject obj in GetAllChildOrDescendants(selector.TraversalType,selectionSource))
                     {
@@ -288,23 +292,24 @@ namespace CsQuery.Engine
                 if (selector.SelectorType != 0)
                 {
       
-                    // if there are no temporary results (b/c there was no indexed selector) then use selection source instead
-                    // (e.g. start from the same point that the index would have)
+                    // if there are no temporary results (b/c there was no indexed selector) then use selection
+                    // source instead (e.g. start from the same point that the index would have) 
 
                     result = GetMatches(result ?? selectionSource ?? Document.ChildElements, selector);
                 }
-                if (lastResult==null) {
-                    lastResult=result;
-                } else {
-                    lastResult = lastResult.Append(result);
-                }
+                
+                lastResult = lastResult == null ?
+                    result : lastResult.Append(result); 
+                
             }
 
             // After the loop has finished, output any results from the last iteration.
-            
+
             output.AddRange(lastResult);
 
-            return output.OrderBy(item => item.Path, StringComparer.Ordinal);
+            // Return the results as a list so that any user will not cause the selector to be run again
+            
+            return output.OrderBy(item => item.Path, StringComparer.Ordinal).ToList();
 
         }
 

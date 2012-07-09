@@ -96,7 +96,7 @@ namespace CsQuery.HtmlParser
         /// Parse with options for a full HTML document. 
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<IDomObject> ParseAsDocument()
+        public List<IDomObject> ParseAsDocument()
         {
             IsDocument = true;
             GenerateOptionalElements = true;
@@ -109,7 +109,7 @@ namespace CsQuery.HtmlParser
         /// Parse with options for fragment
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<IDomObject> ParseAsFragment()
+        public List<IDomObject> ParseAsFragment()
         {
             IsDocument = false;
             GenerateOptionalElements = false;
@@ -122,7 +122,7 @@ namespace CsQuery.HtmlParser
         /// Parse with options for content (generate most optional elements but not document wrapping HTML/BODY)
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<IDomObject> ParseAsContent()
+        public List<IDomObject> ParseAsContent()
         {
             IsDocument = false;
             GenerateOptionalElements = true;
@@ -130,7 +130,7 @@ namespace CsQuery.HtmlParser
             return Parse();
         }
 
-        public IEnumerable<IDomObject> Parse(HtmlParsingMode htmlParsingMode)
+        public List<IDomObject> Parse(HtmlParsingMode htmlParsingMode)
         {
             switch (htmlParsingMode)
             {
@@ -145,11 +145,35 @@ namespace CsQuery.HtmlParser
             }
 
         }
+
         /// <summary>
         /// Parse the HTML, and return it, based on options set.
         /// </summary>
-        /// <returns></returns>
-        public IEnumerable<IDomObject> Parse()
+        ///
+        /// <returns>
+        /// A List of IDomObject elements.
+        /// </returns>
+        ///
+        /// <implementation>
+        /// Because the output can be assigned directly to another object without being enumerated, we
+        /// force it to do so with ToList() here. Otherwise the HTML could potentially be parsed
+        /// repeatedly as the original enumerator is accessed directly by clients..
+        /// </implementation>
+
+        public List<IDomObject> Parse()
+        {
+            return ParseImplementation().ToList();
+        }
+
+        /// <summary>
+        /// Parse the HTML, and return it, based on options set.
+        /// </summary>
+        ///
+        /// <returns>
+        /// An enumerator of the top-level elements.
+        /// </returns>
+
+        protected IEnumerable<IDomObject> ParseImplementation()
         {
             int pos=0;
             Stack<IterationData> stack = new Stack<IterationData>();
