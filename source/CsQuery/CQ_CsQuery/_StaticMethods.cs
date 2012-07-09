@@ -25,12 +25,31 @@ namespace CsQuery
         /// <summary>
         /// Rendering option flags
         /// </summary>
-        public static DomRenderingOptions DefaultDomRenderingOptions = DomRenderingOptions.QuoteAllAttributes;
+        public static DomRenderingOptions DefaultDomRenderingOptions 
+        {
+            get {
+                return Config.DomRenderingOptions;
+            }
+            set {
+                Config.DomRenderingOptions = value;
+            }
+        }
+
+       
 
         /// <summary>
-        /// The default rendering type. This mostly controls the header and how tags are closed. UNIMPLEMENTED right now.
+        /// The default rendering type. 
         /// </summary>
-        public static DocType DefaultDocType = DocType.HTML5;
+        public static DocType DefaultDocType {
+            get
+            {
+                return Config.DocType;
+            }
+            set
+            {
+                Config.DocType = value;
+            }
+        }
 
         #endregion 
 

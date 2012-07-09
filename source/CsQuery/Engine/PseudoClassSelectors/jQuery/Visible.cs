@@ -12,15 +12,23 @@ namespace CsQuery.Engine.PseudoClassSelectors
     /// heights. Additionally, input elements of type "hidden" are always considered not visible.
     /// </summary>
 
-    public class Visible: PseudoSelectorElement
+    public class Visible: PseudoSelectorFilter
     {
-        public override bool Matches(IDomElement element)
+
+        public override bool Matches(IDomObject element)
         {
             return IsVisible(element);
         }
-        public static bool IsVisible(IDomElement element)
+
+        
+        public static bool IsVisible(IDomObject element)
         {
-            IDomObject el = element;
+            //ensure if a text node is passed, we start with its container.
+            // 
+            IDomObject el = element is IDomElement ? 
+                element : 
+                element.ParentNode;
+
             while (el != null && el.NodeType == NodeType.ELEMENT_NODE)
             {
                 if (ElementIsItselfHidden((IDomElement)el))
@@ -31,6 +39,7 @@ namespace CsQuery.Engine.PseudoClassSelectors
             }
             return true;
         }
+        
         private static bool ElementIsItselfHidden(IDomElement el)
         {
             if (el.NodeNameID == HtmlData.tagINPUT && el.Type == "hidden")
@@ -57,5 +66,7 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
             return widthAttr == "0" || heightAttr == "0";
         }
+
+       
     }
 }

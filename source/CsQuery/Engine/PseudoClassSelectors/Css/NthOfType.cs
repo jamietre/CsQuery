@@ -9,13 +9,13 @@ namespace CsQuery.Engine.PseudoClassSelectors
     {
 
 
-        public override bool Matches(IDomElement element)
+        public override bool Matches(IDomObject element)
         {
             return element.NodeType != NodeType.ELEMENT_NODE ? false :
                 NthC.IsNthChildOfType((IDomElement)element,Parameters[0],false);
         }
 
-        public override IEnumerable<IDomObject> ChildMatches(IDomElement element)
+        public override IEnumerable<IDomObject> ChildMatches(IDomContainer element)
         {
             return NthC.NthChildsOfTypeImpl(element,Parameters[0],false);
         }

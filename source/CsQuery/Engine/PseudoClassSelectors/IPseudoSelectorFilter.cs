@@ -25,6 +25,7 @@ namespace CsQuery.Engine
         /// </returns>
 
         IEnumerable<IDomObject> Filter(IEnumerable<IDomObject> selection);
+
     }
 
 }

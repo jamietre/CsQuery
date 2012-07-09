@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CsQuery.Engine.PseudoClassSelectors
 {
-    public abstract class NthChildSelector: PseudoSelector, IPseudoSelectorElement
+    public abstract class NthChildSelector: PseudoSelector, IPseudoSelectorChild
     {
         private NthChildMatcher _NthC;
         protected NthChildMatcher NthC
@@ -18,8 +18,11 @@ namespace CsQuery.Engine.PseudoClassSelectors
                 }
                 return _NthC;
             }
-
         }
+
+        public abstract bool Matches(IDomObject element);
+
+        public abstract IEnumerable<IDomObject> ChildMatches(IDomContainer element);
 
         public override int MinimumParameterCount
         {
@@ -36,9 +39,6 @@ namespace CsQuery.Engine.PseudoClassSelectors
                 return 1;
             }
         }
-        
-        public abstract bool Matches(IDomElement element);
 
-        public abstract IEnumerable<IDomObject> ChildMatches(IDomElement element);
     }
 }

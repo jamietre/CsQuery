@@ -14,15 +14,15 @@ namespace CsQuery.Engine.PseudoClassSelectors
     /// http://reference.sitepoint.com/css/pseudoclass-lastchild
     /// </url>
 
-    public class LastChild: PseudoSelectorElement
+    public class LastChild: PseudoSelectorChild
     {
-        public override bool Matches(IDomElement element)
+        public override bool Matches(IDomObject element)
         {
 
             return element.ParentNode.LastElementChild == element;
         }
 
-        public override IEnumerable<IDomObject> ChildMatches(IDomElement element)
+        public override IEnumerable<IDomObject> ChildMatches(IDomContainer element)
         {
             IDomElement child = element.LastElementChild;
             if (child != null)

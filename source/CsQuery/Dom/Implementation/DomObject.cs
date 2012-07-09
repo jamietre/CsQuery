@@ -511,10 +511,6 @@ namespace CsQuery.Implementation
             {
                 return null;
             }
-            set
-            {
-                throw new InvalidOperationException("You can't change the node name.");
-            }
         }
 
         /// <summary>

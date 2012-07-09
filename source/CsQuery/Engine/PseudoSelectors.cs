@@ -51,7 +51,6 @@ namespace CsQuery.Engine
 
         #endregion
 
-
         #region public properties
 
         /// <summary>
@@ -94,7 +93,53 @@ namespace CsQuery.Engine
         }
 
         /// <summary>
-        /// Try to gets an instance of a named pseudoselector.
+        /// Gets a registered pseudoclass filter type. If the name is not registered, an exception is
+        /// thrown.
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The name of the pseudoselector.
+        /// </param>
+        ///
+        /// <returns>
+        /// The registered type.
+        /// </returns>
+
+        public Type GetRegisteredType(string name)
+        {
+            Type type;
+            if (TryGetRegisteredType(name, out type))
+            {
+                return type;
+            }
+            else
+            {
+                throw new KeyNotFoundException("The named pseudoclass filter is not registered.");
+            }
+        }
+
+        /// <summary>
+        /// Try to get the type of a registered pseudoclass filter.
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The name of the pseudoselector.
+        /// </param>
+        /// <param name="Type">
+        /// [out] The type.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it the named filter was found, false if not.
+        /// </returns>
+
+        public bool TryGetRegisteredType(string name, out Type type)
+        {
+            return InnerSelectors.TryGetValue(name, out type);
+        }
+
+        /// <summary>
+        /// Try to gets an instance of a named pseudoclass filter.
         /// </summary>
         ///
         /// <param name="name">
@@ -119,23 +164,52 @@ namespace CsQuery.Engine
             return false;
         }
 
+        /// <summary>
+        /// Registers a new PseudoSelector type by name.
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The name of the pseudoselector.
+        /// </param>
+        /// <param name="type">
+        /// The type.
+        /// </param>
+        ///
+        /// <exception cref="ArgumentException">
+        /// Throws an exception when the type does not inherit IPseudoSelector.
+        /// </exception>
+
+        public void Register(string name, Type type)
+        {
+            ValidateType(type);
+            InnerSelectors.Add(name, type);
+        }
+
+        /// <summary>
+        /// Unregisters the names pseudoclass filter.
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The name of the pseudoselector.
+        /// </param>
+
+        public bool Unregister(string name)
+        {
+            return InnerSelectors.Remove(name);
+        }
+
         #endregion
 
-
-        
-
+        #region private methods
 
         private void ValidateType(Type value)
         {
-            if (value.GetInterface("IPseudoSelector")==null)
+            if (value.GetInterface("IPseudoSelector") == null)
             {
                 throw new ArgumentException("The type must implement IPseudoSelector.");
             }
         }
 
-       
-
-        #region private methods
 
         private void PopulateInnerSelectors()
         {

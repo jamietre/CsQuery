@@ -5,21 +5,65 @@ using System.Text;
 using CsQuery.StringScanner;
 using CsQuery.StringScanner.Patterns;
 
-namespace CsQuery.Engine.PseudoClassSelectors
+namespace CsQuery.Engine
 {
     /// <summary>
-    /// Base class for any pseudoselector.
+    /// Base class for any pseudoselector that implements validation of min/max parameter values, and
+    /// argument validation. When implementing a pseudoselector, you must also implement an interface for the type
+    /// of pseudoselector
     /// </summary>
 
-    public abstract class PseudoSelector: IPseudoSelector
+    public abstract class PseudoSelector : IPseudoSelector
     {
+        #region private properties
 
         private string _Arguments;
+        
         /// <summary>
         /// Gets or sets criteria (or parameter) data passed with the pseudoselector
         /// </summary>
 
         protected virtual string[] Parameters {get;set;}
+
+        /// <summary>
+        /// A value to determine how to parse the string for a parameter at a specific index.
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// Zero-based index of the parameter.
+        /// </param>
+        ///
+        /// <returns>
+        /// null to accept a string that can (but does not have to be) quoted, true to require a quoted
+        /// parameter, false to only accept an unqouted parameter.
+        /// </returns>
+
+        protected virtual bool? ParameterQuoted(int index)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// Gets a string describing a parameter count mismatch
+        /// </summary>
+        ///
+        /// <returns>
+        /// A string to throw as an error
+        /// </returns>
+
+        #endregion
+
+        #region public properties
+
+        /// <summary>
+        /// This method is called before any validations are called against this selector. This gives the
+        /// developer an opportunity to throw errors based on the configuration outside of the validation
+        /// methods.
+        /// </summary>
+        ///
+        /// <value>
+        /// The arguments.
+        /// </value>
 
         public virtual string Arguments
         {
@@ -50,6 +94,42 @@ namespace CsQuery.Engine.PseudoClassSelectors
                 
             }
         }
+
+        /// <summary>
+        /// The minimum number of parameters that this selector requires. If there are no parameters, return 0
+        /// </summary>
+        ///
+        /// <value>
+        /// An integer
+        /// </value>
+
+        public virtual int MinimumParameterCount { get { return 0; } }
+
+        /// <summary>
+        /// The maximum number of parameters that this selector can accept. If there is no limit, return -1.
+        /// </summary>
+        ///
+        /// <value>
+        /// An integer
+        /// </value>
+
+        public virtual int MaximumParameterCount { get { return 0; } }
+
+        /// <summary>
+        /// Return the properly cased name of this selector (the class name in non-camelcase)
+        /// </summary>
+
+        public virtual string Name
+        {
+            get
+            {
+                return Objects.FromCamelCase(this.GetType().Name);
+            }
+        }
+
+        #endregion
+
+        #region private methods
 
         /// <summary>
         /// Parse the arguments using the rules returned by the ParameterQuoted method.
@@ -150,65 +230,14 @@ namespace CsQuery.Engine.PseudoClassSelectors
                 throw new ArgumentException(ParameterCountMismatchError());
             }
 
-
-        }
-        /// <summary>
-        /// The minimum number of parameters that this selector requires. If there are no parameters, return 0
-        /// </summary>
-        ///
-        /// <value>
-        /// An integer
-        /// </value>
-
-        public virtual int MinimumParameterCount { get { return 0; } }
-
-        /// <summary>
-        /// The maximum number of parameters that this selector can accept. If there is no limit, return -1.
-        /// </summary>
-        ///
-        /// <value>
-        /// An integer
-        /// </value>
-
-        public virtual int MaximumParameterCount { get { return 0; } }
-
-        /// <summary>
-        /// Return the properly cased name of this selector (the class name in non-camelcase)
-        /// </summary>
-        
-        public virtual string Name
-        {
-            get
-            {
-                return Objects.FromCamelCase(this.GetType().Name);
-
-            }
         }
 
         /// <summary>
-        /// A value to determine how to parse the string for a parameter at a specific index.
-        /// </summary>
-        ///
-        /// <param name="index">
-        /// Zero-based index of the parameter.
-        /// </param>
-        ///
-        /// <returns>
-        /// null to accept a string that can (but does not have to be) quoted, true to require a quoted
-        /// parameter, false to only accept an unqouted parameter.
-        /// </returns>
-
-        protected virtual bool? ParameterQuoted(int index)
-        {
-            return false;
-        }
-
-        /// <summary>
-        /// Gets a string describing a parameter count mismatch
+        /// Gets the string for a parameter count mismatch error.
         /// </summary>
         ///
         /// <returns>
-        /// A string to throw as an error
+        /// A string to be used as an exception message.
         /// </returns>
 
         protected string ParameterCountMismatchError()
@@ -242,18 +271,21 @@ namespace CsQuery.Engine.PseudoClassSelectors
             }
         }
 
+        /// <summary>
+        /// Get a string for an error when there are invalid arguments
+        /// </summary>
+        ///
+        /// <returns>
+        /// A string to be used as an exception message.
+        /// </returns>
+
         protected string InvalidArgumentsError()
         {
             return String.Format("The :{0} pseudoselector has some invalid arguments.",
                         Name);
         }
 
+        #endregion
 
-
-        public virtual bool IsReusable
-        {
-            get { return false; }
-        }
     }
-
 }

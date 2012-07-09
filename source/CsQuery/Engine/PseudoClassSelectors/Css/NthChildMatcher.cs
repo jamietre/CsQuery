@@ -148,13 +148,13 @@ namespace CsQuery.Engine
             return IndexMatches(IndexOf(obj, false, fromLast), formula,fromLast);
         }
 
-        public IEnumerable<IDomObject> NthChildsOfTypeImpl(IDomElement elm, string formula, bool fromLast = false)
+        public IEnumerable<IDomObject> NthChildsOfTypeImpl(IDomContainer elm, string formula, bool fromLast = false)
         {
             
             return GetMatchingChildren(elm, formula, null, fromLast);
         }
 
-        public IEnumerable<IDomObject> NthChilds(IDomElement elm, string formula, bool fromLast = false)
+        public IEnumerable<IDomObject> NthChilds(IDomContainer elm, string formula, bool fromLast = false)
         {
             return GetMatchingChildren(elm, formula, null, fromLast);
         }
@@ -218,7 +218,7 @@ namespace CsQuery.Engine
         /// <param name="formula">The formula for determining n</param>
         /// <param name="onlyNodeName">The type of node to match</param>
         /// <returns></returns>
-        public IEnumerable<IDomObject> GetMatchingChildren(IDomElement obj, string formula, string onlyNodeName=null, bool fromLast=false)
+        public IEnumerable<IDomObject> GetMatchingChildren(IDomContainer obj, string formula, string onlyNodeName = null, bool fromLast = false)
         {
             OnlyNodeName = onlyNodeName;
             FromLast = fromLast;
@@ -226,13 +226,13 @@ namespace CsQuery.Engine
 
         }
 
-        public IEnumerable<IDomObject> GetMatchingChildren(IDomElement obj, string formula)
+        public IEnumerable<IDomObject> GetMatchingChildren(IDomContainer obj, string formula)
         {
             Text = formula;
             return GetMatchingChildren(obj);
         }
 
-        public IEnumerable<IDomObject> GetMatchingChildren(IDomElement obj)
+        public IEnumerable<IDomObject> GetMatchingChildren(IDomContainer obj)
         {
             if (!obj.HasChildren)
             {
@@ -312,7 +312,7 @@ namespace CsQuery.Engine
 
         #region private methods
 
-        private IDomElement GetNthChild(IDomElement parent, int index)
+        private IDomElement GetNthChild(IDomContainer parent, int index)
         {
             int newActualIndex;
             int elementIndex = 1;
@@ -326,7 +326,7 @@ namespace CsQuery.Engine
             return nthChild;
         }
 
-        private IDomElement GetNextChild(IDomElement parent, int currentIndex, out int newIndex)
+        private IDomElement GetNextChild(IDomContainer parent, int currentIndex, out int newIndex)
         {
 
             int index = currentIndex;

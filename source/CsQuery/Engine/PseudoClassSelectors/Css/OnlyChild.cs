@@ -14,14 +14,14 @@ namespace CsQuery.Engine.PseudoClassSelectors
     /// http://reference.sitepoint.com/css/pseudoclass-firstchild
     /// </url>
 
-    public class OnlyChild : PseudoSelectorElement
+    public class OnlyChild : PseudoSelectorChild
     {
-        public override bool Matches(IDomElement element)
+        public override bool Matches(IDomObject element)
         {
             return OnlyChildOrNull(element.ParentNode) == element;
         }
 
-        public override IEnumerable<IDomObject> ChildMatches(IDomElement element)
+        public override IEnumerable<IDomObject> ChildMatches(IDomContainer element)
         {
             IDomObject child = OnlyChildOrNull(element);
             if (child != null)
@@ -42,12 +42,6 @@ namespace CsQuery.Engine.PseudoClassSelectors
             }
         }
 
-        public override bool IsReusable
-        {
-            get
-            {
-                return false;
-            }
-        }
+
     }
 }

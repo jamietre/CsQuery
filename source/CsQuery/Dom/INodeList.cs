@@ -38,5 +38,15 @@ namespace CsQuery
         /// </param>
 
         void AddAlways(IDomObject item);
+
+        /// <summary>
+        /// The element that owns this list
+        /// </summary>
+        ///
+        /// <value>
+        /// An IDomContainer element
+        /// </value>
+
+        IDomContainer Owner { get; }
     }
 }

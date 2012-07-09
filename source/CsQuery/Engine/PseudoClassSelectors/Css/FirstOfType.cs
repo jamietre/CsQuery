@@ -13,9 +13,9 @@ namespace CsQuery.Engine.PseudoClassSelectors
     /// http://reference.sitepoint.com/css/pseudoclass-firstoftype
     /// </url>
 
-    public class FirstOfType : PseudoSelectorElement
+    public class FirstOfType : PseudoSelectorChild
     {
-        public override bool Matches(IDomElement element)
+        public override bool Matches(IDomObject element)
         {
 
             return element.ParentNode.ChildElements
@@ -23,7 +23,7 @@ namespace CsQuery.Engine.PseudoClassSelectors
               .FirstOrDefault() == element;
         }
 
-        public override IEnumerable<IDomObject> ChildMatches(IDomElement element)
+        public override IEnumerable<IDomObject> ChildMatches(IDomContainer element)
         {
             HashSet<ushort> Types = new HashSet<ushort>();
             foreach (var child in element.ChildElements)

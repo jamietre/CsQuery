@@ -632,7 +632,7 @@ namespace CsQuery.Engine
         {
             IEnumerable<IDomObject> results;
            
-            results = ((IPseudoSelectorElement)selector.PseudoSelector).ChildMatches(elm);
+            results = ((IPseudoSelectorChild)selector.PseudoSelector).ChildMatches(elm);
 
             foreach (var item in results)
             {
@@ -672,7 +672,7 @@ namespace CsQuery.Engine
 
         protected bool MatchesPseudoClass(IDomElement element, SelectorClause selector)
         {
-            return ((IPseudoSelectorElement)selector.PseudoSelector).Matches(element);       
+            return ((IPseudoSelectorChild)selector.PseudoSelector).Matches(element);       
         }
 
  

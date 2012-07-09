@@ -14,9 +14,9 @@ namespace CsQuery.Engine.PseudoClassSelectors
     /// http://reference.sitepoint.com/css/pseudoclass-onlyoftype
     /// </url>
 
-    public class OnlyOfType: PseudoSelectorElement
+    public class OnlyOfType: PseudoSelectorChild
     {
-        public override bool Matches(IDomElement element)
+        public override bool Matches(IDomObject element)
         {
 
             return element.ParentNode.ChildElements
@@ -24,7 +24,7 @@ namespace CsQuery.Engine.PseudoClassSelectors
                .SingleOrDefaultAlways() != null;
         }
 
-        public override IEnumerable<IDomObject> ChildMatches(IDomElement element)
+        public override IEnumerable<IDomObject> ChildMatches(IDomContainer element)
         {
             return OnlyChildOfAnyType(element);
         }

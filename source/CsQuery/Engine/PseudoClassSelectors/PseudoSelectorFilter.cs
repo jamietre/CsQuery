@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CsQuery.Engine.PseudoClassSelectors
+namespace CsQuery.Engine
 {
     /// <summary>
-    /// Base class for an Element pseudoselector.
+    /// A base class for filter-type selectors that implements a simple iterator function and calls
+    /// Matches for each element. Classes that depend on the element's position in the filtered list
+    /// cannot use this and should implement IPseudoSelectorFilter directly.
     /// </summary>
 
-    public abstract class PseudoSelectorElement: PseudoSelector, IPseudoSelectorElement
+    public abstract class PseudoSelectorFilter: PseudoSelector, IPseudoSelectorFilter
     {
         /// <summary>
         /// Test whether an element matches this selector.
@@ -23,7 +25,7 @@ namespace CsQuery.Engine.PseudoClassSelectors
         /// true if it matches, false if not.
         /// </returns>
 
-        public abstract bool Matches(IDomElement element);
+        public abstract bool Matches(IDomObject element);
 
         /// <summary>
         /// Basic implementation of ChildMatches, runs the Matches method against each child. This should
@@ -40,9 +42,9 @@ namespace CsQuery.Engine.PseudoClassSelectors
         /// A sequence of children that match.
         /// </returns>
 
-        public virtual IEnumerable<IDomObject> ChildMatches(IDomElement element)
+        public virtual IEnumerable<IDomObject> Filter(IEnumerable<IDomObject> elements)
         {
-            return element.ChildElements.Where(item => Matches(item));
+            return elements.Where(item => Matches(item));
         }
     }
 

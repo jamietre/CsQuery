@@ -14,15 +14,15 @@ namespace CsQuery.Engine.PseudoClassSelectors
     /// http://reference.sitepoint.com/css/pseudoclass-firstchild
     /// </url>
 
-    public class FirstChild : PseudoSelectorElement
+    public class FirstChild : PseudoSelectorChild
     {
-        public override bool Matches(IDomElement element)
+        public override bool Matches(IDomObject element)
         {
 
             return element.ParentNode.FirstElementChild == element;
         }
 
-        public override IEnumerable<IDomObject> ChildMatches(IDomElement element)
+        public override IEnumerable<IDomObject> ChildMatches(IDomContainer element)
         {
             IDomObject child = element.FirstChild;
             if (child != null)

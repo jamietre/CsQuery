@@ -10,9 +10,9 @@ namespace CsQuery.Engine.PseudoClassSelectors
     /// are considered empty.
     /// </summary>
 
-    public class Empty : PseudoSelectorElement
+    public class Empty : PseudoSelectorFilter
     {
-        public override bool Matches(IDomElement element)
+        public override bool Matches(IDomObject element)
         {
             // try to optimize this by checking for the least labor-intensive things first
             if (element.HasChildren)

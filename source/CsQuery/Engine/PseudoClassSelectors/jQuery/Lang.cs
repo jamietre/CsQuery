@@ -13,9 +13,9 @@ namespace CsQuery.Engine.PseudoClassSelectors
     /// default document-wide setting.
     /// </summary>
 
-    public class Lang: PseudoSelectorElement
+    public class Lang: PseudoSelectorChild
     {
-        public override bool Matches(IDomElement element)
+        public override bool Matches(IDomObject element)
         {
            
             //StartNewSelector(SelectorType.Attribute);
@@ -25,7 +25,8 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
             //Current.Criteria = scanner.GetBoundedBy('(', false);
             //break;
-            throw new NotImplementedException(":lang is not currently supported.");
+            // 
+            throw new NotImplementedException(":lang is not currently implemented.");
         }
     }
 }

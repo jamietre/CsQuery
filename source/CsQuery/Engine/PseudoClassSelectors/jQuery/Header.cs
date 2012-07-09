@@ -5,9 +5,9 @@ using System.Text;
 
 namespace CsQuery.Engine.PseudoClassSelectors
 {
-    public class Header: PseudoSelectorElement
+    public class Header: PseudoSelectorFilter
     {
-        public override bool Matches(IDomElement element)
+        public override bool Matches(IDomObject element)
         {
             var nodeName = element.NodeName;
             return nodeName[0] == 'H'

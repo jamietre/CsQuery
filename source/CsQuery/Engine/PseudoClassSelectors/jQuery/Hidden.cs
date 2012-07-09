@@ -12,9 +12,9 @@ namespace CsQuery.Engine.PseudoClassSelectors
     /// heights. Additionally, input elements of type "hidden" are always considered not visible.
     /// </summary>
 
-    public class Hidden: PseudoSelectorElement
+    public class Hidden: PseudoSelectorFilter
     {
-        public override bool Matches(IDomElement element)
+        public override bool Matches(IDomObject element)
         {
             return !Visible.IsVisible(element);
         }

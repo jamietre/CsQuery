@@ -11,7 +11,7 @@ namespace CsQuery.Engine
     /// category.
     /// </summary>
 
-    public interface IPseudoSelectorElement : IPseudoSelector
+    public interface IPseudoSelectorChild : IPseudoSelector
     {
         /// <summary>
         /// Test whether this element matches the selector implementation.
@@ -25,7 +25,7 @@ namespace CsQuery.Engine
         /// true if it succeeds, false if it fails.
         /// </returns>
 
-        bool Matches(IDomElement element);
+        bool Matches(IDomObject element);
 
         /// <summary>
         /// Return a sequence of all children matching the selector implementation
@@ -39,6 +39,6 @@ namespace CsQuery.Engine
         /// A sequence of children that match
         /// </returns>
 
-        IEnumerable<IDomObject> ChildMatches(IDomElement element);
+        IEnumerable<IDomObject> ChildMatches(IDomContainer element);
     }
 }

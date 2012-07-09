@@ -7,11 +7,17 @@ namespace CsQuery.Implementation
 {
     public class NodeList: INodeList
     {
+        #region constructor
+
         public NodeList(IDomContainer owner)
         {
             Owner = owner;
         }
-        protected  IDomContainer Owner;
+
+        #endregion
+
+        #region private properties
+
         protected List<IDomObject> InnerList
         {
             get
@@ -25,32 +31,17 @@ namespace CsQuery.Implementation
         }
         protected List<IDomObject> _InnerList = null;
 
-        protected void RemoveParent(IDomObject element)
-        {
-            if (element.ParentNode != null)
-            {
-                DomObject item = element as DomObject;
-                if ( !element.IsDisconnected && element.IsIndexed)
-                {
-                    item.Document.DocumentIndex.RemoveFromIndex((IDomIndexedNode)element);
-                }
-                ((DomObject)element).ParentNode = null;
-            }
-            
+        #endregion
 
-        }
-        protected void AddParent(IDomObject element, int index)
-        {
-            DomObject item = element as DomObject;
+        #region public properties
 
-            item.ParentNode = Owner;
-            item.Index = index;
-            if (element.IsIndexed)
-            {
-                item.Document.DocumentIndex.AddToIndex((IDomIndexedNode)element);
-            }
-        }
+        public IDomContainer Owner { get; set; }
+
+        #endregion
+
+
         #region IList<T> Members
+
 
         public int IndexOf(IDomObject item)
         {
@@ -144,6 +135,61 @@ namespace CsQuery.Implementation
                 return true;
             }
         }
+
+        public IDomObject this[int index]
+        {
+            get
+            {
+                return InnerList[index];
+            }
+            set
+            {
+                RemoveAt(index);
+                if (index < InnerList.Count)
+                {
+                    Insert(index, value);
+                }
+                else
+                {
+                    Add(value);
+                }
+
+            }
+        }
+
+
+        #endregion
+
+        #region private methods
+
+
+        protected void RemoveParent(IDomObject element)
+        {
+            if (element.ParentNode != null)
+            {
+                DomObject item = element as DomObject;
+                if (!element.IsDisconnected && element.IsIndexed)
+                {
+                    item.Document.DocumentIndex.RemoveFromIndex((IDomIndexedNode)element);
+                }
+                ((DomObject)element).ParentNode = null;
+            }
+
+
+        }
+        
+        protected void AddParent(IDomObject element, int index)
+        {
+            DomObject item = element as DomObject;
+
+            item.ParentNode = Owner;
+            item.Index = index;
+            if (element.IsIndexed)
+            {
+                item.Document.DocumentIndex.AddToIndex((IDomIndexedNode)element);
+            }
+        }
+
         //Reindex all documents > index (used after inserting, when relative index among siblings changes)
         protected void Reindex(int index)
         {
@@ -170,27 +216,8 @@ namespace CsQuery.Implementation
                 }
             }
         }
-        public IDomObject this[int index]
-        {
-            get
-            {
-                return InnerList[index];
-            }
-            set
-            {
-                RemoveAt(index);
-                if (index < InnerList.Count)
-                {
-                    Insert(index, value);
-                }
-                else
-                {
-                    Add(value);
-                }
 
-            }
-        }
-
+        
         #endregion
 
         #region ICollection<IDomObject> Members
@@ -248,9 +275,6 @@ namespace CsQuery.Implementation
 
 
         #endregion
-
-      
-
 
         #region IEnumerable Members
 

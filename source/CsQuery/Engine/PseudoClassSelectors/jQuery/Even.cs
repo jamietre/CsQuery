@@ -23,5 +23,11 @@ namespace CsQuery.Engine.PseudoClassSelectors
                 index++;
             }
         }
+
+
+        public bool Matches(IDomObject element)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -68,6 +68,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config.cs" />
     <Compile Include="CQ_CsQuery\AttrReplace.cs" />
     <Compile Include="CQ_CsQuery\CreateFromUrl.cs" />
     <Compile Include="CQ_CsQuery\Create.cs" />
@@ -135,7 +136,9 @@
     <Compile Include="Dom\IDomObjectT.cs" />
     <Compile Include="Dom\Implementation\AttributeCollection.cs" />
     <Compile Include="Dom\Implementation\AttributeCollection2.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\PseudoSelectorFilter.cs" />
     <Compile Include="Engine\PseudoClassSelectors\Css\Contains.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\IPseudoSelector.cs" />
     <Compile Include="Engine\PseudoClassSelectors\jQuery\Lang.cs" />
     <Compile Include="Engine\PseudoClassSelectors\jQuery\Hidden.cs" />
     <Compile Include="Engine\PseudoClassSelectors\jQuery\Visible.cs" />
@@ -155,7 +158,7 @@
     <Compile Include="Engine\PseudoClassSelectors\jQuery\Lt.cs" />
     <Compile Include="Engine\PseudoClassSelectors\jQuery\Eq.cs" />
     <Compile Include="Engine\PseudoClassSelectors\Css\OnlyOfType.cs" />
-    <Compile Include="Engine\PseudoClassSelectors\PseudoSelectorElement.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\PseudoSelectorChild.cs" />
     <Compile Include="Engine\PseudoClassSelectors\jQuery\Header.cs" />
     <Compile Include="Engine\PseudoClassSelectors\jQuery\Parent.cs" />
     <Compile Include="Engine\PseudoClassSelectors\jQuery\Empty.cs" />
@@ -165,9 +168,8 @@
     <Compile Include="Engine\PseudoClassSelectors\Css\NthOfType.cs" />
     <Compile Include="Engine\PseudoClassSelectors\Css\NthChild.cs" />
     <Compile Include="Engine\PseudoClassSelectors\PseudoSelector.cs" />
-    <Compile Include="Engine\IPseudoSelectorElement.cs" />
-    <Compile Include="Engine\IPseudoSelectorFilter.cs" />
-    <Compile Include="Engine\IPseudoSelector.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\IPseudoSelectorChild.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\IPseudoSelectorFilter.cs" />
     <Compile Include="EquationParser\enumAssociation.cs" />
     <Compile Include="EquationParser\enumOperationType.cs" />
     <Compile Include="EquationParser\Equations.cs" />
@@ -202,6 +204,10 @@
     <Compile Include="EquationParser\IOrderedDictionary.cs" />
     <Compile Include="EquationParser\IVariable.cs" />
     <Compile Include="EquationParser\IVariableContainer.cs" />
+    <Compile Include="ExtensionMethods\Xml\CqXmlDocument.cs" />
+    <Compile Include="ExtensionMethods\Xml\CqXmlNode.cs" />
+    <Compile Include="ExtensionMethods\Xml\Xml.cs" />
+    <Compile Include="ExtensionMethods\Xml\CqXmlNodeList.cs" />
     <Compile Include="HtmlParser\enumHtmlParsingMode.cs" />
     <Compile Include="HtmlParser\enumInsertionMode.cs" />
     <Compile Include="HtmlParser\enumTokenizerState.cs" />

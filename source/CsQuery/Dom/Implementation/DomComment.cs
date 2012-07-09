@@ -22,6 +22,15 @@ namespace CsQuery.Implementation
         {
             get { return NodeType.COMMENT_NODE; }
         }
+
+        public override string NodeName
+        {
+            get
+            {
+                return "--";
+            }
+        }
+
         public bool IsQuoted { get; set; }
         protected string TagOpener
         {

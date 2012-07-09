@@ -11,14 +11,12 @@ namespace CsQuery.Engine.PseudoClassSelectors
     /// </summary>
     ///
     /// <url>
-    ///
+    /// http://api.jquery.com/contains-selector/
     /// </url>
 
-    public class Contains : PseudoSelector, IPseudoSelectorFilter
+    public class Contains : PseudoSelectorFilter
     {
-
-
-        public IEnumerable<IDomObject> Filter(IEnumerable<IDomObject> selection)
+        public override IEnumerable<IDomObject> Filter(IEnumerable<IDomObject> selection)
         {
             foreach (IDomObject el in selection)
             {
@@ -27,10 +25,16 @@ namespace CsQuery.Engine.PseudoClassSelectors
                     yield return el;
                 }
             }
-        
         }
 
-        protected bool ContainsText(IDomElement source, string text)
+        public override bool Matches(IDomObject element)
+        {
+            return element is IDomContainer ?
+                ContainsText(element, Parameters[0]) :
+                false;
+        }
+
+        protected bool ContainsText(IDomObject source, string text)
         {
             foreach (IDomObject e in source.ChildNodes)
             {

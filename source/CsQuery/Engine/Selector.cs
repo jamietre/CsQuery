@@ -206,8 +206,6 @@ namespace CsQuery.Engine
 
         #endregion
 
-       
-
         #region public methods
 
 
