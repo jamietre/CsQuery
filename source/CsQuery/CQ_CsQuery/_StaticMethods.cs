@@ -40,8 +40,6 @@ namespace CsQuery
         
         #endregion
 
-        
-
         #region static utility methods
 
        

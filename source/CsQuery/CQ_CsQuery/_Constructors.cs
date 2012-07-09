@@ -25,13 +25,13 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Create a new CQ object from an HTML character array.
+        /// Create a new CQ object from an HTML character array. Synonymous with
+        /// <see cref="CsQuery.Create(char[])"/>
         /// </summary>
         ///
         /// <param name="html">
-        /// The html of the new document
+        /// The html of the new document.
         /// </param>
-
 
         public CQ(char[] html)
         {
@@ -39,11 +39,18 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Create a new CQ object wrapping a single element
+        /// Create a new CQ object wrapping a single element.
         /// </summary>
+        /// 
+        /// <remarks>
+        /// This differs from the <see cref="CsQuery.Create"/> method in that this document is still
+        /// related to its owning document; this is the same as if the element had just been selected.
+        /// The Create method, conversely, creates an entirely new Document context contining a single
+        /// element (a clone of this element).
+        /// </remarks>
         ///
         /// <param name="element">
-        /// The element
+        /// The element.
         /// </param>
 
         public CQ(IDomObject element)
@@ -52,10 +59,16 @@ namespace CsQuery
             AddSelection(element);
         }
 
-
         /// <summary>
-        /// Create a new CsQuery from a single DOM element.
+        /// Create a new CQ object wrapping a single DOM element, in the context of another CQ object.
         /// </summary>
+        ///
+        /// <remarks>
+        /// This differs from the overload accepting a single IDomObject parameter in that it associates
+        /// the new object with a previous object, as if it were part of a selector chain. In practice
+        /// this will rarely make a difference, but some methods such as <see cref="CsQuery.End"/> use
+        /// this information.
+        /// </remarks>
         ///
         /// <param name="element">
         /// The element to wrap.
@@ -137,22 +150,6 @@ namespace CsQuery
         /// <param name="elements"></param>
         public CQ(IEnumerable<IDomObject> elements)
         {
-            //bool first = true;
-            //if (elements is CQ)
-            //{
-            //    CsQueryParent = (CQ)elements;
-            //    first = false;
-            //}
-
-            //foreach (IDomObject el in elements)
-            //{
-            //    if (first)
-            //    {
-            //        Document = el.Document;
-            //        first = false;
-            //    }
-            //    SelectionSet.Add(el);
-            //}
             var list = elements.ToList();
 
             if (elements is CQ)
@@ -176,14 +173,14 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Create a new CsQuery object from a set of DOM elements, using the DOM from context.
+        /// Create a new CsQuery object from a set of DOM elements, assigning the 2nd parameter as a context for this object.
         /// </summary>
         ///
         /// <param name="elements">
-        /// .
+        /// The elements that make up the selection set in the new object
         /// </param>
         /// <param name="context">
-        /// The context.
+        /// A CQ object that will be assigned as the context for this one.
         /// </param>
 
         public CQ(IEnumerable<IDomObject> elements, CQ context)
@@ -243,7 +240,7 @@ namespace CsQuery
 
         protected void CreateNewFragment(IEnumerable<IDomObject> elements)
         {
-            Document = new DomFragment(elements);
+            Document = new DomFragment(elements.Clone());
             AddSelection(Document.ChildNodes);
             FinishCreatingNewDocument();
         }
@@ -272,6 +269,7 @@ namespace CsQuery
         {
             Document.DomRenderingOptions = CQ.DefaultDomRenderingOptions;
         }
+        
         #endregion
     }
 }

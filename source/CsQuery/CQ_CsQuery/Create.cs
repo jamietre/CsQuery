@@ -71,26 +71,6 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Create a new CQ from a single element
-        /// </summary>
-        ///
-        /// <param name="element">
-        /// The element to wrap.
-        /// </param>
-        /// <param name="context">
-        /// The context.
-        /// </param>
-        ///
-        /// <returns>
-        ///  A new CQ object.
-        /// </returns>
-
-        public static CQ Create(IDomObject element, CQ context)
-        {
-            return new CQ(element,context);
-        }
-
-        /// <summary>
         /// Creeate a new CQ object from an HTML string
         /// </summary>
         /// <param name="html"></param>
@@ -99,7 +79,6 @@ namespace CsQuery
         {
             return new CQ(html);
         }
-
 
 
         /// <summary>
@@ -115,28 +94,6 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Create a new CQ object from an existing context, bound to the same domain.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="context"></param>
-        private void Create(string selector, CQ context)
-        {
-             //when creating a new CsQuery from another, leave Document blank - it will be populated
-             //automatically with the contents of the selector. 
-
-            var csq = new CQ();
-            CsQueryParent = context;
-
-            if (!String.IsNullOrEmpty(selector))
-            {
-                Selector = new Selector(selector);
-                AddSelection(Selector.Select(Document, context));
-            }
-        }
-
-
-
-        /// <summary>
         /// Creeate a new CQ object from a squence of elements, or another CQ object
         /// </summary>
         /// <param name="elements">A sequence of elements</param>
@@ -144,7 +101,6 @@ namespace CsQuery
         public static CQ Create(IEnumerable<IDomObject> elements)
         {
             CQ csq = new CQ();
-            //csq.LoadFragment(elements);
             csq.CreateNewFragment(elements);
             return csq;
         }

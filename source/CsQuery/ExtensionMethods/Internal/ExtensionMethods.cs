@@ -292,7 +292,6 @@ namespace CsQuery.ExtensionMethods.Internal
         }
         #endregion
 
-
         #region string methods
 
         public static int OccurrencesOf(this string text, char find) {
@@ -728,5 +727,51 @@ namespace CsQuery.ExtensionMethods.Internal
         }
         #endregion
 
+        #region miscellaneous methods
+
+        /// <summary>
+        /// (Alpha) Clone a sequence of objects.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static IEnumerable CloneList(this IEnumerable obj)
+        {
+            return obj.CloneList(false);
+        }
+        /// <summary>
+        /// (Alpha) Deep clone a sequence of objects.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="deep"></param>
+        /// <returns></returns>
+        public static IEnumerable CloneList(this IEnumerable obj, bool deep)
+        {
+            IEnumerable newList;
+            // TODO - check for existence of a "clone" method
+            //if (obj.GetType().IsArray)
+            //{
+            //    return (IEnumerable)((Array)obj).Clone();
+            //} 
+            if (Objects.IsExpando(obj))
+            {
+                newList = new JsObject();
+                var newListDict = (IDictionary<string, object>)newList;
+                foreach (var kvp in ((IDictionary<string, object>)obj))
+                {
+                    newListDict.Add(kvp.Key, deep ? Objects.CloneObject(kvp.Value, true) : kvp.Value);
+                }
+            }
+            else
+            {
+                newList = new List<object>();
+                foreach (var item in obj)
+                {
+                    ((List<object>)newList).Add(deep ? Objects.CloneObject(item, true) : item);
+                }
+            }
+            return newList;
+        }
+
+        #endregion
     }
 }
