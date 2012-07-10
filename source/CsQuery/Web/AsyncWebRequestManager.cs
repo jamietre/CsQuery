@@ -7,7 +7,7 @@ using System.Collections.Concurrent;
 
 namespace CsQuery.Web
 {
-    internal static class AsyncWebRequestManager
+    public static class AsyncWebRequestManager
     {
         private static int LastAsyncRequestID = 0;
         private static object Locker = new object();
@@ -40,17 +40,22 @@ namespace CsQuery.Web
         public static void StartAsyncWebRequest(string url, Action<ICsqWebResponse> success, Action<ICsqWebResponse> fail, int id, ServerConfig options = null)
         {
             var request = new CsqWebRequest(url);
+            ServerConfig.Apply(options, request);
+
             request.Id = id;
             request.Async = true;
-
+            
             var mrEvent = request.GetAsync(success, fail);
             AsyncEvents.Add(mrEvent);
         }
 
+       
         /// <summary>
         /// Waits until all async events have completed. Use for testing primarily as a web app should not stop normally.
         /// </summary>
-        public static void WaitForAsyncEvents(int millisecondsTimeout = -1)
+        /// <param name="millisecondsTimeout">The maximum number of milliseconds to wait</param>
+        /// <returns>true if all events were cleared in the allotted time, false if not</returns>
+        public static bool WaitForAsyncEvents(int millisecondsTimeout = -1)
         {
             ManualResetEvent evt;
             int timeLeft = millisecondsTimeout;
@@ -68,9 +73,19 @@ namespace CsQuery.Web
                     }
                 }
             }
-            DateTime endTime = DateTime.Now;
+            return timeLeft > 0;
         }
 
+        /// <summary>
+        /// Cancel all outstanding async events
+        /// </summary>
+        public static void CancelAsyncEvents()
+        {
+            foreach(var evt in AsyncEvents) {
+                evt.Close();
+            }
+            
+        }
         public static int GetAsyncRequestID()
         {
             lock (Locker)

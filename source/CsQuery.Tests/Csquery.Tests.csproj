@@ -67,8 +67,19 @@
   <ItemGroup>
     <Compile Include="Arrays.cs" />
     <Compile Include="AssertEx.cs" />
+    <Compile Include="Csharp\Documents\MultipleDocs.cs" />
+    <Compile Include="Csharp\Dom\DomDocument.cs" />
+    <Compile Include="Csharp\Dom\DomFragment.cs" />
     <Compile Include="Csharp\Dom\DomElement.cs" />
+    <Compile Include="Csharp\ExtensionMethods\Xml.cs" />
+    <Compile Include="Csharp\Methods\ParentsUntil.cs" />
+    <Compile Include="Csharp\Methods\Width.cs" />
+    <Compile Include="Csharp\Methods\Each.cs" />
+    <Compile Include="Csharp\Methods\Text.cs" />
     <Compile Include="Csharp\Methods\Slice.cs" />
+    <Content Include="Resources\TextAreaTest.htm" />
+    <Compile Include="Csharp\Selectors\Extensions.cs" />
+    <Compile Include="WebIO\StressTests.cs" />
     <Compile Include="TestTests.cs" />
     <Compile Include="Csharp\HtmlParser\Classes.cs" />
     <Compile Include="Csharp\HtmlParser\HtmlDomData.cs" />
@@ -80,7 +91,7 @@
     <Compile Include="Csharp\ExtensionMethods\Forms.cs" />
     <Compile Include="Csharp\Manipulation\Clone.cs" />
     <Compile Include="Csharp\Css\Css.cs" />
-    <Compile Include="Csharp\HtmlParser\Styles.cs" />
+    <Compile Include="Csharp\HtmlParser\TextArea.cs" />
     <Compile Include="Csharp\Methods\End.cs" />
     <Compile Include="Csharp\Promises\Promises.cs" />
     <Compile Include="Csharp\Selectors\Combinators.cs" />
@@ -132,7 +143,7 @@
     <Compile Include="Csharp\ExtensionMethods\ExtensionMethodTests.cs" />
     <Compile Include="Csharp\Utility\JSON\JSON.cs" />
     <Compile Include="jQuery\Traversing.cs" />
-    <Compile Include="Csharp\Miscellaneous\_WebIO.cs" />
+    <Compile Include="WebIO\QueryRemoteServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\HTML Standard.htm">

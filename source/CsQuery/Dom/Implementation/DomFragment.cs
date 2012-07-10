@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CsQuery.ExtensionMethods;
+using CsQuery.HtmlParser;
 
 namespace CsQuery.Implementation
 {
     /// <summary>
-    /// Special node type to represent the DOM.
-    /// THIS IS NOT USED YET
+    /// An incomplete document fragment
     /// </summary>
     public class DomFragment : DomDocument, IDomFragment
     {
@@ -21,7 +21,8 @@ namespace CsQuery.Implementation
         {
         
         }
-        public DomFragment(char[] html): base(html)
+        public DomFragment(char[] html, HtmlParsingMode htmlParsingMode)
+            : base(html, htmlParsingMode)
         {
             
         }
@@ -30,7 +31,23 @@ namespace CsQuery.Implementation
         {
             get { return  NodeType.DOCUMENT_FRAGMENT_NODE; }
         }
-        
+
+        /// <summary>
+        /// Gets a value indicating whether this object is indexed. 
+        /// </summary>
+
+        public override bool IsIndexed
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        public override IDomDocument CreateNew()
+        {
+            return CreateNew<IDomFragment>();
+        }
     }
     
 }

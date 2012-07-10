@@ -6,7 +6,7 @@
 
 <h2>Log On</h2>
 <p>
-    Please enter your user name and password. @Html.ActionLink("Register", "Register") if you don't have an account.
+    You can't really log on. This is just the default MVC3 template. The controller code shows how you can easily manipulate the HTML.
 </p>
 
 <script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
@@ -14,8 +14,13 @@
 
 @Html.ValidationSummary(true, "Login was unsuccessful. Please correct the errors and try again.")
 
+<div id="login-fake" class="error">
+    <b>You can't really log in.</b> This page is a demonstration of manipulating HTML from the server with CsQuery.
+</div>
+
+
 @using (Html.BeginForm()) {
-    <div>
+    <div id="login-form">
         <fieldset>
             <legend>Account Information</legend>
 
@@ -46,3 +51,4 @@
         </fieldset>
     </div>
 }
+

@@ -9,23 +9,52 @@ using CsQuery.StringScanner.ExtensionMethods;
 
 namespace CsQuery.StringScanner.Implementation
 {
-    
-    // Not implemented - intended to update the scanning code in Selector engine and maybe the HTML parser
+    /// <summary>
+    /// String scanner engine. A lexical scanner to match complex patterns.
+    /// </summary>
+
     public class StringScannerEngine: IStringScanner
     {
         #region constructors
+
+        /// <summary>
+        /// Create a new StringScannerEngine with no configuration
+        /// </summary>
+
         public StringScannerEngine()
         {
             Init();
         }
+
+        /// <summary>
+        /// Create a new StringScannerEngine for a string
+        /// </summary>
+        ///
+        /// <param name="text">
+        /// The string to scan
+        /// </param>
+
         public StringScannerEngine(string text)
         {
             Text = text;
             Init();
         }
+
+        /// <summary>
+        /// Create a new StringScannerEngine for a string
+        /// </summary>
+        ///
+        /// <param name="text">
+        /// The string to scan.
+        /// </param>
+
         public static implicit operator StringScannerEngine(string text) {
             return new StringScannerEngine(text);
         }
+
+        /// <summary>
+        /// Common configuration tasks for all constructors.
+        /// </summary>
 
         protected void Init()
         {
@@ -34,15 +63,17 @@ namespace CsQuery.StringScanner.Implementation
         }
         #endregion
 
-        #region private fields
+        #region private properties
+
         private string _Text;
         private string _CurrentMatch;
         private string _LastMatch;
+        private int cachedPos;
+        private string cachedMatch;
+        bool cached = false;
+        private CharacterInfo _characterInfo;
         
-        protected CharacterInfo _characterInfo;
-        #endregion
-        
-        #region protected properties
+       
         /// <summary>
         /// When true, the next seek should honor quotes
         /// </summary>
@@ -66,6 +97,13 @@ namespace CsQuery.StringScanner.Implementation
         #endregion
 
         #region public properties
+
+        /// <summary>
+        /// Gets or sets the text that the scanner acts upon.
+        /// </summary>
+        ///
+        /// <seealso cref="Chars"/>
+
         public string Text
         {
             get
@@ -116,33 +154,43 @@ namespace CsQuery.StringScanner.Implementation
             {
                 Next();
                 QuotingActive = true;
-                QuoteChar = NextChar;
+                QuoteChar = Current;
             }
             return QuotingActive;
         }
         public bool IgnoreWhitespace { get; set; }
+
+        /// <summary>
+        /// Gets or sets the length of the text bound to this scanner.
+        /// </summary>
+
         public int Length
         { get; protected set; }
-        public int Pos
+
+        /// <summary>
+        /// Gets or sets the current zero-based position of the scanner.
+        /// </summary>
+
+        public int Index
         {
             get;
-            set;
+            protected set;
         }
-        public int LastPos
+        public int LastIndex
         {
             get;
-            set;
+            protected set;
         }
         
         /// <summary>
         /// Return the character at the current scanning position without advancing the pointer. Throw an error
         /// if the pointer is at the end of the string.
         /// </summary>
-        public char NextChar
+        public char Current
         {
             get
             {
-                return Text[Pos];
+                return Text[Index];
             }
         }
 
@@ -150,16 +198,18 @@ namespace CsQuery.StringScanner.Implementation
         /// Return the character at the current scanning position without advancing the pointer. If the pointer is
         /// at the end of the string, return an empty string.
         /// </summary>
-        public string NextCharOrEmpty
+        public string CurrentOrEmpty
         {
             get
             {
-                return Finished ? null : NextChar.ToString();
+                return Finished ? null : Current.ToString();
             }
         }
+
         /// <summary>
-        /// The string or character that has been matched
+        /// The string or character that has been matched.
         /// </summary>
+
         public string Match
         {
             get
@@ -193,7 +243,7 @@ namespace CsQuery.StringScanner.Implementation
         {
             get
             {
-                return Pos >= Length || Length == 0;
+                return Index >= Length || Length == 0;
             }
         }
         /// <summary>
@@ -203,7 +253,7 @@ namespace CsQuery.StringScanner.Implementation
         {
             get
             {
-                return Pos == Length - 1;
+                return Index == Length - 1;
             }
         }
         public string LastError
@@ -223,7 +273,7 @@ namespace CsQuery.StringScanner.Implementation
         {
             get
             {
-                characterInfo.Target = Finished ? (char)0 : NextChar;
+                characterInfo.Target = Finished ? (char)0 : Current;
                 return characterInfo;
             }
         }
@@ -242,43 +292,124 @@ namespace CsQuery.StringScanner.Implementation
             }
             return Scanner.Create(Match);
         }
+
         /// <summary>
-        /// Creates a new stringscanner instance from the current match, formatted using passed format first.
+        /// Creates a new StringScanner instance from a string that is formatted using the current match
+        /// as the single format argument.
         /// </summary>
-        /// <param name="format"></param>
-        /// <returns></returns>
-        public IStringScanner ToNewScanner(string format)
+        ///
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the prior operation failed.
+        /// </exception>
+        ///
+        /// <param name="template">
+        /// The string to use as a template
+        /// </param>
+        ///
+        /// <returns>
+        /// A new StringScanner
+        /// </returns>
+
+        public IStringScanner ToNewScanner(string template)
         {
             if (!Success)
             {
                 throw new InvalidOperationException("The last operation was not successful; a new string scanner cannot be created.");
             }
-            return Scanner.Create(String.Format(format,Match));
+            return Scanner.Create(String.Format(template,Match));
         }
+
         /// <summary>
-        /// returns true of the text starting at the current position matches the passed text
+        /// Test that the text starting at the current position matches the passed text.
         /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        public bool Is(string text)
+        ///
+        /// <param name="text">
+        /// The text to match
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
+        public bool Matches(string text)
         {
-            return text.Length + Pos <= Length && Text.Substring(Pos, text.Length) == text;
+            return text.Length + Index <= Length && Text.Substring(Index, text.Length) == text;
         }
-        public bool IsOneOf(params string[] text)
-        {
-            return IsOneOf((IEnumerable<string>)(text));
-        }
-        public bool IsOneOf(IEnumerable<string> text)
+
+        /// <summary>
+        /// Test that the text starting at the current position is any of the strings passed.
+        /// </summary>
+        ///
+        /// <param name="text">
+        /// A sequence of strings to match
+        /// </param>
+        ///
+        /// <returns>
+        /// true if one of, false if not.
+        /// </returns>
+
+        public bool MatchesAny(IEnumerable<string> text)
         {
             foreach (string val in text)
             {
-                if (Is(val))
+                if (Matches(val))
                 {
                     return true;
                 }
             }
             return false;
         }
+
+        /// <summary>
+        /// Seeks until a specific character is found. The Match string becomes everything from the
+        /// current position, through the position before the matched character. If the scanner is
+        /// already at the end, an exception is thrown.
+        /// </summary>
+        ///
+        /// <param name="character">
+        /// The character to seek.
+        /// </param>
+        /// <param name="orEnd">
+        /// When true, the end of the string is a valid match. When false, the end of the string will
+        /// cause an exception.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current string scanner.
+        /// </returns>
+
+        public IStringScanner Seek(char character, bool orEnd)
+        {
+            AssertNotFinished();
+            CachePos();
+            while (!Finished && Current!=character)
+            {
+                Next();
+            }
+            if (!orEnd)
+            {
+                AssertNotFinished();
+            }
+            Match = Text.Substring(cachedPos,Index-cachedPos);
+            NewPos();
+            return this;
+        }
+
+        protected void SkipWhitespaceImpl()
+        {
+            if (Finished)
+            {
+                return;
+            }
+            if (CharacterData.IsType(Current,CharacterType.Whitespace))
+            {
+                while (!Finished && CharacterData.IsType(Current,CharacterType.Whitespace))
+                {
+                    Next();
+                }
+            }
+        }
+
         /// <summary>
         /// If the current character is whitespace, advances to the next non whitespace. Otherwise, nothing happens.
         /// </summary>
@@ -288,27 +419,7 @@ namespace CsQuery.StringScanner.Implementation
             AutoSkipWhitespace();
             NewPos();
         }
-        protected void SkipWhitespaceImpl()
-        {
-            if (Finished)
-            {
-                return;
-            }
-            if (CharacterData.IsType(NextChar,CharacterType.Whitespace))
-            {
-                while (!Finished && CharacterData.IsType(NextChar,CharacterType.Whitespace))
-                {
-                    Next(1);
-                }
-            }
-        }
-        protected void AutoSkipWhitespace()
-        {
-            if (IgnoreWhitespace)
-            {
-                SkipWhitespaceImpl();
-            }
-        }
+
         /// <summary>
         /// Advances to the next non-whitespace character
         /// </summary>
@@ -318,16 +429,12 @@ namespace CsQuery.StringScanner.Implementation
             NextNonWhitespaceImpl();
             NewPos();
         }
-        protected void NextNonWhitespaceImpl()
-        {
-            Next(1);
-            SkipWhitespaceImpl();
-        }
+       
         public char Peek()
         {
-            if (Pos < Length - 1)
+            if (Index < Length - 1)
             {
-                return Text[Pos + 1];
+                return Text[Index + 1];
             }
             else
             {
@@ -339,15 +446,29 @@ namespace CsQuery.StringScanner.Implementation
         /// </summary>
         /// <returns></returns>
 
-        public bool Next(int count=1)
+        public bool Next()
         {
-            if (Pos >= Length)
+            return Move(1);
+        }
+
+        public bool Previous()
+        {
+            return Move(-1);
+        }
+
+        public bool Move(int offset)
+        {
+            if (Index+offset > Length)
             {
                 ThrowException("Cannot advance beyond end of string.");
             }
+            else if (Index + offset < 0)
+            {
+                ThrowException("Cannot reverse beyond beginning of string");
+            }
 
-            Pos += count;
-            return Pos < Length;
+            Index += offset;
+            return Index < Length && Index>0;
         }
         /// <summary>
         /// Returns to the state before the last Expect. This is not affected by manual Next/Prev operations
@@ -355,49 +476,60 @@ namespace CsQuery.StringScanner.Implementation
         /// <returns></returns>
         public void Undo()
         {
-            if (LastPos < 0)
+            if (LastIndex < 0)
             {
                 ThrowException("Can't undo - there's nothing to undo");
             }
-            Pos = LastPos;
+            Index = LastIndex;
             Match = LastMatch;
             LastMatch = "";
-            LastPos = -1;
+            LastIndex = -1;
 
             NewPos();
         }
 
-        public bool Prev(int count=1)
-        {
-            if (Pos == 0)
-            {
-                throw new InvalidOperationException("Cannot reverse beyond beginning of string");
-            }
-            Pos-=count;
-            return Pos >= 0;
-        }
-        public void AssertFinished()
+
+        public void AssertFinished(string errorMessage=null)
         {
             if (!Finished)
             {
-                ThrowUnexpectedCharacterException();
+                if (String.IsNullOrEmpty(errorMessage))
+                {
+                    ThrowUnexpectedCharacterException();
+                }
+                else
+                {
+                    ThrowException(errorMessage);
+                }
             }
         }
-        public void AssertNotFinished()
+        public void AssertNotFinished(string errorMessage=null)
         {
             if (Finished)
             {
-                ThrowUnexpectedCharacterException();
+                if (String.IsNullOrEmpty(errorMessage))
+                {
+                    ThrowUnexpectedCharacterException();
+                }
+                else
+                {
+                    ThrowException(errorMessage);
+                }
             }
         }
         public void Reset()
         {
-            Pos = 0;
-            LastPos = -1;
+            Index = 0;
+            LastIndex = -1;
             Match = "";
             LastError = "";
             Success = true;
         }
+
+        /// <summary>
+        /// Moves the pointer past the last character postion.
+        /// </summary>
+
         public void End()
         {
             CachePos();
@@ -410,10 +542,10 @@ namespace CsQuery.StringScanner.Implementation
             AssertNotFinished();
             CachePos();
             AutoSkipWhitespace();
-            if (Is(text))
+            if (Matches(text))
             {
-                Match = Text.Substring(Pos, text.Length);
-                NewPos(Pos+text.Length);
+                Match = Text.Substring(Index, text.Length);
+                NewPos(Index+text.Length);
             }
             else
             {
@@ -457,10 +589,10 @@ namespace CsQuery.StringScanner.Implementation
             {
                 foreach (string expected in stringList)
                 {
-                    if (Is(expected))
+                    if (Matches(expected))
                     {
-                        Match = Text.Substring(Pos, expected.Length);
-                        NewPos(Pos + expected.Length);
+                        Match = Text.Substring(Index, expected.Length);
+                        NewPos(Index + expected.Length);
                         return;
                     }
                 }
@@ -491,10 +623,10 @@ namespace CsQuery.StringScanner.Implementation
             CachePos();
             AutoSkipWhitespace();
 
-            if (NextChar == character)
+            if (Current == character)
             {
-                Match = NextChar.ToString();
-                Next(1);
+                Match = Current.ToString();
+                Next();
                 NewPos();
             }
             else
@@ -514,15 +646,8 @@ namespace CsQuery.StringScanner.Implementation
                 Expect(characters);
             }, out result);
         }
-        public IStringScanner ExpectChar(string characters)
-        {
-            return ExpectChar(characters.ToCharArray());
-            
-        }
-        public char GetChar(params char[] characters)
-        {
-            return GetChar((IEnumerable<char>)characters);
-        }
+
+
         public IStringScanner ExpectChar(params char[] characters)
         {
             return ExpectChar((IEnumerable<char>)characters);
@@ -547,8 +672,8 @@ namespace CsQuery.StringScanner.Implementation
             AutoSkipWhitespace();
             if (ExpectCharImpl(characters))
             {
-                Match = NextChar.ToString();
-                Next(1);
+                Match = Current.ToString();
+                Next();
                 NewPos();
             }
             else
@@ -561,7 +686,7 @@ namespace CsQuery.StringScanner.Implementation
         {
             //HashSet<char> expected = new HashSet<char>(characters);
             foreach (char item in characters) {
-                if (item==NextChar) {
+                if (item==Current) {
                     return true;
                 }
             }
@@ -615,13 +740,23 @@ namespace CsQuery.StringScanner.Implementation
                 return false;
             }
         }
+
         /// <summary>
-        /// Starting with the current character, treats text as a number, seeking until the next character that would terminate a valid number.
+        /// Starting with the current character, treats text as a number, seeking until the next
+        /// character that would terminate a valid number.
         /// </summary>
-        /// <returns></returns>
-        public IStringScanner ExpectNumber()
+        ///
+        /// <param name="requireWhitespaceTerminator">
+        /// (optional) the require whitespace terminator.
+        /// </param>
+        ///
+        /// <returns>
+        /// .
+        /// </returns>
+
+        public IStringScanner ExpectNumber(bool requireWhitespaceTerminator = false)
         {
-            return Expect(MatchFunctions.Number());
+            return Expect(MatchFunctions.Number(requireWhitespaceTerminator));
         }
         public bool TryGetAlpha(out string result)
         {
@@ -648,7 +783,7 @@ namespace CsQuery.StringScanner.Implementation
 
         public string Get(IExpectPattern pattern)
         {
-            ExpectImpl(pattern, true);
+            ExpectImpl(pattern);
             return Match;
         }
         public bool TryGet(IExpectPattern pattern, out string result)
@@ -670,7 +805,7 @@ namespace CsQuery.StringScanner.Implementation
         /// </param>
         public IStringScanner Expect(IExpectPattern pattern)
         {
-            ExpectImpl(pattern, true);
+            ExpectImpl(pattern);
             return this;
         }
         public string Get(Func<int, char, bool> validate)
@@ -685,25 +820,34 @@ namespace CsQuery.StringScanner.Implementation
                 Expect(validate);
             }, out result);
         }
+
         /// <summary>
-        /// Continue seeking as long as the delegate returns True
+        /// Continue seeking as long as the delegate returns True.
         /// </summary>
-        /// <param name="del"></param>
+        ///
+        /// <param name="validate">
+        /// A pattern matching function
+        /// </param>
+        ///
+        /// <returns>
+        /// This IStringScanner instance
+        /// </returns>
+
         public IStringScanner Expect(Func<int, char, bool> validate)
         {
             AssertNotFinished();
             CachePos();
             AutoSkipWhitespace();
-            int startPos = Pos;
+            int startPos = Index;
             int index = 0;
-            while (!Finished && validate(index, NextChar))
+            while (!Finished && validate(index, Current))
             {
-                Pos++;
+                Index++;
                 index++;
             }
-            if (Pos > startPos)
+            if (Index > startPos)
             {
-                Match = Text.SubstringBetween(startPos, Pos);
+                Match = Text.SubstringBetween(startPos, Index);
                 NewPos();
             }
             else
@@ -712,6 +856,28 @@ namespace CsQuery.StringScanner.Implementation
             }
             return this;
         }
+
+        /// <summary>
+        /// Expects a string bounded by the character at the current postion. If the current character is
+        /// a bounding character, then the pattern will match until the matching closing bound character
+        /// is found, e.g. () [] {} &lt;&gt;. For non-bounding characters, the pattern will match until
+        /// the same character is found again.
+        /// </summary>
+        ///
+        /// <param name="start">
+        /// The position to start scanning.
+        /// </param>
+        /// <param name="end">
+        /// The last position.
+        /// </param>
+        /// <param name="allowQuoting">
+        /// (optional) the allow quoting.
+        /// </param>
+        ///
+        /// <returns>
+        /// The bounded by.
+        /// </returns>
+
         public string GetBoundedBy(string start, string end, bool allowQuoting=false)
         {
             ExpectBoundedBy(start, end);
@@ -732,15 +898,45 @@ namespace CsQuery.StringScanner.Implementation
             boundedBy.HonorInnerQuotes=allowQuoting;
             return Expect(boundedBy);
         }
+
         /// <summary>
-        /// The single character bound will be matched with a closing char for () [] {} &lt;&gt; or the same char for anything else
+        /// The single character bound will be matched with a closing char for () [] {} &lt;&gt; or the
+        /// same char for anything else.
         /// </summary>
-        /// <param name="bound"></param>
+        ///
+        /// <param name="bound">
+        /// .
+        /// </param>
+        /// <param name="allowQuoting">
+        /// (optional) the allow quoting.
+        /// </param>
+        ///
+        /// <returns>
+        /// The bounded by.
+        /// </returns>
+
         public string GetBoundedBy(char bound, bool allowQuoting=false)
         {
             ExpectBoundedBy(bound, allowQuoting);
             return Match;
         }
+
+        /// <summary>
+        /// Require that the text starting at the current position matches a pattern which is bounded by
+        /// a specific character, with the inner value opotionally quoted with a quote character ' or ".
+        /// </summary>
+        ///
+        /// <param name="bound">
+        /// The bounding character.
+        /// </param>
+        /// <param name="allowQuoting">
+        /// (optional) the allow quoting.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current string scanner.
+        /// </returns>
+
         public IStringScanner ExpectBoundedBy(char bound, bool allowQuoting = false)
         {
             var boundedBy = new Patterns.Bounded();
@@ -753,20 +949,16 @@ namespace CsQuery.StringScanner.Implementation
             return Text;
         }
 
-        /// <summary>
-        /// The implementation - if the 2nd parm is false, it is the opposite (seek until the match condition is met)
-        /// 2nd parm NOT IMPLEMENTED
-        /// </summary>
-        /// <param name="validate"></param>
-        /// <param name="untilTrue"></param>
-        protected StringScannerEngine ExpectImpl(IExpectPattern pattern, bool untilTrue)
+
+
+        private StringScannerEngine ExpectImpl(IExpectPattern pattern)
         {
             AssertNotFinished();
             CachePos();
             AutoSkipWhitespace();
-            int startPos = Pos;
+            int startPos = Index;
 
-            pattern.Initialize(Pos, Chars);
+            pattern.Initialize(Index, Chars);
             // call the function one more time after the end of the string - this determines outcome
             if (pattern.Validate())
             {
@@ -775,7 +967,7 @@ namespace CsQuery.StringScanner.Implementation
             }
             else
             {
-                Pos = pattern.EndIndex; // for error report to be accurate - will be undone at end
+                Index = pattern.EndIndex; // for error report to be accurate - will be undone at end
                 ThrowUnexpectedCharacterException();
             }
             return this;
@@ -799,19 +991,19 @@ namespace CsQuery.StringScanner.Implementation
         [DebuggerStepThrough]
         protected void ThrowUnexpectedCharacterException()
         {
-            if (Pos >= Length)
+            if (Index >= Length)
             {
                 ThrowUnexpectedEndOfStringException();
             }
             else
             {
-                ThrowException("Unexpected character found",Pos);
+                ThrowException("Unexpected character found",Index);
             }
         }
         [DebuggerStepThrough]
         protected void ThrowUnexpectedEndOfStringException()
         {
-            ThrowException("The string unexpectedly ended",Pos);
+            ThrowException("The string unexpectedly ended",Index);
         }
         [DebuggerStepThrough]
         protected void ThrowException(string message)
@@ -838,13 +1030,13 @@ namespace CsQuery.StringScanner.Implementation
             {
                 error += " at position " + pos + ": \"";
 
-                if (Pos != pos)
+                if (Index != pos)
                 {
-                    if (Pos > 0 && Pos < Length)
+                    if (Index > 0 && Index < Length)
                     {
                         error += ".. ";
                     }
-                    error += Text.SubstringBetween(Math.Max(Pos - 10, 0), pos) + ">>" + Text[pos] + "<<";
+                    error += Text.SubstringBetween(Math.Max(Index - 10, 0), pos) + ">>" + Text[pos] + "<<";
                     if (pos < Length - 1)
                     {
                         error += Text.SubstringBetween(pos + 1, Math.Min(Length, pos + 30));
@@ -867,12 +1059,24 @@ namespace CsQuery.StringScanner.Implementation
         #endregion
         
         #region private methods
+
+        protected void AutoSkipWhitespace()
+        {
+            if (IgnoreWhitespace)
+            {
+                SkipWhitespaceImpl();
+            }
+        }
+        protected void NextNonWhitespaceImpl()
+        {
+            Next();
+            SkipWhitespaceImpl();
+        }
+
         /// <summary>
         /// Caches the current position
         /// </summary>
-        private int cachedPos;
-        private string cachedMatch;
-        bool cached = false;
+
         /// <summary>
         /// Cache the last pos before an attempted operation,
         /// </summary>
@@ -885,7 +1089,7 @@ namespace CsQuery.StringScanner.Implementation
                 throw new InvalidOperationException("Internal error: already cached");
             }
             cached = true;
-            cachedPos = Pos;
+            cachedPos = Index;
             cachedMatch = Match;
         }
         /// <summary>
@@ -894,14 +1098,14 @@ namespace CsQuery.StringScanner.Implementation
         /// </summary>
         protected void NewPos(int pos)
         {
-            Pos = pos;
+            Index = pos;
             NewPos();
         }
         protected void NewPos()
         {
-            if (Pos != cachedPos)
+            if (Index != cachedPos)
             {
-                LastPos = cachedPos;
+                LastIndex = cachedPos;
                 LastMatch = cachedMatch;
             }
             cached = false;
@@ -914,7 +1118,7 @@ namespace CsQuery.StringScanner.Implementation
         {
             if (cached)
             {
-                Pos = cachedPos;
+                Index = cachedPos;
                 Match= cachedMatch;
                 cached = false;
             }

@@ -112,8 +112,12 @@ namespace CsQuery.Tests.jQuery
             Assert.IsTrue(0 == jQuery("#dl").Attr("style").IndexOf("position"), "Check style attribute getter, also normalize css props to lowercase");
             Assert.IsTrue(0 == jQuery("#foo").Attr("style", "position:absolute;").Attr("style").IndexOf("position"), "Check style setter");
 
-            //    // Check value on button element (#1954)
-            var jbutton = CQ.CreateFragment("<button value='foobar'>text</button>").InsertAfter("#button");
+            //    Check value on button element (#1954)
+            //    [CsQuery] The original test used "InsertAfter("#button")". However that only works with the global Document of a web browser;
+            //    CsQuery has no idea where to look for "#button" other than the fragment. The test was altered to reference the original
+            //    Document to get the target for InsertAfter
+            
+            var jbutton = jQuery("<button value='foobar'>text</button>").InsertAfter(jQuery("#button"));
             Assert.AreEqual(jbutton.Attr("value"), "foobar", "Value retrieval on a button does not return innerHTML");
             Assert.AreEqual(jbutton.Attr("value", "baz").Html(), "text", "Setting the value does not change innerHTML");
 
@@ -380,16 +384,16 @@ namespace CsQuery.Tests.jQuery
 
 
             var jcheck = jQuery("<input />");
-            thrown = true;
+            thrown = false;
             try
             {
                 jcheck.Attr("type", "checkbox");
             }
             catch
             {
-                thrown = false;
+                thrown = true;
             }
-            Assert.IsTrue(thrown, "Exception thrown when trying to change type property");
+            Assert.IsFalse(thrown, "No exception thrown when trying to change type property");
             Assert.AreEqual("checkbox", jcheck.Attr("type"), "Verify that you can change the type of an input element that isn't in the DOM");
 
             var button = jQuery("#button");

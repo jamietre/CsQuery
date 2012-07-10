@@ -44,8 +44,8 @@ namespace CsQuery.Tests.Csharp.Utility
             scanner.ExpectNumber();
             Assert.AreEqual("1", scanner.Match, "Got correct number");
             
-            // skip the =
-            scanner.Next(2);
+            // skip the next 2 characters
+            scanner.Move(2);
 
             text = scanner.GetNumber();
             Assert.AreEqual("102.333", scanner.Match, "Got correct number");
@@ -62,7 +62,7 @@ namespace CsQuery.Tests.Csharp.Utility
             scanner.Undo();
             Assert.AreEqual("444", scanner.Match, "Undo returned correct data for current");
             scanner.Next();
-            Assert.AreEqual('t',scanner.NextChar,"In correct position");
+            Assert.AreEqual('t',scanner.Current,"In correct position");
             text = scanner.GetAlpha();
             Assert.AreEqual("theEnd", scanner.Match, "Backing up resulted in the previous match");
 
@@ -79,7 +79,7 @@ namespace CsQuery.Tests.Csharp.Utility
 
             Assert.Throws(typeof(ArgumentException), Del(() =>
             {
-                scanner.Expect(MatchFunctions.Quoted);
+                scanner.Expect(MatchFunctions.Quoted());
             }), "Bounds don't work with quoted value");
 
             scanner.Expect(MatchFunctions.BoundChar);
@@ -89,10 +89,10 @@ namespace CsQuery.Tests.Csharp.Utility
 
             scanner.ExpectChar('=');
 
-            text = scanner.Get(MatchFunctions.Quoted);
+            text = scanner.Get(MatchFunctions.Quoted());
 
             Assert.AreEqual("this is ' a quoted value", text, "Got first word");
-            Assert.AreEqual(scanner.NextChar, ']', "At right postiion");
+            Assert.AreEqual(scanner.Current, ']', "At right postiion");
 
 
         }
@@ -112,14 +112,14 @@ namespace CsQuery.Tests.Csharp.Utility
             text = innerScanner.Get(MatchFunctions.HTMLAttribute());
             Assert.AreEqual("attr-bute", text, "Got the attribute name");
             innerScanner.Expect("=");
-            text = innerScanner.Get(MatchFunctions.Quoted);
+            text = innerScanner.Get(MatchFunctions.Quoted());
             Assert.AreEqual(@"this ""is ' a quoted value", text, "Quotes were dequoted");
             Assert.IsTrue(innerScanner.Finished, "It's finished after we got the last text");
 
             scanner = @"<comment>How's complex bounding working?</comment> the end";
             text = scanner.GetBoundedBy("<comment>", "</comment>");
             Assert.AreEqual(@"How's complex bounding working?", text, "Complex bounding worked");
-            Assert.AreEqual(' ', scanner.NextChar, "At the right place");
+            Assert.AreEqual(' ', scanner.Current, "At the right place");
             
             Assert.IsTrue(scanner.ExpectAlpha().ExpectAlpha().Finished, "At the end");
 
@@ -161,7 +161,7 @@ namespace CsQuery.Tests.Csharp.Utility
             scanner = @"<comment>How's complex bounding working?</comment> the end";
             string text = scanner.GetBoundedBy("<comment>", "</comment>");
             Assert.AreEqual(@"How's complex bounding working?", text, "Complex bounding worked");
-            Assert.AreEqual(' ', scanner.NextChar, "At the right place");
+            Assert.AreEqual(' ', scanner.Current, "At the right place");
             Assert.IsTrue(scanner.ExpectAlpha().ExpectAlpha().Finished, "At the end");
 
             scanner = "some(complex(formula+2))";

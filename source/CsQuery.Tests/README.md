@@ -10,9 +10,11 @@ A test called `TestTests.cs` in the root will perform basic validation that test
 
 Every test should inherit from `CsQueryTest`. Test fixtures and tests should be marked with attributes for both Visual Studio and NUnit. Test setup and teardown methods should override `FixtureSetUp` and `FixtureTearDown` from the base class; this handles it for both frameworks.
 
+The class itself need only be marked with `TestClass`. This is because the `TestFixture` attribute for NUnite is inherited from CsQueryTest, but the Visual Studio framework does not honor inherited attributes, so you must still mark each class for Visual Studio.
+
 Example:
 
-    [TestFixture, TestClass]
+    [TestClass]
     public class MyNewTestClass: CsQueryTest {
         
         public override void FixtureSetUp()

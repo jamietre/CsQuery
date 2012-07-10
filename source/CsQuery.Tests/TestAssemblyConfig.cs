@@ -5,7 +5,7 @@ using System.Text;
 using NUnit.Framework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
-using CsQuery.Tests.Performance;
+using CsQuery.Tests._Performance;
 using CsQuery.Tests;
 using CsQuery.Utility;
 using System.Reflection;
@@ -26,10 +26,8 @@ namespace CsQuery.Tests
             {
                 solutionFolderTry = Support.GetFilePath("./CsQuery.Tests/");
             }
-            //CsQueryTest.SolutionDirectory = Support.GetFilePath("./" + SolutionFolderName + "/");
-            CsQueryTest.SolutionDirectory = Support.CleanFilePath(solutionFolderTry+"/../");
-            PerformanceTest.SetupTestRun();
 
+            CsQueryTest.SolutionDirectory = Support.CleanFilePath(solutionFolderTry+"/../");
         }
         
         [TearDown]

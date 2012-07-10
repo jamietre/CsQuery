@@ -26,6 +26,15 @@ namespace CsQuery.Implementation
         {
             get { return NodeType.DOCUMENT_TYPE_NODE; }
         }
+        
+        public override string NodeName
+        {
+            get
+            {
+                return "DOCTYPE";
+            }
+        }
+
         public DocType DocType
         {
             get

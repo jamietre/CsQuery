@@ -28,7 +28,8 @@ namespace CsQuery.Web
         protected ManualResetEvent allDone = new ManualResetEvent(false);
         protected StringBuilder HtmlStringbuilder { get; set; }
         protected Stream ResponseStream { get; set; }
-        
+        private WebException _WebException;
+
         #endregion
 
 
@@ -68,6 +69,7 @@ namespace CsQuery.Web
             get;
             set;
         }
+        
 
         /// <summary>
         /// Get or set the user agent string used when the request is made
@@ -125,8 +127,15 @@ namespace CsQuery.Web
         /// </summary>
         public WebException WebException
         {
-            get;
-            protected set;
+            get
+            {
+                return _WebException;
+            }
+            protected set
+            {
+                _WebException = value;
+                Response = (HttpWebResponse)value.Response;
+            }
         }
 
         public WebRequest Request
@@ -134,7 +143,60 @@ namespace CsQuery.Web
             get;
             set;
         }
-       
+
+        public string Error
+        {
+            get
+            {
+                if (WebException == null)
+                {
+                    return "";
+                }
+                else
+                {
+                    return WebException.Message;
+                }
+            }
+        }
+
+        public int HttpStatus
+        {
+            get
+            {
+                
+                if (Response == null)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return (int)Response.StatusCode;
+                }
+            }
+        }
+
+        public string HttpStatusDescription
+        {
+            get
+            {
+                if (Response == null)
+                {
+                    return "";
+                }
+                else
+                {
+                    return Response.StatusDescription;
+                }
+            }
+        }
+
+        public HttpWebResponse Response
+        {
+            get;
+            protected set;
+
+
+        }
         /// <summary>
         /// Return the Html response from the request
         /// </summary>
@@ -194,6 +256,8 @@ namespace CsQuery.Web
                new AsyncCallback(RespCallback), rs);
             return allDone;
         }
+
+        
         #endregion
 
         #region private methods
@@ -209,14 +273,14 @@ namespace CsQuery.Web
             req.Timeout = Timeout;
             req.Headers["UserAgent"] = UserAgent;
 
-            WebResponse resp;
+            
             try
             {
                
 
                 // Call EndGetResponse, which produces the WebResponse object
                 //  that came from the request issued above.
-                resp = req.EndGetResponse(ar);
+                Response = (HttpWebResponse)req.EndGetResponse(ar);
 
             }
             catch (WebException e)
@@ -234,7 +298,7 @@ namespace CsQuery.Web
             }
 
             //  Start reading data from the response stream.
-            Stream ResponseStream = resp.GetResponseStream();
+            Stream ResponseStream = Response.GetResponseStream();
 
             // Store the response stream in RequestState to read 
             // the stream asynchronously.

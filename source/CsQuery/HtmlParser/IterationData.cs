@@ -130,7 +130,7 @@ namespace CsQuery.HtmlParser
 
             if (factory.IsBound)
             {
-                lit.SetTextIndex(factory.Document, factory.Document.TokenizeString(HtmlStart, Pos - HtmlStart));
+                lit.SetTextIndex(factory.Document, factory.Document.DocumentIndex.TokenizeString(HtmlStart, Pos - HtmlStart));
             }
             else
             {

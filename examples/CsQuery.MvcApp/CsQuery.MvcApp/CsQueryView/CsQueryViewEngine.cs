@@ -6,6 +6,9 @@ using System.Web.Mvc;
 
 namespace CsQuery.Mvc
 {
+    /// <summary>
+    /// Custom implementation of RazorViewEngine to support CsQuery processing
+    /// </summary>
     public class CsQueryViewEngine : RazorViewEngine
     {
         protected override IView CreatePartialView(ControllerContext controllerContext, string partialPath)

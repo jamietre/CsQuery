@@ -6,16 +6,20 @@ using CsQuery.StringScanner.Implementation;
 
 namespace CsQuery.StringScanner.Patterns
 {
-    
+    /// <summary>
+    /// A pattern that expects a quoted string. Allows any characters inside the quoted text,
+    /// including backslashed escape characters, and terminates upon a matching closing quote.
+    /// </summary>
+
     public class Quoted: ExpectPattern
     {
-
-
+        /// <summary>
+        /// The quote character that was used to open the string.
+        /// </summary>
+        
         char quoteChar;
-        public override void Initialize(int startIndex, char[] sourceText)
-        {
-            base.Initialize(startIndex, sourceText);
-        }
+
+
         public override bool Validate()
         {
             int index = StartIndex;

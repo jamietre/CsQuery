@@ -68,6 +68,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="CsQueryView\CsQueryController.cs" />
+    <Compile Include="CsQueryView\ICsQueryController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -148,6 +149,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Controllers\Shared\" />
+    <Folder Include="Controllers\Sub\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

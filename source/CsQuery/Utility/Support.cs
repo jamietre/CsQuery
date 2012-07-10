@@ -66,14 +66,23 @@ namespace CsQuery.Utility
         }
 
         /// <summary>
-        /// Given a relative path, locates a file in the parent heirarchy by matching parts of the path
+        /// Given a rooted path to look within, and a partial path to a file, the full path to the file.
         /// </summary>
-        /// <param name="text"></param>
-        /// <param name="match"></param>
-        /// <returns></returns>
-        public static string FindPathTo(string currentRootedPath, string find)
+        ///
+        /// <param name="sourcePath">
+        /// The rooted path to match within
+        /// </param>
+        /// <param name="find">
+        /// The path/filename to find
+        /// </param>
+        ///
+        /// <returns>
+        /// The full rooted path the the file
+        /// </returns>
+
+        public static string FindPathTo(string sourcePath, string find)
         {
-            List<string> rootedPath = new List<string>(currentRootedPath.ToLower().Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries));
+            List<string> rootedPath = new List<string>(sourcePath.ToLower().Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries));
             List<string> findPath = new List<string>(find.ToLower().Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries));
 
             int start = rootedPath.IndexOf(findPath[0]);
@@ -95,6 +104,17 @@ namespace CsQuery.Utility
             }
         }
 
+        /// <summary>
+        /// Gets the first assembly that is not the assembly that this method belongs to
+        /// </summary>
+        ///
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the requested operation is invalid.
+        /// </exception>
+        ///
+        /// <returns>
+        /// The first external assembly.
+        /// </returns>
 
         public static Assembly GetFirstExternalAssembly()
         {
@@ -207,25 +227,91 @@ namespace CsQuery.Utility
         }
 
         /// <summary>
-        /// Get a fully qualified namespaced path to a member
+        /// Get a fully qualified namespaced path to a member.
         /// </summary>
-        /// <param name="mi"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="type">
+        /// The type to inspect.
+        /// </param>
+        /// <param name="memberName">
+        /// Name of the member.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string
+        /// </returns>
+
+
         public static string MethodPath(Type type, string memberName)
         {
             return TypePath(type) + "." + memberName;
         }
+
         /// <summary>
-        /// Get a fully qualified namespaced path to a type
+        /// Get a fully qualified namespaced path to a type, e.g. "CsQuery.Utility.Support.TypePath"
         /// </summary>
-        /// <param name="mi"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="type">
+        /// The type to inspect
+        /// </param>
+        ///
+        /// <returns>
+        /// A string
+        /// </returns>
+
         public static string TypePath(Type type)
         {
             return type.Namespace + "." + type.Name;
         }
 
+        /// <summary>
+        /// Conver a stream to a character array.
+        /// </summary>
+        ///
+        /// <param name="stream">
+        /// The stream.
+        /// </param>
+        ///
+        /// <returns>
+        /// A character array.
+        /// </returns>
 
+        public static char[] StreamToCharArray(Stream stream)
+        {
+            StreamReader reader = new StreamReader(stream);
+
+            long len = stream.Length;
+
+            if (len > 0 && len < int.MaxValue)
+            {
+                char[] arr = new char[stream.Length];
+                reader.Read(arr, 0, Convert.ToInt32(len));
+                return arr;
+            }
+            else
+            {
+                return reader.ReadToEnd().ToCharArray();
+            }
+        }
+
+        /// <summary>
+        /// Convert a string to a char array, if not null.
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// The string.
+        /// </param>
+        ///
+        /// <returns>
+        /// The converted string, or null
+        /// </returns>
+
+        public static char[] StringToCharArray(string html)
+        {
+            return String.IsNullOrEmpty(html) ?
+                null :
+                html.ToCharArray();
+        }
     }
 
 

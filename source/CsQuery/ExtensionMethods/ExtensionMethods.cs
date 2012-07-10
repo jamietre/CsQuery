@@ -20,17 +20,7 @@ namespace CsQuery.ExtensionMethods
     /// </summary>
     public static class ExtensionMethods
     {
-        #region IEnumerable<T> extension methods
-
-        public static void AddRange<T>(this ICollection<T> baseList, IEnumerable<T> list)
-        {
-            foreach (T obj in list)
-            {
-                baseList.Add(obj);
-            }
-        }
-
-        #endregion
+       
 
         #region string extension methods
         
@@ -84,48 +74,25 @@ namespace CsQuery.ExtensionMethods
         #endregion
 
         /// <summary>
-        /// (Alpha) Clone a sequence of objects.
+        /// Clone a sequence of elements to a new sequence
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public static IEnumerable CloneList(this IEnumerable obj)
+        ///
+        /// <param name="source">
+        /// The source sequence
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence containing a clone of each element in the source.
+        /// </returns>
+
+        public static IEnumerable<IDomObject> Clone(this IEnumerable<IDomObject> source)
         {
-            return obj.CloneList(false);
-        }
-        /// <summary>
-        /// (Alpha) Deep clone a sequence of objects.
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="deep"></param>
-        /// <returns></returns>
-        public static IEnumerable CloneList(this IEnumerable obj, bool deep)
-        {
-            IEnumerable newList;
-            // TODO - check for existence of a "clone" method
-            //if (obj.GetType().IsArray)
-            //{
-            //    return (IEnumerable)((Array)obj).Clone();
-            //} 
-            if (Objects.IsExpando(obj))
+            foreach (IDomObject item in source)
             {
-                newList = new JsObject();
-                var newListDict = (IDictionary<string, object>)newList;
-                foreach (var kvp in ((IDictionary<string, object>)obj))
-                {
-                    newListDict.Add(kvp.Key, deep ? Objects.CloneObject(kvp.Value,true) : kvp.Value);
-                }
+                yield return item.Clone();
             }
-            else
-            {
-                newList = new List<object>();
-                foreach (var item in obj)
-                {
-                    ((List<object>)newList).Add(deep ? Objects.CloneObject(item, true) : item);
-                }
-            }
-            return newList;
+
         }
-        
         /// <summary>
         /// Serailize the object to a JSON string
         /// </summary>
@@ -162,18 +129,19 @@ namespace CsQuery.ExtensionMethods
         /// <param name="obj"></param>
         /// <param name="propertyName"></param>
         /// <returns></returns>
-        public static bool HasProperty(this ExpandoObject obj, string propertyName)
+        public static bool HasProperty(this DynamicObject obj, string propertyName)
         {
             return ((IDictionary<string, object>)obj).ContainsKey(propertyName);
         }
+
         /// <summary>
-        /// Return a yped value from an ExpandoObject
+        /// Return a typed value from a dynamic object
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static T Get<T>(this ExpandoObject obj, string name)
+        public static T Get<T>(this DynamicObject obj, string name)
         {
             if (obj == null)
             {
@@ -189,6 +157,79 @@ namespace CsQuery.ExtensionMethods
             {
                 return default(T);
             }
+        }
+
+        /// <summary>
+        /// Reduce the set of matched elements to a subset beginning with the 0-based index provided.
+        /// </summary>
+        ///
+        /// <param name="array">
+        /// The array to act on.
+        /// </param>
+        /// <param name="start">
+        /// The 0-based index at which to begin selecting.
+        /// </param>
+        /// <param name="end">
+        /// The 0-based index of the element at which to stop selecting. The actual element at this
+        /// position is not included in the result.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new array of the same type as the original.
+        /// </returns>
+
+        public static Array Slice(this Array array, int start, int end)
+        {
+            // handle negative values
+
+            if (start < 0)
+            {
+                start = array.Length + start;
+                if (start < 0) { start = 0; }
+            }
+            if (end < 0)
+            {
+                end = array.Length + end;
+                if (end < 0) { end = 0; }
+            }
+            if (end >= array.Length)
+            {
+                end = array.Length;
+            }
+
+
+            int length = end - start;
+
+            Type arrayType = array.GetType().GetElementType();
+            Array output =  Array.CreateInstance(arrayType,length);
+
+            int newIndex = 0;
+            for (int i=start;i<end;i++) {
+                output.SetValue(array.GetValue(i), newIndex++);
+            }
+
+            return output;
+        
+        }
+
+        /// <summary>
+        /// Reduce the set of matched elements to a subset beginning with the 0-based index provided.
+        /// </summary>
+        ///
+        /// <param name="array">
+        /// The array to act on.
+        /// </param>
+        /// <param name="start">
+        /// The 0-based index at which to begin selecting.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new array of the same type as the original.
+        /// </returns>
+
+        public static Array Slice(this Array array, int start)
+        {
+            return Slice(array, start, array.Length);
         }
     }
     

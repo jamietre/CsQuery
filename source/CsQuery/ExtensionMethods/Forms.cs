@@ -92,7 +92,7 @@ namespace CsQuery.ExtensionMethods.Forms
         public static CQ RestorePost(this CQ selection, NameValueCollection postData)
         {
             string selector = "input[name], select[name], button[name], textarea";
-            CQ src = selection.Selectors == null ?
+            CQ src = selection.Selector == null ?
                 selection.Select(selector) :
                 selection.Find(selector);
 
@@ -102,11 +102,6 @@ namespace CsQuery.ExtensionMethods.Forms
                 if (keys.Contains(e.Name))
                 {
                     RestoreData(e, selection, postData[e.Name]);
-                }
-                else
-                {
-                    // when there is a form field that has no submitted value, then reset it to default
-                    RestoreData(e,selection, null);
                 }
             }
             return selection;

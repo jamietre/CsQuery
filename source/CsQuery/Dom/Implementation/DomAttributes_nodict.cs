@@ -12,7 +12,7 @@ using CsQuery.Utility;
 namespace CsQuery.Implementation
 {
     /// <summary>
-    /// Not included in the project - experiment to see how DOM perofrmance is affected by implementing the dictionary differently
+    /// Not included in the project - experiment to see how DOM performance is affected by implementing the dictionary differently
     /// </summary>
     public class DomAttributes : IDictionary<string, string>, IEnumerable<KeyValuePair<string, string>>
     {

@@ -12,9 +12,7 @@ namespace CsQuery.Engine
         Tag = 2,
         ID = 4,
         Class = 8,
-        AttributeExists = 16,
         AttributeValue = 32,
-        Contains = 64,
         PseudoClass = 128,
         Elements = 256,
         HTML = 512,
@@ -59,19 +57,25 @@ namespace CsQuery.Engine
     public enum PseudoClassType
     {
         All = 1,
-        Even = 2, // jquery
-        Odd = 3, // jquery
-        First = 4, // jquery
-        Last = 5, // jquery
-        IndexEquals = 6, // jquery
-        IndexLessThan = 7, // jquery
-        IndexGreaterThan = 8, // jquery
-        Parent = 9, // jquery
-        Visible = 10, // jquery
-        Hidden = 11, // jquery
-        Header = 12, // jquery
-        Has = 13, // jquery
-        Not = 14, // jquery
+
+        // jQuery pseudoclass selectors
+        // 
+        Even = 2, 
+        Odd = 3,
+        First = 4,
+        Last = 5,
+        IndexEquals = 6,
+        IndexLessThan = 7,
+        IndexGreaterThan = 8,
+        Parent = 9,
+        Visible = 10,
+        Hidden = 11,
+        Header = 12,
+        Has = 13,
+        Not = 14, 
+        
+        // CSS pseudoclass selectors
+        
         FirstChild = 20,
         LastChild = 21,
         NthChild = 22,

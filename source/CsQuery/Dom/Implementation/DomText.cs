@@ -46,6 +46,7 @@ namespace CsQuery.Implementation
         }
 
         protected IDomDocument stringRef = null;
+
         protected string unboundText=null;
         
         public override string NodeValue
@@ -53,7 +54,7 @@ namespace CsQuery.Implementation
             get
             {
                 return textIndex >= 0 ?
-                    HtmlData.HtmlDecode(stringRef.GetTokenizedString(textIndex))
+                    HtmlData.HtmlDecode(stringRef.DocumentIndex.GetTokenizedString(textIndex))
                         : unboundText;
             }
             set

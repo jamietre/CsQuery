@@ -6,22 +6,66 @@ using System.Text;
 namespace CsQuery.StringScanner
 {
     /// <summary>
-    /// An interface for pattern matching. For each character, Expect will be called until it returns false.
-    /// Validate will be called with the resulting string, and should return true or false to valide the entire pattern.
-    /// Initialize allows setting up/capturing global data about the string in case other info is eneded
+    /// An interface for pattern matching.
+    /// 
+    /// Something implementing this interface will be used as follows:
+    /// 
+    /// First, Initialize is called, passing in the source and the starting index where scanning
+    /// should begin.
+    /// 
+    /// The Validate function then scans the string, and returns true if a valid match is found, and
+    /// false if not.
+    /// 
+    /// The Result property should be populated by the function with the matching string, and the
+    /// EndIndex property should be populated with the last position scanned (one after the last
+    /// valid character that was returned). If no valid string was matched, EndIndex should equal the
+    /// original StartIndex.
     /// </summary>
+
     public interface IExpectPattern
     {
-        void Initialize(int startIndex, char[] source);
         /// <summary>
-        /// Should return the next position (typically int++) or -1 if matching is complete
+        /// Initializes the pattern
         /// </summary>
-        /// <param name="index"></param>
-        /// <param name="current"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="startIndex">
+        /// The start index.
+        /// </param>
+        /// <param name="source">
+        /// Source for the.
+        /// </param>
+
+        void Initialize(int startIndex, char[] source);
+
+        /// <summary>
+        /// Validate the string and try to match something.
+        /// </summary>
+        ///
+        /// <returns>
+        /// true if a matching string was found, false if not.
+        /// </returns>
 
         bool Validate();
+
+        /// <summary>
+        /// When a valid string was found, the string.
+        /// </summary>
+        ///
+        /// <value>
+        /// A string.
+        /// </value>
+
         string Result { get; }
+
+        /// <summary>
+        /// Gets zero-based index of the ending postion. This is one position after the last matching
+        /// character.
+        /// </summary>
+        ///
+        /// <value>
+        /// The end index.
+        /// </value>
+
         int EndIndex { get; }
     }
 }

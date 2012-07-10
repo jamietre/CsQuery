@@ -2,6 +2,25 @@
 
 This is an informal log of changes to the project; major issues will be logged and described on github.
 
+#####7/9/2012
+
+- Refactored pseudoclass selector engine into a type dictionary to permit user defined classes
+- Add "CsQuery.Config" static class to centralize configuration
+
+#####7/2/2012
+
+- Extensive updates to XML documentation covering most common API methods
+- Added Each overloads that can be exited by returning false from the delegate
+- Fixed return values for InsertAfter(multiple) and InsertBefore(multiple) - should return the elements that were inserted, not the original object
+- Changed name of "Selectors" object to "Selector" (this was a mistake)
+- Split the part of the IDomDocument API related only to indexing into a separate interface; these methods should not be exposed to end-users.
+
+#####6/30/2012
+
+- Move default server config settings to ServerConfig.Default, decoupling it from the CQ object
+- Fix handling of settings (they weren't being applied)
+- Add more properties to web response
+
 #####6/28/2012
 
 - Fix & test Slice method

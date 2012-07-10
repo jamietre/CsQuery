@@ -74,7 +74,7 @@ namespace CsQuery.Implementation
         /// Create a clone of this CSSStyleDeclaration object bound to the owner passed
         /// </summary>
         /// <param name="owner"></param>
-        /// <returns></returns>
+        /// <returns>CSSStyleDeclaration</returns>
         public CSSStyleDeclaration Clone(DomElement owner)
         {
             CSSStyleDeclaration clone = new CSSStyleDeclaration(owner);
@@ -319,7 +319,7 @@ namespace CsQuery.Implementation
 
         public void SetStyle(string name, string value, bool strict)
         {
-            name = ParseCamelCase(name);
+            name = Objects.FromCamelCase(name);
             if (value == null)
             {
                 Remove(name);
@@ -453,7 +453,7 @@ namespace CsQuery.Implementation
         {
             if (!Owner.IsDisconnected)
             {
-                Owner.Document.AddToIndex(Owner.AttributeIndexKey(HtmlData.tagSTYLE), Owner);
+                Owner.Document.DocumentIndex.AddToIndex(Owner.AttributeIndexKey(HtmlData.tagSTYLE), Owner);
             }
         }
 
@@ -461,7 +461,7 @@ namespace CsQuery.Implementation
         {
             if (!Owner.IsDisconnected)
             {
-                Owner.Document.RemoveFromIndex(Owner.AttributeIndexKey(HtmlData.tagSTYLE));
+                Owner.Document.DocumentIndex.RemoveFromIndex(Owner.AttributeIndexKey(HtmlData.tagSTYLE));
             }
         }
 
@@ -542,26 +542,7 @@ namespace CsQuery.Implementation
             }
             yield break;
         }
-        /// <summary>
-        /// Convert camelcased CSS attributes to correct value
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        protected string ParseCamelCase(string name)
-        {
-            int pos = 0;
-            while (pos < name.Length)
-            {
-                if (name[pos] >= 'A' && name[pos] <= 'Z')
-                {
-                    name = name.Substring(0, pos) + "-" + name.Substring(pos, 1).ToLower() + name.Substring(pos + 1);
-                    pos++;
-                }
-                pos++;
-            }
-            return name;
-
-        }
+       
         
         #endregion
 

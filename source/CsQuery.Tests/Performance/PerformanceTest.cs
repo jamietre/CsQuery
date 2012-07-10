@@ -18,12 +18,17 @@ using System.Diagnostics;
 using CsQuery.EquationParser;
 using CsQuery.Tests;
 
-namespace CsQuery.Tests.Performance
+// namespace: CsQuery.Tests._Performance
+//
+// summary:	Underscored to keep this test (which you won't want to run very often) at the top of lists..
+
+namespace CsQuery.Tests._Performance
 {
     [TestClass]
     public abstract class PerformanceTest : CsQueryTest
     {
-        public static bool IsPerformanceTest = false;
+        private static bool IsPerformanceTest = false;
+        private static bool isHeaderWritten = false;
 
         private static string OutputPrefix = "perftest_";
         private static string OutputPrefixCsv = "perftest_";
@@ -31,12 +36,12 @@ namespace CsQuery.Tests.Performance
         private static string OutputFileNameCsv;
         private static string OutputFolder;
 
-        private static bool isHeaderWritten = false;
+       
 
  
         public static void SetupTestRun()
         {
-            IsPerformanceTest = false;
+
             CsQuery.HtmlParser.HtmlData.Touch();
             OutputFolder = CsQueryTest.TestProjectDirectory + "\\performance\\output\\";
             if (!Directory.Exists(OutputFolder))
@@ -59,8 +64,6 @@ namespace CsQuery.Tests.Performance
             OutputFileName = OutputFolder + OutputPrefix + dateStamp + ".txt";
             OutputFileNameCsv = OutputFolder + OutputPrefixCsv + dateStamp + ".csv";
 
-
-            OutputHeaders();
             Debug.WriteLine("");
         }
 
@@ -101,8 +104,13 @@ namespace CsQuery.Tests.Performance
         {
             base.FixtureSetUp();
 
-            IsPerformanceTest = true;
+            if (!IsPerformanceTest)
+            {
+                SetupTestRun();
+                IsPerformanceTest = true;
+            }
 
+        
             PerfCompare = new PerfCompare();
             PerfCompare.MaxTestTime = TimeSpan.FromSeconds(5);
         }
@@ -113,18 +121,17 @@ namespace CsQuery.Tests.Performance
 
         public static void Output(PerfComparison comp)
         {
-            OutputToFile(OutputFileName, comp.ToString());
-            OutputLineToFile(OutputFileName);
-            OutputLineToFile(OutputFileName);
-
-            // csv
 
             if (!isHeaderWritten)
             {
-                isHeaderWritten = true;
                 OutputHeaders();
                 OutputHeadersCsv(comp.Data.Count);
+                isHeaderWritten = true;
             }
+
+            OutputToFile(OutputFileName, comp.ToString());
+            OutputLineToFile(OutputFileName);
+            OutputLineToFile(OutputFileName);
 
             string line = qu + comp.TestName + qu + ","
                 + qu + comp.Context + qu + ","

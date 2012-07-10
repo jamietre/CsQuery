@@ -158,6 +158,41 @@ namespace CsQuery.Tests.Csharp.Attributes
             Assert.AreEqual(null,el.Attributes["test"]);
         }
 
+        /// <summary>
+        /// Attributes can be: boolean and render just as 'checked';
+        /// Have an empty string value and render as 'checked=""'
+        /// Be missing (and not render) but return null from GetAttribute
+        /// 
+        /// When an attribute is set to "" or is set using "SetAttribute" it will always return "", but could
+        /// render as just a property or as an empty string.
+        /// 
+        /// </summary>
+
+        [Test, TestMethod]
+        public void Boolean()
+        {
+            var el = CQ.CreateFragment("<div>")[0];
+            el.SetAttribute("test");
+            Assert.AreEqual("<div test></div>",el.Render());
+            Assert.AreEqual("",el.GetAttribute("test"));
+
+            el.SetAttribute("test","someValue");
+            Assert.AreEqual("<div test=\"someValue\"></div>",el.Render());
+
+            el.SetAttribute("test", "");
+            Assert.AreEqual("<div test=\"\"></div>", el.Render());
+            
+            el.SetAttribute("test", null);
+            Assert.AreEqual("<div></div>", el.Render());
+            Assert.AreEqual(null,el.GetAttribute("test"));
+
+            el.SetAttribute("test");
+            el.RemoveAttribute("test");
+            Assert.AreEqual(null, el.GetAttribute("test"));
+
+        }
+
+        #region test configuration
 
         [SetUp]
         public override void FixtureSetUp()
@@ -169,7 +204,7 @@ namespace CsQuery.Tests.Csharp.Attributes
         {
             Dom = TestDom("TestHtml");
         }
-
+        #endregion
 
         protected class StylesClass
         {

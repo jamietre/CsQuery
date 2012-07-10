@@ -20,33 +20,60 @@ using CsQuery.Utility;
 namespace CsQuery
 {
     /// <summary>
-    /// Document is an IDomDocument object, referred to sometimes as the "DOM", and represents the DOM that this 
-    /// CsQuery objects applies to. When CQ methods are run, the resulting CQ object will refer to the same 
-    /// Document as the original. Selectors always run against this DOM. 
+    /// The CQ object is analogus to the basic jQuery object. It has instance methods that mirror the
+    /// methods of a jQuery object, and static methods that mirror utility methods such as "$.map".
     /// 
-    /// Creating a CQ object from something that is not bound to a DOM (such as an HTML string, or an unbound
-    /// IDomObject or IDomElement object) will result in a new Document being created, that is unrelated to any
-    /// other active objects you may have. Adding unbound elements using methods such as Append will cause them
-    /// to become part of the target DOM. They will be removed from whatever DOM they previously belonged to.
-    /// (Elements cannot be part of more than one DOM). If you don't want to remove something while adding to
-    /// a CQ object from a different DOM, then you should clone the elements.
-    /// 
-    /// Selection is a set of DOM nodes matching the selector. 
-    /// 
-    /// Elements is a set of IDomElement nodes matching the selector. This is a subset of Selection - it 
-    /// excludes non-Element nodes.
-    /// 
-    /// The static Create() methods create new DOMs. To create a CsQuery object based on an existing dom, 
-    /// use new CQ() (similar to jQuery() methods).
+    /// Most methods return a new jQuery object that is bound to the same document, but a different
+    /// selection set. In a web browser, you genally only have a single context (the browser DOM).
+    /// Here, you could have many, though most of the time you will only be working with one.
     /// </summary>
-    
+    ///
+    /// <remarks>
+    /// Document is an IDomDocument object, referred to sometimes as the "DOM", and represents the
+    /// DOM that this CsQuery objects applies to. When CQ methods are run, the resulting CQ object
+    /// will refer to the same Document as the original. Selectors always run against this DOM.
+    /// 
+    /// Creating a CQ object from something that is not bound to a DOM (such as an HTML string, or an
+    /// unbound IDomObject or IDomElement object) will result in a new Document being created, that
+    /// is unrelated to any other active objects you may have. Adding unbound elements using methods
+    /// such as Append will cause them to become part of the target DOM. They will be removed from
+    /// whatever DOM they previously belonged to. (Elements cannot be part of more than one DOM). If
+    /// you don't want to remove something while adding to a CQ object from a different DOM, then you
+    /// should clone the elements.
+    /// 
+    /// Selection is a set of DOM nodes matching the selector.
+    /// 
+    /// Elements is a set of IDomElement nodes matching the selector. This is a subset of Selection -
+    /// it excludes non-Element nodes.
+    /// 
+    /// The static Create() methods create new DOMs. To create a CsQuery object based on an existing
+    /// dom, use new CQ() (similar to jQuery() methods).
+    /// </remarks>
+    ///
+    /// <implementation>
+    /// Most of the jQuery methods are implemented in separate files under the "CQ_jQuery" folder. 
+    /// Methods which are not part of the jQuery API are found under the "CQ_CsQuery" folder.
+    /// </implementation>
+
     public partial class CQ : IEnumerable<IDomObject>
     {
+        #region private properties
+
+        private Selector _Selector;
+        private IDomDocument _Document;
+
+        #endregion
+
         #region public properties
 
         /// <summary>
-        /// The number of elements in the CsQuery object
+        /// The number of elements in the CQ object.
         /// </summary>
+        ///
+        /// <url>
+        /// http://api.jquery.com/length/
+        /// </url>
+
         public int Length
         {
             get
@@ -55,2501 +82,622 @@ namespace CsQuery
             }
         }
 
+        /// <summary>
+        /// Represents the full, parsed DOM for an object created with an HTML parameter. The Document is
+        /// the equivalent of the "document" in a browser. The Document node for a complete HTML document
+        /// should have only two children, the DocType node and the HTML node.
+        /// </summary>
+        ///
+        /// <value>
+        /// Returns the Document for this CQ object. This can also be an IDomFragment type, which is a
+        /// derived type of IDomDocument. This is mostly a useful distinction to determine
+        /// programatically how the CQ object was created and whether it's intended to represent a
+        /// complete HTML document, or only a partial fragment.
+        /// </value>
+
+        public IDomDocument Document
+        {
+            get
+            {
+                if (_Document == null)
+                {
+                    CreateNewFragment();
+                }
+                return _Document;
+            }
+            protected set
+            {
+                _Document = value;
+            }
+        }
+
+        /// <summary>
+        /// The selector (parsed) used to create this instance.
+        /// </summary>
+        ///
+        /// <remarks>
+        /// This is not guaranteed to have useful data, since CQ objects can be created indirectly and
+        /// not represent a selector. If this object was created directly from a selector, this will
+        /// contain the Selector object. The ToString() overload will show how the selector was parsed.
+        /// </remarks>
+
+        public Selector Selector
+        {
+            get
+            {
+                return _Selector;
+            }
+            protected set
+            {
+                _Selector = value;
+            }
+        }
+
+        /// <summary>
+        /// The entire selection set as a sequence of elements. This is the default enumerator for a CQ
+        /// object as well.
+        /// </summary>
+
+        public IEnumerable<IDomObject> Selection
+        {
+            get
+            {
+                return SelectionSet;
+            }
+        }
+
+        /// <summary>
+        /// Returns only IDomElement objects from the current selection.
+        /// </summary>
+
+        public IEnumerable<IDomElement> Elements
+        {
+            get
+            {
+                return OnlyElements(SelectionSet);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the order in which the selection set is returned. Usually, this is the order
+        /// that elements appear in the DOM. Some operations could result in a selection set that's in an
+        /// arbitrary order, though.
+        /// </summary>
+
+        public SelectionSetOrder Order
+        {
+            get
+            {
+                return SelectionSet.OutputOrder;
+            }
+            set
+            {
+                SelectionSet.OutputOrder= value;
+            }
+        }
+
         #endregion
 
         #region public methods
 
-        /// <summary>
-        /// Add the previous set of elements on the stack to the current set.
-        /// </summary>
-        /// <returns></returns>
-        public CQ AndSelf()
+        public override string ToString()
         {
-            var csq = new CQ(this);
-            csq.Order = SelectionSetOrder.Ascending;
-            
-            if (CsQueryParent == null)
+            return SelectionHtml();
+        }
+
+        #endregion
+
+        #region interface members
+
+        public IEnumerator<IDomObject> GetEnumerator()
+        {
+            return SelectionSet.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return SelectionSet.GetEnumerator();
+        }
+
+        #endregion
+
+        #region private properties
+
+        private CQ _CsQueryParent;
+        private SelectionSet<IDomObject> _Selection;
+
+        /// <summary>
+        /// The object from which this CsQuery was created.
+        /// </summary>
+
+        protected CQ CsQueryParent
+        {
+            get
             {
-                return csq;
-            }
-            else
-            {
-                csq.SelectionSet.AddRange(CsQueryParent.SelectionSet);
-                return csq;
-            }
-        }
 
-        /// <summary>
-        /// End the most recent filtering operation in the current chain and return the set of matched elements 
-        /// to its previous state
-        /// </summary>
-        /// <returns></returns>
-        public CQ End()
-        {
-            return CsQueryParent ?? New();
-        }
-
-        /// <summary>
-        /// Return the active selection set
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<IDomObject> Get()
-        {
-            return SelectionSet;
-        }
-
-        /// <summary>
-        /// Return a specific element from the selection set
-        /// </summary>
-        /// <param name="index">The zero-based index of the element to be returned</param>
-        /// <returns></returns>
-        public IDomObject Get(int index)
-        {
-            int effectiveIndex = index < 0 ? SelectionSet.Count+index-1 : index;
-            return effectiveIndex >= 0 && effectiveIndex < SelectionSet.Count ?
-                SelectionSet.ElementAt(effectiveIndex) :
-                null;
-        }
-
-        /// <summary>
-        /// Remove all child nodes of the set of matched elements from the DOM.
-        /// </summary>
-        /// <returns></returns>
-        public CQ Empty()
-        {
-            
-            return Each((IDomObject e) => {
-                if (e.HasChildren)
                 {
-                    e.ChildNodes.Clear();
-                }
-            });
-        }
-
-        /// <summary>
-        /// Set the HTML contents of each element in the set of matched elements. 
-        /// Any elements without InnerHtml are ignored.
-        /// </summary>
-        /// <param name="html"></param>
-        /// <returns></returns>
-        public CQ Html(params string[] html)
-        {
-            CQ htmlElements = EnsureCsQuery(mergeContent(html));
-            bool first = true;
-
-            foreach (DomElement obj in onlyElements(SelectionSet))
-            {
-                if (obj.InnerHtmlAllowed)
-                {
-                    obj.ChildNodes.Clear();
-                    obj.ChildNodes.AddRange(first ? htmlElements : htmlElements.Clone());
-                    first = false;
+                    return _CsQueryParent;
                 }
             }
-            return this;
-        }
-
-        /// <summary>
-        /// Get the HTML contents of the first element in the set of matched elements.
-        /// </summary>
-        /// <returns></returns>
-        public string Html()
-        {
-            return Length > 0 ? this[0].InnerHTML : String.Empty;
-        }
-
-        /// <summary>
-        /// Selects all elements that do not match the given selector.
-        /// </summary>
-        /// <param name="selector">A CSS selector</param>
-        /// <returns>A new CQ object</returns>
-        public CQ Not(string selector)
-        {
-            var notSelector = new Selector(selector);
-            return new CQ(notSelector.Except(Document, SelectionSet));
-        }
-
-        /// <summary>
-        /// Selects all elements that do not match the given selector.
-        /// </summary>
-        /// <param name="selector">A CSS selector</param>
-        /// <returns>A new CQ object</returns>
-        public CQ Not(IDomObject element)
-        {
-            return Not(Objects.Enumerate(element));
-        }
-
-        /// <summary>
-        /// Selects all elements that do not match the given selector.
-        /// </summary>
-        /// <param name="selector">A CSS selector</param>
-        /// <returns>A new CQ object</returns>
-        public CQ Not(IEnumerable<IDomObject> elements)
-        {
-            CQ csq = new CQ(SelectionSet);
-            csq.SelectionSet.ExceptWith(elements);
-            csq.Selectors = Selectors;
-            return csq;
-        }
-
-        /// <summary>
-        /// Reduce the set of matched elements to those that have a descendant that matches the selector or DOM element.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ Has(string selector)
-        {
-            var csq = New();
-
-            foreach (IDomObject obj in SelectionSet)
+            set
             {
-                if (Select(obj).Find(selector).Length > 0)
+                _CsQueryParent = value;
+                if (value != null)
                 {
-                    csq.SelectionSet.Add(obj);
-                }
-            }
-            return csq;
-        }
-
-        /// <summary>
-        /// Reduce the set of matched elements to those that have a descendant that matches the selector or DOM element.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ Has(IDomObject element)
-        {
-            return Has(Objects.Enumerate(element));
-        }
-
-        /// <summary>
-        /// Reduce the set of matched elements to those that have a descendant that matches the selector or DOM element.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ Has(IEnumerable<IDomObject> elements)
-        {
-            var csq = New();
-            foreach (IDomObject obj in SelectionSet)
-            {
-                if (obj.Cq().Find(elements).Length > 0)
-                {
-                    csq.SelectionSet.Add(obj);
-                }
-            }
-            return csq;
-        }
-
-        /// <summary>
-        /// Set the content of each element in the set of matched elements to the specified text.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns>The current CQ object</returns>
-        public CQ Text(string value)
-        {
-            foreach (IDomElement obj in Elements)
-            {
-                if (obj.InnerTextAllowed)
-                {
-                    obj.ChildNodes.Clear();
-                    // Element types that cannot have HTML contents should not have the value encoded.
-                    //string textValue = obj.InnerHtmlAllowed ? Objects.HtmlEncode(value) : value;
-                    IDomText text = obj.InnerHtmlAllowed  ? new DomText(value) : new DomInnerText(value);
-                    obj.ChildNodes.Add(text);
-                }
-            }
-            return this;
-        }
-
-        /// <summary>
-        /// Set the content of each element in the set of matched elements to the specified text.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns>The current CQ object</returns>
-        public CQ Text(Func<object,object,object> func) {
-
-            return this;
-        }
-
-        /// <summary>
-        /// Get the combined text contents of each element in the set of matched elements, including their descendants.
-        /// </summary>
-        /// <returns>The text contents of the selection</returns>
-        public string Text()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            IDomObject lastElement = null;
-            foreach (IDomObject obj in SelectionSet)
-            {
-                // Add a space between noncontiguous elements in the selection
-                //if (lastElement != null && obj.Index > 0
-                //    && obj.PreviousSibling != lastElement)
-                //{
-                //    sb.Append(" ");
-                //}
-                lastElement = obj;
-                if (obj.NodeType == NodeType.TEXT_NODE)
-                {
-                    sb.Append(obj.NodeValue);
+                    Document = value.Document;
                 }
                 else
                 {
-                    Text(sb, obj.Cq().Contents());
+                    Document = null;
                 }
+                ClearSelections();
             }
-            return sb.ToString();
-        }
-
-        
-        /// <summary>
-        /// Add elements to the set of matched elements from a selector or an HTML fragment. 
-        /// </summary>
-        /// <param name="html"></param>
-        /// <returns>A new CQ object.</returns>
-        public CQ Add(string selector)
-        {
-            return Add(Select(selector));
         }
 
         /// <summary>
-        /// Add elements to the set of matched elements from a selector or an HTML fragment. 
+        /// The current selection set including all node types.
         /// </summary>
-        /// <param name="html"></param>
-        /// <returns>A new CQ object.</returns>
-        public CQ Add(IDomObject element)
-        {
-            return Add(Objects.Enumerate(element));
-        }
 
-        /// <summary>
-        /// Add elements to the set of matched elements from a selector or an HTML fragment. 
-        /// </summary>
-        /// <param name="html"></param>
-        /// <returns>A new CQ object.</returns>
-        public CQ Add(IEnumerable<IDomObject> elements)
+        protected SelectionSet<IDomObject> SelectionSet
         {
-            CQ res = new CQ(this);
-            res.AddSelectionRange(elements);
-            return res;
-        }
-
-        /// <summary>
-        /// Add elements to the set of matched elements from a selector or an HTML fragment. 
-        /// </summary>
-        /// <param name="html"></param>
-        /// <returns>A new CQ object.</returns>
-        public CQ Add(string selector, IEnumerable<IDomObject> context)
-        {
-            return Add(Select(selector, context));
-        }
-
-        /// <summary>
-        /// Add elements to the set of matched elements from a selector or an HTML fragment. 
-        /// </summary>
-        /// <param name="html"></param>
-        /// <returns>A new CQ object.</returns>
-        public CQ Add(string selector,IDomObject context)
-        {
-            return Add(Select(selector,context));
-        }
-
-        /// <summary>
-        /// Adds the specified class(es) to each of the set of matched elements.
-        /// </summary>
-        /// <param name="className"></param>
-        /// <returns></returns>
-        public CQ AddClass(string className)
-        {
-            foreach (var item in Elements)
+            get
             {
-                item.AddClass(className);
-            }
-            return this;
-        }
-
-        /// <summary>
-        /// Add or remove one or more classes from each element in the set of matched elements, 
-        /// depending on either the class's presence.
-        /// </summary>
-        /// <param name="className"></param>
-        /// <returns></returns>
-        public CQ ToggleClass(string classes)
-        {
-            IEnumerable<string> classList = classes.SplitClean(' ');
-            foreach (IDomElement el in Elements) {
-                foreach (string cls in classList)
+                if (_Selection == null)
                 {
-                    if (el.HasClass(cls))
-                    {
-                        el.RemoveClass(cls);
-                    }
-                    else
-                    {
-                        el.AddClass(cls);
-                    }
+                    _Selection = new SelectionSet<IDomObject>(SelectionSetOrder.OrderAdded);
                 }
+                return _Selection;
             }
-            return this;
-        }
-
-        /// <summary>
-        /// Add or remove one or more classes from each element in the set of matched elements, 
-        /// depending on the value of the switch argument.
-        /// </summary>
-        /// <param name="className"></param>
-        /// <returns></returns>
-        public CQ ToggleClass(string classes, bool addRemoveSwitch)
-        {
-            IEnumerable<string> classList = classes.SplitClean(' ');
-            foreach (IDomElement el in Elements)
+            set
             {
-                foreach (string cls in classList)
-                {
-                    if (addRemoveSwitch)
-                    {
-                        el.AddClass(cls); 
-                    }
-                    else
-                    {
-                        el.RemoveClass(cls);
-                    }
-                }
+                _Selection = value;
             }
-            return this;
         }
 
+        #endregion
+
+        #region private methods
+
+
         /// <summary>
-        /// Determine whether any of the matched elements are assigned the given class.
+        /// Clear the entire object.
         /// </summary>
-        /// <param name="className"></param>
-        /// <returns></returns>
-        public bool HasClass(string className)
-        {
-            
-            IDomElement el = FirstElement();
 
-            return el==null ? false :
-                el.HasClass(className);
+        protected void Clear()
+        {
+            CsQueryParent = null;
+            Document = null;
+            ClearSelections();
         }
 
         /// <summary>
-        /// Insert content, specified by the parameter, to the end of each element in the set of matched elements.
+        /// Clears the current selection set.
         /// </summary>
-        /// <param name="content"></param>
-        /// <returns>The current CQ object</returns>
-        public CQ Append(params string[] content)
+
+        protected void ClearSelections()
         {
-            return Append(mergeContent(content));
+            SelectionSet.Clear();
         }
 
         /// <summary>
-        /// Insert content, specified by the parameter, to the end of each element in the set of matched elements.
+        /// Sets the selection set for this object, and asserts that the order in which it as assigned is
+        /// the order passed. This allows most operations to return the original set directly; if it is
+        /// requested in a different order then it will be sorted.
         /// </summary>
-        /// <param name="content"></param>
-        /// <returns>The current CQ object</returns>
-        public CQ Append(IDomObject element)
-        {
-            return Append(Objects.Enumerate(element));
-        }
-
-        /// <summary>
-        /// Insert content, specified by the parameter, to the end of each element in the set of matched elements.
-        /// </summary>
-        /// <param name="content"></param>
-        /// <returns>The current CQ object</returns>
-        public CQ Append(IEnumerable<IDomObject> elements)
-        {
-            CQ ignoredOutput;
-            return Append(elements, out ignoredOutput);
-        }
-
-        /// <summary>
-        ///  Insert every element in the set of matched elements to the end of the target.
-        /// </summary>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        public CQ AppendTo(string target)
-        {
-            return AppendTo(Select(target));
-
-        }
-        public CQ AppendTo(IDomObject target)
-        {
-            return AppendTo(Objects.Enumerate(target));
-        }
-        public CQ AppendTo(IEnumerable<IDomObject> targets)
-        {
-            CQ output;
-            EnsureCsQuery(targets).Append(SelectionSet, out output);
-            return output;
-        }
-
-        /// <summary>
         ///
-        /// </summary>
-        /// <param name="func">
-        /// delegate(int index, string html) 
-        ///  A function that returns an HTML string to insert at the end of each element in the set of matched elements. 
-        /// Receives the index position of the element in the set and the old HTML value of the element as arguments.
+        /// <param name="selectionSet">
+        /// The current selection set including all node types.
         /// </param>
-        /// <returns>The current CQ object</returns>
-        public CQ Append(Func<int, string, string> func)
-        {
-            int index = 0;
-            foreach (DomElement obj in Elements)
-            {
+        /// <param name="inputOrder">
+        /// The order in which the elements appear in selectionSet. If omitted, Ascending is the default.
+        /// </param>
+        /// <param name="outputOrder">
+        /// The default output order, if different from the inputOrder. If omitted, the same as the input
+        /// order is the default.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object
+        /// </returns>
 
-                string val = func(index, obj.InnerHTML);
-                obj.Cq().Append((string)val);
-                index++;
-            }
-            return this;
-        }
+        protected CQ SetSelection(IEnumerable<IDomObject> selectionSet, 
 
+            /// <summary>
+            /// The output order.
+            /// </summary>
 
-        public CQ Append(Func<int, string, IDomElement> func)
+            SelectionSetOrder inputOrder = SelectionSetOrder.Ascending, 
+            SelectionSetOrder outputOrder=0)
         {
-            int index = 0;
-            foreach (IDomElement obj in Elements)
-            {
-                IDomElement clientValue = func(index, obj.InnerHTML);
-                obj.Cq().Append(clientValue);
-                index++;
-            }
-            return this;
-        }
-        public CQ Append(Func<int, string, IEnumerable<IDomElement>> func)
-        {
-            int index = 0;
-            foreach (IDomElement obj in Elements)
-            {
-                IEnumerable<IDomElement> val = func(index, obj.InnerHTML);
-                obj.Cq().Append(val);
-                index++;
-            }
+            SelectionSet = new SelectionSet<IDomObject>(selectionSet, inputOrder, outputOrder);
             return this;
         }
 
         /// <summary>
-        /// Insert content, specified by the parameter, to the beginning of each element in the set of matched elements.
+        /// Sets the selection set for this object to a single element..
         /// </summary>
-        /// <param name="elements">One or more elements</param>
-        /// <returns>The current CQ object</returns>
-        public CQ Prepend(params IDomObject[] elements)
+        ///
+        /// <param name="element">
+        /// The element to add.
+        /// </param>
+        /// <param name="outputOrder">
+        /// The default output order. If omitted, Ascending (DOM) order is the default.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object
+        /// </returns>
+
+        protected CQ SetSelection(IDomObject element,
+            SelectionSetOrder outputOrder = SelectionSetOrder.Ascending)
         {
-            return Prepend(Objects.Enumerate(elements));
+            SelectionSet = new SelectionSet<IDomObject>(Objects.Enumerate(element), outputOrder,outputOrder);
+            return this;
         }
 
-        /// <summary>
-        /// Insert content, specified by the parameter, to the beginning of each element in the set of matched elements.
-        /// </summary>
-        /// <param name="selector">One or more selectors or HTML strings</param>
-        /// <returns>The current CQ object</returns>
-        public CQ Prepend(params string[] selector)
-        {
-            return Prepend(mergeContent(selector));
-        }
 
         /// <summary>
-        /// Insert content, specified by the parameter, to the beginning of each element in the set of matched elements.
+        /// Map a CSV or enumerable object to a hashset.
         /// </summary>
-        /// <param name="elements">The elements to be inserted</param>
-        /// <returns>The current CQ object</returns>
-        public CQ Prepend(IEnumerable<IDomObject> elements)
-        {
-            CQ ignoredOutput;
-            return Prepend(elements, out ignoredOutput);
-        }
+        ///
+        /// <param name="value">
+        /// the object or sequence to map
+        /// </param>
+        ///
+        /// <returns>
+        /// A new hashset
+        /// </returns>
 
-        /// <summary>
-        /// Insert content, specified by the parameter, to the beginning of each element in the set of matched elements.
-        /// </summary>
-        /// <param name="elements">The elements to be inserted</param>
-        /// <param name="insertedElements">A CQ object containing all the elements added</param>
-        /// <returns></returns>
-        public CQ Prepend(IEnumerable<IDomObject> elements, out CQ insertedElements)
+        protected HashSet<string> MapMultipleValues(object value)
         {
-            insertedElements = New();
-            bool first = true;
-            
-            foreach (var target in Elements)
+            var values = new HashSet<string>();
+            if (value is string)
             {
-                IEnumerable<IDomObject> content =
-                    first ? elements : EnsureCsQuery(onlyElements(elements)).Clone().SelectionSet;
+                values.AddRange(value.ToString().Split(','));
 
-
-                int index = 0;
-                foreach (var addedItem in content)
+            }
+            if (value is IEnumerable)
+            {
+                foreach (object obj in (IEnumerable)value)
                 {
-                    target.ChildNodes.Insert(index++, addedItem);
-                    insertedElements.SelectionSet.Add(addedItem);
+                    values.Add(obj.ToString());
                 }
-                first = false;
             }
-            return this;
-        }
 
-        /// <summary>
-        /// Insert every element in the set of matched elements to the beginning of the target.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns>The current CQ object</returns>
-        public CQ PrependTo(params string[] selector)
-        {
-            var target = New();
-            Each(selector, item => target.SelectionSet.AddRange(Select(item)));
-            target.Prepend(SelectionSet);
-            return this;
-        }
-        public CQ PrependTo(params IDomObject[] element)
-        {
-            return PrependTo(element);
-        }
-        public CQ PrependTo(IEnumerable<IDomObject> targets)
-        {
-            CQ output;
-            EnsureCsQuery(targets).Prepend(SelectionSet, out output);
-            return output;
-        }
-
-        /// <summary>
-        /// Get the value of an attribute for the first element in the set of matched elements.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public string Attr(string name)
-        {
-            name= name.ToLower();
-            if (Length > 0)
+            if (values.Count == 0)
             {
-                string value;
-                var el = this[0];
-                switch(name) { 
-                    case "class":
-                        return el.ClassName;
-                    case "style":
-                        string st=  el.Style.ToString();
-                        return st == "" ? null : st;
-                    default:
-                        if (el.TryGetAttribute(name, out value))
+                if (value != null)
+                {
+                    values.Add(value.ToString());
+                }
+            }
+            return values;
+
+        }
+
+        /// <summary>
+        /// Helper function for option groups to set multiple options when passed a CSV of values.
+        /// </summary>
+        ///
+        /// <param name="elements">
+        /// .
+        /// </param>
+        /// <param name="value">
+        /// .
+        /// </param>
+        /// <param name="multiple">
+        /// true to multiple.
+        /// </param>
+
+        protected void SetOptionSelected(IEnumerable<IDomElement> elements, object value, bool multiple)
+        {
+            HashSet<string> values = MapMultipleValues(value);
+            SetOptionSelected(elements, values, multiple);
+        }
+
+        /// <summary>
+        /// Helper function for option groups to set multiple options when passed a CSV of values.
+        /// </summary>
+        ///
+        /// <param name="elements">
+        /// .
+        /// </param>
+        /// <param name="values">
+        /// The values.
+        /// </param>
+        /// <param name="multiple">
+        /// true to multiple.
+        /// </param>
+
+        protected void SetOptionSelected(IEnumerable<IDomElement> elements, HashSet<string> values, bool multiple)
+        {
+            bool setOne = false;
+            string attribute;
+
+            foreach (IDomElement e in elements)
+            {
+                attribute = String.Empty;
+                switch (e.NodeNameID)
+                {
+                    case HtmlData.tagOPTION:
+                        attribute = "selected";
+                        break;
+                    case HtmlData.tagINPUT:
+                        switch (e["type"])
                         {
-                            if (HtmlData.IsBoolean(name))
-                            {
-                                // Pre-1.6 and 1.6.1+ compatibility: always return the name of the attribute if it exists for
-                                // boolean attributes
-                                return name;
-                            }
-                            else
-                            {
-     
-                                return value; 
-                            }
-                        } else if (name=="value" &&
-                            (el.NodeName =="INPUT" || el.NodeName=="SELECT" || el.NodeName=="OPTION")) {
-                            return Val();
-                        } else if (name=="value" && el.NodeName =="TEXTAREA") {
-                            return el.InnerText;
+                            case "checkbox":
+                            case "radio":
+                                attribute = "checked";
+                                break;
                         }
                         break;
-                }
-                
-            }
-            return null;
-        }
-        /// <summary>
-        /// Returns an attribute value as a nullable integer, or null if not an integer
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public T Attr<T>(string name)
-        {
-            string value;
-            if (Length > 0 && this[0].TryGetAttribute(name, out value))
-            {
-                return (T)Convert.ChangeType(value, typeof(T));
-            }
-            return default(T);
-        }
-        /// <summary>
-        /// Set one or more attributes for the set of matched elements.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public CQ Attr(string name, IConvertible value)
-        {
-
-            // Make sure attempts to pass a JSON string end up a the right place
-            if (Objects.IsJson(name) && value.GetType()==typeof(bool))
-            {
-                return AttrSet(name, (bool)value);
-            }
-            
-            // jQuery 1.7 compatibility
-            bool isBoolean = HtmlData.IsBoolean(name);
-            if (isBoolean)
-            {
-                // Using attr with empty string should set a property to "true. But prop() itself requires a truthy value. Check for this specifically.
-                if (value is string && (string)value == String.Empty)
-                {
-                    value = true;
-                }
-                SetProp(name, value);
-                return this;
-            }
-
-            string val;
-            if (value is bool)
-            {
-                val = value.ToString().ToLower();
-            }
-            else
-            {
-                val = GetValueString(value);
-            }
-
-            foreach (IDomElement e in Elements)
-            {
-                if ((e.NodeName == "INPUT" || e.NodeName == "BUTTON") && name == "type"
-                    && !e.IsDisconnected)
-                {
-                    throw new InvalidOperationException("Can't change type of \"input\" elements that have already been added to a DOM");
-                }
-                e.SetAttribute(name, val);
-            }
-            return this;
-        }
-        
-        /// <summary>
-        /// Map an object to attributes.
-        /// </summary>
-        /// <param name="attributes"></param>
-        /// <returns></returns>
-        public CQ AttrSet(object attributes)
-        {
-            return AttrSet(attributes, false);
-        }
-
-
-        /// <summary>
-        /// Map an object to attributes. If quickSet is true, treat give special treamtent to "css", "html", "text", "width" and "height" properties.
-        /// </summary>
-        /// <param name="attributes"></param>
-        /// <returns></returns>
-        public CQ AttrSet(object attributes, bool quickSet=false)
-        {
-            IDictionary<string, object> dict;
-
-            string cssString = attributes as string;
-            if (cssString != null && Objects.IsJson((cssString)))
-            {
-                dict = ParseJSON<IDictionary<string, object>>(cssString);
-            }
-            else
-            {
-                dict = Objects.ToExpando(attributes);
-            }
-
-            foreach (IDomElement el in Elements)
-            {
-                foreach (var kvp in dict)
-                {
-                    if (quickSet)
-                    {
-                        string name = kvp.Key.ToLower();
-                        switch (name)
-                        {
-                            case "css":
-                                Select(el).CssSet(Objects.ToExpando(kvp.Value));
-                                break;
-                            case "html":
-                                Select(el).Html(kvp.Value.ToString());
-                                break;
-                            case "height":
-                            case "width":
-                                // for height and width, do not set attributes - set css
-                                Select(el).Css(name, kvp.Value.ToString());
-                                break;
-                            case "text":
-                                Select(el).Text(kvp.Value.ToString());
-                                break;
-                            default:
-                                el.SetAttribute(kvp.Key, kvp.Value.ToString());
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        el.SetAttribute(kvp.Key, kvp.Value.ToString());
-                    }
-                }
-            }
-            return this;
-        }
-        /// <summary>
-        /// Perform a substring replace on the contents of the named attribute in each item in the selection set. 
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="replaceWhat"></param>
-        /// <param name="replaceWith"></param>
-        /// <returns></returns>
-        public CQ AttrReplace(string name, string replaceWhat, string replaceWith)
-        {
-            foreach (IDomElement item in SelectionSet)
-            {
-                string val = item[name];
-                if (val != null)
-                {
-                    item[name] = val.Replace(replaceWhat, replaceWith);
-                }
-            }
-            return this;
-        }
-        /// <summary>
-        /// Remove an attribute from each element in the set of matched elements.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public CQ RemoveAttr(string name)
-        {
-            foreach (IDomElement e in Elements)
-            {
-                switch (name)
-                {
-                    case "class":
-                        e.ClassName = "";
-                        break;
-                    case "style":
-                        e.Style.Clear();
-                        break;
-                    default:
-                        e.RemoveAttribute(name);
+                    case HtmlData.tagOPTGROUP:
+                        SetOptionSelected(e.ChildElements, values, multiple);
                         break;
                 }
-            }
-            return this;
-        }
-        /// <summary>
-        ///  Remove a property for the set of matched elements.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public CQ RemoveProp(string name)
-        {
-            return RemoveAttr(name);
-        }
-        /// <summary>
-        /// Insert content, specified by the parameter, before each element in the set of matched elements.
-        /// </summary>
-        /// <param name="?"></param>
-        /// <returns></returns>
-        public CQ Before(string selector)
-        {
-            return Before(Select(selector));
-        }
-        public CQ Before(IDomObject element)
-        {
-            return Before(Objects.Enumerate(element));
-        }
-        /// <summary>
-        /// Insert content, specified by the parameter, before each element in the set of matched elements.
-        /// </summary>
-        public CQ Before(IEnumerable<IDomObject> selection)
-        {
-            EnsureCsQuery(selection).InsertAtOffset(SelectionSet, 0);
-            return this;
-        }
-        /// <summary>
-        ///  Insert content, specified by the parameter, after each element in the set of matched elements.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ After(string selector)
-        {
-            return After(Select(selector));
-        }
-        /// <summary>
-        ///  Insert content, specified by the parameter, after each element in the set of matched elements.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ After(IDomObject element)
-        {
-            return After(Objects.Enumerate(element));
-        }
-        /// <summary>
-        ///  Insert content, specified by the parameter, after each element in the set of matched elements.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ After(IEnumerable<IDomObject> selection)
-        {
-            EnsureCsQuery(selection).InsertAtOffset(SelectionSet, 1);
-            return this;
-            
-        }
-
-        /// <summary>
-        /// Remove the parents of the set of matched elements from the DOM, 
-        /// leaving the matched elements in their place.
-        /// </summary>
-        /// <returns></returns>
-        public CQ Unwrap()
-        {
-            HashSet<IDomObject> parents = new HashSet<IDomObject>();
-            
-            // Start with a unique list of parents instead of working with the siblings
-            // to avoid repetition and unwrapping more than once for multiple siblings from
-            // a single parent
-            foreach (IDomObject obj in SelectionSet)
-            {
-                if (obj.ParentNode != null) {
-                    parents.Add(obj.ParentNode);
-                }
-            }
-            foreach (IDomObject obj in parents) {
-                var csq = obj.Cq();
-                csq.ReplaceWith(csq.Contents());
-
-            }
-            //Order = SelectionSetOrder.Ascending;
-            return this;
-        }
-        public CQ Wrap(string wrappingSelector)
-        {
-            return Wrap(Select(wrappingSelector));
-        }
-        public CQ Wrap(IDomObject element)
-        {
-            return Wrap(Objects.Enumerate(element));
-        }
-        public CQ Wrap(IEnumerable<IDomObject> wrapper)
-        {
-            return Wrap(wrapper, false);
-        }
-        public CQ WrapAll(string wrappingSelector)
-        {
-            return WrapAll(Select(wrappingSelector));
-        }
-        public CQ WrapAll(IDomObject element)
-        {
-            return WrapAll(Objects.Enumerate(element));
-        }
-        public CQ WrapAll(IEnumerable<IDomObject> wrapper)
-        {
-            return Wrap(wrapper, true);
-        }
-        protected CQ Wrap(IEnumerable<IDomObject> wrapper, bool keepSiblingsTogether)
-        {
-            // get innermost structure
-            CQ wrapperTemplate = EnsureCsQuery(wrapper);
-            IDomElement wrappingEl= null;
-            IDomElement wrappingElRoot=null;
-
-            int depth = getInnermostContainer(wrapperTemplate.Elements, out wrappingEl, out wrappingElRoot);
-          
-            if (wrappingEl!=null) {
-                IDomObject nextEl = null;
-                IDomElement innerEl = null;
-                IDomElement innerElRoot = null;
-                foreach (IDomObject el in SelectionSet)
+                if (attribute != String.Empty && !setOne && values.Contains(e["value"]))
                 {
-
-                    if (nextEl==null 
-                        || (!ReferenceEquals(nextEl,el)) && 
-                            !keepSiblingsTogether)
+                    e.SetAttribute(attribute);
+                    if (!multiple)
                     {
-                        var template = wrappingElRoot.Cq().Clone();
-                        if (el.ParentNode != null)
-                        {
-                            template.InsertBefore(el);
-                        } 
-                        // This will always succceed because we tested before this loop. But we need
-                        // to run it again b/c it's a clone now
-                        getInnermostContainer(template.Elements, out innerEl, out innerElRoot);
+                        setOne = true;
                     }
-                    nextEl = el.NextSibling;
-                    innerEl.AppendChild(el);
-                    
-                }
-            }
-            return this;
-        }
-        /// <summary>
-        /// Wrap an HTML structure around the content of each element in the set of matched elements.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ WrapInner(string selector)
-        {
-            return WrapInner(Select(selector));
-        }
-        /// <summary>
-        /// Wrap an HTML structure around the content of each element in the set of matched elements.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ WrapInner(IDomObject wrapper)
-        {
-            return WrapInner(Objects.Enumerate(wrapper));
-        }
-        // <summary>
-        /// Wrap an HTML structure around the content of each element in the set of matched elements.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ WrapInner(IEnumerable<IDomObject> wrapper) {
-            foreach (var el in Elements)
-            {
-                var self = el.Cq();
-                var contents = self.Contents();
-                if (contents.Length > 0)
-                {
-                    contents.WrapAll(wrapper);
                 }
                 else
                 {
-                    self.Append(wrapper);
-                }
-            }
-            return this;
-        }
-        //protected 
-        /// <summary>
-        /// Get the children of each element in the set of matched elements, optionally filtered by a selector.
-        /// </summary>
-        /// <returns></returns>
-        public CQ Children(string filter=null)
-        {
-            return filterIfSelector(filter, SelectionChildren());
-        }
-        /// <summary>
-        /// Description: Get the siblings of each element in the set of matched elements, optionally filtered by a selector.
-        /// </summary>
-        /// <returns></returns>
-        public CQ Siblings(string selector=null)
-        {
-            SelectionSet<IDomElement> siblings = new SelectionSet<IDomElement>();
-            
-            // Add siblings of each item in the selection except the item itself for that iteration.
-            // If two siblings are in the selection set, then all children of their mutual parent should
-            // be returned. Otherwise, all children except the item iteself.
-            foreach (var item in SelectionSet)
-            {
-                foreach (var child in item.ParentNode.ChildElements) {
-                    if (!ReferenceEquals(child,item))
-                    {
-                        siblings.Add(child);
-                    }
-                }
-            }
-            return filterIfSelector(selector,siblings, SelectionSetOrder.Ascending);
-        }
-        /// <summary>
-        /// Create a deep copy of the set of matched elements.
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public CQ Clone()
-        {
-            CQ csq = new CQ();
-            
-            foreach (IDomObject elm in SelectionSet)
-            {
-                IDomObject clone = elm.Clone();
-                csq.Document.ChildNodes.AddAlways(clone);
-                csq.AddSelection(clone);
-            }
-            return csq;
-        }
-        /// <summary>
-        /// Get the first ancestor element that matches the selector, beginning at the current element and progressing up through the DOM tree.
-        /// </summary>
-        /// <returns></returns>
-        public CQ Closest(string selector)
-        {
-            CQ matchTo = Select(selector);
-            return Closest(matchTo);
-        }
-        public CQ Closest(IDomObject element)
-        {
-            return Closest(Objects.Enumerate(element));
-        }
-        public CQ Closest(IEnumerable<IDomObject> elements)
-        {
-            // Use a hashset to operate faster - since we already haveone for the selection set anyway
-            SelectionSet<IDomObject> selectionSet;
-            if (elements is CQ)
-            {
-                selectionSet = ((CQ)elements).SelectionSet;
-            }
-            else
-            {
-                selectionSet = new SelectionSet<IDomObject>();
-                selectionSet.AddRange(elements);
-            }
-            CQ csq = New();
-
-            foreach (var el in SelectionSet)
-            {
-                var search = el;
-                while (search != null)
-                {
-                    if (selectionSet.Contains(search))
-                    {
-                        csq.AddSelection(search);
-                        return csq;
-                    }
-                    search = search.ParentNode;
+                    e.RemoveAttribute(attribute);
                 }
 
             }
-            return csq;
-
         }
-        /// <summary>
-        /// Get the children of each element in the set of matched elements, including text and comment nodes.
-        /// </summary>
-        /// <returns></returns>
-        public CQ Contents()
-        {
 
-            List<IDomObject> list = new List<IDomObject>();
-            foreach (IDomObject obj in SelectionSet)
-            {
-                if (obj is IDomContainer)
-                {
-                    list.AddRange(obj.ChildNodes );
-                }
-            }
-
-            return new CQ(list, this);
-        }
-        
 
         /// <summary>
-        ///  Set one or more CSS properties for the set of matched elements from JSON data
+        /// Add an item to the list of selected elements. It should be part of this DOM.
         /// </summary>
-        /// <param name="cssJson"></param>
-        /// <returns></returns>
-        public CQ CssSet(object css)
+        ///
+        /// <param name="element">
+        /// The element to add
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the element was added.
+        /// </returns>
+
+        protected bool AddSelection(IDomObject element)
         {
-            IDictionary<string, object> dict;
-            if (Objects.IsJson(css))
-            {
-                dict = ParseJSON<IDictionary<string, object>>((string)css);
-            }
-            else
-            {
-                dict = Objects.ToExpando(css);
-            }
-            foreach (IDomElement e in Elements) 
-            {
-                foreach (var key in dict)
-                {
-                    e.Style[key.Key]= key.Value.ToString();
-                }
-            }
-            return this;
+            //if (!ReferenceEquals(element.Dom, Dom))
+            //{
+            //    throw new InvalidOperationException("Cannot add unbound elements or elements bound to another DOM directly to a selection set.");
+            //}
+            return SelectionSet.Add(element);
         }
 
         /// <summary>
-        ///  Set one or more CSS properties for the set of matched elements.
+        /// Adds each element to the current selection set. 
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public CQ Css(string name, IConvertible value)
-        {
-            string style = String.Empty;
+        ///
+        /// <param name="elements">
+        /// The elements to add
+        /// </param>
+        ///
+        /// <returns>
+        /// true if any elements were added.
+        /// </returns>
 
-            foreach (IDomElement e in Elements)
+        protected bool AddSelection(IEnumerable<IDomObject> elements)
+        {
+            bool result = false;
+            foreach (IDomObject elm in elements)
             {
-                e.Style[name]=value.ToString();
-            }
-            return this;
-        }
-
-        /// <summary>
-        /// Get the value of a style property for the first element in the set of matched elements,
-        /// and converts to type T
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="style"></param>
-        /// <returns></returns>
-        public T Css<T>(String style) where T: IConvertible 
-        {
-            IDomElement el =FirstElement();
-            if (el==null) {
-                return default(T);
-            }
-
-            IStringScanner scanner = Scanner.Create(el.Style[style] ?? "");
-            T num;
-            if (scanner.TryGetNumber<T>(out num))
-            {
-                return num;
-            }
-            else
-            {
-                return default(T);
-            }
-        }
-        /// <summary>
-        /// Get the value of a style property for the first element in the set of matched elements
-        /// </summary>
-        /// <param name="style"></param>
-        /// <returns></returns>
-        public string Css(string style)
-        {
-            IDomElement el = FirstElement();
-            string def=null;
-            if (el!=null) {
-                def = el.Style[style];
-                switch (style)
-                {
-                    case "display":
-                        if (String.IsNullOrEmpty(def))
-                        {
-                            def = el.IsBlock ? "block" : "inline";
-                        }
-                        break;
-                    case "opacity":
-                        if (String.IsNullOrEmpty(def))
-                        {
-                            def = "1";
-                        }
-                        break;
-                }
-            }
-            return def;
-            
-        }
-        /// <summary>
-        /// Returns all values at named data store for the first element in the jQuery collection, as set by data(name, value).
-        /// (Any attributes starting with data-)
-        /// </summary>
-        /// <returns></returns>
-        public IDynamicMetaObjectProvider Data()
-        {
-            var dataObj = new JsObject();
-            IDictionary<string, object> data = dataObj;
-            IDomElement obj = FirstElement();
-            if (obj != null)
-            {
-
-                foreach (var item in obj.Attributes)
-                {
-                    if (item.Key.StartsWith("data-"))
-                    {
-                        data[item.Key.Substring(5)] = CQ.ParseJSON(item.Value);
-                    }
-                }
-                return dataObj;
-            }
-            else
-            {
-                return null;
-            }
-            
-        }
-        /// <summary>
-        /// Store arbitrary data associated with the specified element. Returns the value that was set.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="jsonData"></param>
-        /// <returns></returns>
-        public CQ Data(string key,string data)
-        {
-            foreach (IDomElement e in Elements)
-            {
-                e.SetAttribute("data-" + key, JSON.ToJSON(data));
-            }
-            return this;
-        }
-        /// <summary>
-        /// Convert an object to JSON and store as data
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public CQ Data(string key, object data)
-        {
-            string json = CQ.ToJSON(data);
-            foreach (IDomElement e in Elements)
-            {
-                e.SetAttribute("data-" + key, json);
-            }
-            return this;
-        }
-        /// <summary>
-        /// Convert an object to JSON and stores each named property as a data element
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public CQ DataSet(object data)
-        {
-            JsObject obj = CQ.ToExpando(data);
-            foreach (var kvp in obj)
-            {
-                Data(kvp.Key, kvp.Value);
-            }
-            return this;
-        }
-        /// <summary>
-        /// Returns value at named data store for the first element in the jQuery collection, as set by data(name, value).
-        /// </summary>
-        public object Data(string element)
-        {
-            string data = First().Attr("data-" + element);
-            
-            return JSON.ParseJSON(data);
-        }
-        public T Data<T>(string key)
-        {
-            string data = First().Attr("data-" + key);
-            return JSON.ParseJSON<T>(data);
-        }
-
-        /// <summary>
-        /// Remove all data- attributes from the element.
-        /// </summary>
-        /// <returns></returns>
-        public CQ RemoveData()
-        {
-            return RemoveData((string)null);
-        }
-
-       
-        /// <summary>
-        /// Remove a previously-stored piece of data.
-        /// </summary>
-        /// <param name="element"></param>
-        /// <returns></returns>
-        public CQ RemoveData(string key)
-        {
-            foreach (IDomElement el in Elements)
-            {
-                List<string> toRemove = new List<string>();
-                foreach (var kvp in el.Attributes)
-                {
-                    bool match = String.IsNullOrEmpty(key) ?
-                        kvp.Key.StartsWith("data-") :
-                        kvp.Key == "data-" + key;
-                    if (match)
-                    {
-                        toRemove.Add(kvp.Key);
-                    }
-                }
-                foreach (string attr in toRemove)
-                {
-                    el.RemoveAttribute(attr);
-                }
-            }
-            return this;
-        }
-        /// <summary>
-        /// Remove all data from an element.
-        /// </summary>
-        /// <returns></returns>
-        public CQ RemoveData(IEnumerable<string> keys)
-        {
-            foreach (var key in keys)
-            {
-                RemoveData(key);
-
-            }
-            return this;
-        }
-        /// <summary>
-        /// Returns data as a string, with no attempt to decode it
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public string DataRaw(string key)
-        {
-            return First().Attr("data-" + key);
-        }
-        /// <summary>
-        /// Iterate over each matched element.
-        /// </summary>
-        /// <param name="func"></param>
-        /// <returns></returns>
-        public CQ Each(Action<int, IDomObject> func)
-        {
-            int index = 0;
-            foreach (IDomObject obj in Selection)
-            {
-                func(index, obj);
-            }
-            return this;
-        }
-
-        /// <summary>
-        /// Iterate over each matched element.
-        /// </summary>
-        /// <param name="func"></param>
-        /// <returns></returns>
-
-        public CQ Each(Action<IDomObject> func)
-        {
-            foreach (IDomObject obj in Selection)
-            {
-                func(obj);
-            }
-            return this;
-        }
-        /// <summary>
-        /// Reduce the set of matched elements to the one at the specified index.
-        /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        public CQ Eq(int index)
-        {
-            if (index < 0)
-            {
-                index = Length + index-1;
-            }
-            if (index >= 0 && index < Length)
-            {
-                return new CQ(SelectionSet[index], this);
-            }
-            else
-            {
-                return New();
-            }
-        }
-
-        
-        /// <summary>
-        /// Get the descendants of each element in the current set of matched elements, filtered by a selector
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ Find(string selector)
-        {
-            return FindImpl(new Selector(selector));
-        }
-
-        /// <summary>
-        /// Get the descendants of each element in the current set of matched elements, filtered by a sequence of elements or jQuery object
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ Find(IEnumerable<IDomObject> elements)
-        {
-           return FindImpl(new Selector(elements));
-        }
-
-        /// <summary>
-        /// Find an specific element if it is a descentent of the current selection
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ Find(IDomObject element)
-        {
-            return FindImpl(new Selector(element));
-        }
-
-        private CQ FindImpl(Selector selector)
-        {
-            CQ csq = New();
-            csq.AddSelectionRange(selector.Select(Document, this));
-            csq.Selectors = selector;
-            return csq;
-        }
-
-        public CQ Filter(string selector)
-        {
-            return new CQ(filterElements(SelectionSet, selector));
-
-        }
-        public CQ Filter(IDomObject element) {
-            return Filter(Objects.Enumerate(element));
-        }
-        public CQ Filter(IEnumerable<IDomObject> elements) {
-            CQ filtered = new CQ(this);
-            filtered.SelectionSet.IntersectWith(elements);
-            return filtered;            
-        }
-        public CQ Filter(Func<IDomObject, bool> function)
-        {
-            CQ result = New();
-            foreach (IDomObject obj in SelectionSet)
-            {
-                if (function(obj)) {
-                    result.AddSelection(obj);
-                }
-            }
-            return result;
-        }
-        public CQ Filter(Func<IDomObject, int, bool> function)
-        {
-            CQ result = New();
-            int index = 0;
-            foreach (IDomObject obj in SelectionSet)
-            {
-                if (function(obj,index++))
-                {
-                    result.AddSelection(obj);
-                }
+                result = true;
+                AddSelection(elm);
             }
             return result;
         }
 
         /// <summary>
-        /// Return matched element. 
+        /// Map range of elements to a new CQ object using a function delegate to populate it.
         /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        public IDomObject this[int index]
-        {
-            get
-            {
-                return Get(index);
-            }
-        }
+        ///
+        /// <param name="source">
+        /// Source elements
+        /// </param>
+        /// <param name="del">
+        /// Delegate to the mapping function
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object
+        /// </returns>
 
-        /// <summary>
-        /// Select elements and return a new CSQuery object 
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ Select(string selector)
+        protected CQ MapRangeToNewCQ(IEnumerable<IDomObject> source, Func<IDomObject, IEnumerable<IDomObject>> del)
         {
-            CQ csq = New();
-            csq.Selectors = new Selector(selector);
-
-            // If the selector is HTML create it as a new fragment so it can be indexed & traversed upon
-            // (This comment is a placeholder for implementing document fragments properly)
-            // IDomDocument dom = selectors.IsHtml ? new DomFragment(selector.ToCharArray()) : Document;
-            
-            csq.AddSelectionRange(csq.Selectors.Select(Document));
-            return csq;
-        }
-
-        /// <summary>
-        /// Select elements and return a new CSQuery object 
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ this[string selector]
-        {
-            get
-            {
-                return Select(selector);
-            }
-        }
-
-        /// <summary>
-        /// Return element wrapped in a new CQ
-        /// </summary>
-        /// <param name="element"></param>
-        /// <returns></returns>
-        public CQ Select(IDomObject element)
-        {
-            CQ csq = new CQ(element,this);
-            return csq;
-        }
-
-        /// <summary>
-        /// Return element wrapped in a new CQ
-        /// </summary>
-        /// <param name="element"></param>
-        /// <returns></returns>
-        public CQ this[IDomObject element]
-        {
-            get
-            {
-                return Select(element);
-            }
-        }
-
-        /// <summary>
-        /// Return a sequence of elements wrapped in a new CQ
-        /// </summary>
-        /// <param name="element"></param>
-        /// <returns></returns>
-        public CQ Select(IEnumerable<IDomObject> elements)
-        {
-            CQ csq = new CQ(elements,this);
-            return csq;
-        }
-
-        /// <summary>
-        /// Return a sequence of elements wrapped in a new CQ
-        /// </summary>
-        /// <param name="element"></param>
-        /// <returns></returns>
-        public CQ this[IEnumerable<IDomObject> element]
-        {
-            get
-            {
-                return Select(element);
-            }
-        }
-
-        /// <summary>
-        /// Select elements from within a context
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public CQ Select(string selector, IDomObject context)
-        {
-            var selectors = new Selector(selector);
-            var selection = selectors.Select(Document, context);
-
-            CQ csq = new CQ(selection, this);
-            csq.Selectors = selectors;
-            return csq;
-        }
-
-        /// <summary>
-        /// Select elements from within a context
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public CQ this[string selector, IDomObject context]
-        {
-            get
-            {
-                return Select(selector, context);
-            }
-        }
-
-        /// <summary>
-        ///  Select elements from within a context
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public CQ Select(string selector, IEnumerable<IDomObject> context)
-        {
-            var selectors = new Selector(selector);
-
-            IEnumerable<IDomObject> selection = selectors.Select(Document, context);
-
-            CQ csq = new CQ(selection, (CQ)this);
-            csq.Selectors = selectors;
-            return csq;
-        }
-       
-        /// <summary>
-        ///  Select elements from within a context
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public CQ this[string selector, IEnumerable<IDomObject> context]
-        {
-            get
-            {
-                return Select(selector, context);
-            }
-        }
-
-        /// <summary>
-        /// Reduce the set of matched elements to the first in the set.
-        /// </summary>
-        /// <returns></returns>
-        public CQ First()
-        {
-            return Eq(0);
-        }
-        /// <summary>
-        /// Reduce the set of matched elements to the last in the set.
-        /// </summary>
-        /// <returns></returns>
-        public CQ Last()
-        {
-            if (SelectionSet.Count == 0)
-            {
-                return New();
-            }
-            else
-            {
-                return Eq(SelectionSet.Count - 1);
-            }
-        }
-        /// <summary>
-        /// Hide the matched elements.
-        /// </summary>
-        /// <returns></returns>
-        public CQ Hide()
-        {
-            foreach (IDomElement e in Elements)
-            {
-                e.Style["display"]= "none";
-            }
-            return this;
-
-        }
-        /// <summary>
-        /// Toggle the visiblity state of the matched elements.
-        /// </summary>
-        /// <returns></returns>
-        public CQ Toggle()
-        {
-           foreach (IDomElement e in Elements)
-            {
-                string displ = e.Style["display"];
-                bool isVisible = displ == null || displ != "none";
-                e.Style["display"] = isVisible ? "none" : null;
-            }
-           return this;
-        }
-        /// <summary>
-        /// Display or hide the matched elements.
-        /// </summary>
-        /// <returns></returns>
-        public CQ Toggle(bool isVisible)
-        {
-            foreach (IDomElement e in Elements)
-            {
-                if (isVisible)
-                {
-                    e.RemoveStyle("display");
-                }
-                else
-                {
-                    e.Style["display"] = "none";
-                }
-            }
-            return this;
-        }
-        /// <summary>
-        /// Search for a given element from among the matched elements.
-        /// </summary>
-        /// <returns></returns>
-        public int Index()
-        {
-            IDomObject el = SelectionSet.FirstOrDefault();
-            if (el != null)
-            {
-                return GetElementIndex(el);
-            }
-            return -1;
-        }
-        /// <summary>
-        /// Returns the position of the current selection within the new selection defined by "selector"
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public int Index(string selector)
-        {
-            var selection = Select(selector);
-            return selection.Index(SelectionSet);
-        }
-        public int Index(IDomObject elements)
-        {
-            return Index(Objects.Enumerate(elements));
-        }
-        public int Index(IEnumerable<IDomObject> elements)
-        {
-            IDomObject find = elements.FirstOrDefault();
-            int index = -1;
-            if (find != null)
-            {
-                int count = 0;
-                foreach (IDomObject el in SelectionSet)
-                {
-                    if (ReferenceEquals(el, find))
-                    {
-                        index=count;
-                        break;
-                    }
-                    count++;
-                }
-            }
-            return index;
-        }
-
-        /// <summary>
-        /// Insert every element in the set of matched elements after the target.
-        /// </summary>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        public CQ InsertAfter(IDomObject target)
-        {
-            return InsertAtOffset(target,1);
-        }
-        /// <summary>
-        /// Insert every element in the set of matched elements after the target.
-        /// </summary>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        public CQ InsertAfter(IEnumerable<IDomObject> target) {
-            return InsertAtOffset(target, 1);
-        }
-        /// <summary>
-        /// Insert every element in the set of matched elements after the target.
-        /// </summary>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        public CQ InsertAfter(string target)
-        {
-            return InsertAfter(Select(target));
-        }
-        
-
-        /// <summary>
-        /// A selector, element, HTML string, or jQuery object; the matched set of elements will be inserted before the element(s) specified by this parameter.
-        /// </summary>
-        /// <param name="target"></param>
-        /// <returns>The current CQ object</returns>
-        public CQ InsertBefore(string selector)
-        {
-            return InsertBefore(Select(selector));
-        }
-        public CQ InsertBefore(IDomObject target)
-        {
-            return InsertAtOffset(target, 0);
-        }
-        public CQ InsertBefore(IEnumerable<IDomObject> target)
-        {
-            return InsertAtOffset(target, 0);
-        }
-
-        /// <summary>
-        /// Get the immediately preceding sibling of each element in the set of matched elements, 
-        /// optionally filtered by a selector.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ Prev(string selector=null)
-        {
-            return nextPrevImpl(selector, false);
-        }   
-
-        /// <summary>
-        /// Get the immediately following sibling of each element in the set of matched elements. 
-        /// If a selector is provided, it retrieves the next sibling only if it matches that selector.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ Next(string selector=null)
-        {
-            return nextPrevImpl(selector, true);
-        }
-
-        /// <summary>
-        /// Get all following siblings of each element in the set of matched elements, 
-        /// optionally filtered by a selector.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ NextAll(string filter = null)
-        {
-            return nextPrevAllImpl(filter, true);
-        }
-
-        /// <summary>
-        /// Get all following siblings of each element up to but not including the element matched by the selector, DOM node, or jQuery object passed
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="filter"></param>
-        /// <returns></returns>
-        public CQ NextUntil(string selector=null, string filter=null)
-        {
-            return nextPrevUntilImpl(selector, filter,true);
-        }
-
-        /// <summary>
-        /// Get all following siblings of each element in the set of matched elements, 
-        /// optionally filtered by a selector.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ PrevAll(string filter = null)
-        {
-            return nextPrevAllImpl(filter, false);
-        }
-        /// <summary>
-        /// Get all preceding siblings of each element up to but not including the element matched by the selector, DOM node, or jQuery object passed
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="filter"></param>
-        /// <returns></returns>
-        public CQ PrevUntil(string selector=null, string filter=null)
-        {
-            return nextPrevUntilImpl(selector, filter, false);
-        }
-
-       
-        /// <summary>
-        /// Reduce the set of matched elements to a subset beginning with the 0-based index provided
-        /// </summary>
-        /// <param name="start">The 0-based index at which to begin selecting</param>
-        /// <returns></returns>
-        public CQ Slice(int start)
-        {
-            return Slice(start, SelectionSet.Count);
-        }
-        /// <summary>
-        /// Reduce the set of matched elements to a subset specified by a range of indices. 
-        /// </summary>
-        /// <param name="start">The 0-based index at which to begin selecting</param>
-        /// <param name="end">The 0-based index at which to stop selecting (up to but not including this index)</param>
-        /// <returns></returns>
-        public CQ Slice(int start, int end)
-        {
-            if (start < 0)
-            {
-                start = SelectionSet.Count + start;
-                if (start < 0) { start = 0; }
-            }
-            if (end < 0)
-            {
-                end = SelectionSet.Count + end;
-                if (end < 0) { end = 0; }
-            }
-            if (end >= SelectionSet.Count)
-            {
-                end = SelectionSet.Count;
-            }
-
-            CQ output= New();
-            
-            for (int i = start; i < end; i++)
-            {
-                output.SelectionSet.Add(SelectionSet[i]);
-            }
-            
-            return output;
-        }
-
-        /// <summary>
-        /// Get the parent of each element in the current set of matched elements, optionally filtered by a selector.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ Parent(string selector=null)
-        {
-            return filterIfSelector(selector, ForEachMany(Elements, parentImpl));
-        }
-        protected IEnumerable<IDomObject> parentImpl(IDomObject input)
-        {
-            if (input.ParentNode != null &&
-                input.ParentNode.NodeType == NodeType.ELEMENT_NODE)
-            {
-                yield return input.ParentNode;
-            }
-        }
-        /// <summary>
-        ///  Get the ancestors of each element in the current set of matched elements, 
-        ///  optionally filtered by a selector.
-        /// </summary>
-        /// <returns></returns>
-        public CQ Parents(string filter=null)
-        {
-            return ParentsUntil(null, filter);
-        }
-        public CQ ParentsUntil(string selector=null, string filter=null)
-        {
-            
             CQ output = New();
-            HashSet<IDomElement> targets = new HashSet<IDomElement>();
-            if (selector != null)
-            {
-                targets.AddRange(Select(selector).Elements);
-            }
-            var filtered = filterElementsIgnoreNull(parentsImpl(Elements, targets), filter);
-            output.SelectionSet.Order = SelectionSetOrder.Descending;
-            output.SelectionSet.AddRange(filtered);
-            
-            return output;
-        }
-       
-        protected IEnumerable<IDomElement> parentsImpl(IEnumerable<IDomElement> source, HashSet<IDomElement> until)
-        {
-
-            HashSet<IDomElement> alreadyAdded = new HashSet<IDomElement>();
-
             foreach (var item in source)
             {
-                int depth = item.Depth;
-                IDomElement parent = item.ParentNode as IDomElement;
-                while (parent != null && !until.Contains(parent))
-                {
-                    if (alreadyAdded.Add(parent))
-                    {
-                        yield return parent;
-                    }
-                    else
-                    {
-                        break;
-                    }
+                output.SelectionSet.AddRange(del(item));
+            }
+            return output;
+        }
 
-                    parent = parent.ParentNode as IDomElement;
+        /// <summary>
+        /// Runs a set of selectors and returns the combined result as a single enumerable.
+        /// </summary>
+        ///
+        /// <param name="selectors">
+        /// A sequence of strings that area each selectors
+        /// </param>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process merge selections in this collection.
+        /// </returns>
+
+        protected IEnumerable<IDomObject> MergeSelections(IEnumerable<string> selectors)
+        {
+            SelectionSet<IDomObject> allContent = new SelectionSet<IDomObject>(SelectionSetOrder.Ascending);
+
+            Each(selectors, item => allContent.AddRange(Select(item)));
+            return allContent;
+        }
+
+        /// <summary>
+        /// Runs a set of HTML creation selectors and returns result as a single enumerable.
+        /// </summary>
+        ///
+        /// <param name="content">
+        /// A sequence of strings that are each valid HTML
+        /// </param>
+        ///
+        /// <returns>
+        /// A new sequence containing all the elements from all the selectors.
+        /// </returns>
+
+        protected IEnumerable<IDomObject> MergeContent(IEnumerable<string> content)
+        {
+            List<IDomObject> allContent = new List<IDomObject>();
+            foreach (var item in content)
+            {
+                allContent.AddRange(CQ.CreateFragment(item));
+            }
+            return allContent;
+        }
+
+
+        /// <summary>
+        /// Enumerates only the IDomElements in the sequence provided. Any other elemnent types are excluded..
+        /// </summary>
+        ///
+        /// <param name="objects">
+        /// The objects.
+        /// </param>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process only elements in this collection.
+        /// </returns>
+
+        protected IEnumerable<IDomElement> OnlyElements(IEnumerable<IDomObject> objects)
+        {
+            foreach (var item in objects)
+            {
+                IDomElement el = item as IDomElement;
+                if (el != null)
+                {
+                    yield return el;
                 }
             }
-
-
-            //return results.Select(item => item.Item3);
-            //var comp = new parentComparer();
-            //return results.OrderBy(item=>item,comp).Select(item => item.Item3);
         }
-        class parentComparer : IComparer<Tuple<int, int, IDomElement>>
-        {
 
-            public int Compare(Tuple<int, int, IDomElement> x, Tuple<int, int, IDomElement> y)
-            {
-                int depth = y.Item1 - x.Item1;
-                return depth != 0 ? depth : x.Item2 - y.Item2;
-            }
-        }
         /// <summary>
-        /// Set one or more properties for the set of matched elements.
+        /// Filter a sequence using a selector if the selector is not empty. If it's empty, return a new
+        /// CQ object containing the original list.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
-        public CQ Prop(string name, IConvertible value)
-        {
-            // Prop actually works on things other than boolean - e.g. SelectedIndex. For now though only use prop for booleans
+        ///
+        /// <param name="selector">
+        /// The selector.
+        /// </param>
+        /// <param name="list">
+        /// The source sequence.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
 
-            if (HtmlData.IsBoolean(name))
+        protected CQ FilterIfSelector(string selector, IEnumerable<IDomObject> list)
+        {
+            return FilterIfSelector(selector, list, SelectionSetOrder.OrderAdded);
+        }
+
+        /// <summary>
+        /// Filter a sequence using a selector if the selector is not empty. If it's empty, return a new CQ object
+        /// containing the original list.
+        /// </summary>
+        ///
+        /// <param name="selector">
+        /// The selector.
+        /// </param>
+        /// <param name="list">
+        /// The source sequence
+        /// </param>
+        /// <param name="order">
+        /// The order in which the elements of the new CQ object should be returned
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object
+        /// </returns>
+
+        protected CQ FilterIfSelector(string selector, IEnumerable<IDomObject> list, SelectionSetOrder order)
+        {
+            CQ output;
+            if (String.IsNullOrEmpty(selector))
             {
-                SetProp(name, value);
+                output = new CQ(list, this);
             }
             else
             {
-                Attr(name, value);
+                output = new CQ(FilterElements(list, selector), this);
             }
-            return this;
-        }
-        public bool Prop(string name)
-        {
-            name=name.ToLower();
-            if (Length > 0 && HtmlData.IsBoolean(name))
-            {
-                bool has = this[0].HasAttribute(name);
-                // if there is nothing with the "selected" attribute, in non-multiple select lists, 
-                // the first one is selected by default by Sizzle. We will return that same information 
-                // when using prop.
-                // TODO: this won't work for the "selected" selector. Need to move this logic into DomElement 
-                // and use selected property instead to make this work. I am not sure I agree with the jQuery
-                // implementation anyway since querySelectorAll does NOT return this
-                if (name == "selected" && !has)
-                {
-                    var owner = First().Closest("select");
-                    string ownerSelected = owner.Val();
-                    if (ownerSelected == String.Empty && !owner.Prop("multiple"))
-                    {
-                        return ReferenceEquals(owner.Find("option")[0], this[0]);
-                    }
-
-                }
-                return has;
-            }
-            return false;
-        }
-
-
-        /// <summary>
-        /// Remove all selected elements from the DOM
-        /// </summary>
-        /// <returns></returns>
-        public CQ Remove(string selector=null)
-        {
-            SelectionSet<IDomObject> list = !String.IsNullOrEmpty(selector) ?
-                Filter(selector).SelectionSet :
-                SelectionSet;
-            
-            // We need to copy first because selection can change
-            List<IDomObject> removeList = new List<IDomObject>(list);
-            List<bool> disconnected = list.Select(item => item.IsDisconnected).ToList();
-
-            for (int index=0;index<list.Count;index++) 
-            {
-                var el = removeList[index];
-                if (disconnected[index])
-                {
-                    list.Remove(el);
-                }
-                if (el.ParentNode!=null) {
-                    el.Remove();
-                }
-            }
-            return this;
-        }
-        /// <summary>
-        /// This is synonymous with Remove in CsQuery, since there's nothing associated with an element
-        /// that is not rendered.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ Detach(string selector = null)
-        {
-            return Remove(selector);
-        }
-
-        public CQ RemoveClass()
-        {
-            Elements.ForEach(item =>
-            {
-                item.ClassName = "";
-            });
-            return this;
-        }
-        /// <summary>
-        /// Remove a single class, multiple classes, or all classes from each element in the set of matched elements.
-        /// </summary>
-        /// <param name="className"></param>
-        /// <returns></returns>
-        public CQ RemoveClass(string className)
-        {
-            
-            foreach (IDomElement e in Elements)
-            {
-                if (!String.IsNullOrEmpty(className))
-                {
-                    e.RemoveClass(className);
-                }
-            }
-           return this;
-        }
-
-
-        /// <summary>
-        /// Determine whether an element has any jQuery data associated with it.
-        /// </summary>
-        /// <returns></returns>
-        public bool HasData()
-        {
-            foreach (IDomElement el in Elements)
-            {
-                foreach (var kvp in el.Attributes)
-                {
-                    if (kvp.Key.StartsWith("data-"))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
+            output.Order = order;
+            return output;
         }
 
         /// <summary>
-        /// Replace each element in the set of matched elements with the provided new content.
+        /// Filter a sequence using a selector, ignoring missing selectors
         /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ ReplaceWith(params string[] content)
+        ///
+        /// <param name="elements">
+        /// The sequence to filter
+        /// </param>
+        /// <param name="selector">
+        /// The selector.
+        /// </param>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process filter elements in this collection.
+        /// </returns>
+
+        protected IEnumerable<IDomObject> FilterElements(IEnumerable<IDomObject> elements, string selector)
         {
-            if (Length > 0)
+            return FilterElementsIgnoreNull(elements, selector ?? "");
+        }
+
+        /// <summary>
+        /// Filter an element list using another selector. A null selector results in no filtering; an
+        /// empty string selector results in an empty list being return.
+        /// </summary>
+        ///
+        /// <param name="elements">
+        /// The sequence to filter.
+        /// </param>
+        /// <param name="selector">
+        /// The selector.
+        /// </param>
+        ///
+        /// <returns>
+        /// The filtered list.
+        /// </returns>
+
+        protected IEnumerable<IDomObject> FilterElementsIgnoreNull(IEnumerable<IDomObject> elements, string selector)
+        {
+            if (selector == "")
             {
-                // Before allows adding of new content to an empty selector. To ensure consistency with jQuery
-                // implentation, do not do this if called on an empty selector. 
-
-                // The logic here is tricky because we can do a replace on disconnected selection sets. This has to
-                // track what was orignally scheduled for removal in case the set changes in "Before" b/c it's disconnected.
-
-                CQ newContent = EnsureCsQuery(mergeContent(content));
-                CQ replacing = new CQ(this);
-                
-                Before(newContent);
-                SelectionSet.ExceptWith(replacing);
-                replacing.Remove();                
-                return this;
+                return Objects.EmptyEnumerable<IDomObject>();
+            }
+            else if (selector == null)
+            {
+                return elements;
             }
             else
             {
-                return this;
+                Selector selectors = new Selector(selector);
+                return selectors.Filter(Document, elements);
             }
         }
-        public CQ ReplaceWith(IDomObject element)
-        {
-            return ReplaceWith(Objects.Enumerate(element));
-        }
-        public CQ ReplaceWith(IEnumerable<IDomObject> elements)
-        {
-            return Before(elements).Remove();
-        }
-        /// <summary>
-        /// Replace the target element with the set of matched elements.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ ReplaceAll(string selector)
-        {
-            return ReplaceAll(Select(selector));
-        }
-        /// <summary>
-        /// Replace the target element with the set of matched elements.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ ReplaceAll(IDomObject target)
-        {
-            return ReplaceAll(Objects.Enumerate(target));
-        }
-        /// <summary>
-        /// Replace each target element with the set of matched elements.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public CQ ReplaceAll(IEnumerable<IDomObject> targets)
-        {
-            return EnsureCsQuery(targets).ReplaceWith(SelectionSet);
-        }
-        public CQ Show()
-        {
-            foreach (IDomElement e in Elements)
-            {
-                e.RemoveStyle("display");
-            }
-            return this;
-        }
-
-        /// <summary>
-        /// Get the current value of the first element in the set of matched elements, and try to convert to the specified type
-        /// </summary>
-        /// <returns></returns>
-        public T Val<T>()
-        {
-            string val = Val();
-            return Objects.Convert<T>(val);
-        }
-        public T ValOrDefault<T>()
-        {
-            string val = Val();
-            T outVal;
-            if (Objects.TryConvert<T>(val, out outVal))
-            {
-                return outVal;
-            }
-            else
-            {
-                return (T)Objects.DefaultValue(typeof(T));
-            }
-        }
-
-        /// <summary>
-        /// Get the current value of the first element in the set of matched elements.
-        /// </summary>
-        /// <returns></returns>
-        public string Val()
-        {
-            if (Length > 0)
-            {
-                IDomElement e = this.Elements.First();
-                switch(e.NodeNameID) {
-                    case HtmlData.tagTEXTAREA:
-                        return e.InnerText;
-                    case HtmlData.tagINPUT:
-                        string val = e.GetAttribute("value",String.Empty);
-                        switch(e.GetAttribute("type",String.Empty)) {
-                            case "radio":
-                            case "checkbox":
-                                if (String.IsNullOrEmpty(val))
-                                {
-                                    val = "on";
-                                }
-                                break;
-                            default:
-                                break;
-                        }
-                        return val;
-                    case HtmlData.tagSELECT:
-                        string result = String.Empty;
-                        // TODO optgroup handling (just like the setter code)
-                        var options =Find("option");
-                        if (options.Length==0) {
-                            return null;
-                        }
-                        
-                        foreach (IDomElement child in options)
-                        {
-                            bool disabled = child.HasAttribute("disabled") 
-                                || (child.ParentNode.NodeName == "OPTGROUP" && child.ParentNode.HasAttribute("disabled"));
-
-                            if (child.HasAttribute("selected") && !disabled)
-                            {
-                                var optVal = child.GetAttribute("value");
-                                if (optVal == null)
-                                {
-                                    optVal = child.Cq().Text();
-                                }
-                                result = result.ListAdd(optVal,",");
-                                if (!e.HasAttribute("multiple"))
-                                {
-                                    break;
-                                }
-                            }
-                        }
-                        
-                        if (result == String.Empty)
-                        {
-                            result = options[0].GetAttribute("value", String.Empty);
-                        }
-                        return result;
-                    case HtmlData.tagOPTION:
-                        val = e.GetAttribute("value");
-                        return val ?? e.InnerText;
-                    default:
-                        return e.GetAttribute("value",String.Empty);
-                }
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Set the value of each element in the set of matched elements. If a comma-separated value is passed to a multuple select list, then it
-        /// will be treated as an array.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public CQ Val(object value)
-        {
-            bool first = true;
-            string val = GetValueString(value);
-            foreach (IDomElement e in Elements)
-            {
-                switch (e.NodeName)
-                {
-                    case "TEXTAREA":
-                        // should we delete existing children first? they should not exist
-                        e.InnerText = val;
-                        break;
-                    case "INPUT":
-                        switch (e.GetAttribute("type",String.Empty))
-                        {
-                            case "checkbox":
-                            case "radio":
-                                if (first)
-                                {
-                                    SetOptionSelected(Elements, value, true);
-                                }
-                                break;
-                            default:
-                                e.SetAttribute("value", val);
-                                break;
-                        }
-                        break;
-                    case "SELECT":
-                        if (first) {
-                            var multiple = e.HasAttribute("multiple");
-                            SetOptionSelected(e.ChildElements, value, multiple);
-                        }
-                        break;
-                    default:
-                        e.SetAttribute("value", val);
-                        break;
-                }
-                first = false;
-
-            }
-            return this;
-        }
- 
-        /// <summary>
-        /// Set the CSS width of each element in the set of matched elements.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public CQ Width(int value)
-        {
-            return Width(value.ToString() + "px");
-        }
-
-        /// <summary>
-        /// Set the CSS width of each element in the set of matched elements.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public CQ Width(string value)
-        {
-            return Css("width", value);
-        }
-
-        /// <summary>
-        /// Set the CSS width of each element in the set of matched elements.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public CQ Height(int value)
-        {
-            return Height(value.ToString() + "px");
-        }
-
-        /// <summary>
-        /// Set the CSS height of each element in the set of matched elements.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public CQ Height(string value)
-        {
-            return Css("height", value);
-        }
-
-        /// <summary>
-        /// Check the current matched set of elements against a selector and return true if at least one of these elements matches the selector.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public bool Is(string selector)
-        {
-            return Filter(selector).Length > 0;
-        }
-
-        /// <summary>
-        /// Check the current matched set of elements against a selector and return true if at least one of these elements matches the selector.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public bool Is(IEnumerable<IDomObject> elements)
-        {
-            HashSet<IDomObject> els = new HashSet<IDomObject>(elements);
-            els.IntersectWith(SelectionSet);
-            return els.Count > 0;
-        }
-
-        /// <summary>
-        /// Check the current matched set of elements against a selector and return true if at least one of these elements matches the selector.
-        /// </summary>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        public bool Is(IDomObject element)
-        {
-            return SelectionSet.Contains(element);
-        }
+        
 
         #endregion
-
-        #region private helpers for public methods
-
-        private CQ nextPrevImpl(string selector, bool next)
-        {
-            return filterIfSelector(selector,
-                ForEach(Elements, (input) =>
-                {
-                    return next ? input.NextElementSibling : input.PreviousElementSibling;
-                }), next ? SelectionSetOrder.Ascending : SelectionSetOrder.Descending);
-        }
-        private CQ nextPrevAllImpl(string filter, bool next)
-        {
-            return filterIfSelector(filter, ForEachMany(Elements, (input) =>
-            {
-                return nextPrevAllImpl(input, next);
-            }), next ? SelectionSetOrder.Ascending : SelectionSetOrder.Descending);
-        }
-
-        private CQ nextPrevUntilImpl(string selector, string filter, bool next)
-        {
-            if (string.IsNullOrEmpty(selector))
-            {
-                return next ? NextAll(filter) : PrevAll(filter);
-            }
-
-            HashSet<IDomElement> untilEls = new HashSet<IDomElement>(Select(selector).Elements);
-            return filterIfSelector(filter, ForEachMany(Elements, (input) =>
-            {
-                return nextPrevUntilFilterImpl(input, untilEls, next);
-            }), next ? SelectionSetOrder.Ascending : SelectionSetOrder.Descending);
-        }
-
-        private IEnumerable<IDomObject> nextPrevAllImpl(IDomObject input, bool next)
-        {
-            IDomObject item = next ? input.NextElementSibling : input.PreviousElementSibling;
-            while (item != null)
-            {
-                yield return item;
-                item = next ? item.NextElementSibling : item.PreviousElementSibling;
-            }
-        }
-
-        private IEnumerable<IDomObject> nextPrevUntilFilterImpl(IDomObject input, HashSet<IDomElement> untilEls, bool next)
-        {
-            foreach (IDomElement el in nextPrevAllImpl(input, next))
-            {
-                if (untilEls.Contains(el))
-                {
-                    break;
-                }
-                yield return el;
-            }
-        }
-
-        /// <summary>
-        /// Helper for public Text() function to act recursively
-        /// </summary>
-        /// <param name="sb"></param>
-        /// <param name="elements"></param>
-        private void Text(StringBuilder sb, IEnumerable<IDomObject> elements)
-        {
-            IDomObject lastElement = null;
-            foreach (IDomObject obj in elements)
-            {
-                if (lastElement != null && obj.Index > 0
-                   && obj.PreviousSibling != lastElement)
-                {
-                    sb.Append(" ");
-                }
-                lastElement = obj;
-                switch (obj.NodeType)
-                {
-                    case NodeType.TEXT_NODE:
-                    case NodeType.CDATA_SECTION_NODE:
-                    case NodeType.COMMENT_NODE:
-                        sb.Append(obj.NodeValue);
-                        break;
-                    case NodeType.ELEMENT_NODE:
-                        Text(sb, obj.ChildNodes);
-                        break;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Support for InsertAfter and InsertBefore. An offset of 0 will insert before the current element. 1 after.
-        /// </summary>
-        /// <param name="target"></param>
-        /// <returns></returns>
-        private CQ InsertAtOffset(IDomObject target, int offset)
-        {
-            int index = target.Index;
-
-            foreach (var item in SelectionSet)
-            {
-                target.ParentNode.ChildNodes.Insert(index + offset, item);
-                index++;
-            }
-            return this;
-        }
-
-        private CQ Append(IEnumerable<IDomObject> elements, out CQ insertedElements)
-        {
-            insertedElements = New();
-            bool first = true;
-            foreach (var obj in Elements)
-            {
-                // Make sure they didn't really mean to add to a tbody or something
-                IDomElement target = getTrueTarget(obj);
-
-                // must copy the enumerable first, since this can cause
-                // els to be removed from it
-                List<IDomObject> list = new List<IDomObject>(elements);
-                foreach (var e in list)
-                {
-                    IDomObject toInsert = first ? e : e.Clone();
-                    target.AppendChild(toInsert);
-                    insertedElements.SelectionSet.Add(toInsert);
-                }
-                first = false;
-            }
-            return this;
-        }
-        #endregion
-
-
+        
     }
-
-
-    
 }

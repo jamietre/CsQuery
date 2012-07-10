@@ -498,11 +498,127 @@ namespace CsQuery
         #endregion
 
         #region Other methods
+        /// <summary>
+        /// Enumerate the values of the properties of an object to a sequence of type T
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> EnumerateProperties<T>(object obj)
+        {
+            return EnumerateProperties<T>(obj, new Type[] { typeof(ScriptIgnoreAttribute) });
+        }
 
+        /// <summary>
+        /// Enumerate the values of the properties of an object to a sequence of type T
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <param name="ignoreAttributes">All properties with an attribute of these types will be ignored</param>
+        /// <returns></returns>
+        public static IEnumerable<T> EnumerateProperties<T>(object obj, IEnumerable<Type> ignoreAttributes)
+        {
+            HashSet<Type> IgnoreList = new HashSet<Type>();
+            if (ignoreAttributes != null)
+            {
+                IgnoreList.AddRange(ignoreAttributes);
+            }
 
+            IDictionary<string, object> source;
+
+            if (obj is IDictionary<string, object>)
+            {
+                source = (IDictionary<string, object>)obj;
+            }
+            else
+            {
+                source = Objects.ToExpando<JsObject>(obj, false, ignoreAttributes);
+            }
+            foreach (KeyValuePair<string, object> kvp in source)
+            {
+                if (typeof(T) == typeof(KeyValuePair<string, object>))
+                {
+                    yield return (T)(object)(new KeyValuePair<string, object>(kvp.Key,
+                         kvp.Value is IDictionary<string, object> ?
+                            ToExpando((IDictionary<string, object>)kvp.Value) :
+                            kvp.Value));
+
+                }
+                else
+                {
+                    yield return Objects.Convert<T>(kvp.Value);
+                }
+            }
+
+        }
+        /// <summary>
+        /// Given a string, convert each uppercase letter to a "-" followed by the lower case letter.
+        /// E.g. "fontSize" becomes "font-size".
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The string to uncamelcase
+        /// </param>
+        ///
+        /// <returns>
+        /// A string
+        /// </returns>
+
+        public static string FromCamelCase(string name)
+        {
+            int pos = 0;
+            StringBuilder output = new StringBuilder();
+
+            while (pos < name.Length)
+            {
+                char cur = name[pos];
+                if (cur >= 'A' && cur <= 'Z')
+                {
+                    if (pos != 0)
+                    {
+                        output.Append("-");
+                    }
+                    output.Append(cur.ToLower());
+                }
+                else
+                {
+                    output.Append(cur);
+                }
+                pos++;
+            }
+            return output.ToString();
+
+        }
+
+        /// <summary>
+        /// Converts a name from dashed-separators to camelCase.
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The string to camelCase.
+        /// </param>
+        ///
+        /// <returns>
+        /// a dased-separated string
+        /// </returns>
+
+        public static string ToCamelCase(string name)
+        {
+            int pos = 0;
+            while (pos < name.Length)
+            {
+                if (name[pos] =='-')
+                {
+                    name = name.Substring(0, pos) + name.Substring(pos, 1).ToUpper() + name.Substring(pos + 1);
+                    pos++;
+                }
+                pos++;
+            }
+            return name;
+        }
         public static object DefaultValue(Type type)
         {
-            return type.IsValueType ? Activator.CreateInstance(type) : null;
+            return type.IsValueType ? Utility.FastActivator.CreateInstance(type) : null;
         }
         /// <summary>
         /// Returns an enumerable of one element from an object
@@ -637,7 +753,7 @@ namespace CsQuery
                     else
                     {
                         Type listType = typeof(List<>).MakeGenericType(new Type[1] { onlyType });
-                        list = (IList)Activator.CreateInstance(listType);
+                        list = (IList)Utility.FastActivator.CreateInstance(listType);
                     }
 
                     foreach (var item in objectList)

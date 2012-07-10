@@ -139,7 +139,7 @@ namespace CsQuery.Tests.jQuery
         {
 
             // switched out Window with Body, no concept of Window here
-            var window = jQuery("body");
+            var window = jQuery("body")[0];
             var elements = jQuery(document).Add(window);
 
             var inputElements = jQuery("#radio1,#radio2,#check1,#check2");
@@ -580,6 +580,9 @@ namespace CsQuery.Tests.jQuery
             //within and IDomDocument. For now just compare to null instead.
 
             var divs = jQuery("<div/>").Add("#sndp");
+
+
+            //[CsQuery] Fragments have no parent node
             //Assert.IsTrue( (int)divs[0].ParentNode.NodeType ==11, "Make sure the first element is still the disconnected node." );
             Assert.IsTrue(divs[0].ParentNode==null, "Make sure the first element is still the disconnected node.");
 
@@ -588,7 +591,7 @@ namespace CsQuery.Tests.jQuery
             Assert.AreEqual(divs[0].ParentNode,  null, "Make sure the first element is still the disconnected node.");
 
             divs = jQuery("#sndp").Add("<div/>");
-            Assert.IsTrue(divs[1].ParentNode==null, "Make sure the first element is still the disconnected node." );
+            Assert.AreEqual(divs[1].ParentNode,null, "Make sure the first element is still the disconnected node.");
 
             var tmp = jQuery("<div/>");
 
@@ -596,7 +599,11 @@ namespace CsQuery.Tests.jQuery
             Assert.AreEqual(x[0].Id, "x1", "Check on-the-fly element1" );
             Assert.AreEqual(x[1].Id, "x2", "Check on-the-fly element2" );
 
-            x = CQ.Create().Add(jQuery("<p id='x1'>xxx</p>").AppendTo(tmp)[0]).Add(jQuery("<p id='x2'>xxx</p>").AppendTo(tmp)[0]);
+            x = CQ.Create().Add(
+                    jQuery("<p id='x1'>xxx</p>").AppendTo(tmp)[0]
+                ).Add(
+                    jQuery("<p id='x2'>xxx</p>").AppendTo(tmp)[0]
+                );
             Assert.AreEqual(x[0].Id, "x1", "Check on-the-fly element1" );
             Assert.AreEqual(x[1].Id, "x2", "Check on-the-fly element2" );
 
