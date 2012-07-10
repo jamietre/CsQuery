@@ -717,9 +717,13 @@ namespace CsQuery.Implementation
         {
             get
             {
-                foreach (var id in _Classes)
-                {
-                    yield return HtmlData.TokenName(id);
+                if (!HasClasses) {
+                    yield break;
+                } else {
+                    foreach (var id in _Classes)
+                    {
+                        yield return HtmlData.TokenName(id);
+                    }
                 }
             }
         }

@@ -137,7 +137,25 @@ namespace CsQuery.Tests.Csharp.Miscellaneous
             
         }
 
+        /// <summary>
+        /// Bug - Classes collection failing when no classes.
+        /// </summary>
 
+        [Test,TestMethod]
+        public void ClassStartsWith() {
+            // filter elements based on having any class starting with "entry" using LINQ
+            
+            var html = Dom["TestHtml"];
+            var elements = html["span"].Where(item=>
+                    item.Classes.Where(cls=>cls.StartsWith("badge")).Any()
+                );
+
+            // wrap the sequence of elements in a CQ object again and use 
+            // Text() to get just the text
+
+            var text = new CQ(elements).Text();
+
+       }
         #region setup
         public override void FixtureSetUp()
         {

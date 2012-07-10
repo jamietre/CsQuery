@@ -6,6 +6,7 @@ This is an informal log of changes to the project; major issues will be logged a
 
 - Refactored pseudoclass selector engine into a type dictionary to permit user defined classes
 - Add "CsQuery.Config" static class to centralize configuration
+- Fix "IDomObject.Classes" breaking when no classes returned
 
 #####7/2/2012
 

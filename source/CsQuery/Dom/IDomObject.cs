@@ -89,9 +89,12 @@ namespace CsQuery
         string ClassName { get; set; }
 
         /// <summary>
-        /// A sequence of all the unique class names applied to this object.
+        /// All the unique class names applied to this object.
         /// </summary>
-
+        /// <value>
+        /// A sequence of strings	   
+        /// </value>
+        
         IEnumerable<string> Classes { get; }
 
         /// <summary>
