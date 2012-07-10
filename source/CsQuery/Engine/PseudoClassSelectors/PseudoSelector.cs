@@ -34,13 +34,14 @@ namespace CsQuery.Engine
         /// </param>
         ///
         /// <returns>
-        /// null to accept a string that can (but does not have to be) quoted, true to require a quoted
-        /// parameter, false to only accept an unqouted parameter.
+        /// NeverQuoted to treat quotes as any other character; AlwaysQuoted to require that a quote
+        /// character bounds the parameter; or OptionallyQuoted to accept a string that can (but does not
+        /// have to be) quoted. The default abstract implementation returns NeverQuoted.
         /// </returns>
 
-        protected virtual bool? ParameterQuoted(int index)
+        protected virtual QuotingRule ParameterQuoted(int index)
         {
-            return false;
+            return QuotingRule.NeverQuoted;
         }
 
         /// <summary>
@@ -153,18 +154,22 @@ namespace CsQuery.Engine
            
             while (!scanner.Finished)
             {
-                if (ParameterQuoted(index) == null)
+                var quoting = ParameterQuoted(index);
+                switch (quoting)
                 {
-                    scanner.Expect(MatchFunctions.OptionallyQuoted(","));
+                    case QuotingRule.OptionallyQuoted:
+                        scanner.Expect(MatchFunctions.OptionallyQuoted(","));
+                        break;
+                    case QuotingRule.AlwaysQuoted:
+                        scanner.Expect(MatchFunctions.Quoted());
+                        break;
+                    case QuotingRule.NeverQuoted:
+                        scanner.Seek(',', true);
+                        break;
+                    default:
+                        throw new NotImplementedException("Unimplemented quoting rule");
                 }
-                else if (ParameterQuoted(index) == true)
-                {
-                    scanner.Expect(MatchFunctions.Quoted());
-                }
-                else
-                {
-                    scanner.Seek(',', true);
-                }
+
                 parms.Add(scanner.Match);
                 if (!scanner.Finished)
                 {
@@ -179,29 +184,31 @@ namespace CsQuery.Engine
         protected string ParseSingleArg(string value)
         {
             IStringScanner scanner = Scanner.Create(value);
-                   
-            if (ParameterQuoted(1) == null)
+
+            var quoting = ParameterQuoted(0);
+            switch (quoting)
             {
-                scanner.Expect(MatchFunctions.OptionallyQuoted());
-                if (!scanner.Finished)
-                {
-                    throw new ArgumentException(InvalidArgumentsError());
-                }
-                return scanner.Match;
+                case QuotingRule.OptionallyQuoted:
+                    scanner.Expect(MatchFunctions.OptionallyQuoted());
+                    if (!scanner.Finished)
+                    {
+                        throw new ArgumentException(InvalidArgumentsError());
+                    }
+                    return scanner.Match;
+                case QuotingRule.AlwaysQuoted:
+
+                    scanner.Expect(MatchFunctions.Quoted());
+                    if (!scanner.Finished)
+                    {
+                        throw new ArgumentException(InvalidArgumentsError());
+                    }
+                    return scanner.Match;
+                case QuotingRule.NeverQuoted:
+                    return value;
+                default:
+                    throw new NotImplementedException("Unimplemented quoting rule");
             }
-            else if (ParameterQuoted(1) == true)
-            {
-                scanner.Expect(MatchFunctions.Quoted());
-                if (!scanner.Finished)
-                {
-                    throw new ArgumentException(InvalidArgumentsError());
-                }
-                return scanner.Match;
-            }
-            else
-            {
-                return value;
-            }
+        
         }
 
         /// <summary>

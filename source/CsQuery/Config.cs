@@ -16,7 +16,14 @@ namespace CsQuery
         /// <summary>
         /// The default rendering options. These are flags.
         /// </summary>
+        
         public static DomRenderingOptions DomRenderingOptions = DomRenderingOptions.QuoteAllAttributes;
+
+        /// <summary>
+        /// The default startup options. These are flags. 
+        /// </summary>
+
+        public static StartupOptions StartupOptions = StartupOptions.LookForExtensions;
 
         /// <summary>
         /// Default document type.

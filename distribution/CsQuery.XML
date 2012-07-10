@@ -2508,6 +2508,25 @@
              Throws an exception when the type does not inherit IPseudoSelector.
              </exception>
         </member>
+        <member name="M:CsQuery.Engine.PseudoSelectors.Register(System.Reflection.Assembly)">
+             <summary>
+             Registers all classes implementing IPseudoSelector in the namespace CsQuery.Extensions in the
+             passed assembly. If no assembly is provided, then inspects the calling assembly instead.
+             </summary>
+            
+             <remarks>
+             This method is called when the LookForExtensions startup option is set. (This is the default
+             setting).
+             </remarks>
+            
+             <param name="assembly">
+             The assembly to search.
+             </param>
+            
+             <returns>
+             The number of extensions added
+             </returns>
+        </member>
         <member name="M:CsQuery.Engine.PseudoSelectors.Unregister(System.String)">
              <summary>
              Unregisters the names pseudoclass filter.
@@ -2623,8 +2642,9 @@
              </param>
             
              <returns>
-             null to accept a string that can (but does not have to be) quoted, true to require a quoted
-             parameter, false to only accept an unqouted parameter.
+             NeverQuoted to treat quotes as any other character; AlwaysQuoted to require that a quote
+             character bounds the parameter; or OptionallyQuoted to accept a string that can (but does not
+             have to be) quoted. The default abstract implementation returns NeverQuoted.
              </returns>
         </member>
         <member name="M:CsQuery.Engine.PseudoSelector.ParseArgs(System.String)">
@@ -7313,6 +7333,11 @@
             Returns all elements
             </summary>
         </member>
+        <member name="T:CsQuery.StringScanner.Implementation.ExpectPattern">
+            <summary>
+            Abstract base class for IExpectPattern. This implements some helper functions that are commonly used by patterns.
+            </summary>
+        </member>
         <member name="T:CsQuery.StringScanner.IExpectPattern">
             <summary>
             An interface for pattern matching.
@@ -7371,24 +7396,145 @@
              The end index.
              </value>
         </member>
-        <member name="M:CsQuery.StringScanner.Implementation.ExpectPattern.Validate">
+        <member name="F:CsQuery.StringScanner.Implementation.ExpectPattern.info">
             <summary>
-            By default, returns true if the string is not empty
+            ICharacterInfo wrapper arond the current character. This class provides methods to test a
+            character for certain properties.
             </summary>
-            <param name="result"></param>
-            <param name="parsedResult"></param>
-            <returns></returns>
+        </member>
+        <member name="F:CsQuery.StringScanner.Implementation.ExpectPattern.Source">
+            <summary>
+            The source string being scanned
+            </summary>
+        </member>
+        <member name="F:CsQuery.StringScanner.Implementation.ExpectPattern.StartIndex">
+            <summary>
+            The starting index within the source string
+            </summary>
+        </member>
+        <member name="F:CsQuery.StringScanner.Implementation.ExpectPattern.Length">
+            <summary>
+            The total length of the source string
+            </summary>
+        </member>
+        <member name="M:CsQuery.StringScanner.Implementation.ExpectPattern.Initialize(System.Int32,System.Char[])">
+             <summary>
+             Initializes the pattern. This is called before any scanning begins.
+             </summary>
+            
+             <param name="startIndex">
+             The index within the source string to begin scanning.
+             </param>
+             <param name="sourceText">
+             The source string.
+             </param>
+        </member>
+        <member name="M:CsQuery.StringScanner.Implementation.ExpectPattern.Validate">
+             <summary>
+             Run the validation against the passed string
+             </summary>
+            
+             <returns>
+             Returns true if the pattern defined by this class is successfully matched, and false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.Implementation.ExpectPattern.MatchSubstring(System.Int32,System.String)">
+             <summary>
+             Test if a string matches a substring in the source
+             </summary>
+            
+             <param name="startIndex">
+             The index within the source string to begin scanning.
+             </param>
+             <param name="substring">
+             The substring to match
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.Implementation.ExpectPattern.GetOuput(System.Int32,System.Int32,System.Boolean)">
+             <summary>
+             Copy the source to an output string between startIndex and endIndex (exclusive), optionally
+             unescaping part of it.
+             </summary>
+            
+             <param name="startIndex">
+             The starting index to begin copying.
+             </param>
+             <param name="endIndex">
+             The ending index
+             </param>
+             <param name="honorQuotes">
+             true to honor quotes within the output string, false to treat them as any other characer.
+             </param>
+            
+             <returns>
+             The ouput.
+             </returns>
         </member>
         <member name="M:CsQuery.StringScanner.Implementation.ExpectPattern.GetOuput(System.Int32,System.Int32,System.Boolean,System.Boolean)">
-            <summary>
-            Copy the source to an output string betweem startIndex and endIndex, optionally unescaping part of it
-            </summary>
-            <param name="source"></param>
-            <param name="startIndex"></param>
-            <param name="endIndex"></param>
-            <param name="quotedStartIndex"></param>
-            <param name="quotedEndIndex"></param>
-            <returns></returns>
+             <summary>
+             Copy the source to an output string between startIndex and endIndex (exclusive), optionally
+             unescaping part of it.
+             </summary>
+            
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the requested operation is invalid.
+             </exception>
+            
+             <param name="startIndex">
+             The starting index to begin copying.
+             </param>
+             <param name="endIndex">
+             The ending index.
+             </param>
+             <param name="honorQuotes">
+             true to honor quotes within the output string, false to treat them as any other characer.
+             </param>
+             <param name="stripQuotes">
+             true to strip quotes.
+             </param>
+            
+             <returns>
+             The ouput.
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.Implementation.ExpectPattern.TryParseEscapeChar(System.Char,System.Char@)">
+             <summary>
+             Try parse escape character.
+             </summary>
+            
+             <param name="character">
+             The character.
+             </param>
+             <param name="newValue">
+             [out] The new value.
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="P:CsQuery.StringScanner.Implementation.ExpectPattern.EndIndex">
+             <summary>
+             Gets or sets zero-based index of the ending postion. This is one position after the last
+             matching character.
+             </summary>
+            
+             <value>
+             The end index.
+             </value>
+        </member>
+        <member name="P:CsQuery.StringScanner.Implementation.ExpectPattern.Result">
+             <summary>
+             When a valid string was found, the string.
+             </summary>
+            
+             <value>
+             A string.
+             </value>
         </member>
         <member name="P:CsQuery.StringScanner.Patterns.Number.RequireWhitespaceTerminator">
             <summary>
@@ -8093,7 +8239,12 @@
             http://mironabramson.com/blog/post/2008/08/Fast-version-of-the-ActivatorCreateInstance-method-using-IL.aspx
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:CsQuery.Utility.FastActivator.CreateInstance``1" -->
+        <member name="M:CsQuery.Utility.FastActivator.CreateInstance``1">
+            <summary>
+            Create an object that will used as a 'factory' to the specified type T 
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:CsQuery.ExtensionMethods.Forms.ExtensionMethods">
             <summary>
             Extension methods for use in form manipulation
@@ -9211,9 +9362,17 @@
              </param>
             
              <returns>
-             null to accept a string that can (but does not have to be) quoted, true to require a quoted
-             parameter, false to only accept an unqouted parameter.
+             NeverQuoted to treat quotes as any other character; AlwaysQuoted to require that a quote
+             character bounds the parameter; or OptionallyQuoted to accept a string that can (but does not
+             have to be) quoted.
              </returns>
+        </member>
+        <member name="F:CsQuery.StartupOptions.LookForExtensions">
+            <summary>
+            When true, CsQuery will scan the client assembly for extensions. Any classes 
+            found in a namespace CsQuery.Extensions will be configured automatically. Default is true; 
+            disable this flag to disable this behavior
+            </summary>
         </member>
         <member name="T:CsQuery.Config">
             <summary>
@@ -9223,6 +9382,11 @@
         <member name="F:CsQuery.Config.DomRenderingOptions">
             <summary>
             The default rendering options. These are flags.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Config.StartupOptions">
+            <summary>
+            The default startup options. These are flags. 
             </summary>
         </member>
         <member name="F:CsQuery.Config.DocType">
@@ -10225,15 +10389,17 @@
             <returns></returns>
         </member>
         <member name="M:CsQuery.StringScanner.Implementation.StringScannerEngine.Expect(CsQuery.StringScanner.IExpectPattern)">
-            <summary>
-            Continue seeking as long as the delegate returns true.
-            </summary>
-            <param name="validate">
-            A function accepting parameters int, CharacterInfo, char[] and returning bool.
-            int is the index of the matching string starting with 0
-            CharacterInfo is a wrapper for the current character
-            char[] is the remainder of the string starting at Pos
-            </param>
+             <summary>
+             Continue seeking as long as the delegate returns true.
+             </summary>
+            
+             <param name="pattern">
+             A class specifying the pattern to match.
+             </param>
+            
+             <returns>
+             The string scanner.
+             </returns>
         </member>
         <member name="M:CsQuery.StringScanner.Implementation.StringScannerEngine.Expect(System.Func{System.Int32,System.Char,System.Boolean})">
              <summary>

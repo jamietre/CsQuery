@@ -797,12 +797,15 @@ namespace CsQuery.StringScanner.Implementation
         /// <summary>
         /// Continue seeking as long as the delegate returns true.
         /// </summary>
-        /// <param name="validate">
-        /// A function accepting parameters int, CharacterInfo, char[] and returning bool.
-        /// int is the index of the matching string starting with 0
-        /// CharacterInfo is a wrapper for the current character
-        /// char[] is the remainder of the string starting at Pos
+        ///
+        /// <param name="pattern">
+        /// A class specifying the pattern to match.
         /// </param>
+        ///
+        /// <returns>
+        /// The string scanner.
+        /// </returns>
+
         public IStringScanner Expect(IExpectPattern pattern)
         {
             ExpectImpl(pattern);

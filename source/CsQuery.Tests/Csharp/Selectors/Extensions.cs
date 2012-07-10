@@ -8,6 +8,7 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
+using CollectionAssert = NUnit.Framework.CollectionAssert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
@@ -54,20 +55,26 @@ namespace CsQuery.Tests.Csharp.Selectors
         }
 
         [Test, TestMethod]
-        public void Regex()
+        public void AutoAddRegex()
         {
 
+            // The Regexp class should be automatically registered with the default startup options.
+            //CsQuery.Config.PseudoClassFilters.Register("regex", typeof(Regexp));
+
+
             var dom = TestDom("TestHtml");
-            CsQuery.Config.PseudoClassFilters.Register("regex", typeof(Regexp));
-           
+            
+            
             var res = dom.Select("span:regex(class,[0-9])");
 
+            CollectionAssert.AreEqual(res.Select(item => item.ClassName).ToArray(), Arrays.String("badge2", "badge3"),"Regex with class attribute worked");
+
+            // match anything with a width
+            res = dom.Select(":regex(css:width,'.+')");
+
+            Assert.AreEqual(1, res.Length);
+            Assert.AreEqual(dom["#hidden-div > :first-child"][0], res[0]);
         }
-
-
-
-
-
 
 
         /// <summary>
@@ -132,121 +139,8 @@ namespace CsQuery.Tests.Csharp.Selectors
             }
         }
 
-        /// <summary>
-        /// Port of James Padolsey's regex jQuery selector: http://james.padolsey.com/javascript/regex-selector-for-jquery/
-        /// </summary>
-
-        private class Regexp : PseudoSelectorFilter
-        {
-            private enum Modes {
-                Data=1,
-                Css=2,
-                Attr=3
-            }
-
-            private string Property;
-            private Modes Mode;
-            private Regex Expression;
-
-            public override bool Matches(IDomObject element)
-            {
-
-                switch (Mode)
-                {
-                    case Modes.Attr:
-                        return Expression.IsMatch(element[Property]);
-
-                    case Modes.Css:
-                        return Expression.IsMatch(element.Style[Property]);
-                    case Modes.Data:
-                        return Expression.IsMatch(element.Cq().DataRaw(Property));
-                    default: 
-                        throw new NotImplementedException();
-                }
-            }
-
-            private void Configure()
-            {
-                var validLabels = new Regex("/^(data|css):/");
-                
-                if (validLabels.IsMatch(Parameters[0]))
-                {
-                    string[] subParm =Parameters[0].Split(':');
-                    string methodName = subParm[0];
-
-                    if (methodName == "data")
-                    {
-                        Mode = Modes.Data;
-                    }
-                    else if (methodName == "css")
-                    {
-                        Mode = Modes.Css;
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Unknown mode for regex pseudoselector.");
-                    }
-                    Property = subParm[1];
-                }
-                else
-                {
-                    Mode = Modes.Attr;
-                    Property = Parameters[0];
-                }
-                Expression = new Regex(Parameters[1].RegexReplace(@"^\s+|\s+$/g",""),RegexOptions.IgnoreCase | RegexOptions.Multiline);
-            }
+       
 
 
-            // we override arguments to do some setup when this selector is first created since there's no need to do it
-            // on each call, as in the original code
-
-            public override string Arguments
-            {
-                get
-                {
-                    return base.Arguments;
-                }
-                set
-                {
-                    base.Arguments = value;
-                    Configure();
-                }
-            }
-
-            // Allow either parameter to be optionally quoted
-            protected override bool?  ParameterQuoted(int index)
-            {
- 	             return null;
-            }
-
-            public override int  MaximumParameterCount
-            {
-	            get 
-	            { 
-		             return 2;
-	            }
-            }
-            public override int  MinimumParameterCount
-            {
-	            get 
-	            { 
-		             return 2;
-	            }
-            }
-
-        }
-
-//        jQuery.expr[':'].regex = function(elem, index, match) {
-//    var matchParams = match[3].split(','),
-//        validLabels = /^(data|css):/,
-//        attr = {
-//            method: matchParams[0].match(validLabels) ? 
-//                        matchParams[0].split(':')[0] : 'attr',
-//            property: matchParams.shift().replace(validLabels,'')
-//        },
-//        regexFlags = 'ig',
-//        regex = new RegExp(matchParams.join('').replace(/^\s+|\s+$/g,''), regexFlags);
-//    return regex.test(jQuery(elem)[attr.method](attr.property));
-//}
     }
 }

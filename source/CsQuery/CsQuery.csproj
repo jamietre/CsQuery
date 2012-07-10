@@ -69,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config.cs" />
+    <Compile Include="Config\enumStartupOptions.cs" />
     <Compile Include="CQ_CsQuery\AttrReplace.cs" />
     <Compile Include="CQ_CsQuery\CreateFromUrl.cs" />
     <Compile Include="CQ_CsQuery\Create.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="Dom\IDomObjectT.cs" />
     <Compile Include="Dom\Implementation\AttributeCollection.cs" />
     <Compile Include="Dom\Implementation\AttributeCollection2.cs" />
+    <Compile Include="Engine\PseudoClassSelectors\enumQuotingRule.cs" />
     <Compile Include="Engine\PseudoClassSelectors\PseudoSelectorFilter.cs" />
     <Compile Include="Engine\PseudoClassSelectors\Css\Contains.cs" />
     <Compile Include="Engine\PseudoClassSelectors\IPseudoSelector.cs" />
@@ -264,7 +266,7 @@
     <Compile Include="CQ_CsQuery\_StaticMethods.cs" />
     <Compile Include="Dom\enumCssStyleType.cs" />
     <Compile Include="Dom\enumDocType.cs" />
-    <Compile Include="Dom\enumDomRenderingOptions.cs" />
+    <Compile Include="Config\enumDomRenderingOptions.cs" />
     <Compile Include="Dom\enumNodeType.cs" />
     <Compile Include="Dom\ICssStyle.cs" />
     <Compile Include="Dom\ICSSStyleDeclaration.cs" />

@@ -80,13 +80,14 @@ namespace CsQuery.Engine.PseudoClassSelectors
         /// </param>
         ///
         /// <returns>
-        /// null to accept a string that can (but does not have to be) quoted, true to require a quoted
-        /// parameter, false to only accept an unqouted parameter.
+        /// NeverQuoted to treat quotes as any other character; AlwaysQuoted to require that a quote
+        /// character bounds the parameter; or OptionallyQuoted to accept a string that can (but does not
+        /// have to be) quoted.
         /// </returns>
 
-        protected override bool? ParameterQuoted(int index)
+        protected override QuotingRule ParameterQuoted(int index)
         {
-            return null;
+            return QuotingRule.OptionallyQuoted;
         }
         
     }
