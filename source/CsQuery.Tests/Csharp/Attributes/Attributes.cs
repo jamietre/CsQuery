@@ -17,8 +17,6 @@ namespace CsQuery.Tests.Csharp.Attributes
     [TestClass,TestFixture]
     public class Attribute : CsQueryTest 
     {
-        Func<object,object> bareObj = (input) => {return input; };
-
         [TestMethod,Test]
         public void Show()
         {
@@ -189,6 +187,55 @@ namespace CsQuery.Tests.Csharp.Attributes
             el.SetAttribute("test");
             el.RemoveAttribute("test");
             Assert.AreEqual(null, el.GetAttribute("test"));
+
+        }
+
+        /// <summary>
+        /// Since class and style are not tracked as attributes internally, make sure they work
+        /// </summary>
+
+        [Test, TestMethod]
+        public void ClassStyleAttributes()
+        {
+            var dom = TestDom("TestHtml");
+
+            var el = dom["[class=profile-link]"][0];
+
+            Assert.IsTrue(el.HasAttribute("class"));
+            Assert.IsTrue(el.HasAttribute("style"));
+            Assert.AreEqual("profile-link",el["class"]);
+            Assert.AreEqual("color: #ff0000",el["style"]);
+
+            Assert.IsTrue(dom["[class]"].Length > 0);
+            Assert.IsTrue(dom["[style]"].Length > 0);
+
+
+            var badge2 = dom[".badge2"][0];
+
+            Assert.IsTrue(badge2.HasAttributes);
+            Assert.IsTrue(badge2.HasClasses);
+            Assert.IsFalse(badge2.HasStyles);
+            Assert.AreEqual("badge2", badge2.Attributes["class"]);
+            Assert.AreEqual("badge2", badge2["class"]);
+            Assert.AreEqual("badge2", badge2.GetAttribute("class"));
+            Assert.AreEqual(1,badge2.Classes.Count());
+            Assert.AreEqual("badge2",badge2.Classes.First());
+
+            var styleOnly = dom["#hidden-div > :first-child"][0];
+            var style= "width: 100; height: 200;";
+
+            Assert.IsTrue(styleOnly.HasAttributes);
+            Assert.IsFalse(styleOnly.HasClasses);
+            Assert.IsTrue(styleOnly.HasStyles);
+            Assert.AreEqual(style, styleOnly.Attributes["style"]);
+            Assert.AreEqual(style, styleOnly["style"]);
+            Assert.AreEqual(style, styleOnly.GetAttribute("style"));
+            Assert.AreEqual(2, styleOnly.Style.Count);
+            Assert.AreEqual(style, styleOnly.Style.ToString());
+
+            
+            
+
 
         }
 

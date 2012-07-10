@@ -88,7 +88,9 @@ namespace CsQuery.Tests.jQuery.Sizzle
 
             var res = attrbad["input[name=foo.baz]"];
             Assert.AreEqual(res.Single(), attrbad["input:first"].Single());
-            res = attrbad["input[name=foo[baz]]"];
+
+            // [CsQuery] see must quote things with stoppers
+            res = attrbad["input[name='foo[baz]']"];
             Assert.AreEqual(res.Single(), attrbad["input:last"].Single());
         }
         protected void broken<T>(string name, string selector, CQ context = null) where T : Exception

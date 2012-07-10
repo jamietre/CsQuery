@@ -28,7 +28,7 @@ namespace CsQuery.Implementation
         /// The dom attributes.
         /// </summary>
 
-        private AttributeCollection _DomAttributes;
+        private AttributeCollection _InnerAttributes;
 
         /// <summary>
         /// Backing field for _Style.
@@ -52,15 +52,32 @@ namespace CsQuery.Implementation
         /// Gets the dom attributes.
         /// </summary>
 
-        protected AttributeCollection DomAttributes
+        protected AttributeCollection InnerAttributes
         {
             get
             {
-                if (_DomAttributes == null)
+                if (_InnerAttributes == null)
                 {
-                    _DomAttributes = new AttributeCollection();
+                    _InnerAttributes = new AttributeCollection();
                 }
-                return _DomAttributes;
+                return _InnerAttributes;
+            }
+            set
+            {
+                _InnerAttributes = value;
+            }
+        }
+
+        /// <summary>
+        /// Returns true if this node has any actual attributes (not class or style)
+        /// </summary>
+
+        public bool HasInnerAttributes
+        {
+            get
+            {
+                return _InnerAttributes != null &&
+                    _InnerAttributes.HasAttributes;
             }
         }
 
@@ -200,7 +217,7 @@ namespace CsQuery.Implementation
             {
                 if (!IsFragment)
                 {
-                    if (DomAttributes.ContainsKey(HtmlData.IDAttrId))
+                    if (InnerAttributes.ContainsKey(HtmlData.IDAttrId))
                     {
                         Document.DocumentIndex.RemoveFromIndex(IndexKey("#", HtmlData.TokenIDCaseSensitive(Id), Path));
                     }
@@ -380,7 +397,9 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return _DomAttributes != null && DomAttributes.HasAttributes;
+                return HasClasses ||
+                    HasStyles ||
+                    HasInnerAttributes;
             }
         }
 
@@ -802,9 +821,9 @@ namespace CsQuery.Implementation
             }
             if (HasAttributes)
             {
-                foreach (ushort attrId in DomAttributes.GetAttributeIds())
+                foreach (var attr in (IAttributeCollection)this)
                 {
-                    yield return IndexKey("!", attrId, path);
+                    yield return IndexKey("!", HtmlData.TokenID(attr.Key), path);
                 }
             }
         }
@@ -824,7 +843,7 @@ namespace CsQuery.Implementation
 
             if (HasAttributes)
             {
-                clone._DomAttributes = DomAttributes.Clone();
+                clone._InnerAttributes = InnerAttributes.Clone();
             }
             if (HasClasses)
             {
@@ -1003,8 +1022,8 @@ namespace CsQuery.Implementation
                 case HtmlData.tagSTYLE:
                     return HasStyles;
                 default:
-                    return _DomAttributes != null
-                        && DomAttributes.ContainsKey(tokenId);
+                    return _InnerAttributes != null
+                        && InnerAttributes.ContainsKey(tokenId);
             }
         }
 
@@ -1098,7 +1117,6 @@ namespace CsQuery.Implementation
         public override void SetAttribute(string name)
         {
             SetAttribute(HtmlData.TokenID(name));
-            
         }
 
         /// <summary>
@@ -1111,8 +1129,13 @@ namespace CsQuery.Implementation
 
         public void SetAttribute(ushort tokenId)
         {
+            if (tokenId == HtmlData.ClassAttrId || tokenId == HtmlData.tagSTYLE)
+            {
+                throw new InvalidOperationException("You can't set class or style attributes as a boolean property.");
+            }
+            
             AttributeAddToIndex(tokenId);
-            DomAttributes.SetBoolean(tokenId);
+            InnerAttributes.SetBoolean(tokenId);
         }
 
         /// <summary>
@@ -1130,13 +1153,13 @@ namespace CsQuery.Implementation
         {
             if (value == null)
             {
-                DomAttributes.Unset(tokenId);
+                InnerAttributes.Unset(tokenId);
                 AttributeRemoveFromIndex(tokenId);
             }
             else
             {
                 AttributeAddToIndex(tokenId);
-                DomAttributes[tokenId] = value;
+                InnerAttributes[tokenId] = value;
             }
         }
 
@@ -1172,6 +1195,12 @@ namespace CsQuery.Implementation
 
         protected bool RemoveAttribute(ushort tokenId)
         {
+            if (!HasAttributes)
+            {
+                return false;
+            }
+
+
             switch (tokenId)
             {
                 case HtmlData.ClassAttrId:
@@ -1185,7 +1214,7 @@ namespace CsQuery.Implementation
                         return false;
                     }
                 case HtmlData.IDAttrId:
-                    if (DomAttributes.ContainsKey(HtmlData.IDAttrId))
+                    if (HasInnerAttributes && InnerAttributes.ContainsKey(HtmlData.IDAttrId))
                     {
                         Id = null;
                         return true;
@@ -1207,19 +1236,17 @@ namespace CsQuery.Implementation
                     {
                         return false;
                     }
-            }
+                default:
 
-            if (_DomAttributes == null)
-            {
-                return false;
-            }
 
-            bool success = DomAttributes.Remove(tokenId);
-            if (success)
-            {
-                AttributeRemoveFromIndex(tokenId);
+
+                    bool success = InnerAttributes.Remove(tokenId);
+                    if (success)
+                    {
+                        AttributeRemoveFromIndex(tokenId);
+                    }
+                    return success;
             }
-            return success;
             
         }
 
@@ -1341,8 +1368,8 @@ namespace CsQuery.Implementation
                     value = Style.ToString();
                     return true;
                 default:
-                    if (_DomAttributes != null) {
-                        return DomAttributes.TryGetValue(tokenId, out value);
+                    if (HasInnerAttributes) {
+                        return InnerAttributes.TryGetValue(tokenId, out value);
                     }
                     value = null;
                     return false;
@@ -1604,7 +1631,7 @@ namespace CsQuery.Implementation
 
         protected void AttributeAddToIndex(ushort attrId)
         {
-            if (!IsDisconnected && !DomAttributes.ContainsKey(attrId))
+            if (!IsDisconnected && !InnerAttributes.ContainsKey(attrId))
             {
 
                 Document.DocumentIndex.AddToIndex(AttributeIndexKey(attrId), this);
@@ -1783,9 +1810,9 @@ namespace CsQuery.Implementation
                 sb.Append("\"");
             }
 
-            if (_DomAttributes != null)
+            if (HasInnerAttributes)
             {
-                foreach (var kvp in _DomAttributes)
+                foreach (var kvp in InnerAttributes)
                 {
                     if (kvp.Key != "id")
                     {
@@ -1907,8 +1934,8 @@ namespace CsQuery.Implementation
             get {
                 int otherAttributes = (HasClasses ? 1 : 0) + (HasStyles ? 1 : 0);
 
-                return otherAttributes + (!HasAttributes ? 0 :
-                    DomAttributes.Count);
+                return otherAttributes + (!HasInnerAttributes ? 0 :
+                    InnerAttributes.Count);
             }
         }
 
@@ -1964,9 +1991,12 @@ namespace CsQuery.Implementation
             {
                 yield return new KeyValuePair<string, string>("style", Style.ToString());
             }
-            foreach (var kvp in DomAttributes)
+            if (HasInnerAttributes)
             {
-                yield return kvp;
+                foreach (var kvp in InnerAttributes)
+                {
+                    yield return kvp;
+                }
             }
         }
         

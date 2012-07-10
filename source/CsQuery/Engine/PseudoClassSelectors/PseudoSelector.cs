@@ -164,10 +164,14 @@ namespace CsQuery.Engine
                 else
                 {
                     scanner.Seek(',', true);
-                    scanner.Next();
                 }
                 parms.Add(scanner.Match);
-                index++;
+                if (!scanner.Finished)
+                {
+                    scanner.Next();
+                    index++;
+                }
+                
             }
             return parms.ToArray();
         }
