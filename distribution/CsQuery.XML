@@ -119,6 +119,50 @@
             http://aspalliance.com/author.aspx?uId=1026.
             </remarks>
         </member>
+        <member name="M:CsQuery.Objects.EnumerateProperties``1(System.Object)">
+            <summary>
+            Enumerate the values of the properties of an object to a sequence of type T
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.Objects.EnumerateProperties``1(System.Object,System.Collections.Generic.IEnumerable{System.Type})">
+            <summary>
+            Enumerate the values of the properties of an object to a sequence of type T
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="obj"></param>
+            <param name="ignoreAttributes">All properties with an attribute of these types will be ignored</param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.Objects.FromCamelCase(System.String)">
+             <summary>
+             Given a string, convert each uppercase letter to a "-" followed by the lower case letter.
+             E.g. "fontSize" becomes "font-size".
+             </summary>
+            
+             <param name="name">
+             The string to uncamelcase
+             </param>
+            
+             <returns>
+             A string
+             </returns>
+        </member>
+        <member name="M:CsQuery.Objects.ToCamelCase(System.String)">
+             <summary>
+             Converts a name from dashed-separators to camelCase.
+             </summary>
+            
+             <param name="name">
+             The string to camelCase.
+             </param>
+            
+             <returns>
+             a dased-separated string
+             </returns>
+        </member>
         <member name="M:CsQuery.Objects.Enumerate``1(``0)">
             <summary>
             Returns an enumerable of one element from an object
@@ -347,15 +391,31 @@
              A string
              </returns>
         </member>
-        <member name="T:CsQuery.Utility.SmallDictionary`2">
-            <summary>
-            A lightweight dictionary for small lists. This is intended to boost performance for situations where we know the list
-            will always be small (e.g. like HybridDictionary but even better since there's no need to check size ever). Performance
-            testing could reveal that this doesn't affect performance much or it should just be implemented with a regular dictionary;
-            I leave this is a different implementation than a standard dictionary so it can be easily changed in the future.
-            </summary>
-            <typeparam name="TKey"></typeparam>
-            <typeparam name="TValue"></typeparam>
+        <member name="M:CsQuery.Utility.Support.StreamToCharArray(System.IO.Stream)">
+             <summary>
+             Conver a stream to a character array.
+             </summary>
+            
+             <param name="stream">
+             The stream.
+             </param>
+            
+             <returns>
+             A character array.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Utility.Support.StringToCharArray(System.String)">
+             <summary>
+             Convert a string to a char array, if not null.
+             </summary>
+            
+             <param name="html">
+             The string.
+             </param>
+            
+             <returns>
+             The converted string, or null
+             </returns>
         </member>
         <member name="M:CsQuery.HtmlParser.IterationData.Reset">
             <summary>
@@ -443,16 +503,20 @@
             </summary>
         </member>
         <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.IsOneOf(System.Enum,System.Enum[])">
-            <summary>
-            Returns true if the enum is any of the parameters in question
-            </summary>
-            <param name="theEnum"></param>
-            <param name="value1"></param>
-            <param name="value2"></param>
-            <param name="value3"></param>
-            <param name="value4"></param>
-            <param name="value5"></param>
-            <returns></returns>
+             <summary>
+             Returns true if the enum is any of the parameters in question.
+             </summary>
+            
+             <param name="theEnum">
+             The enum object
+             </param>
+             <param name="values">
+             The values to test for
+             </param>
+            
+             <returns>
+             true if one of, false if not.
+             </returns>
         </member>
         <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.GetValue(System.Enum)">
             <summary>
@@ -468,13 +532,91 @@
             <param name="value"></param>
             <returns></returns>
         </member>
-        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.IsNullOrEmpty``1(System.Collections.Generic.ICollection{``0})">
+        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.AddRange``1(System.Collections.Generic.ICollection{``0},System.Collections.Generic.IEnumerable{``0})">
+             <summary>
+             Add all the items in a sequence to a collection.
+             </summary>
+            
+             <typeparam name="T">
+             The type of the collections.
+             </typeparam>
+             <param name="target">
+             The target collection
+             </param>
+             <param name="elements">
+             The elements to add
+             </param>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.Append``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0})">
+             <summary>
+             Append the contents of a second sequence to the end of a sequence
+             </summary>
+            
+             <typeparam name="T">
+             The type of objects in the sequences
+             </typeparam>
+             <param name="list">
+             The list to act on.
+             </param>
+             <param name="otherList">
+             List of others.
+             </param>
+            
+             <returns>
+             The combined sequence
+             </returns>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.IsNullOrEmpty``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
             Return true of a given collection is null or has no values
             </summary>
             <typeparam name="T"></typeparam>
             <param name="baseList"></param>
             <returns></returns>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.TryGetFirst``1(System.Collections.Generic.IEnumerable{``0},``0@)">
+            <summary>
+            Try to get the first element of a sequence. If the sequence is null or has no elements, return false.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="baseList"></param>
+            <param name="firstElement"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.SingleOrDefaultAlways``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Return a single element or the default value; does not fail on >1 value but also returns the default.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.ForEach``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0})">
+            <summary>
+            Iterate over a sequence, calling the delegate for each element
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+            <param name="func"></param>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.IndexOf``1(System.Collections.Generic.IEnumerable{``0},``0)">
+             <summary>
+             Return the zero-based index of item in a sequence.
+             </summary>
+            
+             <typeparam name="T">
+             The type of elements in the sequence.
+             </typeparam>
+             <param name="list">
+             The sequence to search through.
+             </param>
+             <param name="target">
+             The target collection.
+             </param>
+            
+             <returns>
+             The zero-based posiiton in the list where the item was found, or -1 if it was not found.
+             </returns>
         </member>
         <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.ListAdd(System.String,System.String,System.String)">
             <summary>
@@ -501,40 +643,6 @@
             <param name="text"></param>
             <param name="startIndex"></param>
             <param name="endIndex"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.Substring(System.Char[],System.Int32,System.Int32)">
-            <summary>
-            Return a substring from a character array
-            </summary>
-            <param name="text"></param>
-            <param name="startIndex"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.Substring(System.Char[],System.Int32)">
-            <summary>
-            Return a substring from a character array
-            </summary>
-            <param name="text"></param>
-            <param name="startIndex"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.Seek(System.Char[],System.String)">
-            <summary>
-            Return the position of the first occurrence of a string in a character array 
-            </summary>
-            <param name="text"></param>
-            <param name="seek"></param>
-            <param name="startIndex"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.Seek(System.Char[],System.String,System.Int32)">
-            <summary>
-            Return the position of the first occurrence of a string in a character array that is on or after startIndex
-            </summary>
-            <param name="text"></param>
-            <param name="seek"></param>
-            <param name="startIndex"></param>
             <returns></returns>
         </member>
         <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.RemoveWhitespace(System.String)">
@@ -576,39 +684,6 @@
             <param name="find">The text to find</param>
             <returns></returns>
         </member>
-        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.IsNullOrEmpty``1(System.Collections.Generic.IEnumerable{``0})">
-            <summary>
-            Test if a sequence is null or empty
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="baseList"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.TryGetFirst``1(System.Collections.Generic.IEnumerable{``0},``0@)">
-            <summary>
-            Try to get the first element of a sequence. If the sequence is null or has no elements, return false.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="baseList"></param>
-            <param name="firstElement"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.SingleOrDefaultAlways``1(System.Collections.Generic.IEnumerable{``0})">
-            <summary>
-            Return a single element or the default value; does not fail on >1 value but also returns the default.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="list"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.ForEach``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0})">
-            <summary>
-            Iterate over a sequence, calling the delegate for each element
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="list"></param>
-            <param name="func"></param>
-        </member>
         <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.CleanUp(System.String)">
             <summary>
             Clean a string by converts null to an empty string and trimming any whitespace from the beginning and end
@@ -639,30 +714,102 @@
             <param name="separator"></param>
             <returns></returns>
         </member>
-        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.IfNullOrEmpty(System.String,System.String)">
+        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.Substring(System.Char[],System.Int32,System.Int32)">
             <summary>
-            Test a string for null or empty; if true, returns an alternate value
+            Return a substring from a character array
             </summary>
-            <param name="value"></param>
-            <param name="alternate"></param>
+            <param name="text"></param>
+            <param name="startIndex"></param>
             <returns></returns>
         </member>
-        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.IfNull(System.String,System.String)">
+        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.Substring(System.Char[],System.Int32)">
             <summary>
-            Test a string for null; if true, returns an alternate value
+            Return a substring from a character array
             </summary>
-            <param name="value"></param>
-            <param name="alternate"></param>
+            <param name="text"></param>
+            <param name="startIndex"></param>
             <returns></returns>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.Seek(System.Char[],System.String)">
+            <summary>
+            Return the position of the first occurrence of a string in a character array 
+            </summary>
+            <param name="text"></param>
+            <param name="seek"></param>
+            <param name="startIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.Seek(System.Char[],System.String,System.Int32)">
+            <summary>
+            Return the position of the first occurrence of a string in a character array that is on or after startIndex
+            </summary>
+            <param name="text"></param>
+            <param name="seek"></param>
+            <param name="startIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.ToLower(System.Char)">
+             <summary>
+             Convert a single character to lower case
+             </summary>
+            
+             <param name="character">
+             The character to act on.
+             </param>
+            
+             <returns>
+             The lowercased character
+             </returns>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.ToUpper(System.Char)">
+             <summary>
+             Convert a single character to upper case
+             </summary>
+            
+             <param name="character">
+             The character to act on.
+             </param>
+            
+             <returns>
+             The uppercased character
+             </returns>
         </member>
         <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.IndexOf``1(``0[],``0,System.Int32)">
+             <summary>
+             Return the index of item in an array. If count is > 0 then that is considered the length of
+             the array.
+             </summary>
+            
+             <typeparam name="T">
+             .
+             </typeparam>
+             <param name="arr">
+             .
+             </param>
+             <param name="item">
+             .
+             </param>
+             <param name="count">
+             .
+             </param>
+            
+             <returns>
+             .
+             </returns>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.CloneList(System.Collections.IEnumerable)">
             <summary>
-            Return the index of item in an array. If count is > 0 then that is conisdered the length of the array
+            (Alpha) Clone a sequence of objects.
             </summary>
-            <typeparam name="T"></typeparam>
-            <param name="arr"></param>
-            <param name="item"></param>
-            <param name="count"></param>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.CloneList(System.Collections.IEnumerable,System.Boolean)">
+            <summary>
+            (Alpha) Deep clone a sequence of objects.
+            </summary>
+            <param name="obj"></param>
+            <param name="deep"></param>
             <returns></returns>
         </member>
         <member name="T:CsQuery.Implementation.DomText">
@@ -1225,8 +1372,11 @@
         </member>
         <member name="P:CsQuery.IDomObject.Classes">
             <summary>
-            A sequence of all the unique class names applied to this object.
+            All the unique class names applied to this object.
             </summary>
+            <value>
+            A sequence of strings	   
+            </value>
         </member>
         <member name="P:CsQuery.IDomObject.Value">
             <summary>
@@ -1988,7 +2138,7 @@
             The direct parent of this node.
             </summary>
         </member>
-        <member name="P:CsQuery.Implementation.DomObject.IsDisconnected">
+        <member name="P:CsQuery.Implementation.DomObject.IsFragment">
             <summary>
             The element is not associated with an IDomDocument.
             </summary>
@@ -2269,108 +2419,108 @@
             unique methods are nonstandard ones.
             </summary>
         </member>
-        <member name="M:CsQuery.Engine.PseudoSelectors.IsNthChild(CsQuery.IDomElement,System.String)">
-            <summary>
-            Criteria should be the formula, optionally preceded by a node type filter e.g. "span|2n"
-            </summary>
-            <param name="elm"></param>
-            <param name="criteria"></param>
-            <returns></returns>
+        <member name="M:CsQuery.Engine.PseudoSelectors.#ctor">
+             <summary>
+             Default constructor/.
+             </summary>
+            
+             <exception cref="T:System.Exception">
+             Throws an exception if an instance has already been assigned to the static Items property.
+             This class should instantiate itself as a singleton.
+             </exception>
         </member>
-        <member name="M:CsQuery.Engine.PseudoSelectors.IsNthLastChild(CsQuery.IDomElement,System.String)">
-            <summary>
-            Criteria should be the formula, optionally preceded by a node type filter e.g. "span|2n"
-            </summary>
-            <param name="elm"></param>
-            <param name="criteria"></param>
-            <returns></returns>
+        <member name="M:CsQuery.Engine.PseudoSelectors.GetInstance(System.String)">
+             <summary>
+             Gets an instance of a named pseudoselector
+             </summary>
+            
+             <exception cref="T:System.ArgumentException">
+             Thrown when the pseudoselector does not exist
+             </exception>
+            
+             <param name="name">
+             The name of the pseudoselector
+             </param>
+            
+             <returns>
+             A new instance
+             </returns>
         </member>
-        <member name="M:CsQuery.Engine.PseudoSelectors.IndexOfTypeOnly(CsQuery.IDomElement,System.String,System.Boolean)">
-            <summary>
-            Return the index of obj within its siblings, including only elements with the same node name
-            </summary>
-            <param name="obj"></param>
-            <returns></returns>
+        <member name="M:CsQuery.Engine.PseudoSelectors.GetRegisteredType(System.String)">
+             <summary>
+             Gets a registered pseudoclass filter type. If the name is not registered, an exception is
+             thrown.
+             </summary>
+            
+             <param name="name">
+             The name of the pseudoselector.
+             </param>
+            
+             <returns>
+             The registered type.
+             </returns>
         </member>
-        <member name="M:CsQuery.Engine.PseudoSelectors.NthChilds(CsQuery.IDomElement,System.String)">
-            <summary>
-            Criteria should be the formula, optionally preceded by a node type filter e.g. "span|2n"
-            </summary>
-            <param name="elm"></param>
-            <param name="criteria"></param>
-            <returns></returns>
+        <member name="M:CsQuery.Engine.PseudoSelectors.TryGetRegisteredType(System.String,System.Type@)">
+             <summary>
+             Try to get the type of a registered pseudoclass filter.
+             </summary>
+            
+             <param name="name">
+             The name of the pseudoselector.
+             </param>
+             <param name="Type">
+             [out] The type.
+             </param>
+            
+             <returns>
+             true if it the named filter was found, false if not.
+             </returns>
         </member>
-        <member name="M:CsQuery.Engine.PseudoSelectors.NthLastChilds(CsQuery.IDomElement,System.String)">
-            <summary>
-            Criteria should be the formula, optionally preceded by a node type filter e.g. "span|2n"
-            </summary>
-            <param name="elm"></param>
-            <param name="criteria"></param>
-            <returns></returns>
+        <member name="M:CsQuery.Engine.PseudoSelectors.TryGetInstance(System.String,CsQuery.Engine.IPseudoSelector@)">
+             <summary>
+             Try to gets an instance of a named pseudoclass filter.
+             </summary>
+            
+             <param name="name">
+             The name of the pseudoselector.
+             </param>
+             <param name="instance">
+             [out] The new instance.
+             </param>
+            
+             <returns>
+             true if succesful, false if a pseudoselector of that name doesn't exist.
+             </returns>
         </member>
-        <member name="M:CsQuery.Engine.PseudoSelectors.OnlyOfType(CsQuery.IDomObject,System.String)">
-            <summary>
-            Return all child elements of parent that are the only children of their type (or a specific type) within parent
-            </summary>
-            <param name="parent"></param>
-            <returns></returns>
+        <member name="M:CsQuery.Engine.PseudoSelectors.Register(System.String,System.Type)">
+             <summary>
+             Registers a new PseudoSelector type by name.
+             </summary>
+            
+             <param name="name">
+             The name of the pseudoselector.
+             </param>
+             <param name="type">
+             The type.
+             </param>
+            
+             <exception cref="T:System.ArgumentException">
+             Throws an exception when the type does not inherit IPseudoSelector.
+             </exception>
         </member>
-        <member name="M:CsQuery.Engine.PseudoSelectors.OnlyOfTypeImpl(CsQuery.IDomObject)">
-            <summary>
-            When there's no type, it must return all children that are the only one of that type
-            </summary>
-            <param name="parent"></param>
-            <returns></returns>
+        <member name="M:CsQuery.Engine.PseudoSelectors.Unregister(System.String)">
+             <summary>
+             Unregisters the names pseudoclass filter.
+             </summary>
+            
+             <param name="name">
+             The name of the pseudoselector.
+             </param>
         </member>
-        <member name="M:CsQuery.Engine.PseudoSelectors.IsEmpty(CsQuery.IDomObject)">
+        <member name="P:CsQuery.Engine.PseudoSelectors.Items">
             <summary>
-            Element nodes and non-empty text nodes are considered to be children; empty text nodes, comments,
-            and processing instructions don’t count as children. A text node is considered empty if it has a data 
-            length of zero; so, for example, a text node with a single space isn’t empty.
+            Static instance of the PseudoSelectors singleton.
             </summary>
-            <param name="elm"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.Engine.PseudoSelectors.Empty(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
-            <summary>
-            Return all child nodes that are empty
-            </summary>
-            <param name="list"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.Engine.PseudoSelectors.IsParent(CsQuery.IDomObject)">
-            <summary>
-            Return true of the node is a parent.
-            Element nodes and non-empty text nodes are considered to be children; empty text nodes, comments,
-            and processing instructions don’t count as children. A text node is considered empty if it has a data 
-            length of zero; so, for example, a text node with a single space isn’t empty.
-            </summary>
-            <param name="elm"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.Engine.PseudoSelectors.Has(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},CsQuery.IDomDocument,CsQuery.Engine.Selector)">
-            <summary>
-            Return all elements of "list" that match selector
-            </summary>
-            <param name="list"></param>
-            <param name="document"></param>
-            <param name="criteria"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.Engine.PseudoSelectors.Visible(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
-            <summary>
-            Return all child nodes that are visible
-            </summary>
-            <param name="list"></param>
-            <returns></returns>
-        </member>
-        <!-- Badly formed XML comment ignored for member "M:CsQuery.Engine.PseudoSelectors.IsVisible(CsQuery.IDomObject)" -->
-        <member name="M:CsQuery.Engine.PseudoSelectors.Enumerate(CsQuery.IDomObject)">
-            <summary>
-            Yield nothing if obj is null, or the object if not
-            </summary>
-            <param name="obj"></param>
-            <returns></returns>
         </member>
         <member name="M:CsQuery.EquationParser.Implementation.Operand.Clone">
             <summary>
@@ -2411,6 +2561,282 @@
             <summary>
             The name of this variable
             </summary>
+        </member>
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.OnlyChild">
+             <summary>
+             Mathches elements that are the the first child of a parent
+             </summary>
+            
+             <url>
+             http://reference.sitepoint.com/css/pseudoclass-firstchild
+             </url>
+        </member>
+        <member name="T:CsQuery.Engine.PseudoSelectorChild">
+            <summary>
+            Base class for an Child-type pseudoselector.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Engine.PseudoSelector">
+            <summary>
+            Base class for any pseudoselector that implements validation of min/max parameter values, and
+            argument validation. When implementing a pseudoselector, you must also implement an interface for the type
+            of pseudoselector
+            </summary>
+        </member>
+        <member name="P:CsQuery.Engine.IPseudoSelector.Arguments">
+            <summary>
+            This method is called before any validations are called against this selector. This gives the
+            developer an opportunity to throw errors based on the configuration outside of the validation
+            methods.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Engine.IPseudoSelector.MinimumParameterCount">
+             <summary>
+             The minimum number of parameters that this selector requires. If there are no parameters, return 0
+             </summary>
+            
+             <value>
+             An integer
+             </value>
+        </member>
+        <member name="P:CsQuery.Engine.IPseudoSelector.MaximumParameterCount">
+             <summary>
+             The maximum number of parameters that this selector can accept. If there is no limit, return -1.
+             </summary>
+            
+             <value>
+             An integer
+             </value>
+        </member>
+        <member name="P:CsQuery.Engine.IPseudoSelector.Name">
+            <summary>
+            Gets CSS name of the pseudoselector
+            </summary>
+        </member>
+        <member name="M:CsQuery.Engine.PseudoSelector.ParameterQuoted(System.Int32)">
+             <summary>
+             A value to determine how to parse the string for a parameter at a specific index.
+             </summary>
+            
+             <param name="index">
+             Zero-based index of the parameter.
+             </param>
+            
+             <returns>
+             null to accept a string that can (but does not have to be) quoted, true to require a quoted
+             parameter, false to only accept an unqouted parameter.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Engine.PseudoSelector.ParseArgs(System.String)">
+             <summary>
+             Parse the arguments using the rules returned by the ParameterQuoted method.
+             </summary>
+            
+             <param name="value">
+             The arguments
+             </param>
+            
+             <returns>
+             An array of strings
+             </returns>
+        </member>
+        <member name="M:CsQuery.Engine.PseudoSelector.ValidateParameters(System.String[])">
+             <summary>
+             Validates a parameter array against the expected number of parameters.
+             </summary>
+            
+             <exception cref="T:System.ArgumentException">
+             Thrown when the wrong number of parameters is passed.
+             </exception>
+            
+             <param name="parameters">
+             Criteria (or parameter) data passed with the pseudoselector.
+             </param>
+        </member>
+        <member name="M:CsQuery.Engine.PseudoSelector.ParameterCountMismatchError">
+             <summary>
+             Gets the string for a parameter count mismatch error.
+             </summary>
+            
+             <returns>
+             A string to be used as an exception message.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Engine.PseudoSelector.InvalidArgumentsError">
+             <summary>
+             Get a string for an error when there are invalid arguments
+             </summary>
+            
+             <returns>
+             A string to be used as an exception message.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Engine.PseudoSelector.Parameters">
+            <summary>
+            Gets or sets criteria (or parameter) data passed with the pseudoselector
+            </summary>
+        </member>
+        <member name="P:CsQuery.Engine.PseudoSelector.Arguments">
+             <summary>
+             This method is called before any validations are called against this selector. This gives the
+             developer an opportunity to throw errors based on the configuration outside of the validation
+             methods.
+             </summary>
+            
+             <value>
+             The arguments.
+             </value>
+        </member>
+        <member name="P:CsQuery.Engine.PseudoSelector.MinimumParameterCount">
+             <summary>
+             The minimum number of parameters that this selector requires. If there are no parameters, return 0
+             </summary>
+            
+             <value>
+             An integer
+             </value>
+        </member>
+        <member name="P:CsQuery.Engine.PseudoSelector.MaximumParameterCount">
+             <summary>
+             The maximum number of parameters that this selector can accept. If there is no limit, return -1.
+             </summary>
+            
+             <value>
+             An integer
+             </value>
+        </member>
+        <member name="P:CsQuery.Engine.PseudoSelector.Name">
+            <summary>
+            Return the properly cased name of this selector (the class name in non-camelcase)
+            </summary>
+        </member>
+        <member name="T:CsQuery.Engine.IPseudoSelectorChild">
+            <summary>
+            A pseudo-selector that depends only on an actual element's properties and/or it's
+            relationship to other elements within the DOM. All CSS pseudoselectors fall within this
+            category.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Engine.IPseudoSelectorChild.Matches(CsQuery.IDomObject)">
+             <summary>
+             Test whether this element matches the selector implementation.
+             </summary>
+            
+             <param name="element">
+             The object.
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Engine.IPseudoSelectorChild.ChildMatches(CsQuery.IDomContainer)">
+             <summary>
+             Return a sequence of all children matching the selector implementation
+             </summary>
+            
+             <param name="element">
+             The parent element.
+             </param>
+            
+             <returns>
+             A sequence of children that match
+             </returns>
+        </member>
+        <member name="M:CsQuery.Engine.PseudoSelectorChild.Matches(CsQuery.IDomObject)">
+             <summary>
+             Test whether an element matches this selector.
+             </summary>
+            
+             <param name="element">
+             The element to test.
+             </param>
+            
+             <returns>
+             true if it matches, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Engine.PseudoSelectorChild.ChildMatches(CsQuery.IDomContainer)">
+             <summary>
+             Basic implementation of ChildMatches, runs the Matches method against each child. This should
+             be overridden with something more efficient if possible. For example, selectors that inspect
+             the element's index could get their results more easily by picking the correct results from
+             the list of children rather than testing each one.
+             
+             Also note that the default iterator for ChildMatches only passed element (e.g. non-text node)
+             children. If you wanted to design a filter that worked on other node types, you should
+             override this to access all children instead of just the elements.
+             </summary>
+            
+             <param name="element">
+             The parent element.
+             </param>
+            
+             <returns>
+             A sequence of children that match.
+             </returns>
+        </member>
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.Visible">
+            <summary>
+            A pseudoselector that returns elements that are visible. Visibility is defined by CSS: a
+            nonzero opacity, a display that is not "hidden", and the absence of zero-valued width &amp;
+            heights. Additionally, input elements of type "hidden" are always considered not visible.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Engine.PseudoSelectorFilter">
+            <summary>
+            A base class for filter-type selectors that implements a simple iterator function and calls
+            Matches for each element. Classes that depend on the element's position in the filtered list
+            cannot use this and should implement IPseudoSelectorFilter directly.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Engine.IPseudoSelectorFilter">
+            <summary>
+            A pseudoselector that filters a list of elements. Most jQuery extensions fall within this
+            category.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Engine.IPseudoSelectorFilter.Filter(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+             <summary>
+             Filter only the elements matching this result-list position type selector
+             </summary>
+            
+             <param name="element">
+             The sequence of elements prior to this filter being applied
+             </param>
+            
+             <returns>
+             A sequence of matching elements.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Engine.PseudoSelectorFilter.Matches(CsQuery.IDomObject)">
+             <summary>
+             Test whether an element matches this selector.
+             </summary>
+            
+             <param name="element">
+             The element to test.
+             </param>
+            
+             <returns>
+             true if it matches, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Engine.PseudoSelectorFilter.Filter(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+             <summary>
+             Basic implementation of ChildMatches, runs the Matches method against each child. This should
+             be overridden with something more efficient if possible. For example, selectors that inspect
+             the element's index could get their results more easily by picking the correct results from
+             the list of children rather than testing each one.
+             </summary>
+            
+             <param name="element">
+             The parent element.
+             </param>
+            
+             <returns>
+             A sequence of children that match.
+             </returns>
         </member>
         <member name="T:CsQuery.Implementation.AttributeCollection2">
             <summary>
@@ -2588,6 +3014,51 @@
              <url>
              http://api.jquery.com/each/
              </url>
+        </member>
+        <member name="M:CsQuery.CQ.Each``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0})">
+            <summary>
+            Iterate over each element in a sequence, and call a delegate for each element
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="list"></param>
+            <param name="func"></param>
+        </member>
+        <member name="M:CsQuery.CQ.Extend(System.Object,System.Object[])">
+             <summary>
+             Map each property of the objects in sources to the target object.  Returns an expando object
+             (either the target object, if it's an expando object, or a new expando object)
+             </summary>
+            
+             <param name="target">
+             .
+             </param>
+             <param name="sources">
+             .
+             </param>
+            
+             <returns>
+             .
+             </returns>
+        </member>
+        <member name="M:CsQuery.CQ.Extend(System.Boolean,System.Object,System.Object[])">
+             <summary>
+             Map each property of the objects in sources to the target object.  Returns an expando object
+             (either the target object, if it's an expando object, or a new expando object)
+             </summary>
+            
+             <param name="deep">
+             true to deep.
+             </param>
+             <param name="target">
+             .
+             </param>
+             <param name="sources">
+             .
+             </param>
+            
+             <returns>
+             .
+             </returns>
         </member>
         <member name="M:CsQuery.CQ.Clone">
              <summary>
@@ -2806,6 +3277,43 @@
              <url>
              http://api.jquery.com/end/
              </url>
+        </member>
+        <member name="M:CsQuery.CQ.Map``1(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},System.Func{CsQuery.IDomObject,``0})">
+             <summary>
+             Map each element of the result set to a new form. If a value is returned from the function,
+             the element will be excluded.
+             </summary>
+            
+             <typeparam name="T">
+             .
+             </typeparam>
+             <param name="elements">
+             .
+             </param>
+             <param name="function">
+             .
+             </param>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process map&lt; t&gt; in this collection.
+             </returns>
+        </member>
+        <member name="M:CsQuery.CQ.Map``1(System.Func{CsQuery.IDomObject,``0})">
+             <summary>
+             Map each element of the result set to a new form. If a value is returned from the function,
+             the element will be excluded.
+             </summary>
+            
+             <typeparam name="T">
+             Generic type parameter.
+             </typeparam>
+             <param name="function">
+             .
+             </param>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process map&lt; t&gt; in this collection.
+             </returns>
         </member>
         <member name="M:CsQuery.CQ.Closest(System.String)">
              <summary>
@@ -3602,6 +4110,44 @@
             Clears the current selection set.
             </summary>
         </member>
+        <member name="M:CsQuery.CQ.SetSelection(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},CsQuery.Implementation.SelectionSetOrder,CsQuery.Implementation.SelectionSetOrder)">
+             <summary>
+             Sets the selection set for this object, and asserts that the order in which it as assigned is
+             the order passed. This allows most operations to return the original set directly; if it is
+             requested in a different order then it will be sorted.
+             </summary>
+            
+             <param name="selectionSet">
+             The current selection set including all node types.
+             </param>
+             <param name="inputOrder">
+             The order in which the elements appear in selectionSet. If omitted, Ascending is the default.
+             </param>
+             <param name="outputOrder">
+             The default output order, if different from the inputOrder. If omitted, the same as the input
+             order is the default.
+             </param>
+            
+             <returns>
+             The current CQ object
+             </returns>
+        </member>
+        <member name="M:CsQuery.CQ.SetSelection(CsQuery.IDomObject,CsQuery.Implementation.SelectionSetOrder)">
+             <summary>
+             Sets the selection set for this object to a single element..
+             </summary>
+            
+             <param name="element">
+             The element to add.
+             </param>
+             <param name="outputOrder">
+             The default output order. If omitted, Ascending (DOM) order is the default.
+             </param>
+            
+             <returns>
+             The current CQ object
+             </returns>
+        </member>
         <member name="M:CsQuery.CQ.MapMultipleValues(System.Object)">
              <summary>
              Map a CSV or enumerable object to a hashset.
@@ -3743,7 +4289,7 @@
              A new CQ object.
              </returns>
         </member>
-        <member name="M:CsQuery.CQ.FilterIfSelector(System.String,System.Collections.Generic.IEnumerable{CsQuery.IDomObject},CsQuery.Utility.SelectionSetOrder)">
+        <member name="M:CsQuery.CQ.FilterIfSelector(System.String,System.Collections.Generic.IEnumerable{CsQuery.IDomObject},CsQuery.Implementation.SelectionSetOrder)">
              <summary>
              Filter a sequence using a selector if the selector is not empty. If it's empty, return a new CQ object
              containing the original list.
@@ -4012,6 +4558,134 @@
              </url>
              
         </member>
+        <member name="M:CsQuery.CQ.Create">
+             <summary>
+             Create an empty CQ object.
+             </summary>
+            
+             <returns>
+             A new CQ object
+             </returns>
+        </member>
+        <member name="M:CsQuery.CQ.Create(System.Char[])">
+             <summary>
+             Create a new CQ object from an HTML character array.
+             </summary>
+            
+             <param name="html">
+             The HTML source for the document
+             </param>
+            
+             <returns>
+             A new CQ object
+             </returns>
+        </member>
+        <member name="M:CsQuery.CQ.Create(CsQuery.IDomObject)">
+             <summary>
+             Create a new CQ object from a single element. Unlike the constructor method <see cref="T:CsQuery.CQ"/>
+             this new objet is not bound to any context from the element.
+             </summary>
+            
+             <param name="element">
+             The element to wrap
+             </param>
+            
+             <returns>
+             A new CQ object
+             </returns>
+        </member>
+        <member name="M:CsQuery.CQ.Create(System.String)">
+            <summary>
+            Creeate a new CQ object from an HTML string
+            </summary>
+            <param name="html"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.Create(System.String,System.Object)">
+            <summary>
+            Create a new CQ from an HTML fragment, and use quickSet to create attributes (and/or css)
+            </summary>
+            <param name="html">A string of HTML</param>
+            <param name="quickSet">an object containing CSS properties and attributes to be applied to the resulting fragment</param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.Create(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+            <summary>
+            Creeate a new CQ object from a squence of elements, or another CQ object
+            </summary>
+            <param name="elements">A sequence of elements</param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.Create(System.IO.Stream)">
+            <summary>
+            Create a new CQ object from a stream of HTML, treating the HTML as a content document
+            </summary>
+            <param name="stream"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.CreateFragment(System.String)">
+            <summary>
+            Creeate a new fragment from HTML text
+            </summary>
+            <param name="html"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.CreateFragment(System.Char[])">
+            <summary>
+            Create a new fragment from HTML text
+            </summary>
+            <param name="html"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.CreateFragment(System.IO.Stream)">
+            <summary>
+            Create a new fragment from a stream of HTML text
+            </summary>
+            <param name="html"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.CreateFragment(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+            <summary>
+            Creeate a new CQ object from a squence of elements, or another CQ object
+            </summary>
+            <param name="elements">A sequence of elements</param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.CreateDocument(System.String)">
+            <summary>
+            Creeate a new DOM from HTML text using full HTML5 tag generation
+            </summary>
+            <param name="html"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.CreateDocument(System.Char[])">
+            <summary>
+            Creeate a new DOM from HTML text using full HTML5 tag generation
+            </summary>
+            <param name="html"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.CreateDocument(System.IO.Stream)">
+            <summary>
+            UNTESTED!
+            </summary>
+            <param name="html"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.CreateDocumentFromFile(System.String)">
+            <summary>
+            Creates a new DOM from an HTML file.
+            </summary>
+            <param name="htmlFile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.CreateFromFile(System.String)">
+            <summary>
+            Creates a new DOM from an HTML file.
+            </summary>
+            <param name="htmlFile"></param>
+            <returns></returns>
+        </member>
         <member name="M:CsQuery.CQ.SelectionHtml">
              <summary>
              Returns the HTML for all selected documents, separated by commas. No inner html or children
@@ -4046,6 +4720,57 @@
              <returns>
              A string of HTML.
              </returns>
+        </member>
+        <member name="M:CsQuery.CQ.CreateFromUrl(System.String,CsQuery.Web.ServerConfig)">
+            <summary>
+            Creates a new DOM from an HTML file.
+            </summary>
+            <param name="htmlFile"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.CreateFromUrlAsync(System.String,CsQuery.Web.ServerConfig)">
+            <summary>
+            Start an asynchronous request to an HTTP server, returning a promise that will resolve when the request is completed or rejected
+            </summary>
+            <param name="url"></param>
+            <param name="callbackSuccess"></param>
+            <param name="callbackFail"></param>
+            <param name="options"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.CreateFromUrlAsync(System.String,System.Action{CsQuery.Web.ICsqWebResponse},System.Action{CsQuery.Web.ICsqWebResponse},CsQuery.Web.ServerConfig)">
+            <summary>
+            Start an asynchronous request to an HTTP server
+            </summary>
+            <param name="url"></param>
+            <param name="callbackSuccess"></param>
+            <param name="callbackFail"></param>
+            <param name="options"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.CreateFromUrlAsync(System.String,System.Int32,System.Action{CsQuery.Web.ICsqWebResponse},System.Action{CsQuery.Web.ICsqWebResponse},CsQuery.Web.ServerConfig)">
+            <summary>
+            Start an asynchronous request to an HTTP server
+            </summary>
+            <param name="url"></param>
+            <param name="callbackSuccess"></param>
+            <param name="callbackFail"></param>
+            <param name="options"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.CQ.WaitForAsyncEvents(System.Int32)">
+            <summary>
+            Waits until all async events have completed. Use for testing primarily as a web app should not stop normally.
+            </summary>
+            <param name="millisecondsTimeout">The maximum number of milliseconds to wait</param>
+            <returns>true if all events were cleared in the allotted time, false if not</returns>
+        </member>
+        <member name="M:CsQuery.CQ.WhenAll(CsQuery.Promises.IPromise[])">
+            <summary>
+            Return a new promise that resolves when all the promises passed in are resolved
+            </summary>
+            <param name="promises"></param>
+            <returns></returns>
         </member>
         <member name="M:CsQuery.CQ.Html">
              <summary>
@@ -4623,8 +5348,60 @@
         </member>
         <member name="M:CsQuery.CQ.#ctor">
             <summary>
-            Creates a new, empty jQuery object.
+            Creates a new, empty CQ object.
             </summary>
+        </member>
+        <member name="M:CsQuery.CQ.#ctor(System.Char[])">
+             <summary>
+             Create a new CQ object from an HTML character array. Synonymous with
+             <see cref="!:CsQuery.Create(char[])"/>
+             </summary>
+            
+             <param name="html">
+             The html of the new document.
+             </param>
+        </member>
+        <member name="M:CsQuery.CQ.#ctor(CsQuery.IDomObject)">
+             <summary>
+             Create a new CQ object wrapping a single element.
+             </summary>
+             
+             <remarks>
+             This differs from the <see cref="!:CsQuery.Create"/> method in that this document is still
+             related to its owning document; this is the same as if the element had just been selected.
+             The Create method, conversely, creates an entirely new Document context contining a single
+             element (a clone of this element).
+             </remarks>
+            
+             <param name="element">
+             The element.
+             </param>
+        </member>
+        <member name="M:CsQuery.CQ.#ctor(CsQuery.IDomObject,CsQuery.CQ)">
+             <summary>
+             Create a new CQ object wrapping a single DOM element, in the context of another CQ object.
+             </summary>
+            
+             <remarks>
+             This differs from the overload accepting a single IDomObject parameter in that it associates
+             the new object with a previous object, as if it were part of a selector chain. In practice
+             this will rarely make a difference, but some methods such as <see cref="!:CsQuery.End"/> use
+             this information.
+             </remarks>
+            
+             <param name="element">
+             The element to wrap.
+             </param>
+             <param name="context">
+             The context.
+             </param>
+        </member>
+        <member name="M:CsQuery.CQ.#ctor(System.String)">
+            <summary>
+            Create a new CQ object from an HTML character array 
+            </summary>
+            <param name="html"></param>
+            <returns></returns>
         </member>
         <member name="M:CsQuery.CQ.#ctor(System.String,CsQuery.CQ)">
             <summary>
@@ -4633,14 +5410,6 @@
             </summary>
             <param name="selector">A valid CSS selector</param>
             <param name="context">The context</param>
-        </member>
-        <member name="M:CsQuery.CQ.#ctor(System.String,CsQuery.IDomElement)">
-            <summary>
-            Create a new CsQuery object using an existing instance and a selector. if the selector is null or missing, then
-            it will contain no selection results.
-            </summary>
-            <param name="selector"></param>
-            <param name="context"></param>
         </member>
         <member name="M:CsQuery.CQ.#ctor(System.String,System.String,CsQuery.CQ)">
             <summary>
@@ -4656,13 +5425,6 @@
             <param name="selector"></param>
             <param name="context"></param>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:CsQuery.CQ.#ctor(CsQuery.IDomObject)" -->
-        <member name="M:CsQuery.CQ.#ctor(CsQuery.IDomObject,CsQuery.CQ)">
-            <summary>
-            Create a new CsQuery from a single DOM element
-            </summary>
-            <param name="element"></param>
-        </member>
         <member name="M:CsQuery.CQ.#ctor(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
             <summary>
             Create a new CsQuery object from an existing CsQuery object (or any set of DOM elements).
@@ -4672,59 +5434,24 @@
             <param name="elements"></param>
         </member>
         <member name="M:CsQuery.CQ.#ctor(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},CsQuery.CQ)">
-            <summary>
-            Create a new CsQuery object from a set of DOM elements, using the DOM from context
-            </summary>
-            <param name="elements"></param>
+             <summary>
+             Create a new CsQuery object from a set of DOM elements, assigning the 2nd parameter as a context for this object.
+             </summary>
+            
+             <param name="elements">
+             The elements that make up the selection set in the new object
+             </param>
+             <param name="context">
+             A CQ object that will be assigned as the context for this one.
+             </param>
         </member>
-        <member name="M:CsQuery.CQ.op_Implicit(System.String)~CsQuery.CQ">
-            <summary>
-            Create a new CQ object from html
-            </summary>
-            <param name="text"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.op_Implicit(CsQuery.Implementation.DomObject)~CsQuery.CQ">
-            <summary>
-            Create a new CQ object from an element
-            </summary>
-            <param name="obj"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.LoadDocument(System.Char[])">
-            <summary>
-            Load from an HTML document. This will try to parse it into a valid document using HTML5 rules. The key word is "try" this
-            is not completely implemented.
-            </summary>
-            <param name="html"></param>
-        </member>
-        <member name="M:CsQuery.CQ.LoadContent(System.Char[])">
-            <summary>
-            Load as if content - tag generation (EXCEPT for html/body) is enabled
-            </summary>
-            <param name="html"></param>
-        </member>
-        <member name="M:CsQuery.CQ.LoadFragment(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
-            <summary>
-            Load as if a fragment - no tag generation whatsoever
-            </summary>
-            <param name="html"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.LoadFragment(System.Char[])">
-            <summary>
-            Creates a new fragment, e.g. HTML and BODY are not generated
-            </summary>
-            <param name="html"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.CreateNewDocument(System.Char[])">
-            <summary>
+        <member name="M:CsQuery.CQ.CreateNewDocument(System.Char[],CsQuery.HtmlParser.HtmlParsingMode)">
+            <summary> 
             Replace the existing DOM with the html (or empty if no parameter passed)
             </summary>
             <param name="html"></param>
         </member>
-        <member name="M:CsQuery.CQ.CreateNewFragment(System.Char[])">
+        <member name="M:CsQuery.CQ.CreateNewFragment(System.Char[],CsQuery.HtmlParser.HtmlParsingMode)">
             <summary>
             Replace the existing DOM with the html (or empty if no parameter passed)
             </summary>
@@ -5285,222 +6012,6 @@
              A new sequence.
              </returns>
         </member>
-        <member name="F:CsQuery.CQ.DefaultDomRenderingOptions">
-            <summary>
-            Rendering option flags
-            </summary>
-        </member>
-        <member name="F:CsQuery.CQ.DefaultDocType">
-            <summary>
-            The default rendering type. This mostly controls the header and how tags are closed. UNIMPLEMENTED right now.
-            </summary>
-        </member>
-        <member name="M:CsQuery.CQ.Create">
-            <summary>
-            Create an empty CQ object
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.Create(System.String)">
-            <summary>
-            Creeate a new CQ object from an HTML string
-            </summary>
-            <param name="html"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.Create(System.Char[])">
-            <summary>
-            Create a new CQ object from an HTML character array 
-            </summary>
-            <param name="html"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.Create(System.String,System.Object)">
-            <summary>
-            Create a new CQ from an HTML fragment, and use quickSet to create attributes (and/or css)
-            </summary>
-            <param name="html">A string of HTML</param>
-            <param name="quickSet">an object containing CSS properties and attributes to be applied to the resulting fragment</param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.Create(System.String,CsQuery.CQ)">
-            <summary>
-            Create a new CQ object from an existing context, bound to the same domain.
-            </summary>
-            <param name="selector"></param>
-            <param name="context"></param>
-        </member>
-        <member name="M:CsQuery.CQ.Create(CsQuery.IDomObject)">
-            <summary>
-            Create a new CQ object from a single element
-            </summary>
-            <param name="element"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.Create(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
-            <summary>
-            Creeate a new CQ object from a squence of elements, or another CQ object
-            </summary>
-            <param name="elements">A sequence of elements</param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.Create(System.IO.Stream)">
-            <summary>
-            Create a new CQ object from a stream of HTML, treating the HTML as a content document
-            </summary>
-            <param name="stream"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.CreateFragment(System.String)">
-            <summary>
-            Creeate a new fragment from HTML text
-            </summary>
-            <param name="html"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.CreateFragment(System.Char[])">
-            <summary>
-            Create a new fragment from HTML text
-            </summary>
-            <param name="html"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.CreateFragment(System.IO.Stream)">
-            <summary>
-            Create a new fragment from a stream of HTML text
-            </summary>
-            <param name="html"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.CreateFragment(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
-            <summary>
-            Creeate a new CQ object from a squence of elements, or another CQ object
-            </summary>
-            <param name="elements">A sequence of elements</param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.CreateDocument(System.String)">
-            <summary>
-            Creeate a new DOM from HTML text using full HTML5 tag generation
-            </summary>
-            <param name="html"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.CreateDocument(System.Char[])">
-            <summary>
-            Creeate a new DOM from HTML text using full HTML5 tag generation
-            </summary>
-            <param name="html"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.CreateDocument(System.IO.Stream)">
-            <summary>
-            UNTESTED!
-            </summary>
-            <param name="html"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.CreateDocumentFromFile(System.String)">
-            <summary>
-            Creates a new DOM from an HTML file.
-            </summary>
-            <param name="htmlFile"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.CreateFromFile(System.String)">
-            <summary>
-            Creates a new DOM from an HTML file.
-            </summary>
-            <param name="htmlFile"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.CreateFromUrl(System.String,CsQuery.Web.ServerConfig)">
-            <summary>
-            Creates a new DOM from an HTML file.
-            </summary>
-            <param name="htmlFile"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.CreateFromUrlAsync(System.String,CsQuery.Web.ServerConfig)">
-            <summary>
-            Start an asynchronous request to an HTTP server, returning a promise that will resolve when the request is completed or rejected
-            </summary>
-            <param name="url"></param>
-            <param name="callbackSuccess"></param>
-            <param name="callbackFail"></param>
-            <param name="options"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.CreateFromUrlAsync(System.String,System.Action{CsQuery.Web.ICsqWebResponse},System.Action{CsQuery.Web.ICsqWebResponse},CsQuery.Web.ServerConfig)">
-            <summary>
-            Start an asynchronous request to an HTTP server
-            </summary>
-            <param name="url"></param>
-            <param name="callbackSuccess"></param>
-            <param name="callbackFail"></param>
-            <param name="options"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.CreateFromUrlAsync(System.String,System.Int32,System.Action{CsQuery.Web.ICsqWebResponse},System.Action{CsQuery.Web.ICsqWebResponse},CsQuery.Web.ServerConfig)">
-            <summary>
-            Start an asynchronous request to an HTTP server
-            </summary>
-            <param name="url"></param>
-            <param name="callbackSuccess"></param>
-            <param name="callbackFail"></param>
-            <param name="options"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.WaitForAsyncEvents(System.Int32)">
-            <summary>
-            Waits until all async events have completed. Use for testing primarily as a web app should not stop normally.
-            </summary>
-            <param name="millisecondsTimeout">The maximum number of milliseconds to wait</param>
-            <returns>true if all events were cleared in the allotted time, false if not</returns>
-        </member>
-        <member name="M:CsQuery.CQ.WhenAll(CsQuery.Promises.IPromise[])">
-            <summary>
-            Return a new promise that resolves when all the promises passed in are resolved
-            </summary>
-            <param name="promises"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.Each``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0})">
-            <summary>
-            Iterate over each element in a sequence, and call a delegate for each element
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="list"></param>
-            <param name="func"></param>
-        </member>
-        <member name="M:CsQuery.CQ.Map``1(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},System.Func{CsQuery.IDomObject,``0})">
-            <summary>
-            Map each element of the result set to a new form. If a value is returned from the function, the element
-            will be excluded.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="elements"></param>
-            <param name="function"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.Extend(System.Object,System.Object[])">
-            <summary>
-            Map each property of the objects in sources to the target object.  Returns an expando object (either 
-            the target object, if it's an expando object, or a new expando object)
-            </summary>
-            <param name="target"></param>
-            <param name="sources"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.Extend(System.Boolean,System.Object,System.Object[])">
-            <summary>
-            Map each property of the objects in sources to the target object.  Returns an expando object (either 
-            the target object, if it's an expando object, or a new expando object)
-            </summary>
-            <param name="target"></param>
-            <param name="sources"></param>
-            <returns></returns>
-        </member>
         <member name="M:CsQuery.CQ.ToJSON(System.Object)">
             <summary>
             Convert an object to JSON
@@ -5536,23 +6047,6 @@
             e.g. as returned from JSON data
             </summary>
             <param name="?"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.EnumerateProperties``1(System.Object)">
-            <summary>
-            Enumerate the values of the properties of an object to a sequence of type T
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="obj"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.CQ.EnumerateProperties``1(System.Object,System.Collections.Generic.IEnumerable{System.Type})">
-            <summary>
-            Enumerate the values of the properties of an object to a sequence of type T
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="obj"></param>
-            <param name="ignoreAttributes">All properties with an attribute of these types will be ignored</param>
             <returns></returns>
         </member>
         <member name="M:CsQuery.CQ.Add(System.String)">
@@ -6611,9 +7105,25 @@
              http://api.jquery.com/jQuery/#jQuery1
              </url>
         </member>
+        <member name="P:CsQuery.CQ.DefaultDomRenderingOptions">
+            <summary>
+            Rendering option flags
+            </summary>
+        </member>
+        <member name="P:CsQuery.CQ.DefaultDocType">
+            <summary>
+            The default rendering type. 
+            </summary>
+        </member>
         <member name="P:CsQuery.CQ.Browser">
             <summary>
             Provide simple user agent information
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.SelectionSetOrder">
+            <summary>
+            Orders in which the selection set can be arranged. Ascending and Descending refer to to the
+            DOM element order.
             </summary>
         </member>
         <member name="T:CsQuery.Web.CsQueryHttpContext">
@@ -6677,6 +7187,116 @@
              <value>
              Object encapsulating the UpdatePanel data.
              </value>
+        </member>
+        <member name="T:CsQuery.Implementation.SelectionSet`1">
+             <summary>
+             A list of DOM elements. The default order is the order added to this construct; the Order
+             property can be changed to return the contents in a different order.
+             </summary>
+            
+             <typeparam name="T">
+             The type of element represented by this set.
+             </typeparam>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.#ctor(CsQuery.Implementation.SelectionSetOrder)">
+             <summary>
+             Create an initially empty instance whose results are returned in the order specified.
+             </summary>
+            
+             <param name="outputOrder">
+             The output order.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.#ctor(System.Collections.Generic.IEnumerable{`0},CsQuery.Implementation.SelectionSetOrder,CsQuery.Implementation.SelectionSetOrder)">
+             <summary>
+             Create an instance based on an existing sequence. The order passed defines the order of the
+             original list; if the output order should be different than change it.
+             
+             The sequence is bound directly as the source of this selection set; it is not enumerated.
+             Therefore it's possible to create "live" sets that will reflect the same contents as their
+             original source at any point in time. If a client alters the selection set, however, it
+             becomes static as the set at that point is copied in order to permit alterations. The
+             original source sequence is never altered, even if it is a list type that can be altered.
+             
+             Because of this care is required. If using an IEnumerable source that is not a basic data
+             structure, but instead refers to a computationally-intensive process, it might be desirable
+             to copy it to a list first. The output from the HTML parser and selector engine do this
+             automatically to prevent accidental misuse. It is conceivable that some future function might
+             want to provide direct access the the selector engine's IEnumerable output instead of a List
+             copy to provide a live CSS selector; in this case the engine's Select method would need to be
+             altered to return the enumerator directly.
+             </summary>
+            
+             <param name="elements">
+             The sequence to source this selection set.
+             </param>
+             <param name="inputOrder">
+             The list order.
+             </param>
+             <param name="outputOrder">
+             The output order.
+             </param>
+        </member>
+        <member name="F:CsQuery.Implementation.SelectionSet`1._Count">
+            <summary>
+            Cached count
+            </summary>
+        </member>
+        <member name="F:CsQuery.Implementation.SelectionSet`1.OriginalList">
+            <summary>
+            The immutable list as set by a client; can be obsolete if MutableList is non-null
+            </summary>
+        </member>
+        <member name="F:CsQuery.Implementation.SelectionSet`1._OrderedList">
+            <summary>
+            Cached reference to the list in the output order
+            </summary>
+        </member>
+        <member name="F:CsQuery.Implementation.SelectionSet`1._MutableList">
+            <summary>
+            The active list, if changes are made after set by the client
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.ConvertToMutable">
+            <summary>
+            When an operation changes the original list, configures this object to track changes and deal
+            with altered lists.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.SynchronizeOrderedList">
+            <summary>
+            Use after set operations that alter the list
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.SelectionSet`1.OrderedList">
+            <summary>
+            The selection set in the output order.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.SelectionSet`1.IsDirty">
+            <summary>
+            The output (sorted) list is dirty because changes have been made since it was created. Update the cache.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.SelectionSet`1.IsAltered">
+            <summary>
+            The list is altered from its original state using "Add" or "Remove".
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.SelectionSet`1.OutputOrder">
+            <summary>
+            The order in which elements in the set are returned
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.SmallDictionary`2">
+            <summary>
+            A lightweight dictionary for small lists. This is intended to boost performance for situations where we know the list
+            will always be small (e.g. like HybridDictionary but even better since there's no need to check size ever). Performance
+            testing could reveal that this doesn't affect performance much or it should just be implemented with a regular dictionary;
+            I leave this is a different implementation than a standard dictionary so it can be easily changed in the future.
+            </summary>
+            <typeparam name="TKey"></typeparam>
+            <typeparam name="TValue"></typeparam>
         </member>
         <member name="T:CsQuery.Implementation.DomContainer`1">
             <summary>
@@ -6775,26 +7395,21 @@
             Normally true
             </summary>
         </member>
-        <member name="T:CsQuery.Utility.SelectionSet`1">
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.Gt">
             <summary>
-            A list of DOM elements. The default order is the order added to this construct; the Order property can be changed to
-            return the contents in a different order.
-            </summary>
-            <typeparam name="T"></typeparam>
-        </member>
-        <member name="M:CsQuery.Utility.SelectionSet`1.Touch">
-            <summary>
-            Force the list to be re-sorted.
+             Test whether an element appears after the specified position with the list.
             </summary>
         </member>
-        <member name="M:CsQuery.Utility.SelectionSet`1.SynchronizeOrderedListAfterRemove">
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.Indexed">
             <summary>
-            Use after set operations that alter the list
+            Test whether an element is appears at the specified position with the list.
             </summary>
         </member>
-        <member name="P:CsQuery.Utility.SelectionSet`1.Order">
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.Hidden">
             <summary>
-            The order in which elements in the set are returned
+            A pseudoselector that returns elements that are hidden. Visibility is defined by CSS: a
+            nonzero opacity, a display that is not "hidden", and the absence of zero-valued width &amp;
+            heights. Additionally, input elements of type "hidden" are always considered not visible.
             </summary>
         </member>
         <member name="F:CsQuery.Implementation.CSSStyleDeclaration._Styles">
@@ -6878,13 +7493,6 @@
             Cleans/validates a CSS units string, or throws an error if not possible
             </summary>
             <param name="value"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.Implementation.CSSStyleDeclaration.ParseCamelCase(System.String)">
-            <summary>
-            Convert camelcased CSS attributes to correct value
-            </summary>
-            <param name="name"></param>
             <returns></returns>
         </member>
         <member name="P:CsQuery.Implementation.CSSStyleDeclaration.QuickSetValue">
@@ -7046,6 +7654,21 @@
              https://developer.mozilla.org/en/DOM/element.getElementsByTagName
              </url>
         </member>
+        <member name="M:CsQuery.IDomDocument.CreateNew``1">
+             <summary>
+             Creates an IDomDocument that is derived from this one. The new type can also be a derived
+             type, such as IDomFragment. The new object will inherit DomRenderingOptions from this one.
+             </summary>
+            
+             <typeparam name="T">
+             The type of object to create that is IDomDocument
+             </typeparam>
+            
+             <returns>
+             A new, empty concrete class that is represented by the interface T, configured with the same
+             options as the current object.
+             </returns>
+        </member>
         <member name="P:CsQuery.IDomDocument.DocumentIndex">
             <summary>
             An interface to the internal indexing methods. You generally should not use this.
@@ -7106,6 +7729,11 @@
             <summary>
             Indicates that a character is alphabetic-like character defined as a-z, A-Z, hyphen, underscore, and ISO 10646 code U+00A1 and higher.
             (per characters allowed in CSS identifiers)
+            </summary>
+        </member>
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.Eq">
+            <summary>
+            Test whether an element is appears at the specified position with the list.
             </summary>
         </member>
         <member name="T:CsQuery.Web.AsyncWebRequest">
@@ -7279,20 +7907,18 @@
             <param name="pattern"></param>
             <returns></returns>
         </member>
-        <member name="M:CsQuery.ExtensionMethods.ExtensionMethods.CloneList(System.Collections.IEnumerable)">
-            <summary>
-            (Alpha) Clone a sequence of objects.
-            </summary>
-            <param name="obj"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.ExtensionMethods.ExtensionMethods.CloneList(System.Collections.IEnumerable,System.Boolean)">
-            <summary>
-            (Alpha) Deep clone a sequence of objects.
-            </summary>
-            <param name="obj"></param>
-            <param name="deep"></param>
-            <returns></returns>
+        <member name="M:CsQuery.ExtensionMethods.ExtensionMethods.Clone(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+             <summary>
+             Clone a sequence of elements to a new sequence
+             </summary>
+            
+             <param name="source">
+             The source sequence
+             </param>
+            
+             <returns>
+             A sequence containing a clone of each element in the source.
+             </returns>
         </member>
         <member name="M:CsQuery.ExtensionMethods.ExtensionMethods.ToJSON(System.Object)">
             <summary>
@@ -7370,117 +7996,40 @@
              A new array of the same type as the original.
              </returns>
         </member>
-        <member name="T:CsQuery.JsObject">
+        <member name="T:CsQuery.Implementation.RangeSortedDictionary`1">
             <summary>
-            A dynamic object implementation that differs from ExpandoObject in two ways:
-            
-            1) Missing property values always return null (or a specified value)
-            2) Allows case-insensitivity
-            
+            A dictionary that is substring-lookup capable. This is the data structure used to index HTML documents for selectors.
+            A SortedSet of keys is used for the index because it allows fast access by substring. A list of keys obtained from the
+            SortedSet for a selector is used to obtain the target references from a regular dictionary.
+            </summary>
+            <typeparam name="TValue"></typeparam>
+        </member>
+        <member name="T:CsQuery.Implementation.IRangeSortedDictionary`1">
+            <summary>
+            A sorted dictionary that allows lookup by range.
             </summary>
         </member>
-        <member name="M:CsQuery.JsObject.GetList``1(System.String)">
+        <member name="M:CsQuery.Implementation.IRangeSortedDictionary`1.GetRangeKeys(System.String)">
             <summary>
-            Try to return a li
+            Return all keys starting with subKey
             </summary>
-            <typeparam name="T"></typeparam>
-            <param name="name"></param>
+            <param name="subKey">The substring to match</param>
             <returns></returns>
         </member>
-        <member name="T:CsQuery.Engine.NthChild">
+        <member name="M:CsQuery.Implementation.IRangeSortedDictionary`1.GetRange(System.String)">
             <summary>
-            Figure out if an index matches an Nth Child, or return a list of all matching elements from a list.
+            Return all values having keys beginning with subKey
             </summary>
-        </member>
-        <member name="M:CsQuery.Engine.NthChild.IndexMatches(System.Int32,System.String,System.String,System.Boolean)">
-            <summary>
-            Return true if the index matches the formula provided
-            </summary>
-            <param name="index"></param>
-            <param name="formulaText"></param>
-            <param name="onlyNodeName">Only include nodes of this type</param>
-            <param name="fromLast">Count from the last element instead of the first</param>
+            <param name="subKey"></param>
             <returns></returns>
         </member>
-        <member name="M:CsQuery.Engine.NthChild.GetMatchingChildren(CsQuery.IDomElement,System.String,System.String,System.Boolean)">
+        <member name="M:CsQuery.Implementation.RangeSortedDictionary`1.GetRange(System.String,System.Int32,System.Boolean)">
             <summary>
-            Return nth children that match type
+            Return only keys at depth. Zero is the matching key.
             </summary>
-            <param name="obj">The parent object</param>
-            <param name="formula">The formula for determining n</param>
-            <param name="onlyNodeName">The type of node to match</param>
+            <param name="subKey"></param>
+            <param name="depth"></param>
             <returns></returns>
-        </member>
-        <member name="M:CsQuery.Engine.NthChild.GetEffectiveChild(CsQuery.INodeList,System.Int32,System.Boolean)">
-            <summary>
-            Return the correct child from a list based on an index, and the fromLast setting
-            </summary>
-            <param name="nodeList"></param>
-            <param name="index"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.Engine.NthChild.GetEffectiveChild(CsQuery.INodeList,System.Int32)">
-            <summary>
-            Return the correct child from a list based on an index, and the current "FromLast" setting
-            </summary>
-            <param name="nodeList"></param>
-            <param name="index"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.Engine.NthChild.ParseEquation(System.String)">
-            <summary>
-            Parse the equation text into in IEquation, or obtain from the cache if available
-            </summary>
-            <param name="equationText"></param>
-        </member>
-        <member name="M:CsQuery.Engine.NthChild.CheckForSimpleNumber(System.String)">
-            <summary>
-            Check if it was just a number passed (not an equation) and assign the correct delegates to matching
-            </summary>
-            <param name="equation"></param>
-        </member>
-        <member name="M:CsQuery.Engine.NthChild.GetEquation(System.String)">
-            <summary>
-            Returns a parsed equation from a string, validating that it appears to be a legitimate nth-child equation
-            </summary>
-            <param name="equationText"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.Engine.NthChild.CheckForEvenOdd(System.String)">
-            <summary>
-            Replaces _Text with the correct equation for "even" and "odd"
-            </summary>
-            <param name="equation"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.Engine.NthChild.UpdateCacheInfo(System.Int32)">
-            <summary>
-            Get the next matching index using the equation and add it to our cached list of equation results
-            </summary>
-            <param name="lastIndex"></param>
-        </member>
-        <member name="P:CsQuery.Engine.NthChild.IsJustNumber">
-            <summary>
-            When true, the current equation is just a number, and the MatchOnlyIndex value should be used directly
-            </summary>
-        </member>
-        <member name="P:CsQuery.Engine.NthChild.OnlyNodeName">
-            <summary>
-            Only nodes with this name will be included in the count to determine if an index matches the equation
-            </summary>
-        </member>
-        <member name="P:CsQuery.Engine.NthChild.Text">
-            <summary>
-            The formula for this nth child selector
-            </summary>
-        </member>
-        <member name="T:CsQuery.Engine.NthChild.CacheInfo">
-            <summary>
-            A structure to keep information about what has been calculated so far for a given equation string.
-            NthChild is expensive so we cache a list of matching element IDs for a given equation along with the 
-            last index this list represents and the iteration. The next time it's called we can either reference
-            the list of matches so far, or update it only from the point where we stopped last time.
-            </summary>
         </member>
         <member name="M:CsQuery.StringScanner.Patterns.HTMLAttributeName.IsValidAttributeName(System.Int32,System.Char)">
             <summary>
@@ -7533,6 +8082,18 @@
             </summary>
             <typeparam name="T"></typeparam>
         </member>
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.Parent">
+            <summary>
+            Determines whether the target is a parent.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Utility.FastActivator">
+            <summary>
+            Replacement for Activator.CreateInstance - see:
+            http://mironabramson.com/blog/post/2008/08/Fast-version-of-the-ActivatorCreateInstance-method-using-IL.aspx
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:CsQuery.Utility.FastActivator.CreateInstance``1" -->
         <member name="T:CsQuery.ExtensionMethods.Forms.ExtensionMethods">
             <summary>
             Extension methods for use in form manipulation
@@ -7613,6 +8174,17 @@
             <param name="addRemoveSwitch"></param>
             <returns></returns>
         </member>
+        <member name="T:CsQuery.StringScanner.Patterns.Quoted">
+            <summary>
+            A pattern that expects a quoted string. Allows any characters inside the quoted text,
+            including backslashed escape characters, and terminates upon a matching closing quote.
+            </summary>
+        </member>
+        <member name="F:CsQuery.StringScanner.Patterns.Quoted.quoteChar">
+            <summary>
+            The quote character that was used to open the string.
+            </summary>
+        </member>
         <!-- Badly formed XML comment ignored for member "M:CsQuery.EquationParser.Implementation.Utils.IsNumericType(System.Type)" -->
         <member name="M:CsQuery.EquationParser.Implementation.Utils.IsNumericConvertible(System.Type)">
             <summary>
@@ -7650,139 +8222,125 @@
             <param name="literal"></param>
             <param name="value"></param>
         </member>
-        <member name="T:CsQuery.Utility.DomStyles">
+        <member name="T:CsQuery.Engine.NthChildMatcher">
             <summary>
-            A dictionary of valid styles, based on a Visual Studio format XML schema. 
+            Figure out if an index matches an Nth Child, or return a list of all matching elements from a list.
             </summary>
         </member>
-        <member name="M:CsQuery.Engine.CssSelectionEngine.Select(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+        <member name="M:CsQuery.Engine.NthChildMatcher.IsNthChildOfType(CsQuery.IDomElement,System.String,System.Boolean)">
+             <summary>
+             General purpose method for various nth-child selectors. 
+             </summary>
+            
+             <param name="obj">
+             .
+             </param>
+             <param name="criteria">
+             The criteria.
+             </param>
+             <param name="fromLast">
+             Count from the last element instead of the first.
+             </param>
+            
+             <returns>
+             true if nth child of type implementation, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Engine.NthChildMatcher.IndexOf(CsQuery.IDomElement,System.Boolean,System.Boolean)">
             <summary>
-            Select from the bound Document using index. First non-class/tag/id selector will result in this being passed off to GetMatches
+            Return the index of obj within its siblings, including only elements with the same node name
             </summary>
-            <param name="document"></param>
+            <param name="obj"></param>
             <returns></returns>
         </member>
-        <member name="M:CsQuery.Engine.CssSelectionEngine.GetSelectionSource(CsQuery.Engine.SelectorClause,System.Collections.Generic.IEnumerable{CsQuery.IDomObject},System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+        <member name="M:CsQuery.Engine.NthChildMatcher.IndexMatches(System.Int32,System.String,System.Boolean)">
             <summary>
-            Get the sequence that is the source for the current clause, based on the selector, prior results, and context.
+            Return true if the index matches the formula provided
             </summary>
-            <param name="selector"></param>
-            <param name="lastResult"></param>
-            <param name="context"></param>
+            <param name="index"></param>
+            <param name="formulaText"></param>
+            <param name="onlyNodeName">Only include nodes of this type</param>
+            <param name="fromLast">Count from the last element instead of the first</param>
             <returns></returns>
         </member>
-        <member name="M:CsQuery.Engine.CssSelectionEngine.GetMatches(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},CsQuery.Engine.SelectorClause)">
+        <member name="M:CsQuery.Engine.NthChildMatcher.GetMatchingChildren(CsQuery.IDomContainer,System.String,System.String,System.Boolean)">
             <summary>
-            Return all elements matching a selector, within a domain baseList, starting from list.
-            This function will traverse children, but it is expected that the source (e.g. from an Adjacent
-            or Sibling selector) is correct.
+            Return nth children that match type
             </summary>
-            <param name="baseList"></param>
-            <param name="list"></param>
-            <param name="selector"></param>
+            <param name="obj">The parent object</param>
+            <param name="formula">The formula for determining n</param>
+            <param name="onlyNodeName">The type of node to match</param>
             <returns></returns>
         </member>
-        <member name="M:CsQuery.Engine.CssSelectionEngine.Has(CsQuery.Engine.Selector,CsQuery.IDomObject)">
+        <member name="M:CsQuery.Engine.NthChildMatcher.GetEffectiveChild(CsQuery.INodeList,System.Int32,System.Boolean)">
             <summary>
-            Returns true if the element contains items matching the selector
+            Return the correct child from a list based on an index, and the fromLast setting
             </summary>
-            <param name="selector"></param>
-            <param name="element"></param>
+            <param name="nodeList"></param>
+            <param name="index"></param>
             <returns></returns>
         </member>
-        <member name="M:CsQuery.Engine.CssSelectionEngine.Matches(CsQuery.Engine.Selector,System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+        <member name="M:CsQuery.Engine.NthChildMatcher.GetEffectiveChild(CsQuery.INodeList,System.Int32)">
             <summary>
-            Return all elements that match the selector
+            Return the correct child from a list based on an index, and the current "FromLast" setting
             </summary>
-            <param name="selector"></param>
-            <param name="element"></param>
+            <param name="nodeList"></param>
+            <param name="index"></param>
             <returns></returns>
         </member>
-        <member name="M:CsQuery.Engine.CssSelectionEngine.Matches(CsQuery.Engine.SelectorClause,CsQuery.IDomObject)">
+        <member name="M:CsQuery.Engine.NthChildMatcher.ParseEquation(System.String)">
             <summary>
-            Return true if the element matches the selector. Anything other than "all" or filter-type selectors will return false.
+            Parse the equation text into in IEquation, or obtain from the cache if available
             </summary>
-            <param name="selector"></param>
-            <param name="element"></param>
+            <param name="equationText"></param>
+        </member>
+        <member name="M:CsQuery.Engine.NthChildMatcher.CheckForSimpleNumber(System.String)">
+            <summary>
+            Check if it was just a number passed (not an equation) and assign the correct delegates to matching
+            </summary>
+            <param name="equation"></param>
+        </member>
+        <member name="M:CsQuery.Engine.NthChildMatcher.GetEquation(System.String)">
+            <summary>
+            Returns a parsed equation from a string, validating that it appears to be a legitimate nth-child equation
+            </summary>
+            <param name="equationText"></param>
             <returns></returns>
         </member>
-        <member name="M:CsQuery.Engine.CssSelectionEngine.Matches(CsQuery.Engine.SelectorClause,CsQuery.IDomObject,System.Int32)">
+        <member name="M:CsQuery.Engine.NthChildMatcher.CheckForEvenOdd(System.String)">
             <summary>
-            Return true if an object matches a specific selector. If the selector has a desecendant or child traversal type, it must also
-            match the specificed depth.
+            Replaces _Text with the correct equation for "even" and "odd"
             </summary>
-            <param name="selector">The jQuery/CSS selector</param>
-            <param name="obj">The target object</param>
-            <param name="depth">The depth at which the target must appear for descendant or child selectors</param>
+            <param name="equation"></param>
             <returns></returns>
         </member>
-        <member name="M:CsQuery.Engine.CssSelectionEngine.GetResultPositionMatches(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},CsQuery.Engine.SelectorClause)">
+        <member name="M:CsQuery.Engine.NthChildMatcher.UpdateCacheInfo(System.Int32)">
             <summary>
-            Return all position-type matches. These are selectors that are keyed to the position within the selection
-            set itself.
+            Get the next matching index using the equation and add it to our cached list of equation results
             </summary>
-            <param name="sourceList"></param>
-            <param name="selector"></param>
-            <returns></returns>
+            <param name="lastIndex"></param>
         </member>
-        <member name="M:CsQuery.Engine.CssSelectionEngine.GetPseudoClassMatches(CsQuery.IDomElement,CsQuery.Engine.SelectorClause)">
+        <member name="P:CsQuery.Engine.NthChildMatcher.IsJustNumber">
             <summary>
-            Return all child elements matching a DOM-position type selector
+            When true, the current equation is just a number, and the MatchOnlyIndex value should be used directly
             </summary>
-            <param name="elm"></param>
-            <param name="selector"></param>
-            <returns></returns>
         </member>
-        <member name="M:CsQuery.Engine.CssSelectionEngine.MatchesPseudoClass(CsQuery.IDomElement,CsQuery.Engine.SelectorClause)">
+        <member name="P:CsQuery.Engine.NthChildMatcher.OnlyNodeName">
             <summary>
-            Return true if an element matches a specific DOM position-type filter
+            Only nodes with this name will be included in the count to determine if an index matches the equation
             </summary>
-            <param name="elm"></param>
-            <param name="type"></param>
-            <param name="criteria"></param>
-            <returns></returns>
         </member>
-        <member name="M:CsQuery.Engine.CssSelectionEngine.GetAdjacentOrSiblings(CsQuery.Engine.TraversalType,System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+        <member name="P:CsQuery.Engine.NthChildMatcher.Text">
             <summary>
-            Map a list to its siblings or adjacent elements if needed. Ignore other traversal types.
+            The formula for this nth child selector
             </summary>
-            <param name="traversalType"></param>
-            <param name="list"></param>
-            <returns></returns>
         </member>
-        <member name="M:CsQuery.Engine.CssSelectionEngine.GetAllChildOrDescendants(CsQuery.Engine.TraversalType,System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+        <member name="T:CsQuery.Engine.NthChildMatcher.CacheInfo">
             <summary>
-            Map a list to its children or descendants, if needed.
-            </summary>
-            <param name="traversalType"></param>
-            <param name="list"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.Engine.CssSelectionEngine.GetChildElements(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
-            <summary>
-            Return all children of each element in the list
-            </summary>
-            <param name="list"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.Engine.CssSelectionEngine.GetDescendantElements(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
-            <summary>
-            Return all descendants of each element in the list
-            </summary>
-            <param name="list"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.Engine.CssSelectionEngine.ContainsText(CsQuery.IDomElement,System.String)">
-            <summary>
-            Return true if any text node descendant of the source element contains the specified text
-            </summary>
-            <param name="source"></param>
-            <param name="text"></param>
-            <returns></returns>
-        </member>
-        <member name="P:CsQuery.Engine.CssSelectionEngine.Selectors">
-            <summary>
-            The current selection list being acted on
+            A structure to keep information about what has been calculated so far for a given equation string.
+            NthChild is expensive so we cache a list of matching element IDs for a given equation along with the 
+            last index this list represents and the iteration. The next time it's called we can either reference
+            the list of matches so far, or update it only from the point where we stopped last time.
             </summary>
         </member>
         <member name="T:CsQuery.StringScanner.Patterns.HtmlID">
@@ -7799,6 +8357,37 @@
             <param name="character"></param>
             <returns></returns>
         </member>
+        <member name="T:CsQuery.ExtensionMethods.Xml.ExtensionMethods">
+            <summary>
+            Extension methods for converting to XML
+            </summary>
+        </member>
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.OnlyOfType">
+             <summary>
+             Mathches elements that are the only sibling of this type.
+             </summary>
+            
+             <url>
+             http://reference.sitepoint.com/css/pseudoclass-onlyoftype
+             </url>
+        </member>
+        <member name="M:CsQuery.Engine.PseudoClassSelectors.OnlyOfType.OnlyChildOfAnyType(CsQuery.IDomObject)">
+            <summary>
+            When there's no type, it must return all children that are the only one of that type
+            </summary>
+            <param name="parent"></param>
+            <returns></returns>
+        </member>
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.Lt">
+            <summary>
+            Test whether an element appears before the specified position with the list.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.Odd">
+            <summary>
+            Return only odd-numbered elements from the selection
+            </summary>
+        </member>
         <member name="F:CsQuery.HtmlParser.HtmlElementFactory.GenerateOptionalElements">
             <summary>
             When true, HTML5 optional elements will be created automatically. This spefically excludes 
@@ -7812,8 +8401,7 @@
         </member>
         <member name="M:CsQuery.HtmlParser.HtmlElementFactory.ParseAsDocument">
             <summary>
-            Parse with options for a full HTML document. Not that this method WILL NOT handle stranded text nodes (outside
-            Body) right now. This only works with ParseToDocument.
+            Parse with options for a full HTML document. 
             </summary>
             <returns></returns>
         </member>
@@ -7830,17 +8418,30 @@
             <returns></returns>
         </member>
         <member name="M:CsQuery.HtmlParser.HtmlElementFactory.Parse">
-            <summary>
-            Parse the HTML, and return it, based on options set.
-            </summary>
-            <returns></returns>
+             <summary>
+             Parse the HTML, and return it, based on options set.
+             </summary>
+            
+             <returns>
+             A List of IDomObject elements.
+             </returns>
+            
+             <implementation>
+             Because the output can be assigned directly to another object without being enumerated, we
+             force it to do so with ToList() here. Otherwise the HTML could potentially be parsed
+             repeatedly as the original enumerator is accessed directly by clients..
+             </implementation>
         </member>
-        <member name="M:CsQuery.HtmlParser.HtmlElementFactory.ParseToDocument">
-            <summary>
-            Parse the HTML into the bound document
-            </summary>
+        <member name="M:CsQuery.HtmlParser.HtmlElementFactory.ParseImplementation">
+             <summary>
+             Parse the HTML, and return it, based on options set.
+             </summary>
+            
+             <returns>
+             An enumerator of the top-level elements.
+             </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.HtmlElementFactory.ReorganizeStrandedTextNodes">
+        <member name="M:CsQuery.HtmlParser.HtmlElementFactory.ReorganizeStrandedTextNodes(CsQuery.IDomDocument)">
             <summary>
             In the future I will update the parser to do this directly, since this requires binding to a Document to work.
             </summary>
@@ -7872,8 +8473,7 @@
         </member>
         <member name="T:CsQuery.Implementation.DomFragment">
             <summary>
-            Special node type to represent the DOM.
-            THIS IS NOT USED YET
+            An incomplete document fragment
             </summary>
         </member>
         <member name="T:CsQuery.Implementation.DomDocument">
@@ -7920,7 +8520,7 @@
             </summary>
             <param name="elements"></param>
         </member>
-        <member name="M:CsQuery.Implementation.DomDocument.#ctor(System.Char[])">
+        <member name="M:CsQuery.Implementation.DomDocument.#ctor(System.Char[],CsQuery.HtmlParser.HtmlParsingMode)">
             <summary>
             Create a new document from a character array of html
             </summary>
@@ -7966,6 +8566,50 @@
             </summary>
             <param name="subKey"></param>
             <returns></returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.CreateNew``1(System.Char[],CsQuery.HtmlParser.HtmlParsingMode)">
+             <summary>
+             Creates an IDomDocument that is derived from this one. The new type can also be a derived
+             type, such as IDomFragment. The new object will inherit DomRenderingOptions from this one.
+             </summary>
+            
+             <exception cref="T:System.ArgumentException">
+             Thrown when one or more arguments have unsupported or illegal values.
+             </exception>
+            
+             <typeparam name="T">
+             The type of object to create that is IDomDocument.
+             </typeparam>
+             <param name="html">
+             The HTML source for the new document.
+             </param>
+            
+             <returns>
+             A new, empty concrete class that is represented by the interface T, configured with the same
+             options as the current object.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.CreateNew``1(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+             <summary>
+             Creates an IDomDocument that is derived from this one. The new type can also be a derived
+             type, such as IDomFragment. The new object will inherit DomRenderingOptions from this one.
+             </summary>
+            
+             <exception cref="T:System.ArgumentException">
+             Thrown when one or more arguments have unsupported or illegal values.
+             </exception>
+            
+             <typeparam name="T">
+             The type of object to create that is IDomDocument.
+             </typeparam>
+             <param name="elements">
+             The elements that are the source for the new document.
+             </param>
+            
+             <returns>
+             A new, empty concrete class that is represented by the interface T, configured with the same
+             options as the current object.
+             </returns>
         </member>
         <member name="P:CsQuery.Implementation.DomDocument.DocumentIndex">
             <summary>
@@ -8018,6 +8662,24 @@
             <param name="character"></param>
             <returns></returns>
         </member>
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.LastChild">
+             <summary>
+             Mathches elements that are the the last child of a parent
+             </summary>
+            
+             <url>
+             http://reference.sitepoint.com/css/pseudoclass-lastchild
+             </url>
+        </member>
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.FirstChild">
+             <summary>
+             Mathches elements that are the the first child of a parent
+             </summary>
+            
+             <url>
+             http://reference.sitepoint.com/css/pseudoclass-firstchild
+             </url>
+        </member>
         <member name="M:CsQuery.INodeList.AddRange(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
              <summary>
              Adds a sequence of elements to the end of this INodeList
@@ -8045,6 +8707,15 @@
             <summary>
             The number of nodes in this INodeList
             </summary>
+        </member>
+        <member name="P:CsQuery.INodeList.Owner">
+             <summary>
+             The element that owns this list
+             </summary>
+            
+             <value>
+             An IDomContainer element
+             </value>
         </member>
         <member name="M:CsQuery.Implementation.NodeList.Add(CsQuery.IDomObject)">
             <summary>
@@ -8097,6 +8768,340 @@
             DOCTYPE node
             </summary>
         </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.Peek">
+             <summary>
+             Returns the character after the current character
+             </summary>
+            
+             <returns>
+             A character
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.AllowQuoting">
+             <summary>
+             Causes the next action to permit quoting -- if the first character is a quote character, stop
+             characters between there and the next matching quote character will be ignored.
+             </summary>
+            
+             <returns>
+             true if the next value is quoted, false if not
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.SkipWhitespace">
+            <summary>
+            If the pointer is current on whitespace, advance to the next non-whitespace character. If the
+            pointer is not on whitespace, do nothing.
+            </summary>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.NextNonWhitespace">
+            <summary>
+            Advance the pointer to the next character that is not whitespace. This differes from
+            SkipShitespace in that this always advances the pointer.
+            </summary>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.Next">
+             <summary>
+             Advance the pointer by one character.
+             </summary>
+            
+             <returns>
+             true if the pointer can be advanced again, false if it is after the last position.
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.Previous">
+             <summary>
+             Move the pointer back one position.
+             </summary>
+            
+             <returns>
+             true if the pointer can be moved back again, false if it is at the origin.
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.Move(System.Int32)">
+             <summary>
+             Moves the pointer by a specific number of characters, forward or reverse.
+             </summary>
+            
+             <param name="count">
+             A positive or negative integer.
+             </param>
+            
+             <returns>
+             true if the pointer is not at the origin or after the end of the string, false otherwise.
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.Undo">
+            <summary>
+            Undo the last operation
+            </summary>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.End">
+            <summary>
+            Moves the pointer past the last character postion.
+            </summary>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.AssertFinished(System.String)">
+             <summary>
+             Throw an error if the current scanner is not finished.
+             </summary>
+            
+             <param name="errorMessage">
+             (optional) message describing the error.
+             </param>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.AssertNotFinished(System.String)">
+             <summary>
+             Throw an error if the current scanner is finished.
+             </summary>
+            
+             <param name="errorMessage">
+             (optional) message describing the error.
+             </param>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.Reset">
+            <summary>
+            Resets the pointer to the origin and clear any state information about the scanner. This sets
+            the internal state as if it had just been created.
+            </summary>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.Matches(System.String)">
+             <summary>
+             Test that the text starting at the current position matches the passed text.
+             </summary>
+            
+             <param name="text">
+             The text to match
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.MatchesAny(System.Collections.Generic.IEnumerable{System.String})">
+             <summary>
+             Test that the text starting at the current position is any of the strings passed.
+             </summary>
+            
+             <param name="text">
+             A sequence of strings to match
+             </param>
+            
+             <returns>
+             true if one of, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.Seek(System.Char,System.Boolean)">
+             <summary>
+             Seeks until a specific character is found. The Match string becomes everything from the
+             current position, through the position before the matched character. If the scanner is
+             already at the end, an exception is thrown.
+             </summary>
+            
+             <param name="character">
+             The character to seek.
+             </param>
+             <param name="orEnd">
+             When true, the end of the string is a valid match. When false, the end of the string will
+             cause an exception.
+             </param>
+            
+             <returns>
+             The current string scanner.
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.ToNewScanner">
+             <summary>
+             Creates a new scanner from the current match.
+             </summary>
+            
+             <returns>
+             A new IStringScanner
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.ToNewScanner(System.String)">
+             <summary>
+             Creates a new scanner from the current match.
+             </summary>
+            
+             <param name="template">
+             The template.
+             </param>
+            
+             <returns>
+             A new IStringScanner.
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.Expect(System.String)">
+             <summary>
+             Assert that the text matches the string starting at the current position. The pointer is
+             advanced to the first position beyond the matching text. If it does not, an ArgumentException
+             is thrown.
+             </summary>
+            
+             <param name="text">
+             The text to match.
+             </param>
+            
+             <returns>
+             The current StringScanner.
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.Expect(CsQuery.StringScanner.IExpectPattern)">
+             <summary>
+             Assert that the text matches the pattern defined by an IExpectPattern object. The pointer is
+             advanced until the pattern stops matching. If it does not, an ArgumentException is thrown.
+             </summary>
+            
+             <param name="pattern">
+             A pattern specifying the.
+             </param>
+            
+             <returns>
+             The current StringScanner.
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.Expect(System.Func{System.Int32,System.Char,System.Boolean})">
+             <summary>
+             Assert that at least one character starting at the current position validates using a
+             function delegate. The pointer advances until the delegate returns false. If it does not, an
+             ArgumentException is thrown.
+             </summary>
+            
+             <param name="validate">
+             The validate.
+             </param>
+            
+             <returns>
+             The current StringScanner.
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.ExpectChar(System.Char)">
+             <summary>
+             Assert that the current character matches the character passed. The pointer is advanced by
+             one position. If it does not, an ArgumentException is thrown.
+             </summary>
+            
+             <param name="character">
+             The character to seek.
+             </param>
+            
+             <returns>
+             .
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.ExpectChar(System.Collections.Generic.IEnumerable{System.Char})">
+             <summary>
+             Assert that the current character matches any of the characters passed. The pointer is
+             advanced by one position. If it does not, an ArgumentException is thrown.
+             </summary>
+            
+             <param name="characters">
+             The characters to match
+             </param>
+            
+             <returns>
+             The current string scanner.
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.IStringScanner.ExpectNumber(System.Boolean)">
+             <summary>
+             Assert that there is a pattern that matches a number starting at the current position. The
+             pointer is advanced to the position after the end of the number. If it does not, an
+             ArgumentException is thrown.
+             </summary>
+            
+             <param name="requireWhitespaceTerminator">
+             (optional) Indicates if whitespace is the only valid terminator. If true, an
+             ArgumentException will be thrown if the first character that terminates the number is not
+             whitespace. If false, any character that is invalid as part of a number will stop matching
+             with no error.
+             </param>
+            
+             <returns>
+             .
+             </returns>
+        </member>
+        <member name="P:CsQuery.StringScanner.IStringScanner.Text">
+            <summary>
+            Gets or sets the text that the scanner acts upon
+            </summary>
+            <seealso cref="P:CsQuery.StringScanner.IStringScanner.Chars"/>
+        </member>
+        <member name="P:CsQuery.StringScanner.IStringScanner.Chars">
+             <summary>
+             Gets or sets the text that this scanner acts upon.
+             </summary>
+            
+             <seealso cref="P:CsQuery.StringScanner.IStringScanner.Text"/>
+        </member>
+        <member name="P:CsQuery.StringScanner.IStringScanner.IgnoreWhitespace">
+            <summary>
+            Gets or sets a value indicating whether the scanner should ignore whitespace. When true, it
+            is skipped automatically.
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.IStringScanner.Length">
+            <summary>
+            Gets the length of the text bound to this scanner.
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.IStringScanner.Index">
+            <summary>
+            Gets or sets the current zero-based position of the scanner.
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.IStringScanner.LastIndex">
+            <summary>
+            Gets the zero-based index of the scanner before the last operation.
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.IStringScanner.Current">
+            <summary>
+            Gets the current character.
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.IStringScanner.CurrentOrEmpty">
+            <summary>
+            Gets the next character, or an empty string if the pointer is at the end of the string.
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.IStringScanner.Match">
+            <summary>
+            Gets the current match string (usually, the text between the prior pointer position and the
+            current pointer position, possibly excluding whitespace. This depends on the last operation).
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.IStringScanner.LastMatch">
+            <summary>
+            Gets the match prior to the curren one.
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.IStringScanner.Finished">
+            <summary>
+            Gets a value indicating whether the pointer is after the end of the string.
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.IStringScanner.AtEnd">
+            <summary>
+            Gets a value indicating whether at the last character of the string.
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.IStringScanner.Success">
+            <summary>
+            Gets a value indicating whether the last operation succeeded. Since failure throws an error,
+            this is generally useful only if errors are trapped.
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.IStringScanner.LastError">
+            <summary>
+            Gets the error message when the prior operation failed.
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.IStringScanner.Info">
+            <summary>
+            CharacterInfo object bound to the character at the current index.
+            </summary>
+        </member>
         <member name="M:CsQuery.EquationParser.Equations.CreateEquationOperand(System.String)">
             <summary>
             Create an operand by parsing a string. Like CreateEquation but does not wrap in an Equation object.
@@ -8104,11 +9109,21 @@
             <param name="text"></param>
             <returns></returns>
         </member>
-        <member name="T:CsQuery.Utility.SelectionSetComparer">
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.Even">
             <summary>
-            A comparer to ensure that items are returned from a selection set in DOM order, e.g. by comparing their
-            internal paths.
+            Return only odd-numbered elements from the selection
             </summary>
+        </member>
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.Last">
+            <summary>
+            Return only the last element from a selection
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.SimpleDictionary`1">
+            <summary>
+            Just convers a NameValueCollection to a dictionary with few methods
+            </summary>
+            <typeparam name="T"></typeparam>
         </member>
         <member name="M:CsQuery.StringScanner.Patterns.HTMLTagSelectorName.IsValidTagName(System.Int32,System.Char)">
             <summary>
@@ -8142,6 +9157,88 @@
             <summary>
             Error (if any) that occurred while parsing
             </summary>
+        </member>
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.Empty">
+            <summary>
+            Test whether an element is empty. Elements that contain text nodes with empty or null values
+            are considered empty.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Engine.PseudoClassSelectors.Empty.IsEmpty(CsQuery.IDomObject)">
+             <summary>
+             Test whether an element contains no non-empty children. An element can technically have
+             children, but if they are text nodes with empty values, then it's considered empty.
+             </summary>
+            
+             <param name="element">
+             The element to test
+             </param>
+            
+             <returns>
+             true if an element is empty, false if not.
+             </returns>
+        </member>
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.Not">
+            <summary>
+            Return only the last element from a selection
+            </summary>
+        </member>
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.FirstOfType">
+             <summary>
+             Matches the first element of the same type within its siblings
+             </summary>
+            
+             <url>
+             http://reference.sitepoint.com/css/pseudoclass-firstoftype
+             </url>
+        </member>
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.Contains">
+             <summary>
+             Mathches elements that have children containing the specified text
+             </summary>
+            
+             <url>
+             http://api.jquery.com/contains-selector/
+             </url>
+        </member>
+        <member name="M:CsQuery.Engine.PseudoClassSelectors.Contains.ParameterQuoted(System.Int32)">
+             <summary>
+             A value to determine how to parse the string for a parameter at a specific index.
+             </summary>
+            
+             <param name="index">
+             Zero-based index of the parameter.
+             </param>
+            
+             <returns>
+             null to accept a string that can (but does not have to be) quoted, true to require a quoted
+             parameter, false to only accept an unqouted parameter.
+             </returns>
+        </member>
+        <member name="T:CsQuery.Config">
+            <summary>
+            Global configuration and defaults
+            </summary>
+        </member>
+        <member name="F:CsQuery.Config.DomRenderingOptions">
+            <summary>
+            The default rendering options. These are flags.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Config.DocType">
+            <summary>
+            Default document type.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Config.PseudoClassFilters">
+             <summary>
+             Provides access to the PseudoSelectors object, which allows registering new filters and accessing information
+             and instances about existing filters.
+             </summary>
+            
+             <value>
+             The pseudo PseudoSelectors configuration object.
+             </value>
         </member>
         <member name="T:CsQuery.Utility.JSON">
             <summary>
@@ -8237,6 +9334,11 @@
             <param name="objectToDeserialize"></param>
             <returns></returns>
         </member>
+        <member name="T:CsQuery.Engine.Selector">
+            <summary>
+            A parsed selector, consisting of one or more SelectorClauses.
+            </summary>
+        </member>
         <member name="M:CsQuery.Engine.Selector.#ctor(System.String)">
             <summary>
             Create a new selector from any string
@@ -8248,6 +9350,29 @@
             Create a new selector from DOM elements
             </summary>
             <param name="elements"></param>
+        </member>
+        <member name="M:CsQuery.Engine.Selector.SetTraversalType(CsQuery.Engine.TraversalType)">
+             <summary>
+             Sets the traversal type for all CombinatorType.Root child selectors. This is useful for
+             subselectors; you may not want them to default to a filter.
+             </summary>
+            
+             <param name="type">
+             The type.
+             </param>
+        </member>
+        <member name="M:CsQuery.Engine.Selector.GetEngine(CsQuery.IDomDocument)">
+             <summary>
+             Gets a new selection engine for this selector
+             </summary>
+            
+             <param name="document">
+             The document that's the root for the selector engine
+             </param>
+            
+             <returns>
+             The new engine.
+             </returns>
         </member>
         <member name="M:CsQuery.Engine.Selector.Insert(System.Int32,CsQuery.Engine.SelectorClause,CsQuery.Engine.CombinatorType)">
             <summary>
@@ -8292,6 +9417,29 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="P:CsQuery.Engine.Selector.Count">
+            <summary>
+            The number of clauses in this selector
+            </summary>
+        </member>
+        <member name="P:CsQuery.Engine.Selector.Item(System.Int32)">
+             <summary>
+             Indexer to get clauses of this selector by index.
+             </summary>
+            
+             <param name="index">
+             Zero-based index of the entry to access.
+             </param>
+            
+             <returns>
+             The selector clause at the index specified
+             </returns>
+        </member>
+        <member name="P:CsQuery.Engine.Selector.Clauses">
+            <summary>
+            Gets a list of clauses in this selector
+            </summary>
+        </member>
         <member name="T:CsQuery.OutputFormatters.FormatPlainText">
             <summary>
             Removes all extraneous whitespace
@@ -8308,6 +9456,19 @@
             </summary>
             <param name="selector"></param>
             <returns></returns>
+        </member>
+        <member name="M:CsQuery.Engine.SelectorParser.AddPseudoSelector(System.String)">
+             <summary>
+             Adds a named pseudo selector from the pseudoselector library.
+             </summary>
+            
+             <param name="key">
+             The pseudoselector name
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
         </member>
         <member name="M:CsQuery.Engine.SelectorParser.expectsOptionallyQuotedValue">
             <summary>
@@ -8386,12 +9547,6 @@
         <member name="M:CsQuery.Web.AsyncWebRequestManager.CancelAsyncEvents">
             <summary>
             Cancel all outstanding async events
-            </summary>
-        </member>
-        <member name="T:CsQuery.Utility.AttributeDictionary">
-            <summary>
-            Alternate implementation of the IDictionary for attributes that uses no objects to see if this is important for performance.
-            (It doesn't seem to be). Not used as of 6/15/2012
             </summary>
         </member>
         <member name="T:CsQuery.Engine.PseudoClassType">
@@ -8474,29 +9629,31 @@
             A dictionary of valid styles, based on a Visual Studio format XML schema. 
             </summary>
         </member>
-        <member name="T:CsQuery.Utility.IRangeSortedDictionary`1">
-            <summary>
-            A sorted dictionary that allows lookup by range.
-            </summary>
-        </member>
-        <member name="M:CsQuery.Utility.IRangeSortedDictionary`1.GetRangeKeys(System.String)">
-            <summary>
-            Return all keys starting with subKey
-            </summary>
-            <param name="subKey">The substring to match</param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.Utility.IRangeSortedDictionary`1.GetRange(System.String)">
-            <summary>
-            Return all values having keys beginning with subKey
-            </summary>
-            <param name="subKey"></param>
-            <returns></returns>
-        </member>
         <member name="F:CsQuery.Promises.WhenAll.Success">
             <summary>
             When false, means one or more of the promises was rejected, and the All will be rejected
             </summary>
+        </member>
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.Has">
+            <summary>
+            Return only the last element from a selection
+            </summary>
+        </member>
+        <member name="P:CsQuery.Engine.PseudoClassSelectors.Has.MaximumParameterCount">
+             <summary>
+             Adds a matched element to the cache. I'm not quite sure if this makes sense. The idea is that
+             you will often be checking children of something you just checked; probably we would have to
+             iterate through the results of the first subselector and add all the node trees to the root
+             for each result to the cache. Might not be worth it.
+             </summary>
+            
+             <value>
+             The number of maximum parameters.
+             </value>
+            
+             ### <param name="item">
+             The item that contains the child selector.
+             </param>
         </member>
         <member name="M:CsQuery.Implementation.AttributeCollection.Set(System.String,System.String)">
             <summary>
@@ -8533,11 +9690,25 @@
             <param name="name"></param>
             <returns></returns>
         </member>
-        <member name="T:CsQuery.Utility.SimpleDictionary`1">
+        <member name="T:CsQuery.Implementation.SelectionSetComparer">
             <summary>
-            Just convers a NameValueCollection to a dictionary with few methods
+            A comparer to ensure that items are returned from a selection set in DOM order, e.g. by comparing their
+            internal paths.
             </summary>
-            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.Xml.CqXmlNode.CleanXmlNodeName(System.String)">
+             <summary>
+             Clean an XML node name. Since the only problematic node names should be like "#text" we just
+             look for a # and strip it.
+             </summary>
+            
+             <param name="name">
+             The name.
+             </param>
+            
+             <returns>
+             A string that's acceptable as an XML node name.
+             </returns>
         </member>
         <member name="M:CsQuery.EquationParser.Implementation.Equation.Clone">
             <summary>
@@ -8587,10 +9758,49 @@
             The time, in milliseconds, after which to abort an incomplete request.
             </summary>
         </member>
+        <member name="T:CsQuery.Implementation.AttributeDictionary">
+            <summary>
+            Alternate implementation of the IDictionary for attributes that uses no objects to see if this is important for performance.
+            (It doesn't seem to be). Not used as of 6/15/2012
+            </summary>
+        </member>
         <member name="T:CsQuery.StringScanner.Patterns.OptionallyQuoted">
             <summary>
-            Match an attribute value. Should be quoted but doesn't have to be.
+            Match an attribute value that is optionally quoted with a quote character ' or ".
             </summary>
+        </member>
+        <member name="M:CsQuery.StringScanner.Patterns.OptionallyQuoted.#ctor">
+            <summary>
+            Create in instance of the pattern matcher using default terminators
+            </summary>
+        </member>
+        <member name="M:CsQuery.StringScanner.Patterns.OptionallyQuoted.#ctor(System.Collections.Generic.IEnumerable{System.Char})">
+             <summary>
+             Create in instance of the pattern matcher using any character in the string as a terminator.
+             A closing quote (when the string is quoted) is always a terminator.
+             </summary>
+            
+             <param name="terminators">
+             A string containing characters, each of which will terminate seeking (when not inside a quote
+             block)
+             </param>
+        </member>
+        <member name="M:CsQuery.StringScanner.Patterns.OptionallyQuoted.Expect(System.Int32@,System.Char)">
+             <summary>
+             Override the default Expect for a quoted string to also terminate upon finding one of the
+             terminators (if not quoted).
+             </summary>
+            
+             <param name="index">
+             The current index.
+             </param>
+             <param name="current">
+             The current character
+             </param>
+            
+             <returns>
+             true to continue seeking
+             </returns>
         </member>
         <member name="P:CsQuery.StringScanner.Patterns.OptionallyQuoted.Terminators">
             <summary>
@@ -8685,6 +9895,116 @@
             The default settings used when making remote requests
             </summary>
         </member>
+        <member name="M:CsQuery.Engine.SelectorEngine.Select(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+            <summary>
+            Select from the bound Document using index. First non-class/tag/id selector will result in this being passed off to GetMatches
+            </summary>
+            <param name="document"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.Engine.SelectorEngine.GetSelectionSource(CsQuery.Engine.SelectorClause,System.Collections.Generic.IEnumerable{CsQuery.IDomObject},System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+            <summary>
+            Get the sequence that is the source for the current clause, based on the selector, prior results, and context.
+            </summary>
+            <param name="selector"></param>
+            <param name="lastResult"></param>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.Engine.SelectorEngine.GetMatches(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},CsQuery.Engine.SelectorClause)">
+            <summary>
+            Return all elements matching a selector, within a domain baseList, starting from list.
+            This function will traverse children, but it is expected that the source (e.g. from an Adjacent
+            or Sibling selector) is correct.
+            </summary>
+            <param name="baseList"></param>
+            <param name="list"></param>
+            <param name="selector"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.Engine.SelectorEngine.Matches(CsQuery.Engine.SelectorClause,CsQuery.IDomElement,System.Int32)">
+            <summary>
+            Return true if an object matches a specific selector. If the selector has a desecendant or child traversal type, it must also
+            match the specificed depth.
+            </summary>
+            <param name="selector">The jQuery/CSS selector</param>
+            <param name="obj">The target object</param>
+            <param name="depth">The depth at which the target must appear for descendant or child selectors</param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.Engine.SelectorEngine.GetResultPositionMatches(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},CsQuery.Engine.SelectorClause)">
+            <summary>
+            Return all position-type matches. These are selectors that are keyed to the position within the selection
+            set itself.
+            </summary>
+            <param name="sourceList"></param>
+            <param name="selector"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.Engine.SelectorEngine.GetPseudoClassMatches(CsQuery.IDomElement,CsQuery.Engine.SelectorClause)">
+            <summary>
+            Return all child elements matching a DOM-position type selector
+            </summary>
+            <param name="elm"></param>
+            <param name="selector"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.Engine.SelectorEngine.MatchesPseudoClass(CsQuery.IDomElement,CsQuery.Engine.SelectorClause)">
+             <summary>
+             Return true if an element matches a specific filter.
+             </summary>
+            
+             <param name="element">
+             The element to test
+             </param>
+             <param name="selector">
+             A selector clause
+             </param>
+            
+             <returns>
+             true if matches pseudo class, false if not.matches the selector, false if not
+             </returns>
+        </member>
+        <member name="M:CsQuery.Engine.SelectorEngine.GetAdjacentOrSiblings(CsQuery.Engine.TraversalType,System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+            <summary>
+            Map a list to its siblings or adjacent elements if needed. Ignore other traversal types.
+            </summary>
+            <param name="traversalType"></param>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.Engine.SelectorEngine.GetAllChildOrDescendants(CsQuery.Engine.TraversalType,System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+            <summary>
+            Map a list to its children or descendants, if needed.
+            </summary>
+            <param name="traversalType"></param>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.Engine.SelectorEngine.GetChildElements(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+            <summary>
+            Return all children of each element in the list
+            </summary>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CsQuery.Engine.SelectorEngine.GetDescendantElements(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+            <summary>
+            Return all descendants of each element in the list
+            </summary>
+            <param name="list"></param>
+            <returns></returns>
+        </member>
+        <member name="P:CsQuery.Engine.SelectorEngine.Selector">
+            <summary>
+            The current selection list being acted on
+            </summary>
+        </member>
+        <member name="P:CsQuery.Engine.SelectorEngine.Document">
+            <summary>
+            The Document bound to this engine instance
+            </summary>
+        </member>
         <member name="T:CsQuery.IDomIndexedNode">
             <summary>
             A node that should be indexed
@@ -8694,6 +10014,15 @@
             <summary>
             A CSS selector parsed into it's component parts
             </summary>
+        </member>
+        <member name="P:CsQuery.Engine.SelectorClause.PseudoSelector">
+             <summary>
+             When this is a pseudoselector, the implementation.
+             </summary>
+            
+             <value>
+             The pseudo selector.
+             </value>
         </member>
         <member name="P:CsQuery.Engine.SelectorClause.Tag">
             <summary>
@@ -8775,18 +10104,67 @@
             <returns></returns>
         </member>
         <member name="M:CsQuery.StringScanner.Implementation.StringScannerEngine.ToNewScanner(System.String)">
-            <summary>
-            Creates a new stringscanner instance from the current match, formatted using passed format first.
-            </summary>
-            <param name="format"></param>
-            <returns></returns>
+             <summary>
+             Creates a new StringScanner instance from a string that is formatted using the current match
+             as the single format argument.
+             </summary>
+            
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the prior operation failed.
+             </exception>
+            
+             <param name="template">
+             The string to use as a template
+             </param>
+            
+             <returns>
+             A new StringScanner
+             </returns>
         </member>
-        <member name="M:CsQuery.StringScanner.Implementation.StringScannerEngine.Is(System.String)">
-            <summary>
-            returns true of the text starting at the current position matches the passed text
-            </summary>
-            <param name="text"></param>
-            <returns></returns>
+        <member name="M:CsQuery.StringScanner.Implementation.StringScannerEngine.Matches(System.String)">
+             <summary>
+             Test that the text starting at the current position matches the passed text.
+             </summary>
+            
+             <param name="text">
+             The text to match
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.Implementation.StringScannerEngine.MatchesAny(System.Collections.Generic.IEnumerable{System.String})">
+             <summary>
+             Test that the text starting at the current position is any of the strings passed.
+             </summary>
+            
+             <param name="text">
+             A sequence of strings to match
+             </param>
+            
+             <returns>
+             true if one of, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.Implementation.StringScannerEngine.Seek(System.Char,System.Boolean)">
+             <summary>
+             Seeks until a specific character is found. The Match string becomes everything from the
+             current position, through the position before the matched character. If the scanner is
+             already at the end, an exception is thrown.
+             </summary>
+            
+             <param name="character">
+             The character to seek.
+             </param>
+             <param name="orEnd">
+             When true, the end of the string is a valid match. When false, the end of the string will
+             cause an exception.
+             </param>
+            
+             <returns>
+             The current string scanner.
+             </returns>
         </member>
         <member name="M:CsQuery.StringScanner.Implementation.StringScannerEngine.SkipWhitespace">
             <summary>
@@ -8798,7 +10176,7 @@
             Advances to the next non-whitespace character
             </summary>
         </member>
-        <member name="M:CsQuery.StringScanner.Implementation.StringScannerEngine.Next(System.Int32)">
+        <member name="M:CsQuery.StringScanner.Implementation.StringScannerEngine.Next">
             <summary>
             Moves pointer forward one character, or to the position after the next match.
             </summary>
@@ -8809,6 +10187,11 @@
             Returns to the state before the last Expect. This is not affected by manual Next/Prev operations
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.Implementation.StringScannerEngine.End">
+            <summary>
+            Moves the pointer past the last character postion.
+            </summary>
         </member>
         <member name="M:CsQuery.StringScanner.Implementation.StringScannerEngine.ExpectChar(System.Char)">
             <summary>
@@ -8821,11 +10204,19 @@
         <member name="M:CsQuery.StringScanner.Implementation.StringScannerEngine.ExpectChar(System.Collections.Generic.IEnumerable{System.Char})">
             If one of the current characters (or next non-whitespace character) is not the expected value, then an error is thrown
         </member>
-        <member name="M:CsQuery.StringScanner.Implementation.StringScannerEngine.ExpectNumber">
-            <summary>
-            Starting with the current character, treats text as a number, seeking until the next character that would terminate a valid number.
-            </summary>
-            <returns></returns>
+        <member name="M:CsQuery.StringScanner.Implementation.StringScannerEngine.ExpectNumber(System.Boolean)">
+             <summary>
+             Starting with the current character, treats text as a number, seeking until the next
+             character that would terminate a valid number.
+             </summary>
+            
+             <param name="requireWhitespaceTerminator">
+             (optional) the require whitespace terminator.
+             </param>
+            
+             <returns>
+             .
+             </returns>
         </member>
         <member name="M:CsQuery.StringScanner.Implementation.StringScannerEngine.ExpectAlpha">
             <summary>
@@ -8880,28 +10271,38 @@
              </returns>
         </member>
         <member name="M:CsQuery.StringScanner.Implementation.StringScannerEngine.GetBoundedBy(System.Char,System.Boolean)">
-            <summary>
-            The single character bound will be matched with a closing char for () [] {} &lt;&gt; or the same char for anything else
-            </summary>
-            <param name="bound"></param>
-        </member>
-        <member name="M:CsQuery.StringScanner.Implementation.StringScannerEngine.ExpectImpl(CsQuery.StringScanner.IExpectPattern)">
              <summary>
-             Implementation of Expect
+             The single character bound will be matched with a closing char for () [] {} &lt;&gt; or the
+             same char for anything else.
              </summary>
             
-             <param name="pattern">
+             <param name="bound">
              .
+             </param>
+             <param name="allowQuoting">
+             (optional) the allow quoting.
              </param>
             
              <returns>
-             .
+             The bounded by.
              </returns>
         </member>
-        <member name="F:CsQuery.StringScanner.Implementation.StringScannerEngine.cachedPos">
-            <summary>
-            Caches the current position
-            </summary>
+        <member name="M:CsQuery.StringScanner.Implementation.StringScannerEngine.ExpectBoundedBy(System.Char,System.Boolean)">
+             <summary>
+             Require that the text starting at the current position matches a pattern which is bounded by
+             a specific character, with the inner value opotionally quoted with a quote character ' or ".
+             </summary>
+            
+             <param name="bound">
+             The bounding character.
+             </param>
+             <param name="allowQuoting">
+             (optional) the allow quoting.
+             </param>
+            
+             <returns>
+             The current string scanner.
+             </returns>
         </member>
         <member name="M:CsQuery.StringScanner.Implementation.StringScannerEngine.CachePos">
             <summary>
@@ -8924,13 +10325,30 @@
             When true, the next seek should honor quotes
             </summary>
         </member>
-        <member name="P:CsQuery.StringScanner.Implementation.StringScannerEngine.NextChar">
+        <member name="P:CsQuery.StringScanner.Implementation.StringScannerEngine.Text">
+             <summary>
+             Gets or sets the text that the scanner acts upon.
+             </summary>
+            
+             <seealso cref="P:CsQuery.StringScanner.Implementation.StringScannerEngine.Chars"/>
+        </member>
+        <member name="P:CsQuery.StringScanner.Implementation.StringScannerEngine.Length">
+            <summary>
+            Gets or sets the length of the text bound to this scanner.
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.Implementation.StringScannerEngine.Index">
+            <summary>
+            Gets or sets the current zero-based position of the scanner.
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.Implementation.StringScannerEngine.Current">
             <summary>
             Return the character at the current scanning position without advancing the pointer. Throw an error
             if the pointer is at the end of the string.
             </summary>
         </member>
-        <member name="P:CsQuery.StringScanner.Implementation.StringScannerEngine.NextCharOrEmpty">
+        <member name="P:CsQuery.StringScanner.Implementation.StringScannerEngine.CurrentOrEmpty">
             <summary>
             Return the character at the current scanning position without advancing the pointer. If the pointer is
             at the end of the string, return an empty string.
@@ -8938,7 +10356,7 @@
         </member>
         <member name="P:CsQuery.StringScanner.Implementation.StringScannerEngine.Match">
             <summary>
-            The string or character that has been matched
+            The string or character that has been matched.
             </summary>
         </member>
         <member name="P:CsQuery.StringScanner.Implementation.StringScannerEngine.LastMatch">
@@ -8967,6 +10385,11 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.First">
+            <summary>
+            Return only odd-numbered elements from the selection
+            </summary>
+        </member>
         <member name="T:CsQuery.Implementation.DomElement">
             <summary>
             HTML elements.
@@ -8991,7 +10414,7 @@
             <returntype>bool</returntype>
         </member>
         <!-- Badly formed XML comment ignored for member "P:CsQuery.IDomElement.ElementIndex" -->
-        <member name="F:CsQuery.Implementation.DomElement._DomAttributes">
+        <member name="F:CsQuery.Implementation.DomElement._InnerAttributes">
             <summary>
             The dom attributes.
             </summary>
@@ -9667,9 +11090,14 @@
              collection.
              </returns>
         </member>
-        <member name="P:CsQuery.Implementation.DomElement.DomAttributes">
+        <member name="P:CsQuery.Implementation.DomElement.InnerAttributes">
             <summary>
             Gets the dom attributes.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.HasInnerAttributes">
+            <summary>
+            Returns true if this node has any actual attributes (not class or style)
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomElement.Style">
@@ -9910,20 +11338,21 @@
              int
              </returntype>
         </member>
-        <member name="T:CsQuery.Utility.RangeSortedDictionary`1">
+        <member name="T:CsQuery.JsObject">
             <summary>
-            A dictionary that is substring-lookup capable. This is the data structure used to index HTML documents for selectors.
-            A SortedSet of keys is used for the index because it allows fast access by substring. A list of keys obtained from the
-            SortedSet for a selector is used to obtain the target references from a regular dictionary.
+            A dynamic object implementation that differs from ExpandoObject in two ways:
+            
+            1) Missing property values always return null (or a specified value)
+            2) Allows case-insensitivity
+            
             </summary>
-            <typeparam name="TValue"></typeparam>
         </member>
-        <member name="M:CsQuery.Utility.RangeSortedDictionary`1.GetRange(System.String,System.Int32,System.Boolean)">
+        <member name="M:CsQuery.JsObject.GetList``1(System.String)">
             <summary>
-            Return only keys at depth. Zero is the matching key.
+            Try to return a li
             </summary>
-            <param name="subKey"></param>
-            <param name="depth"></param>
+            <typeparam name="T"></typeparam>
+            <param name="name"></param>
             <returns></returns>
         </member>
         <member name="T:CsQuery.HtmlParser.HtmlData">
@@ -10129,5 +11558,23 @@
             </summary>
         </member>
         <!-- Badly formed XML comment ignored for member "P:CsQuery.StringScanner.Implementation.CharacterInfo.Enclosing" -->
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.LastOfType">
+             <summary>
+             Matches the last element of the same type within its siblings
+             </summary>
+            
+             <url>
+             http://reference.sitepoint.com/css/pseudoclass-lastoftype
+             </url>
+        </member>
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.Lang">
+            <summary>
+            Pseudoclass selector for :lang. This is not currently implemented. The problem with :lang is
+            that it is based on an inherited property value. This messes with the index since elements
+            will be pre-filtered by an attribute selector. This could be implemented using a pseudoclass
+            type construct instead, e.g. as "visible" that traverses through parents, and inherits a
+            default document-wide setting.
+            </summary>
+        </member>
     </members>
 </doc>
