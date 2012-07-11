@@ -273,8 +273,8 @@ namespace CsQuery.Engine
                     foreach (IDomObject obj in GetAllChildOrDescendants(selector.TraversalType,selectionSource))
                     {
 
-                        key = HtmlData.indexSeparator + obj.Path;
-                        HashSet<IDomObject> srcKeys = new HashSet<IDomObject>(Document.DocumentIndex.QueryIndex(key));
+                        //key = HtmlData.indexSeparator + obj.Path;
+                        HashSet<IDomObject> srcKeys = new HashSet<IDomObject>(Document.DocumentIndex.QueryIndex(HtmlData.indexSeparator + obj.Path));
                         foreach (IDomObject match in selector.SelectElements)
                         {
                             if (srcKeys.Contains(match))

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CsQuery
 {
-    public enum CssStyleType
+    public enum CssStyleType: byte
     {
         Unit = 1,
         Option = 2,

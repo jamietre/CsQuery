@@ -24,6 +24,9 @@ namespace CsQuery.Implementation
     {
         #region private fields
 
+        //private string _PathID;
+        //private char _PathID;
+
         /// <summary>
         /// The dom attributes.
         /// </summary>
@@ -433,16 +436,21 @@ namespace CsQuery.Implementation
         /// trees are moved.
         /// </summary>
 
-        public override string PathID
+        public override char PathID
         {
             get
             {
-                if (_PathID == null)
-                {
-                    _PathID = PathEncode(Index);
-                }
-                return _PathID;
+                //if (_PathID == null)
+                //{
+                //    _PathID = PathEncode(Index);
+                //}
+                //return _PathID;
+                return (char)Index;
             }
+            //internal set
+            //{
+            //    _PathID = value;
+            //}
         }
 
         /// <summary>
@@ -757,7 +765,8 @@ namespace CsQuery.Implementation
 
         public void Reindex()
         {
-            PathID = null;
+            //PathID = null;
+            //PathID = (char)0;
             Index = 0;
         }
 

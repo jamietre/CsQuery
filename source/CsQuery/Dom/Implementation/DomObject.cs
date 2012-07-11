@@ -26,7 +26,7 @@ namespace CsQuery.Implementation
         private IDomDocument _Document;
 
         /// <summary>
-        /// Backink property for index.
+        /// Backing property for index.
         /// </summary>
 
         private int _Index;
@@ -35,7 +35,7 @@ namespace CsQuery.Implementation
         /// This must be accessd by overriding PathID implemenetation in DomElement.
         /// </summary>
 
-        protected string _PathID;
+        //protected string _PathID;
 
         /// <summary>
         /// The implementation for Clone.
@@ -137,9 +137,35 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return ParentNode != null ? ParentNode.Path + PathID :
+                // The underscore is just a convention to easily identify disconnected nodes when debugging. 
+
+                //return ParentNode != null ? 
+                //    ParentNode.Path + PathID :
+                //    "_" + PathID;
+
+                return ParentNode != null ?
+                    GetPath() :
                     "_" + PathID;
+
             }
+        }
+
+        private string GetPath()
+        {
+            int index = Depth;
+            char[] path = new char[index + 1];
+
+            IDomObject parent = ParentNode;
+            path[index] = PathID;
+            
+            while (parent != null)
+            {
+                path[--index] =  parent.PathID;
+                parent = parent.ParentNode;
+
+            }
+            return new string(path);
+
         }
 
         /// <summary>
@@ -157,6 +183,7 @@ namespace CsQuery.Implementation
                     _Document = ParentNode == null ? null : ParentNode.Document;
                 }
                 return _Document;
+                //return ParentNode == null ? null : ParentNode.Document;
             }
             internal set
             {
@@ -263,18 +290,19 @@ namespace CsQuery.Implementation
         /// trees are moved.
         /// </summary>
 
-        public virtual string PathID
+        public virtual char PathID
         {
             get
             {
                 // Don't actually store paths with non-element nodes as they aren't indexed and don't have children.
                 // Fast read access is less important than not having to reset them when moved.
-                return PathEncode(Index);
+                //return PathEncode(Index);
+                return (char)Index;
             }
-            internal set
-            {
-                _PathID = value;
-            }
+            //internal set
+            //{
+            //    _PathID = value;
+            //}
         }
 
         /// <summary>
@@ -325,7 +353,7 @@ namespace CsQuery.Implementation
             internal set
             {
                 _Index = value;
-                _PathID = null;
+                //_PathID = null;
             }
         }
 

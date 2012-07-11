@@ -30,7 +30,10 @@ namespace CsQuery.HtmlParser
         /// Length of each node's path ID (in characters), sets a limit on the number of child nodes before a reindex
         /// is required. For most cases, a small number will yield better performance. In production we probably can get
         /// away with just 1 (meaning a char=65k possible values). 
+        /// 
+        /// NOTE: At present PathID has been optimized as a ushort data type. You CANNOT just change this.
         /// </summary>
+        
         public const int pathIdLength = 1;
         /// <summary>
         /// The character used to separate the unique part of an index entry from its path. When debugging
@@ -545,6 +548,8 @@ namespace CsQuery.HtmlParser
 
             return sc_result.PadLeft(pathIdLength, '0');
         }
+
+
 
         /// <summary>
         /// HtmlEncode the string (pass-thru to system; abstracted in case we want to change)

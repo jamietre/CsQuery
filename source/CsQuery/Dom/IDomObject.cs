@@ -697,7 +697,7 @@ namespace CsQuery
         /// Gets a unique ID for this element among its siblings
         /// </summary>
 
-        string PathID { get; }
+        char PathID { get; }
 
         /// <summary>
         /// Gets the unique path to this element from the root of the heirarchy. This is generally only
