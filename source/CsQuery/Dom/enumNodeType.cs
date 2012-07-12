@@ -5,7 +5,8 @@ using System.Text;
 
 namespace CsQuery
 {
-    public enum NodeType
+    
+    public enum NodeType: byte
     {
         ELEMENT_NODE = 1,
         ATTRIBUTE_NODE =2,

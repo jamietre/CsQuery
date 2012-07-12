@@ -78,6 +78,7 @@
     <Compile Include="Csharp\Methods\Text.cs" />
     <Compile Include="Csharp\Methods\Slice.cs" />
     <Content Include="Resources\TextAreaTest.htm" />
+    <Compile Include="Csharp\Selectors\RegexExtension.cs" />
     <Compile Include="Csharp\Selectors\Extensions.cs" />
     <Compile Include="WebIO\StressTests.cs" />
     <Compile Include="TestTests.cs" />

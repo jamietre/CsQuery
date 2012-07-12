@@ -24,6 +24,7 @@ namespace CsQuery.Utility
 
         /// <summary>
         /// Create an object that will used as a 'factory' to the specified type T 
+        /// </summary>
         /// <returns></returns>
         public static object CreateInstance<T>() where T : class
         {

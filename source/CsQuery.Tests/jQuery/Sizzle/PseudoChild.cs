@@ -100,10 +100,16 @@ namespace CsQuery.Tests.jQuery.Sizzle
             Assert.IsTrue( match( select, ":has(option)" ), "Has Option Matches" );
 
             t( "Text Contains", "a:contains(Google)", Arrays.String("google","groups") );
+
+            
             t( "Text Contains", "a:contains(Google Groups)", Arrays.String("groups") );
 
-            t( "Text Contains", "a:contains(Google Groups (Link))", Arrays.String("groups") );
-            t( "Text Contains", "a:contains((Link))", Arrays.String("groups") );
+            // [CsQuery] We don't at this time allow constructst like "a:contains(Google Groups(link))"
+            // without quoting (e.g. inner parsing of parens without quotes). Deal with it. This is changed
+            // from the original to quote the selection. 
+            
+            t( "Text Contains", "a:contains('Google Groups (Link)')", Arrays.String("groups") );
+            t( "Text Contains", "a:contains('(Link)')", Arrays.String("groups") );
 
             var tmp = document.CreateElement("div");
             tmp.Id = "tmp_input";

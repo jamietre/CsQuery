@@ -20,7 +20,6 @@ namespace CsQuery.Engine
         static PseudoSelectors()
         {
             Items = new PseudoSelectors();
-            
         }
 
         /// <summary>
@@ -48,7 +47,7 @@ namespace CsQuery.Engine
         #region private properties
 
         private IDictionary<string, Type> InnerSelectors;
-
+        
         #endregion
 
         #region public properties
@@ -186,6 +185,30 @@ namespace CsQuery.Engine
         }
 
         /// <summary>
+        /// Registers all classes implementing IPseudoSelector in the namespace CsQuery.Extensions in the
+        /// passed assembly. If no assembly is provided, then inspects the calling assembly instead.
+        /// </summary>
+        ///
+        /// <remarks>
+        /// This method is called when the LookForExtensions startup option is set. (This is the default
+        /// setting).
+        /// </remarks>
+        ///
+        /// <param name="assembly">
+        /// The assembly to search.
+        /// </param>
+        ///
+        /// <returns>
+        /// The number of extensions added
+        /// </returns>
+
+        public int Register(Assembly assembly=null)
+        {
+            var CallingAssembly = Support.GetFirstExternalAssembly();
+            return PopulateFromAssembly(CallingAssembly, "CsQuery.Engine.PseudoClassSelectors", "CsQuery.Extensions");
+        }
+
+        /// <summary>
         /// Unregisters the names pseudoclass filter.
         /// </summary>
         ///
@@ -213,27 +236,38 @@ namespace CsQuery.Engine
 
         private void PopulateInnerSelectors()
         {
-            string nameSpace = "CsQuery.Engine.PseudoClassSelectors";
-            var assy = Assembly.GetExecutingAssembly();
-            bool foundTypes = false;
+            string defaultNamespace = "CsQuery.Engine.PseudoClassSelectors";
+            PopulateFromAssembly(Assembly.GetExecutingAssembly(),defaultNamespace);
+            if (InnerSelectors.Count == 0)
+            {
+                throw new InvalidOperationException(String.Format("I didn't find the native PseudoClassSelectors in the namespace {0}.",defaultNamespace));
+            }
+
+            if (CsQuery.Config.StartupOptions.HasFlag(StartupOptions.LookForExtensions))
+            {
+                Register();
+            }
+        }
+
+        private int PopulateFromAssembly(Assembly assy, params string[] nameSpaces) 
+        {
+            int loaded = 0;
             foreach (var t in assy.GetTypes())
             {
                 if (t.IsClass && t.Namespace != null &&
                     !t.IsAbstract &&
-                    t.Namespace.StartsWith(nameSpace))
+                    nameSpaces.Contains(t.Namespace))
                 {
                     if (t.GetInterface("IPseudoSelector") != null)
                     {
-                        foundTypes = true;
-                        InnerSelectors.Add(Objects.FromCamelCase(t.Name),t);
+                        IPseudoSelector instance = (IPseudoSelector)FastActivator.CreateInstance(t);
+                        InnerSelectors.Add(instance.Name,t);
+                        loaded++;
                     }
 
                 }
             }
-            if (!foundTypes)
-            {
-                throw new InvalidOperationException("Could not find any default PseudoClassSelectors. Did you change a namespace?");
-            }
+            return loaded;
         }
 
         #endregion

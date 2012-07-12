@@ -282,6 +282,21 @@ namespace CsQuery.Implementation
             }
         }
 
+        public override bool IsFragment
+        {
+            get
+            {
+                return false;
+            }
+        }
+        public override bool IsDisconnected
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         #endregion
 
         #region public methods

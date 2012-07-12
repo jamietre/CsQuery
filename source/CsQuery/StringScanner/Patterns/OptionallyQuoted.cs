@@ -108,7 +108,7 @@ namespace CsQuery.StringScanner.Patterns
             else
             {
                 if (Terminators.Contains(current)) {
-                    index+=1;
+                    //index+=1;
                     return false;
                 }
                 index++;

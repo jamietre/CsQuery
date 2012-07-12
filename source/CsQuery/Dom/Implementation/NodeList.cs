@@ -172,7 +172,7 @@ namespace CsQuery.Implementation
                 {
                     item.Document.DocumentIndex.RemoveFromIndex((IDomIndexedNode)element);
                 }
-                ((DomObject)element).ParentNode = null;
+                item.ParentNode = null;
             }
 
 

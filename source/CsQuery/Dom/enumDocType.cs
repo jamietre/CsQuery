@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CsQuery
 {
-    public enum DocType
+    public enum DocType: byte
     {
         HTML5 = 1,
         HTML4 = 2,

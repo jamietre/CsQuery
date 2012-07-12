@@ -89,9 +89,12 @@ namespace CsQuery
         string ClassName { get; set; }
 
         /// <summary>
-        /// A sequence of all the unique class names applied to this object.
+        /// All the unique class names applied to this object.
         /// </summary>
-
+        /// <value>
+        /// A sequence of strings	   
+        /// </value>
+        
         IEnumerable<string> Classes { get; }
 
         /// <summary>
@@ -694,7 +697,7 @@ namespace CsQuery
         /// Gets a unique ID for this element among its siblings
         /// </summary>
 
-        string PathID { get; }
+        char PathID { get; }
 
         /// <summary>
         /// Gets the unique path to this element from the root of the heirarchy. This is generally only

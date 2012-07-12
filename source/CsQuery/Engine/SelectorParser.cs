@@ -364,9 +364,7 @@ namespace CsQuery.Engine
         /// <returns></returns>
         protected IExpectPattern expectsOptionallyQuotedValue()
         {
-            var pattern = new OptionallyQuoted();
-            pattern.Terminators = Objects.Enumerate(']');
-            return pattern;
+            return new OptionallyQuoted("]");
         }
 
         /// <summary>

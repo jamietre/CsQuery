@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
+using CollectionAssert = NUnit.Framework.CollectionAssert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
 using CsQuery.Utility;
 using CsQuery.Engine;
+using CsQuery.ExtensionMethods;
 
 namespace CsQuery.Tests.Csharp.Selectors
 {
@@ -51,7 +54,27 @@ namespace CsQuery.Tests.Csharp.Selectors
             }
         }
 
+        [Test, TestMethod]
+        public void AutoAddRegex()
+        {
 
+            // The Regexp class should be automatically registered with the default startup options.
+            //CsQuery.Config.PseudoClassFilters.Register("regex", typeof(Regexp));
+
+
+            var dom = TestDom("TestHtml");
+            
+            
+            var res = dom.Select("span:regex(class,[0-9])");
+
+            CollectionAssert.AreEqual(res.Select(item => item.ClassName).ToArray(), Arrays.String("badge2", "badge3"),"Regex with class attribute worked");
+
+            // match anything with a width
+            res = dom.Select(":regex(css:width,'.+')");
+
+            Assert.AreEqual(1, res.Length);
+            Assert.AreEqual(dom["#hidden-div > :first-child"][0], res[0]);
+        }
 
 
         /// <summary>
@@ -115,22 +138,9 @@ namespace CsQuery.Tests.Csharp.Selectors
                 }
             }
         }
-        
-        //private bool ContentGreaterThan(IDomObject obj, string parms)
-        //{
-        //    if (obj.NodeType == NodeType.TEXT_NODE)
-        //    {
-        //        double val;
-        //        if (double.TryParse(obj.NodeValue, out val))
-        //        {
-                    
-        //        }
-        //    }
-        //    else
-        //    {
-        //        return false;
-        //    }
-        //}
+
+       
+
 
     }
 }
