@@ -43,6 +43,13 @@ namespace CsQuery.Implementation
                 return true;
             }
         }
+        public override bool IsFragment
+        {
+            get
+            {
+                return true;
+            }
+        }
 
         public override IDomDocument CreateNew()
         {

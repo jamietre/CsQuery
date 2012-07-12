@@ -461,7 +461,8 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return !IsDisconnected && Document.IsIndexed;
+                //return !IsDisconnected && Document.IsIndexed;
+                return (DocFlags & DocumentFlags.IsIndexed) != 0;
             }
         }
 

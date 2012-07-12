@@ -19,6 +19,17 @@ namespace CsQuery.Implementation
     {
         #region private properties
 
+        [Flags]
+        protected enum DocumentFlags : byte
+        {
+            IsIndexed = 1,
+            IsDocument = 2,
+            IsConnected = 4,
+            IsParentTested = 8
+        }
+
+        protected DocumentFlags DocFlags;
+
         /// <summary>
         /// The document.
         /// </summary>
@@ -144,29 +155,12 @@ namespace CsQuery.Implementation
                 //    "_" + PathID;
 
                 return ParentNode != null ?
-                    GetPath() :
+                   ParentNode.Path + PathID :
                     "_" + PathID;
 
             }
         }
 
-        private string GetPath()
-        {
-            int index = Depth;
-            char[] path = new char[index + 1];
-
-            IDomObject parent = ParentNode;
-            path[index] = PathID;
-            
-            while (parent != null)
-            {
-                path[--index] =  parent.PathID;
-                parent = parent.ParentNode;
-
-            }
-            return new string(path);
-
-        }
 
         /// <summary>
         /// The DOM for this object. This is obtained by looking at its parents value until it finds a
@@ -178,25 +172,51 @@ namespace CsQuery.Implementation
         {
             get
             {
-                if (_Document == null)
+                if ((DocFlags & DocumentFlags.IsParentTested) == 0)
                 {
-                    _Document = ParentNode == null ? null : ParentNode.Document;
+                    UpdateDocumentFlags();
                 }
                 return _Document;
-                //return ParentNode == null ? null : ParentNode.Document;
             }
             internal set
             {
                 _Document = value;
-                if (value == null && HasChildren)
-                {
-                    foreach (var item in ChildElements)
-                    {
-                        ((DomObject)item).Document = null;
-                    }
+                SetDocFlags();
 
+                // I think we can get away without resetting children. When removing something from a document,
+                // you are exclusively going to be adding it to something else. We only need to update the parents
+                // during the add operation.
+
+                if (HasChildren && value != null)
+                {
+                    foreach (var item in ChildNodes.Cast<DomObject>())
+                    {
+                        item.Document = value;
+                    }
                 }
             }
+        }
+
+        /// <summary>
+        /// Updates the cached Document and property flags 
+        /// </summary>
+
+        private void UpdateDocumentFlags()
+        {
+            Document = ParentNode == null ? null : ParentNode.Document;
+
+        }
+
+        private void SetDocFlags()
+        {
+            DocFlags = DocumentFlags.IsParentTested |
+                (_Document == null ? 0 :
+                    DocumentFlags.IsConnected |
+                    (_Document.NodeType == NodeType.DOCUMENT_NODE ?
+                        DocumentFlags.IsDocument : 0) |
+                    (_Document.IsIndexed ?
+                        DocumentFlags.IsIndexed : 0));
+
         }
 
         /// <summary>
@@ -260,7 +280,7 @@ namespace CsQuery.Implementation
                 _ParentNode = value;
                 //_ParentPath = null;
                 // de-cache _Document
-                Document = null;
+                UpdateDocumentFlags();
             }
         }
 
@@ -268,19 +288,21 @@ namespace CsQuery.Implementation
         /// The element is not associated with an IDomDocument.
         /// </summary>
 
-        public bool IsFragment
+        public virtual bool IsFragment
         {
             get
             {
-                return IsDisconnected || Document.NodeType == NodeType.DOCUMENT_FRAGMENT_NODE;
+                //return IsDisconnected || Document.NodeType == NodeType.DOCUMENT_FRAGMENT_NODE;
+                return (DocFlags & DocumentFlags.IsDocument) == 0;
             }
         }
 
-        public bool IsDisconnected
+        public virtual bool IsDisconnected
         {
             get
             {
-                return Document==null;
+                //return Document==null;
+                return (DocFlags & DocumentFlags.IsConnected) == 0;
             }
         }
 
