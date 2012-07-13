@@ -2,6 +2,13 @@
 
 This is an informal log of changes to the project; major issues will be logged and described on github.
 
+####7/13/2012
+
+- Fixed DEBUG_PATH code
+- Remove unused "IDomNode.Complete" property
+- Remove unused "IDomIndexedNode.Reindex" method
+- Cache information about ParentNode to speed DOM construction when this is tested frequently
+
 #####7/9/2012
 
 - Refactored pseudoclass selector engine into a type dictionary to permit user defined classes

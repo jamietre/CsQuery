@@ -61,10 +61,7 @@ namespace CsQuery.Implementation
         {
             get { return false; }
         }
-        public override bool Complete
-        {
-            get { return true; }
-        }
+
         public string Text
         {
             get

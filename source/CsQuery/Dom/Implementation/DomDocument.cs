@@ -244,11 +244,6 @@ namespace CsQuery.Implementation
         {
             get { return true; }
         }
-        
-        public override bool Complete
-        {
-            get { return true; }
-        }
 
         public IDictionary<string, object> Data
         {

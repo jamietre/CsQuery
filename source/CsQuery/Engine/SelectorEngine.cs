@@ -143,10 +143,10 @@ namespace CsQuery.Engine
 
 #if DEBUG_PATH
 
-                     if (selector.SelectorType.HasFlag(SelectorType.AttributeValue) 
+                    if (selector.SelectorType.HasFlag(SelectorType.AttributeValue) 
                         && selector.AttributeSelectorType != AttributeSelectorType.NotEquals)
                     {
-                        key = "!" + selector.AttributeName;
+                        key = "!" + selector.AttributeName.ToLower();
 
                         // AttributeValue must still be matched manually - so remove this flag only if the
                         // selector is conclusive without further checking
@@ -155,18 +155,18 @@ namespace CsQuery.Engine
                         {
                             removeSelectorType = SelectorType.AttributeValue;
                         }
-                    } 
-                    else if (type.HasFlag(SelectorType.Tag))
+                    }
+                    else if (selector.SelectorType.HasFlag(SelectorType.Tag))
                     {
-                        key = "+"+selector.Tag;
+                        key = "+"+selector.Tag.ToLower();
                         removeSelectorType=SelectorType.Tag;
                     }
-                    else if (type.HasFlag(SelectorType.ID))
+                    else if (selector.SelectorType.HasFlag(SelectorType.ID))
                     {
                         key = "#" + selector.ID;
                         removeSelectorType=SelectorType.ID;
                     }
-                    else if (type.HasFlag(SelectorType.Class))
+                    else if (selector.SelectorType.HasFlag(SelectorType.Class))
                     {
                         key = "." + selector.Class;
                         removeSelectorType=SelectorType.Class;
@@ -179,7 +179,7 @@ namespace CsQuery.Engine
                     if (selector.SelectorType.HasFlag(SelectorType.AttributeValue) 
                         && selector.AttributeSelectorType != AttributeSelectorType.NotEquals)
                     {
-                        key = "!" + (char)HtmlData.TokenID(selector.AttributeName);
+                        key = "!" + (char)HtmlData.Tokenize(selector.AttributeName);
 
                         // AttributeValue must still be matched manually - so remove this flag only if the
                         // selector is conclusive without further checking
@@ -191,17 +191,17 @@ namespace CsQuery.Engine
                     }
                     else if (selector.SelectorType.HasFlag(SelectorType.Tag))
                     {
-                        key = "+" + (char)HtmlData.TokenID(selector.Tag);
+                        key = "+" + (char)HtmlData.Tokenize(selector.Tag);
                         removeSelectorType=SelectorType.Tag;
                     }
                     else if (selector.SelectorType.HasFlag(SelectorType.ID))
                     {
-                        key = "#" + (char)HtmlData.TokenIDCaseSensitive(selector.ID);
+                        key = "#" + (char)HtmlData.TokenizeCaseSensitive(selector.ID);
                         removeSelectorType=SelectorType.ID;
                     }
                     else if (selector.SelectorType.HasFlag(SelectorType.Class))
                     {
-                        key = "." + (char)HtmlData.TokenIDCaseSensitive(selector.Class);
+                        key = "." + (char)HtmlData.TokenizeCaseSensitive(selector.Class);
                         removeSelectorType=SelectorType.Class;
                     }
 #endif

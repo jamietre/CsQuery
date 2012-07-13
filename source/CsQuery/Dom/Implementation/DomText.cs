@@ -90,13 +90,6 @@ namespace CsQuery.Implementation
         {
             get { return false; }
         }
-        public override bool Complete
-        {
-            get { 
-                //return !String.IsNullOrEmpty(Text); 
-                return textIndex >=0;
-            }
-        }
         public override string ToString()
         {
             return NodeValue;

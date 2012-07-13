@@ -136,11 +136,11 @@ namespace CsQuery.Implementation
             }
             else if (!UseDict)
             {
-                return InnerKeys.IndexOf(HtmlData.TokenID(key),Count) >= 0;
+                return InnerKeys.IndexOf(HtmlData.Tokenize(key),Count) >= 0;
             }
             else
             {
-                return InnerDictionary.ContainsKey(HtmlData.TokenID(key));
+                return InnerDictionary.ContainsKey(HtmlData.Tokenize(key));
             }
         }
         public bool ContainsKey(ushort tokenId)
@@ -210,7 +210,7 @@ namespace CsQuery.Implementation
             
             value = Get(key);
             return value != null ||
-                ContainsKey(HtmlData.TokenID(key));
+                ContainsKey(HtmlData.Tokenize(key));
         }
         public bool TryGetValue(ushort key, out string value)
         {
@@ -225,7 +225,7 @@ namespace CsQuery.Implementation
         /// <param name="name"></param>
         public void SetBoolean(string name)
         {
-            ushort tokenId = HtmlData.TokenID(name);
+            ushort tokenId = HtmlData.Tokenize(name);
 
             SetBoolean(tokenId);
         }
@@ -258,7 +258,7 @@ namespace CsQuery.Implementation
         /// <returns></returns>
         public bool Unset(string name)
         {
-            return Unset(HtmlData.TokenID(name));
+            return Unset(HtmlData.Tokenize(name));
         }
         public bool Unset(ushort tokenId)
         {
@@ -323,7 +323,7 @@ namespace CsQuery.Implementation
             {
                 return null;
             }
-            return Get(HtmlData.TokenID(name));
+            return Get(HtmlData.Tokenize(name));
         }
         protected string Get(ushort tokenId)
         {
@@ -356,7 +356,7 @@ namespace CsQuery.Implementation
                 throw new ArgumentException("Cannot set an attribute with no name.");
             }
             name = name.CleanUp();
-            Set(HtmlData.TokenID(name), value);
+            Set(HtmlData.Tokenize(name), value);
         }
         /// <summary>
         /// Second to last line of defense -- will call back to owning Element for attempts to set class, style, or ID, which are 

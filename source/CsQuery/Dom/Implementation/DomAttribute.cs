@@ -56,12 +56,7 @@ namespace CsQuery.Implementation
     //    {
     //        get { return null; }
     //    }
-
-    //    public bool Complete
-    //    {
-    //        get { return true; }
-    //    }
-
+    
     //    public string Render()
     //    {
     //        throw new NotImplementedException();

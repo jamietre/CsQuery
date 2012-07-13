@@ -222,11 +222,11 @@ namespace CsQuery.Implementation
                 {
                     if (InnerAttributes.ContainsKey(HtmlData.IDAttrId))
                     {
-                        Document.DocumentIndex.RemoveFromIndex(IndexKey("#", HtmlData.TokenIDCaseSensitive(Id), Path));
+                        Document.DocumentIndex.RemoveFromIndex(IndexKey("#", HtmlData.TokenizeCaseSensitive(Id), Path));
                     }
                     if (value != null)
                     {
-                        Document.DocumentIndex.AddToIndex(IndexKey("#", HtmlData.TokenIDCaseSensitive(value), Path), this);
+                        Document.DocumentIndex.AddToIndex(IndexKey("#", HtmlData.TokenizeCaseSensitive(value), Path), this);
                     }
                 }
                 SetAttributeRaw(HtmlData.IDAttrId, value);
@@ -430,28 +430,6 @@ namespace CsQuery.Implementation
             }
         }
 
-        /// <summary>
-        /// Unique ID assigned when added to a dom. This is not the full path but just the ID at this
-        /// level. The full path is never stored with each node to prevent having to regenerate if node
-        /// trees are moved.
-        /// </summary>
-
-        public override char PathID
-        {
-            get
-            {
-                //if (_PathID == null)
-                //{
-                //    _PathID = PathEncode(Index);
-                //}
-                //return _PathID;
-                return (char)Index;
-            }
-            //internal set
-            //{
-            //    _PathID = value;
-            //}
-        }
 
         /// <summary>
         /// Gets a value indicating whether this object type should be indexed.
@@ -462,7 +440,7 @@ namespace CsQuery.Implementation
             get
             {
                 //return !IsDisconnected && Document.IsIndexed;
-                return (DocFlags & DocumentFlags.IsIndexed) != 0;
+                return (DocInfo & DocumentInfo.IsIndexed) != 0;
             }
         }
 
@@ -506,15 +484,6 @@ namespace CsQuery.Implementation
             }
         }
 
-        /// <summary>
-        /// When false, this element has not had a tag name assigned yet. Normally you should not create
-        /// elements like this, however, during DOM construction this could be true.
-        /// </summary>
-
-        public override bool Complete
-        {
-            get { return _NodeNameID >= 0; }
-        }
 
         /// <summary>
         /// The child node at the specified index.
@@ -760,18 +729,6 @@ namespace CsQuery.Implementation
         #region public methods
 
         /// <summary>
-        /// Reindexes this object. It is not necessary for end-users to call this method; all DOM
-        /// manipulation will cause elements to be reindexed when necessary.
-        /// </summary>
-
-        public void Reindex()
-        {
-            //PathID = null;
-            //PathID = (char)0;
-            Index = 0;
-        }
-
-        /// <summary>
         /// Renders this object.
         /// </summary>
         ///
@@ -815,13 +772,18 @@ namespace CsQuery.Implementation
         {
 
             string path = Path;
-            yield return "" + HtmlData.indexSeparator + path;
+
+            yield return HtmlData.indexSeparator + path;
+            
             yield return IndexKey("+",_NodeNameID, path);
+
             string id = Id;
+            
             if (!String.IsNullOrEmpty(id))
             {
-                yield return IndexKey("#", HtmlData.TokenIDCaseSensitive(id), path);
+                yield return IndexKey("#", HtmlData.TokenizeCaseSensitive(id), path);
             }
+
             if (HasClasses)
             {
                 foreach (ushort clsId in _Classes)
@@ -829,12 +791,10 @@ namespace CsQuery.Implementation
                     yield return IndexKey(".", clsId, path);
                 }
             }
-            if (HasAttributes)
+
+            foreach (ushort token in AttributesTokens())
             {
-                foreach (var attr in (IAttributeCollection)this)
-                {
-                    yield return IndexKey("!", HtmlData.TokenID(attr.Key), path);
-                }
+                yield return IndexKey("!", token, path); ;
             }
         }
 
@@ -925,7 +885,7 @@ namespace CsQuery.Implementation
         public override bool HasClass(string name)
         {
             return HasClasses
-                && _Classes.Contains(HtmlData.TokenIDCaseSensitive(name));
+                && _Classes.Contains(HtmlData.TokenizeCaseSensitive(name));
         }
 
         /// <summary>
@@ -954,7 +914,7 @@ namespace CsQuery.Implementation
                     {
                         _Classes = new List<ushort>();
                     }
-                    ushort tokenId = HtmlData.TokenIDCaseSensitive(cls);
+                    ushort tokenId = HtmlData.TokenizeCaseSensitive(cls);
                     
                     _Classes.Add(tokenId);
                     if (IsIndexed)
@@ -993,7 +953,7 @@ namespace CsQuery.Implementation
             {
                 if (HasClass(cls))
                 {
-                    ushort tokenId = HtmlData.TokenIDCaseSensitive(cls);
+                    ushort tokenId = HtmlData.TokenizeCaseSensitive(cls);
                     _Classes.Remove(tokenId);
                     if (!IsDisconnected)
                     {
@@ -1051,7 +1011,7 @@ namespace CsQuery.Implementation
 
         public override bool HasAttribute(string name)
         {
-            return HasAttribute(HtmlData.TokenID(name));
+            return HasAttribute(HtmlData.Tokenize(name));
         }
 
         /// <summary>
@@ -1067,7 +1027,7 @@ namespace CsQuery.Implementation
 
         public override void SetAttribute(string name, string value)
         {
-            SetAttribute(HtmlData.TokenID(name), value);
+            SetAttribute(HtmlData.Tokenize(name), value);
         }
 
         /// <summary>
@@ -1126,7 +1086,7 @@ namespace CsQuery.Implementation
 
         public override void SetAttribute(string name)
         {
-            SetAttribute(HtmlData.TokenID(name));
+            SetAttribute(HtmlData.Tokenize(name));
         }
 
         /// <summary>
@@ -1187,7 +1147,7 @@ namespace CsQuery.Implementation
 
         public override bool RemoveAttribute(string name)
         {
-            return RemoveAttribute(HtmlData.TokenID(name));
+            return RemoveAttribute(HtmlData.Tokenize(name));
 
         }
 
@@ -1316,7 +1276,7 @@ namespace CsQuery.Implementation
 
         public override string GetAttribute(string name, string defaultValue)
         {
-            return GetAttribute(HtmlData.TokenID(name), defaultValue);
+            return GetAttribute(HtmlData.Tokenize(name), defaultValue);
         }
 
         /// <summary>
@@ -1403,7 +1363,7 @@ namespace CsQuery.Implementation
 
         public override bool TryGetAttribute(string name, out string value)
         {
-            return TryGetAttribute(HtmlData.TokenID(name), out value);
+            return TryGetAttribute(HtmlData.Tokenize(name), out value);
         }
 
         /// <summary>
@@ -1568,7 +1528,7 @@ namespace CsQuery.Implementation
         {
             if (_NodeNameID < 1)
             {
-                _NodeNameID = HtmlData.TokenID(nodeName);
+                _NodeNameID = HtmlData.Tokenize(nodeName);
             }
             else
             {
@@ -1591,7 +1551,7 @@ namespace CsQuery.Implementation
 
         public string AttributeIndexKey(string attrName)
         {
-            return AttributeIndexKey(HtmlData.TokenID(attrName));
+            return AttributeIndexKey(HtmlData.Tokenize(attrName));
         }
 
         /// <summary>
@@ -1609,7 +1569,7 @@ namespace CsQuery.Implementation
         public string AttributeIndexKey(ushort attrId)
         {
 #if DEBUG_PATH
-            return "!" + DomData.TokenName(attrId) + DomData.indexSeparator + Owner.Path;
+            return "!" + HtmlData.TokenName(attrId).ToLower() + HtmlData.indexSeparator + Path;
 #else
             return "!" + (char)attrId + HtmlData.indexSeparator + Path;
 #endif
@@ -1744,15 +1704,11 @@ namespace CsQuery.Implementation
 
         internal string IndexKey(string prefix, string key, string path)
         {
-#if DEBUG_PATH
-            return prefix + key + DomData.indexSeparator + path;
-#else
-            return IndexKey(prefix, HtmlData.TokenID(key), path);
-#endif
+            return IndexKey(prefix, HtmlData.Tokenize(key), path);
         }
 
         /// <summary>
-        /// Index key.
+        /// Generates a key that will be used to refernece this item in the index
         /// </summary>
         ///
         /// <param name="prefix">
@@ -1762,31 +1718,31 @@ namespace CsQuery.Implementation
         /// Identifier for the key token.
         /// </param>
         /// <param name="path">
-        /// Full pathname of the file.
+        /// Full path to the element.
         /// </param>
         ///
         /// <returns>
-        /// .
+        /// A string representing the key for this item in the index
         /// </returns>
 
         internal string IndexKey(string prefix, ushort keyTokenId, string path)
         {
 #if DEBUG_PATH
-            return prefix + DomData.TokenName(keyTokenId) + DomData.indexSeparator + path;
+            return prefix + HtmlData.TokenName(keyTokenId) + HtmlData.indexSeparator + path;
 #else
             return prefix + (char)keyTokenId + HtmlData.indexSeparator + path;
 #endif
         }
 
         /// <summary>
-        /// Gets a HTML.
+        /// Gets the HTML representation of this element and its children
         /// </summary>
         ///
         /// <param name="options">
-        /// Options for controlling the operation.
+        /// Options for how to render the HTML.
         /// </param>
         /// <param name="sb">
-        /// The sb.
+        /// A StringBuilder object to which append the output.
         /// </param>
         /// <param name="includeChildren">
         /// true to include, false to exclude the children.
@@ -1863,25 +1819,21 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// TODO this really should be in Attributes.
+        /// Render an attribute
         /// </summary>
         ///
         /// <param name="sb">
-        /// The sb.
+        /// A StringBuilder to append the attributes to
         /// </param>
         /// <param name="name">
-        /// .
+        /// The name of the attribute
         /// </param>
         /// <param name="value">
-        /// .
+        /// The attribute value
         /// </param>
         /// <param name="quoteAll">
-        /// true to quote all.
+        /// true to require quotes around the attribute value, false to use quotes only if needed.
         /// </param>
-        ///
-        /// ### <returns>
-        /// .
-        /// </returns>
 
         protected void RenderAttribute(StringBuilder sb, string name, string value, bool quoteAll)
         {
@@ -1907,15 +1859,15 @@ namespace CsQuery.Implementation
         #region explicit members for IAttributesCollection
 
         /// <summary>
-        /// The child node at the specified index.
+        /// Get the named attribute value
         /// </summary>
         ///
         /// <param name="attributeName">
-        /// .
+        /// The name of the attribute
         /// </param>
         ///
         /// <returns>
-        /// The indexed item.
+        /// A string of the attribute value
         /// </returns>
 
         string IAttributeCollection.this[string attributeName]
@@ -2008,6 +1960,34 @@ namespace CsQuery.Implementation
                     yield return kvp;
                 }
             }
+        }
+
+        /// <summary>
+        /// Return a sequence of tokens for each attribute (including class and style) that exists on this element
+        /// </summary>
+        ///
+        /// <returns>
+        /// An enumerator of ushort
+        /// </returns>
+
+        protected IEnumerable<ushort> AttributesTokens()
+        {
+            if (HasClasses)
+            {
+                yield return HtmlData.ClassAttrId;
+            }
+            if (HasStyles)
+            {
+                yield return HtmlData.tagSTYLE;
+            }
+            if (HasInnerAttributes)
+            {
+                foreach (var token in InnerAttributes.GetAttributeIds())
+                {
+                    yield return token;
+                }
+            }
+
         }
         
         #endregion

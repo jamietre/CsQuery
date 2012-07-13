@@ -26,6 +26,7 @@ namespace CsQuery.HtmlParser
         public const char indexSeparator = '>';
 #else
         public static bool Debug = false;
+        
         /// <summary>
         /// Length of each node's path ID (in characters), sets a limit on the number of child nodes before a reindex
         /// is required. For most cases, a small number will yield better performance. In production we probably can get
@@ -35,11 +36,13 @@ namespace CsQuery.HtmlParser
         /// </summary>
         
         public const int pathIdLength = 1;
+        
         /// <summary>
         /// The character used to separate the unique part of an index entry from its path. When debugging
         /// it is useful to have a printable character. Otherwise we want something that is guaranteed to be
         /// a unique stop character.
         /// </summary>
+        
         public const char indexSeparator = (char)1;
 #endif
 
@@ -266,44 +269,44 @@ namespace CsQuery.HtmlParser
 
             // keep a placeholder open before real tags start
 
-            TokenID("unused"); //2
+            Tokenize("unused"); //2
 
-            TokenID("class"); //3
-            TokenID("value"); //4
-            TokenID("id"); //5
+            Tokenize("class"); //3
+            Tokenize("value"); //4
+            Tokenize("id"); //5
 
-            TokenID("selected"); //6
-            TokenID("readonly"); //7 
-            TokenID("checked"); //8
-            TokenID("input"); //9
-            TokenID("select"); //10
-            TokenID("option"); //11
+            Tokenize("selected"); //6
+            Tokenize("readonly"); //7 
+            Tokenize("checked"); //8
+            Tokenize("input"); //9
+            Tokenize("select"); //10
+            Tokenize("option"); //11
 
-            TokenID("p"); //12
-            TokenID("tr"); //13
-            TokenID("td"); //14
-            TokenID("th"); //15
-            TokenID("head"); //16
-            TokenID("body"); //17
-            TokenID("dt"); //18
-            TokenID("colgroup"); //19
-            TokenID("dd"); //20
-            TokenID("li"); //21
-            TokenID("dl"); //22
-            TokenID("table"); //23
-            TokenID("optgroup"); //24
-            TokenID("ul"); //25
-            TokenID("ol"); //26
-            TokenID("tbody"); //27
-            TokenID("tfoot"); //28
-            TokenID("thead"); //29
-            TokenID("rt"); //30
-            TokenID("rp"); //31
-            TokenID("script"); //32
-            TokenID("textarea"); //33
-            TokenID("style"); //34
-            TokenID("col"); //34
-            TokenID("html"); //36
+            Tokenize("p"); //12
+            Tokenize("tr"); //13
+            Tokenize("td"); //14
+            Tokenize("th"); //15
+            Tokenize("head"); //16
+            Tokenize("body"); //17
+            Tokenize("dt"); //18
+            Tokenize("colgroup"); //19
+            Tokenize("dd"); //20
+            Tokenize("li"); //21
+            Tokenize("dl"); //22
+            Tokenize("table"); //23
+            Tokenize("optgroup"); //24
+            Tokenize("ul"); //25
+            Tokenize("ol"); //26
+            Tokenize("tbody"); //27
+            Tokenize("tfoot"); //28
+            Tokenize("thead"); //29
+            Tokenize("rt"); //30
+            Tokenize("rp"); //31
+            Tokenize("script"); //32
+            Tokenize("textarea"); //33
+            Tokenize("style"); //34
+            Tokenize("col"); //34
+            Tokenize("html"); //36
 
             // all this hardcoding makes me nervous, sanity check
             
@@ -352,7 +355,7 @@ namespace CsQuery.HtmlParser
             var set = new HashSet<ushort>();
             foreach (var item in tokens)
             {
-                set.Add(TokenID(item));
+                set.Add(Tokenize(item));
             }
             return set;
         }
@@ -396,7 +399,7 @@ namespace CsQuery.HtmlParser
         /// <returns></returns>
         public static bool HtmlChildrenNotAllowed(string nodeName)
         {
-            return HtmlChildrenNotAllowed(TokenID(nodeName));
+            return HtmlChildrenNotAllowed(Tokenize(nodeName));
         }
 
         /// <summary>
@@ -415,7 +418,7 @@ namespace CsQuery.HtmlParser
         }
         public static bool InnerTextAllowed(string nodeName)
         {
-            return ChildrenAllowed(TokenID(nodeName));
+            return ChildrenAllowed(Tokenize(nodeName));
         }
         public static bool IsBlock(ushort nodeId)
         {
@@ -425,7 +428,7 @@ namespace CsQuery.HtmlParser
         }
         public static bool IsBlock(string nodeName)
         {
-            return IsBlock(TokenID(nodeName));
+            return IsBlock(Tokenize(nodeName));
         }
         /// <summary>
         /// The attribute is a boolean type
@@ -444,21 +447,53 @@ namespace CsQuery.HtmlParser
         /// <returns></returns>
         public static bool IsBoolean(string nodeName)
         {
-            return IsBoolean(TokenID(nodeName));
+            return IsBoolean(Tokenize(nodeName));
         }
 
+        /// <summary>
+        /// Return a token for a name
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The name to tokenize.
+        /// </param>
+        ///
+        /// <returns>
+        /// .
+        /// </returns>
 
-        public static ushort TokenID(string tokenName)
+        public static ushort Tokenize(string name)
         {
 
-            if (String.IsNullOrEmpty(tokenName))
+            if (String.IsNullOrEmpty(name))
             {
                 return 0;
             }
-            return TokenIDImpl(tokenName.ToLower());
+            return TokenizeImpl(name.ToLower());
 
         }
 
+        /// <summary>
+        /// Return a token for a name, adding to the index if it doesn't exist. When indexing tags and
+        /// attributes, TokenID(tokenName) should be used.
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The name to tokenize
+        /// </param>
+        ///
+        /// <returns>
+        /// A token representation of the string
+        /// </returns>
+
+        public static ushort TokenizeCaseSensitive(string name)
+        {
+            if (String.IsNullOrEmpty(name))
+            {
+                return 0;
+            }
+            return TokenizeImpl(name);
+        }
         /// <summary>
         /// Return a token ID for a name, adding to the index if it doesn't exist.
         /// When indexing tags and attributes, ignoreCase should be used
@@ -466,22 +501,7 @@ namespace CsQuery.HtmlParser
         /// <param name="tokenName"></param>
         /// <param name="ignoreCase"></param>
         /// <returns></returns>
-        public static ushort TokenIDCaseSensitive(string tokenName)
-        {
-            if (String.IsNullOrEmpty(tokenName))
-            {
-                return 0;
-            }
-            return TokenIDImpl(tokenName);
-        }
-        /// <summary>
-        /// Return a token ID for a name, adding to the index if it doesn't exist.
-        /// When indexing tags and attributes, ignoreCase should be used
-        /// </summary>
-        /// <param name="tokenName"></param>
-        /// <param name="ignoreCase"></param>
-        /// <returns></returns>
-        public static ushort TokenIDImpl(string tokenName)
+        public static ushort TokenizeImpl(string tokenName)
         {
             ushort id;
 
@@ -640,8 +660,8 @@ namespace CsQuery.HtmlParser
         public static ushort SpecialTagAction(string tag, string newTag, bool isDocument = true)
         {
             return isDocument ?
-                SpecialTagActionForDocument(TokenID(tag), TokenID(newTag)) :
-                SpecialTagAction(TokenID(tag), TokenID(newTag));
+                SpecialTagActionForDocument(Tokenize(tag), Tokenize(newTag)) :
+                SpecialTagAction(Tokenize(tag), Tokenize(newTag));
         }
 
 
@@ -854,7 +874,7 @@ namespace CsQuery.HtmlParser
         {
             foreach (var token in tokens)
             {
-                setBit(TokenID(token), bit);
+                setBit(Tokenize(token), bit);
             }
 
         }
