@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CsQuery.ExtensionMethods;
+using CsQuery.HtmlParser;
 
 namespace CsQuery.Implementation
 {
@@ -79,7 +80,7 @@ namespace CsQuery.Implementation
                     {
                         {
 #if DEBUG_PATH
-                            curDepth = (key.Length - len) / DomData.pathIdLength;
+                            curDepth = (key.Length - len) / HtmlData.pathIdLength;
 #else
                             curDepth = key.Length - len;
 #endif

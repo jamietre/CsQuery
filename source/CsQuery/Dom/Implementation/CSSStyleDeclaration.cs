@@ -247,7 +247,7 @@ namespace CsQuery.Implementation
         /// <returns></returns>
         public bool Remove(string name)
         {
-            return Styles.Remove(HtmlData.TokenID(name));
+            return Styles.Remove(HtmlData.Tokenize(name));
         }
         public bool RemoveStyle(string name)
         {
@@ -280,7 +280,7 @@ namespace CsQuery.Implementation
         /// <returns></returns>
         public bool HasStyle(string styleName)
         {
-            return Styles.ContainsKey(HtmlData.TokenID(styleName));
+            return Styles.ContainsKey(HtmlData.Tokenize(styleName));
         }
         /// <summary>
         /// Sets style setting with no parsing
@@ -290,19 +290,19 @@ namespace CsQuery.Implementation
         public void SetRaw(string name, string value)
         {
             bool hadStyles = HasStyles;
-            Styles[HtmlData.TokenID(name)] = value;
+            Styles[HtmlData.Tokenize(name)] = value;
             UpdateIndex(hadStyles);
         }
         public bool TryGetValue(string key, out string value)
         {
-            return Styles.TryGetValue(HtmlData.TokenID(key), out value);
+            return Styles.TryGetValue(HtmlData.Tokenize(key), out value);
         }
 
 
         public string GetStyle(string name)
         {
             string value;
-            if (Styles.TryGetValue(HtmlData.TokenID(name), out value))
+            if (Styles.TryGetValue(HtmlData.Tokenize(name), out value))
             {
                 return value;
             }
@@ -553,7 +553,7 @@ namespace CsQuery.Implementation
         }
         bool IDictionary<string, string>.ContainsKey(string key)
         {
-            return Styles.ContainsKey(HtmlData.TokenID(key));
+            return Styles.ContainsKey(HtmlData.Tokenize(key));
         }
         void ICollection<KeyValuePair<string, string>>.Add(KeyValuePair<string, string> item)
         {
@@ -563,7 +563,7 @@ namespace CsQuery.Implementation
 
         bool ICollection<KeyValuePair<string, string>>.Contains(KeyValuePair<string, string> item)
         {
-            return Styles.Contains(new KeyValuePair<ushort, string>(HtmlData.TokenID(item.Key), item.Value));
+            return Styles.Contains(new KeyValuePair<ushort, string>(HtmlData.Tokenize(item.Key), item.Value));
         }
 
         void ICollection<KeyValuePair<string, string>>.CopyTo(KeyValuePair<string, string>[] array, int arrayIndex)
@@ -578,7 +578,7 @@ namespace CsQuery.Implementation
 
         bool ICollection<KeyValuePair<string, string>>.Remove(KeyValuePair<string, string> item)
         {
-            var kvp = new KeyValuePair<ushort, string>(HtmlData.TokenID(item.Key), item.Value);
+            var kvp = new KeyValuePair<ushort, string>(HtmlData.Tokenize(item.Key), item.Value);
             return Styles.Remove(kvp);
         }
 

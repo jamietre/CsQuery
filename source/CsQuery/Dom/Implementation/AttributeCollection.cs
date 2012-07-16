@@ -117,7 +117,7 @@ namespace CsQuery.Implementation
         }
         public bool ContainsKey(string key)
         {
-            return Attributes.ContainsKey(HtmlData.TokenID(key));
+            return Attributes.ContainsKey(HtmlData.Tokenize(key));
         }
         public bool ContainsKey(ushort tokenId)
         {
@@ -144,7 +144,7 @@ namespace CsQuery.Implementation
             // do not use trygetvalue from dictionary. We need default handling in Get
             value = Get(key);
             return value != null ||
-                Attributes.ContainsKey(HtmlData.TokenID(key));
+                Attributes.ContainsKey(HtmlData.Tokenize(key));
         }
         public bool TryGetValue(ushort key, out string value)
         {
@@ -166,7 +166,7 @@ namespace CsQuery.Implementation
             {
                 return null;
             }
-            return Get(HtmlData.TokenID(name));
+            return Get(HtmlData.Tokenize(name));
         }
         protected string Get(ushort tokenId)
         {
@@ -194,7 +194,7 @@ namespace CsQuery.Implementation
                 throw new ArgumentException("Cannot set an attribute with no name.");
             }
             name = name.CleanUp();
-            Set(HtmlData.TokenID(name), value);
+            Set(HtmlData.Tokenize(name), value);
         }
         /// <summary>
         /// Second to last line of defense -- will call back to owning Element for attempts to set class, style, or ID, which are 
@@ -228,7 +228,7 @@ namespace CsQuery.Implementation
         /// <param name="name"></param>
         public void SetBoolean(string name)
         {
-            ushort tokenId = HtmlData.TokenID(name);
+            ushort tokenId = HtmlData.Tokenize(name);
 
             SetBoolean(tokenId);
         }
@@ -243,7 +243,7 @@ namespace CsQuery.Implementation
         /// <returns></returns>
         public bool Unset(string name)
         {
-            return Unset(HtmlData.TokenID(name));
+            return Unset(HtmlData.Tokenize(name));
         }
         public bool Unset(ushort tokenId)
         {
@@ -287,7 +287,7 @@ namespace CsQuery.Implementation
         bool ICollection<KeyValuePair<string, string>>.Contains(KeyValuePair<string, string> item)
         {
             return ContainsKey(item.Key)
-                && Attributes[HtmlData.TokenID(item.Key)] == item.Value;
+                && Attributes[HtmlData.Tokenize(item.Key)] == item.Value;
         }
 
         void ICollection<KeyValuePair<string, string>>.CopyTo(KeyValuePair<string, string>[] array, int arrayIndex)
@@ -303,7 +303,7 @@ namespace CsQuery.Implementation
         bool ICollection<KeyValuePair<string, string>>.Remove(KeyValuePair<string, string> item)
         {
             if (ContainsKey(item.Key)
-                && Attributes[HtmlData.TokenID(item.Key)] == item.Value)
+                && Attributes[HtmlData.Tokenize(item.Key)] == item.Value)
             {
                 return Remove(item.Key);
             }

@@ -36,8 +36,6 @@ namespace CsQuery.Tests._Performance
         private static string OutputFileNameCsv;
         private static string OutputFolder;
 
-       
-
  
         public static void SetupTestRun()
         {
@@ -52,13 +50,11 @@ namespace CsQuery.Tests._Performance
 
             DateTime dt = DateTime.Now;
 
-            string dateStamp = String.Format("{0}_{1}_{2}_{3}_{4}_{5}",
+            string dateStamp = String.Format("{0}_{1}_{2}_{3}",
                     dt.Year,
                     dt.Month,
                     dt.Day,
-                    dt.Hour,
-                    dt.Minute,
-                    dt.Second
+                    dt.Hour * 3600 + dt.Minute * 60 + dt.Second
                     );
 
             OutputFileName = OutputFolder + OutputPrefix + dateStamp + ".txt";

@@ -10,7 +10,6 @@ namespace CsQuery
     /// </summary>
     public interface IDomIndexedNode: IDomNode
     {
-        void Reindex();
         IEnumerable<string> IndexKeys();
         IDomObject IndexReference { get; }
     }

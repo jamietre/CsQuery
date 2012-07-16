@@ -57,13 +57,6 @@ namespace CsQuery
         IEnumerable<IDomElement> ChildElements { get; }
 
         /// <summary>
-        /// Gets a value indicating whether this node is complete. This is for internal use. During DOM
-        /// construction it is possible for a node object to exist but not be properly configured.
-        /// </summary>
-
-        bool Complete { get; }
-
-        /// <summary>
         /// Renders the complete HTML for this element, including its children.
         /// </summary>
         ///

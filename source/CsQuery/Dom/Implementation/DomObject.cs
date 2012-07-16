@@ -17,10 +17,21 @@ namespace CsQuery.Implementation
 
     public abstract class DomObject: IDomObject, IDomNode
     {
+
         #region private properties
 
+        /// <summary>
+        /// A reference to the owning document. This is also the topmost node in the tree.
+        /// </summary>
+
+        private IDomDocument _Document;
+
+        /// <summary>
+        /// Flags indicating particular states regarding the owning document.
+        /// </summary>
+
         [Flags]
-        protected enum DocumentFlags : byte
+        protected enum DocumentInfo : byte
         {
             IsIndexed = 1,
             IsDocument = 2,
@@ -28,13 +39,13 @@ namespace CsQuery.Implementation
             IsParentTested = 8
         }
 
-        protected DocumentFlags DocFlags;
-
         /// <summary>
-        /// The document.
+        /// Information describing metadata about the element's owning document. This is essentially a
+        /// cache, it prevents us from having to check to see if there's an owning document and access it
+        /// directly. This is an optimizaton as this happens often.
         /// </summary>
 
-        private IDomDocument _Document;
+        protected DocumentInfo DocInfo;
 
         /// <summary>
         /// Backing property for index.
@@ -42,11 +53,6 @@ namespace CsQuery.Implementation
 
         private int _Index;
 
-        /// <summary>
-        /// This must be accessd by overriding PathID implemenetation in DomElement.
-        /// </summary>
-
-        //protected string _PathID;
 
         /// <summary>
         /// The implementation for Clone.
@@ -124,12 +130,6 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// When false, this element is not configured properly. (Internal use.)
-        /// </summary>
-
-        public virtual bool Complete { get { return true; } }
-
-        /// <summary>
         /// Gets a value indicating whether this object type should be indexed.
         /// </summary>
 
@@ -150,14 +150,9 @@ namespace CsQuery.Implementation
             {
                 // The underscore is just a convention to easily identify disconnected nodes when debugging. 
 
-                //return ParentNode != null ? 
-                //    ParentNode.Path + PathID :
-                //    "_" + PathID;
-
                 return ParentNode != null ?
                    ParentNode.Path + PathID :
                     "_" + PathID;
-
             }
         }
 
@@ -172,51 +167,13 @@ namespace CsQuery.Implementation
         {
             get
             {
-                if ((DocFlags & DocumentFlags.IsParentTested) == 0)
+                if ((DocInfo & DocumentInfo.IsParentTested) == 0)
                 {
                     UpdateDocumentFlags();
                 }
                 return _Document;
             }
-            internal set
-            {
-                _Document = value;
-                SetDocFlags();
-
-                // I think we can get away without resetting children. When removing something from a document,
-                // you are exclusively going to be adding it to something else. We only need to update the parents
-                // during the add operation.
-
-                if (HasChildren && value != null)
-                {
-                    foreach (var item in ChildNodes.Cast<DomObject>())
-                    {
-                        item.Document = value;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Updates the cached Document and property flags 
-        /// </summary>
-
-        private void UpdateDocumentFlags()
-        {
-            Document = ParentNode == null ? null : ParentNode.Document;
-
-        }
-
-        private void SetDocFlags()
-        {
-            DocFlags = DocumentFlags.IsParentTested |
-                (_Document == null ? 0 :
-                    DocumentFlags.IsConnected |
-                    (_Document.NodeType == NodeType.DOCUMENT_NODE ?
-                        DocumentFlags.IsDocument : 0) |
-                    (_Document.IsIndexed ?
-                        DocumentFlags.IsIndexed : 0));
-
+          
         }
 
         /// <summary>
@@ -278,8 +235,8 @@ namespace CsQuery.Implementation
             internal set
             {
                 _ParentNode = value;
-                //_ParentPath = null;
-                // de-cache _Document
+
+                // Update the parent info cache
                 UpdateDocumentFlags();
             }
         }
@@ -293,7 +250,7 @@ namespace CsQuery.Implementation
             get
             {
                 //return IsDisconnected || Document.NodeType == NodeType.DOCUMENT_FRAGMENT_NODE;
-                return (DocFlags & DocumentFlags.IsDocument) == 0;
+                return (DocInfo & DocumentInfo.IsDocument) == 0;
             }
         }
 
@@ -302,7 +259,7 @@ namespace CsQuery.Implementation
             get
             {
                 //return Document==null;
-                return (DocFlags & DocumentFlags.IsConnected) == 0;
+                return (DocInfo & DocumentInfo.IsConnected) == 0;
             }
         }
 
@@ -311,21 +268,30 @@ namespace CsQuery.Implementation
         /// level. The full path is never stored with each node to prevent having to regenerate if node
         /// trees are moved.
         /// </summary>
+#if DEBUG_PATH
+        public virtual string PathID
+        {
+            get
+            {
+                // Don't actually store paths with non-element nodes as they aren't indexed and don't have children.
+                // Fast read access is less important than not having to reset them when moved.
 
+                return HtmlParser.HtmlData.BaseXXEncode(Index);
+            }
+        }
+
+#else
         public virtual char PathID
         {
             get
             {
                 // Don't actually store paths with non-element nodes as they aren't indexed and don't have children.
                 // Fast read access is less important than not having to reset them when moved.
-                //return PathEncode(Index);
+
                 return (char)Index;
             }
-            //internal set
-            //{
-            //    _PathID = value;
-            //}
         }
+#endif
 
         /// <summary>
         /// Gets the depth.
@@ -375,7 +341,6 @@ namespace CsQuery.Implementation
             internal set
             {
                 _Index = value;
-                //_PathID = null;
             }
         }
 
@@ -757,8 +722,13 @@ namespace CsQuery.Implementation
         {
             get
             {
+                if (ParentNode == null)
+                {
+                    return null;
+                }
                 int curIndex = Index;
                 var elements = ParentNode.ChildNodes;
+
                 while (++curIndex < elements.Count)
                 {
                     if (elements[curIndex].NodeType == NodeType.ELEMENT_NODE)
@@ -783,6 +753,11 @@ namespace CsQuery.Implementation
         {
             get
             {
+                if (ParentNode == null)
+                {
+                    return null;
+                }
+
                 int curIndex = Index;
                 var elements = ParentNode.ChildNodes;
                 while (--curIndex >= 0)
@@ -1347,29 +1322,58 @@ namespace CsQuery.Implementation
         #region private methods
 
         /// <summary>
-        /// Converts a number to a compact representation that can be used to create a unique path to
-        /// this element in the DOM herarchy.
+        /// Updates the cached Document and property flags.
+        /// </summary>
+
+        protected void UpdateDocumentFlags()
+        {
+            UpdateDocumentFlags(ParentNode == null ? null : ParentNode.Document);
+
+        }
+
+        /// <summary>
+        /// Updates the cached Document and property flags.
         /// </summary>
         ///
-        /// <param name="number">
-        /// Number of.
+        /// <param name="document">
+        /// A reference to the owning document. This is also the topmost node in the tree.
         /// </param>
-        ///
-        /// <returns>
-        /// .
-        /// </returns>
 
-        protected string PathEncode(int number)
+        protected void UpdateDocumentFlags(IDomDocument document)
         {
-            // return number.ToString().PadLeft(pathIdLength, '0');
-            return HtmlParser.HtmlData.BaseXXEncode(number);
+            _Document = document;
+            SetDocFlags();
+            // I think we can get away without resetting children. When removing something from a document,
+            // you are exclusively going to be adding it to something else. We only need to update the parents
+            // during the add operation.
+
+            if (HasChildren && _Document != null)
+            {
+                foreach (var item in ChildNodes.Cast<DomObject>())
+                {
+                    item.UpdateDocumentFlags(_Document);
+                }
+            }
         }
+
+        private void SetDocFlags()
+        {
+            DocInfo = DocumentInfo.IsParentTested |
+                (_Document == null ? 0 :
+                    DocumentInfo.IsConnected |
+                    (_Document.NodeType == NodeType.DOCUMENT_NODE ?
+                        DocumentInfo.IsDocument : 0) |
+                    (_Document.IsIndexed ?
+                        DocumentInfo.IsIndexed : 0));
+
+        }
+
 
         #endregion
 
         #region interface members
 
-         /// <summary>
+        /// <summary>
          /// Makes a deep copy of this object.
          /// </summary>
          ///

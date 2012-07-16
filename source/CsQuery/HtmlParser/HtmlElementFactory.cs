@@ -221,7 +221,7 @@ namespace CsQuery.HtmlParser
                                 {
                                     // It's a tag closer. Make sure it's the right one.
                                     current.Pos = tagStartPos + 1;
-                                    ushort closeTagId = HtmlData.TokenID(current.GetCloseTag(Html));
+                                    ushort closeTagId = HtmlData.Tokenize(current.GetCloseTag(Html));
 
                                     // Ignore empty tags, or closing tags found when no parent is open
                                     bool isProperClose = closeTagId == current.ParentTagID();
@@ -320,7 +320,7 @@ namespace CsQuery.HtmlParser
 
                                     // seems to be a new element tag, parse it.
 
-                                    ushort newTagId = HtmlData.TokenID(newTag);
+                                    ushort newTagId = HtmlData.Tokenize(newTag);
                                     
                                     // Before we keep going see if this is an implicit close
                                     ushort parentTagId = current.ParentTagID();
