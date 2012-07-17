@@ -7,10 +7,15 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ### Change Log
 
+Version 1.1.3:
+
+- [Issue #18](https://github.com/jamietre/CsQuery/issues/18) - class & style not being indexed as an attribute
+- [Pull Request #17:](https://github.com/jamietre/CsQuery/pull/17) Feature: API to add custom filter selectors
+
 Version 1.1.2.2:
 
-- Fix for [Issue #16](https://github.com/jamietre/CsQuery/issues/16) causing HTML to parse incorrectly where the tag name and the first attribute were separated by new lines
-- Fix for [Issue #15](https://github.com/jamietre/CsQuery/issues/15) crashing when using ":hidden" pseudoselector on an input element with no "type" attribute
+- [Issue #16](https://github.com/jamietre/CsQuery/issues/16) causing HTML to parse incorrectly where the tag name and the first attribute were separated by new lines
+- [Issue #15](https://github.com/jamietre/CsQuery/issues/15) crashing when using ":hidden" pseudoselector on an input element with no "type" attribute
 - Fix for return values of `InsertAfter(sequence)` and `InsertBefore(sequence)`; was returning the original object, should have been returning the elements that were inserted. No issue for this bug, discovered during testing.
 - Added `EachUntil` methods to implement the jQuery "each" method's functionality where a "false" return value causes the looping to end
 - Added complete XML documentation for most common objects and interfaces: CQ, IDomDocument, IDomElement, IDomObject, some others, including links to related documentation from jQuery and Mozilla.
