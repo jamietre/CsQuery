@@ -57,7 +57,7 @@ namespace CsQuery.Engine
             }
             
             scanner = Scanner.Create(sel);
-
+			
             while (!scanner.Finished)
             {
                 switch (scanner.Current)
@@ -168,7 +168,6 @@ namespace CsQuery.Engine
                                 Current.AttributeValue=innerScanner.Get(expectsOptionallyQuotedValue());
                                 switch (matchType)
                                 {
-
                                     case "=":
                                         Current.SelectorType |= SelectorType.AttributeValue;
                                         Current.AttributeSelectorType = AttributeSelectorType.Equals;
@@ -278,6 +277,36 @@ namespace CsQuery.Engine
             return Selectors;
         }
         #endregion
+
+		public static bool TryParse(string selectorString, out Selector selector)
+		{
+			if (string.IsNullOrEmpty(selectorString))
+			{
+				selector = null;
+				return false;
+			}
+
+			Exception e = null;
+			
+			selector = CreateHelper(selectorString, ref e);
+
+			return ((e == null) && (selector != null));
+		}
+
+		internal static Selector CreateHelper(string selectorString, ref Exception e)
+		{
+			SelectorParser selectorParser = new SelectorParser();
+			try
+			{
+				Selector selector = selectorParser.Parse(selectorString);
+				return selector;
+			}
+			catch (Exception ex)
+			{
+				e = ex;
+				return null;
+			}			
+		}
 
         #region private methods
 
