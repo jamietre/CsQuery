@@ -11,6 +11,8 @@ Version 1.1.3:
 
 - [Issue #18](https://github.com/jamietre/CsQuery/issues/18) - class & style not being indexed as an attribute
 - [Pull Request #17:](https://github.com/jamietre/CsQuery/pull/17) Feature: API to add custom filter selectors
+- Refactored most pseudoclass selectors into modules using new API
+- Some performance improvements to selection engine achieved by "lazy-sorting" selection set results and better caching of root document access
 
 Version 1.1.2.2:
 
