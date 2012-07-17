@@ -353,7 +353,7 @@ namespace CsQuery.Utility
             if (typed)
             {
                 Type listType = typeof(List<>).MakeGenericType(new Type[] { oneType });
-                IList typedList = (IList)FastActivator.CreateInstance(listType);
+                IList typedList = (IList)Activator.CreateInstance(listType);
                 foreach (var item in list)
                 {
                     typedList.Add(item);

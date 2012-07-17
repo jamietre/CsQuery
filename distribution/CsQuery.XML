@@ -8229,18 +8229,6 @@
             Determines whether the target is a parent.
             </summary>
         </member>
-        <member name="T:CsQuery.Utility.FastActivator">
-            <summary>
-            Replacement for Activator.CreateInstance - see:
-            http://mironabramson.com/blog/post/2008/08/Fast-version-of-the-ActivatorCreateInstance-method-using-IL.aspx
-            </summary>
-        </member>
-        <member name="M:CsQuery.Utility.FastActivator.CreateInstance``1">
-            <summary>
-            Create an object that will used as a 'factory' to the specified type T 
-            </summary>
-            <returns></returns>
-        </member>
         <member name="T:CsQuery.ExtensionMethods.Forms.ExtensionMethods">
             <summary>
             Extension methods for use in form manipulation
@@ -11743,6 +11731,42 @@
             type construct instead, e.g. as "visible" that traverses through parents, and inherits a
             default document-wide setting.
             </summary>
+        </member>
+        <member name="T:CsQuery.Utility.FastActivator">
+             <summary>
+             Replacement for Activator.CreateInstance that caches the constructor fucnction, providing a
+             significant performance improvement over Activator.CreateInstance.
+             </summary>
+            
+             <url>
+             http://mironabramson.com/blog/post/2008/08/Fast-version-of-the-ActivatorCreateInstance-method-using-IL.aspx
+             </url>
+        </member>
+        <member name="M:CsQuery.Utility.FastActivator.CreateInstance``1">
+             <summary>
+             Create a new instance of type T
+             </summary>
+            
+             <typeparam name="T">
+             The type of object to create
+             </typeparam>
+            
+             <returns>
+             A new instance of type T
+             </returns>
+        </member>
+        <member name="M:CsQuery.Utility.FastActivator.CreateInstance(System.Type)">
+             <summary>
+             Creates an instance.
+             </summary>
+            
+             <param name="t">
+             The Type to process.
+             </param>
+            
+             <returns>
+             The new instance.
+             </returns>
         </member>
     </members>
 </doc>

@@ -80,6 +80,7 @@
     <Content Include="Resources\TextAreaTest.htm" />
     <Compile Include="Csharp\Selectors\RegexExtension.cs" />
     <Compile Include="Csharp\Selectors\Extensions.cs" />
+    <Compile Include="Csharp\Utility\FastActivator.cs" />
     <Compile Include="WebIO\StressTests.cs" />
     <Compile Include="TestTests.cs" />
     <Compile Include="Csharp\HtmlParser\Classes.cs" />

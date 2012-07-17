@@ -618,7 +618,8 @@ namespace CsQuery
         }
         public static object DefaultValue(Type type)
         {
-            return type.IsValueType ? Utility.FastActivator.CreateInstance(type) : null;
+            return type.IsValueType ? 
+                Activator.CreateInstance(type) : null;
         }
         /// <summary>
         /// Returns an enumerable of one element from an object
@@ -753,7 +754,7 @@ namespace CsQuery
                     else
                     {
                         Type listType = typeof(List<>).MakeGenericType(new Type[1] { onlyType });
-                        list = (IList)Utility.FastActivator.CreateInstance(listType);
+                        list = (IList)Activator.CreateInstance(listType);
                     }
 
                     foreach (var item in objectList)

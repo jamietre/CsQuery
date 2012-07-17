@@ -1,6 +1,11 @@
-﻿### Change Log
+### Change Log
 
 This is an informal log of changes to the project; major issues will be logged and described on github.
+
+
+####7/17/2012
+
+- Bugfix - update `FastActivator.CreateInstance` to handle value types by deferring to `Activator.CreateInstance`. Introduced in 1.1.3.
 
 ####7/13/2012
 
