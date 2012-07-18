@@ -12,7 +12,6 @@ using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
 using CsQuery.Utility;
-using CsQuery.Engine;
 
 namespace CsQuery.Tests.Csharp.Selectors
 {
@@ -132,16 +131,6 @@ namespace CsQuery.Tests.Csharp.Selectors
             base.FixtureSetUp();
             Dom = TestDom("TestHtml");
         }
-		
-		[Test, TestMethod]
-		public void SelectorValidation()
-		{
-			string invalidSelector = @"div[sd..";
-			Selector selector = null;
-			var result = SelectorParser.TryParse(invalidSelector, out selector);
-
-			Assert.IsFalse(result);
-		}
 
 		[Test, TestMethod]
 		public void HexWith6DigitsEscapedSelector()
