@@ -115,6 +115,22 @@ namespace CsQuery.Tests.Csharp.Selectors
             Assert.AreEqual(39, res.Length);
         }
 
+        /// <summary>
+        /// Issue #19: error when no children
+        /// </summary>
+
+        [Test, TestMethod]
+        public void Eq()
+        {
+            var res = CQ.CreateFragment(@"<div class='header'>
+                Billing Address
+                </div>");
+
+            var k = res.Find("> label:visible:eq(0)");
+
+            Assert.AreEqual(0, k.Length);
+        }
+
         #region Setup
         public override void FixtureSetUp()
         {

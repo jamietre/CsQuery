@@ -17,6 +17,8 @@ namespace CsQuery.Tests.Csharp.Attributes
     [TestClass,TestFixture]
     public class Attribute : CsQueryTest 
     {
+     
+
         [TestMethod,Test]
         public void Show()
         {
