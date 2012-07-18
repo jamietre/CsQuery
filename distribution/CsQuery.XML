@@ -17,25 +17,45 @@
             <returns></returns>
         </member>
         <member name="M:CsQuery.Objects.IsJson(System.Object)">
-            <summary>
-            Returns true if the string appears to be JSON.
-            </summary>
-            <param name="text"></param>
-            <returns></returns>
+             <summary>
+             Returns true if the object is a string, and appears to be JSON, e.g. it starts with a single
+             curly brace.
+             </summary>
+            
+             <param name="obj">
+             The object to test.
+             </param>
+            
+             <returns>
+             true if json, false if not.
+             </returns>
         </member>
         <member name="M:CsQuery.Objects.IsImmutable(System.Object)">
-            <summary>
-            Only value types, strings, and null
-            </summary>
-            <param name="obj"></param>
-            <returns></returns>
+             <summary>
+             Tests whether an object is a common immutable, specifically, value types, strings, and null.
+             KeyValuePairs are specifically excluded. (Why?)
+             </summary>
+            
+             <param name="obj">
+             .
+             </param>
+            
+             <returns>
+             true if immutable, false if not.
+             </returns>
         </member>
         <member name="M:CsQuery.Objects.IsExtendableType(System.Object)">
-            <summary>
-            Returns false if this is a value type, null string, or enumerable (but not Extendable)
-            </summary>
-            <param name="obj"></param>
-            <returns></returns>
+             <summary>
+             Returns false if this is a value type, null string, or enumerable (but not Extendable)
+             </summary>
+            
+             <param name="obj">
+             .
+             </param>
+            
+             <returns>
+             true if extendable type, false if not.
+             </returns>
         </member>
         <member name="M:CsQuery.Objects.IsTruthy(System.Object)">
             <summary>
@@ -49,34 +69,98 @@
             <returns></returns>
         </member>
         <member name="M:CsQuery.Objects.IsNumericType(System.Type)">
-            <summary>
-            Returns true if the object is a primitive numeric type, e.g. exluding string &amp; char
-            </summary>
-            <param name="obj"></param>
-            <returns></returns>
+             <summary>
+             Returns true if the object is a primitive numeric type, that is, any primtive except string
+             &amp; char.
+             </summary>
+            
+             <param name="type">
+             The type to test.
+             </param>
+            
+             <returns>
+             true if numeric type, false if not.
+             </returns>
         </member>
         <member name="M:CsQuery.Objects.IsNativeType(System.Type)">
-            <summary>
-            Returns true if the value is a JS native type (string, number, bool, datetime)
-            </summary>
-            <param name="t"></param>
-            <returns></returns>
+             <summary>
+             Returns true if the value is a Javascript native type (string, number, bool, datetime)
+             </summary>
+            
+             <param name="type">
+             The type to test
+             </param>
+            
+             <returns>
+             true if a Javascript native type, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Objects.Join(System.Array)">
+             <summary>
+             Combine elements of an array into a single string, separated by a comma.
+             </summary>
+            
+             <param name="array">
+             The array to join.
+             </param>
+            
+             <returns>
+             A string separated by a comma.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Objects.Join(System.Collections.IEnumerable)">
+             <summary>
+             Combine elements of a sequenceinto a single string, separated by a comma.
+             </summary>
+            
+             <param name="list">
+             A list of objects.
+             </param>
+            
+             <returns>
+             A string containging the string representation of each object in the sequence separated by a
+             comma.
+             </returns>
         </member>
         <member name="M:CsQuery.Objects.IsExpando(System.Object)">
-            <summary>
-            Test if an object is "Expando-like", e.g. a an IDictionary-string,object-
-            </summary>
-            <param name="obj"></param>
-            <returns></returns>
+             <summary>
+             Test if an object is "Expando-like", e.g. is an IDictionary&lt;string,object&gt;.
+             </summary>
+            
+             <param name="obj">
+             The object to test.
+             </param>
+            
+             <returns>
+             true if expando, false if not.
+             </returns>
         </member>
         <member name="M:CsQuery.Objects.IsEmptyExpando(System.Object)">
-            <summary>
-            Test if an object is a an IDictionary-string,object- that is empty
-            </summary>
-            <param name="obj"></param>
-            <returns></returns>
+             <summary>
+             Test if an object is a an IDictionary&lt;string,object&gt; that is empty.
+             </summary>
+            
+             <param name="obj">
+             The object to test
+             </param>
+            
+             <returns>
+             true if empty expando, false if not.
+             </returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:CsQuery.Objects.IsKeyValuePair(System.Object)" -->
+        <member name="M:CsQuery.Objects.IsKeyValuePair(System.Object)">
+             <summary>
+             Test if an object is a KeyValuePair&lt;,&gt; (e.g. of any types)
+             </summary>
+            
+             <param name="obj">
+             The object to test
+             </param>
+            
+             <returns>
+             true if key value pair, false if not.
+             </returns>
+        </member>
         <member name="M:CsQuery.Objects.Coerce(System.Object)">
             <summary>
             Coerce a javascript object into a Javascript type (null, bool, int, double, datetime, or string). If you know what the 
@@ -86,12 +170,24 @@
             <returns></returns>
         </member>
         <member name="M:CsQuery.Objects.Convert``1(System.Object)">
-            <summary>
-            Convert an object of any value type to the specified type using any known means
-            </summary>
-            <param name="value"></param>
-            <param name="type"></param>
-            <returns></returns>
+             <summary>
+             Convert an object of any value type to the specified type using any known means.
+             </summary>
+            
+             <exception cref="T:System.InvalidCastException">
+             Thrown when an object cannot be cast to a required type.
+             </exception>
+            
+             <typeparam name="T">
+             Generic type parameter.
+             </typeparam>
+             <param name="value">
+             The object to convert
+             </param>
+            
+             <returns>
+             An object of the target type
+             </returns>
         </member>
         <member name="M:CsQuery.Objects.Convert(System.Object,System.Type)">
             <summary>
@@ -171,13 +267,37 @@
             <param name="obj"></param>
             <returns></returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:CsQuery.Objects.Dict2Dynamic``1(System.Collections.Generic.IDictionary{System.String,System.Object})" -->
+        <member name="M:CsQuery.Objects.Dict2Dynamic``1(System.Collections.Generic.IDictionary{System.String,System.Object})">
+             <summary>
+             Convert (recursively) an IDictionary&lt;string,object&gt; to a dynamic object.
+             </summary>
+            
+             <typeparam name="T">
+             Generic type parameter.
+             </typeparam>
+             <param name="obj">
+             The source dicationary
+             </param>
+            
+             <returns>
+             A new dynamic object
+             </returns>
+        </member>
         <member name="M:CsQuery.Objects.Join(System.Collections.Generic.IEnumerable{System.String},System.String)">
-            <summary>
-            Combine elements of a list into a single string, separated by separator
-            </summary>
-            <param name="list"></param>
-            <returns></returns>
+             <summary>
+             Combine elements of a sequence into a single string, separated by separator.
+             </summary>
+            
+             <param name="list">
+             The source sequence.
+             </param>
+             <param name="separator">
+             The separator.
+             </param>
+            
+             <returns>
+             A string.
+             </returns>
         </member>
         <member name="M:CsQuery.Objects.ParseValue(System.Object)">
             <summary>
@@ -202,17 +322,46 @@
             <param name="type"></param>
             <returns></returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:CsQuery.Objects.Dict2Dynamic``1(System.Collections.Generic.IDictionary{System.String,System.Object},System.Boolean)" -->
+        <member name="M:CsQuery.Objects.Dict2Dynamic``1(System.Collections.Generic.IDictionary{System.String,System.Object},System.Boolean)">
+             <summary>
+             Convert any IDictionary&lt;string,object&gt; into an expandoobject recursively.
+             </summary>
+            
+             <typeparam name="T">
+             The type of target to create. It must implementing IDynamicMetaObjectProvider; if it is
+             actually the interface IDynamicMetaObjectProvider, then the default dynamic object type will
+             be created.
+             </typeparam>
+             <param name="obj">
+             The source dictionary
+             </param>
+             <param name="convertDates">
+             .
+             </param>
+            
+             <returns>
+             .
+             </returns>
+        </member>
         <member name="M:CsQuery.Objects.Extend(System.Boolean,System.Object,System.Object[])">
-            <summary>
-            Map properties of inputObjects to target. If target is an expando object, it will be updated. If not,
-            a new one will be created including the properties of target and inputObjects.
-            </summary>
-            <param name="parents"></param>
-            <param name="deep"></param>
-            <param name="target"></param>
-            <param name="inputObjects"></param>
-            <returns></returns>
+             <summary>
+             Map properties of inputObjects to target. If target is an expando object, it will be updated.
+             If not, a new one will be created including the properties of target and inputObjects.
+             </summary>
+            
+             <param name="deep">
+             When true, will clone properties that are objects.
+             </param>
+             <param name="target">
+             The target of the mapping, or null to create a new target
+             </param>
+             <param name="inputObjects">
+             One or more objects that are the source of the mapping
+             </param>
+            
+             <returns>
+             The target object itself, if non-null, or a new dynamic object, if the target is null
+             </returns>
         </member>
         <member name="M:CsQuery.Objects.ToExpando(System.Object)">
             <summary>
@@ -436,12 +585,21 @@
             <returns></returns>
         </member>
         <member name="M:CsQuery.HtmlParser.IterationData.TryGetLiteral(CsQuery.HtmlParser.HtmlElementFactory,CsQuery.IDomObject@)">
-            <summary>
-            Returns a literal object for the text between HtmlStart (the last position of the end of a tag) and the current position.
-            If !AllowLiterals then it's wrapped in a span.
-            </summary>
-            <param name="current"></param>
-            <returns></returns>
+             <summary>
+             Returns a literal object for the text between HtmlStart (the last position of the end of a
+             tag) and the current position. If !AllowLiterals then it's wrapped in a span.
+             </summary>
+            
+             <param name="factory">
+             The HTML factory to operate against
+             </param>
+             <param name="literal">
+             [out] The literal.
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
         </member>
         <member name="M:CsQuery.HtmlParser.IterationData.CloseElement(CsQuery.HtmlParser.HtmlElementFactory)">
             <summary>
@@ -917,7 +1075,7 @@
              use the ChildrenAllowed property.
              </summary>
             
-             <seealso cref="!:ChildrenAllowed"/>
+             <seealso cref="P:CsQuery.IDomObject.ChildrenAllowed"/>
         </member>
         <member name="P:CsQuery.IDomNode.ChildNodes">
             <summary>
@@ -7605,28 +7763,40 @@
             <returns>CSSStyleDeclaration</returns>
         </member>
         <member name="M:CsQuery.Implementation.CSSStyleDeclaration.SetStyles(System.String)">
-            <summary>
-            Sets all the styles from a single CSS style string. Any existing styles will be erased.
-            Styles will be validated and an error thrown if an invalid style is attempted.
-            </summary>
-            <param name="styles">A legal HTML style string</param>
-            <param name="strict">When true, the styles will be validated and an error thrown if any are not valid</param>
+             <summary>
+             Sets all the styles from a single CSS style string. Any existing styles will be erased.
+             Styles will be validated and an error thrown if an invalid style is attempted.
+             </summary>
+            
+             <param name="styles">
+             A legal HTML style string.
+             </param>
         </member>
         <member name="M:CsQuery.Implementation.CSSStyleDeclaration.SetStyles(System.String,System.Boolean)">
-            <summary>
-            Sets all the styles from a single CSS style string. Any existing styles will be erased.
-            This method is used by DomElementFactory (not in strict mode).
-            </summary>
-            <param name="styles">A legal HTML style string</param>
-            <param name="strict">When true, the styles will be validated and an error thrown if any are not valid</param>
+             <summary>
+             Sets all the styles from a single CSS style string. Any existing styles will be erased. This
+             method is used by DomElementFactory (not in strict mode).
+             </summary>
+            
+             <param name="styles">
+             A legal HTML style string.
+             </param>
+             <param name="strict">
+             When true, the styles will be validated and an error thrown if any are not valid.
+             </param>
         </member>
         <member name="M:CsQuery.Implementation.CSSStyleDeclaration.AddStyles(System.String,System.Boolean)">
-            <summary>
-            Add one or more styles to this element. Unlike SetStyle, existing styles are not affected, except
-            for existing styles of the same name.
-            </summary>
-            <param name="styles"></param>
-            <param name="strict"></param>
+             <summary>
+             Add one or more styles to this element. Unlike SetStyle, existing styles are not affected,
+             except for existing styles of the same name.
+             </summary>
+            
+             <param name="styles">
+             The CSS style string
+             </param>
+             <param name="strict">
+             When true, the styles will be validated as CSS3 before adding.
+             </param>
         </member>
         <member name="M:CsQuery.Implementation.CSSStyleDeclaration.Remove(System.String)">
             <summary>
@@ -7700,7 +7870,11 @@
             <param name="strict"></param>
             <returns></returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "T:CsQuery.IDomInnerText" -->
+        <member name="T:CsQuery.IDomInnerText">
+            <summary>
+            Special element for the text contents of SCRIPT &amp; TEXTAREA objects.
+            </summary>
+        </member>
         <member name="T:CsQuery.IDomDocument">
             <summary>
             An interface to a Document that represents an HTML document.
@@ -8890,10 +9064,13 @@
              </value>
         </member>
         <member name="M:CsQuery.Implementation.NodeList.Add(CsQuery.IDomObject)">
-            <summary>
-            Add a child to this element 
-            </summary>
-            <param name="element"></param>
+             <summary>
+             Add a child to this element.
+             </summary>
+            
+             <param name="item">
+             The element to add
+             </param>
         </member>
         <member name="M:CsQuery.Implementation.NodeList.AddAlways(CsQuery.IDomObject)">
             <summary>
@@ -8902,11 +9079,16 @@
             <param name="item"></param>
         </member>
         <member name="M:CsQuery.Implementation.NodeList.Insert(System.Int32,CsQuery.IDomObject)">
-            <summary>
-            Adds a child element at a specific index
-            </summary>
-            <param name="index"></param>
-            <param name="element"></param>
+             <summary>
+             Adds a child element at a specific index.
+             </summary>
+            
+             <param name="index">
+             The index at which to insert the element
+             </param>
+             <param name="item">
+             The element to insert
+             </param>
         </member>
         <member name="M:CsQuery.Implementation.NodeList.RemoveAt(System.Int32)">
             <summary>
@@ -8915,10 +9097,17 @@
             <param name="index"></param>
         </member>
         <member name="M:CsQuery.Implementation.NodeList.Remove(CsQuery.IDomObject)">
-            <summary>
-            Remove an element from this element's children
-            </summary>
-            <param name="element"></param>
+             <summary>
+             Remove an element from this element's children.
+             </summary>
+            
+             <param name="item">
+             The item to remove.
+             </param>
+            
+             <returns>
+             true if it succeeds, false if the item was not found in the children.
+             </returns>
         </member>
         <member name="M:CsQuery.Implementation.NodeList.Clear">
             <summary>
@@ -10013,18 +10202,143 @@
         </member>
         <member name="T:CsQuery.StringScanner.CharacterData">
             <summary>
-            A static class to provide attribute information about characters, e.g. determining whether or not it
-            belongs to a number of predefined classes. This creates an array of every possible character with a 
-            uint that is a bitmap (of up to 32 possible values)
-            This permits very fast access to this information since it only needs to be looked up
-            via an index. Uses an array of 65536 uints = 256K of memory
-            
+            A static class to provide attribute information about characters, e.g. determining whether or
+            not it belongs to a number of predefined classes. This creates an array of every possible
+            character with a uint that is a bitmap (of up to 32 possible values)
+            This permits very fast access to this information since it only needs to be looked up via an
+            index. Uses an array of 65536 uints = 256K of memory.
             </summary>
         </member>
         <member name="M:CsQuery.StringScanner.CharacterData.#cctor">
             <summary>
-            Configuration of the xref of character info
+            Configuration of the xref of character info. This sets bitflags in the "characterFlags" array
+            for every unicode value that defines its attributes. This creates a lookup table allowing
+            very rapid access to metadata about a single character, useful during string-parsing and
+            scanning.
             </summary>
+        </member>
+        <member name="F:CsQuery.StringScanner.CharacterData.charsHtmlSpaceArray">
+            <summary>
+            An array of all HTML "space" characters.
+            </summary>
+        </member>
+        <member name="M:CsQuery.StringScanner.CharacterData.CreateCharacterInfo">
+             <summary>
+             Creates a new instance of the CharacterInfo class
+             </summary>
+            
+             <returns>
+             The new character information.
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.CharacterData.CreateCharacterInfo(System.Char)">
+             <summary>
+             Creates a new instance of the CharacterInfo class.
+             </summary>
+            
+             <param name="character">
+             The character to bind to the new instance.
+             </param>
+            
+             <returns>
+             A new CharacterInfo instance.
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.CharacterData.CreateStringInfo">
+             <summary>
+             Creates a new StringInfo instance
+             </summary>
+            
+             <returns>
+             The new StringInfo instance
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.CharacterData.CreateStringInfo(System.String)">
+             <summary>
+             Creates a new StringInfo instance bound to a string
+             </summary>
+            
+             <param name="text">
+             The string to bind.
+             </param>
+            
+             <returns>
+             The new StringInfo instance.
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.CharacterData.IsType(System.Char,CsQuery.StringScanner.CharacterType)">
+             <summary>
+             Test whether a character matches a set of flags defined by the paramter
+             </summary>
+            
+             <param name="character">
+             The character to test
+             </param>
+             <param name="type">
+             The type to which to compare the character
+             </param>
+            
+             <returns>
+             true if the character matches the flags in the test type, false if not
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.CharacterData.GetType(System.Char)">
+             <summary>
+             Gets a type with all flags set for the types implemented by this character
+             </summary>
+            
+             <param name="character">
+             The character to test
+             </param>
+            
+             <returns>
+             The type.
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.CharacterData.Closer(System.Char)">
+             <summary>
+             Return the closing character for a set of known opening enclosing characters (including
+             single and double quotes)
+             </summary>
+            
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the character is not a known opening bound
+             </exception>
+            
+             <param name="character">
+             The opening bound character
+             </param>
+            
+             <returns>
+             The closing bound character
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.CharacterData.MatchingBound(System.Char)">
+             <summary>
+             Return the matching bound for known opening and closing bound characters (same as Closer, but
+             accepts closing tags and returns openers)
+             </summary>
+            
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the requested operation is invalid.
+             </exception>
+            
+             <param name="character">
+             The opening bound character
+             </param>
+            
+             <returns>
+             The matching close character
+             </returns>
+        </member>
+        <member name="M:CsQuery.StringScanner.CharacterData.SetAlphaISO10646(System.UInt32)">
+             <summary>
+             Sets the bits for ISO 10646.
+             </summary>
+            
+             <param name="hsb">
+             the target
+             </param>
         </member>
         <member name="M:CsQuery.StringScanner.CharacterData.SetHtmlIdNameExceptStart(System.UInt32)">
             <summary>
@@ -10054,22 +10368,6 @@
             Add the . back in when actually parsing html
             </summary>
             <param name="hsb"></param>
-        </member>
-        <member name="M:CsQuery.StringScanner.CharacterData.Closer(System.Char)">
-            <summary>
-            Return the closing character for a set of known opening enclosing characters
-            (including single and double quotes)
-            </summary>
-            <param name="character"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.StringScanner.CharacterData.MatchingBound(System.Char)">
-            <summary>
-            Return the matching bound for known opening and closing bound characters (same as Closer,
-            but accepts closing tags and returns openers)
-            </summary>
-            <param name="character"></param>
-            <returns></returns>
         </member>
         <member name="T:CsQuery.Web.ServerConfig">
             <summary>
@@ -10607,19 +10905,25 @@
             </summary>
         </member>
         <member name="M:CsQuery.IDomElement.ElementHtml">
-            <summary>
-            Returns the HTML for this element, but ignoring children/innerHTML
-            </summary>
-            <returns>A string of HTML</returns>
-            <returntype>string</returntype>
+             <summary>
+             Returns the HTML for this element, but ignoring children/innerHTML.
+             </summary>
+            
+             <returns>
+             A string of HTML.
+             </returns>
         </member>
         <member name="P:CsQuery.IDomElement.IsBlock">
             <summary>
-            The element is a block element
+            The element is a block element.
             </summary>
-            <returntype>bool</returntype>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:CsQuery.IDomElement.ElementIndex" -->
+        <member name="P:CsQuery.IDomElement.ElementIndex">
+            <summary>
+            Get this element's index only among other elements (e.g. excluding text &amp; other non-
+            element node types)
+            </summary>
+        </member>
         <member name="F:CsQuery.Implementation.DomElement._InnerAttributes">
             <summary>
             The dom attributes.
@@ -11252,20 +11556,9 @@
              </param>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.System#Collections#Generic#IEnumerable{System#Collections#Generic#KeyValuePair{System#String@System#String}}#GetEnumerator">
-             <summary>
-             Gets the enumerator.
-             </summary>
-            
-             <typeparam name="string">
-             Type of the string.
-             </typeparam>
-             <typeparam name="string">
-             Type of the string.
-             </typeparam>
-            
-             <returns>
-             The enumerator.
-             </returns>
+            <summary>
+            Gets the enumerator.
+            </summary>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.System#Collections#IEnumerable#GetEnumerator">
              <summary>
@@ -11754,14 +12047,70 @@
              The character.
              </param>
         </member>
+        <member name="M:CsQuery.StringScanner.Implementation.CharacterInfo.op_Implicit(System.Char)~CsQuery.StringScanner.Implementation.CharacterInfo">
+             <summary>
+             CharacterInfo casting operator: creates a new instance from a single character
+             </summary>
+            
+             <param name="character">
+             The character to bind to the new CharacterInfo class
+             </param>
+        </member>
+        <member name="M:CsQuery.StringScanner.Implementation.CharacterInfo.Create(System.Char)">
+             <summary>
+             Creates a new CharacterInfo instance from a character
+             </summary>
+            
+             <param name="character">
+             The character to bind to this instance.
+             </param>
+            
+             <returns>
+             A new CharacterInfo object
+             </returns>
+        </member>
+        <member name="P:CsQuery.StringScanner.Implementation.CharacterInfo.Target">
+            <summary>
+            Gets or sets bound character for this instance. This is the character against which all tests
+            are performed.
+            </summary>
+        </member>
         <member name="P:CsQuery.StringScanner.Implementation.CharacterInfo.Type">
             <summary>
-            Flags indicating the use of this character
+            Flags indicating the use of this character.
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.Implementation.CharacterInfo.Alpha">
+            <summary>
+            Gets a value indicating whether the character is alphabetic, e.g. a-z, A-Z
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.Implementation.CharacterInfo.Numeric">
+            <summary>
+            Gets a value indicating whether the bound character is numeric only, e.g. 0-9
             </summary>
         </member>
         <member name="P:CsQuery.StringScanner.Implementation.CharacterInfo.NumericExtended">
             <summary>
-            Returns true if numeric, dot or -
+            Test whether the character is numeric or part of a complete number, e.g. also includes '+', '-
+            ' and '.'.
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.Implementation.CharacterInfo.Lower">
+            <summary>
+            Test whether the character is lower-case
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.Implementation.CharacterInfo.Upper">
+            <summary>
+            Test whether the character is upper-case
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.Implementation.CharacterInfo.Whitespace">
+            <summary>
+            Test whether the character is whitespace. This is really HTML5 "space" and not ANSI
+            whitespace which. HTML5 space is much more restrictive; this is generally used to test
+            whether a character delimits an entity during HTML/CSS/HTML-related parsing.
             </summary>
         </member>
         <member name="P:CsQuery.StringScanner.Implementation.CharacterInfo.Bound">
@@ -11769,7 +12118,27 @@
             Enclosing, plus double and single quotes
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:CsQuery.StringScanner.Implementation.CharacterInfo.Enclosing" -->
+        <member name="P:CsQuery.StringScanner.Implementation.CharacterInfo.Enclosing">
+            <summary>
+            Tests whether the character is an enclosing/bounding type, one of:
+            ()[]{}&lt;&gt;`´“”«».
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.Implementation.CharacterInfo.Quote">
+            <summary>
+            Tests whether the bound character is a single- or double-quote
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.Implementation.CharacterInfo.Parenthesis">
+            <summary>
+            Tests whether the bound character is an opening or closing parenthesis.
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.Implementation.CharacterInfo.Separator">
+            <summary>
+            Tests
+            </summary>
+        </member>
         <member name="T:CsQuery.Engine.PseudoClassSelectors.LastOfType">
              <summary>
              Matches the last element of the same type within its siblings

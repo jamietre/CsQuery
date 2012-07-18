@@ -47,10 +47,15 @@ namespace CsQuery.Implementation
         {
             return _InnerList == null ? -1 : InnerList.IndexOf(item);
         }
+
         /// <summary>
-        /// Add a child to this element 
+        /// Add a child to this element.
         /// </summary>
-        /// <param name="element"></param>
+        ///
+        /// <param name="item">
+        /// The element to add
+        /// </param>
+        
         public void Add(IDomObject item)
         {
  
@@ -83,11 +88,18 @@ namespace CsQuery.Implementation
             InnerList.Add(item);
             AddParent(item, InnerList.Count - 1);
         }
+
         /// <summary>
-        /// Adds a child element at a specific index
+        /// Adds a child element at a specific index.
         /// </summary>
-        /// <param name="index"></param>
-        /// <param name="element"></param>
+        ///
+        /// <param name="index">
+        /// The index at which to insert the element
+        /// </param>
+        /// <param name="item">
+        /// The element to insert
+        /// </param>
+
         public void Insert(int index, IDomObject item)
         {
             //RemoveParent(item);
@@ -120,9 +132,17 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Remove an element from this element's children
+        /// Remove an element from this element's children.
         /// </summary>
-        /// <param name="element"></param>
+        ///
+        /// <param name="item">
+        /// The item to remove.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if the item was not found in the children.
+        /// </returns>
+
         public bool Remove(IDomObject item)
         {
             if (item.ParentNode != this.Owner)

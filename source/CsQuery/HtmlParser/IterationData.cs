@@ -94,13 +94,22 @@ namespace CsQuery.HtmlParser
             }
         }
 
-
         /// <summary>
-        /// Returns a literal object for the text between HtmlStart (the last position of the end of a tag) and the current position.
-        /// If !AllowLiterals then it's wrapped in a span.
+        /// Returns a literal object for the text between HtmlStart (the last position of the end of a
+        /// tag) and the current position. If !AllowLiterals then it's wrapped in a span.
         /// </summary>
-        /// <param name="current"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="factory">
+        /// The HTML factory to operate against
+        /// </param>
+        /// <param name="literal">
+        /// [out] The literal.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
         public bool TryGetLiteral(HtmlElementFactory factory, out IDomObject literal)
         {
 

@@ -1904,17 +1904,6 @@ namespace CsQuery.Implementation
         /// <summary>
         /// Gets the enumerator.
         /// </summary>
-        ///
-        /// <typeparam name="string">
-        /// Type of the string.
-        /// </typeparam>
-        /// <typeparam name="string">
-        /// Type of the string.
-        /// </typeparam>
-        ///
-        /// <returns>
-        /// The enumerator.
-        /// </returns>
 
         IEnumerator<KeyValuePair<string, string>> IEnumerable<KeyValuePair<string, string>>.GetEnumerator()
         {

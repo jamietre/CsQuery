@@ -40,7 +40,7 @@ namespace CsQuery
         /// use the ChildrenAllowed property.
         /// </summary>
         ///
-        /// <seealso cref="ChildrenAllowed"/>
+        /// <seealso cref="CsQuery.IDomObject.ChildrenAllowed"/>
 
         bool HasChildren { get; }
 

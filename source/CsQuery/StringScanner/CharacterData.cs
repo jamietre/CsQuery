@@ -9,49 +9,27 @@ using CsQuery.StringScanner.Implementation;
 namespace CsQuery.StringScanner
 {
     /// <summary>
-    /// A static class to provide attribute information about characters, e.g. determining whether or not it
-    /// belongs to a number of predefined classes. This creates an array of every possible character with a 
-    /// uint that is a bitmap (of up to 32 possible values)
-    /// This permits very fast access to this information since it only needs to be looked up
-    /// via an index. Uses an array of 65536 uints = 256K of memory
-    /// 
+    /// A static class to provide attribute information about characters, e.g. determining whether or
+    /// not it belongs to a number of predefined classes. This creates an array of every possible
+    /// character with a uint that is a bitmap (of up to 32 possible values)
+    /// This permits very fast access to this information since it only needs to be looked up via an
+    /// index. Uses an array of 65536 uints = 256K of memory.
     /// </summary>
+    
     public static class CharacterData
     {
-        // HTML spec for a space: http://www.w3.org/TR/html-markup/terminology.html#space
-        //
-        // U+0020 SPACE
-        // U+0009 CHARACTER TABULATION (tab)
-        // U+000A LINE FEED (LF)
-        // U+000C FORM FEED (FF)
-        // U+000D CARRIAGE RETURN (CR).
+        #region constructor
 
-        public const string charsHtmlSpace = "\x0020\x0009\x000A\x000C\x000D";
-        public static char[] charsHtmlSpaceArray = {
-            '\x0020','\x0009','\x000A','\x000C','\x000D'
-        };
-
-        // Add a couple more for non-HTML spec whitespace
-        public const string charsWhitespace = charsHtmlSpace + "\x00A0\x00C0";
-
-        public const string charsNumeric = "0123456789";
-        public const string charsNumericExtended = "0123456789.-+";
-        public const string charsLower = "abcdefghijklmnopqrstuvwxyz";
-        public const string charsUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        public const string charsAlpha = charsLower + charsUpper;
-        public const string charsQuote = "\"'";
-        public const string charsOperator = "!+-*/%<>^=~";
-        public const string charsEnclosing = "()[]{}<>`´“”«»";
-        public const string charsEscape = "\\";
-        public const string charsSeparators = ", |";
-
-
-        private static uint[] characterFlags;
         /// <summary>
-        /// Configuration of the xref of character info
+        /// Configuration of the xref of character info. This sets bitflags in the "characterFlags" array
+        /// for every unicode value that defines its attributes. This creates a lookup table allowing
+        /// very rapid access to metadata about a single character, useful during string-parsing and
+        /// scanning.
         /// </summary>
+
         static CharacterData()
         {
+            charsHtmlSpaceArray = charsHtmlSpace.ToArray<char>();
 
             characterFlags = new uint[65536];
             setBit(charsWhitespace, (uint)CharacterType.Whitespace);
@@ -85,6 +63,232 @@ namespace CsQuery.StringScanner
 
             SetAlphaISO10646((uint)CharacterType.AlphaISO10646);
         }
+
+        #endregion
+
+        #region private properties/constants
+
+        // HTML spec for a space: http://www.w3.org/TR/html-markup/terminology.html#space
+        //
+        // U+0020 SPACE
+        // U+0009 CHARACTER TABULATION (tab)
+        // U+000A LINE FEED (LF)
+        // U+000C FORM FEED (FF)
+        // U+000D CARRIAGE RETURN (CR).
+
+        const string charsHtmlSpace = "\x0020\x0009\x000A\x000C\x000D";
+        
+        // Add a couple more for non-HTML spec whitespace
+        const string charsWhitespace = charsHtmlSpace + "\x00A0\x00C0";
+
+        const string charsNumeric = "0123456789";
+        const string charsNumericExtended = "0123456789.-+";
+        const string charsLower = "abcdefghijklmnopqrstuvwxyz";
+        const  string charsUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const string charsAlpha = charsLower + charsUpper;
+        const string charsQuote = "\"'";
+        const string charsOperator = "!+-*/%<>^=~";
+        const string charsEnclosing = "()[]{}<>`´“”«»";
+        const string charsEscape = "\\";
+        const string charsSeparators = ", |";
+
+
+        private static uint[] characterFlags;
+
+        #endregion
+
+        
+
+        #region public properties/methods
+
+        /// <summary>
+        /// An array of all HTML "space" characters.
+        /// </summary>
+
+        public static readonly char[] charsHtmlSpaceArray;
+
+        /// <summary>
+        /// Creates a new instance of the CharacterInfo class
+        /// </summary>
+        ///
+        /// <returns>
+        /// The new character information.
+        /// </returns>
+
+        public static ICharacterInfo CreateCharacterInfo()
+        {
+            return new CharacterInfo();
+        }
+
+        /// <summary>
+        /// Creates a new instance of the CharacterInfo class.
+        /// </summary>
+        ///
+        /// <param name="character">
+        /// The character to bind to the new instance.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CharacterInfo instance.
+        /// </returns>
+
+        public static ICharacterInfo CreateCharacterInfo(char character)
+        {
+            return new CharacterInfo(character);
+        }
+
+        /// <summary>
+        /// Creates a new StringInfo instance
+        /// </summary>
+        ///
+        /// <returns>
+        /// The new StringInfo instance
+        /// </returns>
+
+        public static IStringInfo CreateStringInfo()
+        {
+            return new StringInfo();
+        }
+
+        /// <summary>
+        /// Creates a new StringInfo instance bound to a string
+        /// </summary>
+        ///
+        /// <param name="text">
+        /// The string to bind.
+        /// </param>
+        ///
+        /// <returns>
+        /// The new StringInfo instance.
+        /// </returns>
+
+        public static IStringInfo CreateStringInfo(string text)
+        {
+            return new StringInfo(text);
+        }
+
+        /// <summary>
+        /// Test whether a character matches a set of flags defined by the paramter
+        /// </summary>
+        ///
+        /// <param name="character">
+        /// The character to test
+        /// </param>
+        /// <param name="type">
+        /// The type to which to compare the character
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the character matches the flags in the test type, false if not
+        /// </returns>
+
+        public static bool IsType(char character, CharacterType type)
+        {
+            return (characterFlags[character] & (uint)type) > 0;
+        }
+
+        /// <summary>
+        /// Gets a type with all flags set for the types implemented by this character
+        /// </summary>
+        ///
+        /// <param name="character">
+        /// The character to test
+        /// </param>
+        ///
+        /// <returns>
+        /// The type.
+        /// </returns>
+
+        public static CharacterType GetType(char character)
+        {
+            return (CharacterType)characterFlags[character];
+        }
+
+        /// <summary>
+        /// Return the closing character for a set of known opening enclosing characters (including
+        /// single and double quotes)
+        /// </summary>
+        ///
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the character is not a known opening bound
+        /// </exception>
+        ///
+        /// <param name="character">
+        /// The opening bound character
+        /// </param>
+        ///
+        /// <returns>
+        /// The closing bound character
+        /// </returns>
+
+        public static char Closer(char character)
+        {
+            char result = CloserImpl(character);
+            if (result == (char)0)
+            {
+                throw new InvalidOperationException("The character '" + character + "' is not a known opening bound.");
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Return the matching bound for known opening and closing bound characters (same as Closer, but
+        /// accepts closing tags and returns openers)
+        /// </summary>
+        ///
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the requested operation is invalid.
+        /// </exception>
+        ///
+        /// <param name="character">
+        /// The opening bound character
+        /// </param>
+        ///
+        /// <returns>
+        /// The matching close character
+        /// </returns>
+
+        public static char MatchingBound(char character)
+        {
+            
+            switch (character)
+            {
+                case ']':
+                    return '[';
+                case ')':
+                    return '(';
+                case '}':
+                    return '{';
+                case '>':
+                    return '<';
+                case '´':
+                    return '`';
+                case '”':
+                    return '“';
+                case '»':
+                    return '«';
+                default:
+                    char result =  CloserImpl(character);
+                    if (result == (char)0)
+                    {
+                        throw new InvalidOperationException("The character '" + character + "' is not a bound.");
+                    };
+                    return result;
+            }
+        }
+
+        #endregion
+
+        #region private methods
+
+        /// <summary>
+        /// Sets the bits for ISO 10646.
+        /// </summary>
+        ///
+        /// <param name="hsb">
+        /// the target
+        /// </param>
+
         private static void SetAlphaISO10646(uint hsb)
         {
 
@@ -116,7 +320,7 @@ namespace CsQuery.StringScanner
 
             setBit(charsAlpha, hsb);
             setBit("_", hsb);
-            SetRange(hsb,0xC0,0xD6);
+            SetRange(hsb, 0xC0, 0xD6);
             SetRange(hsb, 0xD8, 0xF6);
             SetRange(hsb, 0xF8, 0x2FF);
             SetRange(hsb, 0x370, 0x37D);
@@ -139,7 +343,7 @@ namespace CsQuery.StringScanner
             SetHtmlTagSelectorStart(hsb);
             setBit(charsNumeric, hsb);
             setBit("-", hsb);
-            setBit((char)0xB7,hsb);
+            setBit((char)0xB7, hsb);
             SetRange(hsb, 0x0300, 0x036F);
             SetRange(hsb, 0x203F, 0x2040);
         }
@@ -147,7 +351,8 @@ namespace CsQuery.StringScanner
         /// Add the : back in when actually parsing html
         /// </summary>
         /// <param name="hsb"></param>
-        private static void SetHtmlTagNameStart(uint hsb) {
+        private static void SetHtmlTagNameStart(uint hsb)
+        {
             SetHtmlTagSelectorStart(hsb);
             setBit(":", hsb);
         }
@@ -171,7 +376,8 @@ namespace CsQuery.StringScanner
         }
         private static void setBit(string forCharacters, uint bit)
         {
-            for (int i=0;i<forCharacters.Length;i++) {
+            for (int i = 0; i < forCharacters.Length; i++)
+            {
                 setBit(forCharacters[i], bit);
             }
         }
@@ -180,46 +386,8 @@ namespace CsQuery.StringScanner
             characterFlags[(ushort)character] |= bit;
         }
 
-        public static ICharacterInfo CreateCharacterInfo()
+        private static char CloserImpl(char character)
         {
-            return new CharacterInfo();
-        }
-        public static ICharacterInfo CreateCharacterInfo(char character)
-        {
-            return new CharacterInfo(character);
-        }
-        public static IStringInfo CreateStringInfo()
-        {
-            return new StringInfo();
-        }
-        public static IStringInfo  CreateStringInfo(string text)
-        {
-            return new StringInfo(text);
-        }
-        public static bool IsType(char character, CharacterType type)
-        {
-            return (characterFlags[character] & (uint)type) > 0;
-        }
-        public static CharacterType GetType(char character)
-        {
-            return (CharacterType)characterFlags[character];
-        }
-        /// <summary>
-        /// Return the closing character for a set of known opening enclosing characters
-        /// (including single and double quotes)
-        /// </summary>
-        /// <param name="character"></param>
-        /// <returns></returns>
-        public static char Closer(char character)
-        {
-            char result = CloserImpl(character);
-            if (result == (char)0)
-            {
-                throw new InvalidOperationException("The character '" + character + "' is not a known opening bound.");
-            }
-            return result;
-        }
-        private static char CloserImpl(char character) {
             switch (character)
             {
                 case '"':
@@ -243,42 +411,9 @@ namespace CsQuery.StringScanner
                 case '»':
                     return '«';
                 default:
-                   return (char)0;
+                    return (char)0;
             }
         }
-        /// <summary>
-        /// Return the matching bound for known opening and closing bound characters (same as Closer,
-        /// but accepts closing tags and returns openers)
-        /// </summary>
-        /// <param name="character"></param>
-        /// <returns></returns>
-        public static char MatchingBound(char character)
-        {
-            
-            switch (character)
-            {
-                case ']':
-                    return '[';
-                case ')':
-                    return '(';
-                case '}':
-                    return '{';
-                case '>':
-                    return '<';
-                case '´':
-                    return '`';
-                case '”':
-                    return '“';
-                case '»':
-                    return '«';
-                default:
-                    char result =  CloserImpl(character);
-                    if (result == (char)0)
-                    {
-                        throw new InvalidOperationException("The character '" + character + "' is not a bound.");
-                    };
-                    return result;
-            }
-        }
+        #endregion
     }
 }

@@ -184,9 +184,9 @@ namespace CsQuery.HtmlParser
             }
             maxPathIndex = (int)Math.Pow(encodingLength, pathIdLength) - 1;
 
-            MustBeQuotedAll = new char[CharacterData.charsHtmlSpace.Length + MustBeQuoted.Length];
+            MustBeQuotedAll = new char[CharacterData.charsHtmlSpaceArray.Length + MustBeQuoted.Length];
             MustBeQuoted.CopyTo(MustBeQuotedAll, 0);
-            CharacterData.charsHtmlSpace.ToCharArray().CopyTo(MustBeQuotedAll, MustBeQuoted.Length);
+            CharacterData.charsHtmlSpaceArray.CopyTo(MustBeQuotedAll, MustBeQuoted.Length);
 
             // these elements can never have html children.
 

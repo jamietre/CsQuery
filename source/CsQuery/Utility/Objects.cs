@@ -49,22 +49,37 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Returns true if the string appears to be JSON.
+        /// Returns true if the object is a string, and appears to be JSON, e.g. it starts with a single
+        /// curly brace.
         /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="obj">
+        /// The object to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if json, false if not.
+        /// </returns>
+
         public static bool IsJson(object obj)
         {
             string text = obj as string;
             return text != null && text.StartsWith("{") && !text.StartsWith("{{");
         }
 
-
         /// <summary>
-        /// Only value types, strings, and null
+        /// Tests whether an object is a common immutable, specifically, value types, strings, and null.
+        /// KeyValuePairs are specifically excluded. (Why?)
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="obj">
+        /// .
+        /// </param>
+        ///
+        /// <returns>
+        /// true if immutable, false if not.
+        /// </returns>
+
         public static bool IsImmutable(object obj)
         {
             return obj == null ||
@@ -72,11 +87,19 @@ namespace CsQuery
                 obj is string ||
                 (obj is ValueType && !(Objects.IsKeyValuePair(obj)));
         }
+
         /// <summary>
         /// Returns false if this is a value type, null string, or enumerable (but not Extendable)
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="obj">
+        /// .
+        /// </param>
+        ///
+        /// <returns>
+        /// true if extendable type, false if not.
+        /// </returns>
+
         public static bool IsExtendableType(object obj)
         {
             // Want to allow enumerable types since we can treat them as objects. Exclude arrays.
@@ -112,59 +135,125 @@ namespace CsQuery
 
             return true;
         }
+
         /// <summary>
-        /// Returns true if the object is a primitive numeric type, e.g. exluding string &amp; char
+        /// Returns true if the object is a primitive numeric type, that is, any primtive except string
+        /// &amp; char.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="type">
+        /// The type to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if numeric type, false if not.
+        /// </returns>
+
         public static bool IsNumericType(Type type)
         {
             Type t = GetUnderlyingType(type);
             return t.IsPrimitive && !(t == typeof(string) || t == typeof(char) || t==typeof(bool));
         }
+
         /// <summary>
-        /// Returns true if the value is a JS native type (string, number, bool, datetime)
+        /// Returns true if the value is a Javascript native type (string, number, bool, datetime)
         /// </summary>
-        /// <param name="t"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="type">
+        /// The type to test
+        /// </param>
+        ///
+        /// <returns>
+        /// true if a Javascript native type, false if not.
+        /// </returns>
+
         public static bool IsNativeType(Type type)
         {
             Type t = GetUnderlyingType(type);
             return t.IsEnum || t.IsValueType || t.IsPrimitive || t == typeof(string);
         }
-        public static string Join(Array list)
+
+        /// <summary>
+        /// Combine elements of an array into a single string, separated by a comma.
+        /// </summary>
+        ///
+        /// <param name="array">
+        /// The array to join.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string separated by a comma.
+        /// </returns>
+
+        public static string Join(Array array)
         {
-            return Join(toStringList(list), ",");
+            return Join(toStringList(array), ",");
         }
+
+        /// <summary>
+        /// Combine elements of a sequenceinto a single string, separated by a comma.
+        /// </summary>
+        ///
+        /// <param name="list">
+        /// A list of objects.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string containging the string representation of each object in the sequence separated by a
+        /// comma.
+        /// </returns>
+
         public static string Join(IEnumerable list)
         {
             return Join(toStringList(list), ",");
         }
+
         /// <summary>
-        /// Test if an object is "Expando-like", e.g. a an IDictionary-string,object-
+        /// Test if an object is "Expando-like", e.g. is an IDictionary&lt;string,object&gt;.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="obj">
+        /// The object to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if expando, false if not.
+        /// </returns>
+
         public static bool IsExpando(object obj)
         {
             return (obj is IDictionary<string, object>);
         }
 
         /// <summary>
-        /// Test if an object is a an IDictionary-string,object- that is empty
+        /// Test if an object is a an IDictionary&lt;string,object&gt; that is empty.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="obj">
+        /// The object to test
+        /// </param>
+        ///
+        /// <returns>
+        /// true if empty expando, false if not.
+        /// </returns>
+
         public static bool IsEmptyExpando(object obj)
         {
             return IsExpando(obj) && ((IDictionary<string, object>)obj).Count == 0;
         }
 
         /// <summary>
-        /// Test if an object is a KeyValuePair<,> (e.g. of any types)
+        /// Test if an object is a KeyValuePair&lt;,&gt; (e.g. of any types)
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="obj">
+        /// The object to test
+        /// </param>
+        ///
+        /// <returns>
+        /// true if key value pair, false if not.
+        /// </returns>
+
         public static bool IsKeyValuePair(object obj)
         {
             Type valueType = obj.GetType();
@@ -238,12 +327,26 @@ namespace CsQuery
 
 
         }
+
         /// <summary>
-        /// Convert an object of any value type to the specified type using any known means
+        /// Convert an object of any value type to the specified type using any known means.
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
+        ///
+        /// <exception cref="InvalidCastException">
+        /// Thrown when an object cannot be cast to a required type.
+        /// </exception>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="value">
+        /// The object to convert
+        /// </param>
+        ///
+        /// <returns>
+        /// An object of the target type
+        /// </returns>
+
         public static T Convert<T>(object value)
         {
             T output;
@@ -650,20 +753,40 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Convert (recursively) an IDictionary<string,object> to expando objects
+        /// Convert (recursively) an IDictionary&lt;string,object&gt; to a dynamic object.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The source dicationary
+        /// </param>
+        ///
+        /// <returns>
+        /// A new dynamic object
+        /// </returns>
+
         public static T Dict2Dynamic<T>(IDictionary<string, object> obj) where T : IDynamicMetaObjectProvider, new()
         {
             return Dict2Dynamic<T>(obj, false);
         }
 
         /// <summary>
-        /// Combine elements of a list into a single string, separated by separator
+        /// Combine elements of a sequence into a single string, separated by separator.
         /// </summary>
-        /// <param name="list"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="list">
+        /// The source sequence.
+        /// </param>
+        /// <param name="separator">
+        /// The separator.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string.
+        /// </returns>
+
         public static string Join(IEnumerable<string> list, string separator)
         {
             StringBuilder sb = new StringBuilder();
@@ -809,12 +932,25 @@ namespace CsQuery
         // TODO - the implementation needs to go to another class
 
         /// <summary>
-        /// Convert any IDictionary<string,object> into an expandoobject recursively
+        /// Convert any IDictionary&lt;string,object&gt; into an expandoobject recursively.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="obj"></param>
-        /// <param name="convertDates"></param>
-        /// <returns></returns>
+        ///
+        /// <typeparam name="T">
+        /// The type of target to create. It must implementing IDynamicMetaObjectProvider; if it is
+        /// actually the interface IDynamicMetaObjectProvider, then the default dynamic object type will
+        /// be created.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The source dictionary
+        /// </param>
+        /// <param name="convertDates">
+        /// .
+        /// </param>
+        ///
+        /// <returns>
+        /// .
+        /// </returns>
+
         public static T Dict2Dynamic<T>(IDictionary<string, object> obj, bool convertDates) where T : IDynamicMetaObjectProvider, new()
         {
             T returnObj = new T();
@@ -830,14 +966,24 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Map properties of inputObjects to target. If target is an expando object, it will be updated. If not,
-        /// a new one will be created including the properties of target and inputObjects.
+        /// Map properties of inputObjects to target. If target is an expando object, it will be updated.
+        /// If not, a new one will be created including the properties of target and inputObjects.
         /// </summary>
-        /// <param name="parents"></param>
-        /// <param name="deep"></param>
-        /// <param name="target"></param>
-        /// <param name="inputObjects"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="deep">
+        /// When true, will clone properties that are objects.
+        /// </param>
+        /// <param name="target">
+        /// The target of the mapping, or null to create a new target
+        /// </param>
+        /// <param name="inputObjects">
+        /// One or more objects that are the source of the mapping
+        /// </param>
+        ///
+        /// <returns>
+        /// The target object itself, if non-null, or a new dynamic object, if the target is null
+        /// </returns>
+
         public static object Extend( bool deep, object target, params object[] inputObjects)
         {
             return ExtendImpl(null, deep, target, inputObjects);

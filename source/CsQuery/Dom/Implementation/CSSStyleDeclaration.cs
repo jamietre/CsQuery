@@ -186,19 +186,28 @@ namespace CsQuery.Implementation
         /// Sets all the styles from a single CSS style string. Any existing styles will be erased.
         /// Styles will be validated and an error thrown if an invalid style is attempted.
         /// </summary>
-        /// <param name="styles">A legal HTML style string</param>
-        /// <param name="strict">When true, the styles will be validated and an error thrown if any are not valid</param>
+        ///
+        /// <param name="styles">
+        /// A legal HTML style string.
+        /// </param>
+
         public void SetStyles(string styles)
         {
             SetStyles(styles, true);
         }
 
         /// <summary>
-        /// Sets all the styles from a single CSS style string. Any existing styles will be erased.
-        /// This method is used by DomElementFactory (not in strict mode).
+        /// Sets all the styles from a single CSS style string. Any existing styles will be erased. This
+        /// method is used by DomElementFactory (not in strict mode).
         /// </summary>
-        /// <param name="styles">A legal HTML style string</param>
-        /// <param name="strict">When true, the styles will be validated and an error thrown if any are not valid</param>
+        ///
+        /// <param name="styles">
+        /// A legal HTML style string.
+        /// </param>
+        /// <param name="strict">
+        /// When true, the styles will be validated and an error thrown if any are not valid.
+        /// </param>
+
         public void SetStyles(string styles, bool strict)
         {
             _Styles = null;
@@ -212,12 +221,19 @@ namespace CsQuery.Implementation
                 AddStyles(styles, strict);
             }
         }
+
         /// <summary>
-        /// Add one or more styles to this element. Unlike SetStyle, existing styles are not affected, except
-        /// for existing styles of the same name.
+        /// Add one or more styles to this element. Unlike SetStyle, existing styles are not affected,
+        /// except for existing styles of the same name.
         /// </summary>
-        /// <param name="styles"></param>
-        /// <param name="strict"></param>
+        ///
+        /// <param name="styles">
+        /// The CSS style string
+        /// </param>
+        /// <param name="strict">
+        /// When true, the styles will be validated as CSS3 before adding.
+        /// </param>
+
         public void AddStyles(string styles, bool strict)
         {
             foreach (string style in styles.SplitClean(';'))
