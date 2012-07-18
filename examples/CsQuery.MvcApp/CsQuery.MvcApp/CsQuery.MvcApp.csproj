@@ -36,9 +36,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CsQuery, Version=1.1.2.22634, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="CsQuery, Version=1.1.3.30725, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\CsQuery.1.1.2.1\lib\net40\CsQuery.dll</HintPath>
+      <HintPath>..\packages\CsQuery.1.1.3.2\lib\net40\CsQuery.dll</HintPath>
+    </Reference>
+    <Reference Include="CsQuery.Mvc, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CsQuery.Mvc.1.0.5\lib\net40\CsQuery.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data.Entity" />
@@ -66,16 +69,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\Shared\LayoutController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="CsQueryView\CsQueryController.cs" />
-    <Compile Include="CsQueryView\ICsQueryController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CsQueryView\CsQueryView.cs" />
-    <Compile Include="CsQueryView\CsQueryViewEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
@@ -148,7 +148,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Controllers\Shared\" />
     <Folder Include="Controllers\Sub\" />
   </ItemGroup>
   <ItemGroup>

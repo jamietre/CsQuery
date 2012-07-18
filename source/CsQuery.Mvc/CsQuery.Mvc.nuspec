@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>CsQuery.Mvc</id>
+    <version>1.0.5</version>
+    <title>CsQuery MVC Framework</title>
+    <authors>James Treworgy</authors>
+    <owners>James Treworgy</owners>
+    <licenseUrl>https://github.com/jamietre/CsQuery/blob/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/jamietre/CsQuery/</projectUrl>
+    <iconUrl>http://www.outsharked.com/csquery/images/csquery-icon-large.gif</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>Custom view engine and controllers for using CsQuery directly in an ASP.NET MVC application</summary>
+    <description>This framework automatically passed a CQ object created from the HTML markup of a page before it's rendered to special action methods in your controllers.</description>
+    <releaseNotes>Initial release</releaseNotes>
+    <copyright>Copyright 2012</copyright>
+    <tags>jquery html</tags>
+  </metadata>
+    <files>
+        <file src="bin\release\CsQuery.Mvc.dll" target="lib\net40" />
+        <file src="bin\release\CsQuery.Mvc.xml" target="lib\net40" />
+        <file src="bin\release\CsQuery.Mvc.pdb" target="lib\net40" />
+        <file src="**\*.cs" target="src" />
+  </files>  
+</package>
+

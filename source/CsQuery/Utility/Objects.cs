@@ -616,11 +616,47 @@ namespace CsQuery
             }
             return name;
         }
+
+        /// <summary>
+        /// Return the default value for a type.
+        /// </summary>
+        ///
+        /// <param name="type">
+        /// The type
+        /// </param>
+        ///
+        /// <returns>
+        /// An value or null
+        /// </returns>
+
         public static object DefaultValue(Type type)
         {
             return type.IsValueType ? 
-                Activator.CreateInstance(type) : null;
+                CreateInstance(type) : null;
         }
+
+        /// <summary>
+        /// Creates an instance of a type
+        /// </summary>
+        ///
+        /// <param name="type">
+        /// The type
+        /// </param>
+        ///
+        /// <returns>
+        /// The new instance.
+        /// </returns>
+
+        public static object CreateInstance(Type type)
+        {
+            return Utility.FastActivator.CreateInstance(type);
+        }
+
+        public static T CreateInstance<T>() where T: class
+        {
+            return Utility.FastActivator.CreateInstance<T>();
+        }
+
         /// <summary>
         /// Returns an enumerable of one element from an object
         /// </summary>
@@ -754,7 +790,7 @@ namespace CsQuery
                     else
                     {
                         Type listType = typeof(List<>).MakeGenericType(new Type[1] { onlyType });
-                        list = (IList)Activator.CreateInstance(listType);
+                        list = (IList)CreateInstance(listType);
                     }
 
                     foreach (var item in objectList)
