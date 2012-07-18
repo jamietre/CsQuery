@@ -132,6 +132,24 @@ namespace CsQuery.Tests.Csharp.Selectors
             Dom = TestDom("TestHtml");
         }
 
+		[Test, TestMethod]
+		public void HexWith6DigitsEscapedSelector()
+		{
+			string html = "<div id=\"B&W?\"><p>test</p></div>";
+			var dom = CsQuery.CQ.CreateFragment(html);
+			var result = dom.Select("#B\\000026W\\3F");
+			Assert.Greater(result.Length, 0);
+		}
+		
+		[Test, TestMethod]
+		public void HexWith2DigitsEscapedSelector()
+		{
+			string html = "<div id=\"B&W?\"><p>test</p></div>";
+			var dom = CsQuery.CQ.CreateFragment(html);
+			var result = dom.Select("#B\\26 W\\3F");
+			Assert.Greater(result.Length, 0);
+		}
+
         protected string WriteDOMObject(IDomElement obj)
         {
             string result = "";
