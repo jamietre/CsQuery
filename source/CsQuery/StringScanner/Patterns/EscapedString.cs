@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Globalization;
 using CsQuery.StringScanner.Implementation;
 
 namespace CsQuery.StringScanner.Patterns
@@ -37,6 +38,30 @@ namespace CsQuery.StringScanner.Patterns
                 {
                     if (Escaped)
                     {
+						// process unicode char code point, if presented
+						int tempIndex = index;
+						StringBuilder sb = new StringBuilder();
+						while (Source[tempIndex] != ' ')
+						{
+							sb.Append(Source[tempIndex]);
+
+							if (tempIndex == Source.Length - 1 ||	// end of string?
+								tempIndex - index == 5)				// only 6 hexadecimal digits are allowed
+								break;
+
+							tempIndex++;
+						}
+
+						if (sb.Length == 2 || sb.Length == 6)
+						{
+							int value = 0;
+							if (Int32.TryParse(sb.ToString(), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out value))
+							{
+								character = (char)value;
+								index = tempIndex;
+							}
+						}
+												
                         Escaped = false;
                     }
                     else
