@@ -75,9 +75,9 @@ namespace CsQuery.Promises
             Resolved = false;
             RejectImpl();
         }
-        
 
-        public IPromise Then(Action<object> success, Action<object> failure = null)
+
+        public IPromise Then(PromiseAction<object> success, PromiseAction<object> failure = null)
         {
             NextDeferred = new Deferred();
             Success = new Func<object, IPromise>((parm) =>
@@ -98,7 +98,7 @@ namespace CsQuery.Promises
             return NextDeferred;
         }
 
-        public IPromise Then(Func<object, IPromise> success, Func<object, IPromise> failure = null)
+        public IPromise Then(PromiseFunction<object> success, PromiseFunction<object> failure = null)
         {
             NextDeferred = new Deferred();
             Success = new Func<object,IPromise>((parm) => {

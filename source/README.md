@@ -7,6 +7,15 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ### Change Log
 
+####Version 1.1.3.1
+
+Released 2012.07.19 *Bugfix Release*
+
+- [Issue #20](https://github.com/jamietre/CsQuery/issues/20) - selector engine doesn't recognize hex escape sequences - [pull request #22 from @vitallium](https://github.com/jamietre/CsQuery/pull/22)
+
+https://github.com/jamietre/CsQuery/pull/22
+
+
 ####Version 1.1.3
 
 Released 2012.07.17. See [release notes for version 1.1.3](http://blog.outsharked.com/2012/07/csquery-113-released.html)
