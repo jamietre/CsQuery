@@ -90,8 +90,6 @@ namespace CsQuery.Tests.Csharp._WebIO
             CQ.WaitForAsyncEvents(10000);
 
             Assert.IsTrue(complete);
-
-
         }
 
         [Test, TestMethod]
@@ -132,6 +130,14 @@ namespace CsQuery.Tests.Csharp._WebIO
             Assert.IsTrue(complete, "Complete flag was set properly.");
 
         }
+
+		[Test, TestMethod]
+		public void GetCompressedResponseTest()
+		{
+			CQ mCQ = CQ.CreateFromUrl("http://api.jquery.com/jQuery.contains/");
+			Assert.IsTrue(mCQ.Select("#jq-footerNavigation").Length == 1, "I found an expected content container - if jQuery changed their web site or compressing method this could fail.");
+		}
+
         private void FinishRequest(ICsqWebResponse response)
         {
             var csq= response.Dom;
