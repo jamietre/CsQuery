@@ -18,6 +18,10 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 - [Issue #24](https://github.com/jamietre/CsQuery/issues/24) - improve performance of substring extraction method in HTML parser
 
+*Changes*
+
+- Change internal type from List<T> to T[] for object deserialization methods. Testing unknown objects for enumerable types, and treating them as a sequence in those situations, is too risky. We should only treat actual arrays as JSON arrays.
+
 ####Version 1.1.3
 
 Released 2012.07.17. See [release notes for version 1.1.3](http://blog.outsharked.com/2012/07/csquery-113-released.html)

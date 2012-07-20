@@ -274,7 +274,7 @@ namespace CsQuery.ExtensionMethods.Internal
         /// </param>
         ///
         /// <returns>
-        /// The zero-based posiiton in the list where the item was found, or -1 if it was not found.
+        /// The zero-based position in the list where the item was found, or -1 if it was not found.
         /// </returns>
 
         public static int IndexOf<T>(this IEnumerable<T> list, T target)

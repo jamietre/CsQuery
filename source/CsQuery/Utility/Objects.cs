@@ -9,6 +9,7 @@ using System.Web.Script.Serialization;
 using System.ComponentModel;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
+using CsQuery.Utility;
 
 namespace CsQuery
 {
@@ -829,13 +830,28 @@ namespace CsQuery
 
             return result;
         }
+
         /// <summary>
-        /// Takes a default deserialized value from JavaScriptSerializer and parses it into expando objectes
+        /// Takes a default deserialized value from JavaScriptSerializer and parses it into expando
+        /// objects. This will convert inner array types to strongly-typed arrays; inner object types to
+        /// dynamic objects; and inner date/time value strings to real datetime values.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="value"></param>
-        /// <param name="convertDates"></param>
-        /// <returns></returns>
+        ///
+        /// <typeparam name="T">
+        /// The target type.
+        /// </typeparam>
+        /// <param name="value">
+        /// The value.
+        /// </param>
+        /// <param name="convertDates">
+        /// When true, date values will be parsed also. (This is likely problematic because of different
+        /// date conventions).
+        /// </param>
+        ///
+        /// <returns>
+        /// The deserialized converted value&lt; t&gt;
+        /// </returns>
+
         private static object ConvertDeserializedValue<T>(object value, bool convertDates) where T : IDynamicMetaObjectProvider, new()
         {
             if (value is IDictionary<string, object>)
@@ -844,8 +860,11 @@ namespace CsQuery
             }
             else if (value is IEnumerable && !(value is string))
             {
-                // JSON arrays are returned as ArrayLists of values or IDictionary<string,object> by JavaScriptSerializer 
-                // We need to convert the values to expando objects
+                // JSON arrays are returned as ArrayLists of values or IDictionary<string,object> by
+                // JavaScriptSerializer We will convert them to arrays that are either strongly typed, or
+                // object[]. We do this by seeing if everything is the same type first while adding it to an
+                // object list, then constructing an array. 
+                
                 IList<object> objectList = new List<object>();
                     
                 Type onlyType=null;
@@ -864,33 +883,36 @@ namespace CsQuery
                         }
                     }
                     objectList.Add(val);
-
                 }
+
+                Array array;
                 if (onlyType != null)
                 {
-                    IList list;
-                    // If it's a list of obejcts, map again to the default dynamic type
+                    // This means a single type was found, and we can create a strongly typed array
+                    // If it's a list of objects, map again to the default dynamic type
+                    
                     if (typeof(IDictionary<string, object>).IsAssignableFrom(onlyType))
                     {
-                        list = new List<T>();
+                        array = Array.CreateInstance(Config.DynamicObjectType, objectList.Count);
                     }
                     else
                     {
-                        Type listType = typeof(List<>).MakeGenericType(new Type[1] { onlyType });
-                        list = (IList)Activator.CreateInstance(listType);
+                        array = Array.CreateInstance(onlyType, objectList.Count);
                     }
-
-                    foreach (var item in objectList)
-                    {
-                        //list.Add(item);
-                        list.Add(ConvertDeserializedValue<T>(item, true));
-                    }
-                    return list;
                 }
                 else
                 {
-                    return objectList;
+                    array = Array.CreateInstance(Config.DynamicObjectType, objectList.Count);
                 }
+
+                // copy values from list to the arraty
+                for (int index = 0; index < objectList.Count; index++)
+                {
+                    array.SetValue(ConvertDeserializedValue<T>(objectList[index], true), index);
+                }
+
+                return array;
+
             }
             else if (convertDates)
             {
@@ -1020,10 +1042,12 @@ namespace CsQuery
                     sources.Enqueue(src);
                 }
             }
+            
             // Create a new empty object if there's no existing target -- same as using {} as the jQuery parameter
+            
             if (target == null)
             {
-                target = new ExpandoObject();
+                target = FastActivator.CreateInstance(Config.DynamicObjectType);
             }
 
             else if (!Objects.IsExtendableType(target))
@@ -1112,12 +1136,19 @@ namespace CsQuery
             return target;
         }
 
-
         /// <summary>
-        /// Converts a regular object to an expando object, or returns the source object if it is already an expando object.
+        /// Converts a regular object to a dynamic object, or returns the source object if it is already
+        /// a dynamic object.
         /// </summary>
-        /// <param name="source"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="source">
+        /// 
+        /// </param>
+        ///
+        /// <returns>
+        /// source as a JsObject.
+        /// </returns>
+
         public static JsObject ToExpando(object source)
         {
             return ToExpando(source,false);
@@ -1156,17 +1187,38 @@ namespace CsQuery
         {
             return CloneObject(obj,false);
         }
+
+        /// <summary>
+        /// Clone an object. For value types, returns the value. For reference types, coverts to a dynamic object. 
+        /// </summary>
+        ///
+        /// <param name="obj">
+        /// The source object.
+        /// </param>
+        /// <param name="deep">
+        /// When true, will clone properties that are objects.
+        /// </param>
+        ///
+        /// <returns>
+        /// The value passed or a new dynamic object.
+        /// </returns>
+
         public static object CloneObject(object obj, bool deep)
         {
+            // a value type
+            
             if (Objects.IsImmutable(obj))
             {
                 return obj;
             }
-            else if (obj is IEnumerable)
+            else if (obj.GetType().IsArray || 
+                IsExpando(obj))
             {
-                // captures expando objects too
+                // CloneList hanldes IDictionary&lt;string,object&gt; types. 
+                
+                
                 return ((IEnumerable)obj).CloneList(deep);
-            }
+            } 
             else
             {
                 // TODO - check for existence of a "clone" method
@@ -1174,36 +1226,43 @@ namespace CsQuery
                 return (ToExpando(obj,true));
             }
         }
-        
 
         /// <summary>
-        /// Remove a property from an object, returning a new expando object.
+        /// Remove a property from a dynamic object, or return a copy of the object a a new dynamic object without the property.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="property"></param>
+        ///
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the requested operation is invalid.
+        /// </exception>
+        ///
+        /// <param name="obj">
+        /// The source object
+        /// </param>
+        /// <param name="property">
+        /// The property to delete
+        /// </param>
+        ///
+        /// <returns>
+        /// A new dynamic object
+        /// </returns>
+
         public static object DeleteProperty(object obj, string property)
         {
-            if (!Objects.IsExpando(obj))
+            if (IsImmutable(obj)) {
+                throw new ArgumentException("The object is a value type, it has no deletable properties.");
+            } else if (IsExpando(obj))
             {
-                throw new InvalidOperationException("This method only works on objects that implement IDictionary<string,object>");
+                IDictionary<string, object> dict = (IDictionary<string, object>)obj;
+                dict.Remove(property);
+                return dict;
+            } else {
+                var target = CloneObject(obj); 
+                
+                return DeleteProperty(target, property);
             }
-            ExpandoObject target = (ExpandoObject)CloneObject(obj);
-            DeleteProperty(target,property);
-            return target;
-
         }
 
-        /// <summary>
-        /// Remove a property from an object, returning a new expando object.
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="property"></param>
-        public static void DeleteProperty(ExpandoObject obj, string property)
-        {
-            IDictionary<string, object> objDict = (IDictionary<string, object>)obj;
-            objDict.Remove(property);
-        }
-
+   
         /// <summary>
         /// Implementation of "Extend" functionality
         /// </summary>

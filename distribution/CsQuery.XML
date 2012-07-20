@@ -307,13 +307,26 @@
             <returns></returns>
         </member>
         <member name="M:CsQuery.Objects.ConvertDeserializedValue``1(System.Object,System.Boolean)">
-            <summary>
-            Takes a default deserialized value from JavaScriptSerializer and parses it into expando objectes
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="value"></param>
-            <param name="convertDates"></param>
-            <returns></returns>
+             <summary>
+             Takes a default deserialized value from JavaScriptSerializer and parses it into expando
+             objects. This will convert inner array types to strongly-typed arrays; inner object types to
+             dynamic objects; and inner date/time value strings to real datetime values.
+             </summary>
+            
+             <typeparam name="T">
+             The target type.
+             </typeparam>
+             <param name="value">
+             The value.
+             </param>
+             <param name="convertDates">
+             When true, date values will be parsed also. (This is likely problematic because of different
+             date conventions).
+             </param>
+            
+             <returns>
+             The deserialized converted value&lt; t&gt;
+             </returns>
         </member>
         <member name="M:CsQuery.Objects.GetUnderlyingType(System.Type)">
             <summary>
@@ -364,11 +377,18 @@
              </returns>
         </member>
         <member name="M:CsQuery.Objects.ToExpando(System.Object)">
-            <summary>
-            Converts a regular object to an expando object, or returns the source object if it is already an expando object.
-            </summary>
-            <param name="source"></param>
-            <returns></returns>
+             <summary>
+             Converts a regular object to a dynamic object, or returns the source object if it is already
+             a dynamic object.
+             </summary>
+            
+             <param name="source">
+             
+             </param>
+            
+             <returns>
+             source as a JsObject.
+             </returns>
         </member>
         <member name="M:CsQuery.Objects.ToExpando(System.Object,System.Boolean)">
             <summary>
@@ -378,19 +398,41 @@
             <param name="source"></param>
             <returns></returns>
         </member>
-        <member name="M:CsQuery.Objects.DeleteProperty(System.Object,System.String)">
-            <summary>
-            Remove a property from an object, returning a new expando object.
-            </summary>
-            <param name="obj"></param>
-            <param name="property"></param>
+        <member name="M:CsQuery.Objects.CloneObject(System.Object,System.Boolean)">
+             <summary>
+             Clone an object. For value types, returns the value. For reference types, coverts to a dynamic object. 
+             </summary>
+            
+             <param name="obj">
+             The source object.
+             </param>
+             <param name="deep">
+             When true, will clone properties that are objects.
+             </param>
+            
+             <returns>
+             The value passed or a new dynamic object.
+             </returns>
         </member>
-        <member name="M:CsQuery.Objects.DeleteProperty(System.Dynamic.ExpandoObject,System.String)">
-            <summary>
-            Remove a property from an object, returning a new expando object.
-            </summary>
-            <param name="obj"></param>
-            <param name="property"></param>
+        <member name="M:CsQuery.Objects.DeleteProperty(System.Object,System.String)">
+             <summary>
+             Remove a property from a dynamic object, or return a copy of the object a a new dynamic object without the property.
+             </summary>
+            
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the requested operation is invalid.
+             </exception>
+            
+             <param name="obj">
+             The source object
+             </param>
+             <param name="property">
+             The property to delete
+             </param>
+            
+             <returns>
+             A new dynamic object
+             </returns>
         </member>
         <member name="M:CsQuery.Objects.AddExtendKVP(System.Boolean,System.Collections.Generic.HashSet{System.Object},System.Object,System.String,System.Object)">
             <summary>
@@ -851,7 +893,7 @@
              </param>
             
              <returns>
-             The zero-based posiiton in the list where the item was found, or -1 if it was not found.
+             The zero-based position in the list where the item was found, or -1 if it was not found.
              </returns>
         </member>
         <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.ListAdd(System.String,System.String,System.String)">
@@ -5121,7 +5163,7 @@
              Though the jQuery "Data" methods are designed to read the HTML5 "data-" attributes like the
              CsQuery version, jQuery Data keeps its data in an internal data store that is unrelated to
              the element attributes. This is not particularly necessary when working in C# since you have
-             many other framwork options for managing data. Rather, this method has been implemented to
+             many other framework options for managing data. Rather, this method has been implemented to
              simplify passing data back and forth between the client and server. You should be able to use
              CsQuery's Data methods to set arbitrary objects as data, and read them directly from the
              client using the jQuery data method. Bear and mind that because CsQuery intends to write
@@ -6003,6 +6045,24 @@
             
              <url>
              http://api.jquery.com/eq/
+             </url>
+        </member>
+        <member name="M:CsQuery.CQ.Parent(System.String)">
+             <summary>
+             Get the parent of each element in the current set of matched elements, optionally filtered by
+             a selector.
+             </summary>
+            
+             <param name="selector">
+             A string containing a selector expression to match elements against.
+             </param>
+            
+             <returns>
+             A new CQ object
+             </returns>
+            
+             <url>
+             http://api.jquery.com/parents/
              </url>
         </member>
         <member name="M:CsQuery.CQ.AndSelf">
@@ -7323,24 +7383,6 @@
              The current CQ object.
              </returns>
         </member>
-        <member name="M:CsQuery.CQ.Parent(System.String)">
-             <summary>
-             Get the parent of each element in the current set of matched elements, optionally filtered by
-             a selector.
-             </summary>
-            
-             <param name="selector">
-             A string containing a selector expression to match elements against.
-             </param>
-            
-             <returns>
-             A new CQ object
-             </returns>
-            
-             <url>
-             http://api.jquery.com/parents/
-             </url>
-        </member>
         <member name="P:CsQuery.CQ.Length">
              <summary>
              The number of elements in the CQ object.
@@ -7672,6 +7714,251 @@
             The active list, if changes are made after set by the client
             </summary>
         </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.Add(`0)">
+             <summary>
+             Adds a new item to the SelectionSet
+             </summary>
+            
+             <param name="item">
+             The item to add.
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.Clear">
+            <summary>
+            Clears this SelectionSet
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.Clone">
+             <summary>
+             Makes a clone of this SelectionSet
+             </summary>
+            
+             <returns>
+             A copy of this object.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.CloneImpl">
+             <summary>
+             Enumerates clone objects in this collection.
+             </summary>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process clone objects in this collection.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.Contains(`0)">
+             <summary>
+             Test whether the item is present in the SelectionSet
+             </summary>
+            
+             <param name="item">
+             The item to test for containment.
+             </param>
+            
+             <returns>
+             true if the object is in this collection, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.CopyTo(`0[],System.Int32)">
+             <summary>
+             Copy the contents of this SelectionSet to an array
+             </summary>
+            
+             <param name="array">
+             The target array.
+             </param>
+             <param name="arrayIndex">
+             Zero-based index of the starting position in the array to begin copying.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.Remove(`0)">
+             <summary>
+             Removes the given item from the SelectionSet
+             </summary>
+            
+             <param name="item">
+             The item to remove.
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.ExceptWith(System.Collections.Generic.IEnumerable{`0})">
+             <summary>
+             Removes all elements in the specified collection from the current SelectionSet&lt;T&gt;
+             object.
+             </summary>
+            
+             <param name="other">
+             The collection of items to remove from the SelectionSet&lt;T&gt; object.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.IntersectWith(System.Collections.Generic.IEnumerable{`0})">
+             <summary>
+             Modifies the current SelectionSet&lt;T&gt; object to contain only elements that are present
+             in that object and in the specified collection.
+             </summary>
+            
+             <param name="other">
+             The collection to compare to the current SelectionSet&lt;T&gt;
+             object.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.IsProperSubsetOf(System.Collections.Generic.IEnumerable{`0})">
+             <summary>
+             Determines whether a SelectionSet&lt;T&gt; object is a proper subset of the specified
+             collection.
+             </summary>
+            
+             <param name="other">
+             The collection to compare to the current SelectionSet&lt;T&gt; object.
+             </param>
+            
+             <returns>
+             true if it is a proper subset, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.IsProperSupersetOf(System.Collections.Generic.IEnumerable{`0})">
+             <summary>
+             Determines whether a SelectionSet&lt;T&gt; object is a proper superset of the specified
+             collection.
+             </summary>
+            
+             <param name="other">
+             The collection to compare to the current SelectionSet&lt;T&gt; object.
+             </param>
+            
+             <returns>
+             true if is is a proper superset, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.IsSubsetOf(System.Collections.Generic.IEnumerable{`0})">
+             <summary>
+             Determines whether a SelectionSet&lt;T&gt; object is a subset of the specified collection.
+             </summary>
+            
+             <param name="other">
+             The collection to compare to the current SelectionSet&lt;T&gt; object.
+             </param>
+            
+             <returns>
+             true if it is a proper subset, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.IsSupersetOf(System.Collections.Generic.IEnumerable{`0})">
+             <summary>
+             Determines whether a SelectionSet&lt;T&gt; object is a superset of the specified collection.
+             </summary>
+            
+             <param name="other">
+             The collection to compare to the current SelectionSet&lt;T&gt; object.
+             </param>
+            
+             <returns>
+             true if is is a proper superset, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.Overlaps(System.Collections.Generic.IEnumerable{`0})">
+             <summary>
+             Determines whether the current SelectionSet&lt;T&gt; object and a specified collection share
+             common elements.
+             </summary>
+            
+             <param name="other">
+             The collection to compare to the current System.Collections.Generic.HashSet&lt;T&gt;
+             object.
+             </param>
+            
+             <returns>
+             true if the sets share at least one common element; , false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.SetEquals(System.Collections.Generic.IEnumerable{`0})">
+             <summary>
+             Determines whether a SelectionSet&lt;T&gt; object and the specified collection contain the
+             same elements.
+             </summary>
+            
+             <param name="other">
+             The collection to compare to the current SelectionSet&lt;T&gt; object.
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.SymmetricExceptWith(System.Collections.Generic.IEnumerable{`0})">
+             <summary>
+             Modifies the current SelectionSet&lt;T&gt; object to contain only elements that are present
+             either in that object or in the specified collection, but not both.
+             </summary>
+            
+             <param name="other">
+             The collection to compare to the current SelectionSet&lt;T&gt; object.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.UnionWith(System.Collections.Generic.IEnumerable{`0})">
+             <summary>
+             Modifies the current SelectionSet&lt;T&gt; object to contain all elements that are present in
+             itself, the specified collection, or both.
+             </summary>
+            
+             <param name="other">
+             The collection to compare to the current SelectionSet&lt;T&gt; object.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.IndexOf(`0)">
+             <summary>
+             Return the zero-based index of item in a sequence.
+             </summary>
+            
+             <param name="item">
+             The item.
+             </param>
+            
+             <returns>
+             The zero-based position in the list where the item was found, or -1 if it was not found.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.Insert(System.Int32,`0)">
+             <summary>
+             Inserts an item at the specified index
+             </summary>
+            
+             <param name="index">
+             Zero-based index of the position to insert the item
+             </param>
+             <param name="item">
+             The item to insert.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.RemoveAt(System.Int32)">
+             <summary>
+             Removes the item at the specified index.
+             </summary>
+            
+             <exception cref="T:System.IndexOutOfRangeException">
+             Thrown when the index is outside the bound of the current set.
+             </exception>
+            
+             <param name="index">
+             Zero-based index of the item to remove.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.SelectionSet`1.GetEnumerator">
+             <summary>
+             Gets the enumerator for the SelectionSet
+             </summary>
+            
+             <returns>
+             The enumerator.
+             </returns>
+        </member>
         <member name="M:CsQuery.Implementation.SelectionSet`1.ConvertToMutable">
             <summary>
             When an operation changes the original list, configures this object to track changes and deal
@@ -7702,6 +7989,19 @@
             <summary>
             The order in which elements in the set are returned
             </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.SelectionSet`1.Item(System.Int32)">
+             <summary>
+             Indexer to get or set items within this collection using array index syntax.
+             </summary>
+            
+             <param name="index">
+             Zero-based index of the entry to access.
+             </param>
+            
+             <returns>
+             The indexed item.
+             </returns>
         </member>
         <member name="T:CsQuery.Implementation.SmallDictionary`2">
             <summary>
@@ -8800,6 +9100,91 @@
             <summary>
             An unsupported document type.
             </summary>
+        </member>
+        <member name="T:CsQuery.Promises.IPromise">
+            <summary>
+            A promise is an object exposing "Then" which will be called on the resoluton of a particular process.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Promises.IPromise.Then(System.Delegate,System.Delegate)">
+             <summary>
+             Chains delegates that will be executed on success or failure of a promise.
+             </summary>
+            
+             <param name="success">
+             The delegate to call upon successful resolution of the promise.
+             </param>
+             <param name="failure">
+             (optional) The delegate to call upon unsuccessful resolution of the promise.
+             </param>
+            
+             <returns>
+             A new promise which will resolve when this promise has resolved.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Promises.IPromise.Then(System.Action,System.Action)">
+             <summary>
+             Chains delegates that will be executed on success or failure of a promise.
+             </summary>
+            
+             <param name="success">
+             The delegate to call upon successful resolution of the promise.
+             </param>
+             <param name="failure">
+             (optional) The delegate to call upon unsuccessful resolution of the promise.
+             </param>
+            
+             <returns>
+             A new promise which will be chained to this promise.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Promises.IPromise.Then(System.Func{CsQuery.Promises.IPromise},System.Func{CsQuery.Promises.IPromise})">
+             <summary>
+             Chains delegates that will be executed on success or failure of a promise.
+             </summary>
+            
+             <param name="success">
+             The delegate to call upon successful resolution of the promise.
+             </param>
+             <param name="failure">
+             (optional) The delegate to call upon unsuccessful resolution of the promise.
+             </param>
+            
+             <returns>
+             A new promise which will be chained to this promise.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Promises.IPromise.Then(CsQuery.Promises.PromiseAction{System.Object},CsQuery.Promises.PromiseAction{System.Object})">
+             <summary>
+             Chains delegates that will be executed on success or failure of a promise.
+             </summary>
+            
+             <param name="success">
+             The delegate to call upon successful resolution of the promise.
+             </param>
+             <param name="failure">
+             (optional) The delegate to call upon unsuccessful resolution of the promise.
+             </param>
+            
+             <returns>
+             A new promise which will resolve when this promise has resolved.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Promises.IPromise.Then(CsQuery.Promises.PromiseFunction{System.Object},CsQuery.Promises.PromiseFunction{System.Object})">
+             <summary>
+             Chains delegates that will be executed on success or failure of a promise.
+             </summary>
+            
+             <param name="success">
+             The delegate to call upon successful resolution of the promise.
+             </param>
+             <param name="failure">
+             (optional) The delegate to call upon unsuccessful resolution of the promise.
+             </param>
+            
+             <returns>
+             A new promise which will resolve when this promise has resolved.
+             </returns>
         </member>
         <member name="T:CsQuery.ExtensionMethods.Forms.ExtensionMethods">
             <summary>
@@ -10123,6 +10508,35 @@
             </summary>
             <typeparam name="T"></typeparam>
         </member>
+        <member name="T:CsQuery.Promises.PromiseAction`1">
+             <summary>
+             An action accepting a single parameter that runs on a promise resolution.
+             </summary>
+            
+             <typeparam name="T">
+             The type of the parameter
+             </typeparam>
+             <param name="parameter">
+             The parameter.
+             </param>
+        </member>
+        <member name="T:CsQuery.Promises.PromiseFunction`1">
+             <summary>
+             An action accepting a single parameter that runs on a promise resolution, and returns another
+             promise.
+             </summary>
+            
+             <typeparam name="T">
+             The type of the parameter
+             </typeparam>
+             <param name="parameter">
+             The parameter.
+             </param>
+            
+             <returns>
+             A new promise that can be chained.
+             </returns>
+        </member>
         <member name="T:CsQuery.Utility.Types">
             <summary>
             A set of helper methods for analyzing types.
@@ -10260,6 +10674,12 @@
             Default document type.
             </summary>
         </member>
+        <member name="P:CsQuery.Config.DynamicObjectType">
+            <summary>
+            Gets or sets the default dynamic object type. This is the type of object used by default when
+            parsing JSON into an unspecified type.
+            </summary>
+        </member>
         <member name="P:CsQuery.Config.PseudoClassFilters">
              <summary>
              Provides access to the PseudoSelectors object, which allows registering new filters and accessing information
@@ -10300,62 +10720,185 @@
             <returns></returns>
         </member>
         <member name="M:CsQuery.Utility.JSON.ParseJSON(System.String)">
-            <summary>
-            Parse JSON into a dynamic object, or single typed value
-            </summary>
-            <param name="objectToDeserialize"></param>
-            <returns></returns>
+             <summary>
+             Parse a JSON object or nameless JSON value into a dynamic object, or single typed value.
+             </summary>
+            
+             <param name="json">
+             The JSON string
+             </param>
+            
+             <returns>
+             .
+             </returns>
+        </member>
+        <member name="M:CsQuery.Utility.JSON.ParseJSONValue``1(System.String)">
+             <summary>
+             Parse a single JSON value to a C# value of the specified type., if the
+             value is another object, an object or array.
+             </summary>
+            
+             <typeparam name="T">
+             The type of data to return
+             </typeparam>
+             <param name="jsonValue">
+             A string that represents a single nameless JSON value.
+             </param>
+            
+             <returns>
+             An object of the CLR datatype matching the value.
+             </returns>
+            
+             <exception cref="T:System.ArgumentException">
+             Thrown when the argument was not a valid JSON value.
+             </exception>
         </member>
         <member name="M:CsQuery.Utility.JSON.ParseJSONValue(System.String)">
-            <summary>
-            Parse a JSON value to a C# value (string,bool, int, double, datetime) or, if the value is another object, an object or array.
-            </summary>
-            <param name="objectToDeserialize"></param>
-            <returns></returns>
+             <summary>
+             Parse a single JSON value to a C# value (string, bool, int, double, datetime) or, if the value is
+             another object, an object or array.
+             </summary>
+            
+             <exception cref="T:System.ArgumentException">
+             Thrown when the argument was not a valid JSON value
+             </exception>
+            
+             <param name="jsonValue">
+             A string that represents a single nameless JSON value
+             </param>
+            
+             <returns>
+             An object of the CLR datatype matching the value
+             </returns>
         </member>
         <member name="M:CsQuery.Utility.JSON.ParseJSONValue(System.String,System.Type)">
-            <summary>
-            Parse a JSON value to a C# value of the type requested
-            </summary>
-            <param name="objectToDeserialize"></param>
-            <returns></returns>
+             <summary>
+             Parse a JSON value to a C# CLR object of the type requested.
+             </summary>
+            
+             <exception cref="T:System.ArgumentException">
+             Thrown when the value could not be converted to the specified type
+             </exception>
+            
+             <param name="jsonValue">
+             The JSON value.
+             </param>
+             <param name="type">
+             The target type.
+             </param>
+            
+             <returns>
+             An object of the type specfiied.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Utility.JSON.TryParseJSONValue(System.String,System.Object@)">
+             <summary>
+             Parse a JSON value to a C# value into the best matching CLR type for that JSON value type
+             </summary>
+            
+             <param name="jsonValue">
+             The JSON value.
+             </param>
+             <param name="value">
+             [out] The value.
+             </param>
+            
+             <returns>
+             true if successful, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Utility.JSON.TryParseJSONValue(System.String,System.Type,System.Object@)">
+             <summary>
+             Parse a JSON value to a C# value of the type requested.
+             </summary>
+            
+             <param name="jsonValue">
+             The JSON value.
+             </param>
+             <param name="type">
+             The target type.
+             </param>
+             <param name="value">
+             [out] The value.
+             </param>
+            
+             <returns>
+             true if successful, false if not
+             </returns>
         </member>
         <member name="M:CsQuery.Utility.JSON.IsJsonDate(System.String)">
-            <summary>
-            The value represents a JSON date (MS format)
-            </summary>
-            <param name="input"></param>
-            <returns></returns>
+             <summary>
+             The value represents a JSON date (MS format)
+             </summary>
+            
+             <param name="jsonValue">
+             The JSON value
+             </param>
+            
+             <returns>
+             true if JSON date, false if not.
+             </returns>
         </member>
         <member name="M:CsQuery.Utility.JSON.IsJsonObject(System.String)">
-            <summary>
-            The value represents a JSON object, e.g. is bounded by curly braces
-            </summary>
-            <param name="input"></param>
-            <returns></returns>
+             <summary>
+             The value represents a JSON object, e.g. is bounded by curly braces.
+             </summary>
+            
+             <param name="jsonValue">
+             the JSON value
+             </param>
+            
+             <returns>
+             true if JSON object, false if not.
+             </returns>
         </member>
         <member name="M:CsQuery.Utility.JSON.IsJsonString(System.String)">
-            <summary>
-            The value represents a JSON string, e.g. is bounded by double-quotes
-            </summary>
-            <param name="input"></param>
-            <returns></returns>
+             <summary>
+             The value represents a JSON string, e.g. is bounded by double-quotes.
+             </summary>
+            
+             <param name="jsonValue">
+             The JSON value
+             </param>
+            
+             <returns>
+             true if JSON string, false if not.
+             </returns>
         </member>
         <member name="M:CsQuery.Utility.JSON.IsJsonArray(System.String)">
-            <summary>
-            The value represents a JSON array, e.g. is bounded by square brackets
-            </summary>
-            <param name="input"></param>
-            <returns></returns>
+             <summary>
+             The value represents a JSON array, e.g. is bounded by square brackets.
+             </summary>
+            
+             <param name="jsonValue">
+             The JSON value
+             </param>
+            
+             <returns>
+             true if JSON array, false if not.
+             </returns>
         </member>
         <member name="M:CsQuery.Utility.JSON.TryParseJsonValueImpl(System.String,System.Object@)">
-            <summary>
-            Try to parse a JSON value into a value type or, if the value represents an object or array, an object. This method does not
-            address numeric types, leaving that up to a caller, so that they can map to specific numeric casts if desired.
-            </summary>
-            <param name="objectToDeserialize"></param>
-            <param name="value"></param>
-            <returns></returns>
+             <summary>
+             Try to parse a JSON value into a value type or, if the value represents an object or array,
+             an object. This method does not address numeric types, leaving that up to a caller, so that
+             they can map to specific numeric casts if desired.
+             </summary>
+            
+             <exception cref="T:System.ArgumentException">
+             Thrown when the value was not a valid JSON value.
+             </exception>
+            
+             <param name="jsonValue">
+             The JSON value
+             </param>
+             <param name="value">
+             [out] the convert and typecast CLR value
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
         </member>
         <member name="M:CsQuery.Utility.JSON.ParseJSONObject(System.String)">
             <summary>

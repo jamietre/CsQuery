@@ -16,7 +16,7 @@ namespace CsQuery.Tests.Csharp._WebIO
     /// <summary>
     /// This test is disabled by default because it accesses public web sites, activate it just to test this feature
     /// </summary>
-    [TestFixture, TestClass, Description("CsQuery Tests (Not from Jquery test suite)")]
+    [TestFixture, TestClass]
     public class _WebIO_QueryRemoteServer : CsQueryTest
     {
         public override void FixtureSetUp()
