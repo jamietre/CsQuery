@@ -19,11 +19,11 @@ The internal storage mechanism uses a subselect-capable index that can perform m
 
 The NuGet package will always reflect the release noted here. The code on GitHub may contain changes since the last NuGet release.
 
-### Current Release Notes
+### Release Notes
 
-The current release is 1.1.3 (July 17, 2012). Read the complete [release notes for version 1.1.3](http://blog.outsharked.com/2012/07/csquery-113-released.html). 
+The current release is 1.1.3 (July 17, 2012). Read the complete [release notes for version 1.1.3](http://blog.outsharked.com/2012/07/csquery-113-released.html), or see [all release notes.](http://blog.outsharked.com/search/label/csquery-release)
 
-You can see more detailed release notes for this and previous versions in the [source code readme](https://github.com/jamietre/CsQuery/blob/master/source/README.md).  For a play-by-play, [see the change log.](https://github.com/jamietre/CsQuery/blob/master/source/CsQuery/Documentation/Changes.md)
+There are no formal release notes for minor bugfix releases. For information on changes between significant releases, please review the detailed change log for in the [source code readme](https://github.com/jamietre/CsQuery/blob/master/source/README.md).
 
 
 ### Documentation
