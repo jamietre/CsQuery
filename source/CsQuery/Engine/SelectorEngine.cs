@@ -70,7 +70,8 @@ namespace CsQuery.Engine
 
             ActiveSelectors = new List<SelectorClause>(Selector);
 
-            // First just check if we ended up here with an HTML selector; if so, had it off.
+            // First just check if we ended up here with an HTML selector; if so, hand it off.
+            
             var firstSelector = ActiveSelectors[0];
             if (firstSelector.SelectorType == SelectorType.HTML)
             {
@@ -80,7 +81,7 @@ namespace CsQuery.Engine
 
                 // Return the factory ouptut as a list because otherwise the enumerator could end up
                 // as the actual source of the selection, meaning it would get re-parsed each time
-                // 
+                
                 return factory.ParseAsFragment();
             } 
 
@@ -88,17 +89,13 @@ namespace CsQuery.Engine
 
             IEnumerable<IDomObject> lastResult = null;
 
-
-            // this is the source  from which selections are made in a given iteration; it could be the DOM root, a context,
-            // or the previous result set.
+            // this is the source from which selections are made in a given iteration; it could be the DOM
+            // root, a context, or the previous result set. 
             
             IEnumerable<IDomObject> selectionSource=null;
 
             // Disable the index if there is no context (e.g. disconnected elements)
-            // or if the first element is not indexed. It is possible for a context to have a Document, but
-            // be disconnected from it (e.g. belong to a root DomDisconnectedFragment). These elements are
-            // not indexed by the Document element. 
-
+            // or if the first element is not indexed.
 
             bool useIndex = context.IsNullOrEmpty() || 
                 (!context.First().IsDisconnected && context.First().IsIndexed);
@@ -111,21 +108,23 @@ namespace CsQuery.Engine
 
                 if (lastResult != null)
                 {
-                    // we will alter the selector during each iteration to remove the parts that have already been parsed,
-                    // so use a copy.
-                    // this is a selector that was chanined with the selector grouping combinator "," -- we always output the results so
-                    // far when beginning a new group.
+                    // we will alter the selector during each iteration to remove the parts that have already been
+                    // parsed, so use a copy. This is a selector that was chained with the selector grouping
+                    // combinator "," -- we always output the results so far when beginning a new group. 
 
                     if (selector.CombinatorType == CombinatorType.Root && lastResult != null)
                     {
                         output.AddRange(lastResult);
                         lastResult = null;
-
                     }
-
                 }
+
                 // For "and" combinator types, we want to leave everything as it was -- the results of this
-                // selector should compound with the prior. 
+                // selector should compound with the prior. This is not an actual CSS combinator, this is the
+                // equivalent of grouping parenthesis. That is, in CSS there's no way to say "(input[submit],
+                // button):visible" - that is group the results on selector part and apply a filter to it. But
+                // we need to do exactly this for certain selector types (for example the jQuery :button
+                // selector). 
 
                 if (selector.CombinatorType != CombinatorType.And)
                 {
@@ -133,8 +132,6 @@ namespace CsQuery.Engine
                     lastResult = null;
                 }
                 
-                
-
                 string key = "";
                 SelectorType removeSelectorType = 0;
 

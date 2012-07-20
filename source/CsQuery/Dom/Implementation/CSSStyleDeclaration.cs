@@ -309,11 +309,38 @@ namespace CsQuery.Implementation
             Styles[HtmlData.Tokenize(name)] = value;
             UpdateIndex(hadStyles);
         }
-        public bool TryGetValue(string key, out string value)
+
+        /// <summary>
+        /// Try to get the value of the named style.
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The name of the style
+        /// </param>
+        /// <param name="value">
+        /// [out] The value.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the named style is defined, false if not.
+        /// </returns>
+
+        public bool TryGetValue(string name, out string value)
         {
-            return Styles.TryGetValue(HtmlData.Tokenize(key), out value);
+            return Styles.TryGetValue(HtmlData.Tokenize(name), out value);
         }
 
+        /// <summary>
+        /// Gets a style by name
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The style name
+        /// </param>
+        ///
+        /// <returns>
+        /// The style, or null if it is not defined.
+        /// </returns>
 
         public string GetStyle(string name)
         {
@@ -328,10 +355,43 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Sets a named style, validating its format.
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The style name
+        /// </param>
+        /// <param name="value">
+        /// The style value
+        /// </param>
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown if the style name and value are not valid CSS
+        /// </exception>
+
         public void SetStyle(string name, string value)
         {
             SetStyle(name, value, true);
         }
+
+        /// <summary>
+        /// Sets a named style, validating its format.
+        /// </summary>
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown if the style name and value are not valid CSS
+        /// </exception>
+        ///
+        /// <param name="name">
+        /// The style name.
+        /// </param>
+        /// <param name="value">
+        /// The style value.
+        /// </param>
+        /// <param name="strict">
+        /// When true, the styles will be validated and an error thrown if any are not valid.
+        /// </param>
 
         public void SetStyle(string name, string value, bool strict)
         {
@@ -388,7 +448,17 @@ namespace CsQuery.Implementation
             SetRaw(name, value);
         }
 
-
+        /// <summary>
+        /// Returns the numeric value only of a style, ignoring units
+        /// </summary>
+        ///
+        /// <param name="style">
+        /// The style.
+        /// </param>
+        ///
+        /// <returns>
+        /// A double, or null if the style did not exist or did not contain a numeric value.
+        /// </returns>
 
         public double? NumberPart(string style)
         {
@@ -412,6 +482,14 @@ namespace CsQuery.Implementation
                 return null;
             }
         }
+
+        /// <summary>
+        /// Return the formatted string representation of this style, as HTML.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A string.
+        /// </returns>
 
         public override string ToString()
         {
@@ -438,6 +516,15 @@ namespace CsQuery.Implementation
 
             return style;
         }
+
+        /// <summary>
+        /// Return an enumerator that exposes each style name/value pair
+        /// </summary>
+        ///
+        /// <returns>
+        /// The enumerator.
+        /// </returns>
+
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
         {
             return stylesEnumerable().GetEnumerator();

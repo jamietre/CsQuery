@@ -5,49 +5,154 @@ using System.Text;
 
 namespace CsQuery.Engine
 {
+    /// <summary>
+    /// Bitfield of flags for specifying the SelectorType.
+    /// </summary>
+
     [Flags]
     public enum SelectorType
     {
+        /// <summary>
+        /// Return all elements.
+        /// </summary>
         All = 1,
+        /// <summary>
+        /// Return only a specific tag/node name.
+        /// </summary>
         Tag = 2,
+        /// <summary>
+        /// Return a specific ID.
+        /// </summary>
         ID = 4,
+        /// <summary>
+        /// Return elements containing a specific class.
+        /// </summary>
         Class = 8,
+        /// <summary>
+        /// Return elements matching an attribute type selector
+        /// </summary>
         AttributeValue = 32,
+        /// <summary>
+        /// Return elements matching a pseudoclass filter selector.
+        /// </summary>
         PseudoClass = 128,
+        /// <summary>
+        /// Return specific elements
+        /// </summary>
         Elements = 256,
+        /// <summary>
+        /// Generate HTML.
+        /// </summary>
         HTML = 512,
+        /// <summary>
+        /// Return nothing.
+        /// </summary>
         None = 1024   // returns no values ever
 
     }
+
+    /// <summary>
+    /// Values that represent the type of attribute selector
+    /// </summary>
+
     public enum AttributeSelectorType
     {
+        /// <summary>
+        /// The attribute exists.
+        /// </summary>
         Exists = 1,
+        /// <summary>
+        /// The attribute's value matches a specific value.
+        /// </summary>
         Equals = 2,
+        /// <summary>
+        /// The attribute's value starts with a specific value.
+        /// </summary>
         StartsWith = 3,
+        /// <summary>
+        /// The attribute's value contains a specified substring.
+        /// </summary>
         Contains = 4,
+        /// <summary>
+        /// The attribute does not exist.
+        /// </summary>
         NotExists = 5,
+        /// <summary>
+        /// The attribute contains a complete word (e.g. a subtring bounded by whitespace).
+        /// </summary>
         ContainsWord = 6,
+        /// <summary>
+        /// The attribute ends with a specified substring.
+        /// </summary>
         EndsWith = 7,
+        /// <summary>
+        /// The attribute does not equal a string.
+        /// </summary>
         NotEquals = 8,
+        /// <summary>
+        /// The attribute value, or the part of the value before a hyphen (if present), matches a value
+        /// </summary>
         StartsWithOrHyphen=9 // for lang
     }
 
+    /// <summary>
+    /// Values that represent CombinatorType. This is a bit of a misnomer because Combinator is used
+    /// in CSS selector-speak to refer to how one subpart of a selector relates to another.
+    /// Unfortunately, I use it to refer to how one *group* of a selector relates to another. This is
+    /// an internal concept, mostly, and is required to link subparts of a selector together.
+    /// </summary>
+
     public enum CombinatorType
     {
-        And = 1,       // This selector clause  and the prior one must match
-        Chained = 2,   // The selector clause is applied to the results of the prior one
-        Root = 3       // The selector clause is applied to the root context of this selector
+        /// <summary>
+        ///  This selector clause  and the prior one must match
+        /// </summary>
+        And = 1,       
+        
+        /// <summary>
+        /// The selector clause is applied to the results of the prior one.
+        /// </summary>
+        Chained = 2,  
+
+        /// <summary>
+        /// The selector clause is applied to the root context of this selector.
+        /// </summary>
+        Root = 3      
     }
+
+    /// <summary>
+    /// Values that represent TraversalType. This is essentially what CSS calls "combinator" and
+    /// defines the traversal mechanism used from one selector subpart to the next.
+    /// </summary>
+
     public enum TraversalType
     {
-        Incomplete=0,
+
+        /// <summary>
+        /// Return all elements
+        /// </summary>
         All = 1,
+        /// <summary>
+        /// The operand matches a subset of the prior selection.
+        /// </summary>
         Filter = 2,
+        /// <summary>
+        /// The operand matches only descendants of the prior selection.
+        /// </summary>
         Descendent = 3,
+        /// <summary>
+        /// The operand matches only direct children of the prior selection.
+        /// </summary>
         Child = 4,
+        /// <summary>
+        /// The operand matches only the element immediately following (adjacent to) the prior selection.
+        /// </summary>
         Adjacent = 5,
+        /// <summary>
+        /// The operand matches all siblings of the prior selection.
+        /// </summary>
         Sibling = 6
-        //,Inherited = 7
+        // ,Inherited = 7. 
     }
 
     /// <summary>

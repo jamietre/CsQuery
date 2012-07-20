@@ -20,26 +20,27 @@ namespace CsQuery.Tests.Csharp.ExtensionMethods
 {
     // Not Implemented
     //[TestFixture, TestClass]
-    public class Xml: CsQueryTest
-    {
+    //public class Xml: CsQueryTest
+    //{
 
 
-        //[TestMethod,Test]
-        //public void ToXml() {
-        //    var dom = TestDom("TestHtml");
-        //    var xml = dom.Document.ToXml();
+    //    [TestMethod, Test]
+    //    public void ToXml()
+    //    {
+    //        var dom = TestDom("TestHtml");
+    //        var xml = dom.Document.ToXml();
 
-        //    StringWriter stringWriter = new StringWriter();
-        //    XmlTextWriter xmlTextWriter = new XmlTextWriter(stringWriter);
+    //        StringWriter stringWriter = new StringWriter();
+    //        XmlTextWriter xmlTextWriter = new XmlTextWriter(stringWriter);
 
-        //    xml.WriteTo(xmlTextWriter);
+    //        xml.WriteTo(xmlTextWriter);
 
-            
 
-        //}
+
+    //    }
 
 
     
-    }
+    //}
 
 }

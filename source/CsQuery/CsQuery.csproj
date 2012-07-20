@@ -96,10 +96,10 @@
     <Compile Include="CQ_jQuery\Children.cs" />
     <Compile Include="CQ_jQuery\Clone.cs" />
     <Compile Include="CQ_jQuery\Contents.cs" />
+    <Compile Include="CQ_jQuery\Parent.cs" />
     <Compile Include="CQ_jQuery\Extend.cs" />
     <Compile Include="CQ_jQuery\Map.cs" />
     <Compile Include="CQ_jQuery\ParentsUntil.cs" />
-    <Compile Include="CQ_jQuery\Copy of _empty.cs" />
     <Compile Include="CQ_jQuery\FirstLast.cs" />
     <Compile Include="CQ_jQuery\Eq.cs" />
     <Compile Include="CQ_jQuery\End.cs" />

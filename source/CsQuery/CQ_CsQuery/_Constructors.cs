@@ -227,16 +227,33 @@ namespace CsQuery
 
         #region Internal DOM creation methods
 
+        /// <summary>
+        /// Bind this instance to a new empty DomDocument configured with the default options.
+        /// </summary>
+
         protected void CreateNewDocument()
         {
             Document = new DomDocument();
             FinishCreatingNewDocument();
         }
+
+        /// <summary>
+        /// Bind this instance to a new empty DomFragment configured with the default options.
+        /// </summary>
+
         protected void CreateNewFragment()
         {
             Document = new DomFragment();
             FinishCreatingNewDocument();
         }
+
+        /// <summary>
+        /// Bind this instance to a new DomFragment created from a sequence of elements.
+        /// </summary>
+        ///
+        /// <param name="elements">
+        /// The elements to provide the source for this object's DOM.
+        /// </param>
 
         protected void CreateNewFragment(IEnumerable<IDomObject> elements)
         {
@@ -244,10 +261,18 @@ namespace CsQuery
             AddSelection(Document.ChildNodes);
             FinishCreatingNewDocument();
         }
-        /// <summary> 
-        /// Replace the existing DOM with the html (or empty if no parameter passed)
+
+        /// <summary>
+        /// Bind this instance to a new DomDocument created from HTML using the specified parsing mode.
         /// </summary>
-        /// <param name="html"></param>
+        ///
+        /// <param name="html">
+        /// The HTML.
+        /// </param>
+        /// <param name="htmlParsingMode">
+        /// The HTML parsing mode.
+        /// </param>
+
         protected void CreateNewDocument(char[] html, HtmlParsingMode htmlParsingMode)
         {
             Document = new DomDocument(html,htmlParsingMode);
@@ -255,19 +280,32 @@ namespace CsQuery
             AddSelection(Document.ChildNodes);
             FinishCreatingNewDocument();
         }
+
         /// <summary>
-        /// Replace the existing DOM with the html (or empty if no parameter passed)
+        /// Bind this instance to a new DomFragment created from HTML using the specified parsing mode.
         /// </summary>
-        /// <param name="html"></param>
+        ///
+        /// <param name="html">
+        /// The HTML.
+        /// </param>
+        /// <param name="htmlParsingMode">
+        /// The HTML parsing mode.
+        /// </param>
+
         protected void CreateNewFragment(char[] html, HtmlParsingMode htmlParsingMode)
         {
             Document = new DomFragment(html,htmlParsingMode);
             SetSelection(Document.ChildNodes,SelectionSetOrder.Ascending);
             FinishCreatingNewDocument();
         }
+
+        /// <summary>
+        /// Apply the default rendering options to the new document.
+        /// </summary>
+
         private void FinishCreatingNewDocument()
         {
-            Document.DomRenderingOptions = CQ.DefaultDomRenderingOptions;
+            Document.DomRenderingOptions = CsQuery.Config.DomRenderingOptions;
         }
         
         #endregion

@@ -23,15 +23,41 @@ namespace CsQuery.Engine
         /// last index this list represents and the iteration. The next time it's called we can either reference
         /// the list of matches so far, or update it only from the point where we stopped last time.
         /// </summary>
+        
         protected class CacheInfo
         {
+            /// <summary>
+            /// Default constructor.
+            /// </summary>
+
             public CacheInfo()
             {
                 MatchingIndices=new HashSet<int>();
             }
+
+            /// <summary>
+            /// The equation.
+            /// </summary>
+
             public IEquation<int> Equation;
+
+            /// <summary>
+            /// The indices which match the equation. This may be incomplete, as it may only have been calculated up to the number
+            /// of children present in the prior use. <seealso cref="CacheInfo.MaxIndex"/>
+            /// </summary>
+
             public HashSet<int> MatchingIndices;
+
+            /// <summary>
+            /// The next iterator value, used to resume calculations where it was left off.
+            /// </summary>
+
             public int NextIterator;
+
+            /// <summary>
+            /// The maximum target index value calculated so far
+            /// </summary>
+
             public int MaxIndex;
         }
 
@@ -120,14 +146,14 @@ namespace CsQuery.Engine
         #region public properties/methods
 
         /// <summary>
-        /// General purpose method for various nth-child selectors. 
+        /// Test if an element is the nth-child matching the output of a formula
         /// </summary>
         ///
-        /// <param name="obj">
-        /// .
+        /// <param name="element">
+        /// The element to test
         /// </param>
-        /// <param name="criteria">
-        /// The criteria.
+        /// <param name="formula">
+        /// The formula.
         /// </param>
         /// <param name="fromLast">
         /// Count from the last element instead of the first.
@@ -137,15 +163,32 @@ namespace CsQuery.Engine
         /// true if nth child of type implementation, false if not.
         /// </returns>
 
-        public bool IsNthChildOfType(IDomElement obj, string formula, bool fromLast = false)
+        public bool IsNthChildOfType(IDomElement element, string formula, bool fromLast = false)
         {
-
-            return IndexMatches(IndexOf(obj,true, fromLast), formula, fromLast);
+            return IndexMatches(IndexOf(element,true, fromLast), formula, fromLast);
         }
 
-        public bool IsNthChild(IDomElement obj, string formula, bool fromLast = false)
+        /// <summary>
+        /// Test if an element is the nth-child matching the output of a formula
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to test
+        /// </param>
+        /// <param name="formula">
+        /// The formula.
+        /// </param>
+        /// <param name="fromLast">
+        /// Count from the last element instead of the first.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if nth child, false if not.
+        /// </returns>
+
+        public bool IsNthChild(IDomElement element, string formula, bool fromLast = false)
         {
-            return IndexMatches(IndexOf(obj, false, fromLast), formula,fromLast);
+            return IndexMatches(IndexOf(element, false, fromLast), formula,fromLast);
         }
 
         public IEnumerable<IDomObject> NthChildsOfTypeImpl(IDomContainer elm, string formula, bool fromLast = false)
@@ -190,35 +233,78 @@ namespace CsQuery.Engine
             return -1;
         }
 
-
         /// <summary>
-        /// Return true if the index matches the formula provided
+        /// Return true if the index matches the formula provided.
         /// </summary>
-        /// <param name="index"></param>
-        /// <param name="formulaText"></param>
-        /// <param name="onlyNodeName">Only include nodes of this type</param>
-        /// <param name="fromLast">Count from the last element instead of the first</param>
-        /// <returns></returns>
-        public bool IndexMatches(int index, string formulaText, bool fromLast=false)
+        ///
+        /// <param name="index">
+        /// The index to test
+        /// </param>
+        /// <param name="formula">
+        /// The formula
+        /// </param>
+        /// <param name="fromLast">
+        /// Count from the last element instead of the first.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
+        public bool IndexMatches(int index, string formula, bool fromLast=false)
         {
             FromLast = fromLast;
-            return IndexMatches(index, formulaText);
+            return IndexMatches(index, formula);
         }
-        public bool IndexMatches(int index, string formulaText)
+
+        /// <summary>
+        /// Return true if the index matches the formula provided.
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// The index to test.
+        /// </param>
+        /// <param name="formula">
+        /// The formula.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
+        public bool IndexMatches(int index, string formula)
         {
-            Text = formulaText;
+            Text = formula;
             return IndexMatchesImpl(index);
                 
         }
 
         /// <summary>
-        /// Return nth children that match type
+        /// Return each child that matches an index returned by the forumla
         /// </summary>
-        /// <param name="obj">The parent object</param>
-        /// <param name="formula">The formula for determining n</param>
-        /// <param name="onlyNodeName">The type of node to match</param>
-        /// <returns></returns>
-        public IEnumerable<IDomObject> GetMatchingChildren(IDomContainer obj, string formula, string onlyNodeName = null, bool fromLast = false)
+        ///
+        /// <param name="obj">
+        /// The parent object.
+        /// </param>
+        /// <param name="formula">
+        /// The formula for determining n.
+        /// </param>
+        /// <param name="onlyNodeName">
+        /// The type of node to match.
+        /// </param>
+        /// <param name="fromLast">
+        /// Count from the last element instead of the first.
+        /// </param>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process get matching children in this
+        /// collection.
+        /// </returns>
+
+        public IEnumerable<IDomObject> GetMatchingChildren(IDomContainer obj, 
+            string formula, 
+            string onlyNodeName = null, 
+            bool fromLast = false)
         {
             OnlyNodeName = onlyNodeName;
             FromLast = fromLast;
@@ -226,11 +312,40 @@ namespace CsQuery.Engine
 
         }
 
+        /// <summary>
+        ///Return each child that matches an index returned by the forumla
+        /// </summary>
+        ///
+        /// <param name="obj">
+        /// The parent object.
+        /// </param>
+        /// <param name="formula">
+        /// The formula for determining n.
+        /// </param>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process get matching children in this
+        /// collection.
+        /// </returns>
+
         public IEnumerable<IDomObject> GetMatchingChildren(IDomContainer obj, string formula)
         {
             Text = formula;
             return GetMatchingChildren(obj);
         }
+
+        /// <summary>
+        /// Return each child that matches an index returned by the forumla.
+        /// </summary>
+        ///
+        /// <param name="obj">
+        /// The parent object.
+        /// </param>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process get matching children in this
+        /// collection.
+        /// </returns>
 
         public IEnumerable<IDomObject> GetMatchingChildren(IDomContainer obj)
         {
@@ -280,11 +395,24 @@ namespace CsQuery.Engine
         // These methods are exposed because they are used elsewhere
 
         /// <summary>
-        /// Return the correct child from a list based on an index, and the fromLast setting
+        /// Return the correct child from a list based on an index, and the fromLast setting. That is, if fromLast is
+        /// true, just return the child at "index." If not, return the child starting from the end at "index"
         /// </summary>
-        /// <param name="nodeList"></param>
-        /// <param name="index"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="nodeList">
+        /// The container to obtain children from
+        /// </param>
+        /// <param name="index">
+        /// The index
+        /// </param>
+        /// <param name="fromLast">
+        /// Count from the last element instead of the first.
+        /// </param>
+        ///
+        /// <returns>
+        /// The effective child.
+        /// </returns>
+
         public static IDomObject GetEffectiveChild(INodeList nodeList, int index, bool fromLast)
         {
             if (fromLast)
@@ -296,6 +424,26 @@ namespace CsQuery.Engine
                 return nodeList[index];
             }
         }
+
+        /// <summary>
+        /// Gets the true index based on an effective index. (Misnomer, consider changing, should be
+        /// GetActualIndex)
+        /// </summary>
+        ///
+        /// <param name="nodeList">
+        /// The container to obtain children from
+        /// </param>
+        /// <param name="index">
+        /// The index
+        /// </param>
+        /// <param name="fromLast">
+        /// Count from the last element instead of the first.
+        /// </param>
+        ///
+        /// <returns>
+        /// The actual index.
+        /// </returns>
+
         public static int GetEffectiveIndex(INodeList nodeList, int index, bool fromLast)
         {
             if (fromLast)
@@ -449,10 +597,17 @@ namespace CsQuery.Engine
         }
 
         /// <summary>
-        /// Replaces _Text with the correct equation for "even" and "odd"
+        /// Replaces _Text with the correct equation for "even" and "odd".
         /// </summary>
-        /// <param name="equation"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="equation">
+        /// The equation
+        /// </param>
+        ///
+        /// <returns>
+        /// The new equation
+        /// </returns>
+
         protected string CheckForEvenOdd(string equation)
         {
             switch (_Text)
@@ -466,13 +621,37 @@ namespace CsQuery.Engine
             }
         }
 
-        // the two IndexMatches implementations
+        /// <summary>
+        /// Test whether an index matches a hard index passed by the formula. (This is one of two
+        /// implementations used via delegate)
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// The index to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it matches, false if not.
+        /// </returns>
 
         protected bool IndexMatchesNumber(int index)
         {
             return MatchOnlyIndex - 1 == index;
-
         }
+
+        /// <summary>
+        /// Test whether an index matches the calculated (or cached) value of a formula. (This is one of
+        /// two implementations used via delegate)
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// .
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
         protected bool IndexMatchesFormula(int index)
         {
             var matchIndex = index += 1; // nthchild is 1 based indices
@@ -485,17 +664,28 @@ namespace CsQuery.Engine
 
         }
 
-        // the two GetMatchingChildren implementations
+        /// <summary>
+        /// Enumerates each child that matches a hard number passed as a formula (one of two
+        /// implementations used via delegate)
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The parent element.
+        /// </param>
+        ///
+        /// <returns>
+        /// An sequence of the single matching child, or an empty sequence if none match.
+        /// </returns>
 
-        public IEnumerable<IDomObject> GetMatchingChildrenNumber(IDomElement obj)
+        public IEnumerable<IDomObject> GetMatchingChildrenNumber(IDomElement element)
         {
-            if (!obj.HasChildren)
+            if (!element.HasChildren)
             {
                 yield break;
             }
             else 
             {
-                IDomElement child = GetNthChild(obj, MatchOnlyIndex);
+                IDomElement child = GetNthChild(element, MatchOnlyIndex);
 
                 if (child != null)
                 {
@@ -508,36 +698,54 @@ namespace CsQuery.Engine
             }
         }
 
-        public IEnumerable<IDomObject> GetMatchingChildrenFormula(IDomElement obj)
+        /// <summary>
+        /// Enumerates the child elements that match a formula (one of two implementations used via
+        /// delegate)
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The parent element.
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence of matching children.
+        /// </returns>
+
+        public IEnumerable<IDomObject> GetMatchingChildrenFormula(IDomElement element)
         {
-            if (!obj.HasChildren)
+            if (!element.HasChildren)
             {
                 yield break;
             }
             else
             {
-                UpdateCacheInfo(obj.ChildNodes.Count);
+                UpdateCacheInfo(element.ChildNodes.Count);
 
                 int elementIndex = 1;
                 int newActualIndex = -1;
 
-                IDomElement el = GetNextChild(obj, -1, out newActualIndex);
+                IDomElement el = GetNextChild(element, -1, out newActualIndex);
                 while (newActualIndex >= 0)
                 {
                     if (cacheInfo.MatchingIndices.Contains(elementIndex))
                     {
                         yield return el;
                     }
-                    el = GetNextChild(obj, newActualIndex, out newActualIndex);
+                    el = GetNextChild(element, newActualIndex, out newActualIndex);
                     elementIndex++;
                 }
             }
         }
 
         /// <summary>
-        /// Get the next matching index using the equation and add it to our cached list of equation results
+        /// Get the next matching index using the equation and add it to our cached list of equation
+        /// results.
         /// </summary>
-        /// <param name="lastIndex"></param>
+        ///
+        /// <param name="lastIndex">
+        /// The last index used
+        /// </param>
+
         protected void UpdateCacheInfo(int lastIndex)
         {
 

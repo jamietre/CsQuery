@@ -5,6 +5,10 @@ using System.Text;
 
 namespace CsQuery.Engine
 {
+    /// <summary>
+    /// General interface for a pseudoselector filter.
+    /// </summary>
+
     public interface IPseudoSelector
     {
         /// <summary>

@@ -4,17 +4,19 @@ The CsQuery source is C# targeting .NET4. There are no dependencies.
 
 Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/README.md) for usage information. This document is mostly a change log.
 
-
 ### Change Log
 
-####Version 1.1.3.1
+####Version 1.1.3.1 (development)
 
-Released 2012.07.19 *Bugfix Release*
+*Bug Fixes*
 
+- [Issue #25](https://github.com/jamietre/CsQuery/issues/25) - `CreateFromUrl` not accepting compressed content - [pull request #25 from @vitallium](https://github.com/jamietre/CsQuery/pull/26)
+- [Issue #23](https://github.com/jamietre/CsQuery/issues/23) - Possible index out of range parsing invalid HTML
 - [Issue #20](https://github.com/jamietre/CsQuery/issues/20) - selector engine doesn't recognize hex escape sequences - [pull request #22 from @vitallium](https://github.com/jamietre/CsQuery/pull/22)
 
-https://github.com/jamietre/CsQuery/pull/22
+*Enhancements*
 
+- [Issue #24](https://github.com/jamietre/CsQuery/issues/24) - improve performance of substring extraction method in HTML parser
 
 ####Version 1.1.3
 

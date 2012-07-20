@@ -63,13 +63,29 @@ namespace CsQuery
             return ParentsUntil(Objects.Enumerate(element),filter);
         }
 
+        /// <summary>
+        /// Get the ancestors of each element in the current set of matched elements, up to but not
+        /// including any element matched by the selector, optionally filtered by another selector.
+        /// </summary>
+        ///
+        /// <param name="elements">
+        /// The elements.
+        /// </param>
+        /// <param name="filter">
+        /// (optional) a selector which limits the elements returned.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+
         public CQ ParentsUntil(IEnumerable<IDomElement> elements, string filter = null)
         {
 
             CQ output = New();
             HashSet<IDomElement> targets = new HashSet<IDomElement>(elements);
 
-            var filtered = FilterElementsIgnoreNull(parentsImpl(Elements, targets), filter);
+            var filtered = FilterElementsIgnoreNull(ParentsImpl(Elements, targets), filter);
             
             output.SetSelection(filtered,
                 SelectionSetOrder.OrderAdded,

@@ -196,11 +196,22 @@ namespace CsQuery.HtmlParser
         }
 
         /// <summary>
-        /// Call when attribute parsing is finished; either adds this to the parent, or yields it if complete & no parent.
-        /// The return value indicates whether there are any children.
+        /// Call when attribute parsing is finished; either adds this to the parent, or yields it if
+        /// complete &amp; no parent. The return value indicates whether there are any children.
         /// </summary>
-        /// <param name="element"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="html">
+        /// The HTML
+        /// </param>
+        /// <param name="completeElement">
+        /// [out] The complete element.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
+
         public bool FinishTagOpener(char[] html,out IDomObject completeElement)
         {
 
@@ -233,12 +244,20 @@ namespace CsQuery.HtmlParser
             return hasChildren;
 
         }
+
         /// <summary>
-        /// Start: the opening caret of a tag
-        /// End: the first stop character (e.g. space after the tag name)
+        /// Returns the tag name. The placeholder should be on the opening caret of a tag, and upon exit
+        /// will be on the first stop character (e.g. space after the tag name)
         /// </summary>
-        /// <param name="current"></param>
-        /// <returns>Tag name</returns>
+        ///
+        /// <param name="html">
+        /// The HTML
+        /// </param>
+        ///
+        /// <returns>
+        /// The new tag name.
+        /// </returns>
+
         public string GetTagOpener(char[] html)
         {
             bool finished = false;
@@ -290,11 +309,19 @@ namespace CsQuery.HtmlParser
         }
 
         /// <summary>
-        /// Start: Expects the position to be after an opening caret for a close tag, and returns the tag name.
-        /// End: Position after closing caret
+        /// Return the current closing tag. Expects the placeholder to be _after_ an opening caret for a
+        /// close tag, and returns the tag name. Upon exit, the placeholder is at the next position after
+        /// the closing caret.
         /// </summary>
-        /// <param name="current"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="html">
+        /// The HTML.
+        /// </param>
+        ///
+        /// <returns>
+        /// The close tag.
+        /// </returns>
+
         public string GetCloseTag(char[] html)
         {
             bool finished = false;
@@ -340,6 +367,19 @@ namespace CsQuery.HtmlParser
             return name;
         }
 
+        /// <summary>
+        /// Returns all text from the current position up to but not including the next opening caret.
+        /// The placeholder will be on the opening caret.
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// The HTML.
+        /// </param>
+        ///
+        /// <returns>
+        /// The open text, or null if the placeholder is already at a caret.
+        /// </returns>
+
         public string GetOpenText(char[] html)
         {
             int pos = html.CharIndexOf('<', Pos);
@@ -362,14 +402,20 @@ namespace CsQuery.HtmlParser
         }
 
         /// <summary>
-        /// Start: Position inside a tag opening construct
-        /// End: position after last character of tag construct {x=["|']y["|]]} or just {x}) and adds attribute if successful
-        ///      position ON closing caret of tag opener if failed
+        /// Parse an HTML attribute construct: {x=["|']y["|]]} or just {x}) and add the attribute to the
+        /// current element if successful. The placeholder should be tag opening construct but after the
+        /// tag name. Upon exit it will be positioned after last character of attribute, or  positioned
+        /// ON closing caret of tag opener if failed.
         /// </summary>
-        /// <param name="current"></param>
+        ///
+        /// <param name="html">
+        /// The HTML
+        /// </param>
+        ///
         /// <returns>
-        /// Returns true if an attribute was added, false if no more attributes were found
+        /// true if it succeeds, false if it fails.
         /// </returns>
+
         public bool GetTagAttribute(char[] html)
         {
             bool finished = false;
@@ -484,8 +530,6 @@ namespace CsQuery.HtmlParser
             {
                 // 12-15-11 - don't replace a valid attribute with a bad one
 
-                //var curVal = Element.GetAttribute(aName);
-                //if (string.IsNullOrEmpty(curVal))
                 if (!Element.HasAttribute(aName))
                 {
                     if (aValue == null)
@@ -506,11 +550,20 @@ namespace CsQuery.HtmlParser
         }
 
         /// <summary>
-        ///  Add a new parent of type tagId.
+        /// Add a new parent of type tagId. In other words, wrap the current element in a new element.
         /// </summary>
-        /// <param name="tagId"></param>
-        /// /// <param name="pos">The position which the new child should be marked to start parsing.</param>
-        /// <returns></returns>
+        ///
+        /// <param name="tagId">
+        /// The token for the tag to add
+        /// </param>
+        /// <param name="pos">
+        /// The index position for the iteration data
+        /// </param>
+        ///
+        /// <returns>
+        /// The iteration data representing the current element (replaces the
+        /// </returns>
+
         public IterationData AddNewParent(ushort tagId, int pos)
         {
             Object = new DomElement(tagId);
@@ -518,11 +571,31 @@ namespace CsQuery.HtmlParser
             return AddNewChild(pos);
         }
 
+        /// <summary>
+        /// Adds a new child to this item, and returns it.
+        /// </summary>
+        ///
+        /// <returns>
+        /// New IterationData that is a child of the current IterationData.
+        /// </returns>
+
         public IterationData AddNewChild()
         {
             return AddNewChild(Pos);
 
         }
+
+        /// <summary>
+        /// Adds a new child to this item, and returns it
+        /// </summary>
+        ///
+        /// <param name="pos">
+        /// The index position for the iteration data.
+        /// </param>
+        ///
+        /// <returns>
+        /// New IterationData that is a child of the current IterationData
+        /// </returns>
 
         public IterationData AddNewChild(int pos)
         {

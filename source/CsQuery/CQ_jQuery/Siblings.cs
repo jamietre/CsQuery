@@ -40,6 +40,18 @@ namespace CsQuery
             return FilterIfSelector(selector, GetSiblings(SelectionSet), SelectionSetOrder.Ascending);
         }
 
+        /// <summary>
+        /// Return all the siblings of each element in the sequence.
+        /// </summary>
+        ///
+        /// <param name="elements">
+        /// The elements.
+        /// </param>
+        ///
+        /// <returns>
+        /// An enumerator that exposes each sibling of each element passed.
+        /// </returns>
+
         protected IEnumerable<IDomObject> GetSiblings(IEnumerable<IDomObject> elements)
         {
             foreach (var item in elements)

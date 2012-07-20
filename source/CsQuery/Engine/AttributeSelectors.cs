@@ -6,17 +6,47 @@ using CsQuery.Utility;
 using CsQuery.StringScanner;
 using CsQuery.StringScanner.Patterns;
 using CsQuery.ExtensionMethods.Internal;
+using CsQuery.HtmlParser;
 
 namespace CsQuery.Engine
 {
+    /// <summary>
+    /// Helper methods to perform matching against attribute-type selectors
+    /// </summary>
+
     public static class AttributeSelectors
     {
-        public static bool Matches(IDomElement elm, 
+        /// <summary>
+        /// Test whether a single element matches a specific attribute selector
+        /// </summary>
+        ///
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when an unknown AttributeSelectorType is passed
+        /// </exception>
+        ///
+        /// <param name="element">
+        /// The element to test
+        /// </param>
+        /// <param name="matchType">
+        /// The attribute selector match type
+        /// </param>
+        /// <param name="attributeName">
+        /// Name of the attribute.
+        /// </param>
+        /// <param name="matchValue">
+        /// (optional) the value to match against, for selector types that test for certain values
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the element matches, false if not.
+        /// </returns>
+
+        public static bool Matches(IDomElement element, 
             AttributeSelectorType matchType, 
             string attributeName, 
             string matchValue=null)
         {
-            bool match = elm.HasAttribute(attributeName);
+            bool match = element.HasAttribute(attributeName);
 
             if (!match)
             {
@@ -32,7 +62,7 @@ namespace CsQuery.Engine
             }
             else
             {
-                string value = elm[attributeName];
+                string value = element[attributeName];
 
                 switch (matchType)
                 {
@@ -80,15 +110,47 @@ namespace CsQuery.Engine
             }
         }
 
-        public static bool Matches(IDomElement element,SelectorClause selector )
+        /// <summary>
+        /// Test whether a single element matches a specific attribute selector.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to test.
+        /// </param>
+        /// <param name="selector">
+        /// The selector.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the element matches, false if not.
+        /// </returns>
+
+        public static bool Matches(IDomElement element, SelectorClause selector)
         {
             return Matches(element, selector.AttributeSelectorType, selector.AttributeName, selector.AttributeValue);
         }
 
-        private static bool ContainsWord(string text, string word)
+        /// <summary>
+        /// Test whether a sentence contains a word
+        /// </summary>
+        ///
+        /// <param name="sentence">
+        /// The sentence.
+        /// </param>
+        /// <param name="word">
+        /// The word.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it contains the word, false if not.
+        /// </returns>
+
+        private static bool ContainsWord(string sentence, string word)
         {
-            HashSet<string> words = new HashSet<string>(word.Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-            return words.Contains(text);
+            HashSet<string> words = new HashSet<string>(word.Trim().Split(CharacterData.charsHtmlSpaceArray, 
+                StringSplitOptions.RemoveEmptyEntries));
+
+            return words.Contains(sentence);
         }
        
     }
