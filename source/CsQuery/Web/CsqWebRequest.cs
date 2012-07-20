@@ -94,6 +94,7 @@ namespace CsQuery.Web
            // HttpWebRequest webRequest = default(HttpWebRequest);
            // var async = WebRequest.
             HttpWebRequest request = GetWebRequest();
+			request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             Html=null;
             using (StreamReader responseReader = new StreamReader(request.GetResponse().GetResponseStream())) {
                 Html = responseReader.ReadToEnd();
