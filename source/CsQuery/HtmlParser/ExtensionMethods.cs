@@ -27,17 +27,17 @@ namespace CsQuery.HtmlParser
             return pos == end && charArray[end - 1] != seek ? -1 : pos - 1;
 
         }
-
+        
         public static string SubstringBetween(this char[] text, int startIndex, int endIndex)
         {
-            int len = endIndex - startIndex + 1;
-            string result = "";
-            for (int i = startIndex; i < endIndex; i++)
+            var result = new StringBuilder();
+            for (var i = startIndex; i < endIndex; i++)
             {
-                result += text[i];
+                result.Append(text[i]);
             }
-            return result;
+            return result.ToString();
         }
+
         public static string AsString(this char[] text)
         {
             return String.Join("", text);

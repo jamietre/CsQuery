@@ -4,7 +4,7 @@ This is an informal log of changes to the project; major issues will be logged a
 
 #####7/18/2012
 
-- Bugfix - Issue #20 - selector engine doesn't recognize hex escape sequences - from vitallium
+- Bugfix - Issue #20 - selector engine doesn't recognize hex escape sequences - pull request #vitallium
 
 #####7/17/2012
 

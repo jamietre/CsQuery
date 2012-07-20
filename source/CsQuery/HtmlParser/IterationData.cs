@@ -246,7 +246,7 @@ namespace CsQuery.HtmlParser
             int tagStart = -1;
             int len = html.Length;
 
-            while (!finished && Pos <= len)
+            while (!finished && Pos < len)
             {
                 char c = html[Pos];
                 switch (step)
