@@ -7,38 +7,79 @@ using CsQuery.StringScanner;
 
 namespace CsQuery.HtmlParser
 {
+    /// <summary>
+    /// A class encapsulating the state of an HTML parser element.
+    /// </summary>
 
     public class IterationData
     {
+        /// <summary>
+        /// When true, literals that are not the child of another element should be wrapped in a
+        /// "span" block.
+        /// </summary>
+
         public bool WrapLiterals;
-        public InsertionMode InsertionMode;
-        public TokenizerState TokenizerState;
-
-        public IterationData Parent;
-        public IDomObject Object;
-       
-        public int Pos;
-        public int HtmlStart;
-
-        public DomElement Element
-        {
-            get
-            {
-                return (DomElement)Object;
-            }
-        }
 
         /// <summary>
-        /// Use this to prepare the iterator object to continue finding siblings. It retains the parent. It just avoids having to recreate
-        /// an instance of this object for the next tag.
+        /// The insertion mode active at this time.
         /// </summary>
+
+        public InsertionMode InsertionMode;
+
+        /// <summary>
+        /// State of the tokenizer.
+        /// </summary>
+
+        public TokenizerState TokenizerState;
+
+        /// <summary>
+        /// The parent object to this object.
+        /// </summary>
+
+        public IterationData Parent;
+
+        /// <summary>
+        /// The DomObject that this IterationData is creating.
+        /// </summary>
+
+        public IDomObject Element;
+
+        /// <summary>
+        /// The current placeholder/pointer position.
+        /// </summary>
+
+        public int Pos;
+
+        /// <summary>
+        /// The starting position of content (inner HTML) for this element. When a non-text character is
+        /// found, the content from this position until the curren pointer position will be mapped to a
+        /// text node.
+        /// </summary>
+
+        public int HtmlStart;
+
+        /// <summary>
+        /// Use this to prepare the iterator object to continue finding siblings. It retains the parent.
+        /// It just avoids having to recreate an instance of this object for the next tag.
+        /// </summary>
+
         public void Reset()
         {
             TokenizerState = TokenizerState.Default;
             HtmlStart = Pos;
             InsertionMode = InsertionMode.Default;
-            Object = null;
+            Element = null;
         }
+
+        /// <summary>
+        /// Use this to prepare the iterator object to continue finding siblings. It retains the parent.
+        /// It just avoids having to recreate an instance of this object for the next tag.
+        /// </summary>
+        ///
+        /// <param name="pos">
+        /// The index position to which to reset the pointer.
+        /// </param>
+
         public void Reset(int pos)
         {
             Pos = pos;
@@ -46,11 +87,17 @@ namespace CsQuery.HtmlParser
         }
 
         /// <summary>
-        /// Read content from the current position as text only (if ReadTextOnly=true)
+        /// Read content from the current position as text only (if InsertionMode.Text)
         /// </summary>
+        ///
+        /// <param name="html">
+        /// The HTML.
+        /// </param>
+
         public void ReadText(char[] html)
         {
             // deal with when we're in a literal block (script/textarea)
+            
             if (InsertionMode==InsertionMode.Text)
             {
                 int endPos = Pos;
@@ -72,18 +119,26 @@ namespace CsQuery.HtmlParser
                 }
             }
         }
+
         /// <summary>
-        /// Advance the pointer to the next caret, or past the end if none is found
+        /// Advance the pointer to the next caret, or past the end if none is found.
         /// </summary>
-        /// <param name="html"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="html">
+        /// The HTML
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
         public bool FindNextTag(char[] html)
         {
             Pos = html.CharIndexOf('<', Pos);
             if (Pos < 0)
             {
                 // done - no new tags found
-                //Pos = EndPos + 1;
+
                 Pos = html.Length;
                 return false;
             }
@@ -169,12 +224,19 @@ namespace CsQuery.HtmlParser
         }
 
         /// <summary>
-        ///  Close out this element. This method will return true if something can be yielded; this
-        ///  this means it's got a parent at the top of the heirarchy. Otherwise it's just closed but 
-        ///  false is returned.
+        /// Close out this element. This method will return true if something can be yielded; this this
+        /// means it's got a parent at the top of the heirarchy. Otherwise it's just closed but false is
+        /// returned.
         /// </summary>
-        /// <param name="element"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="factory">
+        /// The HTML factory to operate against.
+        /// </param>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process close element in this collection.
+        /// </returns>
+
         public IEnumerable<IDomObject> CloseElement(HtmlElementFactory factory)
         {
             IDomObject element = null;
@@ -217,20 +279,20 @@ namespace CsQuery.HtmlParser
 
             bool hasChildren = MoveOutsideTag(html);
 
-            // tricky part: if there are children, push ourselves back on the stack and start with a new object
-            // from this position. The children will add themselves as they are created, avoiding recursion.
-            // When the close tag is found, the parent will be yielded if it's a root element.
-            // I think there's a slightly better way to do this, capturing all the yield logic at the end of the
-            // stack but it works for now.
+            // tricky part: if there are children, push ourselves back on the stack and start with a new
+            // object from this position. The children will add themselves as they are created, avoiding
+            // recursion. When the close tag is found, the parent will be yielded if it's a root element. I
+            // think there's a slightly better way to do this, capturing all the yield logic at the end of
+            // the stack but it works. 
 
             if (Parent != null)
             {
-                Parent.Element.ChildNodes.AddAlways(Object);
+                Parent.Element.ChildNodes.AddAlways(Element);
                 completeElement = null;
             }
             else if (!hasChildren)
             {
-                completeElement = Object;
+                completeElement = Element;
             }
             else
             {
@@ -566,8 +628,8 @@ namespace CsQuery.HtmlParser
 
         public IterationData AddNewParent(ushort tagId, int pos)
         {
-            Object = new DomElement(tagId);
-            Parent.Element.ChildNodes.AddAlways(Object);
+            Element = new DomElement(tagId);
+            Parent.Element.ChildNodes.AddAlways(Element);
             return AddNewChild(pos);
         }
 
@@ -610,13 +672,18 @@ namespace CsQuery.HtmlParser
 
         }
 
-
         /// <summary>
-        /// Move pointer to the first character after the closing caret of this tag. 
+        /// Move pointer to the first character after the closing caret of this tag.
         /// </summary>
+        ///
+        /// <param name="html">
+        /// The HTML.
+        /// </param>
+        ///
         /// <returns>
-        /// Returns True if there are children
+        /// Returns True if there are children.
         /// </returns>
+
         public bool MoveOutsideTag(char[] html)
         {
             int endPos = html.CharIndexOf('>', Pos);
@@ -626,7 +693,7 @@ namespace CsQuery.HtmlParser
             {
                 Pos = endPos + 1;
                 return html[endPos - 1] == '/' ? false :
-                    Object.InnerHtmlAllowed || Object.InnerTextAllowed;
+                    Element.InnerHtmlAllowed || Element.InnerTextAllowed;
 
             }
             else
@@ -637,10 +704,18 @@ namespace CsQuery.HtmlParser
 
         }
 
+        /// <summary>
+        /// Gets the token for the parent node to this node.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A ushort of the parent's token, or 0 if there is no parent.
+        /// </returns>
+
         public ushort ParentTagID()
         {
             return Parent != null ?
-                Parent.Element.NodeNameID:
+                Parent.Element.NodeNameID :
                 (ushort)0;
         }
 

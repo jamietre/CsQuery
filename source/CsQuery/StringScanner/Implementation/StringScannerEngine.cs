@@ -1077,12 +1077,13 @@ namespace CsQuery.StringScanner.Implementation
         }
 
         /// <summary>
-        /// Caches the current position
+        /// Cache the last pos before an attempted operation,.
         /// </summary>
+        ///
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when there is already something cached.
+        /// </exception>
 
-        /// <summary>
-        /// Cache the last pos before an attempted operation,
-        /// </summary>
         protected void CachePos()
         {
             LastError = "";

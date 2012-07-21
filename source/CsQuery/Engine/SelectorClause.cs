@@ -98,22 +98,54 @@ namespace CsQuery.Engine
         public string Criteria {get;set;}
 
         /// <summary>
+        /// Gets or sets zero-based index of the position.
+        /// </summary>
         /// <summary>
         /// For Position selectors, the position. Negative numbers start from the end.
         /// </summary>
+
         public int PositionIndex { get; set; }
+
         /// <summary>
         /// For Child selectors, the depth of the child.
         /// </summary>
+
         public int ChildDepth { get; set; }
-        public string AttributeValue { get; set; }
-        public string Class { get; set; }
-        public string ID { get; set; }
-        public string Html { get; set; }
+
         /// <summary>
-        /// The list of elements that should be matched, for elements selectors
+        /// For AttributeValue selectors, the value to match
         /// </summary>
+
+        public string AttributeValue { get; set; }
+
+        /// <summary>
+        /// For Class selectors, the class name to match
+        /// </summary>
+
+        public string Class { get; set; }
+
+        /// <summary>
+        /// For ID selectors, the ID to match
+        /// </summary>
+
+        public string ID { get; set; }
+
+        /// <summary>
+        /// The HTML to create, for HTML "selectors"
+        /// </summary>
+
+        public string Html { get; set; }
+
+        /// <summary>
+        /// The list of elements that should be matched, for elements selectors.
+        /// </summary>
+
         public IEnumerable<IDomObject> SelectElements { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is a selector that is based on the element's
+        /// position in the DOM, versus the element's position in the result set.
+        /// </summary>
 
         public bool IsDomPositionPseudoSelector
         {
@@ -126,11 +158,11 @@ namespace CsQuery.Engine
                 return !IsResultListPosition;
             }
         }
-        
+
         /// <summary>
-        /// Indicates that a position type selector refers to the result list, not the DOM position
+        /// Indicates that a position type selector refers to the result list, not the DOM position.
         /// </summary>
-        /// <returns></returns>
+
         public bool IsResultListPosition
         {
             get
@@ -143,6 +175,11 @@ namespace CsQuery.Engine
                 }
             }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this selector accepts parameters.
+        /// </summary>
+
         public bool IsFunction
         {
             get
@@ -151,6 +188,10 @@ namespace CsQuery.Engine
                 
             }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this Selector is new (unconfigured).
+        /// </summary>
 
         public bool IsNew
         {
@@ -162,6 +203,11 @@ namespace CsQuery.Engine
                     && CombinatorType == CombinatorType.Root;
             }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is completely configured.
+        /// </summary>
+
         public bool IsComplete
         {
             get
@@ -169,16 +215,22 @@ namespace CsQuery.Engine
                 return SelectorType != 0;
             }
         }
+
         /// <summary>
-        /// When true do not attempt to use the index to obtain a result from this selector. Used for automatically 
-        /// generated filters
+        /// When true do not attempt to use the index to obtain a result from this selector. Used for
+        /// automatically generated filters.
         /// </summary>
+
         public bool NoIndex { get; set; }
         
         #endregion
 
         #region public methods
-        
+
+        /// <summary>
+        /// Clears this object to its blank/initial state.
+        /// </summary>
+
         public void Clear()
         {
 
@@ -198,6 +250,14 @@ namespace CsQuery.Engine
 
             Initialize();
         }
+
+        /// <summary>
+        /// Makes a deep copy of this Selector.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A copy of this object.
+        /// </returns>
 
         public SelectorClause Clone()
         {
@@ -224,6 +284,14 @@ namespace CsQuery.Engine
             return clone;
         }
 
+        /// <summary>
+        /// Serves as a hash function for a particular type.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object" />.
+        /// </returns>
+
         public override int GetHashCode()
         {
             return GetHash(SelectorType) + GetHash(TraversalType) + GetHash(CombinatorType) +
@@ -232,7 +300,21 @@ namespace CsQuery.Engine
                 GetHash(ID) + GetHash(NoIndex) + GetHash(PositionIndex) + GetHash(SelectElements) +
                 GetHash(Tag);
         }
-        
+
+        /// <summary>
+        /// Determines whether the specified <see cref="T:System.Object" /> is equal to the current
+        /// <see cref="T:System.Object" />.
+        /// </summary>
+        ///
+        /// <param name="obj">
+        /// The <see cref="T:System.Object" /> to compare with the current <see cref="T:System.Object" />.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the specified <see cref="T:System.Object" /> is equal to the current
+        /// <see cref="T:System.Object" />; otherwise, false.
+        /// </returns>
+
         public override bool Equals(object obj)
         {
             SelectorClause other = obj as SelectorClause;
@@ -254,10 +336,31 @@ namespace CsQuery.Engine
                 other.Tag == Tag;
         }
 
+        /// <summary>
+        /// Gets a hash.
+        /// </summary>
+        ///
+        /// <param name="obj">
+        /// The <see cref="T:System.Object" /> to compare with the current <see cref="T:System.Object" />.
+        /// </param>
+        ///
+        /// <returns>
+        /// The hash.
+        /// </returns>
+
         private int GetHash(object obj) {
 
             return obj == null ? 0 : obj.GetHashCode();
         }
+
+        /// <summary>
+        /// Returns a string representation of the parsed selector. This may not exactly match the input
+        /// selector as it is regenerated.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A CSS selector string.
+        /// </returns>
 
         public override string ToString()
         {
@@ -325,14 +428,10 @@ namespace CsQuery.Engine
               
               
             }
-            //if (SelectorType.HasFlag(SelectorType.Contains))
-            //{
-            //    output += ":contains(" + Criteria + ")";
-            //}
-
 
             return output;
         }
+
         #endregion
                     
     }

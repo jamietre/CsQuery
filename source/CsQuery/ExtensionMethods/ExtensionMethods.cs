@@ -61,15 +61,7 @@ namespace CsQuery.ExtensionMethods
         {
             return Regex.IsMatch(input, pattern);
         }
-        /// <summary>
-        /// Returns true when a value is "truthy" using similar logic as Javascript
-        ///   null = false
-        ///   empty string = false BUT zero string = true
-        ///   zero numeric = false
-        ///   false boolean values = false
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+
 
         #endregion
 
@@ -112,15 +104,22 @@ namespace CsQuery.ExtensionMethods
         {
             return JSON.ParseJSON<T>(objectToDeserialize);
         }
+
         /// <summary>
-        /// Deserialize the JSON string to an ExpandoObject or value type
+        /// Deserialize the JSON string to a dynamic object or a single value.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="objectToDeserialize"></param>
-        /// <returns></returns>
-        public static object ParseJSON(this string text)
+        ///
+        /// <param name="json">
+        /// The JSON string.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new object created from the json.
+        /// </returns>
+
+        public static object ParseJSON(this string json)
         {
-            return JSON.ParseJSON(text);
+            return JSON.ParseJSON(json);
         }
 
         /// <summary>

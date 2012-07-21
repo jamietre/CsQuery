@@ -313,15 +313,10 @@ namespace CsQuery
         /// </param>
         ///
         /// <returns>
-        /// The current CQ object
+        /// The current CQ object.
         /// </returns>
 
         protected CQ SetSelection(IEnumerable<IDomObject> selectionSet, 
-
-            /// <summary>
-            /// The output order.
-            /// </summary>
-
             SelectionSetOrder inputOrder = SelectionSetOrder.Ascending, 
             SelectionSetOrder outputOrder=0)
         {

@@ -196,27 +196,17 @@ namespace CsQuery
         /// </returns>
 
         IDomDocument CreateNew<T>() where T : IDomDocument;
+
+        /// <summary>
+        /// Creates an IDomDocument that is derived from this one. The new type can also be a derived
+        /// type, such as IDomFragment. The new object will inherit DomRenderingOptions from this one.
+        /// </summary>
+        ///
+        /// <returns>
+        /// The new Document.
+        /// </returns>
+
         IDomDocument CreateNew();
-
-        /// <summary>
-        /// Populate this instance from a character string. This is destructive; any prior contents are destroyed.
-        /// </summary>
-        ///
-        /// <param name="html">
-        /// The HTML.
-        /// </param>
-
-        //void Populate(char[] html, HtmlParsingMode htmlParsingMode );
-
-        /// <summary>
-        /// Populate this instance from a sequence of elements. This is destructive; any prior contents are destroyed.
-        /// </summary>
-        ///
-        /// <param name="elements">
-        /// The elements.
-        /// </param>
-
-        //void Populate(IEnumerable<IDomObject> elements);
 
     }
 }

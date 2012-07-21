@@ -42,16 +42,16 @@ namespace CsQuery.Tests.Csharp.HtmlParser
         [Test, TestMethod]
         public void InnerTextAllowed()
         {
-            Assert.IsTrue(HtmlData.InnerTextAllowed("textarea"));
-            Assert.IsTrue(HtmlData.InnerTextAllowed("script"));
-            Assert.IsTrue(HtmlData.InnerTextAllowed("style"));
-            Assert.IsTrue(HtmlData.InnerTextAllowed("div"));
-            Assert.IsTrue(HtmlData.InnerTextAllowed("p"));
-            Assert.IsTrue(HtmlData.InnerTextAllowed("option"));
-            Assert.IsTrue(HtmlData.InnerTextAllowed("random"));
+            Assert.IsTrue(HtmlData.ChildrenAllowed("textarea"));
+            Assert.IsTrue(HtmlData.ChildrenAllowed("script"));
+            Assert.IsTrue(HtmlData.ChildrenAllowed("style"));
+            Assert.IsTrue(HtmlData.ChildrenAllowed("div"));
+            Assert.IsTrue(HtmlData.ChildrenAllowed("p"));
+            Assert.IsTrue(HtmlData.ChildrenAllowed("option"));
+            Assert.IsTrue(HtmlData.ChildrenAllowed("random"));
 
-            Assert.IsFalse(HtmlData.InnerTextAllowed("br"));
-            Assert.IsFalse(HtmlData.InnerTextAllowed("link"));
+            Assert.IsFalse(HtmlData.ChildrenAllowed("br"));
+            Assert.IsFalse(HtmlData.ChildrenAllowed("link"));
         }
 
         [Test, TestMethod]

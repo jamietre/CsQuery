@@ -208,12 +208,24 @@ namespace CsQuery.Engine
 
         #region public methods
 
-
         /// <summary>
-        /// Insert a selector clause at the specified position
+        /// Insert a selector clause at the specified position.
         /// </summary>
-        /// <param name="index"></param>
-        /// <param name="selector"></param>
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown if the selector is not valid to insert at this position.
+        /// </exception>
+        ///
+        /// <param name="index">
+        /// The position in the selector chain to insert this clause
+        /// </param>
+        /// <param name="clause">
+        /// The clause to insert
+        /// </param>
+        /// <param name="combinatorType">
+        /// (optional) type of the combinator.
+        /// </param>
+
         public void Insert(int index, SelectorClause clause, CombinatorType combinatorType = CombinatorType.Chained)
         {
             if (combinatorType == CombinatorType.Root && Clauses.Count!=0) {
@@ -272,11 +284,20 @@ namespace CsQuery.Engine
         }
 
         /// <summary>
-        /// Test if a single element matches this selector
+        /// Test if a single element matches this selector.
         /// </summary>
-        /// <param name="document"></param>
-        /// <param name="sequence"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="document">
+        /// The document context
+        /// </param>
+        /// <param name="element">
+        /// The element to test
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
         public bool Matches(IDomDocument document, IDomObject element)
         {
             return GetFilterSelector().Select(document, element).Any();
@@ -285,9 +306,18 @@ namespace CsQuery.Engine
         /// <summary>
         /// Return only elements from the sequence that do not match this selector.
         /// </summary>
-        /// <param name="document"></param>
-        /// <param name="source"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="document">
+        /// The document context.
+        /// </param>
+        /// <param name="sequence">
+        /// The source sequence.
+        /// </param>
+        ///
+        /// <returns>
+        /// The elements from the source sequence that do not match this selector.
+        /// </returns>
+        
         public IEnumerable<IDomObject> Except(IDomDocument document, IEnumerable<IDomObject> sequence)
         {
             HashSet<IDomObject> matches = new HashSet<IDomObject>(GetFilterSelector().Select(document, sequence));
@@ -301,9 +331,14 @@ namespace CsQuery.Engine
         }
 
         /// <summary>
-        /// Returns a clone of this selector with all "root" combinators mapped to "filter", e.g. so it can be applied to 
-        /// a sequence.
+        /// Returns a clone of this selector with all "root" combinators mapped to "filter", e.g. so it
+        /// can be applied to a sequence.
         /// </summary>
+        ///
+        /// <returns>
+        /// The filter selector.
+        /// </returns>
+
         protected Selector GetFilterSelector() {
              var clone = Clone();
 
@@ -313,15 +348,30 @@ namespace CsQuery.Engine
             return clone;
 
         }
+
         /// <summary>
-        /// Return a clone of this selector
+        /// Return a clone of this selector.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <returns>
+        /// A copy of this object.
+        /// </returns>
+
         public Selector Clone()
         {
             Selector clone = new Selector(ClausesClone);
             return clone;
         }
+
+        /// <summary>
+        /// Returns CSS selector string of this Selector. This may not exactly match the input clause since
+        /// it has been regenerated.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A CSS selector.
+        /// </returns>
+
         public override string ToString()
         {
             string output = "";
@@ -346,6 +396,14 @@ namespace CsQuery.Engine
         #endregion
 
         #region interface members
+
+        /// <summary>
+        /// An enumerator to iterate over each clause in this selector
+        /// </summary>
+        ///
+        /// <returns>
+        /// The enumerator.
+        /// </returns>
 
         public IEnumerator<SelectorClause> GetEnumerator()
         {

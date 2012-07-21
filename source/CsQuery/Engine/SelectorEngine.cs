@@ -48,10 +48,23 @@ namespace CsQuery.Engine
         #region public methods
 
         /// <summary>
-        /// Select from the bound Document using index. First non-class/tag/id selector will result in this being passed off to GetMatches
+        /// Select from the bound Document using index. First non-class/tag/id selector will result in
+        /// this being passed off to GetMatches.
         /// </summary>
-        /// <param name="document"></param>
-        /// <returns></returns>
+        ///
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when one or more required arguments are null.
+        /// </exception>
+        ///
+        /// <param name="context">
+        /// The context in which the selector applies. If null, the selector is run against the entire
+        /// Document. If not, the selector is run against this sequence of elements.
+        /// </param>
+        ///
+        /// <returns>
+        /// A list of elements matching the selector.
+        /// </returns>
+
         public List<IDomObject> Select(IEnumerable<IDomObject> context)
         {
             // this holds the final output
@@ -60,7 +73,7 @@ namespace CsQuery.Engine
 
             if (Selector == null )
             {
-                throw new ArgumentException("No selectors provided.");
+                throw new ArgumentNullException("The selector cannot be null.");
             }
 
             if (Selector.Count == 0)
@@ -405,32 +418,45 @@ namespace CsQuery.Engine
             }
             return selectionSource;
         }
-        
+
         /// <summary>
-        /// Return all elements matching a selector, within a domain baseList, starting from list.
-        /// This function will traverse children, but it is expected that the source (e.g. from an Adjacent
-        /// or Sibling selector) is correct.
+        /// Return all elements matching a selector, within a list of elements. This function will
+        /// traverse children, but it is expected that the source list at the current depth (e.g. from an
+        /// Adjacent or Sibling selector) is already processed.
         /// </summary>
-        /// <param name="baseList"></param>
-        /// <param name="list"></param>
-        /// <param name="selector"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="list">
+        /// The sequence of elements to filter.
+        /// </param>
+        /// <param name="selector">
+        /// The selector.
+        /// </param>
+        ///
+        /// <returns>
+        /// The sequence of elements matching the selector.
+        /// </returns>
+
         protected IEnumerable<IDomObject> GetMatches(IEnumerable<IDomObject> list, SelectorClause selector)
         {
             // Maintain a hashset of every element already searched. Since result sets frequently contain items which are
             // children of other items in the list, we would end up searching the tree repeatedly
+            
             HashSet<IDomObject> uniqueElements = null;
 
+            // The processing stack
+            
             Stack<MatchElement> stack = null;
 
-            // map the list to adacent/siblings if needed. Descendant & child traversals are handled through
-            // recursion.
+            // The source list for the current iteration
 
             IEnumerable<IDomObject> curList = list;
             
+            // the results obtained so far in this iteration
+
             HashSet<IDomObject> temporaryResults = new HashSet<IDomObject>();
 
             // The unique list has to be reset for each sub-selector
+            
             uniqueElements = new HashSet<IDomObject>();
 
 
@@ -457,14 +483,17 @@ namespace CsQuery.Engine
             {
                 // We must check everything again when looking for specific depth of children
                 // otherwise - no point - skip em
-                // 
+                
                 IDomElement el = obj as IDomElement;
                 if (el == null || selector.TraversalType != TraversalType.Child && uniqueElements.Contains(el))
                 {
                     continue;
                 }
+                
                 stack.Push(new MatchElement(el, 0));
+                
                 int matchIndex = 0;
+                
                 while (stack.Count != 0)
                 {
                     var current = stack.Pop();
@@ -515,8 +544,8 @@ namespace CsQuery.Engine
                         }
                     }
                 }
-
             }
+
             return temporaryResults;
         }
 
@@ -602,13 +631,24 @@ namespace CsQuery.Engine
         }
 
         /// <summary>
-        /// Return all position-type matches. These are selectors that are keyed to the position within the selection
-        /// set itself.
+        /// Return all position-type matches. These are selectors that are keyed to the position within
+        /// the selection set itself.
         /// </summary>
-        /// <param name="sourceList"></param>
-        /// <param name="selector"></param>
-        /// <returns></returns>
-        protected IEnumerable<IDomObject> GetResultPositionMatches(IEnumerable<IDomObject> list, SelectorClause selector)
+        ///
+        /// <param name="list">
+        /// The list of elements to filter
+        /// </param>
+        /// <param name="selector">
+        /// The selector
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence of elements matching the filter
+        /// </returns>
+
+
+        protected IEnumerable<IDomObject> GetResultPositionMatches(IEnumerable<IDomObject> list, 
+            SelectorClause selector)
         {
             // for sibling traversal types the mapping was done already by the Matches function
 

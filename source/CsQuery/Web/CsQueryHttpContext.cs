@@ -246,11 +246,17 @@ namespace CsQuery.Web
             }
         } protected StringBuilder _UserOutput = null;
 
-
         /// <summary>
-        /// Write json data to a global variable
+        /// Write json data to a global variable.
         /// </summary>
-        /// <param name="data"></param>
+        ///
+        /// <param name="target">
+        /// Target for the.
+        /// </param>
+        /// <param name="data">
+        /// .
+        /// </param>
+
         public void WriteJson(string target, object data)
         {
             UserOutput.Append(CsQueryHttpContext.JsonStringDef(target, data));

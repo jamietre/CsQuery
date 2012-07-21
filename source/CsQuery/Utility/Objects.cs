@@ -109,14 +109,19 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Returns true when a value is "truthy" using similar logic as Javascript
-        ///   null = false
-        ///   empty string = false BUT zero string = true
-        ///   zero numeric = false
-        ///   false boolean values = false
+        /// Returns true when a value is "truthy" using same logic as Javascript.
+        ///   null = false; empty string = false; "0" string = true; 0 numeric = false; false boolean =
+        ///   false.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="obj">
+        /// The object to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if truthy, false if not.
+        /// </returns>
+
         public static bool IsTruthy(object obj)
         {
             if (obj == null) return false;
