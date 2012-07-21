@@ -1,8 +1,8 @@
 ##CsQuery.MVC Framework
 
-CsQuery.MVC is a simple framework that lets you pipeline CsQuery into view rendering so you can perform manipulation of the HTML before it is finally rendered. This works by replacing the default view engine & controllers. The app shows a few things you can do with this.
+CsQuery.MVC is a simple framework that lets you pipeline CsQuery into view rendering so you can perform manipulation of the HTML before it is finally rendered. This works by replacing the default view engine & controllers. 
 
-Instructions for using this are below. To see how it works, just to look at the example MVC application under "examples", especially the `HomeController.cs` and `AboutController.cs` classes.
+Instructions for using this are below. To see it in action, just to look at the example MVC application under "examples", especially the `HomeController.cs` and `AboutController.cs` classes.
 
 ####Configuration
 

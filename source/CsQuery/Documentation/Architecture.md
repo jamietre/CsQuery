@@ -9,7 +9,7 @@ CsQuery.Implementation					Concrete classes
 CsQuery.HtmlParser
 CsQuery.StringScanner
 CsQuery.EquationParser
-CsQuery.ExtensionMethods
+CsQuery.ExtensionMethodsD:\projects\csharp\CsQuery-mvc\source\CsQuery\Documentation\Changes.md
 CsQuery.ExtensionMethods.Forms			Include this to add form-posting specific extension methods
 CsQuery.ExtensionMethods.Internal
 CsQuery.Promises						Promises API
