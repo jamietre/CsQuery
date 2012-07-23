@@ -39,7 +39,6 @@ namespace CsQuery.Implementation
 
         #endregion
 
-
         #region IList<T> Members
 
 

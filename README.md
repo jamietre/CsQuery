@@ -21,9 +21,9 @@ The NuGet package will always reflect the release noted here. The code on GitHub
 
 ### Release Notes
 
-The current release is 1.1.3 (July 17, 2012). Read the complete [release notes for version 1.1.3](http://blog.outsharked.com/2012/07/csquery-113-released.html), or see [all release notes.](http://blog.outsharked.com/search/label/csquery-release)
+The current release is 1.1.3.1 (July 23, 2012), a bugfix release. Please review the [change log](https://github.com/jamietre/CsQuery/blob/master/source/README.md) for details on this release. 
 
-There are no formal release notes for minor bugfix releases. For information on changes between significant releases, please review the detailed change log for in the [source code readme](https://github.com/jamietre/CsQuery/blob/master/source/README.md).
+The last significant release was 1.1.3. Read the [release notes for version 1.1.3](http://blog.outsharked.com/2012/07/csquery-113-released.html), or see [all release notes.](http://blog.outsharked.com/search/label/csquery-release). 
 
 
 ### Documentation

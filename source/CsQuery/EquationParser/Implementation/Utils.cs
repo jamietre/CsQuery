@@ -58,31 +58,79 @@ namespace CsQuery.EquationParser.Implementation
             Type t = GetUnderlyingType(obj.GetType());
             return IsNumericType(t);
         }
+
         /// <summary>
-        /// Any true numeric primitive type, e.g. all except string, char & bool
+        /// Test if the type is a numeric primitive type, e.g. all except string, char &amp; bool.
         /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="type">
+        /// The type to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if numeric type, false if not.
+        /// </returns>
+
         public static bool IsNumericType(Type type)
         {
             return type.IsPrimitive && !(type == typeof(string) || type == typeof(char) || type == typeof(bool));
         }
+
         /// <summary>
         /// Any primitive type that can be converted to a number, e.g. all except string. This just
-        /// returns any primitive type that is not IEnumerable
+        /// returns any primitive type that is not IEnumerable.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="type">
+        /// The type to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if numeric convertible, false if not.
+        /// </returns>
+
         public static bool IsNumericConvertible(Type type)
         {
             return type.IsPrimitive && !(type  == typeof(string));
         }
+
+        /// <summary>
+        /// Test if the value is a string or char type
+        /// </summary>
+        ///
+        /// <param name="value">
+        /// The value to test
+        /// </param>
+        ///
+        /// <returns>
+        /// true if text or char, false if not.
+        /// </returns>
 
         public static bool IsText(object value)
         {
             Type t  = value.GetType();
             return t == typeof(string) || t == typeof(char);
         }
+
+        /// <summary>
+        /// Factory to return a function object based on a name
+        /// </summary>
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown when the named function is not known.
+        /// </exception>
+        ///
+        /// <typeparam name="T">
+        /// The return type of the function
+        /// </typeparam>
+        /// <param name="functionName">
+        /// Name of the function.
+        /// </param>
+        ///
+        /// <returns>
+        /// The function&lt; t&gt;
+        /// </returns>
+
         public static IFunction GetFunction<T>(string functionName)
         {
             bool IsTyped = typeof(T) == typeof(IConvertible);

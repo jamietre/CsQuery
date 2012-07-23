@@ -34,7 +34,7 @@ namespace CsQuery.Engine
         /// the list of children rather than testing each one.
         /// </summary>
         ///
-        /// <param name="element">
+        /// <param name="elements">
         /// The parent element.
         /// </param>
         ///

@@ -11,6 +11,10 @@ using CsQuery.StringScanner;
 
 namespace CsQuery.HtmlParser
 {
+    /// <summary>
+    /// The HTML parser
+    /// </summary>
+
     public class HtmlElementFactory
     {
         #region constructors
@@ -93,9 +97,13 @@ namespace CsQuery.HtmlParser
         #region public methods
 
         /// <summary>
-        /// Parse with options for a full HTML document. 
+        /// Parse with options for a full HTML document.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <returns>
+        /// A list of IDomObject elements; the topmost sequence of the DOM.
+        /// </returns>
+
         public List<IDomObject> ParseAsDocument()
         {
             IsDocument = true;
@@ -106,9 +114,13 @@ namespace CsQuery.HtmlParser
         }
 
         /// <summary>
-        /// Parse with options for fragment
+        /// Parse with options for fragment.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <returns>
+        /// A list of IDomObject elements; the topmost sequence of the fragment.
+        /// </returns>
+
         public List<IDomObject> ParseAsFragment()
         {
             IsDocument = false;
@@ -117,11 +129,15 @@ namespace CsQuery.HtmlParser
             return Parse();
         }
 
-
         /// <summary>
-        /// Parse with options for content (generate most optional elements but not document wrapping HTML/BODY)
+        /// Parse with options for content (generate most optional elements but not document wrapping
+        /// HTML/BODY)
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <returns>
+        /// A list of IDomObject elements; the topmost sequence of the document.
+        /// </returns>
+
         public List<IDomObject> ParseAsContent()
         {
             IsDocument = false;
@@ -129,6 +145,22 @@ namespace CsQuery.HtmlParser
             WrapRootTextNodes = false;
             return Parse();
         }
+
+        /// <summary>
+        /// Parse the HTML, and return it, based on options set.
+        /// </summary>
+        ///
+        /// <exception cref="NotImplementedException">
+        /// Thrown when the requested parsing mode is unknown.
+        /// </exception>
+        ///
+        /// <param name="htmlParsingMode">
+        /// The HTML parsing mode.
+        /// </param>
+        ///
+        /// <returns>
+        /// A List of IDomObject elements; the topmost sequence of the document.
+        /// </returns>
 
         public List<IDomObject> Parse(HtmlParsingMode htmlParsingMode)
         {
@@ -276,18 +308,18 @@ namespace CsQuery.HtmlParser
                                     if (newTagUpper.StartsWith("!DOCTYPE"))
                                     {
                                         specialElement = new DomDocumentType();
-                                        current.Object = specialElement;
+                                        current.Element = specialElement;
                                     }
                                     else if (newTagUpper.StartsWith("![CDATA["))
                                     {
                                         specialElement = new DomCData();
-                                        current.Object = specialElement;
+                                        current.Element = specialElement;
                                         current.Pos = tagStartPos + 9;
                                     }
                                     else 
                                     {
                                         specialElement = new DomComment();
-                                        current.Object = specialElement;
+                                        current.Element = specialElement;
                                         if (newTag.StartsWith("!--"))
                                         {
                                             ((DomComment)specialElement).IsQuoted = true;
@@ -297,7 +329,7 @@ namespace CsQuery.HtmlParser
                                         }
                                     }
 
-                                    string endTag = (current.Object is IDomComment && ((IDomComment)current.Object).IsQuoted) ? "-->" : ">";
+                                    string endTag = (current.Element is IDomComment && ((IDomComment)current.Element).IsQuoted) ? "-->" : ">";
 
                                     int tagEndPos = Html.Seek(endTag, current.Pos);
                                     if (tagEndPos < 0)
@@ -329,7 +361,7 @@ namespace CsQuery.HtmlParser
 
                                     if (parentTagId ==0 && IsDocument) {
                                         if (newTagId != HtmlData.tagHTML) {
-                                            current.Object = new DomElement(HtmlData.tagHTML);
+                                            current.Element = new DomElement(HtmlData.tagHTML);
                                             current = current.AddNewChild();
                                             parentTagId = HtmlData.tagHTML;
                                         }
@@ -393,8 +425,8 @@ namespace CsQuery.HtmlParser
                                     }
 
                                     
-                                    current.Object = new DomElement(newTagId);
-                                    
+                                    current.Element = new DomElement(newTagId);
+
 
                                     if (!current.Element.InnerHtmlAllowed && current.Element.InnerTextAllowed)
                                     {
@@ -443,18 +475,6 @@ namespace CsQuery.HtmlParser
             }
 
         }
-
-        /// <summary>
-        /// Parse the HTML into the bound document
-        /// </summary>
-        //public void ParseToDocument()
-        //{
-        //    foreach (IDomObject obj in ParseAsDocument())
-        //    {
-        //        Document.ChildNodes.AddAlways(obj);
-        //    }
-        //    ReorganizeStrandedTextNodes();
-        //}
 
         #endregion
 

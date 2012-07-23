@@ -27,6 +27,7 @@ namespace CsQuery
         private static Type _DynamicObjectType;
 
         #endregion
+
         /// <summary>
         /// The default rendering options. These are flags.
         /// </summary>

@@ -14,16 +14,10 @@ namespace CsQuery
 {
     public partial class CQ
     {
-
         /// <summary>
         /// Returns all values at named data store for the first element in the jQuery collection, as set
         /// by data(name, value). Put another way, this method constructs an object based on the names
         /// and values of any attributes starting with "data-".
-        /// </summary>
-        ///
-
-        /// <summary>
-        /// Gets the data.
         /// </summary>
         ///
         /// <returns>

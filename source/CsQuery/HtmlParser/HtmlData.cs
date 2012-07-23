@@ -12,8 +12,9 @@ namespace CsQuery.HtmlParser
     /// <summary>
     /// Reference data about HTML tags and attributes;
     /// methods to test tokens for certain properties;
-    /// and the tokenizer
+    /// and the tokenizer.
     /// </summary>
+
     public class HtmlData
     {
         #region constants and data
@@ -47,51 +48,235 @@ namespace CsQuery.HtmlParser
 #endif
 
 
-        /// Hardcode some tokens to improve performance when referring to them often
+        // Hardcode some tokens to improve performance when referring to them often
+
+        /// <summary>
+        /// Special token meaning "do nothing"
+        /// </summary>
 
         public const ushort tagActionNothing = 0;
+
+        /// <summary>
+        /// Special token meaning "close the parent tag before opening the next one"
+        /// </summary>
+
         public const ushort tagActionClose = 1;
 
+        /// <summary>
+        /// Identifier for the Class attribute.
+        /// </summary>
+
         public const ushort ClassAttrId = 3;
+
+        /// <summary>
+        /// Identifier for the Value attribute.
+        /// </summary>
+
         public const ushort ValueAttrId = 4;
+
+        /// <summary>
+        /// Identifier for the ID attribute.
+        /// </summary>
+
         public const ushort IDAttrId = 5;
 
+        /// <summary>
+        /// Identifier for the selected attribute.
+        /// </summary>
+
         public const ushort SelectedAttrId = 6;
+
+        /// <summary>
+        /// Identifier for the readonly attribute.
+        /// </summary>
+
         public const ushort ReadonlyAttrId = 7;
+
+        /// <summary>
+        /// Identifier for the checked attribute.
+        /// </summary>
+
         public const ushort CheckedAttrId = 8;
 
+        /// <summary>
+        /// The INPUT tag.
+        /// </summary>
+
         public const ushort tagINPUT = 9;
+
+        /// <summary>
+        /// The SELECT tag.
+        /// </summary>
+
         public const ushort tagSELECT = 10;
+
+        /// <summary>
+        /// The OPTION tag.
+        /// </summary>
+
         public const ushort tagOPTION = 11;
+
+        /// <summary>
+        /// The P tag.
+        /// </summary>
+
         public const ushort tagP = 12;
+
+        /// <summary>
+        /// The TR tag.
+        /// </summary>
+
         public const ushort tagTR = 13;
+
+        /// <summary>
+        /// The TD tag.
+        /// </summary>
+
         public const ushort tagTD = 14;
+
+        /// <summary>
+        /// The TH tag.
+        /// </summary>
+
         public const ushort tagTH = 15;
+
+        /// <summary>
+        /// The HEAD tag.
+        /// </summary>
+
         public const ushort tagHEAD = 16;
+
+        /// <summary>
+        /// The BODY tag.
+        /// </summary>
+
         public const ushort tagBODY = 17;
+
+        /// <summary>
+        /// The DT tag
+        /// </summary>
+
         public const ushort tagDT = 18;
+
+        /// <summary>
+        /// The COLGROUP tag.
+        /// </summary>
+
         public const ushort tagCOLGROUP = 19;
+
+        /// <summary>
+        /// The DD tag
+        /// </summary>
+
         public const ushort tagDD = 20;
+
+        /// <summary>
+        /// The LI tag
+        /// </summary>
+
         public const ushort tagLI = 21;
+
+        /// <summary>
+        /// The DL tag
+        /// </summary>
+
         public const ushort tagDL = 22;
+
+        /// <summary>
+        /// The TABLE tag.
+        /// </summary>
+
         public const ushort tagTABLE = 23;
+
+        /// <summary>
+        /// The OPTGROUP tag.
+        /// </summary>
+
         public const ushort tagOPTGROUP = 24;
+
+        /// <summary>
+        /// The UL tag.
+        /// </summary>
+
         public const ushort tagUL = 25;
+
+        /// <summary>
+        /// The OL tag.
+        /// </summary>
+
         public const ushort tagOL = 26;
+
+        /// <summary>
+        /// The TBODY tag
+        /// </summary>
+
         public const ushort tagTBODY = 27;
+
+        /// <summary>
+        /// The TFOOT tag.
+        /// </summary>
+
         public const ushort tagTFOOT = 28;
+
+        /// <summary>
+        /// The THEAD tag.
+        /// </summary>
+
         public const ushort tagTHEAD = 29;
+
+        /// <summary>
+        /// The RT tag.
+        /// </summary>
+
         public const ushort tagRT = 30;
+
+        /// <summary>
+        /// The RP tag.
+        /// </summary>
+
         public const ushort tagRP = 31;
+
+        /// <summary>
+        /// The SCRIPT tag.
+        /// </summary>
+
         public const ushort tagSCRIPT = 32;
+
+        /// <summary>
+        /// The TEXTAREA tag.
+        /// </summary>
+
         public const ushort tagTEXTAREA = 33;
+
+        /// <summary>
+        /// The STYLE tag.
+        /// </summary>
+
         public const ushort tagSTYLE = 34;
+
+        /// <summary>
+        /// The COL tag.
+        /// </summary>
+
         public const ushort tagCOL = 35;
+
+        /// <summary>
+        /// The HTML tag.
+        /// </summary>
+
         public const ushort tagHTML = 36;
 
-        private const ushort maxHardcodedTokenId = 36;
+        /// <summary>
+        /// The BUTTON tag.
+        /// </summary>
 
+        public const ushort tagBUTTON = 37;
 
+        /// <summary>
+        /// should match final tag above; for self-checking
+        /// </summary>
+
+        private const ushort maxHardcodedTokenId = 37;
 
         // Unquoted attribute value syntax: http://dev.w3.org/html5/spec-LC/syntax.html#attributes-0
         // 
@@ -103,19 +288,22 @@ namespace CsQuery.HtmlParser
         // or U+0060 GRAVE ACCENT characters (`),
         // and must not be the empty string.}
 
-        public static char[] MustBeQuoted = new char[] { '/', '\x0022', '\x0027', '\x003D', '\x003C', '\x003E', '\x0060' };
-        public static char[] MustBeQuotedAll;
+        private static char[] MustBeQuoted = new char[] { '/', '\x0022', '\x0027', '\x003D', '\x003C', '\x003E', '\x0060' };
+        private static char[] MustBeQuotedAll;
 
-        // Things that can be in a CSS number
-        
+        /// <summary>
+        /// Things that can be in a CSS number
+        /// </summary>
+
         public static HashSet<char> NumberChars = new HashSet<char>("-+0123456789.,");
 
-        // Things that are allowable unit strings in a CSS style.
-        // http://www.w3.org/TR/css3-values/#relative-lengths
-        //
-        // TODO: validate in context - we only check that it's legit, not in context. Many units apply only
-        // to a specific type
-        
+        /// <summary>
+        /// The units that are allowable unit strings in a CSS style..
+        /// </summary>
+        /// <url>
+        /// http://www.w3.org/TR/css3-values/#relative-lengths
+        /// </url>
+
         public static HashSet<string> Units = new HashSet<string>(new string[] { 
             "%", "cm", "mm", "in", "px", "pc", "pt",  
             "em",  "ex",  "vmin", "vw", "rem","vh",
@@ -307,6 +495,7 @@ namespace CsQuery.HtmlParser
             Tokenize("style"); //34
             Tokenize("col"); //34
             Tokenize("html"); //36
+            Tokenize("button"); //37
 
             // all this hardcoding makes me nervous, sanity check
             
@@ -370,8 +559,9 @@ namespace CsQuery.HtmlParser
         #region public methods
 
         /// <summary>
-        /// A list of all keys (tokens) created
+        /// A list of all keys (tokens) created.
         /// </summary>
+
         public static IEnumerable<string> Keys
         {
             get
@@ -393,61 +583,131 @@ namespace CsQuery.HtmlParser
         }
 
         /// <summary>
-        /// This type does not allow HTML children. Some of these types may allow text but not HTML.
+        /// Test whether this type does not allow HTML children. Some of these types may allow text but
+        /// not HTML.
         /// </summary>
-        /// <param name="nodeId"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="nodeName">
+        /// The node name to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if HTML nodes are not allowed as childredn, false if they are.
+        /// </returns>
+
         public static bool HtmlChildrenNotAllowed(string nodeName)
         {
             return HtmlChildrenNotAllowed(Tokenize(nodeName));
         }
 
         /// <summary>
-        /// This element may have children
+        /// Test whether this element may have children.
         /// </summary>
-        /// <param name="nodeId"></param>
-        /// <returns></returns>
-        public static bool ChildrenAllowed(ushort nodeId)
+        ///
+        /// <param name="tokenId">
+        /// The token ID
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
+        public static bool ChildrenAllowed(ushort tokenId)
         {
             // nodeId & NonSpecialTokenMask returns zero for tokens that are in the short list.
             // anything outside the short list (or not matching special properties) os ok - 
             // innertextallowed is the default
 
-            return (nodeId & NonSpecialTokenMask) != 0 ||
-                (TokenMetadata[nodeId] & (ushort)TokenProperties.ChildrenNotAllowed) == 0;
+            return (tokenId & NonSpecialTokenMask) != 0 ||
+                (TokenMetadata[tokenId] & (ushort)TokenProperties.ChildrenNotAllowed) == 0;
         }
-        public static bool InnerTextAllowed(string nodeName)
+
+        /// <summary>
+        /// Test whether this element can have text contents
+        /// </summary>
+        ///
+        /// <param name="nodeName">
+        /// The node name to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it text is allowed, false if not
+        /// </returns>
+
+        public static bool ChildrenAllowed(string nodeName)
         {
             return ChildrenAllowed(Tokenize(nodeName));
         }
-        public static bool IsBlock(ushort nodeId)
+
+        /// <summary>
+        /// Test whether the node is a block-type element.
+        /// </summary>
+        ///
+        /// <param name="tokenId">
+        /// The token ID of the node
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the token ID represents a block type element, false if not.
+        /// </returns>
+
+        public static bool IsBlock(ushort tokenId)
         {
 
-            return (nodeId & NonSpecialTokenMask) == 0 &&
-                (TokenMetadata[nodeId] & (ushort)TokenProperties.BlockElement) != 0;
+            return (tokenId & NonSpecialTokenMask) == 0 &&
+                (TokenMetadata[tokenId] & (ushort)TokenProperties.BlockElement) != 0;
         }
+
+        /// <summary>
+        /// Test whether the node is a block-type element
+        /// </summary>
+        ///
+        /// <param name="nodeName">
+        /// The node name to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if a block type, false if not.
+        /// </returns>
+
         public static bool IsBlock(string nodeName)
         {
             return IsBlock(Tokenize(nodeName));
         }
+
         /// <summary>
-        /// The attribute is a boolean type
+        /// Test whether the attribute is a boolean type.
         /// </summary>
-        /// <param name="nodeId"></param>
-        /// <returns></returns>
-        public static bool IsBoolean(ushort nodeId)
+        ///
+        /// <param name="tokenId">
+        /// The token ID
+        /// </param>
+        ///
+        /// <returns>
+        /// true if boolean, false if not.
+        /// </returns>
+
+        public static bool IsBoolean(ushort tokenId)
         {
-            return (nodeId & NonSpecialTokenMask) == 0 &&
-                  (TokenMetadata[nodeId] & (ushort)TokenProperties.BooleanProperty) != 0;
+            return (tokenId & NonSpecialTokenMask) == 0 &&
+                  (TokenMetadata[tokenId] & (ushort)TokenProperties.BooleanProperty) != 0;
         }
+
         /// <summary>
-        /// The attribute is a boolean type
+        /// Test whether the attribute is a boolean type.
         /// </summary>
-        /// <param name="nodeName"></param>
-        /// <returns></returns>
-        public static bool IsBoolean(string nodeName)
+        ///
+        /// <param name="propertyName">
+        /// The attribute or property name
+        /// </param>
+        ///
+        /// <returns>
+        /// true if boolean, false if not.
+        /// </returns>
+
+        public static bool IsBoolean(string propertyName)
         {
-            return IsBoolean(Tokenize(nodeName));
+            return IsBoolean(Tokenize(propertyName));
         }
 
         /// <summary>
@@ -459,7 +719,7 @@ namespace CsQuery.HtmlParser
         /// </param>
         ///
         /// <returns>
-        /// .
+        /// The token
         /// </returns>
 
         public static ushort Tokenize(string name)
@@ -494,14 +754,21 @@ namespace CsQuery.HtmlParser
             }
             return TokenizeImpl(name);
         }
+
         /// <summary>
-        /// Return a token ID for a name, adding to the index if it doesn't exist.
-        /// When indexing tags and attributes, ignoreCase should be used
+        /// Return a token ID for a name, adding to the index if it doesn't exist. When indexing tags and
+        /// attributes, ignoreCase should be used.
         /// </summary>
-        /// <param name="tokenName"></param>
-        /// <param name="ignoreCase"></param>
-        /// <returns></returns>
-        public static ushort TokenizeImpl(string tokenName)
+        ///
+        /// <param name="tokenName">
+        /// The token name
+        /// </param>
+        ///
+        /// <returns>
+        /// A token
+        /// </returns>
+
+        private static ushort TokenizeImpl(string tokenName)
         {
             ushort id;
 
@@ -522,23 +789,40 @@ namespace CsQuery.HtmlParser
             }
             return id;
         }
+
         /// <summary>
         /// Return a token name for an ID.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public static string TokenName(ushort id)
+        ///
+        /// <param name="tokenId">
+        /// The token ID
+        /// </param>
+        ///
+        /// <returns>
+        /// The string, or an empty string if the token ID was not found
+        /// </returns>
+
+        public static string TokenName(ushort tokenId)
         {
-            return id <= 0 ? "" : Tokens[id - 2];
+            return tokenId <= 0 ? "" : Tokens[tokenId - 2];
         }
-
-
 
         /// <summary>
         /// Encode to base XX (defined in constants)
         /// </summary>
-        /// <param name="number"></param>
-        /// <returns></returns>
+        ///
+        /// <exception cref="OverflowException">
+        /// Thrown when an arithmetic overflow occurs.
+        /// </exception>
+        ///
+        /// <param name="number">
+        /// The number to baseXX encode
+        /// </param>
+        ///
+        /// <returns>
+        /// A baseXX encoded string 
+        /// </returns>
+
         public static string BaseXXEncode(int number)
         {
 
@@ -569,18 +853,36 @@ namespace CsQuery.HtmlParser
             return sc_result.PadLeft(pathIdLength, '0');
         }
 
-
-
         /// <summary>
         /// HtmlEncode the string (pass-thru to system; abstracted in case we want to change)
         /// </summary>
-        /// <param name="html"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="html">
+        /// The HTML to encode
+        /// </param>
+        ///
+        /// <returns>
+        /// The encoded string
+        /// </returns>
+
         public static string HtmlEncode(string html)
         {
             return System.Web.HttpUtility.HtmlEncode(html);
 
         }
+
+        /// <summary>
+        /// HTML decode the string (pass-thru to system; abstracted in case we want to change)
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// The HTML to decode
+        /// </param>
+        ///
+        /// <returns>
+        /// The decoded string
+        /// </returns>
+
         public static string HtmlDecode(string html)
         {
             return System.Web.HttpUtility.HtmlDecode(html);
@@ -602,10 +904,23 @@ namespace CsQuery.HtmlParser
         }
 
         /// <summary>
-        /// Htmlencode a string, except for double-quotes, so it can be enclosed in single-quotes
+        /// HtmlEncode a string, except for double-quotes, so it can be enclosed in single-quotes.
         /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="text">
+        /// The text to encode
+        /// </param>
+        /// <param name="alwaysQuote">
+        /// When true, the attribute value will be quoted even if quotes are not required by the value.
+        /// </param>
+        /// <param name="quoteChar">
+        /// [out] The quote character.
+        /// </param>
+        ///
+        /// <returns>
+        /// The encoded string
+        /// </returns>
+
         public static string AttributeEncode(string text, bool alwaysQuote, out string quoteChar)
         {
             if (text == "")
@@ -651,12 +966,23 @@ namespace CsQuery.HtmlParser
         }
 
         /// <summary>
-        /// For testing only - the inline code never uses this version
+        /// For testing only - the production code never uses this version.
         /// </summary>
-        /// <param name="tag"></param>
-        /// <param name="newTag"></param>
-        /// <param name="isDocument"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="tag">
+        /// .
+        /// </param>
+        /// <param name="newTag">
+        /// .
+        /// </param>
+        /// <param name="isDocument">
+        /// .
+        /// </param>
+        ///
+        /// <returns>
+        /// .
+        /// </returns>
+
         public static ushort SpecialTagAction(string tag, string newTag, bool isDocument = true)
         {
             return isDocument ?
@@ -665,23 +991,22 @@ namespace CsQuery.HtmlParser
         }
 
 
-        // Some tags have inner HTML but are often not closed properly. There are two possible situations. A tag may not 
-        // have a nested instance of itself, and therefore any recurrence of that tag implies the previous one is closed. 
-        // Other tag closings are simply optional, but are not repeater tags (e.g. body, html). These should be handled
-        // automatically by the logic that bubbles any closing tag to its parent if it doesn't match the current tag. The 
-        // exception is <head> which technically does not require a close, but we would not expect to find another close tag
-        // Complete list of optional closing tags: -</HTML>- </HEAD> -</BODY> -</P> -</DT> -</DD> -</LI> -</OPTION> -</THEAD> 
-        // </TH> </TBODY> </TR> </TD> </TFOOT> </COLGROUP>
-        //
-        //  body, html will be closed automatically at the end of parsing and are also not required        
-
         /// <summary>
-        /// Determine a course of action given a new tag, its parent, and whether or not to treat this as a document.
-        /// Return 1 to close, 0 to do nothing, or an ID to generate
+        /// Determine a course of action given a new tag, its parent, and whether or not to treat this as
+        /// a document. Return 1 to close, 0 to do nothing, or an ID to generate.
         /// </summary>
-        /// <param name="parentTagId"></param>
-        /// <param name="newTagId"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="parentTagId">
+        /// The parent tag ID
+        /// </param>
+        /// <param name="newTagId">
+        /// The new tag ID found
+        /// </param>
+        ///
+        /// <returns>
+        /// A tokenId representing an action or a new tag to generate
+        /// </returns>
+
         public static ushort SpecialTagActionForDocument(ushort parentTagId, ushort newTagId)
         {
             if (parentTagId == HtmlData.tagHTML)
@@ -704,12 +1029,38 @@ namespace CsQuery.HtmlParser
             } else {
                 return SpecialTagAction(parentTagId,newTagId);
             }
-                
-
-
         }
 
-
+        /// <summary>
+        /// Return the type of action that should be performed given a tag, and a new tag found as a
+        /// child of that tag.
+        /// </summary>
+        ///
+        /// <remarks>
+        /// Some tags have inner HTML but are often not closed properly. There are two possible
+        /// situations. A tag may not have a nested instance of itself, and therefore any recurrence of
+        /// that tag implies the previous one is closed. Other tag closings are simply optional, but are
+        /// not repeater tags (e.g. body, html). These should be handled automatically by the logic that
+        /// bubbles any closing tag to its parent if it doesn't match the current tag. The exception is
+        /// &lt;head&gt; which technically does not require a close, but we would not expect to find
+        /// another close tag Complete list of optional closing tags: HTML, HEAD, BODY, P, DT, DD, LI,
+        /// OPTION, THEAD, TH, TBODY, TR, TD, TFOOT, COLGROUP
+        /// 
+        ///  body, html will be closed automatically at the end of parsing and are also not required.
+        /// </remarks>
+        ///
+        /// <param name="parentTagId">
+        /// The parent tag's token.
+        /// </param>
+        /// <param name="newTagId">
+        /// The new child tag's token.
+        /// </param>
+        ///
+        /// <returns>
+        /// A tag action code indicating that nothing special should happen or the parent tag should be
+        /// closed; or alternatively the token for a tag that should be generated in place before the new
+        /// tag is opened.
+        /// </returns>
 
         public static ushort SpecialTagAction(ushort parentTagId, ushort newTagId)
         {
@@ -718,13 +1069,13 @@ namespace CsQuery.HtmlParser
             {
                 return HtmlData.tagActionNothing;
             }
+
             switch(parentTagId) {
                 case HtmlData.tagHEAD:
                     return  (newTagId & NonSpecialTokenMask) == 0 &&
                             (TokenMetadata[newTagId] & (ushort)TokenProperties.MetaDataTags) == 0 ?
                                 tagActionClose : tagActionNothing;
-
-                    
+      
                 // [html5] An li element's end tag may be omitted if the li element is immediately followed by another li element 
                 //         or if there is no more content in the parent element.
 
@@ -768,19 +1119,20 @@ namespace CsQuery.HtmlParser
                     return newTagId == HtmlData.tagOPTGROUP
                         ? tagActionClose : tagActionNothing;
 
-                // [html5] An option element's end tag may be omitted if the option element is immediately followed by another option element, 
-                //     or if it is immediately followed by an optgroup element, or if there is no more content in the parent element.
+                // [html5] An option element's end tag may be omitted if the option element is immediately
+                // followed by another option element, or if it is immediately followed by an optgroup element,
+                // or if there is no more content in the parent element. 
 
                 case HtmlData.tagOPTION:
                     return newTagId == HtmlData.tagOPTION
                         ? tagActionClose : tagActionNothing;
 
-                // [html5] A colgroup element's start tag may be omitted if the first thing inside the colgroup element is a col element, and if the element is not immediately 
-                //     preceded by another colgroup element whose end tag has been omitted. (It can't be omitted if the element is empty.)
+                // [html5] A colgroup element's start tag may be omitted if the first thing inside the colgroup
+                // element is a col element, and if the element is not immediately preceded by another colgroup
+                // element whose end tag has been omitted. (It can't be omitted if the element is empty.) 
 
-
-                // [csquery] This logic is beyond the capability of the parser right now. We close colgroup if we hit something else in the table. In practice this
-                //     should make no difference.
+                // [csquery] This logic is beyond the capability of the parser right now. We close colgroup if
+                // we hit something else in the table. In practice this should make no difference. 
 
                 case HtmlData.tagCOLGROUP:
                     return newTagId == HtmlData.tagCOLGROUP || newTagId == HtmlData.tagTR || newTagId == HtmlData.tagTABLE
@@ -789,17 +1141,16 @@ namespace CsQuery.HtmlParser
 
                 // [html5]  A tr element's end tag may be omitted if the tr element is immediately followed by another tr element, or if there is no more content in the parent element.
                 // [csquery] just close it if it's an
+                
                 case HtmlData.tagTR:
                     return newTagId == HtmlData.tagTR || newTagId == HtmlData.tagTBODY || newTagId == HtmlData.tagTFOOT
                         ? tagActionClose : tagActionNothing;
-
-                //return newTagId == HtmlData.tagTD || newTagId == HtmlData.tagTR
-                //    ? SpecialParsingActions.CloseParent : 0;
 
                 case HtmlData.tagTD:
 
                 // [html5] A th element's end tag may be omitted if the th element is immediately followed by a td or th element, or if there is no more content in the parent element.
                 // [csquery] we evaluate "no more content" by trying to open another tag type in the table. This can return both a close & create 
+                
                 case HtmlData.tagTH:
                     return newTagId == HtmlData.tagTBODY || newTagId == HtmlData.tagTFOOT ||
                             newTagId == HtmlData.tagTH || newTagId == HtmlData.tagTD || newTagId == HtmlData.tagTR
@@ -808,11 +1159,7 @@ namespace CsQuery.HtmlParser
                 // simple case: repeater-like tags should be closed by another occurence of itself
 
                 // [html5] A thead element's end tag may be omitted if the thead element is immediately followed by a tbody or tfoot element.
-
-
-
-                //    A tbody element's end tag may be omitted if the tbody element is immediately followed by a tbody or tfoot element, or if there is no more content in the parent element.
-
+                //         A tbody element's end tag may be omitted if the tbody element is immediately followed by a tbody or tfoot element, or if there is no more content in the parent element.
 
                 case HtmlData.tagTHEAD:
                 case HtmlData.tagTBODY:
@@ -843,33 +1190,21 @@ namespace CsQuery.HtmlParser
 
         }
 
-        /// <summary>
-        /// For tags that may automatically generate a parent, this tells what it is
-        /// </summary>
-        /// <param name="newTagId"></param>
-        /// <returns></returns>
-        public static ushort CreateParentFor(ushort newTagId)
-        {
-            switch (newTagId)
-            {
-                //case HtmlData.tagHTML:
-                case HtmlData.tagTR:
-                    return HtmlData.tagTBODY;
-                //case HtmlData.tagCOL:
-                //return HtmlData.tagCOLGROUP;
-                default:
-                    throw new InvalidOperationException(String.Format("I don't know what to create for child tag '{0}", TokenName(newTagId)));
-            }
-        }
         #endregion
 
         #region private methods
 
         /// <summary>
-        /// For each value in "tokens" (ignoring case) sets the specified bit in the reference table
+        /// For each value in "tokens" (ignoring case) sets the specified bit in the reference table.
         /// </summary>
-        /// <param name="tokens"></param>
-        /// <param name="bit"></param>
+        ///
+        /// <param name="tokens">
+        /// A sequence of tokens
+        /// </param>
+        /// <param name="bit">
+        /// The bitflag to set
+        /// </param>
+
         private static void setBit(IEnumerable<string> tokens, TokenProperties bit)
         {
             foreach (var token in tokens)
@@ -880,10 +1215,16 @@ namespace CsQuery.HtmlParser
         }
 
         /// <summary>
-        /// For each value in "tokens" sets the specified bit in the reference table
+        /// For each value in "tokens" sets the specified bit in the reference table.
         /// </summary>
-        /// <param name="tokens"></param>
-        /// <param name="bit"></param>
+        ///
+        /// <param name="tokens">
+        /// The sequence of tokens
+        /// </param>
+        /// <param name="bit">
+        /// The bitflag to set
+        /// </param>
+
         private static void setBit(IEnumerable<ushort> tokens, TokenProperties bit)
         {
             foreach (var token in tokens)
@@ -891,11 +1232,18 @@ namespace CsQuery.HtmlParser
                 setBit(token, bit);
             }
         }
+
         /// <summary>
-        /// Set the specified bit in the reference table for "token"
+        /// Set the specified bit in the reference table for "token".
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="bit"></param>
+        ///
+        /// <param name="token">
+        /// The token
+        /// </param>
+        /// <param name="bit">
+        /// The bit to set
+        /// </param>
+
         private static void setBit(ushort token, TokenProperties bit)
         {
             TokenMetadata[token] |= (ushort)bit;

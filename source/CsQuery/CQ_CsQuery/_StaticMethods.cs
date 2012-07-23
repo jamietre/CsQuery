@@ -137,11 +137,18 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Convert a dictionary to an expando object. Use to get another expando object from a sub-object of an expando object,
-        /// e.g. as returned from JSON data
+        /// Convert a dictionary to a dynamic object. Use to get another expando object from a sub-
+        /// object of an expando object, e.g. as returned from JSON data.
         /// </summary>
-        /// <param name="?"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="obj">
+        /// The object.
+        /// </param>
+        ///
+        /// <returns>
+        /// obj as a JsObject.
+        /// </returns>
+
         public static JsObject ToExpando(object obj)
         {
             JsObject result;

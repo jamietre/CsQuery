@@ -391,11 +391,20 @@ namespace CsQuery.ExtensionMethods.Internal
         }
 
         /// <summary>
-        /// Returns the part of the string before the last occurence of text
+        /// Returns the part of the string before the last occurence of the operand.
         /// </summary>
-        /// <param name="?"></param>
-        /// <param name="text"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="text">
+        /// The text on which to perate
+        /// </param>
+        /// <param name="find">
+        /// The text to find.
+        /// </param>
+        ///
+        /// <returns>
+        /// The portion of the text before the beginning of the last occurence of "find"
+        /// </returns>
+
         public static string BeforeLast(this string text, string find)
         {
             int index = text.LastIndexOf(find);
@@ -410,11 +419,20 @@ namespace CsQuery.ExtensionMethods.Internal
         }
 
         /// <summary>
-        /// Returns the string after the end of the first occurrence of "find"
+        /// Returns the string after the end of the first occurrence of "find".
         /// </summary>
-        /// <param name="text"></param>
-        /// <param name="text"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="text">
+        /// The text to search within
+        /// </param>
+        /// <param name="find">
+        /// The text to find.
+        /// </param>
+        ///
+        /// <returns>
+        /// The portion of the text after the first occurence of "find"
+        /// </returns>
+
         public static string After(this string text, string find)
         {
             int index = text.IndexOf(find);
@@ -526,87 +544,100 @@ namespace CsQuery.ExtensionMethods.Internal
             yield break;
         }
 
-        /// <summary>
-        /// Test a string for null or empty; if true, returns an alternate value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="alternate"></param>
-        /// <returns></returns>
-        //public static string IfNullOrEmpty(this string value, string alternate)
-        //{
-        //    return value.IsNullOrEmpty() ? alternate : value;
-        //}
-
-        /// <summary>
-        /// Test a string for null; if true, returns an alternate value
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="alternate"></param>
-        /// <returns></returns>
-        //public static string IfNull(this string value, string alternate)
-        //{
-        //    return value == null ? alternate : value;
-        //}
-
-
         #endregion
 
         #region char and char array methods 
 
         /// <summary>
-        /// Return a substring from a character array
+        /// Return a substring from a character array starting at the startIndex provided of the
+        /// specified length.
         /// </summary>
-        /// <param name="text"></param>
-        /// <param name="startIndex"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="text">
+        /// The source text.
+        /// </param>
+        /// <param name="startIndex">
+        /// The starting index.
+        /// </param>
+        /// <param name="length">
+        /// The length of the substring to extract.
+        /// </param>
+        ///
+        /// <returns>
+        /// The substring.
+        /// </returns>
+
         public static string Substring(this char[] text, int startIndex, int length)
         {
+            var sb = new StringBuilder(length);
+            sb.Append(text, startIndex, length);
+            return sb.ToString();
 
-            string result = "";
-            for (int i = startIndex; i < startIndex + length; i++)
-            {
-                result += text[i];
-            }
-            return result;
         }
 
         /// <summary>
-        /// Return a substring from a character array
+        /// Return a substring from a character array from the starting index to the end of the array.
         /// </summary>
-        /// <param name="text"></param>
-        /// <param name="startIndex"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="text">
+        /// The source text.
+        /// </param>
+        /// <param name="startIndex">
+        /// The starting index.
+        /// </param>
+        ///
+        /// <returns>
+        /// The substring.
+        /// </returns>
+
         public static string Substring(this char[] text, int startIndex)
         {
+            int len = text.Length - startIndex;
+            var sb = new StringBuilder(len);
+            sb.Append(text, startIndex,len);
+            return sb.ToString();
 
-            string result = "";
-            int i = startIndex;
-            while (i < text.Length)
-            {
-                result += text[i++];
-            }
-            return result;
         }
 
         /// <summary>
-        /// Return the position of the first occurrence of a string in a character array 
+        /// Return the position of the first occurrence of a string in a character array.
         /// </summary>
-        /// <param name="text"></param>
-        /// <param name="seek"></param>
-        /// <param name="startIndex"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="text">
+        /// The text to seek within
+        /// </param>
+        /// <param name="seek">
+        /// The tarket
+        /// </param>
+        ///
+        /// <returns>
+        /// The index of the target, or -1 if not found
+        /// </returns>
+
         public static int Seek(this char[] text, string seek)
         {
             return Seek(text, seek, 0);
         }
 
         /// <summary>
-        /// Return the position of the first occurrence of a string in a character array that is on or after startIndex
+        /// Return the position of the first occurrence of a string in a character array that is on or
+        /// after startIndex.
         /// </summary>
-        /// <param name="text"></param>
-        /// <param name="seek"></param>
-        /// <param name="startIndex"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="text">
+        /// .
+        /// </param>
+        /// <param name="seek">
+        /// .
+        /// </param>
+        /// <param name="startIndex">
+        /// .
+        /// </param>
+        ///
+        /// <returns>
+        /// .
+        /// </returns>
+
         public static int Seek(this char[] text, string seek, int startIndex)
         {
             int nextPos =startIndex;

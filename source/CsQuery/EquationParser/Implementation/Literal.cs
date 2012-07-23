@@ -126,15 +126,20 @@ namespace CsQuery.EquationParser.Implementation
         }
 
         /// <summary>
-        /// This is static so it can be used by the constructors -- sets the value of the strongly typed instance
+        /// This is static so it can be used by the constructors -- sets the value of the strongly typed
+        /// instance.
         /// </summary>
-        /// <param name="literal"></param>
-        /// <param name="value"></param>
+        ///
+        /// <param name="value">
+        /// The value to set
+        /// </param>
+
         private void SetConvert(IConvertible value)
         {
 
             Set((T)Convert.ChangeType(value, typeof(T)));
         }
+
         #endregion
 
         #region interface members

@@ -584,10 +584,24 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Cleans/validates a CSS units string, or throws an error if not possible
+        /// Cleans/validates a CSS units string, or throws an error if not possible.
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown when one or more arguments have unsupported or illegal values.
+        /// </exception>
+        ///
+        /// <param name="name">
+        /// The style name.
+        /// </param>
+        /// <param name="value">
+        /// The value to validate
+        /// </param>
+        ///
+        /// <returns>
+        /// A parsed string of the value
+        /// </returns>
+
         protected string ValidateUnitString(string name,string value)
         {
             int pos = 0;

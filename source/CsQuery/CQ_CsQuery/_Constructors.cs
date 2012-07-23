@@ -26,7 +26,7 @@ namespace CsQuery
 
         /// <summary>
         /// Create a new CQ object from an HTML character array. Synonymous with
-        /// <see cref="CsQuery.Create(char[])"/>
+        /// <see cref="CQ.Create(char[])"/>
         /// </summary>
         ///
         /// <param name="html">
@@ -43,7 +43,7 @@ namespace CsQuery
         /// </summary>
         /// 
         /// <remarks>
-        /// This differs from the <see cref="CsQuery.Create"/> method in that this document is still
+        /// This differs from the <see cref="CQ.Create"/> method in that this document is still
         /// related to its owning document; this is the same as if the element had just been selected.
         /// The Create method, conversely, creates an entirely new Document context contining a single
         /// element (a clone of this element).
@@ -66,7 +66,7 @@ namespace CsQuery
         /// <remarks>
         /// This differs from the overload accepting a single IDomObject parameter in that it associates
         /// the new object with a previous object, as if it were part of a selector chain. In practice
-        /// this will rarely make a difference, but some methods such as <see cref="CsQuery.End"/> use
+        /// this will rarely make a difference, but some methods such as <see cref="CQ.End"/> use
         /// this information.
         /// </remarks>
         ///

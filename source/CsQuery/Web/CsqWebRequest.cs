@@ -11,28 +11,92 @@ using CsQuery.ExtensionMethods;
 
 namespace CsQuery.Web
 {
-    public class CsqWebRequest: ICsqWebRequest 
+    /// <summary>
+    /// A CsqWebRequest object manages data and state related to a WebRequest
+    /// </summary>
+
+    public class CsqWebRequest: ICsqWebRequest
     {
+        #region constructor
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        ///
+        /// <param name="url">
+        /// URL of the document.
+        /// </param>
+
         public CsqWebRequest(string url)
         {
             Url = url;
         }
+
+        #endregion
+
+        #region private properties
+
+        Lazy<List<KeyValuePair<string, string>>> _PostData = new Lazy<List<KeyValuePair<string, string>>>();
+
+        #endregion
+
+        #region public properties
+        
+        /// <summary>
+        /// The url to load.
+        /// </summary>
+
         public string Url { get; protected set; }
+
+        /// <summary>
+        /// The UserAgent string to present to the remote server.
+        /// </summary>
+
         public string UserAgent {get;set;}
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the asynchronous.
+        /// </summary>
+
         public bool Async { get; set; }
+
+        /// <summary>
+        /// Returns true when this request has finished processing.
+        /// </summary>
+
         public bool Complete { get; protected set; }
+
+        /// <summary>
+        /// The CQ object representing the contents of the URL.
+        /// </summary>
+
         public CQ Dom { get; protected set; }
 
         /// <summary>
         /// The time, in milliseconds, after which to abort an incomplete request.
         /// </summary>
+
         public int Timeout { get; set; }
+
+        /// <summary>
+        /// A unique ID for this request. This will be automatically generated if not assigned.
+        /// </summary>
+
         public object Id {get;set;}
+
+        /// <summary>
+        /// Gets or sets the HTML.
+        /// </summary>
 
         public string Html
         {
             get;set;
         }
+
+        /// <summary>
+        /// Gets or sets the post data string.
+        /// </summary>
+
         public string PostDataString
         {
             get
@@ -63,6 +127,9 @@ namespace CsQuery.Web
             }
         }
 
+        /// <summary>
+        /// Gets the information describing the post data to be sent this request.
+        /// </summary>
 
         public List<KeyValuePair<string,string>> PostData 
         {
@@ -70,7 +137,26 @@ namespace CsQuery.Web
                 return _PostData.Value;
             }
         }
-        Lazy<List<KeyValuePair<string, string>>> _PostData = new Lazy<List<KeyValuePair<string, string>>>();
+
+        #endregion
+        
+        #region public methods
+
+        /// <summary>
+        /// Initiates an asynchronous GET request.
+        /// </summary>
+        ///
+        /// <param name="success">
+        /// A delegate that will be invoked with the response data structure upon successful resolution
+        /// of the request.
+        /// </param>
+        /// <param name="fail">
+        /// A delegate that will be invoked with the response data structure upon failure.
+        /// </param>
+        ///
+        /// <returns>
+        /// A ManualResetEvent object for this asynchronous operation.
+        /// </returns>
 
         public ManualResetEvent GetAsync(Action<ICsqWebResponse> success, Action<ICsqWebResponse> fail)
         {
@@ -84,38 +170,84 @@ namespace CsQuery.Web
 
             return requestInfo.GetAsync();
         }
-        
+
         /// <summary>
-        /// Initiate an http GET request
+        /// Initiate a synchronous GET request.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <returns>
+        /// The HTML returned by a successful request
+        /// </returns>
+
         public string Get()
         {
-           // HttpWebRequest webRequest = default(HttpWebRequest);
-           // var async = WebRequest.
             HttpWebRequest request = GetWebRequest();
-			request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+
             Html=null;
             using (StreamReader responseReader = new StreamReader(request.GetResponse().GetResponseStream())) {
                 Html = responseReader.ReadToEnd();
             }
             return Html;
         }
+
+        /// <summary>
+        /// Gets a general-purpose web request object.
+        /// </summary>
+        ///
+        /// <returns>
+        /// An HttpWebRequest.
+        /// </returns>
+
         protected HttpWebRequest GetWebRequest()
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url);
+            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             return request;
         }
+
         /// <summary>
-        /// Initiaite an http POST request
+        /// Initiate an http POST request.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <returns>
+        /// The data returned by the POST request
+        /// </returns>
+
         public string Post() {
             return Post(Url,PostData);
         }
+
+        /// <summary>
+        /// Initiate an http POST request.
+        /// </summary>
+        ///
+        /// <param name="url">
+        /// URL of the document.
+        /// </param>
+        ///
+        /// <returns>
+        /// The data returned by the POST request
+        /// </returns>
+
         public string Post(string url) {
             return Post(url,PostData);
         }
+
+        /// <summary>
+        /// Initiate an http POST request.
+        /// </summary>
+        ///
+        /// <param name="url">
+        /// URL of the document.
+        /// </param>
+        /// <param name="postData">
+        /// The information describing the post data to be sent this request.
+        /// </param>
+        ///
+        /// <returns>
+        /// The data returned by the POST request.
+        /// </returns>
+
         public string Post(string url, IEnumerable<KeyValuePair<string, string>> postData)
         {
             var encoding = new ASCIIEncoding();
@@ -138,11 +270,8 @@ namespace CsQuery.Web
             }
             return Html;
         }
-
-
-
+        
+        #endregion
 
     }
-   
-  
 }

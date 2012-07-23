@@ -157,51 +157,6 @@ namespace CsQuery.Utility
         }
 
         /// <summary>
-        /// Try to parse a single JSON value to a C# value (string, bool, int, double, datetime) or, if
-        /// the value is another object, an object or array.
-        /// </summary>
-        ///
-        /// <param name="jsonValue">
-        /// A string that represents a single nameless JSON value.
-        /// </param>
-        /// <param name="value">
-        /// [out] the converted and typecast CLR value.
-        /// </param>
-        ///
-        /// <returns>
-        /// True if parsing was successful, false if not
-        /// </returns>
-
-        //public static bool TryParseJSONValue(string jsonValue, out object value)
-        //{
-        //    if (TryParseJsonValueImpl(jsonValue, out value)) {
-        //        return true;
-        //    } else {
-        //        // It's not a string, see what we can get out of it
-        //        int integer;
-        //        if (int.TryParse(jsonValue, out integer))
-        //        {
-        //            value= integer;
-        //            return true;
-        //        }
-        //        double dbl;
-        //        if (double.TryParse(jsonValue, out dbl))
-        //        {
-        //            value=dbl;
-        //            return true;
-        //        }
-        //        bool boolean;
-        //        if (bool.TryParse(jsonValue, out boolean))
-        //        {
-        //            value=boolean;
-        //            return true;
-        //        }
-
-        //        return false;
-        //   }
-        //}
-
-        /// <summary>
         /// Parse a JSON value to a C# CLR object of the type requested.
         /// </summary>
         ///
@@ -324,54 +279,7 @@ namespace CsQuery.Utility
             }
             value = null;
             return false;
-                    
             
-            //{
-            //    string obj = jsonValue.Trim();
-            //    if (type.IsEnum)
-            //    {
-            //        int integer;
-            //        if (int.TryParse(obj, out integer))
-            //        {
-            //            value = isObject ?
-            //                integer : 
-            //                Enum.Parse(type, integer.ToString());
-            //            return true;
-            //        }
-            //    }
-            //    if (Objects.IsNumericType(type))
-            //    {
-            //        int integer;
-            //        if (int.TryParse(obj, out integer))
-            //        {
-            //            value =isObject ?
-            //                integer:
-            //                Convert.ChangeType(integer, type);
-            //            return true;
-            //        }
-            //        double dbl;
-            //        if (double.TryParse(obj, out dbl))
-            //        {
-            //            value = isObject ?
-            //                dbl :
-            //                Convert.ChangeType(dbl, type);
-            //            return true;
-            //        }
-            //    }
-            //    else if (Objects.GetUnderlyingType(type) == typeof(bool))
-            //    {
-            //        bool boolean;
-            //        if (bool.TryParse(obj, out boolean))
-            //        {
-            //            value = isObject ?
-            //                boolean: 
-            //                Convert.ChangeType(boolean,type);
-            //            return true;
-            //        }
-            //    }
-            //}
-            return false;
-
         }
 
         /// <summary>

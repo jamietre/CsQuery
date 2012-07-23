@@ -109,10 +109,9 @@ namespace CsQuery
 
             foreach (var target in Elements)
             {
-                /// <summary>
-                /// For the first iteration, the elements can be moved. For successive iterations, a clone
-                /// must be insterted.
-                /// </summary>
+
+                // For the first iteration, the elements can be moved. For successive iterations, a clone must
+                // be insterted. 
 
                 IEnumerable<IDomObject> content =
                     first ?

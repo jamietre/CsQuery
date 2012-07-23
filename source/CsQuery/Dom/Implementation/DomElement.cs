@@ -296,7 +296,7 @@ namespace CsQuery.Implementation
         /// <url>
         /// https://developer.mozilla.org/en/DOM/element.name
         /// </url>
-
+        ///
         /// <implementation>
         /// TODO: Verify that the attribute is applicable to this node type and return null otherwise.
         /// </implementation>

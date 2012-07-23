@@ -54,7 +54,7 @@
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
   <PropertyGroup>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -246,6 +246,8 @@
     <Compile Include="Dom\Implementation\AttributeDictionary.cs" />
     <Compile Include="Utility\FastActivator.cs" />
     <Compile Include="Utility\Types.cs" />
+    <Compile Include="Web\enumRequestState.cs" />
+    <Compile Include="Web\ICsqWebRequestMetadata.cs" />
     <Compile Include="Web\WebForms.cs" />
     <Compile Include="OutputFormatters\IOutputFormatter.cs" />
     <Compile Include="OutputFormatters\FormatPlainText.cs" />

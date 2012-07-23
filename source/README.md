@@ -6,7 +6,7 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ### Change Log
 
-####Version 1.1.3.1 (development)
+####Version 1.1.3.1
 
 *Bug Fixes*
 
@@ -15,15 +15,12 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 - [Issue #20](https://github.com/jamietre/CsQuery/issues/20) - selector engine doesn't recognize hex escape sequences - [pull request #22 from @vitallium](https://github.com/jamietre/CsQuery/pull/22)
 - Store string values without JSON-syntax quotes to match the format expected by jQuery when using `Data(name,value)` method. 
 
-*Enhancements*
+*Other Changes*
 
 - [Issue #24](https://github.com/jamietre/CsQuery/issues/24) - improve performance of substring extraction method in HTML parser
 - Add `CsQuery.Config.DynamicObjectType` to specify default dynamic type when dynamic objects are created.
-
-*Changes*
-
-- Change internal type from List<T> to T[] for object deserialization methods. Testing unknown objects for enumerable types, and treating them as a sequence in those situations, is too risky. We should only treat actual arrays as JSON arrays.
-- 
+- Change internal type from List<T> to T[] for JSON deserialization methods. Testing unknown objects for enumerable types, and treating them as a sequence in those situations, is too risky. We should only treat actual arrays as JSON arrays.
+- Clean up XML documentation in Selector, IterationData, HtmlData, others
 
 ####Version 1.1.3
 

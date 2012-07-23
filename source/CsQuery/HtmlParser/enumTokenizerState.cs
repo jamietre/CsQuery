@@ -5,10 +5,28 @@ using System.Text;
 
 namespace CsQuery.HtmlParser
 {
+    /// <summary>
+    /// Values that represent the current state of the tokenizer for an IterationData object
+    /// </summary>
+
     public enum TokenizerState : byte
     {
-        Default = 0,         // default parsing
-        TagStart = 1,      // We're inside a tag opener
+        /// <summary>
+        /// The normal (default) state; means content / looking for tags.
+        /// </summary>
+        
+        Default = 0,         
+        
+        /// <summary>
+        /// The tokenizer is inside an opening tag and parsing attributes.
+        /// </summary>
+        
+        TagStart = 1,     
+        
+        /// <summary>
+        /// The tokenizer is finished parsing this node.
+        /// </summary>
+       
         Finished = 2
     }
 }
