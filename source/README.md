@@ -13,14 +13,17 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 - [Issue #25](https://github.com/jamietre/CsQuery/issues/25) - `CreateFromUrl` not accepting compressed content - [pull request #25 from @vitallium](https://github.com/jamietre/CsQuery/pull/26)
 - [Issue #23](https://github.com/jamietre/CsQuery/issues/23) - Possible index out of range parsing invalid HTML
 - [Issue #20](https://github.com/jamietre/CsQuery/issues/20) - selector engine doesn't recognize hex escape sequences - [pull request #22 from @vitallium](https://github.com/jamietre/CsQuery/pull/22)
+- Store string values without JSON-syntax quotes to match the format expected by jQuery when using `Data(name,value)` method. 
 
 *Enhancements*
 
 - [Issue #24](https://github.com/jamietre/CsQuery/issues/24) - improve performance of substring extraction method in HTML parser
+- Add `CsQuery.Config.DynamicObjectType` to specify default dynamic type when dynamic objects are created.
 
 *Changes*
 
 - Change internal type from List<T> to T[] for object deserialization methods. Testing unknown objects for enumerable types, and treating them as a sequence in those situations, is too risky. We should only treat actual arrays as JSON arrays.
+- 
 
 ####Version 1.1.3
 
