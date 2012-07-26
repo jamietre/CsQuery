@@ -17,18 +17,18 @@ namespace CsQuery.Implementation
     /// https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
     /// </url>
 
-    public class HtmlOptionsCollection: IHtmlOptionsCollection
+    public class HTMLOptionsCollection: IHTMLOptionsCollection
     {
         #region constructor
 
-        public HtmlOptionsCollection(IDomElement parent)
+        public HTMLOptionsCollection(IDomElement parent)
         {
-            if (parent.NodeNameID != HtmlData.tagOPTION)
+            if (parent.NodeNameID != HtmlData.tagSELECT)
             {
-                throw new ArgumentException("The parent node for an HtmlOptionsCollection must be an Option node.");
+                throw new ArgumentException("The parent node for an HtmlOptionsCollection must be a SELECT node.");
             }
 
-            Parent = (IDomElementSelect)parent;
+            Parent = (IHTMLSelectElement)parent;
         }
 
         #endregion
@@ -39,7 +39,7 @@ namespace CsQuery.Implementation
         /// Gets the parent element for this collection
         /// </summary>
 
-        public IDomElementSelect Parent { get; protected set; }
+        public IHTMLSelectElement Parent { get; protected set; }
 
         /// <summary>
         /// Returns the specific node at the given zero-based index (gives null if out of range)
@@ -134,25 +134,28 @@ namespace CsQuery.Implementation
             }
         }
 
-        /// <summary>
-        /// Returns the index of the currently selected item. You may select an item by assigning its
-        /// index to this property. By assigning -1 to this property, all items will be deselected.
-        /// Returns -1 if no items are selected.
-        /// </summary>
-        ///
-        /// <url>
-        /// https://developer.mozilla.org/en/XUL/Property/selectedIndex.
-        /// </url>
+        #endregion
 
-        public int SelectedIndex
+        #region internal properties
+
+        // These properties are the implementations of methods exposed on IDomElementSelect
+
+        /// <summary>
+        /// Logic: if nothing specifically selected, find the first enabled option, otherwise, the first disabled option.
+        /// </summary>
+
+        internal int SelectedIndex
         {
             get
             {
-                var index = this.IndexOf(item => item.Selected);
+                var index = Children(Parent).IndexOf(item => 
+                    item.Element.HasAttribute("selected"));
 
                 return Parent.Multiple ?
                     index :
-                    index == -1 ? 0 : index;
+                    index == -1 ? 
+                        Children(Parent).IndexOf(item=>!item.Disabled) : 
+                        index;
             }
             set
             {
@@ -170,11 +173,25 @@ namespace CsQuery.Implementation
             }
         }
 
-        public IDomElement SelectedItem
+        internal IDomElement SelectedItem
         {
             get
             {
-
+                return Children().Where(item => item.HasAttribute(HtmlData.SelectedAttrId)).FirstOrDefault();
+            }
+            set
+            {
+                Children().ForEach((item) =>
+                {
+                    if (item == value)
+                    {
+                        item.SetAttribute(HtmlData.SelectedAttrId);
+                    }
+                    else if (item.Selected)
+                    {
+                        item.RemoveAttribute(HtmlData.SelectedAttrId);
+                    }
+                });
             }
         }
 
@@ -225,30 +242,55 @@ namespace CsQuery.Implementation
 
         protected IEnumerable<DomElement> Children()
         {
-            return Children(Parent);
+            return Children(Parent).Select(item => item.Element);
         }
 
         /// <summary>
-        /// Implementation for Children.
+        /// Implementation for Children. The bool part of the tuple indicates if the element inherits a
+        /// "disabled" property.
         /// </summary>
+        ///
+        /// <param name="parent">
+        /// The parent element for this collection.
+        /// </param>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process children in this collection.
+        /// </returns>
 
-        private IEnumerable<DomElement> Children(IDomElement parent)
+        private IEnumerable<OptionElement> Children(IDomElement parent)
         {
-            foreach (var item in parent.ChildNodes)
+            return Children(parent, false);
+        }
+
+        private IEnumerable<OptionElement> Children(IDomElement parent, bool disabled)
+        {
+            foreach (var item in parent.ChildElements)
             {
                 switch (item.NodeNameID)
                 {
                     case HtmlData.tagOPTION:
-                        yield return (DomElement)item;
+                        yield return new OptionElement {
+                             Element = (DomElement)item,
+                             Disabled = disabled || item.HasAttribute("disabled")
+                        };
                         break;
+
                     case HtmlData.tagOPTGROUP:
-                        foreach (var child in Children((IDomElement)item))
+                        foreach (var child in Children(item, disabled || item.HasAttribute("disabled")))
                         {
                             yield return child;
                         }
                         break;
                 }
             }
+        }
+
+        private struct OptionElement
+        {
+            public DomElement Element;
+            public bool Disabled;
+
         }
 
         #endregion

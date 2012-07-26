@@ -13,8 +13,7 @@ namespace CsQuery.Implementation
     /// document, doctype)
     /// </summary>
 
-    public abstract class DomObject: IDomObject, IDomNode, 
-        IDomElementSelect
+    public abstract class DomObject: IDomObject, IDomNode
     {
 
         #region private properties
@@ -614,20 +613,6 @@ namespace CsQuery.Implementation
             {
                 return false;
             }
-        }
-
-        /// <summary>
-        /// Indicates whether the element is selected or not. This value is read-only. To change the
-        /// selection, set either the selectedIndex or selectedItem property of the containing element.
-        /// </summary>
-        ///
-        /// <url>
-        /// https://developer.mozilla.org/en/XUL/Attribute/selected
-        /// </url>
-
-        public virtual bool Selected
-        {
-            get { return false; }
         }
 
         /// <summary>
@@ -1356,24 +1341,24 @@ namespace CsQuery.Implementation
         /// A string of HTML
         /// </returns>
 
-        public string ElementHtml()
+        public virtual string ElementHtml()
         {
             throw new InvalidOperationException("This is not an Element object.");
         }
 
-        public bool IsBlock
+        public virtual bool IsBlock
         {
             get
             {
                 throw new InvalidOperationException("This is not an Element object.");
             }
         }
-        public IEnumerable<string> IndexKeys()
+        public virtual IEnumerable<string> IndexKeys()
         {
             throw new InvalidOperationException("This is not an indexed object.");
         }
 
-        public IDomObject IndexReference
+        public virtual IDomObject IndexReference
         {
             get
             {
@@ -1385,88 +1370,87 @@ namespace CsQuery.Implementation
 
         #region select element properties
 
-        /// <summary>
-        /// A collection of HTML option elements (in document order)
-        /// </summary>
-        ///
-        /// <url>
-        /// https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
-        /// </url>
 
-        public IHtmlOptionsCollection Options
+        #endregion 
+
+
+        #region option element properties
+
+        private HTMLOptionsCollection OwnerSelectOptions()
         {
-            get
+
+            var node = OptionOwner();
+            if (node == null)
             {
-                return this.NodeNameID == HtmlData.tagOPTION ?
-                    new HtmlOptionsCollection(this) :
-                    null;
+                throw new InvalidOperationException("The selected property only applies to valid OPTION nodes within a SELECT node");
             }
+            return OwnerSelectOptions(node);
+
+        }
+        private HTMLOptionsCollection OwnerSelectOptions(IDomElement owner)
+        {
+            return new HTMLOptionsCollection((IDomElement)owner);
+        }
+
+        private IDomElement OptionOwner()
+        {
+            var node =   this.ParentNode == null ?
+                null :
+                this.ParentNode.NodeNameID == HtmlData.tagSELECT ?
+                    this.ParentNode :
+                        this.ParentNode.ParentNode == null ?
+                            null :
+                            this.ParentNode.ParentNode.NodeNameID == HtmlData.tagSELECT ?
+                                this.ParentNode.ParentNode :
+                                null;
+            return (IDomElement)node;
         }
 
         /// <summary>
-        /// This Boolean attribute indicates that multiple options can be selected in the list. If it is
-        /// not specified, then only one option can be selected at a time.
+        /// Indicates whether the element is selected or not. This value is read-only. To change the
+        /// selection, set either the selectedIndex or selectedItem property of the containing element.
         /// </summary>
         ///
         /// <url>
-        /// https://developer.mozilla.org/en/HTML/Element/select
+        /// https://developer.mozilla.org/en/XUL/Attribute/selected
         /// </url>
 
-        public bool Multiple
+        public virtual bool Selected
         {
             get
             {
-                return ((DomElement)this).HasAttribute(HtmlData.attrMULTIPLE);
-            }
-            set
-            {
-                ((DomElement)this).SetAttribute(HtmlData.attrMULTIPLE);
-            }
-        }
-
-        /// <summary>
-        /// Returns the index of the currently selected item. You may select an item by assigning its
-        /// index to this property. By assigning -1 to this property, all items will be deselected.
-        /// Returns -1 if no items are selected.
-        /// </summary>
-        ///
-        /// <url>
-        /// https://developer.mozilla.org/en/XUL/Property/selectedIndex.
-        /// </url>
-
-        public int SelectedIndex { 
-            get
-            {
-                return Options.Sel
-            }
-            set
-            {
-                Options.ForEach((item, i) =>
+                var owner = OptionOwner();
+                if (owner != null)
                 {
-                    if (i == value)
+                    return ((DomElement)this).HasAttribute(HtmlData.SelectedAttrId) ||
+                        OwnerSelectOptions(owner).SelectedItem == this;
+                }
+                else
+                {
+                    return ((DomElement)this).HasAttribute(HtmlData.SelectedAttrId);
+                }
+            }
+            set
+            {
+                var owner = OptionOwner();
+                if (owner != null)
+                {
+                    if (value)
                     {
-                        ((DomElement)item).SetAttribute(HtmlData.SelectedAttrId);
+                        OwnerSelectOptions(owner).SelectedItem = (DomElement)this;
                     }
-                    else if (item.Selected)
+                    else
                     {
-                        ((DomElement)item).RemoveAttribute(HtmlData.SelectedAttrId);
+                        ((DomElement)this).RemoveAttribute(HtmlData.SelectedAttrId);
                     }
-                });
+                }
+                else
+                {
+                    ((DomElement)this).SetAttribute(HtmlData.SelectedAttrId);
+                }
             }
         }
 
-        /// <summary>
-        /// Holds the currently selected item. If no item is currently selected, this value will be null.
-        /// You can select an item by setting this value. A select event will be sent to the container
-        /// (i.e. the listbox, richlistbox, etc., not the list item that was selected) when it is changed
-        /// either via this property, the selectedIndex property, or changed by the user.
-        /// </summary>
-        ///
-        /// <url>
-        /// https://developer.mozilla.org/en/XUL/Property/selectedItem
-        /// </url>
-
-        public IDomElement SelectedItem { get; set; }
 
         #endregion
 

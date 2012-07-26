@@ -309,7 +309,7 @@ namespace CsQuery.Engine
                 }
                 
                 lastResult = lastResult == null ?
-                    result : lastResult.Append(result); 
+                    result : lastResult.Concat(result); 
                 
             }
 

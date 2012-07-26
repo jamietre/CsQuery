@@ -64,7 +64,43 @@ namespace CsQuery.ExtensionMethods
 
         #endregion
 
+
+
         #region IEnumerable<T> extension methods
+
+        /// <summary>
+        /// Append an element to the end of a sequence.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="list">
+        /// The list to act on.
+        /// </param>
+        /// <param name="element">
+        /// The element to append.
+        /// </param>
+        ///
+        /// <returns>
+        /// The combined sequence.
+        /// </returns>
+
+        public static IEnumerable<T> Concat<T>(this IEnumerable<T> list, T element)
+        {
+            if (list != null)
+            {
+                foreach (var item in list)
+                {
+                    yield return item;
+                }
+            }
+
+            if (element != null)
+            {
+                yield return element;
+            }
+        }
 
         /// <summary>
         /// Return the zero-based index of the first item in a sequence where the predicate returns true
@@ -129,25 +165,6 @@ namespace CsQuery.ExtensionMethods
             return -1;
         }
 
-        /// <summary>
-        /// Clone a sequence of elements to a new sequence
-        /// </summary>
-        ///
-        /// <param name="source">
-        /// The source sequence
-        /// </param>
-        ///
-        /// <returns>
-        /// A sequence containing a clone of each element in the source.
-        /// </returns>
-
-        public static IEnumerable<ICloneable> Clone(this IEnumerable<ICloneable> source)
-        {
-            foreach (ICloneable item in source)
-            {
-                yield return (ICloneable)item.Clone();
-            }
-        }
 
         /// <summary>
         /// Iterate over a sequence, calling the delegate for each element.
@@ -298,7 +315,27 @@ namespace CsQuery.ExtensionMethods
 
         #endregion
 
-        #region miscellaneous
+        #region Miscellaneous / CsQuery specific
+
+        /// <summary>
+        /// Clone a sequence of elements to a new sequence
+        /// </summary>
+        ///
+        /// <param name="source">
+        /// The source sequence
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence containing a clone of each element in the source.
+        /// </returns>
+
+        public static IEnumerable<IDomObject> Clone(this IEnumerable<IDomObject> source)
+        {
+            foreach (var item in source)
+            {
+                yield return item.Clone();
+            }
+        }
 
         public static Array Slice(this Array array, int start, int end)
         {

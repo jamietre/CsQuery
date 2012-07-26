@@ -594,7 +594,7 @@ namespace CsQuery
         /// https://developer.mozilla.org/en/XUL/Attribute/selected
         /// </url>
 
-        bool Selected { get; }
+        bool Selected { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the element is checked.

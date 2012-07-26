@@ -21,6 +21,21 @@
     </SccAuxPath>
     <SccProvider>
     </SccProvider>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -68,6 +83,7 @@
     <Compile Include="Arrays.cs" />
     <Compile Include="AssertEx.cs" />
     <Compile Include="Csharp\Documents\MultipleDocs.cs" />
+    <Compile Include="Csharp\Dom\DomSelectElement.cs" />
     <Compile Include="Csharp\Dom\DomDocument.cs" />
     <Compile Include="Csharp\Dom\DomFragment.cs" />
     <Compile Include="Csharp\Dom\DomElement.cs" />
@@ -77,11 +93,86 @@
     <Compile Include="Csharp\Methods\Each.cs" />
     <Compile Include="Csharp\Methods\Text.cs" />
     <Compile Include="Csharp\Methods\Slice.cs" />
+    <Content Include="Resources\jsdom\Level2\anchor.html" />
+    <Content Include="Resources\jsdom\Level2\anchor2.html" />
+    <Content Include="Resources\jsdom\Level2\anchor3.html" />
+    <Content Include="Resources\jsdom\Level2\applet.html" />
+    <Content Include="Resources\jsdom\Level2\applet2.html" />
+    <Content Include="Resources\jsdom\Level2\area.html" />
+    <Content Include="Resources\jsdom\Level2\area2.html" />
+    <Content Include="Resources\jsdom\Level2\base.html" />
+    <Content Include="Resources\jsdom\Level2\base2.html" />
+    <Content Include="Resources\jsdom\Level2\basefont.html" />
+    <Content Include="Resources\jsdom\Level2\body.html" />
+    <Content Include="Resources\jsdom\Level2\br.html" />
+    <Content Include="Resources\jsdom\Level2\button.html" />
+    <Content Include="Resources\jsdom\Level2\collection.html" />
+    <Content Include="Resources\jsdom\Level2\directory.html" />
+    <Content Include="Resources\jsdom\Level2\div.html" />
+    <Content Include="Resources\jsdom\Level2\dl.html" />
+    <Content Include="Resources\jsdom\Level2\document.html" />
+    <Content Include="Resources\jsdom\Level2\element.html" />
+    <Content Include="Resources\jsdom\Level2\fieldset.html" />
+    <Content Include="Resources\jsdom\Level2\font.html" />
+    <Content Include="Resources\jsdom\Level2\form.html" />
+    <Content Include="Resources\jsdom\Level2\form2.html" />
+    <Content Include="Resources\jsdom\Level2\form3.html" />
+    <Content Include="Resources\jsdom\Level2\frame.html" />
+    <Content Include="Resources\jsdom\Level2\frame2.html" />
+    <Content Include="Resources\jsdom\Level2\frameset.html" />
+    <Content Include="Resources\jsdom\Level2\head.html" />
+    <Content Include="Resources\jsdom\Level2\heading.html" />
+    <Content Include="Resources\jsdom\Level2\hr.html" />
+    <Content Include="Resources\jsdom\Level2\html.html" />
+    <Content Include="Resources\jsdom\Level2\iframe.html" />
+    <Content Include="Resources\jsdom\Level2\iframe2.html" />
+    <Content Include="Resources\jsdom\Level2\img.html" />
+    <Content Include="Resources\jsdom\Level2\img\right.png" />
+    <Content Include="Resources\jsdom\Level2\img\w3c_main.png" />
+    <Content Include="Resources\jsdom\Level2\input.html" />
+    <Content Include="Resources\jsdom\Level2\isindex.html" />
+    <Content Include="Resources\jsdom\Level2\js\script1.js" />
+    <Content Include="Resources\jsdom\Level2\label.html" />
+    <Content Include="Resources\jsdom\Level2\legend.html" />
+    <Content Include="Resources\jsdom\Level2\li.html" />
+    <Content Include="Resources\jsdom\Level2\link.html" />
+    <Content Include="Resources\jsdom\Level2\link2.html" />
+    <Content Include="Resources\jsdom\Level2\map.html" />
+    <Content Include="Resources\jsdom\Level2\menu.html" />
+    <Content Include="Resources\jsdom\Level2\meta.html" />
+    <Content Include="Resources\jsdom\Level2\mod.html" />
+    <Content Include="Resources\jsdom\Level2\object.html" />
+    <Content Include="Resources\jsdom\Level2\object2.html" />
+    <Content Include="Resources\jsdom\Level2\olist.html" />
+    <Content Include="Resources\jsdom\Level2\optgroup.html" />
+    <Content Include="Resources\jsdom\Level2\option.html" />
+    <Content Include="Resources\jsdom\Level2\optionscollection.html" />
+    <Content Include="Resources\jsdom\Level2\paragraph.html" />
+    <Content Include="Resources\jsdom\Level2\param.html" />
+    <Content Include="Resources\jsdom\Level2\pre.html" />
+    <Content Include="Resources\jsdom\Level2\quote.html" />
+    <Content Include="Resources\jsdom\Level2\right.png" />
+    <Content Include="Resources\jsdom\Level2\script.html" />
+    <Content Include="Resources\jsdom\Level2\select.html" />
+    <Content Include="Resources\jsdom\Level2\style.html" />
+    <Content Include="Resources\jsdom\Level2\table.html" />
+    <Content Include="Resources\jsdom\Level2\table1.html" />
+    <Content Include="Resources\jsdom\Level2\tablecaption.html" />
+    <Content Include="Resources\jsdom\Level2\tablecell.html" />
+    <Content Include="Resources\jsdom\Level2\tablecol.html" />
+    <Content Include="Resources\jsdom\Level2\tablerow.html" />
+    <Content Include="Resources\jsdom\Level2\tablesection.html" />
+    <Content Include="Resources\jsdom\Level2\textarea.html" />
+    <Content Include="Resources\jsdom\Level2\title.html" />
+    <Content Include="Resources\jsdom\Level2\ulist.html" />
+    <Content Include="Resources\jsdom\Level2\w3c_main.png" />
     <Content Include="Resources\TextAreaTest.htm" />
     <Compile Include="Csharp\Selectors\RegexExtension.cs" />
     <Compile Include="Csharp\Selectors\Extensions.cs" />
     <Compile Include="Csharp\Utility\FastActivator.cs" />
     <Compile Include="jsdom\Attributes.cs" />
+    <Compile Include="jsdom\JsdomTest.cs" />
+    <Compile Include="jsdom\Level2\Level2.cs" />
     <Compile Include="WebIO\StressTests.cs" />
     <Compile Include="TestTests.cs" />
     <Compile Include="Csharp\HtmlParser\Classes.cs" />
@@ -174,6 +265,28 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Performance\Output\" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

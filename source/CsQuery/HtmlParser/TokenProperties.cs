@@ -34,6 +34,10 @@ namespace CsQuery.HtmlParser
 
         // may appear in HEAD
 
-        MetaDataTags = 64
+        MetaDataTags = 64,
+
+        // selection of attribute values is not case sensitive
+        
+        CaseInsensitiveValues = 128
     }
 }

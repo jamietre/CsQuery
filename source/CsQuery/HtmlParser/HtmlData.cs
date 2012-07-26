@@ -279,10 +279,46 @@ namespace CsQuery.HtmlParser
         public const ushort attrMULTIPLE = 38;
 
         /// <summary>
+        /// the A tag
+        /// </summary>
+        
+        public const ushort tagA = 39;
+
+        /// <summary>
+        /// the SPAN tag
+        /// </summary>
+
+        public const ushort tagSPAN = 40;
+
+        /// <summary>
+        /// the SPAN tag
+        /// </summary>
+
+        public const ushort tagFORM = 41;
+
+        /// <summary>
+        /// The REQUIRED attribute.
+        /// </summary>
+
+        public const ushort attrREQUIRED = 42;
+
+
+        /// <summary>
+        /// The REQUIRED attribute.
+        /// </summary>
+
+        public const ushort attrAUTOFOCUS = 43;
+
+        /// <summary>
+        /// The TYPE attribute.
+        /// </summary>
+
+        public const ushort attrTYPE = 44;
+        /// <summary>
         /// should match final tag above; for self-checking
         /// </summary>
 
-        private const ushort maxHardcodedTokenId = 38;
+        private const ushort maxHardcodedTokenId = 44;
 
         // Unquoted attribute value syntax: http://dev.w3.org/html5/spec-LC/syntax.html#attributes-0
         // 
@@ -458,15 +494,18 @@ namespace CsQuery.HtmlParser
             };
 
 
-
-            TokenIDs = new Dictionary<string, ushort>();
-
-
             string[] hardcoded = new string[] {
                 "unused","class","value","id","selected","readonly","checked","input","select","option","p","tr",
                 "td","th","head","body","dt","colgroup","dd","li","dl","table","optgroup","ul","ol","tbody","tfoot","thead","rt",
-                "rp","script","textarea","style","col","html","button","multiple"
+                "rp","script","textarea","style","col","html","button","multiple","a","span","form","required","autofocus",
+                "type"
             };
+
+            string[] caseInsensitiveValues = new string[] {
+                "type","target"
+            };
+
+            TokenIDs = new Dictionary<string, ushort>();
 
             foreach (var item in hardcoded) {
                 Tokenize(item);
@@ -488,6 +527,7 @@ namespace CsQuery.HtmlParser
             PopulateTokenHashset(booleanAttributes);
             PopulateTokenHashset(autoOpenOrClose);
             PopulateTokenHashset(metaDataTags);
+            PopulateTokenHashset(caseInsensitiveValues);
 
             // Fill out the list of tokens to the boundary of the metadata array so the indices align
 
@@ -505,13 +545,12 @@ namespace CsQuery.HtmlParser
 
             setBit(voidElements, TokenProperties.ChildrenNotAllowed | TokenProperties.HtmlChildrenNotAllowed);
 
-
             setBit(autoOpenOrClose, TokenProperties.AutoOpenOrClose);
             setBit(blockElements, TokenProperties.BlockElement);
             setBit(booleanAttributes, TokenProperties.BooleanProperty);
             setBit(paraClosers, TokenProperties.ParagraphCloser);
             setBit(metaDataTags, TokenProperties.MetaDataTags);
-
+            setBit(caseInsensitiveValues, TokenProperties.CaseInsensitiveValues);
         }
 
         private static HashSet<ushort> PopulateTokenHashset(IEnumerable<string> tokens)
@@ -683,6 +722,42 @@ namespace CsQuery.HtmlParser
         public static bool IsBoolean(string propertyName)
         {
             return IsBoolean(Tokenize(propertyName));
+        }
+
+        /// <summary>
+        /// Test whether an attribute has case-insensitive values (for selection purposes)
+        /// </summary>
+        ///
+        /// <param name="attributeName">
+        /// Name of the attribute.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the values are case insensitive, false if not.
+        /// </returns>
+
+        public static bool IsCaseInsensitiveValues(string attributeName)
+        {
+            return IsCaseInsensitiveValues(Tokenize(attributeName));
+        }
+
+        /// <summary>
+        /// Test whether an attribute has case-insensitive values (for selection purposes)
+        /// </summary>
+        ///
+        /// <param name="attributeToken">
+        /// Token ID of the attribute.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the values are case insensitive, false if not.
+        /// </returns>
+
+        public static bool IsCaseInsensitiveValues(ushort attributeToken)
+        {
+            return (attributeToken & NonSpecialTokenMask) == 0 &&
+                 (TokenMetadata[attributeToken] & (ushort)TokenProperties.CaseInsensitiveValues) != 0;
+
         }
 
         /// <summary>

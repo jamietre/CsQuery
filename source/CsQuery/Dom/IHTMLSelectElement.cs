@@ -8,15 +8,15 @@ namespace CsQuery
     /// <summary>
     /// A SELECT element
     /// </summary>
-    
-    public interface IDomElementSelect : IDomElement
+
+    public interface IHTMLSelectElement : IDomElement
     {
         /// <summary>
         /// A collection of HTML option elements (in document order)
         /// </summary>
         /// <url>https://developer.mozilla.org/en/DOM/HTMLOptionsCollection</url>
 
-        IHtmlOptionsCollection Options { get; }
+        IHTMLOptionsCollection Options { get; }
 
         /// <summary>
         /// Returns the index of the currently selected item. You may select an item by assigning its
@@ -53,5 +53,11 @@ namespace CsQuery
         /// </url>
 
         bool Multiple { get; set; }
+
+        /// <summary>
+        /// Gets the number of options in the select
+        /// </summary>
+
+        int Length { get; }
     }
 }

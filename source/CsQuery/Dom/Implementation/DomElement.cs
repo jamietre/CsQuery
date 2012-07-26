@@ -94,7 +94,7 @@ namespace CsQuery.Implementation
 
         public DomElement()
         {
-
+            throw new InvalidOperationException("You can't create a DOM element without a node name.");
         }
 
         /// <summary>
@@ -109,12 +109,16 @@ namespace CsQuery.Implementation
         /// The NodeName for the element (upper case).
         /// </param>
 
-        public DomElement(string nodeName)
+        private DomElement(string nodeName)
             : base()
         {
             if (String.IsNullOrEmpty(nodeName))
             {
                 throw new ArgumentException("You must provide a NodeName when creating a DomElement.");
+            }
+            if (nodeName.ToLower() == "select")
+            {
+                throw new InvalidOperationException();
             }
             SetNodeName(nodeName);
         }
@@ -135,7 +139,42 @@ namespace CsQuery.Implementation
 
 
         #endregion
-        
+
+        #region static methods
+
+        /// <summary>
+        /// Creates a new element
+        /// </summary>
+        ///
+        /// <param name="nodeName">
+        /// The NodeName for the element (upper case).
+        /// </param>
+        ///
+        /// <returns>
+        /// .
+        /// </returns>
+
+        public static DomElement Create(string nodeName)
+        {
+            return Create(HtmlData.Tokenize(nodeName));
+        }
+
+        internal static DomElement Create(ushort nodeNameId)
+        {
+            switch (nodeNameId)
+            {
+                case HtmlData.tagSELECT:
+                    return new HTMLSelectElement();
+                case HtmlData.tagA:
+                    return new HtmlAnchorElement();
+                case HtmlData.tagINPUT:
+                    return new HTMLInputElement();
+                default:
+                    return new DomElement(nodeNameId);
+            }
+        }
+        #endregion
+
         #region public properties
 
         /// <summary>
@@ -276,13 +315,11 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return NodeName=="INPUT" ?
-                    GetAttribute("type","text").ToLower() :
-                    GetAttribute("type");
+                return GetAttribute(HtmlData.attrTYPE);
             }
             set
             {
-                SetAttribute("type", value);
+                SetAttribute(HtmlData.attrTYPE, value);
             }
         }
 
@@ -529,23 +566,6 @@ namespace CsQuery.Implementation
             }
         }
 
-        /// <summary>
-        /// Indicates whether the element is selected or not. This value is read-only. To change the
-        /// selection, set either the selectedIndex or selectedItem property of the containing element.
-        /// </summary>
-        ///
-        /// <url>
-        /// https://developer.mozilla.org/en/XUL/Attribute/selected
-        /// </url>
-
-        public override bool Selected
-        {
-            get
-            {
-                return new HtmlOptionsCollection(this).SelectedItem == this;
-                return HasAttribute(HtmlData.SelectedAttrId);
-            }
-        }
 
         /// <summary>
         /// Gets or sets a value indicating whether the element is checked.
@@ -687,7 +707,7 @@ namespace CsQuery.Implementation
         /// The object to which this index refers.
         /// </summary>
 
-        public IDomObject IndexReference
+        public override IDomObject IndexReference
         {
             get
             {
@@ -699,7 +719,7 @@ namespace CsQuery.Implementation
         /// Returns true if this element is a block-type element.
         /// </summary>
 
-        public bool IsBlock
+        public override bool IsBlock
         {
             get
             {
@@ -753,7 +773,7 @@ namespace CsQuery.Implementation
         /// A string of HTML
         /// </returns>
 
-        public string ElementHtml()
+        public override string ElementHtml()
         {
             StringBuilder sb = new StringBuilder();
             GetHtml(Document == null ? CQ.DefaultDomRenderingOptions : Document.DomRenderingOptions, sb, false);
@@ -769,7 +789,7 @@ namespace CsQuery.Implementation
         /// An enumerator that allows foreach to be used to process index keys in this collection.
         /// </returns>
 
-        public IEnumerable<string> IndexKeys()
+        public override IEnumerable<string> IndexKeys()
         {
 
             string path = Path;
@@ -793,7 +813,18 @@ namespace CsQuery.Implementation
                 }
             }
 
-            foreach (ushort token in AttributesTokens())
+            // index attributes
+
+            if (HasClasses)
+            {
+                yield return IndexKey("!", HtmlData.ClassAttrId, path);
+            }
+            if (HasStyles)
+            {
+                yield return IndexKey("!", HtmlData.tagSTYLE, path);
+            }
+
+            foreach (ushort token in IndexAttributesTokens())
             {
                 yield return IndexKey("!", token, path); ;
             }
@@ -809,8 +840,7 @@ namespace CsQuery.Implementation
 
         public override DomElement Clone()
         {
-            var clone = new DomElement();
-            clone._NodeNameID = _NodeNameID;
+            var clone = DomElement.Create(_NodeNameID);
 
             if (HasAttributes)
             {
@@ -825,9 +855,11 @@ namespace CsQuery.Implementation
                 clone.Style = Style.Clone(clone);
             }
             // will not create ChildNodes lazy object unless results are returned (this is why we don't use AddRange)
+
+            var childNodes = (ChildNodeList)clone.ChildNodes;
             foreach (IDomObject child in CloneChildren())
             {
-                clone.ChildNodes.AddAlways(child);
+                childNodes.AddAlways(child);
             }
 
             return clone;
@@ -843,7 +875,7 @@ namespace CsQuery.Implementation
 
         public override IEnumerable<IDomObject> CloneChildren()
         {
-            if (_ChildNodes!=null)
+            if (ChildNodesInternal!=null)
             {
                 foreach (IDomObject obj in ChildNodes)
                 {
@@ -984,7 +1016,7 @@ namespace CsQuery.Implementation
         /// true if attribute, false if not.
         /// </returns>
 
-        protected override bool HasAttribute(ushort tokenId)
+        public virtual bool HasAttribute(ushort tokenId)
         {
             switch (tokenId)
             {
@@ -1657,10 +1689,10 @@ namespace CsQuery.Implementation
         /// </param>
         ///
         /// <returns>
-        /// .
+        /// A string
         /// </returns>
 
-        internal string IndexKey(string prefix, ushort keyTokenId)
+        protected string IndexKey(string prefix, ushort keyTokenId)
         {
             return IndexKey(prefix, keyTokenId, Path);
         }
@@ -1677,10 +1709,10 @@ namespace CsQuery.Implementation
         /// </param>
         ///
         /// <returns>
-        /// .
+        /// A string
         /// </returns>
 
-        internal string IndexKey(string prefix, string key)
+        protected string IndexKey(string prefix, string key)
         {
             return IndexKey(prefix, key, Path);
         }
@@ -1703,7 +1735,7 @@ namespace CsQuery.Implementation
         /// .
         /// </returns>
 
-        internal string IndexKey(string prefix, string key, string path)
+        protected string IndexKey(string prefix, string key, string path)
         {
             return IndexKey(prefix, HtmlData.Tokenize(key), path);
         }
@@ -1726,7 +1758,7 @@ namespace CsQuery.Implementation
         /// A string representing the key for this item in the index
         /// </returns>
 
-        internal string IndexKey(string prefix, ushort keyTokenId, string path)
+        protected string IndexKey(string prefix, ushort keyTokenId, string path)
         {
 #if DEBUG_PATH
             return prefix + HtmlData.TokenName(keyTokenId) + HtmlData.indexSeparator + path;
@@ -1857,6 +1889,71 @@ namespace CsQuery.Implementation
         }
         #endregion
 
+        #region internal methods
+
+        /// <summary>
+        /// Gets an attribute value for matching, accounting for default values of special attribute
+        /// types.
+        /// </summary>
+        ///
+        /// <param name="attributeId">
+        /// Identifier for the attribute.
+        /// </param>
+        ///
+        /// <returns>
+        /// The attribute for matching.
+        /// </returns>
+
+        internal virtual bool TryGetAttributeForMatching(ushort attributeId, out string value)
+        {
+            return TryGetAttribute(attributeId, out value);
+        }
+
+        /// <summary>
+        /// Return the first ancestor of the specified tag
+        /// </summary>
+        ///
+        /// <param name="tagID">
+        /// Identifier for the tag.
+        /// </param>
+        ///
+        /// <returns>
+        /// An IDomContainer
+        /// </returns>
+
+        internal IDomElement Closest(ushort tagID)
+        {
+            IDomContainer parent = ParentNode;
+            while (parent != null)
+            {
+                if (parent.NodeNameID == tagID)
+                {
+                    return (IDomElement)parent;
+                }
+                parent = parent.ParentNode;
+            }
+            return null;
+
+        }
+
+        internal void SetProp(ushort tagId, bool value)
+        {
+            if (value)
+            {
+                SetAttribute(tagId);
+            }
+            else
+            {
+                RemoveAttribute(tagId);
+            }
+        }
+
+        internal void SetProp(string tagName, bool value) {
+            SetProp(HtmlData.Tokenize(tagName), value);
+        }
+
+        #endregion
+
         #region explicit members for IAttributesCollection
 
         /// <summary>
@@ -1953,23 +2050,16 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Return a sequence of tokens for each attribute (including class and style) that exists on this element
+        /// Return a sequence of tokens for each non-class, non-style attribute that should be
+        /// added to the attribute index.
         /// </summary>
         ///
         /// <returns>
-        /// An enumerator of ushort
+        /// An enumerator of ushort.
         /// </returns>
 
-        protected IEnumerable<ushort> AttributesTokens()
+        protected virtual IEnumerable<ushort> IndexAttributesTokens()
         {
-            if (HasClasses)
-            {
-                yield return HtmlData.ClassAttrId;
-            }
-            if (HasStyles)
-            {
-                yield return HtmlData.tagSTYLE;
-            }
             if (HasInnerAttributes)
             {
                 foreach (var token in InnerAttributes.GetAttributeIds())
@@ -1977,7 +2067,6 @@ namespace CsQuery.Implementation
                     yield return token;
                 }
             }
-
         }
         
         #endregion

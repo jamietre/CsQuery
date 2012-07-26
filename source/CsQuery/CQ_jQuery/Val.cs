@@ -14,6 +14,7 @@ namespace CsQuery
 {
     public partial class CQ
     {
+
         #region public methods
 
         /// <summary>

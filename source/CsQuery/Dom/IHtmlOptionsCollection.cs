@@ -14,7 +14,7 @@ namespace CsQuery
     /// https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
     /// </url>
 
-    public interface IHtmlOptionsCollection: IEnumerable<IDomObject>
+    public interface IHTMLOptionsCollection : IEnumerable<IDomObject>
     {
         /// <summary>
         /// Returns the specific node at the given zero-based index (gives null if out of range)
