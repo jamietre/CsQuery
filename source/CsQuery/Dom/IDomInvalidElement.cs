@@ -5,10 +5,10 @@ using System.Text;
 
 namespace CsQuery
 {
-
     /// <summary>
-    /// Sn element that will be rendered as text because it was determined to be a mismatched tag
+    /// An element that will be rendered as text because it was determined to be a mismatched tag
     /// </summary>
+    
     public interface IDomInvalidElement : IDomText
     {
 

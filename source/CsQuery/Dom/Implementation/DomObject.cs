@@ -1,11 +1,9 @@
-﻿// file:	Dom\Implementation\DomObject.cs
-//
-// summary:	Implements the dom object class
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CsQuery.HtmlParser;
+using CsQuery.ExtensionMethods;
 
 namespace CsQuery.Implementation
 {
@@ -15,7 +13,8 @@ namespace CsQuery.Implementation
     /// document, doctype)
     /// </summary>
 
-    public abstract class DomObject: IDomObject, IDomNode
+    public abstract class DomObject: IDomObject, IDomNode, 
+        IDomElementSelect
     {
 
         #region private properties
@@ -1010,7 +1009,7 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <exception cref="InvalidOperationException">
-        /// Thrown when the requested operation is invalid.
+        /// Thrown when the object type does not support attributes
         /// </exception>
         ///
         /// <param name="name">
@@ -1027,7 +1026,7 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <exception cref="InvalidOperationException">
-        /// Thrown when the requested operation is invalid.
+        /// Thrown when the object type does not support attributes
         /// </exception>
         ///
         /// <param name="name">
@@ -1135,6 +1134,7 @@ namespace CsQuery.Implementation
             return false;
         }
 
+      
         /// <summary>
         /// Removes an attribute from the specified element.
         /// </summary>
@@ -1317,6 +1317,157 @@ namespace CsQuery.Implementation
         {
             return Render();
         }
+
+        #endregion
+        
+        #region element properties
+
+
+        /// <summary>
+        /// The index excluding text nodes.
+        /// </summary>
+
+        public virtual int ElementIndex
+        {
+            get
+            {
+                throw new InvalidOperationException("This is not an Element object.");
+            }
+        }
+
+        /// <summary>
+        /// An enumeration of clones of the chilren of this object
+        /// </summary>
+        ///
+        /// <returns>
+        /// An enumerator 
+        /// </returns>
+
+        public virtual IEnumerable<IDomObject> CloneChildren()
+        {
+             throw new InvalidOperationException("This is not a Container object.");
+        }
+
+        /// <summary>
+        /// Returns the HTML for this element, but ignoring children/innerHTML.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A string of HTML
+        /// </returns>
+
+        public string ElementHtml()
+        {
+            throw new InvalidOperationException("This is not an Element object.");
+        }
+
+        public bool IsBlock
+        {
+            get
+            {
+                throw new InvalidOperationException("This is not an Element object.");
+            }
+        }
+        public IEnumerable<string> IndexKeys()
+        {
+            throw new InvalidOperationException("This is not an indexed object.");
+        }
+
+        public IDomObject IndexReference
+        {
+            get
+            {
+                throw new InvalidOperationException("This is not an indexed object.");
+            }
+        }
+
+        #endregion
+
+        #region select element properties
+
+        /// <summary>
+        /// A collection of HTML option elements (in document order)
+        /// </summary>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
+        /// </url>
+
+        public IHtmlOptionsCollection Options
+        {
+            get
+            {
+                return this.NodeNameID == HtmlData.tagOPTION ?
+                    new HtmlOptionsCollection(this) :
+                    null;
+            }
+        }
+
+        /// <summary>
+        /// This Boolean attribute indicates that multiple options can be selected in the list. If it is
+        /// not specified, then only one option can be selected at a time.
+        /// </summary>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/HTML/Element/select
+        /// </url>
+
+        public bool Multiple
+        {
+            get
+            {
+                return ((DomElement)this).HasAttribute(HtmlData.attrMULTIPLE);
+            }
+            set
+            {
+                ((DomElement)this).SetAttribute(HtmlData.attrMULTIPLE);
+            }
+        }
+
+        /// <summary>
+        /// Returns the index of the currently selected item. You may select an item by assigning its
+        /// index to this property. By assigning -1 to this property, all items will be deselected.
+        /// Returns -1 if no items are selected.
+        /// </summary>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/XUL/Property/selectedIndex.
+        /// </url>
+
+        public int SelectedIndex { 
+            get
+            {
+                return Options.Sel
+            }
+            set
+            {
+                Options.ForEach((item, i) =>
+                {
+                    if (i == value)
+                    {
+                        ((DomElement)item).SetAttribute(HtmlData.SelectedAttrId);
+                    }
+                    else if (item.Selected)
+                    {
+                        ((DomElement)item).RemoveAttribute(HtmlData.SelectedAttrId);
+                    }
+                });
+            }
+        }
+
+        /// <summary>
+        /// Holds the currently selected item. If no item is currently selected, this value will be null.
+        /// You can select an item by setting this value. A select event will be sent to the container
+        /// (i.e. the listbox, richlistbox, etc., not the list item that was selected) when it is changed
+        /// either via this property, the selectedIndex property, or changed by the user.
+        /// </summary>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/XUL/Property/selectedItem
+        /// </url>
+
+        public IDomElement SelectedItem { get; set; }
+
         #endregion
 
         #region private methods
@@ -1402,5 +1553,4 @@ namespace CsQuery.Implementation
         #endregion
         
     }
-
 }

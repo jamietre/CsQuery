@@ -122,6 +122,8 @@ namespace CsQuery.ExtensionMethods.Internal
 
         #region IEnumerable<T> extension methods
 
+        
+
         /// <summary>
         /// Add all the items in a sequence to a collection.
         /// </summary>
@@ -245,51 +247,10 @@ namespace CsQuery.ExtensionMethods.Internal
             return single;
         }
 
-        /// <summary>
-        /// Iterate over a sequence, calling the delegate for each element
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
-        /// <param name="func"></param>
-        public static void ForEach<T>(this IEnumerable<T> list, Action<T> func)
-        {
-            foreach (T obj in list)
-            {
-                func(obj);
-            }
-        }
+     
 
-        /// <summary>
-        /// Return the zero-based index of item in a sequence.
-        /// </summary>
-        ///
-        /// <typeparam name="T">
-        /// The type of elements in the sequence.
-        /// </typeparam>
-        /// <param name="list">
-        /// The sequence to search through.
-        /// </param>
-        /// <param name="target">
-        /// The target collection.
-        /// </param>
-        ///
-        /// <returns>
-        /// The zero-based position in the list where the item was found, or -1 if it was not found.
-        /// </returns>
+       
 
-        public static int IndexOf<T>(this IEnumerable<T> list, T target)
-        {
-            int index = 0;
-            foreach (var item in list)
-            {
-                if (item.Equals(target))
-                {
-                    return index;
-                }
-                index++;
-            }
-            return -1;
-        }
         #endregion
 
         #region string methods

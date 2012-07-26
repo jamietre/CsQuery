@@ -273,10 +273,16 @@ namespace CsQuery.HtmlParser
         public const ushort tagBUTTON = 37;
 
         /// <summary>
+        /// The BUTTON tag.
+        /// </summary>
+
+        public const ushort attrMULTIPLE = 38;
+
+        /// <summary>
         /// should match final tag above; for self-checking
         /// </summary>
 
-        private const ushort maxHardcodedTokenId = 37;
+        private const ushort maxHardcodedTokenId = 38;
 
         // Unquoted attribute value syntax: http://dev.w3.org/html5/spec-LC/syntax.html#attributes-0
         // 
@@ -455,47 +461,16 @@ namespace CsQuery.HtmlParser
 
             TokenIDs = new Dictionary<string, ushort>();
 
-            // keep a placeholder open before real tags start
 
-            Tokenize("unused"); //2
+            string[] hardcoded = new string[] {
+                "unused","class","value","id","selected","readonly","checked","input","select","option","p","tr",
+                "td","th","head","body","dt","colgroup","dd","li","dl","table","optgroup","ul","ol","tbody","tfoot","thead","rt",
+                "rp","script","textarea","style","col","html","button","multiple"
+            };
 
-            Tokenize("class"); //3
-            Tokenize("value"); //4
-            Tokenize("id"); //5
-
-            Tokenize("selected"); //6
-            Tokenize("readonly"); //7 
-            Tokenize("checked"); //8
-            Tokenize("input"); //9
-            Tokenize("select"); //10
-            Tokenize("option"); //11
-
-            Tokenize("p"); //12
-            Tokenize("tr"); //13
-            Tokenize("td"); //14
-            Tokenize("th"); //15
-            Tokenize("head"); //16
-            Tokenize("body"); //17
-            Tokenize("dt"); //18
-            Tokenize("colgroup"); //19
-            Tokenize("dd"); //20
-            Tokenize("li"); //21
-            Tokenize("dl"); //22
-            Tokenize("table"); //23
-            Tokenize("optgroup"); //24
-            Tokenize("ul"); //25
-            Tokenize("ol"); //26
-            Tokenize("tbody"); //27
-            Tokenize("tfoot"); //28
-            Tokenize("thead"); //29
-            Tokenize("rt"); //30
-            Tokenize("rp"); //31
-            Tokenize("script"); //32
-            Tokenize("textarea"); //33
-            Tokenize("style"); //34
-            Tokenize("col"); //34
-            Tokenize("html"); //36
-            Tokenize("button"); //37
+            foreach (var item in hardcoded) {
+                Tokenize(item);
+            }
 
             // all this hardcoding makes me nervous, sanity check
             

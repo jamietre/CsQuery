@@ -542,6 +542,7 @@ namespace CsQuery.Implementation
         {
             get
             {
+                return new HtmlOptionsCollection(this).SelectedItem == this;
                 return HasAttribute(HtmlData.SelectedAttrId);
             }
         }
@@ -667,7 +668,7 @@ namespace CsQuery.Implementation
         /// The index excluding text nodes.
         /// </summary>
 
-        public int ElementIndex
+        public override int ElementIndex
         {
             get
             {
@@ -749,7 +750,7 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <returns>
-        /// .
+        /// A string of HTML
         /// </returns>
 
         public string ElementHtml()
@@ -983,7 +984,7 @@ namespace CsQuery.Implementation
         /// true if attribute, false if not.
         /// </returns>
 
-        protected bool HasAttribute(ushort tokenId)
+        protected override bool HasAttribute(ushort tokenId)
         {
             switch (tokenId)
             {
@@ -1094,7 +1095,7 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <param name="tokenId">
-        /// .
+        /// The token
         /// </param>
 
         public void SetAttribute(ushort tokenId)
@@ -1163,7 +1164,7 @@ namespace CsQuery.Implementation
         /// true if it succeeds, false if it fails.
         /// </returns>
 
-        protected bool RemoveAttribute(ushort tokenId)
+        public bool RemoveAttribute(ushort tokenId)
         {
             if (!HasAttributes)
             {
@@ -1980,8 +1981,6 @@ namespace CsQuery.Implementation
         }
         
         #endregion
-
-
 
     }
 }

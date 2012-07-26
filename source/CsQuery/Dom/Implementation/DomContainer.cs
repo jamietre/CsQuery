@@ -23,7 +23,6 @@ namespace CsQuery.Implementation
         }
 
 
-        public abstract IEnumerable<IDomObject> CloneChildren();
         /// <summary>
         /// Returns all children (including inner HTML as objects);
         /// </summary>
