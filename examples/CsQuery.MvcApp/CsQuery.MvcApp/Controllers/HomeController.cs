@@ -15,7 +15,8 @@ namespace CsQuery.MvcApp.Controllers
         {
             ViewBag.Message = "Welcome to ASP.NET MVC!";
 
-            return View();
+            var x = View();
+            return x;
         }
 
        
