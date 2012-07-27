@@ -8,6 +8,7 @@ namespace CsQuery
     /// <summary>
     /// A regular DOM element
     /// </summary>
+    
     public interface IDomElement : IDomContainer, IDomIndexedNode
     {
         /// <summary>

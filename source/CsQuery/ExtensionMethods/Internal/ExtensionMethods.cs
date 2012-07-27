@@ -122,6 +122,8 @@ namespace CsQuery.ExtensionMethods.Internal
 
         #region IEnumerable<T> extension methods
 
+        
+
         /// <summary>
         /// Add all the items in a sequence to a collection.
         /// </summary>
@@ -138,48 +140,14 @@ namespace CsQuery.ExtensionMethods.Internal
 
         public static void AddRange<T>(this ICollection<T> target, IEnumerable<T> elements)
         {
-            foreach (T obj in elements)
+            IList<T> elementsList = new List<T>(elements);
+            foreach (T obj in elementsList)
             {
                 target.Add(obj);
             }
         }
 
-        /// <summary>
-        /// Append the contents of a second sequence to the end of a sequence
-        /// </summary>
-        ///
-        /// <typeparam name="T">
-        /// The type of objects in the sequences
-        /// </typeparam>
-        /// <param name="list">
-        /// The list to act on.
-        /// </param>
-        /// <param name="otherList">
-        /// List of others.
-        /// </param>
-        ///
-        /// <returns>
-        /// The combined sequence
-        /// </returns>
-
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> list, IEnumerable<T> otherList)
-        {
-            if (list != null)
-            {
-                foreach (var item in list)
-                {
-                    yield return item;
-                }
-            }
-
-            if (otherList != null)
-            {
-                foreach (var item in otherList)
-                {
-                    yield return item;
-                }
-            }
-        }
+      
 
         /// <summary>
         /// Return true of a given collection is null or has no values
@@ -245,51 +213,10 @@ namespace CsQuery.ExtensionMethods.Internal
             return single;
         }
 
-        /// <summary>
-        /// Iterate over a sequence, calling the delegate for each element
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
-        /// <param name="func"></param>
-        public static void ForEach<T>(this IEnumerable<T> list, Action<T> func)
-        {
-            foreach (T obj in list)
-            {
-                func(obj);
-            }
-        }
+     
 
-        /// <summary>
-        /// Return the zero-based index of item in a sequence.
-        /// </summary>
-        ///
-        /// <typeparam name="T">
-        /// The type of elements in the sequence.
-        /// </typeparam>
-        /// <param name="list">
-        /// The sequence to search through.
-        /// </param>
-        /// <param name="target">
-        /// The target collection.
-        /// </param>
-        ///
-        /// <returns>
-        /// The zero-based position in the list where the item was found, or -1 if it was not found.
-        /// </returns>
+       
 
-        public static int IndexOf<T>(this IEnumerable<T> list, T target)
-        {
-            int index = 0;
-            foreach (var item in list)
-            {
-                if (item.Equals(target))
-                {
-                    return index;
-                }
-                index++;
-            }
-            return -1;
-        }
         #endregion
 
         #region string methods
@@ -759,6 +686,39 @@ namespace CsQuery.ExtensionMethods.Internal
         #endregion
 
         #region miscellaneous methods
+
+        /// <summary>
+        /// Return the default StringComparer class that implements the behavior for a StringComparison
+        /// </summary>
+        ///
+        /// <param name="comparison">
+        /// The comparison to act on.
+        /// </param>
+        ///
+        /// <returns>
+        /// .
+        /// </returns>
+
+        public static StringComparer ComparerFor(this StringComparison comparison)
+        {
+            switch (comparison)
+            {
+                case StringComparison.CurrentCulture:
+                    return StringComparer.CurrentCulture;
+                case StringComparison.CurrentCultureIgnoreCase:
+                    return StringComparer.CurrentCultureIgnoreCase;
+                case StringComparison.InvariantCulture:
+                    return StringComparer.InvariantCulture;
+                case StringComparison.InvariantCultureIgnoreCase:
+                    return StringComparer.InvariantCultureIgnoreCase;
+                case StringComparison.Ordinal:
+                    return StringComparer.Ordinal;
+                case StringComparison.OrdinalIgnoreCase:
+                    return StringComparer.OrdinalIgnoreCase;
+                default:
+                    throw new NotImplementedException("Unknown StringComparer enum value");
+            }
+        }
 
         /// <summary>
         /// (Alpha) Clone a sequence of objects.

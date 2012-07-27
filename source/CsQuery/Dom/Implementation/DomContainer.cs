@@ -15,15 +15,14 @@ namespace CsQuery.Implementation
     {
         public DomContainer()
         {
-
+            
         }
         public DomContainer(IEnumerable<IDomObject> elements): base()
         {
-            ChildNodes.AddRange(elements);
+            ChildNodesInternal.AddRange(elements);
         }
 
 
-        public abstract IEnumerable<IDomObject> CloneChildren();
         /// <summary>
         /// Returns all children (including inner HTML as objects);
         /// </summary>
@@ -33,18 +32,36 @@ namespace CsQuery.Implementation
             {
                 if (_ChildNodes == null)
                 {
-                    _ChildNodes = new NodeList(this);
+                    _ChildNodes = new ChildNodeList(this);
                 }
                 return _ChildNodes;
             }
         }
-        protected NodeList _ChildNodes;
+
+        /// <summary>
+        /// The child nodes as a concete object.
+        /// </summary>
+
+        internal ChildNodeList ChildNodesInternal
+        {
+            get
+            {
+                if (_ChildNodes == null)
+                {
+                    _ChildNodes = new ChildNodeList(this);
+                }
+                return _ChildNodes;
+            }
+        }
+
+        private ChildNodeList _ChildNodes;
+
         // Avoids creating children object when testing
         public override bool HasChildren
         {
             get
             {
-                return _ChildNodes != null && ChildNodes.Count > 0;
+                return ChildNodesInternal != null && ChildNodes.Count > 0;
             }
         }
         

@@ -425,7 +425,7 @@ namespace CsQuery.HtmlParser
                                     }
 
                                     
-                                    current.Element = new DomElement(newTagId);
+                                    current.Element = DomElement.Create(newTagId);
 
 
                                     if (!current.Element.InnerHtmlAllowed && current.Element.InnerTextAllowed)
@@ -497,7 +497,7 @@ namespace CsQuery.HtmlParser
             // ignore everything before <html> except text; if found, start adding to <body>
             // if there's anything before <doctype> then it gets trashed
 
-            IDomElement html = document.GetElementsByTagName("html").FirstOrDefault();
+            IDomElement html = (IDomElement)document.GetElementsByTagName("html").FirstOrDefault();
 
             if (html != null && document.GetElementsByTagName("head").FirstOrDefault() == null)
             {
@@ -506,7 +506,7 @@ namespace CsQuery.HtmlParser
 
 
 
-            IDomElement body = document.GetElementsByTagName("body").FirstOrDefault();
+            IDomElement body = (IDomElement)document.GetElementsByTagName("body").FirstOrDefault();
             if (body != null)
             {
 

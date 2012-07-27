@@ -130,6 +130,7 @@ namespace CsQuery
         {
 
             // Make sure attempts to pass a JSON string end up a the right place
+            
             if (Objects.IsJson(name) && value.GetType() == typeof(bool))
             {
                 return AttrSet(name, (bool)value);
@@ -160,7 +161,7 @@ namespace CsQuery
 
             foreach (IDomElement e in Elements)
             {
-                if ((e.NodeName == "INPUT" || e.NodeName == "BUTTON") && name == "type"
+                if ((e.NodeNameID == HtmlData.tagINPUT || e.NodeNameID == HtmlData.tagBUTTON) && name == "type"
                     && !e.IsFragment)
                 {
                     throw new InvalidOperationException("Can't change type of \"input\" elements that have already been added to a DOM");
