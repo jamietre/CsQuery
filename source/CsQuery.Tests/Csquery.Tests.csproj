@@ -21,6 +21,7 @@
     </SccAuxPath>
     <SccProvider>
     </SccProvider>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -33,7 +34,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -171,6 +171,7 @@
     <Content Include="Resources\TextAreaTest.htm" />
     <Compile Include="Csharp\Selectors\RegexExtension.cs" />
     <Compile Include="Csharp\Selectors\Extensions.cs" />
+    <Compile Include="Csharp\Utility\Support.cs" />
     <Compile Include="Csharp\Utility\FastActivator.cs" />
     <Compile Include="jsdom\Attributes.cs" />
     <Compile Include="jsdom\JsdomTest.cs" />

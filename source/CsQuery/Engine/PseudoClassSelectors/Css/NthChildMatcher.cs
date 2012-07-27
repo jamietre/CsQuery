@@ -417,7 +417,7 @@ namespace CsQuery.Engine
         {
             if (fromLast)
             {
-                return nodeList[nodeList.Length - index - 1];
+                return nodeList[nodeList.Count - index - 1];
             }
             else
             {

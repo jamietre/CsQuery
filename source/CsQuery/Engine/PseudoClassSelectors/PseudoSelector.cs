@@ -116,7 +116,7 @@ namespace CsQuery.Engine
         {
             get
             {
-                return Objects.FromCamelCase(this.GetType().Name);
+                return Utility.Support.FromCamelCase(this.GetType().Name);
             }
         }
 

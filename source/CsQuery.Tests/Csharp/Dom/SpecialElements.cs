@@ -59,6 +59,45 @@ namespace CsQuery.Tests.Csharp.Dom
             Assert.IsTrue(el.Disabled);
 
         }
+
+        [Test, TestMethod]
+        public void Anchor()
+        {
+            var dom = CQ.Create(@"<a id='a1' href='test' rel='alternate'></a>
+                <a id='a2' href='#' rel='invalid'></a>");
+
+            var el = dom.Document.GetElementById<IHTMLAnchorElement>("a1");
+
+            Assert.AreEqual(RelAnchor.Alternate, el.Rel);
+            el = dom.Document.GetElementById<IHTMLAnchorElement>("a2");
+
+            Assert.IsTrue(0==el.Rel);
+            Assert.AreEqual("invalid", el.GetAttribute("rel"));
+
+            el.Rel = RelAnchor.License;
+            Assert.AreEqual(@"<a id=""a2"" href=""#"" rel=""license""></a>", el.Render());
+        }
+
+        [Test, TestMethod]
+        public void Label()
+        {
+            var dom = CQ.Create(@"<input type='text' id='input1' />
+                <label for='input1'><span>test</span></label>");
+
+            var el = (IHTMLLabelElement)dom["label"][0];
+
+            var input1 = dom.Document.GetElementById("input1");
+
+            Assert.AreEqual(input1, el.Control);
+            Assert.AreEqual("input1", el.HtmlFor);
+
+            el.HtmlFor = "";
+            Assert.AreEqual(null, el.Control);
+
+            el.Cq().Append(input1);
+            Assert.AreEqual(input1, el.Control);
+
+        }
     }
 
 }

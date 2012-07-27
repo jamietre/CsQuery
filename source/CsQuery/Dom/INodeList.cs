@@ -7,8 +7,32 @@ using System.Runtime.CompilerServices;
 
 namespace CsQuery
 {
-    public interface INodeList: INodeList<IDomObject>, IList<IDomObject>, ICollection<IDomObject>, IEnumerable<IDomObject>
+    /// <summary>
+    /// Interface for node list, a read/write collection of nodes.
+    /// </summary>
+
+    public interface INodeList: IEnumerable<IDomObject>, IList<IDomObject>, ICollection<IDomObject>
     {
+        /// <summary>
+        /// The number of nodes in this INodeList
+        /// </summary>
+
+        int Length { get; }
+
+        /// <summary>
+        /// Get the item at the specified index
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// Zero-based index of the item
+        /// </param>
+        ///
+        /// <returns>
+        /// An item
+        /// </returns>
+
+        IDomObject Item(int index);
+
         /// <summary>
         /// The number of nodes in this INodeList
         /// </summary>
@@ -51,6 +75,7 @@ namespace CsQuery
         /// An IDomContainer element
         /// </value>
 
-       //IDomContainer Owner { get; }
+        //IDomContainer Owner { get; }
+
     }
 }

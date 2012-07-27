@@ -236,33 +236,6 @@
             <param name="ignoreAttributes">All properties with an attribute of these types will be ignored</param>
             <returns></returns>
         </member>
-        <member name="M:CsQuery.Objects.FromCamelCase(System.String)">
-             <summary>
-             Given a string, convert each uppercase letter to a "-" followed by the lower case letter.
-             E.g. "fontSize" becomes "font-size".
-             </summary>
-            
-             <param name="name">
-             The string to uncamelcase
-             </param>
-            
-             <returns>
-             A string
-             </returns>
-        </member>
-        <member name="M:CsQuery.Objects.ToCamelCase(System.String)">
-             <summary>
-             Converts a name from dashed-separators to camelCase.
-             </summary>
-            
-             <param name="name">
-             The string to camelCase.
-             </param>
-            
-             <returns>
-             a dased-separated string
-             </returns>
-        </member>
         <member name="M:CsQuery.Objects.Enumerate``1(``0)">
             <summary>
             Returns an enumerable of one element from an object
@@ -610,6 +583,91 @@
             
              <returns>
              The converted string, or null
+             </returns>
+        </member>
+        <member name="M:CsQuery.Utility.Support.DoubleOrZero(System.String)">
+             <summary>
+            Convert a string value to a double, or zero if non-numeric
+             </summary>
+            
+             <param name="value">
+             The value.
+             </param>
+            
+             <returns>
+             A double.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Utility.Support.IntOrZero(System.String)">
+             <summary>
+             Convert a string value to an integer, or zero if non-numeric
+             </summary>
+            
+             <param name="value">
+             The value.
+             </param>
+            
+             <returns>
+             An integer
+             </returns>
+        </member>
+        <member name="M:CsQuery.Utility.Support.FromCamelCase(System.String)">
+             <summary>
+             Given a string, convert each uppercase letter to a "-" followed by the lower case letter.
+             E.g. "fontSize" becomes "font-size".
+             </summary>
+            
+             <param name="name">
+             The string to uncamelcase
+             </param>
+            
+             <returns>
+             A string
+             </returns>
+        </member>
+        <member name="M:CsQuery.Utility.Support.ToCamelCase(System.String,System.Boolean)">
+             <summary>
+             Converts a name from dashed-separators to camelCase.
+             </summary>
+            
+             <param name="name">
+             The string to camelCase.
+             </param>
+             <param name="capFirst">
+             (optional) when true, the first letter of the resuling word is captalized.
+             </param>
+            
+             <returns>
+             a dased-separated string.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Utility.Support.AttributeToEnum``1(System.String)">
+             <summary>
+             Converts a value to an enum, assuming the enum is camelcased
+             </summary>
+            
+             <typeparam name="T">
+             Generic type parameter.
+             </typeparam>
+             <param name="value">
+             The value.
+             </param>
+            
+             <returns>
+             value as a T.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Utility.Support.EnumToAttribute(System.Enum)">
+             <summary>
+             Convert an enum to a lowercased attribute value
+             </summary>
+            
+             <param name="value">
+             The value.
+             </param>
+            
+             <returns>
+             The attribute value of a string
              </returns>
         </member>
         <member name="T:CsQuery.HtmlParser.IterationData">
@@ -8292,7 +8350,7 @@
         </member>
         <member name="P:CsQuery.Implementation.DomContainer`1.ChildElements">
             <summary>
-            Returns all elements
+            Get all child elements
             </summary>
         </member>
         <member name="T:CsQuery.Utility.FastActivator">
@@ -8585,6 +8643,11 @@
             Has a VALUE property
             </summary>
         </member>
+        <member name="F:CsQuery.HtmlParser.TokenProperties.FormInputControl">
+            <summary>
+            Element is a form input control
+            </summary>
+        </member>
         <member name="T:CsQuery.Engine.PseudoClassSelectors.Gt">
             <summary>
              Test whether an element appears after the specified position with the list.
@@ -8601,94 +8664,6 @@
             nonzero opacity, a display that is not "hidden", and the absence of zero-valued width &amp;
             heights. Additionally, input elements of type "hidden" are always considered not visible.
             </summary>
-        </member>
-        <member name="T:CsQuery.Implementation.HTMLOptionElement">
-            <summary>
-            An HTML option element.
-            </summary>
-        </member>
-        <member name="T:CsQuery.Implementation.DomElement">
-            <summary>
-            HTML elements.
-            </summary>
-        </member>
-        <member name="T:CsQuery.IDomElement">
-            <summary>
-            A regular DOM element
-            </summary>
-        </member>
-        <member name="T:CsQuery.IDomIndexedNode">
-            <summary>
-            An marker and interface exposing properties required for a node that should be indexed
-            </summary>
-        </member>
-        <member name="M:CsQuery.IDomIndexedNode.IndexKeys">
-             <summary>
-             A sequence of all the index keys that can be used to access this object
-             </summary>
-            
-             <returns>
-             An sequence of strings
-             </returns>
-        </member>
-        <member name="P:CsQuery.IDomIndexedNode.IndexReference">
-            <summary>
-            The object that is the target of the index (normally, the object itself)
-            </summary>
-        </member>
-        <member name="M:CsQuery.IDomElement.ElementHtml">
-             <summary>
-             Returns the HTML for this element, but ignoring children/innerHTML.
-             </summary>
-            
-             <returns>
-             A string of HTML.
-             </returns>
-        </member>
-        <member name="P:CsQuery.IDomElement.IsBlock">
-            <summary>
-            The element is a block element.
-            </summary>
-        </member>
-        <member name="P:CsQuery.IDomElement.ElementIndex">
-            <summary>
-            Get this element's index only among other elements (e.g. excluding text &amp; other non-
-            element node types)
-            </summary>
-        </member>
-        <member name="T:CsQuery.IAttributeCollection">
-            <summary>
-            Interface for methods to access the attributes on a DOM element.
-            </summary>
-        </member>
-        <member name="M:CsQuery.IAttributeCollection.GetAttribute(System.String)">
-            <summary>
-            Get the value of a named attribute
-            </summary>
-            <param name="name">The attribute name</param>
-            <returns>The attribute value</returns>
-        </member>
-        <member name="M:CsQuery.IAttributeCollection.SetAttribute(System.String,System.String)">
-            <summary>
-            Set the value of a named attribute
-            </summary>
-            <param name="name"></param>
-            <param name="value"></param>
-        </member>
-        <member name="P:CsQuery.IAttributeCollection.Item(System.String)">
-            <summary>
-            Get or set the value of a named attribute
-            </summary>
-            <param name="attributeName">The attribute name</param>
-            <returns>The attribute value</returns>
-            <returntype>string</returntype>
-        </member>
-        <member name="P:CsQuery.IAttributeCollection.Length">
-            <summary>
-            The number of attributes in this attribute collection. This includes special attributes such as
-            "class", "id", and "style"
-            </summary>
-            <returntype>int</returntype>
         </member>
         <member name="T:CsQuery.ICSSStyleDeclaration">
             <summary>
@@ -8781,1026 +8756,6 @@
              <returns>
              true if it succeeds, false if it fails. this can only fail if the style was not present.
              </returns>
-        </member>
-        <member name="F:CsQuery.Implementation.DomElement._InnerAttributes">
-            <summary>
-            The dom attributes.
-            </summary>
-        </member>
-        <member name="F:CsQuery.Implementation.DomElement._Style">
-            <summary>
-            Backing field for _Style.
-            </summary>
-        </member>
-        <member name="F:CsQuery.Implementation.DomElement._Classes">
-            <summary>
-            Backing field for _Classes.
-            </summary>
-        </member>
-        <member name="F:CsQuery.Implementation.DomElement._NodeNameID">
-            <summary>
-            Backing field for NodeNameID property.
-            </summary>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.#ctor">
-            <summary>
-            Default constructor.
-            </summary>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.#ctor(System.String)">
-             <summary>
-             Create a new DOM element of a specified nodeName.
-             </summary>
-            
-             <exception cref="T:System.ArgumentException">
-             Thrown when a missing or empty nodeName is passed.
-             </exception>
-            
-             <param name="nodeName">
-             The NodeName for the element (upper case).
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.#ctor(System.UInt16)">
-             <summary>
-             Create a new DomElement node of a nodeTipe determined by a token ID.
-             </summary>
-            
-             <param name="tokenId">
-             Token represnting an existing tokenized node type.
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.Create(System.String)">
-             <summary>
-             Creates a new element
-             </summary>
-            
-             <param name="nodeName">
-             The NodeName for the element (upper case).
-             </param>
-            
-             <returns>
-             A new element that inherits DomElement
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.Render(System.Text.StringBuilder,CsQuery.DomRenderingOptions)">
-             <summary>
-             Renders this object.
-             </summary>
-            
-             <param name="sb">
-             The sb.
-             </param>
-             <param name="options">
-             Options for controlling the operation.
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.ElementHtml">
-             <summary>
-             Returns the HTML for this element, but ignoring children/innerHTML.
-             </summary>
-            
-             <returns>
-             A string of HTML
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.IndexKeys">
-             <summary>
-             Returns all the keys that should be in the index for this item (keys for class, tag,
-             attributes, and id)
-             </summary>
-            
-             <returns>
-             An enumerator that allows foreach to be used to process index keys in this collection.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.Clone">
-             <summary>
-             Makes a deep copy of this object.
-             </summary>
-            
-             <returns>
-             A copy of this object.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.CloneChildren">
-             <summary>
-             Enumerates clone children in this collection.
-             </summary>
-            
-             <returns>
-             An enumerator that allows foreach to be used to process clone children in this collection.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.HasStyle(System.String)">
-             <summary>
-             Query if 'name' has style.
-             </summary>
-            
-             <param name="name">
-             .
-             </param>
-            
-             <returns>
-             true if style, false if not.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.HasClass(System.String)">
-             <summary>
-             Query if 'name' has class.
-             </summary>
-            
-             <param name="name">
-             .
-             </param>
-            
-             <returns>
-             true if class, false if not.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.AddClass(System.String)">
-             <summary>
-             Adds the class.
-             </summary>
-            
-             <param name="name">
-             .
-             </param>
-            
-             <returns>
-             true if it succeeds, false if it fails.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.RemoveClass(System.String)">
-             <summary>
-             Removes the class described by name.
-             </summary>
-            
-             <param name="name">
-             .
-             </param>
-            
-             <returns>
-             true if it succeeds, false if it fails.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.HasAttribute(System.String)">
-             <summary>
-             Query if 'tokenId' has attribute.
-             </summary>
-            
-             <param name="name">
-             .
-             </param>
-            
-             <returns>
-             true if attribute, false if not.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.SetAttribute(System.String,System.String)">
-             <summary>
-             Set the value of a named attribute.
-             </summary>
-            
-             <param name="name">
-             .
-             </param>
-             <param name="value">
-             .
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.SetAttribute(System.UInt16,System.String)">
-             <summary>
-             Set the value of a named attribute.
-             </summary>
-            
-             <param name="tokenId">
-             .
-             </param>
-             <param name="value">
-             .
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.SetAttribute(System.String)">
-             <summary>
-             Sets an attribute with no value.
-             </summary>
-            
-             <param name="name">
-             .
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.SetAttribute(System.UInt16)">
-             <summary>
-             Sets an attribute with no value.
-             </summary>
-            
-             <param name="tokenId">
-             The token
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.SetAttributeRaw(System.UInt16,System.String)">
-             <summary>
-             Used by DomElement to (finally) set the ID value.
-             </summary>
-            
-             <param name="tokenId">
-             .
-             </param>
-             <param name="value">
-             .
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.RemoveAttribute(System.String)">
-             <summary>
-             Removes the attribute described by name.
-             </summary>
-            
-             <param name="name">
-             .
-             </param>
-            
-             <returns>
-             true if it succeeds, false if it fails.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.RemoveAttribute(System.UInt16)">
-             <summary>
-             Removes the attribute described by name.
-             </summary>
-            
-             <param name="tokenId">
-             .
-             </param>
-            
-             <returns>
-             true if it succeeds, false if it fails.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.GetAttribute(System.String)">
-             <summary>
-             Gets an attribute value, or returns null if the value is missing. If a valueless attribute is
-             found, this will also return null. HasAttribute should be used to test for such attributes.
-             Attributes with an empty string value will return String.Empty.
-             </summary>
-            
-             <param name="name">
-             .
-             </param>
-            
-             <returns>
-             The attribute.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.GetAttribute(System.UInt16)">
-             <summary>
-             Gets an attribute value, or returns null if the value is missing. If a valueless attribute is
-             found, this will also return null. HasAttribute should be used to test for such attributes.
-             Attributes with an empty string value will return String.Empty.
-             </summary>
-            
-             <param name="tokenId">
-             .
-             </param>
-            
-             <returns>
-             The attribute.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.GetAttribute(System.String,System.String)">
-             <summary>
-             Return an attribute value identified by name. If it doesn't exist, return the provided
-             default value.
-             </summary>
-            
-             <param name="name">
-             The attribute name.
-             </param>
-             <param name="defaultValue">
-             .
-             </param>
-            
-             <returns>
-             The attribute.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.GetAttribute(System.UInt16,System.String)">
-             <summary>
-             Return an attribute value identified by a token ID. If it doesn't exist, return the provided
-             default value.
-             </summary>
-            
-             <param name="tokenId">
-             .
-             </param>
-             <param name="defaultValue">
-             .
-             </param>
-            
-             <returns>
-             The attribute.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.TryGetAttribute(System.UInt16,System.String@)">
-             <summary>
-             Try get attribute.
-             </summary>
-            
-             <param name="tokenId">
-             .
-             </param>
-             <param name="value">
-             .
-             </param>
-            
-             <returns>
-             true if it succeeds, false if it fails.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.TryGetAttribute(System.String,System.String@)">
-             <summary>
-             Try get attribute.
-             </summary>
-            
-             <param name="name">
-             .
-             </param>
-             <param name="value">
-             .
-             </param>
-            
-             <returns>
-             true if it succeeds, false if it fails.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.ToString">
-             <summary>
-             Convert this object into a string representation.
-             </summary>
-            
-             <returns>
-             This object as a string.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.AddStyle(System.String)">
-             <summary>
-             Add a single style in the form "styleName: value".
-             </summary>
-            
-             <param name="style">
-             .
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.AddStyle(System.String,System.Boolean)">
-             <summary>
-             Add a single style in the form "styleName: value".
-             </summary>
-            
-             <param name="style">
-             .
-             </param>
-             <param name="strict">
-             true to strict.
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.RemoveStyle(System.String)">
-             <summary>
-             Removes the style described by name.
-             </summary>
-            
-             <param name="name">
-             .
-             </param>
-            
-             <returns>
-             true if it succeeds, false if it fails.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.SetStyles(System.String)">
-             <summary>
-             Sets the styles.
-             </summary>
-            
-             <param name="styles">
-             The styles.
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.SetStyles(System.String,System.Boolean)">
-             <summary>
-             Sets the styles.
-             </summary>
-            
-             <param name="styles">
-             The styles.
-             </param>
-             <param name="strict">
-             true to strict.
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.SetStyle(System.String,System.String)">
-             <summary>
-             Sets a style.
-             </summary>
-            
-             <exception cref="T:System.NotImplementedException">
-             Thrown when the requested operation is unimplemented.
-             </exception>
-            
-             <param name="name">
-             .
-             </param>
-             <param name="value">
-             .
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.SetStyle(System.String,System.String,System.Boolean)">
-             <summary>
-             Sets a style.
-             </summary>
-            
-             <exception cref="T:System.NotImplementedException">
-             Thrown when the requested operation is unimplemented.
-             </exception>
-            
-             <param name="name">
-             .
-             </param>
-             <param name="value">
-             .
-             </param>
-             <param name="strict">
-             true to strict.
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.GetStyle(System.String)">
-             <summary>
-             Gets a style.
-             </summary>
-            
-             <exception cref="T:System.NotImplementedException">
-             Thrown when the requested operation is unimplemented.
-             </exception>
-            
-             <param name="name">
-             .
-             </param>
-            
-             <returns>
-             The style.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.AttributeIndexKey(System.String)">
-             <summary>
-             Attribute index key.
-             </summary>
-            
-             <param name="attrName">
-             Name of the attribute.
-             </param>
-            
-             <returns>
-             .
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.AttributeIndexKey(System.UInt16)">
-             <summary>
-             Attribute index key.
-             </summary>
-            
-             <param name="attrId">
-             Identifier for the attribute.
-             </param>
-            
-             <returns>
-             .
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.AttributeRemoveFromIndex(System.UInt16)">
-             <summary>
-             Attribute remove from index.
-             </summary>
-            
-             <param name="attrId">
-             Identifier for the attribute.
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.AttributeAddToIndex(System.UInt16)">
-             <summary>
-             Attribute add to index.
-             </summary>
-            
-             <param name="attrId">
-             Identifier for the attribute.
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.SetClassName(System.String)">
-             <summary>
-             Sets the class name.
-             </summary>
-            
-             <param name="className">
-             And sets the value of the class attribute of the specified element.
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.hasDefaultValue">
-             <summary>
-             Query if this object has default value.
-             </summary>
-            
-             <returns>
-             true if default value, false if not.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.String,System.UInt16)">
-             <summary>
-             Index key.
-             </summary>
-            
-             <param name="prefix">
-             The prefix.
-             </param>
-             <param name="keyTokenId">
-             Identifier for the key token.
-             </param>
-            
-             <returns>
-             A string
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.String,System.String)">
-             <summary>
-             Index key.
-             </summary>
-            
-             <param name="prefix">
-             The prefix.
-             </param>
-             <param name="key">
-             The key.
-             </param>
-            
-             <returns>
-             A string
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.String,System.String,System.String)">
-             <summary>
-             Index key.
-             </summary>
-            
-             <param name="prefix">
-             The prefix.
-             </param>
-             <param name="key">
-             The key.
-             </param>
-             <param name="path">
-             Full pathname of the file.
-             </param>
-            
-             <returns>
-             .
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.String,System.UInt16,System.String)">
-             <summary>
-             Generates a key that will be used to refernece this item in the index
-             </summary>
-            
-             <param name="prefix">
-             The prefix.
-             </param>
-             <param name="keyTokenId">
-             Identifier for the key token.
-             </param>
-             <param name="path">
-             Full path to the element.
-             </param>
-            
-             <returns>
-             A string representing the key for this item in the index
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.GetHtml(CsQuery.DomRenderingOptions,System.Text.StringBuilder,System.Boolean)">
-             <summary>
-             Gets the HTML representation of this element and its children
-             </summary>
-            
-             <param name="options">
-             Options for how to render the HTML.
-             </param>
-             <param name="sb">
-             A StringBuilder object to which append the output.
-             </param>
-             <param name="includeChildren">
-             true to include, false to exclude the children.
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.RenderAttribute(System.Text.StringBuilder,System.String,System.String,System.Boolean)">
-             <summary>
-             Render an attribute
-             </summary>
-            
-             <param name="sb">
-             A StringBuilder to append the attributes to
-             </param>
-             <param name="name">
-             The name of the attribute
-             </param>
-             <param name="value">
-             The attribute value
-             </param>
-             <param name="quoteAll">
-             true to require quotes around the attribute value, false to use quotes only if needed.
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.HasAttribute(System.UInt16)">
-             <summary>
-             Query if 'tokenId' has attribute.
-             </summary>
-            
-             <param name="tokenId">
-             .
-             </param>
-            
-             <returns>
-             true if attribute, false if not.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.TryGetAttributeForMatching(System.UInt16,System.String@)">
-             <summary>
-             Gets an attribute value for matching, accounting for default values of special attribute
-             types.
-             </summary>
-            
-             <param name="attributeId">
-             Identifier for the attribute.
-             </param>
-            
-             <returns>
-             The attribute for matching.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.Closest(System.UInt16)">
-             <summary>
-             Return the first ancestor of the specified tag
-             </summary>
-            
-             <param name="tagID">
-             Identifier for the tag.
-             </param>
-            
-             <returns>
-             An IDomContainer
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.SetProp(System.UInt16,System.Boolean)">
-             <summary>
-             Sets a boolean property by creating or removing it
-             </summary>
-            
-             <param name="tagId">
-             Identifier for the tag.
-             </param>
-             <param name="value">
-             The value to set
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.ChildElementsOfTag``1(System.UInt16)">
-             <summary>
-             Returns all child elements of a specific tag, cast to a type
-             </summary>
-            
-             <typeparam name="T">
-             Generic type parameter.
-             </typeparam>
-             <param name="nodeNameId">
-             Backing field for NodeNameID property.
-             </param>
-            
-             <returns>
-             An enumerator.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.System#Collections#Generic#IEnumerable{System#Collections#Generic#KeyValuePair{System#String@System#String}}#GetEnumerator">
-            <summary>
-            Gets the enumerator.
-            </summary>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.System#Collections#IEnumerable#GetEnumerator">
-             <summary>
-             Gets the enumerator.
-             </summary>
-            
-             <returns>
-             The enumerator.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.AttributesCollection">
-             <summary>
-             Enumerate the attributes + class &amp; style.
-             </summary>
-            
-             <returns>
-             An enumerator that allows foreach to be used to process attributes collection in this
-             collection.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.IndexAttributesTokens">
-             <summary>
-             Return a sequence of tokens for each non-class, non-style attribute that should be
-             added to the attribute index.
-             </summary>
-            
-             <returns>
-             An enumerator of ushort.
-             </returns>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.InnerAttributes">
-            <summary>
-            Gets the dom attributes.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.HasInnerAttributes">
-            <summary>
-            Returns true if this node has any actual attributes (not class or style)
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.Style">
-            <summary>
-            An object encapsulating the Styles associated with this element.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.Attributes">
-             <summary>
-             Access to the IAttributeCollection interface for this element's attributes.
-             </summary>
-            
-             <implementation>
-             We don't actually refer to the inner AttributeCollection object here because we cannot allow
-             users to set attributes directly in the object: they must use SetAttribute so that special
-             handling for "class" and "style" as well as indexing can be performed. To avoid creating a
-             wrapper object,.
-             </implementation>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.ClassName">
-            <summary>
-            gets and sets the value of the "class" attribute of the specified element.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.Id">
-            <summary>
-            Get or set value of the "id" attribute.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.NodeName">
-            <summary>
-            The NodeName for the element. This always returns the name in upper case.
-            </summary>11
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.NodeNameID">
-            <summary>
-            Gets the token that represents this element's NodeName
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.Type">
-             <summary>
-             The value of the "type" attribute. For input elements, this property always returns a
-             lowercase value and defaults to "text" if there is no type attribute. For other element types,
-             it simply returns the value of the "type" attribute.
-             </summary>
-            
-             <url>
-             https://developer.mozilla.org/en/XUL/Property/type
-             </url>
-            
-             <implementation>
-             TODO: in HTML5 type can be used on OL attributes (and maybe others?) and its value is case
-             sensitive. The Type of input elements is always lower case, though. This behavior needs to be
-             verified against the spec.
-             </implementation>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.Name">
-             <summary>
-             Gets or sets the name attribute of an DOM object, it only applies to the following elements:
-             &lt;a&gt; , &lt;applet&gt; , &lt;form&gt; , &lt;frame&gt; , &lt;iframe&gt; , &lt;img&gt; ,
-             &lt;input&gt; , &lt;map&gt; , &lt;meta&gt; , &lt;object&gt; , &lt;option&gt; , &lt;param&gt; ,
-             &lt;select&gt; , and &lt;textarea&gt; .
-             </summary>
-            
-             <url>
-             https://developer.mozilla.org/en/DOM/element.name
-             </url>
-            
-             <implementation>
-             TODO: Verify that the attribute is applicable to this node type and return null otherwise.
-             </implementation>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.DefaultValue">
-            <summary>
-            The value of an input element, or the text of a textarea element.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.Value">
-            <summary>
-            For input elements, the "value" property of this element. Returns null for other element
-            types.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.NodeType">
-            <summary>
-            Gets the type of the node.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.ParentNode">
-            <summary>
-            The direct parent of this node.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.HasAttributes">
-            <summary>
-            Returns true if this node has any attributes.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.HasStyles">
-            <summary>
-            Returns true if this node has any styles defined.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.HasClasses">
-            <summary>
-            Returns true if this node has CSS classes.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.IsIndexed">
-            <summary>
-            Gets a value indicating whether this object type should be indexed.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.InnerHtmlAllowed">
-            <summary>
-            Gets a value indicating whether HTML is allowed as a child of this element. It is possible
-            for this value to be false but InnerTextAllowed to be true for elements which can have inner
-            content, but no child HTML markup, such as &lt;textarea&gt; and &lt;script&gt;
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.InnerTextAllowed">
-            <summary>
-            Gets a value indicating whether text content is allowed as a child of this element.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.ChildrenAllowed">
-            <summary>
-            Gets a value indicating whether this element may have children. When false, it means this is
-            a void element.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.Item(System.String)">
-             <summary>
-             The child node at the specified index.
-             </summary>
-            
-             <param name="attribute">
-             The zero-based index of the child node to access.
-             </param>
-            
-             <returns>
-             IDomObject, the element at the specified index within this node's children.
-             </returns>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.Item(System.Int32)">
-             <summary>
-             The child node at the specified index.
-             </summary>
-            
-             <param name="index">
-             The zero-based index of the child node to access.
-             </param>
-            
-             <returns>
-             IDomObject, the element at the specified index within this node's children.
-             </returns>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.Checked">
-             <summary>
-             Gets or sets a value indicating whether the element is checked.
-             </summary>
-            
-             <url>
-             https://developer.mozilla.org/en/XUL/Property/checked
-             </url>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.ReadOnly">
-             <summary>
-             Gets or sets a value indicating whether the only should be read.
-             </summary>
-            
-             <url>
-             https://developer.mozilla.org/en/XUL/Property/readOnly
-             </url>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.InnerHTML">
-            <summary>
-            Returns text of the inner HTML. When setting, any children will be removed.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.InnerText">
-            <summary>
-            Gets or sets the text content of a node and its descendants.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.ElementIndex">
-            <summary>
-            The index excluding text nodes.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.IndexReference">
-            <summary>
-            The object to which this index refers.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.IsBlock">
-            <summary>
-            Returns true if this element is a block-type element.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.Classes">
-            <summary>
-            A sequence of all unique class names defined on this element.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.CsQuery#IAttributeCollection#Item(System.String)">
-             <summary>
-             Get the named attribute value
-             </summary>
-            
-             <param name="attributeName">
-             The name of the attribute
-             </param>
-            
-             <returns>
-             A string of the attribute value
-             </returns>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.CsQuery#IAttributeCollection#Length">
-             <summary>
-             The number of attributes in this attribute collection. This includes special attributes such
-             as "class", "id", and "style".
-             </summary>
-            
-             <returntype>
-             int
-             </returntype>
-        </member>
-        <member name="T:CsQuery.IHTMLOptionElement">
-            <summary>
-            An HTMLOPTION element
-            </summary>
-            <url>http://dev.w3.org/html5/spec/single-page.html#attr-option-disabled</url>
-        </member>
-        <member name="P:CsQuery.IHTMLOptionElement.Disabled">
-            <summary>
-            Gets or sets a value indicating whether this object is disabled.
-            </summary>
-        </member>
-        <member name="P:CsQuery.IHTMLOptionElement.Form">
-            <summary>
-            The form with which the element is associated
-            </summary>
-        </member>
-        <member name="M:CsQuery.Implementation.HTMLOptionElement.#ctor">
-            <summary>
-            Default constructor.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLOptionElement.Value">
-            <summary>
-            The value of the OPTIOn element, or empty string if none specified.
-            </summary>
-        </member>
-        <member name="T:CsQuery.IHTMLInputElement">
-             <summary>
-             An HTML INPUT element.
-             </summary>
-            
-             <url>
-             http://dev.w3.org/html5/markup/input.html
-             </url>
-        </member>
-        <member name="P:CsQuery.IHTMLInputElement.Form">
-            <summary>
-            The form with which to associate the element.
-            </summary>
-        </member>
-        <member name="P:CsQuery.IHTMLInputElement.Autofocus">
-            <summary>
-            A URL that provides the destination of the hyperlink. If the href attribute is not specified,
-            the element represents a placeholder hyperlink.
-            </summary>
-        </member>
-        <member name="P:CsQuery.IHTMLInputElement.Required">
-            <summary>
-            Specifies that the element is a required part of form submission.
-            </summary>
         </member>
         <member name="F:CsQuery.Implementation.CSSStyleDeclaration._Styles">
             <summary>
@@ -10059,6 +9014,22 @@
              https://developer.mozilla.org/en/DOM/document.getElementById
              </url>
         </member>
+        <member name="M:CsQuery.IDomDocument.GetElementById``1(System.String)">
+             <summary>
+             Gets an element by identifier, and return a strongly-typed interface
+             </summary>
+            
+             <typeparam name="T">
+             Generic type parameter.
+             </typeparam>
+             <param name="id">
+             The identifier.
+             </param>
+            
+             <returns>
+             The element by id&lt; t&gt;
+             </returns>
+        </member>
         <member name="M:CsQuery.IDomDocument.CreateElement(System.String)">
              <summary>
              Creates the specified HTML element.
@@ -10220,6 +9191,40 @@
             <summary>
             Return the body element for this Document.
             </summary>
+        </member>
+        <member name="T:CsQuery.IAttributeCollection">
+            <summary>
+            Interface for methods to access the attributes on a DOM element.
+            </summary>
+        </member>
+        <member name="M:CsQuery.IAttributeCollection.GetAttribute(System.String)">
+            <summary>
+            Get the value of a named attribute
+            </summary>
+            <param name="name">The attribute name</param>
+            <returns>The attribute value</returns>
+        </member>
+        <member name="M:CsQuery.IAttributeCollection.SetAttribute(System.String,System.String)">
+            <summary>
+            Set the value of a named attribute
+            </summary>
+            <param name="name"></param>
+            <param name="value"></param>
+        </member>
+        <member name="P:CsQuery.IAttributeCollection.Item(System.String)">
+            <summary>
+            Get or set the value of a named attribute
+            </summary>
+            <param name="attributeName">The attribute name</param>
+            <returns>The attribute value</returns>
+            <returntype>string</returntype>
+        </member>
+        <member name="P:CsQuery.IAttributeCollection.Length">
+            <summary>
+            The number of attributes in this attribute collection. This includes special attributes such as
+            "class", "id", and "style"
+            </summary>
+            <returntype>int</returntype>
         </member>
         <member name="P:CsQuery.StringScanner.IValueInfo.AlphaISO10646">
             <summary>
@@ -10781,43 +9786,30 @@
             Determines whether the target is a parent.
             </summary>
         </member>
-        <member name="T:CsQuery.IHTMLProgressElement">
-             <summary>
-             An PROGRESS element
-             </summary>
-            
-             <url>
-             http://dev.w3.org/html5/markup/progress.html
-             </url>
-        </member>
-        <member name="P:CsQuery.IHTMLProgressElement.Value">
-            <summary>
-            The current value
-            </summary>
-        </member>
-        <member name="P:CsQuery.IHTMLProgressElement.Max">
-            <summary>
-            The maximum value
-            </summary>
-        </member>
-        <member name="P:CsQuery.IHTMLProgressElement.Position">
-            <summary>
-            If the progress bar is an indeterminate progress bar, then the position IDL attribute must
-            return −1. Otherwise, it must return the result of dividing the current value by the maximum
-            value.
-            </summary>
-        </member>
-        <member name="P:CsQuery.IHTMLProgressElement.Labels">
-            <summary>
-             A NodeList of all LABEL elements within this Progress element
-            </summary>
-        </member>
         <member name="T:CsQuery.Implementation.ChildNodeList">
             <summary>
             A list of nodes representing the children of a DOM element.
             </summary>
         </member>
-        <member name="P:CsQuery.INodeList`1.Length">
+        <member name="T:CsQuery.INodeList">
+            <summary>
+            Interface for node list, a read/write collection of nodes.
+            </summary>
+        </member>
+        <member name="M:CsQuery.INodeList.Item(System.Int32)">
+             <summary>
+             Get the item at the specified index
+             </summary>
+            
+             <param name="index">
+             Zero-based index of the item
+             </param>
+            
+             <returns>
+             An item
+             </returns>
+        </member>
+        <member name="P:CsQuery.INodeList.Length">
             <summary>
             The number of nodes in this INodeList
             </summary>
@@ -11859,6 +10851,39 @@
             <param name="subKey"></param>
             <returns></returns>
         </member>
+        <member name="M:CsQuery.Implementation.DomDocument.GetElementById(System.String)">
+             <summary>
+             Returns a reference to the element by its ID.
+             </summary>
+            
+             <param name="id">
+             The identifier.
+             </param>
+            
+             <returns>
+             The element by identifier.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/document.getElementById
+             </url>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.GetElementById``1(System.String)">
+             <summary>
+             Gets an element by identifier, and return a strongly-typed interface.
+             </summary>
+            
+             <typeparam name="T">
+             Generic type parameter.
+             </typeparam>
+             <param name="id">
+             The identifier.
+             </param>
+            
+             <returns>
+             The element by id&lt; t&gt;
+             </returns>
+        </member>
         <member name="M:CsQuery.Implementation.DomDocument.CreateNew``1(System.Char[],CsQuery.HtmlParser.HtmlParsingMode)">
              <summary>
              Creates an IDomDocument that is derived from this one. The new type can also be a derived
@@ -12034,42 +11059,6 @@
              <url>
              http://reference.sitepoint.com/css/pseudoclass-firstchild
              </url>
-        </member>
-        <member name="T:CsQuery.IHTMLAnchorElement">
-             <summary>
-             An Anchor (A) element.
-             </summary>
-            
-             <url>
-             http://dev.w3.org/html5/markup/a.html
-             </url>
-        </member>
-        <member name="P:CsQuery.IHTMLAnchorElement.Target">
-            <summary>
-            A name or keyword giving a browsing context for UAs to use when following the hyperlink.
-            </summary>
-        </member>
-        <member name="P:CsQuery.IHTMLAnchorElement.Href">
-            <summary>
-            A URL that provides the destination of the hyperlink. If the href attribute is not specified,
-            the element represents a placeholder hyperlink.
-            </summary>
-        </member>
-        <member name="P:CsQuery.IHTMLAnchorElement.Rel">
-            <summary>
-            Gets or sets the relative.
-            </summary>
-        </member>
-        <member name="P:CsQuery.IHTMLAnchorElement.Hreflang">
-            <summary>
-            A list of tokens that specify the relationship between the document containing the hyperlink
-            and the destination indicated by the hyperlink.
-            </summary>
-        </member>
-        <member name="P:CsQuery.IHTMLAnchorElement.Media">
-            <summary>
-            The media for which the destination of the hyperlink was designed.
-            </summary>
         </member>
         <member name="T:CsQuery.Engine.MatchElement">
             <summary>
@@ -12477,83 +11466,6 @@
             Return only the last element from a selection
             </summary>
         </member>
-        <member name="T:CsQuery.IHTMLOptionsCollection">
-             <summary>
-             Interface to a collection of HTML options.
-             </summary>
-            
-             <url>
-             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
-             </url>
-        </member>
-        <member name="M:CsQuery.IHTMLOptionsCollection.Item(System.Int32)">
-             <summary>
-             Returns the specific node at the given zero-based index (gives null if out of range)
-             </summary>
-            
-             <param name="index">
-             The zero-based index of the option element.
-             </param>
-            
-             <returns>
-             An HTML Option element.
-             </returns>
-            
-             <url>
-             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
-             </url>
-        </member>
-        <member name="M:CsQuery.IHTMLOptionsCollection.NamedItem(System.String)">
-             <summary>
-             Returns the specific node with the given DOMString (i.e., string) id. Returns null if no such named node exists.
-             </summary>
-            
-             <param name="name">
-             The zero-based index of the option element.
-             </param>
-            
-             <returns>
-             An HTML Option element.
-             </returns>
-            
-             <url>
-             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
-             </url>
-        </member>
-        <member name="P:CsQuery.IHTMLOptionsCollection.Indexer(System.Int32)">
-             <summary>
-             Returns the specific node at the given zero-based index (gives null if out of range)
-             </summary>
-            
-             <param name="index">
-             The zero-based index of the option element.
-             </param>
-            
-             <returns>
-             An HTML Option element.
-             </returns>
-            
-             <url>
-             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
-             </url>
-        </member>
-        <member name="P:CsQuery.IHTMLOptionsCollection.Indexer(System.String)">
-             <summary>
-             Returns the specific node with the given DOMString (i.e., string) id. Returns null if no such named node exists.
-             </summary>
-            
-             <param name="name">
-             The zero-based index of the option element.
-             </param>
-            
-             <returns>
-             An HTML Option element.
-             </returns>
-            
-             <url>
-             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
-             </url>
-        </member>
         <member name="T:CsQuery.Implementation.NodeList`1">
              <summary>
              An INodeList wrapper for an IList object
@@ -12562,6 +11474,33 @@
              <typeparam name="T">
              Generic type parameter.
              </typeparam>
+        </member>
+        <member name="M:CsQuery.INodeList`1.Item(System.Int32)">
+             <summary>
+             Get the item at the specified index
+             </summary>
+            
+             <param name="index">
+             Zero-based index of the item
+             </param>
+            
+             <returns>
+             An item
+             </returns>
+        </member>
+        <member name="M:CsQuery.INodeList`1.ToList">
+             <summary>
+             Converts this object to a read-only list.
+             </summary>
+            
+             <returns>
+             This object as an IList&lt;IDomObject&gt;
+             </returns>
+        </member>
+        <member name="P:CsQuery.INodeList`1.Length">
+            <summary>
+            The number of nodes in this INodeList
+            </summary>
         </member>
         <member name="M:CsQuery.Implementation.NodeList`1.#ctor(System.Collections.Generic.IList{`0})">
              <summary>
@@ -12581,74 +11520,6 @@
              <param name="sequence">
              The sequence
              </param>
-        </member>
-        <member name="T:CsQuery.Implementation.HTMLInputElement">
-            <summary>
-            An HTML input element.
-            </summary>
-        </member>
-        <member name="M:CsQuery.Implementation.HTMLInputElement.IndexKeys">
-             <summary>
-             Returns all the keys that should be in the index for this item (keys for class, tag,
-             attributes, and id)
-             </summary>
-            
-             <returns>
-             An enumerator that allows foreach to be used to process index keys in this collection.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.HTMLInputElement.TryGetAttributeForMatching(System.UInt16,System.String@)">
-             <summary>
-             Gets an attribute value for matching, accounting for default values of special attribute
-             types.
-             </summary>
-            
-             <param name="attributeId">
-             Identifier for the attribute.
-             </param>
-            
-             <returns>
-             The attribute for matching.
-             </returns>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLInputElement.Form">
-             <summary>
-             The value of form element with which to associate the element.
-             </summary>
-            
-             <remarks>
-             The HTML5 spec says "The value of the id attribute on the form with which to associate the
-             element." This is not what browsers currently return; they return the actual element. We'll
-             keep that for now.
-             </remarks>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLInputElement.Autofocus">
-            <summary>
-            A URL that provides the destination of the hyperlink. If the href attribute is not specified,
-            the element represents a placeholder hyperlink.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLInputElement.Required">
-            <summary>
-            Specifies that the element is a required part of form submission.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLInputElement.Type">
-             <summary>
-             The value of the "type" attribute. For input elements, this property always returns a
-             lowercase value and defaults to "text" if there is no type attribute. For other element types,
-             it simply returns the value of the "type" attribute.
-             </summary>
-            
-             <url>
-             https://developer.mozilla.org/en/XUL/Property/type
-             </url>
-            
-             ### <implementation>
-             TODO: in HTML5 type can be used on OL attributes (and maybe others?) and its value is case
-             sensitive. The Type of input elements is always lower case, though. This behavior needs to be
-             verified against the spec.
-             </implementation>
         </member>
         <member name="T:CsQuery.Implementation.SimpleDictionary`1">
             <summary>
@@ -12794,112 +11665,6 @@
              character bounds the parameter; or OptionallyQuoted to accept a string that can (but does not
              have to be) quoted.
              </returns>
-        </member>
-        <member name="T:CsQuery.Implementation.HTMLSelectElement">
-            <summary>
-            An HTML SELECT element.
-            </summary>
-        </member>
-        <member name="T:CsQuery.IHTMLSelectElement">
-            <summary>
-            A SELECT element
-            </summary>
-        </member>
-        <member name="P:CsQuery.IHTMLSelectElement.Options">
-            <summary>
-            A collection of HTML option elements (in document order)
-            </summary>
-            <url>https://developer.mozilla.org/en/DOM/HTMLOptionsCollection</url>
-        </member>
-        <member name="P:CsQuery.IHTMLSelectElement.SelectedIndex">
-             <summary>
-             Returns the index of the currently selected item. You may select an item by assigning its
-             index to this property. By assigning -1 to this property, all items will be deselected.
-             Returns -1 if no items are selected.
-             </summary>
-            
-             <url>
-             https://developer.mozilla.org/en/XUL/Property/selectedIndex.
-             </url>
-        </member>
-        <member name="P:CsQuery.IHTMLSelectElement.SelectedItem">
-             <summary>
-             Holds the currently selected item. If no item is currently selected, this value will be null.
-             You can select an item by setting this value. A select event will be sent to the container
-             (i.e. the listbox, richlistbox, etc., not the list item that was selected) when it is changed
-             either via this property, the selectedIndex property, or changed by the user.
-             </summary>
-            
-             <url>
-             https://developer.mozilla.org/en/XUL/Property/selectedItem
-             </url>
-        </member>
-        <member name="P:CsQuery.IHTMLSelectElement.Multiple">
-             <summary>
-             This Boolean attribute indicates that multiple options can be selected in the list. If it is
-             not specified, then only one option can be selected at a time.
-             </summary>
-            
-             <url>
-             https://developer.mozilla.org/en/HTML/Element/select
-             </url>
-        </member>
-        <member name="P:CsQuery.IHTMLSelectElement.Length">
-            <summary>
-            Gets the number of options in the select
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLSelectElement.Options">
-             <summary>
-             A collection of HTML option elements (in document order)
-             </summary>
-            
-             <url>
-             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
-             </url>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLSelectElement.Length">
-            <summary>
-            The number OPTION elements contained by this SELECT
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLSelectElement.Type">
-            <summary>
-            The type string for this SELECT group.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLSelectElement.Multiple">
-             <summary>
-             This Boolean attribute indicates that multiple options can be selected in the list. If it is
-             not specified, then only one option can be selected at a time.
-             </summary>
-            
-             <url>
-             https://developer.mozilla.org/en/HTML/Element/select
-             </url>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLSelectElement.SelectedIndex">
-             <summary>
-             Returns the index of the currently selected item. You may select an item by assigning its
-             index to this property. By assigning -1 to this property, all items will be deselected.
-             Returns -1 if no items are selected.
-             </summary>
-            
-             <url>
-             https://developer.mozilla.org/en/XUL/Property/selectedIndex.
-             </url>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLSelectElement.SelectedItem">
-             <summary>
-             Holds the currently selected item. If no item is currently selected, this value will be null.
-             You can select an item by setting this value. A select event will be sent to the container
-             (i.e. the listbox, richlistbox, etc., not the list item that was selected) when it is changed
-             either via this property, the selectedIndex property, or changed by the user.
-             </summary>
-            
-             <url>
-             https://developer.mozilla.org/en/XUL/Property/selectedItem
-             </url>
         </member>
         <member name="F:CsQuery.StartupOptions.LookForExtensions">
             <summary>
@@ -13415,143 +12180,6 @@
             <param name="text"></param>
             <returns></returns>
         </member>
-        <member name="T:CsQuery.Implementation.HTMLOptionsCollection">
-             <summary>
-             A collection of HTML options.
-             </summary>
-            
-             <url>
-             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
-             </url>
-        </member>
-        <member name="M:CsQuery.Implementation.HTMLOptionsCollection.Item(System.Int32)">
-             <summary>
-             Returns the specific node at the given zero-based index (gives null if out of range)
-             </summary>
-            
-             <param name="index">
-             The zero-based index of the option element.
-             </param>
-            
-             <returns>
-             An HTML Option element.
-             </returns>
-            
-             <url>
-             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
-             </url>
-        </member>
-        <member name="M:CsQuery.Implementation.HTMLOptionsCollection.NamedItem(System.String)">
-             <summary>
-             Returns the specific node with the given DOMString (i.e., string) id. Returns null if no such
-             named node exists.
-             </summary>
-            
-             <exception cref="T:System.NotImplementedException">
-             Thrown when the requested operation is unimplemented.
-             </exception>
-            
-             <param name="name">
-             The zero-based index of the option element.
-             </param>
-            
-             <returns>
-             An HTML Option element, or null if the named element does not exist.
-             </returns>
-            
-             <url>
-             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
-             </url>
-        </member>
-        <member name="M:CsQuery.Implementation.HTMLOptionsCollection.GetEnumerator">
-             <summary>
-             Gets the enumerator.
-             </summary>
-            
-             <returns>
-             The enumerator.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.HTMLOptionsCollection.System#Collections#IEnumerable#GetEnumerator">
-             <summary>
-             Gets the enumerator.
-             </summary>
-            
-             <returns>
-             The enumerator.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.HTMLOptionsCollection.Children">
-             <summary>
-             Enumerates the element children of a node.
-             </summary>
-            
-             <param name="parent">
-             The parent.
-             </param>
-            
-             <returns>
-             An enumerator.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.HTMLOptionsCollection.Children(CsQuery.IDomElement)">
-             <summary>
-             Implementation for Children. The bool part of the tuple indicates if the element inherits a
-             "disabled" property.
-             </summary>
-            
-             <param name="parent">
-             The parent element for this collection.
-             </param>
-            
-             <returns>
-             An enumerator that allows foreach to be used to process children in this collection.
-             </returns>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLOptionsCollection.Parent">
-            <summary>
-            Gets the parent element for this collection
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLOptionsCollection.Indexer(System.Int32)">
-             <summary>
-             Returns the specific node at the given zero-based index (gives null if out of range)
-             </summary>
-            
-             <param name="index">
-             The zero-based index of the option element.
-             </param>
-            
-             <returns>
-             An HTML Option element.
-             </returns>
-            
-             <url>
-             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection.
-             </url>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLOptionsCollection.Indexer(System.String)">
-             <summary>
-             Returns the specific node at the given zero-based index (gives null if out of range)
-             </summary>
-            
-             <param name="name">
-             The name of the option element
-             </param>
-            
-             <returns>
-             An HTML Option element.
-             </returns>
-            
-             <url>
-             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
-             </url>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLOptionsCollection.SelectedIndex">
-            <summary>
-            Logic: if nothing specifically selected, find the first enabled option, otherwise, the first disabled option.
-            </summary>
-        </member>
         <member name="T:CsQuery.Web.IAsyncRequestQueue">
             <summary>
             A group of async web requests. 
@@ -13965,21 +12593,6 @@
             <param name="name"></param>
             <returns></returns>
         </member>
-        <member name="T:CsQuery.Implementation.HTMLTextAreaElement">
-            <summary>
-            An HTML text area element.
-            </summary>
-        </member>
-        <member name="M:CsQuery.Implementation.HTMLTextAreaElement.#ctor">
-            <summary>
-            Default constructor.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLTextAreaElement.Value">
-            <summary>
-            The value of the TEXTAREA's contents
-            </summary>
-        </member>
         <member name="T:CsQuery.Implementation.SelectionSetComparer">
             <summary>
             A comparer to ensure that items are returned from a selection set in DOM order, e.g. by comparing their
@@ -14029,28 +12642,6 @@
         <member name="P:CsQuery.EquationParser.Implementation.Equation.Operand">
             <summary>
             The root operand for the equation. The equation must not be changed once set, or variables will not be bound.
-            </summary>
-        </member>
-        <member name="T:CsQuery.Implementation.HTMLProgressElement">
-            <summary>
-            An HTML progress element.
-            </summary>
-        </member>
-        <member name="M:CsQuery.Implementation.HTMLProgressElement.#ctor">
-            <summary>
-            Default constructor.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLProgressElement.Position">
-             <summary>
-            If the progress bar is an indeterminate progress bar, then the position IDL attribute must
-            return −1. Otherwise, it must return the result of dividing the current value by the maximum
-            value.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLProgressElement.Labels">
-            <summary>
-            A NodeList of all LABEL elements within this Progress element
             </summary>
         </member>
         <member name="T:CsQuery.Web.CsqWebRequest">
@@ -14686,6 +13277,25 @@
             The Document bound to this engine instance
             </summary>
         </member>
+        <member name="T:CsQuery.IDomIndexedNode">
+            <summary>
+            An marker and interface exposing properties required for a node that should be indexed
+            </summary>
+        </member>
+        <member name="M:CsQuery.IDomIndexedNode.IndexKeys">
+             <summary>
+             A sequence of all the index keys that can be used to access this object
+             </summary>
+            
+             <returns>
+             An sequence of strings
+             </returns>
+        </member>
+        <member name="P:CsQuery.IDomIndexedNode.IndexReference">
+            <summary>
+            The object that is the target of the index (normally, the object itself)
+            </summary>
+        </member>
         <member name="T:CsQuery.DomRenderingOptions">
             <summary>
             Flags specifying how the document should be rendered
@@ -15222,6 +13832,1019 @@
             Return only odd-numbered elements from the selection
             </summary>
         </member>
+        <member name="T:CsQuery.Implementation.DomElement">
+            <summary>
+            HTML elements.
+            </summary>
+        </member>
+        <member name="T:CsQuery.IDomElement">
+            <summary>
+            A regular DOM element
+            </summary>
+        </member>
+        <member name="M:CsQuery.IDomElement.ElementHtml">
+             <summary>
+             Returns the HTML for this element, but ignoring children/innerHTML.
+             </summary>
+            
+             <returns>
+             A string of HTML.
+             </returns>
+        </member>
+        <member name="P:CsQuery.IDomElement.IsBlock">
+            <summary>
+            The element is a block element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IDomElement.ElementIndex">
+            <summary>
+            Get this element's index only among other elements (e.g. excluding text &amp; other non-
+            element node types)
+            </summary>
+        </member>
+        <member name="F:CsQuery.Implementation.DomElement._InnerAttributes">
+            <summary>
+            The dom attributes.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Implementation.DomElement._Style">
+            <summary>
+            Backing field for _Style.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Implementation.DomElement._Classes">
+            <summary>
+            Backing field for _Classes.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Implementation.DomElement._NodeNameID">
+            <summary>
+            Backing field for NodeNameID property.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.#ctor(System.String)">
+             <summary>
+             Create a new DOM element of a specified nodeName.
+             </summary>
+            
+             <exception cref="T:System.ArgumentException">
+             Thrown when a missing or empty nodeName is passed.
+             </exception>
+            
+             <param name="nodeName">
+             The NodeName for the element (upper case).
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.#ctor(System.UInt16)">
+             <summary>
+             Create a new DomElement node of a nodeTipe determined by a token ID.
+             </summary>
+            
+             <param name="tokenId">
+             Token represnting an existing tokenized node type.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.Create(System.String)">
+             <summary>
+             Creates a new element
+             </summary>
+            
+             <param name="nodeName">
+             The NodeName for the element (upper case).
+             </param>
+            
+             <returns>
+             A new element that inherits DomElement
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.Render(System.Text.StringBuilder,CsQuery.DomRenderingOptions)">
+             <summary>
+             Renders this object.
+             </summary>
+            
+             <param name="sb">
+             The sb.
+             </param>
+             <param name="options">
+             Options for controlling the operation.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.ElementHtml">
+             <summary>
+             Returns the HTML for this element, but ignoring children/innerHTML.
+             </summary>
+            
+             <returns>
+             A string of HTML
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.IndexKeys">
+             <summary>
+             Returns all the keys that should be in the index for this item (keys for class, tag,
+             attributes, and id)
+             </summary>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process index keys in this collection.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.Clone">
+             <summary>
+             Makes a deep copy of this object.
+             </summary>
+            
+             <returns>
+             A copy of this object.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.CloneChildren">
+             <summary>
+             Enumerates clone children in this collection.
+             </summary>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process clone children in this collection.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.HasStyle(System.String)">
+             <summary>
+             Query if 'name' has style.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+            
+             <returns>
+             true if style, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.HasClass(System.String)">
+             <summary>
+             Query if 'name' has class.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+            
+             <returns>
+             true if class, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.AddClass(System.String)">
+             <summary>
+             Adds the class.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.RemoveClass(System.String)">
+             <summary>
+             Removes the class described by name.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.HasAttribute(System.String)">
+             <summary>
+             Query if 'tokenId' has attribute.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+            
+             <returns>
+             true if attribute, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.SetAttribute(System.String,System.String)">
+             <summary>
+             Set the value of a named attribute.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+             <param name="value">
+             .
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.SetAttribute(System.UInt16,System.String)">
+             <summary>
+             Set the value of a named attribute.
+             </summary>
+            
+             <param name="tokenId">
+             .
+             </param>
+             <param name="value">
+             .
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.SetAttribute(System.String)">
+             <summary>
+             Sets an attribute with no value.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.SetAttribute(System.UInt16)">
+             <summary>
+             Sets an attribute with no value.
+             </summary>
+            
+             <param name="tokenId">
+             The token
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.SetAttributeRaw(System.UInt16,System.String)">
+             <summary>
+             Used by DomElement to (finally) set the ID value.
+             </summary>
+            
+             <param name="tokenId">
+             .
+             </param>
+             <param name="value">
+             .
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.RemoveAttribute(System.String)">
+             <summary>
+             Removes the attribute described by name.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.RemoveAttribute(System.UInt16)">
+             <summary>
+             Removes the attribute described by name.
+             </summary>
+            
+             <param name="tokenId">
+             .
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.GetAttribute(System.String)">
+             <summary>
+             Gets an attribute value, or returns null if the value is missing. If a valueless attribute is
+             found, this will also return null. HasAttribute should be used to test for such attributes.
+             Attributes with an empty string value will return String.Empty.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+            
+             <returns>
+             The attribute.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.GetAttribute(System.UInt16)">
+             <summary>
+             Gets an attribute value, or returns null if the value is missing. If a valueless attribute is
+             found, this will also return null. HasAttribute should be used to test for such attributes.
+             Attributes with an empty string value will return String.Empty.
+             </summary>
+            
+             <param name="tokenId">
+             .
+             </param>
+            
+             <returns>
+             The attribute.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.GetAttribute(System.String,System.String)">
+             <summary>
+             Return an attribute value identified by name. If it doesn't exist, return the provided
+             default value.
+             </summary>
+            
+             <param name="name">
+             The attribute name.
+             </param>
+             <param name="defaultValue">
+             .
+             </param>
+            
+             <returns>
+             The attribute.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.GetAttribute(System.UInt16,System.String)">
+             <summary>
+             Return an attribute value identified by a token ID. If it doesn't exist, return the provided
+             default value.
+             </summary>
+            
+             <param name="tokenId">
+             .
+             </param>
+             <param name="defaultValue">
+             .
+             </param>
+            
+             <returns>
+             The attribute.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.TryGetAttribute(System.UInt16,System.String@)">
+             <summary>
+             Try get attribute.
+             </summary>
+            
+             <param name="tokenId">
+             .
+             </param>
+             <param name="value">
+             .
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.TryGetAttribute(System.String,System.String@)">
+             <summary>
+             Try get attribute.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+             <param name="value">
+             .
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.ToString">
+             <summary>
+             Convert this object into a string representation.
+             </summary>
+            
+             <returns>
+             This object as a string.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.AddStyle(System.String)">
+             <summary>
+             Add a single style in the form "styleName: value".
+             </summary>
+            
+             <param name="style">
+             .
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.AddStyle(System.String,System.Boolean)">
+             <summary>
+             Add a single style in the form "styleName: value".
+             </summary>
+            
+             <param name="style">
+             .
+             </param>
+             <param name="strict">
+             true to strict.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.RemoveStyle(System.String)">
+             <summary>
+             Removes the style described by name.
+             </summary>
+            
+             <param name="name">
+             .
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.SetStyles(System.String)">
+             <summary>
+             Sets the styles.
+             </summary>
+            
+             <param name="styles">
+             The styles.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.SetStyles(System.String,System.Boolean)">
+             <summary>
+             Sets the styles.
+             </summary>
+            
+             <param name="styles">
+             The styles.
+             </param>
+             <param name="strict">
+             true to strict.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.SetStyle(System.String,System.String)">
+             <summary>
+             Sets a style.
+             </summary>
+            
+             <exception cref="T:System.NotImplementedException">
+             Thrown when the requested operation is unimplemented.
+             </exception>
+            
+             <param name="name">
+             .
+             </param>
+             <param name="value">
+             .
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.SetStyle(System.String,System.String,System.Boolean)">
+             <summary>
+             Sets a style.
+             </summary>
+            
+             <exception cref="T:System.NotImplementedException">
+             Thrown when the requested operation is unimplemented.
+             </exception>
+            
+             <param name="name">
+             .
+             </param>
+             <param name="value">
+             .
+             </param>
+             <param name="strict">
+             true to strict.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.GetStyle(System.String)">
+             <summary>
+             Gets a style.
+             </summary>
+            
+             <exception cref="T:System.NotImplementedException">
+             Thrown when the requested operation is unimplemented.
+             </exception>
+            
+             <param name="name">
+             .
+             </param>
+            
+             <returns>
+             The style.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.AttributeIndexKey(System.String)">
+             <summary>
+             Attribute index key.
+             </summary>
+            
+             <param name="attrName">
+             Name of the attribute.
+             </param>
+            
+             <returns>
+             .
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.AttributeIndexKey(System.UInt16)">
+             <summary>
+             Attribute index key.
+             </summary>
+            
+             <param name="attrId">
+             Identifier for the attribute.
+             </param>
+            
+             <returns>
+             .
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.AttributeRemoveFromIndex(System.UInt16)">
+             <summary>
+             Attribute remove from index.
+             </summary>
+            
+             <param name="attrId">
+             Identifier for the attribute.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.AttributeAddToIndex(System.UInt16)">
+             <summary>
+             Attribute add to index.
+             </summary>
+            
+             <param name="attrId">
+             Identifier for the attribute.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.SetClassName(System.String)">
+             <summary>
+             Sets the class name.
+             </summary>
+            
+             <param name="className">
+             And sets the value of the class attribute of the specified element.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.hasDefaultValue">
+             <summary>
+             Query if this object has default value.
+             </summary>
+            
+             <returns>
+             true if default value, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.String,System.UInt16)">
+             <summary>
+             Index key.
+             </summary>
+            
+             <param name="prefix">
+             The prefix.
+             </param>
+             <param name="keyTokenId">
+             Identifier for the key token.
+             </param>
+            
+             <returns>
+             A string
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.String,System.String)">
+             <summary>
+             Index key.
+             </summary>
+            
+             <param name="prefix">
+             The prefix.
+             </param>
+             <param name="key">
+             The key.
+             </param>
+            
+             <returns>
+             A string
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.String,System.String,System.String)">
+             <summary>
+             Index key.
+             </summary>
+            
+             <param name="prefix">
+             The prefix.
+             </param>
+             <param name="key">
+             The key.
+             </param>
+             <param name="path">
+             Full pathname of the file.
+             </param>
+            
+             <returns>
+             .
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.String,System.UInt16,System.String)">
+             <summary>
+             Generates a key that will be used to refernece this item in the index
+             </summary>
+            
+             <param name="prefix">
+             The prefix.
+             </param>
+             <param name="keyTokenId">
+             Identifier for the key token.
+             </param>
+             <param name="path">
+             Full path to the element.
+             </param>
+            
+             <returns>
+             A string representing the key for this item in the index
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.GetHtml(CsQuery.DomRenderingOptions,System.Text.StringBuilder,System.Boolean)">
+             <summary>
+             Gets the HTML representation of this element and its children
+             </summary>
+            
+             <param name="options">
+             Options for how to render the HTML.
+             </param>
+             <param name="sb">
+             A StringBuilder object to which append the output.
+             </param>
+             <param name="includeChildren">
+             true to include, false to exclude the children.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.RenderAttribute(System.Text.StringBuilder,System.String,System.String,System.Boolean)">
+             <summary>
+             Render an attribute
+             </summary>
+            
+             <param name="sb">
+             A StringBuilder to append the attributes to
+             </param>
+             <param name="name">
+             The name of the attribute
+             </param>
+             <param name="value">
+             The attribute value
+             </param>
+             <param name="quoteAll">
+             true to require quotes around the attribute value, false to use quotes only if needed.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.DescendantElements">
+             <summary>
+             Enumerates all descendant elements in this collection.
+             </summary>
+            
+             <param name="parent">
+             The parent.
+             </param>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process descendant elements in this
+             collection.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.HasAttribute(System.UInt16)">
+             <summary>
+             Query if 'tokenId' has attribute.
+             </summary>
+            
+             <param name="tokenId">
+             .
+             </param>
+            
+             <returns>
+             true if attribute, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.TryGetAttributeForMatching(System.UInt16,System.String@)">
+             <summary>
+             Gets an attribute value for matching, accounting for default values of special attribute
+             types.
+             </summary>
+            
+             <param name="attributeId">
+             Identifier for the attribute.
+             </param>
+            
+             <returns>
+             The attribute for matching.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.Closest(System.UInt16)">
+             <summary>
+             Return the first ancestor of the specified tag
+             </summary>
+            
+             <param name="tagID">
+             Identifier for the tag.
+             </param>
+            
+             <returns>
+             An IDomContainer
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.SetProp(System.UInt16,System.Boolean)">
+             <summary>
+             Sets a boolean property by creating or removing it
+             </summary>
+            
+             <param name="tagId">
+             Identifier for the tag.
+             </param>
+             <param name="value">
+             The value to set
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.ChildElementsOfTag``1(System.UInt16)">
+             <summary>
+             Returns all child elements of a specific tag, cast to a type
+             </summary>
+            
+             <typeparam name="T">
+             Generic type parameter.
+             </typeparam>
+             <param name="nodeNameId">
+             Backing field for NodeNameID property.
+             </param>
+            
+             <returns>
+             An enumerator.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.System#Collections#Generic#IEnumerable{System#Collections#Generic#KeyValuePair{System#String@System#String}}#GetEnumerator">
+            <summary>
+            Gets the enumerator.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.System#Collections#IEnumerable#GetEnumerator">
+             <summary>
+             Gets the enumerator.
+             </summary>
+            
+             <returns>
+             The enumerator.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.AttributesCollection">
+             <summary>
+             Enumerate the attributes + class &amp; style.
+             </summary>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process attributes collection in this
+             collection.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.IndexAttributesTokens">
+             <summary>
+             Return a sequence of tokens for each non-class, non-style attribute that should be
+             added to the attribute index.
+             </summary>
+            
+             <returns>
+             An enumerator of ushort.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.InnerAttributes">
+            <summary>
+            Gets the dom attributes.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.HasInnerAttributes">
+            <summary>
+            Returns true if this node has any actual attributes (not class or style)
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.Style">
+            <summary>
+            An object encapsulating the Styles associated with this element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.Attributes">
+             <summary>
+             Access to the IAttributeCollection interface for this element's attributes.
+             </summary>
+            
+             <implementation>
+             We don't actually refer to the inner AttributeCollection object here because we cannot allow
+             users to set attributes directly in the object: they must use SetAttribute so that special
+             handling for "class" and "style" as well as indexing can be performed. To avoid creating a
+             wrapper object,.
+             </implementation>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.ClassName">
+            <summary>
+            gets and sets the value of the "class" attribute of the specified element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.Id">
+            <summary>
+            Get or set value of the "id" attribute.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.NodeName">
+            <summary>
+            The NodeName for the element. This always returns the name in upper case.
+            </summary>11
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.NodeNameID">
+            <summary>
+            Gets the token that represents this element's NodeName
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.Type">
+             <summary>
+             The value of the "type" attribute. For input elements, this property always returns a
+             lowercase value and defaults to "text" if there is no type attribute. For other element types,
+             it simply returns the value of the "type" attribute.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Property/type
+             </url>
+            
+             <implementation>
+             TODO: in HTML5 type can be used on OL attributes (and maybe others?) and its value is case
+             sensitive. The Type of input elements is always lower case, though. This behavior needs to be
+             verified against the spec.
+             </implementation>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.Name">
+             <summary>
+             Gets or sets the name attribute of an DOM object, it only applies to the following elements:
+             &lt;a&gt; , &lt;applet&gt; , &lt;form&gt; , &lt;frame&gt; , &lt;iframe&gt; , &lt;img&gt; ,
+             &lt;input&gt; , &lt;map&gt; , &lt;meta&gt; , &lt;object&gt; , &lt;option&gt; , &lt;param&gt; ,
+             &lt;select&gt; , and &lt;textarea&gt; .
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/element.name
+             </url>
+            
+             <implementation>
+             TODO: Verify that the attribute is applicable to this node type and return null otherwise.
+             </implementation>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.DefaultValue">
+            <summary>
+            The value of an input element, or the text of a textarea element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.Value">
+            <summary>
+            For input elements, the "value" property of this element. Returns null for other element
+            types.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.NodeType">
+            <summary>
+            Gets the type of the node.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.ParentNode">
+            <summary>
+            The direct parent of this node.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.HasAttributes">
+            <summary>
+            Returns true if this node has any attributes.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.HasStyles">
+            <summary>
+            Returns true if this node has any styles defined.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.HasClasses">
+            <summary>
+            Returns true if this node has CSS classes.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.IsIndexed">
+            <summary>
+            Gets a value indicating whether this object type should be indexed.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.InnerHtmlAllowed">
+            <summary>
+            Gets a value indicating whether HTML is allowed as a child of this element. It is possible
+            for this value to be false but InnerTextAllowed to be true for elements which can have inner
+            content, but no child HTML markup, such as &lt;textarea&gt; and &lt;script&gt;
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.InnerTextAllowed">
+            <summary>
+            Gets a value indicating whether text content is allowed as a child of this element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.ChildrenAllowed">
+            <summary>
+            Gets a value indicating whether this element may have children. When false, it means this is
+            a void element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.Item(System.String)">
+             <summary>
+             The child node at the specified index.
+             </summary>
+            
+             <param name="attribute">
+             The zero-based index of the child node to access.
+             </param>
+            
+             <returns>
+             IDomObject, the element at the specified index within this node's children.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.Item(System.Int32)">
+             <summary>
+             The child node at the specified index.
+             </summary>
+            
+             <param name="index">
+             The zero-based index of the child node to access.
+             </param>
+            
+             <returns>
+             IDomObject, the element at the specified index within this node's children.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.Checked">
+             <summary>
+             Gets or sets a value indicating whether the element is checked.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Property/checked
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.ReadOnly">
+             <summary>
+             Gets or sets a value indicating whether the only should be read.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Property/readOnly
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.InnerHTML">
+            <summary>
+            Returns text of the inner HTML. When setting, any children will be removed.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.InnerText">
+            <summary>
+            Gets or sets the text content of a node and its descendants.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.ElementIndex">
+            <summary>
+            The index excluding text nodes.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.IndexReference">
+            <summary>
+            The object to which this index refers.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.IsBlock">
+            <summary>
+            Returns true if this element is a block-type element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.Classes">
+            <summary>
+            A sequence of all unique class names defined on this element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.CsQuery#IAttributeCollection#Item(System.String)">
+             <summary>
+             Get the named attribute value
+             </summary>
+            
+             <param name="attributeName">
+             The name of the attribute
+             </param>
+            
+             <returns>
+             A string of the attribute value
+             </returns>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.CsQuery#IAttributeCollection#Length">
+             <summary>
+             The number of attributes in this attribute collection. This includes special attributes such
+             as "class", "id", and "style".
+             </summary>
+            
+             <returntype>
+             int
+             </returntype>
+        </member>
         <member name="T:CsQuery.JsObject">
             <summary>
             A dynamic object implementation that differs from ExpandoObject in two ways:
@@ -15497,9 +15120,9 @@
             The DISABLED attribute
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.HtmlData.maxHardcodedTokenId">
+        <member name="F:CsQuery.HtmlParser.HtmlData.tagMETER">
             <summary>
-            should match final tag above; for self-checking
+            The METER element
             </summary>
         </member>
         <member name="F:CsQuery.HtmlParser.HtmlData.NumberChars">
@@ -15645,6 +15268,19 @@
              true if the values are case insensitive, false if not.
              </returns>
         </member>
+        <member name="M:CsQuery.HtmlParser.HtmlData.HasValueProperty(System.String)">
+             <summary>
+             Test if a node type has a VALUE property.
+             </summary>
+            
+             <param name="nodeNameToken">
+             The node name token.
+             </param>
+            
+             <returns>
+             true if it has a VALUE property, false if not.
+             </returns>
+        </member>
         <member name="M:CsQuery.HtmlParser.HtmlData.HasValueProperty(System.UInt16)">
              <summary>
              Test if a node type has a VALUE property
@@ -15656,6 +15292,32 @@
             
              <returns>
              true if it has a VALUE property, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.HtmlParser.HtmlData.IsFormInputControl(System.String)">
+             <summary>
+             Test if the node name is a form input control.
+             </summary>
+            
+             <param name="nodeName">
+             The node name to test.
+             </param>
+            
+             <returns>
+             true if a form input control, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.HtmlParser.HtmlData.IsFormInputControl(System.UInt16)">
+             <summary>
+             Test if the node name is a form input control
+             </summary>
+            
+             <param name="nodeNameToken">
+             The node name token.
+             </param>
+            
+             <returns>
+             true if a form input control, false if not.
              </returns>
         </member>
         <member name="M:CsQuery.HtmlParser.HtmlData.Tokenize(System.String)">
@@ -16017,6 +15679,935 @@
             will be pre-filtered by an attribute selector. This could be implemented using a pseudoclass
             type construct instead, e.g. as "visible" that traverses through parents, and inherits a
             default document-wide setting.
+            </summary>
+        </member>
+        <member name="T:CsQuery.RelAnchor">
+            <summary>
+            Values allowable for the Rel attribute
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelAnchor.Alternate">
+            <summary>
+            Gives alternate representations of the current document.
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelAnchor.Author">
+            <summary>
+            Gives a link to the current document's author.
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelAnchor.Bookmark">
+            <summary>
+            Gives the permalink for the nearest ancestor section.
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelAnchor.Help">
+            <summary>
+            Provides a link to context-sensitive help.
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelAnchor.License">
+            <summary>
+            Indicates that the main content of the current document is covered by the copyright license described by the referenced document
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelAnchor.Next">
+            <summary>
+            Indicates that the current document is a part of a series, and that the next document in the series is the referenced document.
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelAnchor.Nofollow">
+            <summary>
+            Indicates that the current document's original author or publisher does not endorse the referenced document.
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelAnchor.Noreferrer">
+            <summary>
+            Requires that the user agent not send an HTTP Referer (sic) header if the user follows the hyperlink.
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelAnchor.Prefetch">
+            <summary>
+            Specifies that the target resource should be preemptively cached.
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelAnchor.Prev">
+            <summary>
+            Indicates that the current document is a part of a series, and that the previous document in the series is the referenced document.
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelAnchor.Search">
+            <summary>
+            Gives a link to a resource that can be used to search through the current document and its related pages.
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelAnchor.Tag">
+            <summary>
+            Gives a tag (identified by the given address) that applies to the current document.
+            </summary>
+        </member>
+        <member name="T:CsQuery.RelLink">
+            <summary>
+            Values allowable for the Rel attribute
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelLink.Alternate">
+            <summary>
+            Gives alternate representations of the current document.
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelLink.Author">
+            <summary>
+            Gives a link to the current document's author.
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelLink.Help">
+            <summary>
+            Provides a link to context-sensitive help.
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelLink.Icon">
+            <summary>
+            Imports an icon to represent the current document.
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelLink.License">
+            <summary>
+            Indicates that the main content of the current document is covered by the copyright license described by the referenced document
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelLink.Next">
+            <summary>
+            Indicates that the current document is a part of a series, and that the next document in the series is the referenced document.
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelLink.Prefetch">
+            <summary>
+            Specifies that the target resource should be preemptively cached.
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelLink.Prev">
+            <summary>
+            Indicates that the current document is a part of a series, and that the previous document in the series is the referenced document.
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelLink.Search">
+            <summary>
+            Gives a link to a resource that can be used to search through the current document and its related pages.
+            </summary>
+        </member>
+        <member name="F:CsQuery.RelLink.Stylesheet">
+            <summary>
+            Imports a stylesheet.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.HtmlAnchorElement">
+             <summary>
+             An Anchor (A) element.
+             </summary>
+            
+             <url>
+             http://dev.w3.org/html5/spec/single-page.html#the-a-element
+             </url>
+        </member>
+        <member name="T:CsQuery.IHTMLAnchorElement">
+             <summary>
+             An Anchor (A) element.
+             </summary>
+            
+             <url>
+             http://dev.w3.org/html5/spec/single-page.html#the-a-element
+             </url>
+        </member>
+        <member name="P:CsQuery.IHTMLAnchorElement.Target">
+            <summary>
+            A name or keyword giving a browsing context for UAs to use when following the hyperlink.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLAnchorElement.Href">
+            <summary>
+            A URL that provides the destination of the hyperlink. If the href attribute is not specified,
+            the element represents a placeholder hyperlink.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLAnchorElement.Rel">
+            <summary>
+            The rel attribute on a and area elements controls what kinds of links the elements create.
+            The attribue's value must be a set of space-separated tokens. 
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLAnchorElement.Hreflang">
+            <summary>
+            A list of tokens that specify the relationship between the document containing the hyperlink
+            and the destination indicated by the hyperlink.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLAnchorElement.Media">
+            <summary>
+            The media for which the destination of the hyperlink was designed.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.HtmlAnchorElement.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HtmlAnchorElement.Target">
+            <summary>
+            A name or keyword giving a browsing context for UAs to use when following the hyperlink.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HtmlAnchorElement.Href">
+            <summary>
+            A URL that provides the destination of the hyperlink. If the href attribute is not specified,
+            the element represents a placeholder hyperlink.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.HTMLTextAreaElement">
+            <summary>
+            An HTML text area element.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.HTMLTextAreaElement.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLTextAreaElement.Value">
+            <summary>
+            The value of the TEXTAREA's contents
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.HtmlFormElement">
+             <summary>
+             A FORM element.
+             </summary>
+            
+             <url>
+             http://dev.w3.org/html5/spec/single-page.html#the-form-element
+             </url>
+        </member>
+        <member name="T:CsQuery.IHTMLFormElement">
+             <summary>
+             A FORM element.
+             </summary>
+            
+             <url>
+             http://dev.w3.org/html5/spec/single-page.html#the-form-element
+             </url>
+        </member>
+        <member name="P:CsQuery.IHTMLFormElement.AcceptCharset">
+            <summary>
+            The accept-charset content attribute.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLFormElement.Action">
+            <summary>
+            The action attribute
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLFormElement.Autocomplete">
+            <summary>
+            The automcomplete attribute
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLFormElement.Enctype">
+            <summary>
+            Gets or sets the enctype.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLFormElement.Encoding">
+            <summary>
+            Gets or sets the encoding.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLFormElement.Method">
+            <summary>
+            Gets or sets the method attribute.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLFormElement.NoValidate">
+            <summary>
+            Gets or sets a value indicating whether the no validate.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLFormElement.Target">
+            <summary>
+            Gets or sets the target attribute
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLFormElement.Elements">
+            <summary>
+            An INodeList containing the form elements.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.HtmlFormElement.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HtmlFormElement.Target">
+            <summary>
+            A name or keyword giving a browsing context for UAs to use when following the hyperlink.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.HTMLSelectElement">
+            <summary>
+            An HTML SELECT element.
+            </summary>
+        </member>
+        <member name="T:CsQuery.IHTMLSelectElement">
+            <summary>
+            A SELECT element
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLSelectElement.Options">
+            <summary>
+            A collection of HTML option elements (in document order)
+            </summary>
+            <url>https://developer.mozilla.org/en/DOM/HTMLOptionsCollection</url>
+        </member>
+        <member name="P:CsQuery.IHTMLSelectElement.SelectedIndex">
+             <summary>
+             Returns the index of the currently selected item. You may select an item by assigning its
+             index to this property. By assigning -1 to this property, all items will be deselected.
+             Returns -1 if no items are selected.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Property/selectedIndex.
+             </url>
+        </member>
+        <member name="P:CsQuery.IHTMLSelectElement.SelectedItem">
+             <summary>
+             Holds the currently selected item. If no item is currently selected, this value will be null.
+             You can select an item by setting this value. A select event will be sent to the container
+             (i.e. the listbox, richlistbox, etc., not the list item that was selected) when it is changed
+             either via this property, the selectedIndex property, or changed by the user.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Property/selectedItem
+             </url>
+        </member>
+        <member name="P:CsQuery.IHTMLSelectElement.Multiple">
+             <summary>
+             This Boolean attribute indicates that multiple options can be selected in the list. If it is
+             not specified, then only one option can be selected at a time.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/HTML/Element/select
+             </url>
+        </member>
+        <member name="P:CsQuery.IHTMLSelectElement.Length">
+            <summary>
+            Gets the number of options in the select
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLSelectElement.Options">
+             <summary>
+             A collection of HTML option elements (in document order)
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLSelectElement.Length">
+            <summary>
+            The number OPTION elements contained by this SELECT
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLSelectElement.Type">
+            <summary>
+            The type string for this SELECT group.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLSelectElement.Multiple">
+             <summary>
+             This Boolean attribute indicates that multiple options can be selected in the list. If it is
+             not specified, then only one option can be selected at a time.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/HTML/Element/select
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLSelectElement.SelectedIndex">
+             <summary>
+             Returns the index of the currently selected item. You may select an item by assigning its
+             index to this property. By assigning -1 to this property, all items will be deselected.
+             Returns -1 if no items are selected.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Property/selectedIndex.
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLSelectElement.SelectedItem">
+             <summary>
+             Holds the currently selected item. If no item is currently selected, this value will be null.
+             You can select an item by setting this value. A select event will be sent to the container
+             (i.e. the listbox, richlistbox, etc., not the list item that was selected) when it is changed
+             either via this property, the selectedIndex property, or changed by the user.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Property/selectedItem
+             </url>
+        </member>
+        <member name="T:CsQuery.Implementation.HTMLProgressElement">
+            <summary>
+            An HTML progress element.
+            </summary>
+        </member>
+        <member name="T:CsQuery.IHTMLProgressElement">
+             <summary>
+             An PROGRESS element
+             </summary>
+            
+             <url>
+             http://dev.w3.org/html5/markup/progress.html
+             </url>
+        </member>
+        <member name="P:CsQuery.IHTMLProgressElement.Value">
+            <summary>
+            The current value
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLProgressElement.Max">
+            <summary>
+            The maximum value
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLProgressElement.Position">
+            <summary>
+            If the progress bar is an indeterminate progress bar, then the position IDL attribute must
+            return −1. Otherwise, it must return the result of dividing the current value by the maximum
+            value.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLProgressElement.Labels">
+            <summary>
+             A NodeList of all LABEL elements within this Progress element
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.HTMLProgressElement.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLProgressElement.Position">
+             <summary>
+            If the progress bar is an indeterminate progress bar, then the position IDL attribute must
+            return −1. Otherwise, it must return the result of dividing the current value by the maximum
+            value.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLProgressElement.Labels">
+            <summary>
+            A NodeList of all LABEL elements within this Progress element
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.HTMLInputElement">
+            <summary>
+            An HTML input element.
+            </summary>
+        </member>
+        <member name="T:CsQuery.IHTMLInputElement">
+             <summary>
+             An HTML INPUT element.
+             </summary>
+            
+             <url>
+             http://dev.w3.org/html5/markup/input.html
+             </url>
+        </member>
+        <member name="P:CsQuery.IHTMLInputElement.Form">
+            <summary>
+            The form with which to associate the element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLInputElement.Autofocus">
+            <summary>
+            A URL that provides the destination of the hyperlink. If the href attribute is not specified,
+            the element represents a placeholder hyperlink.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLInputElement.Required">
+            <summary>
+            Specifies that the element is a required part of form submission.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.HTMLInputElement.IndexKeys">
+             <summary>
+             Returns all the keys that should be in the index for this item (keys for class, tag,
+             attributes, and id)
+             </summary>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process index keys in this collection.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.HTMLInputElement.TryGetAttributeForMatching(System.UInt16,System.String@)">
+             <summary>
+             Gets an attribute value for matching, accounting for default values of special attribute
+             types.
+             </summary>
+            
+             <param name="attributeId">
+             Identifier for the attribute.
+             </param>
+            
+             <returns>
+             The attribute for matching.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLInputElement.Form">
+             <summary>
+             The value of form element with which to associate the element.
+             </summary>
+            
+             <remarks>
+             The HTML5 spec says "The value of the id attribute on the form with which to associate the
+             element." This is not what browsers currently return; they return the actual element. We'll
+             keep that for now.
+             </remarks>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLInputElement.Autofocus">
+            <summary>
+            A URL that provides the destination of the hyperlink. If the href attribute is not specified,
+            the element represents a placeholder hyperlink.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLInputElement.Required">
+            <summary>
+            Specifies that the element is a required part of form submission.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLInputElement.Type">
+             <summary>
+             The value of the "type" attribute. For input elements, this property always returns a
+             lowercase value and defaults to "text" if there is no type attribute. For other element types,
+             it simply returns the value of the "type" attribute.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Property/type
+             </url>
+            
+             ### <implementation>
+             TODO: in HTML5 type can be used on OL attributes (and maybe others?) and its value is case
+             sensitive. The Type of input elements is always lower case, though. This behavior needs to be
+             verified against the spec.
+             </implementation>
+        </member>
+        <member name="T:CsQuery.Implementation.HTMLMeterElement">
+            <summary>
+            An HTML progress element.
+            </summary>
+        </member>
+        <member name="T:CsQuery.IHTMLMeterElement">
+             <summary>
+             An PROGRESS element
+             </summary>
+            
+             <url>
+             http://dev.w3.org/html5/spec/the-meter-element.html#the-meter-element
+             </url>
+        </member>
+        <member name="P:CsQuery.IHTMLMeterElement.Value">
+            <summary>
+            The current value
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLMeterElement.Min">
+            <summary>
+            The maximum value
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLMeterElement.Max">
+            <summary>
+            The maximum value
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLMeterElement.Low">
+            <summary>
+            The low value
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLMeterElement.High">
+            <summary>
+            The high value
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLMeterElement.Optimum">
+            <summary>
+            The optimum value
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLMeterElement.Labels">
+            <summary>
+             A NodeList of all LABEL elements within this Progress element
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.HTMLMeterElement.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLMeterElement.Value">
+            <summary>
+            The value of the meter
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLMeterElement.Max">
+            <summary>
+            The maximum value.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLMeterElement.Min">
+            <summary>
+            The minimum value.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLMeterElement.Low">
+            <summary>
+            The low value.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLMeterElement.High">
+            <summary>
+            The high value.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLMeterElement.Optimum">
+            <summary>
+            The optimum value.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLMeterElement.Labels">
+            <summary>
+            A NodeList of all LABEL elements within this Progress element
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.HTMLLIElement">
+            <summary>
+            An HTML LI element.
+            </summary>
+        </member>
+        <member name="T:CsQuery.IHTMLLIElement">
+             <summary>
+             An LI element.
+             </summary>
+            
+             <url>
+             http://dev.w3.org/html5/spec/single-page.html#the-li-element
+             </url>
+        </member>
+        <member name="P:CsQuery.IHTMLLIElement.Value">
+            <summary>
+            A valid integer giving the ordinal value of the list item.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.HTMLLIElement.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.HTMLLabelElement">
+             <summary>
+             A LABEL element.
+             </summary>
+            
+             <url>
+             http://dev.w3.org/html5/spec/single-page.html#the-label-element
+             </url>
+        </member>
+        <member name="T:CsQuery.IHTMLLabelElement">
+             <summary>
+             A LABEL element.
+             </summary>
+            
+             <url>
+             http://dev.w3.org/html5/spec/single-page.html#the-label-element
+             </url>
+        </member>
+        <member name="P:CsQuery.IHTMLLabelElement.Form">
+            <summary>
+            The form to which the label belongs
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLLabelElement.HtmlFor">
+            <summary>
+            Gets or sets the for attribute
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLLabelElement.Control">
+            <summary>
+            The control bound to this label
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLLabelElement.Form">
+            <summary>
+            The form to which the label belongs
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLLabelElement.HtmlFor">
+            <summary>
+            Gets or sets the for attribute
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLLabelElement.Control">
+            <summary>
+            The control bound to this label. If the "for" attribute is set, this is the control with that
+            ID. If not, the first input control that is a child of the label will be returned.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.HTMLOptionsCollection">
+             <summary>
+             A collection of HTML options.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
+             </url>
+        </member>
+        <member name="T:CsQuery.IHTMLOptionsCollection">
+             <summary>
+             Interface to a collection of HTML options.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
+             </url>
+        </member>
+        <member name="M:CsQuery.IHTMLOptionsCollection.Item(System.Int32)">
+             <summary>
+             Returns the specific node at the given zero-based index (gives null if out of range)
+             </summary>
+            
+             <param name="index">
+             The zero-based index of the option element.
+             </param>
+            
+             <returns>
+             An HTML Option element.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
+             </url>
+        </member>
+        <member name="M:CsQuery.IHTMLOptionsCollection.NamedItem(System.String)">
+             <summary>
+             Returns the specific node with the given DOMString (i.e., string) id. Returns null if no such named node exists.
+             </summary>
+            
+             <param name="name">
+             The zero-based index of the option element.
+             </param>
+            
+             <returns>
+             An HTML Option element.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
+             </url>
+        </member>
+        <member name="P:CsQuery.IHTMLOptionsCollection.Indexer(System.Int32)">
+             <summary>
+             Returns the specific node at the given zero-based index (gives null if out of range)
+             </summary>
+            
+             <param name="index">
+             The zero-based index of the option element.
+             </param>
+            
+             <returns>
+             An HTML Option element.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
+             </url>
+        </member>
+        <member name="P:CsQuery.IHTMLOptionsCollection.Indexer(System.String)">
+             <summary>
+             Returns the specific node with the given DOMString (i.e., string) id. Returns null if no such named node exists.
+             </summary>
+            
+             <param name="name">
+             The zero-based index of the option element.
+             </param>
+            
+             <returns>
+             An HTML Option element.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
+             </url>
+        </member>
+        <member name="M:CsQuery.Implementation.HTMLOptionsCollection.Item(System.Int32)">
+             <summary>
+             Returns the specific node at the given zero-based index (gives null if out of range)
+             </summary>
+            
+             <param name="index">
+             The zero-based index of the option element.
+             </param>
+            
+             <returns>
+             An HTML Option element.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
+             </url>
+        </member>
+        <member name="M:CsQuery.Implementation.HTMLOptionsCollection.NamedItem(System.String)">
+             <summary>
+             Returns the specific node with the given DOMString (i.e., string) id. Returns null if no such
+             named node exists.
+             </summary>
+            
+             <exception cref="T:System.NotImplementedException">
+             Thrown when the requested operation is unimplemented.
+             </exception>
+            
+             <param name="name">
+             The zero-based index of the option element.
+             </param>
+            
+             <returns>
+             An HTML Option element, or null if the named element does not exist.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
+             </url>
+        </member>
+        <member name="M:CsQuery.Implementation.HTMLOptionsCollection.GetEnumerator">
+             <summary>
+             Gets the enumerator.
+             </summary>
+            
+             <returns>
+             The enumerator.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.HTMLOptionsCollection.System#Collections#IEnumerable#GetEnumerator">
+             <summary>
+             Gets the enumerator.
+             </summary>
+            
+             <returns>
+             The enumerator.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.HTMLOptionsCollection.Children">
+             <summary>
+             Enumerates the element children of a node.
+             </summary>
+            
+             <param name="parent">
+             The parent.
+             </param>
+            
+             <returns>
+             An enumerator.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.HTMLOptionsCollection.Children(CsQuery.IDomElement)">
+             <summary>
+             Implementation for Children. The bool part of the tuple indicates if the element inherits a
+             "disabled" property.
+             </summary>
+            
+             <param name="parent">
+             The parent element for this collection.
+             </param>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process children in this collection.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLOptionsCollection.Parent">
+            <summary>
+            Gets the parent element for this collection
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLOptionsCollection.Indexer(System.Int32)">
+             <summary>
+             Returns the specific node at the given zero-based index (gives null if out of range)
+             </summary>
+            
+             <param name="index">
+             The zero-based index of the option element.
+             </param>
+            
+             <returns>
+             An HTML Option element.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection.
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLOptionsCollection.Indexer(System.String)">
+             <summary>
+             Returns the specific node at the given zero-based index (gives null if out of range)
+             </summary>
+            
+             <param name="name">
+             The name of the option element
+             </param>
+            
+             <returns>
+             An HTML Option element.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/HTMLOptionsCollection
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLOptionsCollection.SelectedIndex">
+            <summary>
+            Logic: if nothing specifically selected, find the first enabled option, otherwise, the first disabled option.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.HTMLOptionElement">
+            <summary>
+            An HTML option element.
+            </summary>
+        </member>
+        <member name="T:CsQuery.IHTMLOptionElement">
+            <summary>
+            An HTMLOPTION element
+            </summary>
+            <url>http://dev.w3.org/html5/spec/single-page.html#attr-option-disabled</url>
+        </member>
+        <member name="P:CsQuery.IHTMLOptionElement.Disabled">
+            <summary>
+            Gets or sets a value indicating whether this object is disabled.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLOptionElement.Form">
+            <summary>
+            The form with which the element is associated
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.HTMLOptionElement.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLOptionElement.Value">
+            <summary>
+            The value of the OPTIOn element, or empty string if none specified.
             </summary>
         </member>
     </members>

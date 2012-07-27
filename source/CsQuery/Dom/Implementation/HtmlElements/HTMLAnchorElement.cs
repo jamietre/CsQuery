@@ -3,16 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CsQuery.HtmlParser;
+using CsQuery.Utility;
 
 namespace CsQuery.Implementation
 {
+    /// <summary>
+    /// An Anchor (A) element.
+    /// </summary>
+    ///
+    /// <url>
+    /// http://dev.w3.org/html5/spec/single-page.html#the-a-element
+    /// </url>
     public class HtmlAnchorElement : DomElement, IHTMLAnchorElement
     {
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+
         public HtmlAnchorElement()
             : base(HtmlData.tagA)
         {
         }
 
+        /// <summary>
+        /// A name or keyword giving a browsing context for UAs to use when following the hyperlink.
+        /// </summary>
 
         public string Target
         {
@@ -26,6 +41,11 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// A URL that provides the destination of the hyperlink. If the href attribute is not specified,
+        /// the element represents a placeholder hyperlink.
+        /// </summary>
+
         public string Href
         {
             get
@@ -38,15 +58,15 @@ namespace CsQuery.Implementation
             }
         }
 
-        public string Rel
+        public RelAnchor Rel
         {
             get
             {
-                return GetAttribute("rel");
+                return Support.AttributeToEnum<RelAnchor>(GetAttribute("rel"));
             }
             set
             {
-                SetAttribute("rel", value);
+                SetAttribute("rel", Support.EnumToAttribute(value));
             }
         }
 

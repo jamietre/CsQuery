@@ -10,8 +10,9 @@ namespace CsQuery.Implementation
     /// A list of nodes representing the children of a DOM element.
     /// </summary>
 
-    public class ChildNodeList: INodeList
+    public class ChildNodeList : INodeList
     {
+
         #region constructor
 
         public ChildNodeList(IDomContainer owner)
@@ -46,6 +47,11 @@ namespace CsQuery.Implementation
         {
             return this[index];
         }
+        #endregion
+
+        #region INodeList<T> members
+
+
         #endregion
 
         #region IList<T> Members
@@ -327,7 +333,6 @@ namespace CsQuery.Implementation
         }
 
         #endregion
-
 
     }
 }

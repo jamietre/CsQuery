@@ -163,18 +163,26 @@ namespace CsQuery.Implementation
         {
             switch (nodeNameId)
             {
-                case HtmlData.tagSELECT:
-                    return new HTMLSelectElement();
                 case HtmlData.tagA:
                     return new HtmlAnchorElement();
+                case HtmlData.tagFORM:
+                    return new HtmlFormElement();
                 case HtmlData.tagINPUT:
                     return new HTMLInputElement();
+                case HtmlData.tagLABEL:
+                    return new HTMLLabelElement();
+                case HtmlData.tagLI:
+                    return new HTMLLIElement();
+                case HtmlData.tagMETER:
+                    return new HTMLMeterElement();
                 case HtmlData.tagOPTION:
                     return new HTMLOptionElement();
-                case HtmlData.tagTEXTAREA:
-                    return new HTMLTextAreaElement();
                 case HtmlData.tagPROGRESS:
                     return new HTMLProgressElement();
+                case HtmlData.tagSELECT:
+                    return new HTMLSelectElement();
+                case HtmlData.tagTEXTAREA:
+                    return new HTMLTextAreaElement();                
                 default:
                     return new DomElement(nodeNameId);
             }
@@ -1871,6 +1879,34 @@ namespace CsQuery.Implementation
         #endregion
 
         #region internal methods
+
+        /// <summary>
+        /// Enumerates all descendant elements in this collection.
+        /// </summary>
+        ///
+        /// <param name="parent">
+        /// The parent.
+        /// </param>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process descendant elements in this
+        /// collection.
+        /// </returns>
+
+        internal IEnumerable<IDomElement> DescendantElements()
+        {
+            foreach (var el in ChildElements)
+            {
+                yield return el;
+                if (el.HasChildren)
+                {
+                    foreach (var child in ((DomElement)el).DescendantElements())
+                    {
+                        yield return child;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Query if 'tokenId' has attribute.

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CsQuery.HtmlParser;
+using CsQuery.Utility;
 
 namespace CsQuery.Implementation
 {
@@ -25,7 +26,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return IntOrZero(GetAttribute(HtmlData.ValueAttrId));
+                return Support.IntOrZero(GetAttribute(HtmlData.ValueAttrId));
             }
             set
             {
@@ -37,7 +38,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return DoubleOrZero(GetAttribute("max"));
+                return Support.DoubleOrZero(GetAttribute("max"));
             }
             set
             {
@@ -72,39 +73,11 @@ namespace CsQuery.Implementation
         /// A NodeList of all LABEL elements within this Progress element
         /// </summary>
 
-        public INodeList<IDomElement> Labels
+        public INodeList<IHTMLLabelElement> Labels
         {
             get {
-                return new NodeList<IDomElement>(ChildElementsOfTag<IDomElement>(HtmlData.tagLABEL));
+                return new NodeList<IHTMLLabelElement>(ChildElementsOfTag<IHTMLLabelElement>(HtmlData.tagLABEL));
             }
         }
-
-        private double DoubleOrZero(string value)
-        {
-            var val = GetAttribute("value");
-            double dblVal;
-            if (double.TryParse(value, out dblVal))
-            {
-                return dblVal;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-        private int IntOrZero(string value)
-        {
-            var val = GetAttribute("value");
-            int intVal;
-            if (int.TryParse(value, out intVal))
-            {
-                return intVal;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
     }
 }

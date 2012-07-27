@@ -660,71 +660,8 @@ namespace CsQuery
             }
 
         }
-        /// <summary>
-        /// Given a string, convert each uppercase letter to a "-" followed by the lower case letter.
-        /// E.g. "fontSize" becomes "font-size".
-        /// </summary>
-        ///
-        /// <param name="name">
-        /// The string to uncamelcase
-        /// </param>
-        ///
-        /// <returns>
-        /// A string
-        /// </returns>
-
-        public static string FromCamelCase(string name)
-        {
-            int pos = 0;
-            StringBuilder output = new StringBuilder();
-
-            while (pos < name.Length)
-            {
-                char cur = name[pos];
-                if (cur >= 'A' && cur <= 'Z')
-                {
-                    if (pos != 0)
-                    {
-                        output.Append("-");
-                    }
-                    output.Append(cur.ToLower());
-                }
-                else
-                {
-                    output.Append(cur);
-                }
-                pos++;
-            }
-            return output.ToString();
-
-        }
-
-        /// <summary>
-        /// Converts a name from dashed-separators to camelCase.
-        /// </summary>
-        ///
-        /// <param name="name">
-        /// The string to camelCase.
-        /// </param>
-        ///
-        /// <returns>
-        /// a dased-separated string
-        /// </returns>
-
-        public static string ToCamelCase(string name)
-        {
-            int pos = 0;
-            while (pos < name.Length)
-            {
-                if (name[pos] =='-')
-                {
-                    name = name.Substring(0, pos) + name.Substring(pos, 1).ToUpper() + name.Substring(pos + 1);
-                    pos++;
-                }
-                pos++;
-            }
-            return name;
-        }
+        
+        
         public static object DefaultValue(Type type)
         {
             return type.IsValueType ? 

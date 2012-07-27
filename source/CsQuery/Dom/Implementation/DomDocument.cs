@@ -392,16 +392,54 @@ namespace CsQuery.Implementation
             return OriginalStrings.Count - 1;
         }
 
+        /// <summary>
+        /// Returns a reference to the element by its ID.
+        /// </summary>
+        ///
+        /// <param name="id">
+        /// The identifier.
+        /// </param>
+        ///
+        /// <returns>
+        /// The element by identifier.
+        /// </returns>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/DOM/document.getElementById
+        /// </url>
+
         public IDomElement GetElementById(string id)
         {
-            // construct the selector manually so there's no syntax checking
+
+            return GetElementById<IDomElement>(id);
+        }
+
+        /// <summary>
+        /// Gets an element by identifier, and return a strongly-typed interface.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="id">
+        /// The identifier.
+        /// </param>
+        ///
+        /// <returns>
+        /// The element by id&lt; t&gt;
+        /// </returns>
+
+        public T GetElementById<T>(string id) where T: IDomElement
+        {
+
+            // construct the selector manually so there's no syntax checking as if it were a general-purpose selector
 
             SelectorClause selector = new SelectorClause();
             selector.SelectorType = SelectorType.ID;
             selector.ID = id;
 
             Selector selectors = new Selector(selector);
-            return (IDomElement)selectors.Select(Document).FirstOrDefault();
+            return (T)selectors.Select(Document).FirstOrDefault();
         }
 
         public IDomElement GetElementByTagName(string tagName)

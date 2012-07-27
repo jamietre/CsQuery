@@ -61,6 +61,23 @@ namespace CsQuery
         IDomElement GetElementById(string id);
 
         /// <summary>
+        /// Gets an element by identifier, and return a strongly-typed interface
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="id">
+        /// The identifier.
+        /// </param>
+        ///
+        /// <returns>
+        /// The element by id&lt; t&gt;
+        /// </returns>
+
+        T GetElementById<T>(string id) where T : IDomElement;
+
+        /// <summary>
         /// Creates the specified HTML element.
         /// </summary>
         ///

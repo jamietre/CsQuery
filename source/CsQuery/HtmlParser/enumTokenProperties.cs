@@ -59,6 +59,13 @@ namespace CsQuery.HtmlParser
         /// <summary>
         /// Has a VALUE property
         /// </summary>
-        HasValue = 256
+        
+        HasValue = 256,
+
+        /// <summary>
+        /// Element is a form input control
+        /// </summary>
+        
+        FormInputControl = 512
     }
 }

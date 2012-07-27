@@ -10,7 +10,7 @@ namespace CsQuery
     /// </summary>
     ///
     /// <url>
-    /// http://dev.w3.org/html5/markup/a.html
+    /// http://dev.w3.org/html5/spec/single-page.html#the-a-element
     /// </url>
 
     public interface IHTMLAnchorElement : IDomElement
@@ -29,10 +29,11 @@ namespace CsQuery
         string Href {get;set;}
 
         /// <summary>
-        /// Gets or sets the relative.
+        /// The rel attribute on a and area elements controls what kinds of links the elements create.
+        /// The attribue's value must be a set of space-separated tokens. 
         /// </summary>
 
-        string Rel {get;set;}
+        RelAnchor Rel { get; set; }
 
         /// <summary>
         /// A list of tokens that specify the relationship between the document containing the hyperlink
@@ -48,4 +49,6 @@ namespace CsQuery
         string Media {get;set;}
 
     }
+
+    
 }

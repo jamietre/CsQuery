@@ -338,7 +338,13 @@ namespace CsQuery.HtmlParser
         /// should match final tag above; for self-checking
         /// </summary>
 
-        private const ushort maxHardcodedTokenId = 47;
+        /// <summary>
+        /// The METER element
+        /// </summary>
+
+        public const ushort tagMETER = 48;
+
+        private const ushort maxHardcodedTokenId = 48;
 
         // Unquoted attribute value syntax: http://dev.w3.org/html5/spec-LC/syntax.html#attributes-0
         // 
@@ -518,15 +524,25 @@ namespace CsQuery.HtmlParser
                 "type","target"
             };
 
+            // see http://dev.w3.org/html5/spec/single-page.html#elements-1 when interfaces and overridden
+            // DOMElement implementations are developed for all of these elements, this check will no
+            // longer be needed. 
+            
             string[] hasValueAttribute = new string[] {
-                "input","select","option","param","button","progress"
+                "input","select","option","param","button","progress","output","meter"
             };
+
+            string[] isFormControl = new string[] {
+                "input","select","button","textarea"
+            };
+
+            // consider using reflection to add all the hardcoded values instead of this error-prone method
 
             string[] hardcoded = new string[] {
                 "unused","class","value","id","selected","readonly","checked","input","select","option","p","tr",
                 "td","th","head","body","dt","colgroup","dd","li","dl","table","optgroup","ul","ol","tbody","tfoot","thead","rt",
                 "rp","script","textarea","style","col","html","button","multiple","a","span","form","required","autofocus",
-                "type","progress","label","disabled"
+                "type","progress","label","disabled","meter"
             };
 
             TokenIDs = new Dictionary<string, ushort>();
@@ -577,6 +593,7 @@ namespace CsQuery.HtmlParser
             setBit(metaDataTags, TokenProperties.MetaDataTags);
             setBit(caseInsensitiveValues, TokenProperties.CaseInsensitiveValues);
             setBit(hasValueAttribute, TokenProperties.HasValue);
+            setBit(isFormControl, TokenProperties.FormInputControl);
         }
 
         private static HashSet<ushort> PopulateTokenHashset(IEnumerable<string> tokens)
@@ -787,6 +804,23 @@ namespace CsQuery.HtmlParser
         }
 
         /// <summary>
+        /// Test if a node type has a VALUE property.
+        /// </summary>
+        ///
+        /// <param name="nodeNameToken">
+        /// The node name token.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it has a VALUE property, false if not.
+        /// </returns>
+
+        public static bool HasValueProperty(string nodeName)
+        {
+            return HasValueProperty(Tokenize(nodeName));
+        }
+
+        /// <summary>
         /// Test if a node type has a VALUE property
         /// </summary>
         ///
@@ -802,7 +836,41 @@ namespace CsQuery.HtmlParser
         {
             return (nodeNameToken & NonSpecialTokenMask) == 0 &&
                  (TokenMetadata[nodeNameToken] & (ushort)TokenProperties.HasValue) != 0;
+        }
 
+        /// <summary>
+        /// Test if the node name is a form input control.
+        /// </summary>
+        ///
+        /// <param name="nodeName">
+        /// The node name to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if a form input control, false if not.
+        /// </returns>
+
+        public static bool IsFormInputControl(string nodeName)
+        {
+            return IsFormInputControl(Tokenize(nodeName));
+        }
+
+        /// <summary>
+        /// Test if the node name is a form input control
+        /// </summary>
+        ///
+        /// <param name="nodeNameToken">
+        /// The node name token.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if a form input control, false if not.
+        /// </returns>
+
+        public static bool IsFormInputControl(ushort nodeNameToken)
+        {
+            return (nodeNameToken & NonSpecialTokenMask) == 0 &&
+                 (TokenMetadata[nodeNameToken] & (ushort)TokenProperties.HasValue) != 0;
         }
 
         /// <summary>

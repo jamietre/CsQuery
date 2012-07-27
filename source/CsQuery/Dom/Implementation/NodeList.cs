@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Runtime.CompilerServices;
@@ -140,6 +141,11 @@ namespace CsQuery.Implementation
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public IList<T> ToList()
+        {
+            return new List<T>(this).AsReadOnly();
         }
     }
 }

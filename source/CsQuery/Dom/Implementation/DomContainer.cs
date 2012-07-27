@@ -155,9 +155,11 @@ namespace CsQuery.Implementation
             }
             ChildNodes.Insert(referenceNode.Index + 1, newNode);
         }
+
         /// <summary>
-        /// Returns all elements
+        /// Get all child elements
         /// </summary>
+
         public override IEnumerable<IDomElement> ChildElements
         {
             get
@@ -177,7 +179,6 @@ namespace CsQuery.Implementation
             }
         }
 
-
         public override string Render()
         {
             StringBuilder sb = new StringBuilder();
@@ -190,6 +191,7 @@ namespace CsQuery.Implementation
                 CQ.DefaultDomRenderingOptions :
                 Document.DomRenderingOptions);
         }
+
         public override void Render(StringBuilder sb, DomRenderingOptions options)
         {
             if (HasChildren)
@@ -217,6 +219,9 @@ namespace CsQuery.Implementation
             }
             return count;
         }
+
+       
+
         #region interface members
         IDomObject IDomObject.Clone()
         {

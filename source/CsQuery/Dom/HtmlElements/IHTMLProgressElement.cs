@@ -39,6 +39,6 @@ namespace CsQuery
         ///  A NodeList of all LABEL elements within this Progress element
         /// </summary>
 
-        INodeList<IDomElement> Labels {get;}
+        INodeList<IHTMLLabelElement> Labels {get;}
     }
 }
