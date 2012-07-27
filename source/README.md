@@ -6,6 +6,18 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ### Change Log
 
+####Version 1.1.4 (development)
+
+*Bug Fixes*
+
+- [Issue #27](https://github.com/jamietre/CsQuery/issues/27) - Some `Value` properties not implemented.
+
+*Other Changes*
+
+Revised DOM element model to include interfaces and subclasses implementing element-specific behavior for elements. This is a bit of a hybrid since the core interface `IDomObject` already includes some non-global properties.
+
+The goal is a balance between convenience of a single interface for the most common DOM element properties, while still permitting strongly-typed interfaces and overridden implemenations of non-global element behavior. It is unlikely any non-global members of the core interface will be removed to ensure backwards compatibility. Nor is it likely any more will be added; as the model is filled out to fulfill HTML5-compliant behavior, new interfaces will be developed.
+
 ####Version 1.1.3.1
 
 *Bug Fixes*
