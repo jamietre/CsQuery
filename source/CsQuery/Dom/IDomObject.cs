@@ -337,7 +337,8 @@ namespace CsQuery
 
         /// <summary>
         /// Returns the value of the named attribute on the specified element. If the named attribute
-        /// does not exist, the value returned will either be null or "" (the empty string)
+        /// does not exist, the value returned will be null. The empty string is returned for values that
+        /// exist but have no value.
         /// </summary>
         ///
         /// <remarks>
@@ -372,7 +373,7 @@ namespace CsQuery
 
         /// <summary>
         /// Returns the value of the named attribute on the specified element. If the named attribute
-        /// does not exist, the value returned will either be the provide "defaultValue".
+        /// does not exist, the value returned will be the provide "defaultValue".
         /// </summary>
         ///
         /// <remarks>
@@ -594,7 +595,7 @@ namespace CsQuery
         /// https://developer.mozilla.org/en/XUL/Attribute/selected
         /// </url>
 
-        bool Selected { get; }
+        bool Selected { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the element is checked.

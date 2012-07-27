@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CsQuery.HtmlParser;
+using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.Engine
 {
@@ -23,32 +25,34 @@ namespace CsQuery.Engine
             AttributeSelectorType = AttributeSelectorType.Equals;
             CombinatorType = CombinatorType.Root;
             TraversalType = TraversalType.All;
+            AttributeValueStringComparison = StringComparison.CurrentCulture;
+            AttributeValue = "";
         }
 
         #endregion
 
         #region private properties
 
-        protected string _Tag;
-        protected SelectorType _SelectorType;
-        protected string _AttributeName;
-        protected List<Selector> _SubSelectors;
-        
+        private string _Tag;
+        private string _AttributeName;
+        private string _AttributeValue;
+        private StringComparer _AttributeValueStringComparer;
+
+        private bool IsCaseInsensitiveAttributeValue
+        {
+            get
+            {
+                return HtmlData.IsCaseInsensitiveValues(AttributeNameTokenID);
+            }
+        }
+
+
+
         #endregion
 
         #region public properties
 
-        public SelectorType SelectorType
-        {
-            get
-            {
-                return _SelectorType;
-            }
-            set
-            {
-                _SelectorType = value;
-            }
-        }
+        public SelectorType SelectorType {get;set;}
         public CombinatorType CombinatorType { get; set; }
         public TraversalType TraversalType { get; set; }
         
@@ -80,17 +84,7 @@ namespace CsQuery.Engine
                     value.ToUpper();
             }
         }
-        public string AttributeName
-        {
-            get
-            {
-                return _AttributeName;
-            }
-            set
-            {
-                _AttributeName = (value == null ? value : value.ToLower());
-            }
-        }
+    
         /// <summary>
         /// This is really "parameters" and is used differently by different selectors. It's the criteria for attribute selectors;
         /// the node type for -of-type selectors, the equation for nth-child. For nth-of-type, its "type|equation"
@@ -113,10 +107,84 @@ namespace CsQuery.Engine
         public int ChildDepth { get; set; }
 
         /// <summary>
+        /// For attribute selectors, gets or sets the name of the attribute to match 
+        /// </summary>
+
+        public string AttributeName
+        {
+            get
+            {
+                return _AttributeName;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    _AttributeName = null;
+                    AttributeNameTokenID = 0;
+                    AttributeValueStringComparison = StringComparison.CurrentCulture;
+                }
+                else
+                {
+                    _AttributeName = value.ToLower();
+                    AttributeNameTokenID = HtmlData.Tokenize(value);
+                    AttributeValueStringComparison = IsCaseInsensitiveAttributeValue ?
+                        StringComparison.CurrentCultureIgnoreCase :
+                        StringComparison.CurrentCulture;
+                }
+            }
+        }
+        /// <summary>
         /// For AttributeValue selectors, the value to match
         /// </summary>
 
-        public string AttributeValue { get; set; }
+        public string AttributeValue
+        {
+            get
+            {
+                return _AttributeValue;
+            }
+            set
+            {
+                _AttributeValue = value ?? "";
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the identifier of the attribute name token.
+        /// </summary>
+
+        public ushort AttributeNameTokenID
+        {
+            get; private set;
+        }
+
+        /// <summary>
+        /// Returns a string comparer based on the case-sensitivity characteristics of the attribute being tested
+        /// </summary>
+
+        public StringComparison AttributeValueStringComparison
+        {
+            get; private set;
+        }
+
+        /// <summary>
+        /// Returns a string comparer based on the case-sensitivity characteristics of the attribute being tested
+        /// </summary>
+
+        public StringComparer AttributeValueStringComparer
+        {
+            get
+            {
+                if (_AttributeValueStringComparer == null)
+                {
+                    _AttributeValueStringComparer = AttributeValueStringComparison.ComparerFor();
+                }
+                return _AttributeValueStringComparer;
+            }
+
+        }
+
 
         /// <summary>
         /// For Class selectors, the class name to match
@@ -222,7 +290,7 @@ namespace CsQuery.Engine
         /// </summary>
 
         public bool NoIndex { get; set; }
-        
+
         #endregion
 
         #region public methods
@@ -246,7 +314,6 @@ namespace CsQuery.Engine
             PositionIndex = 0;
             SelectElements = null;
             Tag = null;
-            _SubSelectors = null;
 
             Initialize();
         }
@@ -433,6 +500,7 @@ namespace CsQuery.Engine
         }
 
         #endregion
-                    
+
+        
     }
 }

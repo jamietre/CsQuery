@@ -156,6 +156,17 @@ namespace CsQuery.Tests.Csharp.Miscellaneous
             var text = new CQ(elements).Text();
 
        }
+
+        /// <summary>
+        /// Index Out of Range parsing - unverified
+        /// </summary>
+
+        [Test, TestMethod]
+        public void Issue28()
+        {
+            var html = TestDom("issue28");
+
+        }
         #region setup
         public override void FixtureSetUp()
         {

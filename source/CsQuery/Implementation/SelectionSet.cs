@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.Implementation

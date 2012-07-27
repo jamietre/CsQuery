@@ -173,7 +173,7 @@ namespace CsQuery
         /// https://developer.mozilla.org/en/DOM/element.getElementsByTagName
         /// </url>
 
-        IList<IDomElement> GetElementsByTagName(string tagName);
+        INodeList<IDomElement> GetElementsByTagName(string tagName);
 
         /// <summary>
         /// Return the body element for this Document.

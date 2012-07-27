@@ -14,6 +14,7 @@ namespace CsQuery
 {
     public partial class CQ
     {
+
         #region public methods
 
         /// <summary>
@@ -55,7 +56,7 @@ namespace CsQuery
         /// <url>
         /// http://api.jquery.com/val/#val1
         /// </url>
-        /// 
+        
         public T ValOrDefault<T>()
         {
             string val = Val();
@@ -71,7 +72,11 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Get the current value of the first element in the set of matched elements.
+        /// Get the current value of the first element in the set of matched elements. When using Val()
+        /// to access an OPTION group with the "multiple" flag set, this method with return a comma-
+        /// separated string (rather than the array returned by jQuery) of each selected option. When
+        /// there is no "value" property on an option, the text returned for the value of each selected
+        /// option is the inner text of the OPTION element.
         /// </summary>
         ///
         /// <returns>
@@ -109,36 +114,47 @@ namespace CsQuery
                     case HtmlData.tagSELECT:
                         string result = String.Empty;
                         // TODO optgroup handling (just like the setter code)
-                        var options = Find("option");
-                        if (options.Length == 0)
-                        {
-                            return null;
-                        }
+                        //var options = Find("option");
+                        //if (options.Length == 0)
+                        //{
+                        //    return null;
+                        //}
 
-                        foreach (IDomElement child in options)
-                        {
-                            bool disabled = child.HasAttribute("disabled")
-                                || (child.ParentNode.NodeName == "OPTGROUP" && child.ParentNode.HasAttribute("disabled"));
+                        //foreach (IDomElement child in options)
+                        //{
+                        //    bool disabled = child.HasAttribute("disabled")
+                        //        || (child.ParentNode.NodeNameID == HtmlData.tagOPTGROUP 
+                        //            && child.ParentNode.HasAttribute("disabled"));
 
-                            if (child.HasAttribute("selected") && !disabled)
-                            {
-                                var optVal = child.GetAttribute("value");
-                                if (optVal == null)
-                                {
-                                    optVal = child.Cq().Text();
-                                }
-                                result = result.ListAdd(optVal, ",");
-                                if (!e.HasAttribute("multiple"))
-                                {
-                                    break;
-                                }
-                            }
+                        //    if (child.HasAttribute("selected") && !disabled)
+                        //    {
+                        //        var optVal = child.GetAttribute("value");
+                        //        if (optVal == null)
+                        //        {
+                        //            optVal = child.Cq().Text();
+                        //        }
+                        //        result = result.ListAdd(optVal, ",");
+                        //        if (!e.HasAttribute("multiple"))
+                        //        {
+                        //            break;
+                        //        }
+                        //    }
+                        //}
+                        
+                        var sel = (HTMLSelectElement)e;
+                        if (!sel.Multiple) {
+                            var opt = sel.SelectedItem;
+                            result = opt != null ?
+                                opt.GetAttribute("value") ?? 
+                                    opt.InnerText : 
+                                    "";
+                        } else {
+                            var selList = sel.ChildElementsOfTag<IHTMLOptionElement>(HtmlData.tagOPTION);
+                            result = String.Join(",",selList
+                                .Where(item=>item.HasAttribute("selected") && !item.Disabled)
+                                .Select(item=>item.Value ?? item.InnerText));
                         }
-
-                        if (result == String.Empty)
-                        {
-                            result = options[0].GetAttribute("value", String.Empty);
-                        }
+                        
                         return result;
                     case HtmlData.tagOPTION:
                         val = e.GetAttribute("value");

@@ -20,7 +20,6 @@ namespace CsQuery.ExtensionMethods
     /// </summary>
     public static class ExtensionMethods
     {
-       
 
         #region string extension methods
         
@@ -65,31 +64,202 @@ namespace CsQuery.ExtensionMethods
 
         #endregion
 
+
+
+        #region IEnumerable<T> extension methods
+
         /// <summary>
-        /// Clone a sequence of elements to a new sequence
+        /// Append an element to the end of a sequence.
         /// </summary>
         ///
-        /// <param name="source">
-        /// The source sequence
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="list">
+        /// The list to act on.
+        /// </param>
+        /// <param name="element">
+        /// The element to append.
         /// </param>
         ///
         /// <returns>
-        /// A sequence containing a clone of each element in the source.
+        /// The combined sequence.
         /// </returns>
 
-        public static IEnumerable<IDomObject> Clone(this IEnumerable<IDomObject> source)
+        public static IEnumerable<T> Concat<T>(this IEnumerable<T> list, T element)
         {
-            foreach (IDomObject item in source)
+            if (list != null)
             {
-                yield return item.Clone();
+                foreach (var item in list)
+                {
+                    yield return item;
+                }
             }
 
+            if (element != null)
+            {
+                yield return element;
+            }
         }
+
+        /// <summary>
+        /// Return the zero-based index of the first item in a sequence where the predicate returns true
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Type of object in the sequence
+        /// </typeparam>
+        /// <param name="list">
+        /// The sequence to search through.
+        /// </param>
+        /// <param name="predicate">
+        /// The predicate.
+        /// </param>
+        ///
+        /// <returns>
+        /// The zero-based position in the list where the item was found, or -1 if it was not found.
+        /// </returns>
+
+        public static int IndexOf<T>(this IEnumerable<T> list, Func<T, bool> predicate) {
+            int index = 0;
+            var enumerator = list.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                if (predicate(enumerator.Current)) {
+                    return index;
+                }
+                index++;
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// Return the zero-based index of the first item in a sequence where the predicate returns true,
+        /// and return the matched item as an output parameter.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="list">
+        /// The sequence to search through.
+        /// </param>
+        /// <param name="predicate">
+        /// The predicate.
+        /// </param>
+        /// <param name="item">
+        /// [out] The matched item.
+        /// </param>
+        ///
+        /// <returns>
+        /// The zero-based position in the list where the item was found, or -1 if it was not found.
+        /// </returns>
+
+        public static int IndexOf<T>(this IEnumerable<T> list, Func<T, bool> predicate, out T item)
+        {
+            int index = 0;
+            var enumerator = list.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                if (predicate(enumerator.Current))
+                {
+                    item = enumerator.Current;
+                    return index;
+                }
+                index++;
+            }
+            item = default(T);
+            return -1;
+        }
+        /// <summary>
+        /// Return the zero-based index of item in a sequence.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// The type of elements in the sequence.
+        /// </typeparam>
+        /// <param name="list">
+        /// The sequence to search through.
+        /// </param>
+        /// <param name="target">
+        /// The target collection.
+        /// </param>
+        ///
+        /// <returns>
+        /// The zero-based position in the list where the item was found, or -1 if it was not found.
+        /// </returns>
+
+        public static int IndexOf<T>(this IEnumerable<T> list, T target)
+        {
+            int index = 0;
+            foreach (var item in list)
+            {
+                if (item.Equals(target))
+                {
+                    return index;
+                }
+                index++;
+            }
+            return -1;
+        }
+
+
+        /// <summary>
+        /// Iterate over a sequence, calling the delegate for each element.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// The type of object in the sequence.
+        /// </typeparam>
+        /// <param name="list">
+        /// The sequence.
+        /// </param>
+        /// <param name="action">
+        /// The action to invoke for each object.
+        /// </param>
+
+        public static void ForEach<T>(this IEnumerable<T> list, Action<T> action)
+        {
+            foreach (T obj in list)
+            {
+                action(obj);
+            }
+        }
+
+        /// <summary>
+        /// Iterate over a sequence, calling the delegate for each element. The delegate should accept
+        /// two parameters, the object T and the index of the current iteration.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// The type of object in the sequence.
+        /// </typeparam>
+        /// <param name="list">
+        /// The sequence.
+        /// </param>
+        /// <param name="action">
+        /// The action to invoke for each object.
+        /// </param>
+
+        public static void ForEach<T>(this IEnumerable<T> list, Action<T,int> action)
+        {
+            int index=0;
+            foreach (T obj in list)
+            {
+                action(obj,index++);
+            }
+        }
+
+        #endregion
+
+        #region JSON extension methods
+
         /// <summary>
         /// Serailize the object to a JSON string
         /// </summary>
         /// <param name="objectToSerialize"></param>
         /// <returns></returns>
+        
         public static string ToJSON(this object objectToSerialize)
         {
             return JSON.ToJSON(objectToSerialize);
@@ -100,6 +270,7 @@ namespace CsQuery.ExtensionMethods
         /// <typeparam name="T"></typeparam>
         /// <param name="objectToDeserialize"></param>
         /// <returns></returns>
+        
         public static T ParseJSON<T>(this string objectToDeserialize)
         {
             return JSON.ParseJSON<T>(objectToDeserialize);
@@ -122,6 +293,9 @@ namespace CsQuery.ExtensionMethods
             return JSON.ParseJSON(json);
         }
 
+        #endregion
+
+        #region Dynamic object extension methods
         /// <summary>
         /// Indicates whether a property exists on an ExpandoObject
         /// </summary>
@@ -177,6 +351,30 @@ namespace CsQuery.ExtensionMethods
         /// A new array of the same type as the original.
         /// </returns>
 
+        #endregion
+
+        #region Miscellaneous / CsQuery specific
+
+        /// <summary>
+        /// Clone a sequence of elements to a new sequence
+        /// </summary>
+        ///
+        /// <param name="source">
+        /// The source sequence
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence containing a clone of each element in the source.
+        /// </returns>
+
+        public static IEnumerable<IDomObject> Clone(this IEnumerable<IDomObject> source)
+        {
+            foreach (var item in source)
+            {
+                yield return item.Clone();
+            }
+        }
+
         public static Array Slice(this Array array, int start, int end)
         {
             // handle negative values
@@ -230,6 +428,8 @@ namespace CsQuery.ExtensionMethods
         {
             return Slice(array, start, array.Length);
         }
+
+        #endregion
     }
     
 }

@@ -23,20 +23,7 @@ namespace CsQuery.Implementation
 
         #region private properties
 
-
-       // private IDictionary<ushort, string> _Attributes;
-
         private IDictionary<ushort, string> Attributes = new Dictionary<ushort, string>();
-        //{
-        //    get
-        //    {
-        //        if (_Attributes == null)
-        //        {
-        //            _Attributes = new SmallDictionary<ushort, string>();
-        //        }
-        //        return _Attributes;
-        //    }
-        //}
 
         internal string this[ushort nodeId]
         {
@@ -58,7 +45,6 @@ namespace CsQuery.Implementation
             get
             {
                 return 
-                    //_Attributes != null && 
                     Attributes.Count > 0;
             }
         }

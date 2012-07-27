@@ -1,11 +1,9 @@
-﻿// file:	Dom\Implementation\DomObject.cs
-//
-// summary:	Implements the dom object class
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CsQuery.HtmlParser;
+using CsQuery.ExtensionMethods;
 
 namespace CsQuery.Implementation
 {
@@ -618,20 +616,6 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Indicates whether the element is selected or not. This value is read-only. To change the
-        /// selection, set either the selectedIndex or selectedItem property of the containing element.
-        /// </summary>
-        ///
-        /// <url>
-        /// https://developer.mozilla.org/en/XUL/Attribute/selected
-        /// </url>
-
-        public virtual bool Selected
-        {
-            get { return false; }
-        }
-
-        /// <summary>
         /// Gets or sets a value indicating whether the element is checked.
         /// </summary>
         ///
@@ -1010,7 +994,7 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <exception cref="InvalidOperationException">
-        /// Thrown when the requested operation is invalid.
+        /// Thrown when the object type does not support attributes
         /// </exception>
         ///
         /// <param name="name">
@@ -1027,7 +1011,7 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <exception cref="InvalidOperationException">
-        /// Thrown when the requested operation is invalid.
+        /// Thrown when the object type does not support attributes
         /// </exception>
         ///
         /// <param name="name">
@@ -1135,6 +1119,7 @@ namespace CsQuery.Implementation
             return false;
         }
 
+      
         /// <summary>
         /// Removes an attribute from the specified element.
         /// </summary>
@@ -1317,6 +1302,156 @@ namespace CsQuery.Implementation
         {
             return Render();
         }
+
+        #endregion
+        
+        #region element properties
+
+
+        /// <summary>
+        /// The index excluding text nodes.
+        /// </summary>
+
+        public virtual int ElementIndex
+        {
+            get
+            {
+                throw new InvalidOperationException("This is not an Element object.");
+            }
+        }
+
+        /// <summary>
+        /// An enumeration of clones of the chilren of this object
+        /// </summary>
+        ///
+        /// <returns>
+        /// An enumerator 
+        /// </returns>
+
+        public virtual IEnumerable<IDomObject> CloneChildren()
+        {
+             throw new InvalidOperationException("This is not a Container object.");
+        }
+
+        /// <summary>
+        /// Returns the HTML for this element, but ignoring children/innerHTML.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A string of HTML
+        /// </returns>
+
+        public virtual string ElementHtml()
+        {
+            throw new InvalidOperationException("This is not an Element object.");
+        }
+
+        public virtual bool IsBlock
+        {
+            get
+            {
+                throw new InvalidOperationException("This is not an Element object.");
+            }
+        }
+        public virtual IEnumerable<string> IndexKeys()
+        {
+            throw new InvalidOperationException("This is not an indexed object.");
+        }
+
+        public virtual IDomObject IndexReference
+        {
+            get
+            {
+                throw new InvalidOperationException("This is not an indexed object.");
+            }
+        }
+
+        #endregion
+
+        #region select element properties
+
+
+        #endregion 
+
+
+        #region option element properties
+
+        private HTMLOptionsCollection OwnerSelectOptions()
+        {
+
+            var node = OptionOwner();
+            if (node == null)
+            {
+                throw new InvalidOperationException("The selected property only applies to valid OPTION nodes within a SELECT node");
+            }
+            return OwnerSelectOptions(node);
+
+        }
+        private HTMLOptionsCollection OwnerSelectOptions(IDomElement owner)
+        {
+            return new HTMLOptionsCollection((IDomElement)owner);
+        }
+
+        private IDomElement OptionOwner()
+        {
+            var node =   this.ParentNode == null ?
+                null :
+                this.ParentNode.NodeNameID == HtmlData.tagSELECT ?
+                    this.ParentNode :
+                        this.ParentNode.ParentNode == null ?
+                            null :
+                            this.ParentNode.ParentNode.NodeNameID == HtmlData.tagSELECT ?
+                                this.ParentNode.ParentNode :
+                                null;
+            return (IDomElement)node;
+        }
+
+        /// <summary>
+        /// Indicates whether the element is selected or not. This value is read-only. To change the
+        /// selection, set either the selectedIndex or selectedItem property of the containing element.
+        /// </summary>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/XUL/Attribute/selected
+        /// </url>
+
+        public virtual bool Selected
+        {
+            get
+            {
+                var owner = OptionOwner();
+                if (owner != null)
+                {
+                    return ((DomElement)this).HasAttribute(HtmlData.SelectedAttrId) ||
+                        OwnerSelectOptions(owner).SelectedItem == this;
+                }
+                else
+                {
+                    return ((DomElement)this).HasAttribute(HtmlData.SelectedAttrId);
+                }
+            }
+            set
+            {
+                var owner = OptionOwner();
+                if (owner != null)
+                {
+                    if (value)
+                    {
+                        OwnerSelectOptions(owner).SelectedItem = (DomElement)this;
+                    }
+                    else
+                    {
+                        ((DomElement)this).RemoveAttribute(HtmlData.SelectedAttrId);
+                    }
+                }
+                else
+                {
+                    ((DomElement)this).SetAttribute(HtmlData.SelectedAttrId);
+                }
+            }
+        }
+
+
         #endregion
 
         #region private methods
@@ -1402,5 +1537,4 @@ namespace CsQuery.Implementation
         #endregion
         
     }
-
 }
