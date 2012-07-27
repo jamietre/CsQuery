@@ -148,14 +148,9 @@ namespace CsQuery.Implementation
         {
             get
             {
-                var index = Children(Parent).IndexOf(item => 
-                    item.Element.HasAttribute("selected"));
-
-                return Parent.Multiple ?
-                    index :
-                    index == -1 ? 
-                        Children(Parent).IndexOf(item=>!item.Disabled) : 
-                        index;
+                OptionElement el;
+                var index = GetSelectedItem(out el);
+                return index;
             }
             set
             {
@@ -173,11 +168,29 @@ namespace CsQuery.Implementation
             }
         }
 
+        private int GetSelectedItem(out OptionElement el)
+        {
+            var index = Children(Parent).IndexOf(item =>
+                   item.Element.HasAttribute("selected"), out el);
+
+            if (Parent.Multiple || index >= 0)
+            {
+                return index;
+            }
+            else
+            {
+                return Children(Parent).IndexOf(item => !item.Disabled, out el);
+            }
+        }
+
         internal IDomElement SelectedItem
         {
             get
             {
-                return Children().Where(item => item.HasAttribute(HtmlData.SelectedAttrId)).FirstOrDefault();
+
+                OptionElement el;
+                GetSelectedItem(out el);
+                return el.Element;
             }
             set
             {

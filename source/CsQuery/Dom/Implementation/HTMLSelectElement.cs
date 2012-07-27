@@ -6,12 +6,17 @@ using CsQuery.HtmlParser;
 
 namespace CsQuery.Implementation
 {
+    /// <summary>
+    /// An HTML SELECT element.
+    /// </summary>
+
     public class HTMLSelectElement : DomElement, IHTMLSelectElement
     {
         public HTMLSelectElement()
             : base(HtmlData.tagSELECT)
         {
         }
+
         /// <summary>
         /// A collection of HTML option elements (in document order)
         /// </summary>
@@ -28,6 +33,10 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// The number OPTION elements contained by this SELECT
+        /// </summary>
+
         public int Length
         {
             get
@@ -35,6 +44,10 @@ namespace CsQuery.Implementation
                 return SelectOptions().Count();
             }
         }
+
+        /// <summary>
+        /// The type string for this SELECT group.
+        /// </summary>
 
 
         public override string Type
@@ -122,6 +135,18 @@ namespace CsQuery.Implementation
             set
             {
                 SelectOptions().SelectedItem = value;
+            }
+        }
+
+        public override string Value
+        {
+            get
+            {
+                return GetAttribute(HtmlData.ValueAttrId, "");
+            }
+            set
+            {
+                base.Value = value;
             }
         }
     }

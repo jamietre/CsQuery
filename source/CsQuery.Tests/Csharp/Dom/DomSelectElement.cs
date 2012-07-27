@@ -47,27 +47,27 @@ namespace CsQuery.Tests.Csharp.Dom
         /// <summary>
         /// 
         /// </summary>
-        [Test, TestMethod]
-        public void SelectedOption()
-        {
-            var dom = TestDom("jquery-unit-index");
-            var res = dom["#select4"];
-            var el = res[0] as IHTMLSelectElement;
+        //[Test, TestMethod]
+        //public void SelectedOption()
+        //{
+        //    var dom = TestDom("jquery-unit-index");
+        //    var res = dom["#select4"];
+        //    var el = res[0] as IHTMLSelectElement;
 
-            res.RemoveAttr("multiple");
-            res.Find(":selected").ForEach(item =>
-            {
-                item.Selected = false;
-            });
+        //    res.RemoveAttr("multiple");
+        //    res.Find(":selected").ForEach(item =>
+        //    {
+        //        item.Selected = false;
+        //    });
 
-            var newSelected = res.Find(":selected");
-            Assert.AreEqual(1, newSelected.Length);
-            Assert.AreEqual("#option4e", newSelected[0].Id);
+        //    var newSelected = res.Find(":selected");
+        //    Assert.AreEqual(1, newSelected.Length);
+        //    Assert.AreEqual("#option4e", newSelected[0].Id);
 
-            res.Find("optgroup[disabled]").RemoveAttr("disabled");
-            Assert.AreEqual("#option4a", res.Find(":selected")[0].Id);
+        //    res.Find("optgroup[disabled]").RemoveAttr("disabled");
+        //    Assert.AreEqual("#option4a", res.Find(":selected")[0].Id);
 
-        }
+        //}
     }
 }
 

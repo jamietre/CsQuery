@@ -7,6 +7,10 @@ using CsQuery.ExtensionMethods;
 
 namespace CsQuery.Implementation
 {
+    /// <summary>
+    /// An HTML input element.
+    /// </summary>
+
     public class HTMLInputElement : DomElement, IHTMLInputElement
     {
         public HTMLInputElement()

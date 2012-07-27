@@ -134,6 +134,44 @@ namespace CsQuery.ExtensionMethods
         }
 
         /// <summary>
+        /// Return the zero-based index of the first item in a sequence where the predicate returns true,
+        /// and return the matched item as an output parameter.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="list">
+        /// The sequence to search through.
+        /// </param>
+        /// <param name="predicate">
+        /// The predicate.
+        /// </param>
+        /// <param name="item">
+        /// [out] The matched item.
+        /// </param>
+        ///
+        /// <returns>
+        /// The zero-based position in the list where the item was found, or -1 if it was not found.
+        /// </returns>
+
+        public static int IndexOf<T>(this IEnumerable<T> list, Func<T, bool> predicate, out T item)
+        {
+            int index = 0;
+            var enumerator = list.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                if (predicate(enumerator.Current))
+                {
+                    item = enumerator.Current;
+                    return index;
+                }
+                index++;
+            }
+            item = default(T);
+            return -1;
+        }
+        /// <summary>
         /// Return the zero-based index of item in a sequence.
         /// </summary>
         ///

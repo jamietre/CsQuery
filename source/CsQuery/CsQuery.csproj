@@ -148,8 +148,13 @@
     <Compile Include="CQ_jQuery\Has.cs" />
     <Compile Include="CQ_jQuery\Not.cs" />
     <Compile Include="CQ_jQuery\Parents.cs" />
+    <Compile Include="Dom\IHTMLProgressElement.cs" />
+    <Compile Include="Dom\IHTMLOptionElement.cs" />
     <Compile Include="Dom\IHTMLInputElement.cs" />
     <Compile Include="Dom\IHTMLAnchorElement.cs" />
+    <Compile Include="Dom\Implementation\HTMLProgressElement.cs" />
+    <Compile Include="Dom\Implementation\HTMLTextAreaElement.cs" />
+    <Compile Include="Dom\Implementation\HTMLOptionElement.cs" />
     <Compile Include="Dom\Implementation\HTMLInputElement.cs" />
     <Compile Include="Dom\Implementation\HTMLAnchorElement.cs" />
     <Compile Include="Dom\INodeListT.cs" />
@@ -241,7 +246,7 @@
     <Compile Include="HtmlParser\enumTokenizerState.cs" />
     <Compile Include="HtmlParser\ExtensionMethods.cs" />
     <Compile Include="HtmlParser\HtmlStyles.cs" />
-    <Compile Include="HtmlParser\TokenProperties.cs" />
+    <Compile Include="HtmlParser\enumTokenProperties.cs" />
     <Compile Include="OutputFormatters\Indented.cs" />
     <Compile Include="StringScanner\CharacterData.cs" />
     <Compile Include="StringScanner\enumCharacterType.cs" />

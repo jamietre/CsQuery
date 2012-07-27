@@ -314,11 +314,31 @@ namespace CsQuery.HtmlParser
         /// </summary>
 
         public const ushort attrTYPE = 44;
+
+        /// <summary>
+        /// The PROGRESS element
+        /// </summary>
+
+        public const ushort tagPROGRESS = 45;
+
+        /// <summary>
+        /// The LABEL element
+        /// </summary>
+
+        public const ushort tagLABEL = 46;
+
+
+        /// <summary>
+        /// The DISABLED attribute
+        /// </summary>
+
+        public const ushort attrDISABLED = 47;
+
         /// <summary>
         /// should match final tag above; for self-checking
         /// </summary>
 
-        private const ushort maxHardcodedTokenId = 44;
+        private const ushort maxHardcodedTokenId = 47;
 
         // Unquoted attribute value syntax: http://dev.w3.org/html5/spec-LC/syntax.html#attributes-0
         // 
@@ -494,15 +514,19 @@ namespace CsQuery.HtmlParser
             };
 
 
+            string[] caseInsensitiveValues = new string[] {
+                "type","target"
+            };
+
+            string[] hasValueAttribute = new string[] {
+                "input","select","option","param","button","progress"
+            };
+
             string[] hardcoded = new string[] {
                 "unused","class","value","id","selected","readonly","checked","input","select","option","p","tr",
                 "td","th","head","body","dt","colgroup","dd","li","dl","table","optgroup","ul","ol","tbody","tfoot","thead","rt",
                 "rp","script","textarea","style","col","html","button","multiple","a","span","form","required","autofocus",
-                "type"
-            };
-
-            string[] caseInsensitiveValues = new string[] {
-                "type","target"
+                "type","progress","label","disabled"
             };
 
             TokenIDs = new Dictionary<string, ushort>();
@@ -528,6 +552,7 @@ namespace CsQuery.HtmlParser
             PopulateTokenHashset(autoOpenOrClose);
             PopulateTokenHashset(metaDataTags);
             PopulateTokenHashset(caseInsensitiveValues);
+            PopulateTokenHashset(hasValueAttribute);
 
             // Fill out the list of tokens to the boundary of the metadata array so the indices align
 
@@ -551,6 +576,7 @@ namespace CsQuery.HtmlParser
             setBit(paraClosers, TokenProperties.ParagraphCloser);
             setBit(metaDataTags, TokenProperties.MetaDataTags);
             setBit(caseInsensitiveValues, TokenProperties.CaseInsensitiveValues);
+            setBit(hasValueAttribute, TokenProperties.HasValue);
         }
 
         private static HashSet<ushort> PopulateTokenHashset(IEnumerable<string> tokens)
@@ -757,6 +783,25 @@ namespace CsQuery.HtmlParser
         {
             return (attributeToken & NonSpecialTokenMask) == 0 &&
                  (TokenMetadata[attributeToken] & (ushort)TokenProperties.CaseInsensitiveValues) != 0;
+
+        }
+
+        /// <summary>
+        /// Test if a node type has a VALUE property
+        /// </summary>
+        ///
+        /// <param name="attributeToken">
+        /// Token ID of the node type.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it has a VALUE property, false if not.
+        /// </returns>
+
+        public static bool HasValueProperty(ushort nodeNameToken)
+        {
+            return (nodeNameToken & NonSpecialTokenMask) == 0 &&
+                 (TokenMetadata[nodeNameToken] & (ushort)TokenProperties.HasValue) != 0;
 
         }
 

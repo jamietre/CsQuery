@@ -94,7 +94,7 @@ namespace CsQuery.Implementation
 
         public DomElement()
         {
-            throw new InvalidOperationException("You can't create a DOM element without a node name.");
+            throw new InvalidOperationException("You can't create a DOM element using the default constructor. Please use the DomElement.Create static method instead.");
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace CsQuery.Implementation
         /// </param>
         ///
         /// <returns>
-        /// .
+        /// A new element that inherits DomElement
         /// </returns>
 
         public static DomElement Create(string nodeName)
@@ -169,6 +169,12 @@ namespace CsQuery.Implementation
                     return new HtmlAnchorElement();
                 case HtmlData.tagINPUT:
                     return new HTMLInputElement();
+                case HtmlData.tagOPTION:
+                    return new HTMLOptionElement();
+                case HtmlData.tagTEXTAREA:
+                    return new HTMLTextAreaElement();
+                case HtmlData.tagPROGRESS:
+                    return new HTMLProgressElement();
                 default:
                     return new DomElement(nodeNameId);
             }
@@ -393,8 +399,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return HtmlData.tagINPUT == _NodeNameID &&
-                    HasAttribute(HtmlData.ValueAttrId) ?
+                return HtmlData.HasValueProperty(NodeNameID) ?
                         GetAttribute(HtmlData.ValueAttrId) :
                         null;
             }
@@ -1004,31 +1009,7 @@ namespace CsQuery.Implementation
             return result;
         }
 
-        /// <summary>
-        /// Query if 'tokenId' has attribute.
-        /// </summary>
-        ///
-        /// <param name="tokenId">
-        /// .
-        /// </param>
-        ///
-        /// <returns>
-        /// true if attribute, false if not.
-        /// </returns>
-
-        public virtual bool HasAttribute(ushort tokenId)
-        {
-            switch (tokenId)
-            {
-                case HtmlData.ClassAttrId:
-                    return HasClasses;
-                case HtmlData.tagSTYLE:
-                    return HasStyles;
-                default:
-                    return _InnerAttributes != null
-                        && InnerAttributes.ContainsKey(tokenId);
-            }
-        }
+       
 
         /// <summary>
         /// Query if 'tokenId' has attribute.
@@ -1892,6 +1873,32 @@ namespace CsQuery.Implementation
         #region internal methods
 
         /// <summary>
+        /// Query if 'tokenId' has attribute.
+        /// </summary>
+        ///
+        /// <param name="tokenId">
+        /// .
+        /// </param>
+        ///
+        /// <returns>
+        /// true if attribute, false if not.
+        /// </returns>
+
+        internal bool HasAttribute(ushort tokenId)
+        {
+            switch (tokenId)
+            {
+                case HtmlData.ClassAttrId:
+                    return HasClasses;
+                case HtmlData.tagSTYLE:
+                    return HasStyles;
+                default:
+                    return _InnerAttributes != null
+                        && InnerAttributes.ContainsKey(tokenId);
+            }
+        }
+
+        /// <summary>
         /// Gets an attribute value for matching, accounting for default values of special attribute
         /// types.
         /// </summary>
@@ -1936,6 +1943,17 @@ namespace CsQuery.Implementation
 
         }
 
+        /// <summary>
+        /// Sets a boolean property by creating or removing it
+        /// </summary>
+        ///
+        /// <param name="tagId">
+        /// Identifier for the tag.
+        /// </param>
+        /// <param name="value">
+        /// The value to set
+        /// </param>
+
         internal void SetProp(ushort tagId, bool value)
         {
             if (value)
@@ -1952,6 +1970,45 @@ namespace CsQuery.Implementation
             SetProp(HtmlData.Tokenize(tagName), value);
         }
 
+
+        /// <summary>
+        /// Returns all child elements of a specific tag, cast to a type
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="nodeNameId">
+        /// Backing field for NodeNameID property.
+        /// </param>
+        ///
+        /// <returns>
+        /// An enumerator.
+        /// </returns>
+
+        internal IEnumerable<T> ChildElementsOfTag<T>(ushort nodeNameId)
+        {
+            return ChildElementsOfTag<T>(this, nodeNameId);
+        }
+
+        private IEnumerable<T> ChildElementsOfTag<T>(IDomElement parent, ushort nodeNameId)
+        {
+            foreach (var el in ChildNodes)
+            {
+                if (el.NodeType == NodeType.ELEMENT_NODE &&
+                    el.NodeNameID == nodeNameId)
+                {
+                    yield return (T)el;
+                }
+                if (el.HasChildren)
+                {
+                    foreach (var child in ((DomElement)el).ChildElementsOfTag<T>(nodeNameId))
+                    {
+                        yield return child;
+                    }
+                }
+            }
+        }
         #endregion
 
         #region explicit members for IAttributesCollection
@@ -2068,7 +2125,10 @@ namespace CsQuery.Implementation
                 }
             }
         }
-        
+
+
+
+
         #endregion
 
     }

@@ -19,9 +19,32 @@ namespace CsQuery.Implementation
     {
         #region constructor
 
+        /// <summary>
+        /// Wraps a list in a NodeList object
+        /// </summary>
+        ///
+        /// <param name="list">
+        /// The list.
+        /// </param>
+
         public NodeList(IList<T> list)
         {
             InnerList = list;
+            IsReadOnly = true;
+        }
+
+        /// <summary>
+        /// Creates a new node list from an enumeration. This will enumerate the sequence at create time
+        /// into a new list.
+        /// </summary>
+        ///
+        /// <param name="sequence">
+        /// The sequence
+        /// </param>
+
+        public NodeList(IEnumerable<T> sequence)
+        {
+            InnerList = new List<T>(sequence);
             IsReadOnly = true;
         }
 

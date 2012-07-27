@@ -6,7 +6,7 @@ using System.Text;
 namespace CsQuery
 {   
     /// <summary>
-    /// An input element.
+    /// An HTML INPUT element.
     /// </summary>
     ///
     /// <url>
@@ -16,7 +16,7 @@ namespace CsQuery
     public interface IHTMLInputElement : IDomElement
     {
         /// <summary>
-        /// The value of the id attribute on the form with which to associate the element.
+        /// The form with which to associate the element.
         /// </summary>
 
         IDomElement Form {get;}

@@ -87,12 +87,14 @@
     <Compile Include="Csharp\Dom\DomDocument.cs" />
     <Compile Include="Csharp\Dom\DomFragment.cs" />
     <Compile Include="Csharp\Dom\DomElement.cs" />
+    <Compile Include="Csharp\Dom\SpecialElements.cs" />
     <Compile Include="Csharp\ExtensionMethods\Xml.cs" />
     <Compile Include="Csharp\Methods\ParentsUntil.cs" />
     <Compile Include="Csharp\Methods\Width.cs" />
     <Compile Include="Csharp\Methods\Each.cs" />
     <Compile Include="Csharp\Methods\Text.cs" />
     <Compile Include="Csharp\Methods\Slice.cs" />
+    <Content Include="Resources\issue28.htm" />
     <Content Include="Resources\jsdom\Level2\anchor.html" />
     <Content Include="Resources\jsdom\Level2\anchor2.html" />
     <Content Include="Resources\jsdom\Level2\anchor3.html" />
