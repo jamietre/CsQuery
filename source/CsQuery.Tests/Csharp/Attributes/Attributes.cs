@@ -235,11 +235,19 @@ namespace CsQuery.Tests.Csharp.Attributes
             Assert.AreEqual(2, styleOnly.Style.Count);
             Assert.AreEqual(style, styleOnly.Style.ToString());
 
-            
-            
-
-
         }
+
+        [Test, TestMethod]
+        public void CaseInsensitive()
+        {
+            var dom = CQ.Create(@"<input type='checkbox' checked='checked' name='stuff' />
+        <input type='Checkbox' checked='Checked' name='Stuff' />");
+
+            Assert.AreEqual(2, dom["input[type='checkbox']"].Length);
+            Assert.AreEqual(1, dom["input[name='stuff']"].Length);
+        }
+
+
 
         #region test configuration
 

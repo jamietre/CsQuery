@@ -8,6 +8,7 @@ using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 using CsQuery.Engine;
 using CsQuery.Implementation;
+using CsQuery.HtmlParser;
 
 namespace CsQuery
 {
@@ -39,9 +40,9 @@ namespace CsQuery
             }
             if (item.Length > 0)
             {
-                string nodeName = group[0].NodeName;
+                ushort nodeNameID = group[0].NodeNameID;
                 string type = group[0]["type"].ToUpper();
-                if (nodeName == "OPTION")
+                if (nodeNameID == HtmlData.tagOPTION)
                 {
                     var ownerMultiple = group.Closest("select").Prop("multiple");
                     if (Objects.IsTruthy(ownerMultiple))
@@ -54,9 +55,10 @@ namespace CsQuery
                         item.Prop("selected", true);
                     }
                 }
-                else if (nodeName == "INPUT" && (type == "RADIO" || type == "CHECKBOX"))
+                else if (nodeNameID == HtmlData.tagINPUT && 
+                    (type == "radio" || type == "checkbox"))
                 {
-                    if (type == "RADIO")
+                    if (type == "radio")
                     {
                         group.Prop("checked", false);
                     }

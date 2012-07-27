@@ -14,6 +14,14 @@ namespace CsQuery
     /// </summary>
     public interface IDomContainer : IDomObject
     {
+        /// <summary>
+        /// An enumeration of clones of the chilren of this object
+        /// </summary>
+        ///
+        /// <returns>
+        /// An enumerator 
+        /// </returns>
+
         IEnumerable<IDomObject> CloneChildren();
     }
     

@@ -65,7 +65,7 @@ namespace CsQuery.Implementation
         {
             foreach (var item in elements)
             {
-                ChildNodes.AddAlways(item);
+                ChildNodesInternal.AddAlways(item);
             }
   
         }
@@ -410,10 +410,10 @@ namespace CsQuery.Implementation
             return (IDomElement)selectors.Select(Document).FirstOrDefault();
         }
 
-        public IList<IDomElement> GetElementsByTagName(string tagName)
+        public INodeList<IDomElement> GetElementsByTagName(string tagName)
         {
             Selector selectors = new Selector(tagName);
-            return (new List<IDomElement>(OnlyElements(selectors.Select(Document)))).AsReadOnly();
+            return new NodeList<IDomElement>(new List<IDomElement>(OnlyElements(selectors.Select(Document))));
         }
 
         public IDomElement QuerySelector(string selector)
@@ -428,9 +428,9 @@ namespace CsQuery.Implementation
             return (new List<IDomElement>(OnlyElements(selectors.Select(Document)))).AsReadOnly();
         }
 
-
-        public IDomElement CreateElement(string nodeName) {
-            return new DomElement(nodeName);
+        public IDomElement CreateElement(string nodeName) 
+        {
+            return DomElement.Create(nodeName);
         }
 
         public IDomText CreateTextNode(string text)

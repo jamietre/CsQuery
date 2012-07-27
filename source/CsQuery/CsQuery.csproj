@@ -12,6 +12,21 @@
     <AssemblyName>CsQuery</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -133,10 +148,26 @@
     <Compile Include="CQ_jQuery\Has.cs" />
     <Compile Include="CQ_jQuery\Not.cs" />
     <Compile Include="CQ_jQuery\Parents.cs" />
+    <Compile Include="Dom\IHTMLProgressElement.cs" />
+    <Compile Include="Dom\IHTMLOptionElement.cs" />
+    <Compile Include="Dom\IHTMLInputElement.cs" />
+    <Compile Include="Dom\IHTMLAnchorElement.cs" />
+    <Compile Include="Dom\Implementation\HTMLProgressElement.cs" />
+    <Compile Include="Dom\Implementation\HTMLTextAreaElement.cs" />
+    <Compile Include="Dom\Implementation\HTMLOptionElement.cs" />
+    <Compile Include="Dom\Implementation\HTMLInputElement.cs" />
+    <Compile Include="Dom\Implementation\HTMLAnchorElement.cs" />
+    <Compile Include="Dom\INodeListT.cs" />
+    <Compile Include="Dom\Implementation\HTMLSelectElement.cs" />
+    <Compile Include="Dom\Implementation\NodeList.cs" />
+    <Compile Include="Dom\Implementation\HTMLOptionsCollection.cs" />
+    <Compile Include="Dom\IHTMLSelectElement.cs" />
     <Compile Include="Dom\IDomIndex.cs" />
     <Compile Include="Dom\IDomObjectT.cs" />
+    <Compile Include="Dom\IHTMLOptionsCollection.cs" />
     <Compile Include="Dom\Implementation\AttributeCollection.cs" />
     <Compile Include="Dom\Implementation\AttributeCollection2.cs" />
+    <Compile Include="Engine\CharacterEqualityComparer.cs" />
     <Compile Include="Engine\PseudoClassSelectors\enumQuotingRule.cs" />
     <Compile Include="Engine\PseudoClassSelectors\PseudoSelectorFilter.cs" />
     <Compile Include="Engine\PseudoClassSelectors\Css\Contains.cs" />
@@ -215,7 +246,7 @@
     <Compile Include="HtmlParser\enumTokenizerState.cs" />
     <Compile Include="HtmlParser\ExtensionMethods.cs" />
     <Compile Include="HtmlParser\HtmlStyles.cs" />
-    <Compile Include="HtmlParser\TokenProperties.cs" />
+    <Compile Include="HtmlParser\enumTokenProperties.cs" />
     <Compile Include="OutputFormatters\Indented.cs" />
     <Compile Include="StringScanner\CharacterData.cs" />
     <Compile Include="StringScanner\enumCharacterType.cs" />
@@ -321,7 +352,7 @@
     <Compile Include="Web\WebRequestState.cs" />
     <Compile Include="Implementation\SelectionSet.cs" />
     <Compile Include="JsObject.cs" />
-    <Compile Include="Dom\Implementation\NodeList.cs" />
+    <Compile Include="Dom\Implementation\ChildNodeList.cs" />
     <Compile Include="Implementation\RangeSortedDictionary.cs" />
     <Compile Include="Web\CsQueryHttpContext.cs" />
     <Compile Include="Engine\Selector.cs" />
@@ -344,6 +375,28 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Implementation\enumSelectionSetOrder.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
