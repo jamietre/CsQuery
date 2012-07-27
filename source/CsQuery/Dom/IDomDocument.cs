@@ -8,8 +8,10 @@ using CsQuery.HtmlParser;
 namespace CsQuery
 {
     /// <summary>
-    /// An interface to a Document that represents an HTML document.
+    /// An interface to a DOM Document, the high-level representation of an HTML document. This is
+    /// analagous to the web browser "document" object.
     /// </summary>
+
     public interface IDomDocument : IDomContainer
     {
 

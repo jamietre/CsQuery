@@ -276,7 +276,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return NodeName=="INPUT" ?
+                return NodeNameID==HtmlData.tagINPUT ?
                     GetAttribute("type","text").ToLower() :
                     GetAttribute("type");
             }
@@ -356,7 +356,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return HtmlData.tagINPUT == _NodeNameID &&
+                return NodeNameID==HtmlData.tagINPUT &&
                     HasAttribute(HtmlData.ValueAttrId) ?
                         GetAttribute(HtmlData.ValueAttrId) :
                         null;

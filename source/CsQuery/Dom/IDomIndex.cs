@@ -7,7 +7,7 @@ using CsQuery.Implementation;
 namespace CsQuery
 {
     /// <summary>
-    /// 
+    /// Interface for a DOM index. Defines methods to add and remove items from the index, and query the index.
     /// </summary>
     public interface IDomIndex 
     {

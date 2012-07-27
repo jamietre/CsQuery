@@ -92,7 +92,7 @@ As of 6/12/2012, the project is feature-complete. In the coming weeks I will be 
 Most of CsQuery works like jQuery, as is it's intent, so please refer to the jQuery documentation for information on jQuery methods. 
 
 * Usage
-	* Creating a new DOM
+	* [Creating a new DOM](https://github.com/jamietre/CsQuery#creating-a-new-dom)
 	* Manipulate the DOM with jQuery methods
 	* Accessing DOM elements directly
 	* Output as HTML
