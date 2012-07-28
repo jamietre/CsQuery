@@ -22,8 +22,8 @@ namespace CsQuery.Utility
         /// <returns></returns>
         public static string GetFile(string fileName)
         {
-           string filePath = GetFilePath(fileName);
-           return File.ReadAllText(filePath); 
+            string filePath = FindPathTo(fileName);
+            return File.ReadAllText(filePath);
         }
         /// <summary>
         /// Open a stream for a file, trying to find it from the execution location if not rooted.
@@ -31,26 +31,36 @@ namespace CsQuery.Utility
         /// <param name="fileName"></param>
         public static FileStream GetFileStream(string fileName)
         {
-            string filePath = GetFilePath(fileName);
+            string filePath = FindPathTo(fileName);
             FileStream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
             return stream;
 
         }
+
         /// <summary>
-        /// Try to find the path to a file based on the execution location of the calling assembly
+        /// Given a partial path to a folder or file, try to find the full rooted path. The topmost part
+        /// of the partial path must be part of the current application path; e.g. there must be an
+        /// overlapping part on which to match.
         /// </summary>
-        /// <param name="fileName"></param>
-        /// <returns></returns>
-        public static string GetFilePath(string fileName)
+        ///
+        /// <param name="partialPath">
+        /// The partial path to find
+        /// </param>
+        ///
+        /// <returns>
+        /// The file path.
+        /// </returns>
+
+        public static string FindPathTo(string partialPath)
         {
-            if (Path.IsPathRooted(fileName))
+            if (Path.IsPathRooted(partialPath))
             {
-                return fileName;
+                return partialPath;
             }
             else
             {
                 string filePath;
-                string cleanFileName= fileName.Replace("/","\\");
+                string cleanFileName = partialPath.Replace("/", "\\");
 
                 if (cleanFileName.StartsWith(".\\"))
                 {
@@ -58,8 +68,8 @@ namespace CsQuery.Utility
                 }
 
                 string callingAssPath = AppDomain.CurrentDomain.BaseDirectory;
-                
-                filePath = FindPathTo(callingAssPath,cleanFileName);
+
+                filePath = FindPathTo(cleanFileName, callingAssPath);
                 return filePath;
 
             }
@@ -80,10 +90,10 @@ namespace CsQuery.Utility
         /// The full rooted path the the file
         /// </returns>
 
-        public static string FindPathTo(string sourcePath, string find)
+        public static string FindPathTo(string partialPath, string basePath)
         {
-            List<string> rootedPath = new List<string>(sourcePath.ToLower().Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries));
-            List<string> findPath = new List<string>(find.ToLower().Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries));
+            List<string> rootedPath = new List<string>(basePath.ToLower().Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries));
+            List<string> findPath = new List<string>(partialPath.ToLower().Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries));
 
             int start = rootedPath.IndexOf(findPath[0]);
             if (start < 0)
@@ -93,14 +103,15 @@ namespace CsQuery.Utility
             else
             {
                 int i = 0;
-                while (rootedPath[start++] == findPath[i++] 
-                    && i<findPath.Count
-                    && start< rootedPath.Count)
+                while (rootedPath[start++] == findPath[i++]
+                    && i < findPath.Count
+                    && start < rootedPath.Count)
                     ;
 
-                return string.Join("\\", rootedPath.GetRange(0, start)) + "\\"
-                    + string.Join("\\", findPath.GetRange(i, findPath.Count - i));
+                string output = string.Join("\\", rootedPath.GetRange(0, start - 1)) + "\\"
+                    + string.Join("\\", findPath.GetRange(i - 1, findPath.Count - i + 1));
 
+                return CleanFilePath(output);
             }
         }
 
@@ -169,11 +180,19 @@ namespace CsQuery.Utility
         }
 
         /// <summary>
-        /// Make sure there's one (or zero, if not rooted) leading or trailing slash, 
-        /// and convert slashes to backslashes. Missing values are returned as just one backslash.
+        /// Convert slashes to backslashes; make sure there's one (or zero, if not rooted) leading or
+        /// trailing backslash; resolve parent and current folder references. Missing values are
+        /// returned as just one backslash.
         /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="path">
+        /// The path to clean
+        /// </param>
+        ///
+        /// <returns>
+        /// A cleaned/resolved path
+        /// </returns>
+
         public static string CleanFilePath(string path)
         {
             if (string.IsNullOrEmpty(path))
@@ -213,7 +232,7 @@ namespace CsQuery.Utility
             {
                 output = output.Substring(0, output.Length - 1);
             }
-            return output+"\\";
+            return output + "\\";
         }
 
         /// <summary>
@@ -312,8 +331,79 @@ namespace CsQuery.Utility
                 null :
                 html.ToCharArray();
         }
+
+        /// <summary>
+        /// Copies files matching a pattern.
+        /// </summary>
+        ///
+        /// <param name="source">
+        /// Source for the.
+        /// </param>
+        /// <param name="destination">
+        /// Destination for the.
+        /// </param>
+        /// <param name="overwrite">
+        /// true to overwrite, false to preserve.
+        /// </param>
+
+        public static void CopyFiles(DirectoryInfo source,
+                       DirectoryInfo destination,
+                       bool overwrite,
+                        params string[] patterns)
+        {
+            if (source == null)
+            {
+                throw new ArgumentException("No source directory specified.");
+            }
+            if (destination == null)
+            {
+                throw new ArgumentException("No destination directory specified.");
+            }
+            foreach (var pattern in patterns)
+            {
+                FileInfo[] files = source.GetFiles(pattern);
+
+                foreach (FileInfo file in files)
+                {
+                    file.CopyTo(destination.FullName + "\\" + file.Name, overwrite);
+                }
+            }
+        }
+
+        public static void CopyFiles(DirectoryInfo source,
+                    DirectoryInfo destination,
+                     params string[] patterns)
+        {
+            CopyFiles(source, destination, true, patterns);
+        }
+
+        /// <summary>
+        /// Deletes the files in a directory matching one or more patterns (nonrecursive)
+        /// </summary>
+        ///
+        /// <param name="source">
+        /// Directory where files are located
+        /// </param>
+        /// <param name="patterns">
+        /// A variable-length parameters list containing patterns.
+        /// </param>
+
+        public static void DeleteFiles(DirectoryInfo directory, params string[] patterns)
+        {
+            if (directory == null)
+            {
+                throw new ArgumentException("No directory specified.");
+            }
+            foreach (var pattern in patterns)
+            {
+                FileInfo[] files = directory.GetFiles(pattern);
+
+                foreach (FileInfo file in files)
+                {
+                    file.Delete();
+                }
+            }
+        }
     }
-
-
 
 }

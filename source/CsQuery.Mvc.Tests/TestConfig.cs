@@ -5,42 +5,50 @@ using System.Text;
 using NUnit.Framework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
-using CsQuery.Tests._Performance;
-using CsQuery.Tests;
 using CsQuery.Utility;
 using System.Reflection;
 using System.Diagnostics;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web.Hosting;
+using System.IO;
 using CsQuery.Mvc;
 
-namespace CsQuery.Tests
+namespace CsQuery.Mvc.Tests
 {
     [SetUpFixture, TestClass]
-    public class TestAssemblyConfig
+    public class TestConfig
     {
-        
+        public static MvcAppHost Host;
+        private static DirectoryInfo TempFiles;
 
         [SetUp]
         public static void AssemblySetup()
         {
-
-            ViewEngines.Engines.Clear();
-            ViewEngines.Engines.Add(new CsQueryViewEngine<CsQuery.Tests.Controllers.LayoutController>());
+            string appPath = Support.FindPathTo("CsQuery.Mvc.Tests");
+            string binPath = AppDomain.CurrentDomain.BaseDirectory;
+            string destPath = appPath+"\\bin";
             
-            var solutionFolderTry = Support.GetFilePath("./TestResults/");
-            if (solutionFolderTry == "")
-            {
-                solutionFolderTry = Support.GetFilePath("./CsQuery.Tests/");
-            }
+            // in order for CreateApplicationHost to work, all the assemblies must be in the 
+            // bin folder of the root. Copy everything there.
 
-            CsQueryTest.SolutionDirectory = Support.CleanFilePath(solutionFolderTry + "/../");
+            DirectoryInfo bin = new DirectoryInfo(binPath);
+            TempFiles = new DirectoryInfo(destPath);
+
+            Support.CopyFiles(bin, TempFiles, "*.dll", "*.pdb");
+
+            Host = (MvcAppHost)ApplicationHost.CreateApplicationHost(
+                typeof(MvcAppHost), 
+                "/",
+                appPath);
+
+            Host.InitializeApplication<MvcTestApp>();
         }
 
         [TearDown]
         public static void AssemblyTeardown()
         {
-            PerformanceTest.CleanupTestRun();
+            Support.DeleteFiles(TempFiles,"*.pdb","*.dll");
         }
 
         /// <summary>

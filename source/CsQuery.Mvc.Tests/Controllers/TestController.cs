@@ -12,31 +12,20 @@ namespace CsQuery.Mvc.Tests.Controllers
 
         public ActionResult Index()
         {
+
             return View();
         }
 
-        public ActionResult LogOn()
+        public ActionResult Action1()
         {
             
             return View();
             
         }
 
-        public void Cq_LogOn()
+        public void Cq_Index()
         {
-            // Not doing anything useful here, but just showing how easy it is to manipulate HTML.
-
-
-            var loginForm = Doc["#login-form"];
-
-            loginForm.Parent().Append("<div>").Append("<b>The login form was duplicated from code in the LogOn controller.</b><br />");
-
-            loginForm.Parent().Append(loginForm.Clone());
-
-            // call a shared method that does some common configuration
-
-            //FinishPage(doc);
-
+            Doc["#index-content"].Text("cq-index ran");
         }
 
     
