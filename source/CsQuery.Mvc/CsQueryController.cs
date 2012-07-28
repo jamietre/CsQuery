@@ -16,6 +16,7 @@ namespace CsQuery.Mvc
         /// <summary>
         /// The CsQuery representation of the HTML before rendering.
         /// </summary>
+        
         public CQ Doc { get; set; }
 
     }
