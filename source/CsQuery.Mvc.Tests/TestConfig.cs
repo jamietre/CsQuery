@@ -10,7 +10,6 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Web.Mvc;
 using System.Web.Routing;
-using System.Web.Hosting;
 using System.IO;
 using CsQuery.Mvc;
 
@@ -20,35 +19,22 @@ namespace CsQuery.Mvc.Tests
     public class TestConfig
     {
         public static MvcAppHost Host;
-        private static DirectoryInfo TempFiles;
+        
 
         [SetUp]
         public static void AssemblySetup()
         {
             string appPath = Support.FindPathTo("CsQuery.Mvc.Tests");
-            string binPath = AppDomain.CurrentDomain.BaseDirectory;
-            string destPath = appPath+"\\bin";
-            
-            // in order for CreateApplicationHost to work, all the assemblies must be in the 
-            // bin folder of the root. Copy everything there.
 
-            DirectoryInfo bin = new DirectoryInfo(binPath);
-            TempFiles = new DirectoryInfo(destPath);
+            Host = MvcAppHost.CreateApplicationHost<MvcTestApp>(appPath, appPath + "\\bin\\debug");
 
-            Support.CopyFiles(bin, TempFiles, "*.dll", "*.pdb");
 
-            Host = (MvcAppHost)ApplicationHost.CreateApplicationHost(
-                typeof(MvcAppHost), 
-                "/",
-                appPath);
-
-            Host.InitializeApplication<MvcTestApp>();
         }
 
         [TearDown]
         public static void AssemblyTeardown()
         {
-            Support.DeleteFiles(TempFiles,"*.pdb","*.dll");
+            Host.Dispose();
         }
 
         /// <summary>

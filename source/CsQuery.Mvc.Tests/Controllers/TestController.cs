@@ -23,30 +23,31 @@ namespace CsQuery.Mvc.Tests.Controllers
             
         }
 
+
         public void Cq_Index()
         {
-            Doc["#index-content"].Text("cq-index ran");
+            Doc["#index-content"].AddClass("cq-index");
+            Doc["header"].AddClass("cq-index");
         }
 
-    
-        //
-        // GET: /Account/Register
-
-        public ActionResult Register()
+        public void Cq_Action1()
         {
-            return View();
+            Doc["#action1-content"].AddClass("cq-action1");
+            Doc["header"].AddClass("cq-action1");
         }
 
 
+        /// <summary>
+        /// Shoud run for all actions in this class
+        /// </summary>
 
-        //protected override ViewResult View(IView view, object model)
-        //{
-        //    return base.View(view, model);
-        //}
-
-        //protected override ViewResult View(string viewName, string masterName, object model)
-        //{
-        //    return base.View(ViewName, MasterName, model);
-        //}
+        public void Cq_Start()
+        {
+            Doc["div"].AddClass("cq-start");
+        }
+        public void Cq_End()
+        {
+            Doc["div"].AddClass("cq-end");
+        }
     }
 }

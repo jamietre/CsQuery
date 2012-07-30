@@ -77,7 +77,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Tests\Index.cs" />
+    <Compile Include="Tests\Markup.cs" />
     <Compile Include="Controllers\Shared\LayoutController.cs" />
     <Compile Include="AppHost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -93,7 +93,9 @@
     <None Include="Views\Shared\_Layout.cshtml" />
     <None Include="Views\Test\Action1.cshtml" />
     <None Include="Views\Test\Index.cshtml" />
-    <None Include="Views\web.config" />
+    <None Include="Views\web.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Views\_ViewStart.cshtml" />
     <None Include="web.config" />
   </ItemGroup>

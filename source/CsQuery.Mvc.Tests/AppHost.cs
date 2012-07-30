@@ -8,14 +8,58 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using System.IO;
 using System.Reflection;
-
+using System.Web.Hosting;
 using Moq;
 using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.Mvc.Tests
 {
-    public class MvcAppHost : MarshalByRefObject
+    public class MvcAppHost : MarshalByRefObject, IDisposable
     {
+        /// <summary>
+        /// Creates an application host environment for the project at the provided applicationPath. If
+        /// binPath is provided, copies binaries to the applicationPath from there.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter of the HttpApplication type (e.g. globals.asax) for this application.
+        /// </typeparam>
+        /// <param name="applicationPath">
+        /// Full path to the application.
+        /// </param>
+        /// <param name="binPath">
+        /// (optional) The path to the binaries that should be executed, if not found in the "bin"
+        /// subfolder of the application path.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new application host.
+        /// </returns>
+
+        public static MvcAppHost CreateApplicationHost<T>(string applicationPath, string binPath = null) where T : HttpApplication, new()
+        {
+
+            binPath = binPath ?? AppDomain.CurrentDomain.BaseDirectory;
+
+            string destPath = applicationPath + "\\bin";
+
+            var bin = new DirectoryInfo(binPath);
+            var binTarget = new DirectoryInfo(destPath);
+
+            CsQuery.Utility.Support.CopyFiles(bin, binTarget, "*.dll", "*.pdb");
+
+            var host = (MvcAppHost)ApplicationHost.CreateApplicationHost(
+                typeof(MvcAppHost),
+                "/",
+                applicationPath);
+
+            host.AppBinPath = binTarget;
+            host.InitializeApplication<T>();
+
+            return host;
+        }
+        public DirectoryInfo AppBinPath { get; protected set; }
+
         public void InitializeApplication<T>() where T: HttpApplication, new()
         {
 
@@ -92,6 +136,15 @@ namespace CsQuery.Mvc.Tests
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// Cleans up temporary files created in the host environment
+        /// </summary>
+
+        public void Dispose()
+        {
+            CsQuery.Utility.Support.DeleteFiles(AppBinPath, "*.pdb", "*.dll");
         }
     }
 }
