@@ -78,7 +78,7 @@ namespace CsQuery.Tests._Performance
 
             File.Copy(OutputFileName, OutputFolder + OutputPrefix + "latest.txt", true);
             File.Copy(OutputFileNameCsv, OutputFolder + OutputPrefix + "latest.csv", true);
-
+            IsPerformanceTest = false;
         }
 
         protected PerfCompare PerfCompare;

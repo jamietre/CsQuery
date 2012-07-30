@@ -368,9 +368,13 @@ namespace CsQuery.Engine
         }
 
         /// <summary>
-        /// Start a new chained filter selector of the specified type
+        /// Start a new chained filter selector of the specified type.
         /// </summary>
-        /// <param name="positionType"></param>
+        ///
+        /// <param name="selectorType">
+        /// The selector type to start.
+        /// </param>
+
         protected void StartNewSelector(SelectorType selectorType)
         {
             StartNewSelector(selectorType, NextCombinatorType, NextTraversalType);

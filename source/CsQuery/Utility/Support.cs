@@ -7,6 +7,7 @@ using System.IO;
 using System.Diagnostics;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
+using CsQuery.StringScanner;
 
 namespace CsQuery.Utility
 {
@@ -405,6 +406,227 @@ namespace CsQuery.Utility
                     file.Delete();
                 }
             }
+        }
+
+     
+
+        /// <summary>
+        ///Convert a string value to a double, or zero if non-numeric
+        /// </summary>
+        ///
+        /// <param name="value">
+        /// The value.
+        /// </param>
+        ///
+        /// <returns>
+        /// A double.
+        /// </returns>
+
+        public static double DoubleOrZero(string value)
+        {
+            double dblVal;
+            if (double.TryParse(value, out dblVal))
+            {
+                return dblVal;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Convert a string value to an integer, or zero if non-numeric
+        /// </summary>
+        ///
+        /// <param name="value">
+        /// The value.
+        /// </param>
+        ///
+        /// <returns>
+        /// An integer
+        /// </returns>
+
+        public static int IntOrZero(string value)
+        {
+            int intVal;
+            if (int.TryParse(value, out intVal))
+            {
+                return intVal;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Return an int or double from any number.
+        /// </summary>
+        ///
+        /// <param name="value">
+        /// The number to convert
+        /// </param>
+        ///
+        /// <returns>
+        /// The converted number
+        /// </returns>
+
+        public static IConvertible NumberToDoubleOrInt(IConvertible value)
+        {
+            double val = (double)System.Convert.ChangeType(value, typeof(double));
+            if (val == Math.Floor(val))
+            {
+                return (int)val;
+            }
+            else
+            {
+                return val;
+            }
+        }
+
+
+        /// <summary>
+        /// Given a string, convert each uppercase letter to a "-" followed by the lower case letter.
+        /// E.g. "fontSize" becomes "font-size".
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The string to uncamelcase
+        /// </param>
+        ///
+        /// <returns>
+        /// A string
+        /// </returns>
+
+        public static string FromCamelCase(string name)
+        {
+            if (String.IsNullOrEmpty(name))
+            {
+                return "";
+            }
+
+            int pos = 0;
+            StringBuilder output = new StringBuilder();
+
+            while (pos < name.Length)
+            {
+                char cur = name[pos];
+                if (cur >= 'A' && cur <= 'Z')
+                {
+                    if (pos > 0 && name[pos - 1] != '-')
+                    {
+                        output.Append("-");
+                    }
+                    output.Append(cur.ToLower());
+                }
+                else
+                {
+                    output.Append(cur);
+                }
+                pos++;
+            }
+            return output.ToString();
+
+        }
+
+        /// <summary>
+        /// Converts a name from dashed-separators to camelCase.
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The string to camelCase.
+        /// </param>
+        /// <param name="capFirst">
+        /// (optional) when true, the first letter of the resuling word is captalized.
+        /// </param>
+        ///
+        /// <returns>
+        /// a dased-separated string.
+        /// </returns>
+
+        public static string ToCamelCase(string name, bool capFirst = false)
+        {
+            if (String.IsNullOrEmpty(name))
+            {
+                return "";
+            }
+
+            StringBuilder sb = new StringBuilder();
+
+            int pos = 0;
+            bool first = capFirst;
+            while (pos < name.Length)
+            {
+                char c = name[pos];
+
+                if (c == '-' &&
+                        pos > 0 &&
+                        pos < name.Length - 1 &&
+                        CharacterData.IsType(name[pos - 1], CharacterType.Alpha) &&
+                        CharacterData.IsType(name[pos + 1], CharacterType.Alpha))
+                {
+                    c = name[++pos];
+                    sb.Append(first ? c : char.ToUpper(c));
+                    first = false;
+
+                }
+                else
+                {
+                    sb.Append(first ? char.ToUpper(c) : c);
+                    if (CharacterData.IsType(c, CharacterType.Alpha))
+                    {
+                        first = false;
+                    }
+                }
+                pos++;
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Converts a value to an enum, assuming the enum is camelcased
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="value">
+        /// The value.
+        /// </param>
+        ///
+        /// <returns>
+        /// value as a T.
+        /// </returns>
+
+        public static TEnum AttributeToEnum<TEnum>(string value) where TEnum : struct
+        {
+            TEnum enumValue;
+            if (Enum.TryParse<TEnum>(ToCamelCase(value, true), out enumValue))
+            {
+                return enumValue;
+            }
+            else
+            {
+                return (TEnum)(IConvertible)0;
+            }
+        }
+
+        /// <summary>
+        /// Convert an enum to a lowercased attribute value
+        /// </summary>
+        ///
+        /// <param name="value">
+        /// The value.
+        /// </param>
+        ///
+        /// <returns>
+        /// The attribute value of a string
+        /// </returns>
+
+        public static string EnumToAttribute(Enum value)
+        {
+            return value.ToString().ToLower();
         }
     }
 

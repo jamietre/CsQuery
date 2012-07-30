@@ -16,7 +16,7 @@ namespace CsQuery.Tests.Csharp._WebIO
     /// <summary>
     /// This test is disabled by default because it accesses public web sites, activate it just to test this feature
     /// </summary>
-    [TestFixture, TestClass, Description("CsQuery Tests (Not from Jquery test suite)")]
+    [TestFixture, TestClass]
     public class _WebIO_QueryRemoteServer : CsQueryTest
     {
         public override void FixtureSetUp()
@@ -90,8 +90,6 @@ namespace CsQuery.Tests.Csharp._WebIO
             CQ.WaitForAsyncEvents(10000);
 
             Assert.IsTrue(complete);
-
-
         }
 
         [Test, TestMethod]
@@ -132,6 +130,14 @@ namespace CsQuery.Tests.Csharp._WebIO
             Assert.IsTrue(complete, "Complete flag was set properly.");
 
         }
+
+		[Test, TestMethod]
+		public void GetCompressedResponseTest()
+		{
+			CQ mCQ = CQ.CreateFromUrl("http://api.jquery.com/jQuery.contains/");
+			Assert.IsTrue(mCQ.Select("#jq-footerNavigation").Length == 1, "I found an expected content container - if jQuery changed their web site or compressing method this could fail.");
+		}
+
         private void FinishRequest(ICsqWebResponse response)
         {
             var csq= response.Dom;

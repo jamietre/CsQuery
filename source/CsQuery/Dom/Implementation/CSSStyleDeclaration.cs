@@ -186,19 +186,28 @@ namespace CsQuery.Implementation
         /// Sets all the styles from a single CSS style string. Any existing styles will be erased.
         /// Styles will be validated and an error thrown if an invalid style is attempted.
         /// </summary>
-        /// <param name="styles">A legal HTML style string</param>
-        /// <param name="strict">When true, the styles will be validated and an error thrown if any are not valid</param>
+        ///
+        /// <param name="styles">
+        /// A legal HTML style string.
+        /// </param>
+
         public void SetStyles(string styles)
         {
             SetStyles(styles, true);
         }
 
         /// <summary>
-        /// Sets all the styles from a single CSS style string. Any existing styles will be erased.
-        /// This method is used by DomElementFactory (not in strict mode).
+        /// Sets all the styles from a single CSS style string. Any existing styles will be erased. This
+        /// method is used by DomElementFactory (not in strict mode).
         /// </summary>
-        /// <param name="styles">A legal HTML style string</param>
-        /// <param name="strict">When true, the styles will be validated and an error thrown if any are not valid</param>
+        ///
+        /// <param name="styles">
+        /// A legal HTML style string.
+        /// </param>
+        /// <param name="strict">
+        /// When true, the styles will be validated and an error thrown if any are not valid.
+        /// </param>
+
         public void SetStyles(string styles, bool strict)
         {
             _Styles = null;
@@ -212,12 +221,19 @@ namespace CsQuery.Implementation
                 AddStyles(styles, strict);
             }
         }
+
         /// <summary>
-        /// Add one or more styles to this element. Unlike SetStyle, existing styles are not affected, except
-        /// for existing styles of the same name.
+        /// Add one or more styles to this element. Unlike SetStyle, existing styles are not affected,
+        /// except for existing styles of the same name.
         /// </summary>
-        /// <param name="styles"></param>
-        /// <param name="strict"></param>
+        ///
+        /// <param name="styles">
+        /// The CSS style string
+        /// </param>
+        /// <param name="strict">
+        /// When true, the styles will be validated as CSS3 before adding.
+        /// </param>
+
         public void AddStyles(string styles, bool strict)
         {
             foreach (string style in styles.SplitClean(';'))
@@ -293,11 +309,38 @@ namespace CsQuery.Implementation
             Styles[HtmlData.Tokenize(name)] = value;
             UpdateIndex(hadStyles);
         }
-        public bool TryGetValue(string key, out string value)
+
+        /// <summary>
+        /// Try to get the value of the named style.
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The name of the style
+        /// </param>
+        /// <param name="value">
+        /// [out] The value.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the named style is defined, false if not.
+        /// </returns>
+
+        public bool TryGetValue(string name, out string value)
         {
-            return Styles.TryGetValue(HtmlData.Tokenize(key), out value);
+            return Styles.TryGetValue(HtmlData.Tokenize(name), out value);
         }
 
+        /// <summary>
+        /// Gets a style by name
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The style name
+        /// </param>
+        ///
+        /// <returns>
+        /// The style, or null if it is not defined.
+        /// </returns>
 
         public string GetStyle(string name)
         {
@@ -312,14 +355,47 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Sets a named style, validating its format.
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The style name
+        /// </param>
+        /// <param name="value">
+        /// The style value
+        /// </param>
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown if the style name and value are not valid CSS
+        /// </exception>
+
         public void SetStyle(string name, string value)
         {
             SetStyle(name, value, true);
         }
 
+        /// <summary>
+        /// Sets a named style, validating its format.
+        /// </summary>
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown if the style name and value are not valid CSS
+        /// </exception>
+        ///
+        /// <param name="name">
+        /// The style name.
+        /// </param>
+        /// <param name="value">
+        /// The style value.
+        /// </param>
+        /// <param name="strict">
+        /// When true, the styles will be validated and an error thrown if any are not valid.
+        /// </param>
+
         public void SetStyle(string name, string value, bool strict)
         {
-            name = Objects.FromCamelCase(name);
+            name = Utility.Support.FromCamelCase(name);
             if (value == null)
             {
                 Remove(name);
@@ -372,7 +448,17 @@ namespace CsQuery.Implementation
             SetRaw(name, value);
         }
 
-
+        /// <summary>
+        /// Returns the numeric value only of a style, ignoring units
+        /// </summary>
+        ///
+        /// <param name="style">
+        /// The style.
+        /// </param>
+        ///
+        /// <returns>
+        /// A double, or null if the style did not exist or did not contain a numeric value.
+        /// </returns>
 
         public double? NumberPart(string style)
         {
@@ -396,6 +482,14 @@ namespace CsQuery.Implementation
                 return null;
             }
         }
+
+        /// <summary>
+        /// Return the formatted string representation of this style, as HTML.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A string.
+        /// </returns>
 
         public override string ToString()
         {
@@ -422,6 +516,15 @@ namespace CsQuery.Implementation
 
             return style;
         }
+
+        /// <summary>
+        /// Return an enumerator that exposes each style name/value pair
+        /// </summary>
+        ///
+        /// <returns>
+        /// The enumerator.
+        /// </returns>
+
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
         {
             return stylesEnumerable().GetEnumerator();
@@ -481,10 +584,24 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Cleans/validates a CSS units string, or throws an error if not possible
+        /// Cleans/validates a CSS units string, or throws an error if not possible.
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown when one or more arguments have unsupported or illegal values.
+        /// </exception>
+        ///
+        /// <param name="name">
+        /// The style name.
+        /// </param>
+        /// <param name="value">
+        /// The value to validate
+        /// </param>
+        ///
+        /// <returns>
+        /// A parsed string of the value
+        /// </returns>
+
         protected string ValidateUnitString(string name,string value)
         {
             int pos = 0;

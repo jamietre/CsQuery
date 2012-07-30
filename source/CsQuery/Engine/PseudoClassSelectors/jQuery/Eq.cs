@@ -15,8 +15,13 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
         public override IEnumerable<IDomObject> Filter(IEnumerable<IDomObject> selection)
         {
-            yield return ElementAtIndex(selection, Index);
+            IDomObject el =  ElementAtIndex(selection, Index);
+            if (el != null)
+            {
+                yield return el;
+            }
         }
+
 
 
         private IDomObject ElementAtIndex(IEnumerable<IDomObject> list, int index)

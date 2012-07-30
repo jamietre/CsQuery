@@ -124,8 +124,8 @@ namespace CsQuery.Engine
         /// <param name="name">
         /// The name of the pseudoselector.
         /// </param>
-        /// <param name="Type">
-        /// [out] The type.
+        /// <param name="type">
+        /// The type.
         /// </param>
         ///
         /// <returns>

@@ -4,8 +4,35 @@ The CsQuery source is C# targeting .NET4. There are no dependencies.
 
 Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/README.md) for usage information. This document is mostly a change log.
 
-
 ### Change Log
+
+####Version 1.1.4 (development)
+
+*Bug Fixes*
+
+- [Issue #27](https://github.com/jamietre/CsQuery/issues/27) - Some `Value` properties not implemented.
+
+*Other Changes*
+
+Revised DOM element model to include interfaces and subclasses implementing element-specific behavior for elements. This is a bit of a hybrid since the core interface `IDomObject` already includes some non-global properties.
+
+The goal is a balance between convenience of a single interface for the most common DOM element properties, while still permitting strongly-typed interfaces and overridden implemenations of non-global element behavior. It is unlikely any non-global members of the core interface will be removed to ensure backwards compatibility. Nor is it likely any more will be added; as the model is filled out to fulfill HTML5-compliant behavior, new interfaces will be developed.
+
+####Version 1.1.3.1
+
+*Bug Fixes*
+
+- [Issue #25](https://github.com/jamietre/CsQuery/issues/25) - `CreateFromUrl` not accepting compressed content - [pull request #25 from @vitallium](https://github.com/jamietre/CsQuery/pull/26)
+- [Issue #23](https://github.com/jamietre/CsQuery/issues/23) - Possible index out of range parsing invalid HTML
+- [Issue #20](https://github.com/jamietre/CsQuery/issues/20) - selector engine doesn't recognize hex escape sequences - [pull request #22 from @vitallium](https://github.com/jamietre/CsQuery/pull/22)
+- Store string values without JSON-syntax quotes to match the format expected by jQuery when using `Data(name,value)` method. 
+
+*Other Changes*
+
+- [Issue #24](https://github.com/jamietre/CsQuery/issues/24) - improve performance of substring extraction method in HTML parser
+- Add `CsQuery.Config.DynamicObjectType` to specify default dynamic type when dynamic objects are created.
+- Change internal type from List<T> to T[] for JSON deserialization methods. Testing unknown objects for enumerable types, and treating them as a sequence in those situations, is too risky. We should only treat actual arrays as JSON arrays.
+- Clean up XML documentation in Selector, IterationData, HtmlData, others
 
 ####Version 1.1.3
 

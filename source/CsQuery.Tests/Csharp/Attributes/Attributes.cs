@@ -17,6 +17,8 @@ namespace CsQuery.Tests.Csharp.Attributes
     [TestClass,TestFixture]
     public class Attribute : CsQueryTest 
     {
+     
+
         [TestMethod,Test]
         public void Show()
         {
@@ -92,6 +94,7 @@ namespace CsQuery.Tests.Csharp.Attributes
             Assert.AreEqual("10px", div.Css("height"));
             Assert.AreEqual("test", div.Elements.First().Id);
         }
+
         [Test, TestMethod]
         public void FromDynamic()
         {
@@ -104,6 +107,7 @@ namespace CsQuery.Tests.Csharp.Attributes
             Assert.AreEqual("10px", div[0]["width"]);
             Assert.AreEqual("display: none", div[0].Style.ToString());
         }
+
         [Test, TestMethod]
         public void FromDictionary()
         {
@@ -232,12 +236,18 @@ namespace CsQuery.Tests.Csharp.Attributes
             Assert.AreEqual(style, styleOnly.GetAttribute("style"));
             Assert.AreEqual(2, styleOnly.Style.Count);
             Assert.AreEqual(style, styleOnly.Style.ToString());
-
-            
-            
-
-
         }
+
+        [Test, TestMethod]
+        public void CaseInsensitive()
+        {
+            var dom = CQ.Create(@"<input type='checkbox' checked='checked' name='stuff' />
+        <input type='Checkbox' checked='Checked' name='Stuff' />");
+            
+            Assert.AreEqual(2,dom["input[type='checkbox']"].Length);
+            Assert.AreEqual(1, dom["input[name='stuff']"].Length);
+        }
+
 
         #region test configuration
 

@@ -75,11 +75,40 @@ namespace CsQuery.Promises
             Resolved = false;
             RejectImpl();
         }
-        
 
-        public IPromise Then(Action<object> success, Action<object> failure = null)
+        public IPromise Then(Delegate success, Delegate failure = null)
         {
             NextDeferred = new Deferred();
+
+            MethodInfo method = success != null ?
+                success.Method :
+                failure.Method;
+
+            Type returnType = method.ReturnType;
+            Type[] parameters = method.GetParameters().Select(item => item.ParameterType).ToArray();
+
+            bool useParms = parameters.Length > 0;
+
+            Success = new Func<object, IPromise>((parm) =>
+            {
+                object result = success.DynamicInvoke(GetParameters(useParms));
+                return result as IPromise;
+
+            });
+            Failure = new Func<object, IPromise>((parm) =>
+            {
+                object result = failure.DynamicInvoke(GetParameters(useParms));
+                return result as IPromise;
+            });
+
+            return NextDeferred;
+        }
+
+
+        public IPromise Then(PromiseAction<object> success, PromiseAction<object> failure = null)
+        {
+            NextDeferred = new Deferred();
+
             Success = new Func<object, IPromise>((parm) =>
             {
                 success(parm);
@@ -98,7 +127,7 @@ namespace CsQuery.Promises
             return NextDeferred;
         }
 
-        public IPromise Then(Func<object, IPromise> success, Func<object, IPromise> failure = null)
+        public IPromise Then(PromiseFunction<object> success, PromiseFunction<object> failure = null)
         {
             NextDeferred = new Deferred();
             Success = new Func<object,IPromise>((parm) => {
@@ -152,34 +181,7 @@ namespace CsQuery.Promises
             
             return NextDeferred;
         }
-        public IPromise Then(Delegate success, Delegate failure = null)
-        {
-            NextDeferred = new Deferred();
-
-            MethodInfo method = success != null ?
-                success.Method :
-                failure.Method;
-
-            Type returnType = method.ReturnType;
-            Type[] parameters = method.GetParameters().Select(item => item.ParameterType).ToArray();
-
-            bool useParms = parameters.Length > 0;
-
-            Success = new Func<object, IPromise>((parm) =>
-            {
-                object result = success.DynamicInvoke(GetParameters(useParms));
-                return result as IPromise;
-
-            });
-            Failure = new Func<object, IPromise>((parm) =>
-            {
-                object result = failure.DynamicInvoke(GetParameters(useParms));
-                return result as IPromise;
-            });
-            
-            return NextDeferred;
-        }
-
+        
         protected object[] GetParameters(bool useParms)
         {
             object[] parms = null;

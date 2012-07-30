@@ -21,6 +21,7 @@ namespace CsQuery.Tests
         public Arrays(string members)
         {
             InnerList = new List<string>(members.SplitClean(','));
+
         }
         protected IEnumerable<string> InnerList;
 

@@ -33,14 +33,41 @@ namespace CsQuery.StringScanner.Implementation
         {
             Target = character;
         }
+
+        /// <summary>
+        /// CharacterInfo casting operator: creates a new instance from a single character
+        /// </summary>
+        ///
+        /// <param name="character">
+        /// The character to bind to the new CharacterInfo class
+        /// </param>
+
         public static implicit operator CharacterInfo(char character) {
             return new CharacterInfo(character);
         }
+
+        /// <summary>
+        /// Creates a new CharacterInfo instance from a character
+        /// </summary>
+        ///
+        /// <param name="character">
+        /// The character to bind to this instance.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CharacterInfo object
+        /// </returns>
+
         public static ICharacterInfo Create(char character)
         {
             return new CharacterInfo(character);
         }
-       
+
+        /// <summary>
+        /// Gets or sets bound character for this instance. This is the character against which all tests
+        /// are performed.
+        /// </summary>
+
         public char Target { get; set; }
 
         IConvertible IValueInfo.Target
@@ -54,9 +81,11 @@ namespace CsQuery.StringScanner.Implementation
                 Target = (char)value;
             }
         }
+
         /// <summary>
-        /// Flags indicating the use of this character
+        /// Flags indicating the use of this character.
         /// </summary>
+
         public CharacterType Type
         {
             get
@@ -64,6 +93,11 @@ namespace CsQuery.StringScanner.Implementation
                 return CharacterData.GetType(Target);
             }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether the character is alphabetic, e.g. a-z, A-Z
+        /// </summary>
+
         public bool Alpha
         {
             get
@@ -71,6 +105,11 @@ namespace CsQuery.StringScanner.Implementation
                 return CharacterData.IsType(Target,CharacterType.Alpha);
             }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether the bound character is numeric only, e.g. 0-9
+        /// </summary>
+
         public bool Numeric
         {
             get
@@ -78,9 +117,12 @@ namespace CsQuery.StringScanner.Implementation
                 return CharacterData.IsType(Target,CharacterType.Number);
             }
         }
+
         /// <summary>
-        /// Returns true if numeric, dot or -
+        /// Test whether the character is numeric or part of a complete number, e.g. also includes '+', '-
+        /// ' and '.'.
         /// </summary>
+
         public bool NumericExtended
         {
             get
@@ -88,6 +130,11 @@ namespace CsQuery.StringScanner.Implementation
                 return CharacterData.IsType(Target, CharacterType.NumberPart);
             }
         }
+
+        /// <summary>
+        /// Test whether the character is lower-case
+        /// </summary>
+
         public bool Lower
         {
             get
@@ -95,6 +142,11 @@ namespace CsQuery.StringScanner.Implementation
                 return CharacterData.IsType(Target, CharacterType.Lower);
             }
         }
+
+        /// <summary>
+        /// Test whether the character is upper-case
+        /// </summary>
+
         public bool Upper
         {
             get
@@ -102,6 +154,13 @@ namespace CsQuery.StringScanner.Implementation
                 return CharacterData.IsType(Target, CharacterType.Upper);
             }
         }
+
+        /// <summary>
+        /// Test whether the character is whitespace. This is really HTML5 "space" and not ANSI
+        /// whitespace which. HTML5 space is much more restrictive; this is generally used to test
+        /// whether a character delimits an entity during HTML/CSS/HTML-related parsing.
+        /// </summary>
+
         public bool Whitespace
         {
             get
@@ -134,9 +193,12 @@ namespace CsQuery.StringScanner.Implementation
                 return CharacterData.IsType(Target, CharacterType.Enclosing | CharacterType.Quote);
             }
         }
+
         /// <summary>
-        /// ()[]{}<>`´“”«»
+        /// Tests whether the character is an enclosing/bounding type, one of:
+        /// ()[]{}&lt;&gt;`´“”«».
         /// </summary>
+
         public bool Enclosing
         {
             get
@@ -145,6 +207,10 @@ namespace CsQuery.StringScanner.Implementation
             }
         }
 
+        /// <summary>
+        /// Tests whether the bound character is a single- or double-quote
+        /// </summary>
+
         public bool Quote
         {
             get
@@ -152,6 +218,11 @@ namespace CsQuery.StringScanner.Implementation
                 return CharacterData.IsType(Target, CharacterType.Quote);
             }
         }
+
+        /// <summary>
+        /// Tests whether the bound character is an opening or closing parenthesis.
+        /// </summary>
+
         public bool Parenthesis
         {
             get
@@ -159,6 +230,11 @@ namespace CsQuery.StringScanner.Implementation
                 return Target == '(' || Target == ')';
             }
         }
+
+        /// <summary>
+        /// Tests
+        /// </summary>
+
         public bool Separator
         {
             get

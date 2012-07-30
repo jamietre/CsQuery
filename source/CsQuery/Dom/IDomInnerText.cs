@@ -6,7 +6,7 @@ using System.Text;
 namespace CsQuery
 {
     /// <summary>
-    /// Special element for the text contents of SCRIPT & TEXTAREA objects
+    /// Special element for the text contents of SCRIPT &amp; TEXTAREA objects.
     /// </summary>
 
     public interface IDomInnerText : IDomText

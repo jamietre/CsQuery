@@ -19,8 +19,18 @@ namespace CsQuery
         /// <summary>
         /// Set one or more properties for the set of matched elements.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
+        ///
+        /// <param name="name">
+        /// The property to set
+        /// </param>
+        /// <param name="value">
+        /// The value
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object
+        /// </returns>
+
         public CQ Prop(string name, IConvertible value)
         {
             // Prop actually works on things other than boolean - e.g. SelectedIndex. For now though only use prop for booleans
@@ -35,28 +45,50 @@ namespace CsQuery
             }
             return this;
         }
+
+        /// <summary>
+        /// Test whether the named property is set for the first element in the selection set.
+        /// </summary>
+        ///
+        /// <remarks>
+        /// When used to test the "selected" property of options in option groups, and none are
+        /// explicitly marked as "selected", this will return "true" for the first option in the group,
+        /// per browser DOM behavior.
+        /// </remarks>
+        ///
+        /// <param name="name">
+        /// The property name.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it is set, false if not.
+        /// </returns>
+
         public bool Prop(string name)
         {
             name = name.ToLower();
             if (Length > 0 && HtmlData.IsBoolean(name))
             {
                 bool has = this[0].HasAttribute(name);
+
                 // if there is nothing with the "selected" attribute, in non-multiple select lists, 
                 // the first one is selected by default by Sizzle. We will return that same information 
                 // when using prop.
+                
                 // TODO: this won't work for the "selected" selector. Need to move this logic into DomElement 
                 // and use selected property instead to make this work. I am not sure I agree with the jQuery
-                // implementation anyway since querySelectorAll does NOT return this
+                // implementation anyway since querySelectorAll does NOT return this.
+                
                 if (name == "selected" && !has)
                 {
                     var owner = First().Closest("select");
                     string ownerSelected = owner.Val();
                     if (ownerSelected == String.Empty && !owner.Prop("multiple"))
                     {
-                        return ReferenceEquals(owner.Find("option")[0], this[0]);
+                        return ReferenceEquals(owner.Find("option").FirstOrDefault(), this[0]);
                     }
-
                 }
+
                 return has;
             }
             return false;

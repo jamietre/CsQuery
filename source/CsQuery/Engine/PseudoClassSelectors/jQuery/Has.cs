@@ -55,10 +55,6 @@ namespace CsQuery.Engine.PseudoClassSelectors
         /// <value>
         /// The number of maximum parameters.
         /// </value>
-        ///
-        /// ### <param name="item">
-        /// The item that contains the child selector.
-        /// </param>
 
         //protected void AddToCache(IDomObject item)
         //{

@@ -35,6 +35,30 @@ namespace CsQuery.Tests.Csharp.Selectors
             Assert.AreEqual("profile-link", res[0].ClassName);
         }
 
+        [Test, TestMethod]
+        public void AdjacentSelf()
+        {
+
+            CQ res = Dom.Find("#hlinks-user > span+span");
+            Assert.AreEqual(1, res.Length);
+            Assert.AreEqual("13 bronze badges", res[0]["title"]);
+        }
+
+        /// <summary>
+        /// Siblings self; the first element should not end up in the selection set.
+        /// </summary>
+
+        [Test, TestMethod]
+        public void SiblingsSelf()
+        {
+            var dom= CQ.Create("<table><tr id=1><tr id=2><tr id=3></table>");
+
+            var res = dom["table tr+tr"];
+            Assert.AreEqual(2, res.Length);
+            CollectionAssert.AreEqual(Arrays.String("2", "3"), res.Select(item => item.Id).ToList());
+        }
+
+
         [Test,TestMethod]
         public void AdjacentMultiple() {
 

@@ -180,6 +180,14 @@ namespace CsQuery
 
         #region public methods
 
+        /// <summary>
+        /// Returns the HTML of each selected element in order. <see cref="CQ.SelectionHtml()"/>
+        /// </summary>
+        ///
+        /// <returns>
+        /// A string of HTML
+        /// </returns>
+
         public override string ToString()
         {
             return SelectionHtml();
@@ -188,6 +196,14 @@ namespace CsQuery
         #endregion
 
         #region interface members
+
+        /// <summary>
+        /// Returns an enumeration of the current selection set for this CQ object
+        /// </summary>
+        ///
+        /// <returns>
+        /// The enumerator.
+        /// </returns>
 
         public IEnumerator<IDomObject> GetEnumerator()
         {
@@ -297,15 +313,10 @@ namespace CsQuery
         /// </param>
         ///
         /// <returns>
-        /// The current CQ object
+        /// The current CQ object.
         /// </returns>
 
         protected CQ SetSelection(IEnumerable<IDomObject> selectionSet, 
-
-            /// <summary>
-            /// The output order.
-            /// </summary>
-
             SelectionSetOrder inputOrder = SelectionSetOrder.Ascending, 
             SelectionSetOrder outputOrder=0)
         {

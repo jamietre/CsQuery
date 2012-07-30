@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.Implementation
@@ -238,6 +239,18 @@ namespace CsQuery.Implementation
 
         #region public methods
 
+        /// <summary>
+        /// Adds a new item to the SelectionSet
+        /// </summary>
+        ///
+        /// <param name="item">
+        /// The item to add.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
         public bool Add(T item)
         {
             if (MutableList.Add(item))
@@ -250,6 +263,10 @@ namespace CsQuery.Implementation
             }        
         }
 
+        /// <summary>
+        /// Clears this SelectionSet
+        /// </summary>
+
         public void Clear()
         {
             OriginalList = EmptyList();
@@ -258,13 +275,29 @@ namespace CsQuery.Implementation
             _MutableListOrdered = null;
         }
 
+        /// <summary>
+        /// Makes a clone of this SelectionSet
+        /// </summary>
+        ///
+        /// <returns>
+        /// A copy of this object.
+        /// </returns>
+
         public SelectionSet<T> Clone()
         {
-            var clone = new SelectionSet<T>(CloneObjects(),OutputOrder,OutputOrder);
+            var clone = new SelectionSet<T>(CloneImpl(),OutputOrder,OutputOrder);
             return clone;
         }
 
-        protected IEnumerable<T> CloneObjects()
+        /// <summary>
+        /// Enumerates clone objects in this collection.
+        /// </summary>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process clone objects in this collection.
+        /// </returns>
+
+        protected IEnumerable<T> CloneImpl()
         {
             foreach (var item in OrderedList)
             {
@@ -272,12 +305,35 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Test whether the item is present in the SelectionSet
+        /// </summary>
+        ///
+        /// <param name="item">
+        /// The item to test for containment.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the object is in this collection, false if not.
+        /// </returns>
+
         public bool Contains(T item)
         {
             return IsAltered ?
                 MutableList.Contains(item) :
                 OriginalList.Contains(item);
         }
+
+        /// <summary>
+        /// Copy the contents of this SelectionSet to an array
+        /// </summary>
+        ///
+        /// <param name="array">
+        /// The target array.
+        /// </param>
+        /// <param name="arrayIndex">
+        /// Zero-based index of the starting position in the array to begin copying.
+        /// </param>
 
         public void CopyTo(T[] array, int arrayIndex)
         {
@@ -288,7 +344,18 @@ namespace CsQuery.Implementation
             }
         }
 
-       
+        /// <summary>
+        /// Removes the given item from the SelectionSet
+        /// </summary>
+        ///
+        /// <param name="item">
+        /// The item to remove.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
         public bool Remove(T item)
         {
             if (MutableList.Remove(item))
@@ -303,12 +370,31 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Removes all elements in the specified collection from the current SelectionSet&lt;T&gt;
+        /// object.
+        /// </summary>
+        ///
+        /// <param name="other">
+        /// The collection of items to remove from the SelectionSet&lt;T&gt; object.
+        /// </param>
+
         public void ExceptWith(IEnumerable<T> other)
         {
             MutableList.ExceptWith(other);
             SynchronizeOrderedList();
             Touch();
         }
+
+        /// <summary>
+        /// Modifies the current SelectionSet&lt;T&gt; object to contain only elements that are present
+        /// in that object and in the specified collection.
+        /// </summary>
+        ///
+        /// <param name="other">
+        /// The collection to compare to the current SelectionSet&lt;T&gt;
+        /// object.
+        /// </param>
 
         public void IntersectWith(IEnumerable<T> other)
         {
@@ -318,35 +404,121 @@ namespace CsQuery.Implementation
             Touch();
         }
 
+        /// <summary>
+        /// Determines whether a SelectionSet&lt;T&gt; object is a proper subset of the specified
+        /// collection.
+        /// </summary>
+        ///
+        /// <param name="other">
+        /// The collection to compare to the current SelectionSet&lt;T&gt; object.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it is a proper subset, false if not.
+        /// </returns>
+
         public bool IsProperSubsetOf(IEnumerable<T> other)
         {
             return MutableList.IsProperSubsetOf(other);
         }
+
+        /// <summary>
+        /// Determines whether a SelectionSet&lt;T&gt; object is a proper superset of the specified
+        /// collection.
+        /// </summary>
+        ///
+        /// <param name="other">
+        /// The collection to compare to the current SelectionSet&lt;T&gt; object.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if is is a proper superset, false if not.
+        /// </returns>
 
         public bool IsProperSupersetOf(IEnumerable<T> other)
         {
             return MutableList.IsProperSupersetOf(other);
         }
 
+        /// <summary>
+        /// Determines whether a SelectionSet&lt;T&gt; object is a subset of the specified collection.
+        /// </summary>
+        ///
+        /// <param name="other">
+        /// The collection to compare to the current SelectionSet&lt;T&gt; object.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it is a proper subset, false if not.
+        /// </returns>
+
         public bool IsSubsetOf(IEnumerable<T> other)
         {
             return MutableList.IsSubsetOf(other);
         }
+
+        /// <summary>
+        /// Determines whether a SelectionSet&lt;T&gt; object is a superset of the specified collection.
+        /// </summary>
+        ///
+        /// <param name="other">
+        /// The collection to compare to the current SelectionSet&lt;T&gt; object.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if is is a proper superset, false if not.
+        /// </returns>
 
         public bool IsSupersetOf(IEnumerable<T> other)
         {
             return MutableList.IsSupersetOf(other);
         }
 
+        /// <summary>
+        /// Determines whether the current SelectionSet&lt;T&gt; object and a specified collection share
+        /// common elements.
+        /// </summary>
+        ///
+        /// <param name="other">
+        /// The collection to compare to the current System.Collections.Generic.HashSet&lt;T&gt;
+        /// object.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the sets share at least one common element; , false if not.
+        /// </returns>
+
         public bool Overlaps(IEnumerable<T> other)
         {
             return MutableList.Overlaps(other);
         }
 
+        /// <summary>
+        /// Determines whether a SelectionSet&lt;T&gt; object and the specified collection contain the
+        /// same elements.
+        /// </summary>
+        ///
+        /// <param name="other">
+        /// The collection to compare to the current SelectionSet&lt;T&gt; object.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
         public bool SetEquals(IEnumerable<T> other)
         {
             return MutableList.SetEquals(other);
         }
+
+        /// <summary>
+        /// Modifies the current SelectionSet&lt;T&gt; object to contain only elements that are present
+        /// either in that object or in the specified collection, but not both.
+        /// </summary>
+        ///
+        /// <param name="other">
+        /// The collection to compare to the current SelectionSet&lt;T&gt; object.
+        /// </param>
 
         public void SymmetricExceptWith(IEnumerable<T> other)
         {
@@ -355,6 +527,15 @@ namespace CsQuery.Implementation
             Touch();
         }
 
+        /// <summary>
+        /// Modifies the current SelectionSet&lt;T&gt; object to contain all elements that are present in
+        /// itself, the specified collection, or both.
+        /// </summary>
+        ///
+        /// <param name="other">
+        /// The collection to compare to the current SelectionSet&lt;T&gt; object.
+        /// </param>
+
         public void UnionWith(IEnumerable<T> other)
         {
             // The hashset maintains uniqueness; we can just try to add everything.
@@ -362,10 +543,33 @@ namespace CsQuery.Implementation
             this.AddRange(other);
         }
 
+        /// <summary>
+        /// Return the zero-based index of item in a sequence.
+        /// </summary>
+        ///
+        /// <param name="item">
+        /// The item.
+        /// </param>
+        ///
+        /// <returns>
+        /// The zero-based position in the list where the item was found, or -1 if it was not found.
+        /// </returns>
+
         public int IndexOf(T item)
         {
             return OrderedList.IndexOf(item);
         }
+
+        /// <summary>
+        /// Inserts an item at the specified index
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// Zero-based index of the position to insert the item
+        /// </param>
+        /// <param name="item">
+        /// The item to insert.
+        /// </param>
 
         public void Insert(int index, T item)
         {
@@ -376,6 +580,18 @@ namespace CsQuery.Implementation
                 Touch();
             }
         }
+
+        /// <summary>
+        /// Removes the item at the specified index.
+        /// </summary>
+        ///
+        /// <exception cref="IndexOutOfRangeException">
+        /// Thrown when the index is outside the bound of the current set.
+        /// </exception>
+        ///
+        /// <param name="index">
+        /// Zero-based index of the item to remove.
+        /// </param>
 
         public void RemoveAt(int index)
         {
@@ -389,6 +605,18 @@ namespace CsQuery.Implementation
             MutableListOrdered.Remove(item);
             Touch();
         }
+
+        /// <summary>
+        /// Indexer to get or set items within this collection using array index syntax.
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// Zero-based index of the entry to access.
+        /// </param>
+        ///
+        /// <returns>
+        /// The indexed item.
+        /// </returns>
 
         public T this[int index]
         {
@@ -411,6 +639,14 @@ namespace CsQuery.Implementation
                 Touch();
             }
         }
+
+        /// <summary>
+        /// Gets the enumerator for the SelectionSet
+        /// </summary>
+        ///
+        /// <returns>
+        /// The enumerator.
+        /// </returns>
 
         public IEnumerator<T> GetEnumerator()
         {

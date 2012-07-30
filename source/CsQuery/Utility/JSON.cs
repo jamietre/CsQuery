@@ -81,159 +81,303 @@ namespace CsQuery.Utility
                 return output;
             }
         }
+
         /// <summary>
-        /// Parse JSON into a dynamic object, or single typed value
+        /// Parse a JSON object or nameless JSON value into a dynamic object, or single typed value.
         /// </summary>
-        /// <param name="objectToDeserialize"></param>
-        /// <returns></returns>
-        public static object ParseJSON(string objectToDeserialize)
+        ///
+        /// <param name="json">
+        /// The JSON string
+        /// </param>
+        ///
+        /// <returns>
+        /// .
+        /// </returns>
+
+        public static object ParseJSON(string json)
         {
-            if (String.IsNullOrEmpty(objectToDeserialize))
+            if (String.IsNullOrEmpty(json))
             {
                 return null;
             } else {
-                    return ParseJSONValue(objectToDeserialize);
+                return ParseJSONValue(json);
             }
         }
 
         /// <summary>
-        /// Parse a JSON value to a C# value (string,bool, int, double, datetime) or, if the value is another object, an object or array.
+        /// Parse a single JSON value to a C# value of the specified type., if the
+        /// value is another object, an object or array.
         /// </summary>
-        /// <param name="objectToDeserialize"></param>
-        /// <returns></returns>
-        public static object ParseJSONValue(string objectToDeserialize)
+        ///
+        /// <typeparam name="T">
+        /// The type of data to return
+        /// </typeparam>
+        /// <param name="jsonValue">
+        /// A string that represents a single nameless JSON value.
+        /// </param>
+        ///
+        /// <returns>
+        /// An object of the CLR datatype matching the value.
+        /// </returns>
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown when the argument was not a valid JSON value.
+        /// </exception>
+
+        public static T ParseJSONValue<T>(string jsonValue)
         {
-            object value;
-            if (TryParseJsonValueImpl(objectToDeserialize, out value)) {
-                return value;
-            } else {
-                // It's not a string, see what we can get out of it
-                int integer;
-                if (int.TryParse(objectToDeserialize, out integer))
-                {
-                    return integer;
-                }
-                double dbl;
-                if (double.TryParse(objectToDeserialize, out dbl))
-                {
-                    return dbl;
-                }
-                bool boolean;
-                if (bool.TryParse(objectToDeserialize, out boolean))
-                {
-                    return boolean;
-                }
-
-                throw new ArgumentException("The value '" + objectToDeserialize + "' could not be parsed, it doesn't seem to be something that should be a JSON value");
-
-           }
+            return (T)ParseJSONValue(jsonValue, typeof(T));
         }
 
         /// <summary>
-        /// Parse a JSON value to a C# value of the type requested
+        /// Parse a single JSON value to a C# value (string, bool, int, double, datetime) or, if the value is
+        /// another object, an object or array.
         /// </summary>
-        /// <param name="objectToDeserialize"></param>
-        /// <returns></returns>
-        public static object ParseJSONValue(string objectToDeserialize, Type type)
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown when the argument was not a valid JSON value
+        /// </exception>
+        ///
+        /// <param name="jsonValue">
+        /// A string that represents a single nameless JSON value
+        /// </param>
+        ///
+        /// <returns>
+        /// An object of the CLR datatype matching the value
+        /// </returns>
+
+        public static object ParseJSONValue(string jsonValue)
         {
+            object value;
+            if (!TryParseJSONValue(jsonValue,typeof(object), out value))
+            {
+                throw new ArgumentException("The value '" + jsonValue + "' could not be parsed, it doesn't seem to be something that should be a JSON value");
+            }
+            return value;
+        }
+
+        /// <summary>
+        /// Parse a JSON value to a C# CLR object of the type requested.
+        /// </summary>
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown when the value could not be converted to the specified type
+        /// </exception>
+        ///
+        /// <param name="jsonValue">
+        /// The JSON value.
+        /// </param>
+        /// <param name="type">
+        /// The target type.
+        /// </param>
+        ///
+        /// <returns>
+        /// An object of the type specfiied.
+        /// </returns>
+
+        public static object ParseJSONValue(string jsonValue, Type type)
+        {
+            object value;
+            if (!TryParseJSONValue(jsonValue, typeof(object), out value)) {
+                throw new ArgumentException("The value '" + jsonValue + "' could not be parsed to type '" + type.ToString() + "'");
+            }
+            return value;
+        }
+
+        /// <summary>
+        /// Parse a JSON value to a C# value into the best matching CLR type for that JSON value type
+        /// </summary>
+        ///
+        /// <param name="jsonValue">
+        /// The JSON value.
+        /// </param>
+        /// <param name="value">
+        /// [out] The value.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if successful, false if not.
+        /// </returns>
+
+        public static bool TryParseJSONValue(string jsonValue, out object value)
+        {
+            return TryParseJSONValue(jsonValue, typeof(object), out value);
+        }
+
+        /// <summary>
+        /// Parse a JSON value to a C# value of the type requested.
+        /// </summary>
+        ///
+        /// <param name="jsonValue">
+        /// The JSON value.
+        /// </param>
+        /// <param name="type">
+        /// The target type.
+        /// </param>
+        /// <param name="value">
+        /// [out] The value.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if successful, false if not
+        /// </returns>
+
+        public static bool TryParseJSONValue(string jsonValue, Type type, out object value)
+        {
+            bool success = false;
+            bool isObject = type==typeof(object);
+
+            try {
+                if (TryParseJsonValueImpl(jsonValue, out value))
+                {
+                    value = isObject ?
+                        value :
+                        Convert.ChangeType(value, type);
+                    return true;
+                }
+                if (!success)
+                {
+                    // It's not a string, see what we can get out of it
+                    int integer;
+                    if (int.TryParse(jsonValue, out integer))
+                    {
+                        value = type.IsEnum ?
+                            Enum.Parse(type, integer.ToString()) :
+                                isObject ?
+                                    integer :
+                                    Convert.ChangeType(integer, type);
+                        return true;
+                    }
+                    else
+                    {
+                        double dbl;
+                        if (double.TryParse(jsonValue, out dbl))
+                        {
+                            value = isObject ?
+                                        dbl :
+                                        Convert.ChangeType(dbl, type);
+                            return true;
+                        }
+                        else
+                        {
+                            bool boolean;
+                            if (bool.TryParse(jsonValue, out boolean))
+                            {
+                                value = isObject ?
+                                            boolean :
+                                            Convert.ChangeType(boolean, type);
+                                return true;
+                            }
+                        }
+                    }
+
+                }
+            }
+            catch(InvalidCastException) {
+                value = null;
+                return false;
+            }
+            value = null;
+            return false;
             
-            Type baseType = Objects.GetUnderlyingType(type);
-            object value;
-            if (TryParseJsonValueImpl(objectToDeserialize, out value))
-            {
-                return Convert.ChangeType(value, type);
-            }
-            else
-            {
-                string obj = objectToDeserialize.Trim();
-                if (type.IsEnum)
-                {
-                    int integer;
-                    if (int.TryParse(obj, out integer))
-                    {
-                        return Enum.Parse(type, integer.ToString());
-                    }
-                }
-                if (Objects.IsNumericType(type))
-                {
-                    int integer;
-                    if (int.TryParse(obj, out integer))
-                    {
-                        return Convert.ChangeType(integer, type);
-                    }
-                    double dbl;
-                    if (double.TryParse(obj, out dbl))
-                    {
-                        return Convert.ChangeType(dbl, type);
-                    }
-                }
-                else if (baseType == typeof(bool))
-                {
-                    bool boolean;
-                    if (bool.TryParse(obj, out boolean))
-                    {
-                        return boolean;
-                    }
-                }
-            }
-            throw new ArgumentException("The value '" + objectToDeserialize + "' could not be parsed to type '" + type.ToString() + "'");
-
         }
 
-       
         /// <summary>
         /// The value represents a JSON date (MS format)
         /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        public static bool IsJsonDate(string input)
+        ///
+        /// <param name="jsonValue">
+        /// The JSON value
+        /// </param>
+        ///
+        /// <returns>
+        /// true if JSON date, false if not.
+        /// </returns>
+
+        public static bool IsJsonDate(string jsonValue)
         {
-            return input.Length >= 7 && input.Substring(0, 7) == "\"\\/Date";
+            return jsonValue.Length >= 7 && jsonValue.Substring(0, 7) == "\"\\/Date";
         }
 
         /// <summary>
-        /// The value represents a JSON object, e.g. is bounded by curly braces
+        /// The value represents a JSON object, e.g. is bounded by curly braces.
         /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        public static bool IsJsonObject(string input)
+        ///
+        /// <param name="jsonValue">
+        /// the JSON value
+        /// </param>
+        ///
+        /// <returns>
+        /// true if JSON object, false if not.
+        /// </returns>
+
+        public static bool IsJsonObject(string jsonValue)
         {
-            return input != null && input.StartsWith("{") && input.EndsWith("}");
+            return jsonValue != null && jsonValue.StartsWith("{") && jsonValue.EndsWith("}");
         }
 
         /// <summary>
-        /// The value represents a JSON string, e.g. is bounded by double-quotes
+        /// The value represents a JSON string, e.g. is bounded by double-quotes.
         /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        public static bool IsJsonString(string input)
+        ///
+        /// <param name="jsonValue">
+        /// The JSON value
+        /// </param>
+        ///
+        /// <returns>
+        /// true if JSON string, false if not.
+        /// </returns>
+
+        public static bool IsJsonString(string jsonValue)
         {
-            return input.StartsWith("\"") && input.EndsWith("\"");
+            return jsonValue.StartsWith("\"") && jsonValue.EndsWith("\"");
         }
 
         /// <summary>
-        /// The value represents a JSON array, e.g. is bounded by square brackets
+        /// The value represents a JSON array, e.g. is bounded by square brackets.
         /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        public static bool IsJsonArray(string input)
+        ///
+        /// <param name="jsonValue">
+        /// The JSON value
+        /// </param>
+        ///
+        /// <returns>
+        /// true if JSON array, false if not.
+        /// </returns>
+
+        public static bool IsJsonArray(string jsonValue)
         {
-            return input.StartsWith("[") && input.EndsWith("]");
+            return jsonValue.StartsWith("[") && jsonValue.EndsWith("]");
         }
        
         #endregion
 
         #region private methods
+
         /// <summary>
-        /// Try to parse a JSON value into a value type or, if the value represents an object or array, an object. This method does not
-        /// address numeric types, leaving that up to a caller, so that they can map to specific numeric casts if desired.
+        /// Try to parse a JSON value into a value type or, if the value represents an object or array,
+        /// an object. This method does not address numeric types, leaving that up to a caller, so that
+        /// they can map to specific numeric casts if desired.
         /// </summary>
-        /// <param name="objectToDeserialize"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        private static bool TryParseJsonValueImpl(string objectToDeserialize, out object value)
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown when the value was not a valid JSON value.
+        /// </exception>
+        ///
+        /// <param name="jsonValue">
+        /// The JSON value
+        /// </param>
+        /// <param name="value">
+        /// [out] the convert and typecast CLR value
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
+        private static bool TryParseJsonValueImpl(string jsonValue, out object value)
         {
-            var obj = objectToDeserialize.Trim();
+            var obj = jsonValue.Trim();
             if (String.IsNullOrEmpty(obj))
             {
                 throw new ArgumentException("No value passed, not a valid json value.");

@@ -1,13 +1,20 @@
 ### Change Log
 
-This is an informal log of changes to the project; major issues will be logged and described on github.
+####As of 7/18 this is obsolete, I'm going to log changes in a more formal manner in the main readme under 
+"source."
 
+This is an informal log of changes to the project; major issues will be logged and described in the readme at the root of the source.
 
-####7/17/2012
+#####7/18/2012
 
+- Bugfix - Issue #20 - selector engine doesn't recognize hex escape sequences - pull request #vitallium
+
+#####7/17/2012
+
+- Bugfix - Issue #19 - non-matching Eq() throws exception
 - Bugfix - update `FastActivator.CreateInstance` to handle value types by deferring to `Activator.CreateInstance`. Introduced in 1.1.3.
 
-####7/13/2012
+#####7/13/2012
 
 - Fixed DEBUG_PATH code
 - Remove unused "IDomNode.Complete" property

@@ -13,11 +13,11 @@ namespace CsQuery.Engine
     public interface IPseudoSelectorFilter: IPseudoSelector
     {
         /// <summary>
-        /// Filter only the elements matching this result-list position type selector
+        /// Filter only the elements matching this result-list position type selector.
         /// </summary>
         ///
-        /// <param name="element">
-        /// The sequence of elements prior to this filter being applied
+        /// <param name="selection">
+        /// The sequence of elements prior to this filter being applied.
         /// </param>
         ///
         /// <returns>

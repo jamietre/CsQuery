@@ -2,9 +2,7 @@
 
 ## CsQuery - .C# jQuery Port for .NET 4
 
-6/13/2012
-
-Release 1.1.3
+Release 1.1.3.1 - 7/23/2012
 
 CsQuery is a jQuery port for .NET 4. It implements all CSS2 & CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) has been ported to C#. 
 
@@ -19,11 +17,11 @@ The internal storage mechanism uses a subselect-capable index that can perform m
 
 The NuGet package will always reflect the release noted here. The code on GitHub may contain changes since the last NuGet release.
 
-### Current Release Notes
+### Release Notes
 
-The current release is 1.1.3 (July 17, 2012). Read the complete [release notes for version 1.1.3](http://blog.outsharked.com/2012/07/csquery-113-released.html). 
+The current release is 1.1.3.1, a bugfix release. Please review the [change log](https://github.com/jamietre/CsQuery/blob/master/source/README.md) for details on this release. 
 
-You can see more detailed release notes for this and previous versions in the [source code readme](https://github.com/jamietre/CsQuery/blob/master/source/README.md).  For a play-by-play, [see the change log.](https://github.com/jamietre/CsQuery/blob/master/source/CsQuery/Documentation/Changes.md)
+The last significant release was 1.1.3. Read the [release notes for version 1.1.3](http://blog.outsharked.com/2012/07/csquery-113-released.html), or see [all release notes.](http://blog.outsharked.com/search/label/csquery-release). 
 
 
 ### Documentation
@@ -94,7 +92,7 @@ As of 6/12/2012, the project is feature-complete. In the coming weeks I will be 
 Most of CsQuery works like jQuery, as is it's intent, so please refer to the jQuery documentation for information on jQuery methods. 
 
 * Usage
-	* Creating a new DOM
+	* [Creating a new DOM](https://github.com/jamietre/CsQuery#creating-a-new-dom)
 	* Manipulate the DOM with jQuery methods
 	* Accessing DOM elements directly
 	* Output as HTML

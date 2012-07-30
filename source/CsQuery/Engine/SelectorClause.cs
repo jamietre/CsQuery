@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CsQuery.HtmlParser;
+using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.Engine
 {
@@ -23,32 +25,34 @@ namespace CsQuery.Engine
             AttributeSelectorType = AttributeSelectorType.Equals;
             CombinatorType = CombinatorType.Root;
             TraversalType = TraversalType.All;
+            AttributeValueStringComparison = StringComparison.CurrentCulture;
+            AttributeValue = "";
         }
 
         #endregion
 
         #region private properties
 
-        protected string _Tag;
-        protected SelectorType _SelectorType;
-        protected string _AttributeName;
-        protected List<Selector> _SubSelectors;
-        
+        private string _Tag;
+        private string _AttributeName;
+        private string _AttributeValue;
+        private StringComparer _AttributeValueStringComparer;
+
+        private bool IsCaseInsensitiveAttributeValue
+        {
+            get
+            {
+                return HtmlData.IsCaseInsensitiveValues(AttributeNameTokenID);
+            }
+        }
+
+
+
         #endregion
 
         #region public properties
 
-        public SelectorType SelectorType
-        {
-            get
-            {
-                return _SelectorType;
-            }
-            set
-            {
-                _SelectorType = value;
-            }
-        }
+        public SelectorType SelectorType {get;set;}
         public CombinatorType CombinatorType { get; set; }
         public TraversalType TraversalType { get; set; }
         
@@ -80,6 +84,32 @@ namespace CsQuery.Engine
                     value.ToUpper();
             }
         }
+    
+        /// <summary>
+        /// This is really "parameters" and is used differently by different selectors. It's the criteria for attribute selectors;
+        /// the node type for -of-type selectors, the equation for nth-child. For nth-of-type, its "type|equation"
+        /// </summary>
+        public string Criteria {get;set;}
+
+        /// <summary>
+        /// Gets or sets zero-based index of the position.
+        /// </summary>
+        /// <summary>
+        /// For Position selectors, the position. Negative numbers start from the end.
+        /// </summary>
+
+        public int PositionIndex { get; set; }
+
+        /// <summary>
+        /// For Child selectors, the depth of the child.
+        /// </summary>
+
+        public int ChildDepth { get; set; }
+
+        /// <summary>
+        /// For attribute selectors, gets or sets the name of the attribute to match 
+        /// </summary>
+
         public string AttributeName
         {
             get
@@ -88,32 +118,102 @@ namespace CsQuery.Engine
             }
             set
             {
-                _AttributeName = (value == null ? value : value.ToLower());
+                if (value == null)
+                {
+                    _AttributeName = null;
+                    AttributeNameTokenID = 0;
+                    AttributeValueStringComparison = StringComparison.CurrentCulture;
+                }
+                else
+                {
+                    _AttributeName = value.ToLower();
+                    AttributeNameTokenID = HtmlData.Tokenize(value);
+                    AttributeValueStringComparison = IsCaseInsensitiveAttributeValue ?
+                        StringComparison.CurrentCultureIgnoreCase :
+                        StringComparison.CurrentCulture;
+                }
             }
         }
         /// <summary>
-        /// This is really "parameters" and is used differently by different selectors. It's the criteria for attribute selectors;
-        /// the node type for -of-type selectors, the equation for nth-child. For nth-of-type, its "type|equation"
+        /// For AttributeValue selectors, the value to match
         /// </summary>
-        public string Criteria {get;set;}
+
+        public string AttributeValue
+        {
+            get
+            {
+                return _AttributeValue;
+            }
+            set
+            {
+                _AttributeValue = value ?? "";
+            }
+        }
 
         /// <summary>
-        /// <summary>
-        /// For Position selectors, the position. Negative numbers start from the end.
+        /// Gets or sets the identifier of the attribute name token.
         /// </summary>
-        public int PositionIndex { get; set; }
+
+        public ushort AttributeNameTokenID
+        {
+            get; private set;
+        }
+
         /// <summary>
-        /// For Child selectors, the depth of the child.
+        /// Returns a string comparer based on the case-sensitivity characteristics of the attribute being tested
         /// </summary>
-        public int ChildDepth { get; set; }
-        public string AttributeValue { get; set; }
+
+        public StringComparison AttributeValueStringComparison
+        {
+            get; private set;
+        }
+
+        /// <summary>
+        /// Returns a string comparer based on the case-sensitivity characteristics of the attribute being tested
+        /// </summary>
+
+        public StringComparer AttributeValueStringComparer
+        {
+            get
+            {
+                if (_AttributeValueStringComparer == null)
+                {
+                    _AttributeValueStringComparer = AttributeValueStringComparison.ComparerFor();
+                }
+                return _AttributeValueStringComparer;
+            }
+
+        }
+
+
+        /// <summary>
+        /// For Class selectors, the class name to match
+        /// </summary>
+
         public string Class { get; set; }
-        public string ID { get; set; }
-        public string Html { get; set; }
+
         /// <summary>
-        /// The list of elements that should be matched, for elements selectors
+        /// For ID selectors, the ID to match
         /// </summary>
+
+        public string ID { get; set; }
+
+        /// <summary>
+        /// The HTML to create, for HTML "selectors"
+        /// </summary>
+
+        public string Html { get; set; }
+
+        /// <summary>
+        /// The list of elements that should be matched, for elements selectors.
+        /// </summary>
+
         public IEnumerable<IDomObject> SelectElements { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is a selector that is based on the element's
+        /// position in the DOM, versus the element's position in the result set.
+        /// </summary>
 
         public bool IsDomPositionPseudoSelector
         {
@@ -126,11 +226,11 @@ namespace CsQuery.Engine
                 return !IsResultListPosition;
             }
         }
-        
+
         /// <summary>
-        /// Indicates that a position type selector refers to the result list, not the DOM position
+        /// Indicates that a position type selector refers to the result list, not the DOM position.
         /// </summary>
-        /// <returns></returns>
+
         public bool IsResultListPosition
         {
             get
@@ -143,6 +243,11 @@ namespace CsQuery.Engine
                 }
             }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this selector accepts parameters.
+        /// </summary>
+
         public bool IsFunction
         {
             get
@@ -151,6 +256,10 @@ namespace CsQuery.Engine
                 
             }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this Selector is new (unconfigured).
+        /// </summary>
 
         public bool IsNew
         {
@@ -162,6 +271,11 @@ namespace CsQuery.Engine
                     && CombinatorType == CombinatorType.Root;
             }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is completely configured.
+        /// </summary>
+
         public bool IsComplete
         {
             get
@@ -169,16 +283,22 @@ namespace CsQuery.Engine
                 return SelectorType != 0;
             }
         }
+
         /// <summary>
-        /// When true do not attempt to use the index to obtain a result from this selector. Used for automatically 
-        /// generated filters
+        /// When true do not attempt to use the index to obtain a result from this selector. Used for
+        /// automatically generated filters.
         /// </summary>
+
         public bool NoIndex { get; set; }
-        
+
         #endregion
 
         #region public methods
-        
+
+        /// <summary>
+        /// Clears this object to its blank/initial state.
+        /// </summary>
+
         public void Clear()
         {
 
@@ -194,10 +314,17 @@ namespace CsQuery.Engine
             PositionIndex = 0;
             SelectElements = null;
             Tag = null;
-            _SubSelectors = null;
 
             Initialize();
         }
+
+        /// <summary>
+        /// Makes a deep copy of this Selector.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A copy of this object.
+        /// </returns>
 
         public SelectorClause Clone()
         {
@@ -224,6 +351,14 @@ namespace CsQuery.Engine
             return clone;
         }
 
+        /// <summary>
+        /// Serves as a hash function for a particular type.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object" />.
+        /// </returns>
+
         public override int GetHashCode()
         {
             return GetHash(SelectorType) + GetHash(TraversalType) + GetHash(CombinatorType) +
@@ -232,7 +367,21 @@ namespace CsQuery.Engine
                 GetHash(ID) + GetHash(NoIndex) + GetHash(PositionIndex) + GetHash(SelectElements) +
                 GetHash(Tag);
         }
-        
+
+        /// <summary>
+        /// Determines whether the specified <see cref="T:System.Object" /> is equal to the current
+        /// <see cref="T:System.Object" />.
+        /// </summary>
+        ///
+        /// <param name="obj">
+        /// The <see cref="T:System.Object" /> to compare with the current <see cref="T:System.Object" />.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the specified <see cref="T:System.Object" /> is equal to the current
+        /// <see cref="T:System.Object" />; otherwise, false.
+        /// </returns>
+
         public override bool Equals(object obj)
         {
             SelectorClause other = obj as SelectorClause;
@@ -254,10 +403,31 @@ namespace CsQuery.Engine
                 other.Tag == Tag;
         }
 
+        /// <summary>
+        /// Gets a hash.
+        /// </summary>
+        ///
+        /// <param name="obj">
+        /// The <see cref="T:System.Object" /> to compare with the current <see cref="T:System.Object" />.
+        /// </param>
+        ///
+        /// <returns>
+        /// The hash.
+        /// </returns>
+
         private int GetHash(object obj) {
 
             return obj == null ? 0 : obj.GetHashCode();
         }
+
+        /// <summary>
+        /// Returns a string representation of the parsed selector. This may not exactly match the input
+        /// selector as it is regenerated.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A CSS selector string.
+        /// </returns>
 
         public override string ToString()
         {
@@ -325,15 +495,12 @@ namespace CsQuery.Engine
               
               
             }
-            //if (SelectorType.HasFlag(SelectorType.Contains))
-            //{
-            //    output += ":contains(" + Criteria + ")";
-            //}
-
 
             return output;
         }
+
         #endregion
-                    
+
+        
     }
 }

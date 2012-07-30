@@ -76,7 +76,7 @@ namespace CsQuery.Promises
         {
             return Deferred.Then(success, failure);
         }
-        public IPromise Then(Action<object> success, Action<object> failure = null)
+        public IPromise Then(PromiseAction<object> success, PromiseAction<object> failure = null)
         {
             return Deferred.Then(success, failure);
         }
@@ -84,7 +84,7 @@ namespace CsQuery.Promises
         {
             return Deferred.Then(success, failure);
         }
-        public IPromise Then(Func<object, IPromise> success, Func<object, IPromise> failure = null)
+        public IPromise Then(PromiseFunction<object> success,PromiseFunction<object> failure = null)
         {
             return Deferred.Then(success, failure);
         }

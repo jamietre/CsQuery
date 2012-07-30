@@ -36,6 +36,18 @@ namespace CsQuery.Tests.Csharp.Selectors
             Assert.AreEqual(1, res.Length);
         }
 
+        [Test, TestMethod]
+        public void ContainsWord()
+        {
+            var dom = CQ.Create(@"<div data-val='quick brown' id='1'></div>
+                <div data-val='quick brown fox jumps' id='2'></div>
+                <div data-val id='3'></div>");
+
+            Assert.AreEqual(Arrays.String("1", "2"), dom["[data-val~=brown]"].Select(item=>item.Id));
+            Assert.AreEqual(Arrays.String("2"), dom["[data-val~=fox]"].Select(item => item.Id));
+            Assert.AreEqual(0, dom["[data-val~=lazy]"].Length);
+
+        }
 
     }
 }

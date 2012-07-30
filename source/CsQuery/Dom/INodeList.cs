@@ -3,16 +3,44 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace CsQuery
 {
-    public interface INodeList: IList<IDomObject>, ICollection<IDomObject>, IEnumerable<IDomObject>
+    /// <summary>
+    /// Interface for node list, a read/write collection of nodes.
+    /// </summary>
+
+    public interface INodeList: IEnumerable<IDomObject>, IList<IDomObject>, ICollection<IDomObject>
     {
         /// <summary>
         /// The number of nodes in this INodeList
         /// </summary>
 
         int Length { get; }
+
+        /// <summary>
+        /// Get the item at the specified index
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// Zero-based index of the item
+        /// </param>
+        ///
+        /// <returns>
+        /// An item
+        /// </returns>
+
+        IDomObject Item(int index);
+
+        /// <summary>
+        /// The number of nodes in this INodeList
+        /// </summary>
+
+        //int Length { get; }
+       
+        //IDomObject Item(int index);
+
 
         /// <summary>
         /// Adds a sequence of elements to the end of this INodeList
@@ -22,7 +50,7 @@ namespace CsQuery
         /// An IEnumerable&lt;IDomObject&gt; of items to append to this.
         /// </param>
 
-        void AddRange(IEnumerable<IDomObject> elements);
+        //void AddRange(IEnumerable<IDomObject> elements);
 
         /// <summary>
         /// Add a node but do not attempt to clean up duplicate IDs or remove it from an existing DOM.
@@ -37,7 +65,7 @@ namespace CsQuery
         /// The object to add to this INodeList
         /// </param>
 
-        void AddAlways(IDomObject item);
+        //void AddAlways(IDomObject item);
 
         /// <summary>
         /// The element that owns this list
@@ -47,6 +75,7 @@ namespace CsQuery
         /// An IDomContainer element
         /// </value>
 
-        IDomContainer Owner { get; }
+        //IDomContainer Owner { get; }
+
     }
 }

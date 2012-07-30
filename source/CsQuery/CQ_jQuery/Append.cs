@@ -8,6 +8,7 @@ using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 using CsQuery.Engine;
 using CsQuery.Implementation;
+using CsQuery.HtmlParser;
 
 namespace CsQuery
 {
@@ -222,20 +223,27 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Deals with tbody as the target of appends
+        /// Deals with tbody as the target of appends.
         /// </summary>
-        /// <param name="apparentTarget"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="target">
+        /// The true target.
+        /// </param>
+        ///
+        /// <returns>
+        /// Either the element itself, or the TBODY element if the target was a TABLE
+        /// </returns>
+        
         private IDomElement GetTrueTarget(IDomElement target)
         {
             //Special handling for tables: make sure we add to the TBODY
             IDomElement element = target;
-            if (target.NodeName == "TABLE")
+            if (target.NodeNameID == HtmlData.tagTABLE)
             {
                 bool addBody = false;
                 if (target.HasChildren)
                 {
-                    IDomElement body = target.ChildElements.FirstOrDefault(item => item.NodeName == "TBODY");
+                    IDomElement body = target.ChildElements.FirstOrDefault(item => item.NodeNameID == HtmlData.tagTBODY);
                     if (body != null)
                     {
                         element = body;

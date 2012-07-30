@@ -8,15 +8,17 @@ namespace CsQuery.Promises
     public class Deferred<T> : Deferred, IPromise<T>
     {
 
-        public IPromise Then(Action<T> success, Action<T> failure = null)
+        public IPromise Then(PromiseAction<T> success, PromiseAction<T> failure = null)
         {
             return base.Then(success, failure);
         }
 
-        public IPromise Then(Func<T, IPromise> success, Func<T, IPromise> failure = null)
+        public IPromise Then(PromiseFunction<T> success, PromiseFunction<T> failure = null)
         {
             return base.Then(success, failure);
         }
+
+     
     }
    
 }

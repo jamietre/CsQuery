@@ -6,21 +6,41 @@ using CsQuery.Utility;
 using CsQuery.StringScanner;
 using CsQuery.StringScanner.Patterns;
 using CsQuery.ExtensionMethods.Internal;
+using CsQuery.HtmlParser;
+using CsQuery.Implementation;
 
 namespace CsQuery.Engine
 {
+    /// <summary>
+    /// Helper methods to perform matching against attribute-type selectors
+    /// </summary>
+
     public static class AttributeSelectors
     {
-        public static bool Matches(IDomElement elm, 
-            AttributeSelectorType matchType, 
-            string attributeName, 
-            string matchValue=null)
+        /// <summary>
+        /// Test whether a single element matches a specific attribute selector.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to test.
+        /// </param>
+        /// <param name="selector">
+        /// The selector.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the element matches, false if not.
+        /// </returns>
+
+        public static bool Matches(IDomElement element, SelectorClause selector)
         {
-            bool match = elm.HasAttribute(attributeName);
+
+            string value;
+            bool match = ((DomElement)element).TryGetAttributeForMatching(selector.AttributeNameTokenID,out value);
 
             if (!match)
             {
-                switch (matchType)
+                switch (selector.AttributeSelectorType)
                 {
                     case AttributeSelectorType.Exists:
                         return false;
@@ -32,31 +52,42 @@ namespace CsQuery.Engine
             }
             else
             {
-                string value = elm[attributeName];
-
-                switch (matchType)
+               // bool isCaseSensitive = HtmlData.
+                switch (selector.AttributeSelectorType)
                 {
                     case AttributeSelectorType.Exists:
                         return true;
                     case AttributeSelectorType.Equals:
-                        return matchValue == value;
+                        return selector.AttributeValue.Equals(value,selector.AttributeValueStringComparison);
+
                     case AttributeSelectorType.StartsWith:
                         return value != null &&
-                            value.Length >= matchValue.Length &&
-                            value.Substring(0, matchValue.Length) == matchValue;
+                            value.Length >= selector.AttributeValue.Length &&
+                            value.Substring(0, selector.AttributeValue.Length)
+                                .Equals(selector.AttributeValue, selector.AttributeValueStringComparison);
+
                     case AttributeSelectorType.Contains:
-                        return value != null && value.IndexOf(matchValue) >= 0;
+                        return value != null && value.IndexOf(selector.AttributeValue,
+                            selector.AttributeValueStringComparison)>=0;
 
                     case AttributeSelectorType.ContainsWord:
-                        return value != null && ContainsWord(value, matchValue);
+                        return value != null && ContainsWord(value, selector.AttributeValue, 
+                                                           selector.AttributeValueStringComparer);
+
                     case AttributeSelectorType.NotEquals:
-                        return !matchValue.Equals(value);
+                        return !selector.AttributeValue
+                                .Equals(value, selector.AttributeValueStringComparison);
+
                     case AttributeSelectorType.NotExists:
                         return false;
+
                     case AttributeSelectorType.EndsWith:
-                        int len = matchValue.Length;
+                        int len = selector.AttributeValue.Length;
                         return value != null && value.Length >= len &&
-                            value.Substring(value.Length - len) == matchValue;
+                            value.Substring(value.Length - len)
+                                .Equals(selector.AttributeValue, 
+                                        selector.AttributeValueStringComparison);
+
                     case AttributeSelectorType.StartsWithOrHyphen:
                         if (value == null)
                         {
@@ -71,7 +102,9 @@ namespace CsQuery.Engine
                             beforeDash = value.Substring(0, dashPos);
                         }
 
-                        return matchValue == beforeDash || matchValue == value;
+                        return selector.AttributeValue.Equals(beforeDash,selector.AttributeValueStringComparison) || 
+                            selector.AttributeValue.Equals(value,selector.AttributeValueStringComparison);
+
                     default:
                         throw new InvalidOperationException("No AttributeSelectorType set");
 
@@ -80,15 +113,31 @@ namespace CsQuery.Engine
             }
         }
 
-        public static bool Matches(IDomElement element,SelectorClause selector )
-        {
-            return Matches(element, selector.AttributeSelectorType, selector.AttributeName, selector.AttributeValue);
-        }
+      
 
-        private static bool ContainsWord(string text, string word)
+        /// <summary>
+        /// Test whether a sentence contains a word
+        /// </summary>
+        ///
+        /// <param name="sentence">
+        /// The sentence.
+        /// </param>
+        /// <param name="word">
+        /// The word.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it contains the word, false if not.
+        /// </returns>
+
+        private static bool ContainsWord(string sentence, string word, StringComparer comparer)
         {
-            HashSet<string> words = new HashSet<string>(word.Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-            return words.Contains(text);
+            
+            HashSet<string> words = new HashSet<string>(
+                sentence.Trim().Split(CharacterData.charsHtmlSpaceArray, 
+                    StringSplitOptions.RemoveEmptyEntries));
+
+            return words.Contains(word, comparer);
         }
        
     }

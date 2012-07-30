@@ -8,8 +8,10 @@ using CsQuery.HtmlParser;
 namespace CsQuery
 {
     /// <summary>
-    /// An interface to a Document that represents an HTML document.
+    /// An interface to a DOM Document, the high-level representation of an HTML document. This is
+    /// analagous to the web browser "document" object.
     /// </summary>
+
     public interface IDomDocument : IDomContainer
     {
 
@@ -57,6 +59,23 @@ namespace CsQuery
         /// </url>
 
         IDomElement GetElementById(string id);
+
+        /// <summary>
+        /// Gets an element by identifier, and return a strongly-typed interface
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="id">
+        /// The identifier.
+        /// </param>
+        ///
+        /// <returns>
+        /// The element by id&lt; t&gt;
+        /// </returns>
+
+        T GetElementById<T>(string id) where T : IDomElement;
 
         /// <summary>
         /// Creates the specified HTML element.
@@ -173,7 +192,7 @@ namespace CsQuery
         /// https://developer.mozilla.org/en/DOM/element.getElementsByTagName
         /// </url>
 
-        IList<IDomElement> GetElementsByTagName(string tagName);
+        INodeList<IDomElement> GetElementsByTagName(string tagName);
 
         /// <summary>
         /// Return the body element for this Document.
@@ -196,27 +215,17 @@ namespace CsQuery
         /// </returns>
 
         IDomDocument CreateNew<T>() where T : IDomDocument;
+
+        /// <summary>
+        /// Creates an IDomDocument that is derived from this one. The new type can also be a derived
+        /// type, such as IDomFragment. The new object will inherit DomRenderingOptions from this one.
+        /// </summary>
+        ///
+        /// <returns>
+        /// The new Document.
+        /// </returns>
+
         IDomDocument CreateNew();
-
-        /// <summary>
-        /// Populate this instance from a character string. This is destructive; any prior contents are destroyed.
-        /// </summary>
-        ///
-        /// <param name="html">
-        /// The HTML.
-        /// </param>
-
-        //void Populate(char[] html, HtmlParsingMode htmlParsingMode );
-
-        /// <summary>
-        /// Populate this instance from a sequence of elements. This is destructive; any prior contents are destroyed.
-        /// </summary>
-        ///
-        /// <param name="elements">
-        /// The elements.
-        /// </param>
-
-        //void Populate(IEnumerable<IDomObject> elements);
 
     }
 }

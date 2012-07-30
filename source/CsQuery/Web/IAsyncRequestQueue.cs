@@ -5,23 +5,48 @@ using System.Text;
 
 namespace CsQuery.Web
 {
-    public enum RequestState
-    {
-        Idle=1,
-        Active=2,
-        Fail=3,
-        PartialSuccess=4,
-        Success=5
-    }
+
     /// <summary>
     /// A group of async web requests. 
+    /// NOT YET IMPLEMENTED
     /// </summary>
     /// 
     public interface IAsyncRequestQueue : ICsqWebRequest
     {
+        /// <summary>
+        /// Adds a request to the queue.
+        /// </summary>
+        ///
+        /// <param name="url">
+        /// URL of the document.
+        /// </param>
+
         void AddRequest(string url);
+
+        /// <summary>
+        /// Adds a request to the queue.
+        /// </summary>
+        ///
+        /// <param name="request">
+        /// The request.
+        /// </param>
+
         void AddRequest(ICsqWebRequest request);
-        IEnumerable<CQ> Results();
+
+        /// <summary>
+        /// A sequence of responses from the completed requests
+        /// </summary>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process results in this collection.
+        /// </returns>
+
+        IEnumerable<ICsqWebResponse> Results();
+
+        /// <summary>
+        /// Gets the state of the request queue.
+        /// </summary>
+
         RequestState State { get; }
 
     }

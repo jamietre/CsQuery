@@ -8,26 +8,30 @@ namespace CsQuery
     /// <summary>
     /// A regular DOM element
     /// </summary>
+    
     public interface IDomElement : IDomContainer, IDomIndexedNode
     {
-
         /// <summary>
-        /// The element is a block element
+        /// The element is a block element.
         /// </summary>
-        /// <returntype>bool</returntype>
+
         bool IsBlock { get; }
 
         /// <summary>
-        /// Returns the HTML for this element, but ignoring children/innerHTML
+        /// Returns the HTML for this element, but ignoring children/innerHTML.
         /// </summary>
-        /// <returns>A string of HTML</returns>
-        /// <returntype>string</returntype>
+        ///
+        /// <returns>
+        /// A string of HTML.
+        /// </returns>
+
         string ElementHtml();
 
         /// <summary>
-        /// Get this element's index only among other elements (e.g. excluding text & other non-element node types)
+        /// Get this element's index only among other elements (e.g. excluding text &amp; other non-
+        /// element node types)
         /// </summary>
-        /// <returntype>int</returntype>
+
         int ElementIndex { get; }
 
 

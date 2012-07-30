@@ -44,14 +44,6 @@ namespace CsQuery.Engine
             return QuotingRule.NeverQuoted;
         }
 
-        /// <summary>
-        /// Gets a string describing a parameter count mismatch
-        /// </summary>
-        ///
-        /// <returns>
-        /// A string to throw as an error
-        /// </returns>
-
         #endregion
 
         #region public properties
@@ -124,7 +116,7 @@ namespace CsQuery.Engine
         {
             get
             {
-                return Objects.FromCamelCase(this.GetType().Name);
+                return Utility.Support.FromCamelCase(this.GetType().Name);
             }
         }
 
@@ -180,6 +172,25 @@ namespace CsQuery.Engine
             }
             return parms.ToArray();
         }
+
+        /// <summary>
+        /// Parse single argument passed to a pseudoselector
+        /// </summary>
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown when one or more arguments have unsupported or illegal values.
+        /// </exception>
+        /// <exception cref="NotImplementedException">
+        /// Thrown when the requested operation is unimplemented.
+        /// </exception>
+        ///
+        /// <param name="value">
+        /// The arguments.
+        /// </param>
+        ///
+        /// <returns>
+        /// The parsed string
+        /// </returns>
 
         protected string ParseSingleArg(string value)
         {

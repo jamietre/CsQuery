@@ -14,16 +14,10 @@ namespace CsQuery
 {
     public partial class CQ
     {
-
         /// <summary>
         /// Returns all values at named data store for the first element in the jQuery collection, as set
         /// by data(name, value). Put another way, this method constructs an object based on the names
         /// and values of any attributes starting with "data-".
-        /// </summary>
-        ///
-
-        /// <summary>
-        /// Gets the data.
         /// </summary>
         ///
         /// <returns>
@@ -46,7 +40,15 @@ namespace CsQuery
                 {
                     if (item.Key.StartsWith("data-"))
                     {
-                        data[item.Key.Substring(5)] = CQ.ParseJSON(item.Value);
+                        object value;
+                        if (JSON.TryParseJSONValue(item.Value, typeof(object), out value))
+                        {
+                            data[item.Key.Substring(5)] = value;
+                        }
+                        else
+                        {
+                            data[item.Key.Substring(5)] = item.Value;
+                        }
                     }
                 }
                 return dataObj;
@@ -82,7 +84,7 @@ namespace CsQuery
         {
             foreach (IDomElement e in Elements)
             {
-                e.SetAttribute("data-" + key, JSON.ToJSON(data));
+                e.SetAttribute("data-" + key, data);
             }
             return this;
         }
@@ -96,7 +98,7 @@ namespace CsQuery
         /// Though the jQuery "Data" methods are designed to read the HTML5 "data-" attributes like the
         /// CsQuery version, jQuery Data keeps its data in an internal data store that is unrelated to
         /// the element attributes. This is not particularly necessary when working in C# since you have
-        /// many other framwork options for managing data. Rather, this method has been implemented to
+        /// many other framework options for managing data. Rather, this method has been implemented to
         /// simplify passing data back and forth between the client and server. You should be able to use
         /// CsQuery's Data methods to set arbitrary objects as data, and read them directly from the
         /// client using the jQuery data method. Bear and mind that because CsQuery intends to write
@@ -123,7 +125,11 @@ namespace CsQuery
 
         public CQ Data(string key, object data)
         {
-            string json = CQ.ToJSON(data);
+            string json = JSON.ToJSON(data);
+            if (JSON.IsJsonString(json))
+            {
+                json = JSON.ParseJSONValue<string>(json);
+            }
             foreach (IDomElement e in Elements)
             {
                 e.SetAttribute("data-" + key, json);

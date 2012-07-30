@@ -11,9 +11,9 @@ using System.Web.Script.Serialization;
 using System.Dynamic;
 using System.Text;
 using System.Reflection;
-
 using CsQuery.ExtensionMethods.Internal;
 using CsQuery.Utility;
+using CsQuery.HtmlParser;
 
 namespace CsQuery.ExtensionMethods.Forms
 {
@@ -23,28 +23,48 @@ namespace CsQuery.ExtensionMethods.Forms
     public static class ExtensionMethods
     {
         /// <summary>
-        /// Get the value for a particular form element identified by "#ID" or "name". This method will create a selector
-        /// that identifies any input, select, button or textarea element by name attribute (if not passed an ID selector)
+        /// Get the value for a particular form element identified by "#ID" or "name". This method will
+        /// create a selector that identifies any input, select, button or textarea element by name
+        /// attribute (if not passed an ID selector)
         /// </summary>
-        /// <typeparam name="T">The datatype that should be returned</typeparam>
-        /// <param name="obj">The CsQuery object to which this applies</param>
-        /// <param name="name">The name of the input element</param>
-        /// <returns></returns>
+        ///
+        /// <param name="obj">
+        /// The CsQuery object to which this applies.
+        /// </param>
+        /// <param name="name">
+        /// The name of the input element.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string that represents the form field value.
+        /// </returns>
+
         public static string FormValue(this CQ obj, string name)
         {
             return FormValue<string>(obj, name);
         }
 
         /// <summary>
-        /// Get the value for a particular form element identified by "#ID" or "name"
+        /// Get the value for a particular form element identified by "#ID" or "name".
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="obj"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static T FormValue<T>(this CQ obj, string name)
+        ///
+        /// <typeparam name="T">
+        /// The type to cast the value to
+        /// </typeparam>
+        /// <param name="context">
+        /// The context in which to find the element
+        /// </param>
+        /// <param name="name">
+        /// The name of the form element
+        /// </param>
+        ///
+        /// <returns>
+        /// A value of type T
+        /// </returns>
+
+        public static T FormValue<T>(this CQ context, string name)
         {
-            var sel = FormElement(obj, name);
+            var sel = FormElement(context, name);
             if (sel.Length > 0)
             {
                 return sel.Val<T>();
@@ -54,41 +74,74 @@ namespace CsQuery.ExtensionMethods.Forms
                 return default(T);
             }
         }
+
         /// <summary>
-        /// Return an element identified by "#id" or "name". (Special case selector to simplify accessing form elements).
+        /// Return an element identified by "#id" or "name". (Special case selector to simplify accessing
+        /// form elements).
         /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static CQ FormElement(this CQ obj, string name)
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown if the name was invalid
+        /// </exception>
+        ///
+        /// <param name="context">
+        /// The context in which to find the element
+        /// </param>
+        /// <param name="name">
+        /// The name of the form element
+        /// </param>
+        ///
+        /// <returns>
+        /// A CQ object with the form element.
+        /// </returns>
+
+        public static CQ FormElement(this CQ context, string name)
         {
             if (String.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("Name cannot be null or missing.");
             }
             return name[0] == '#' ?
-                obj[name] :
-                obj[String.Format("input[name='{0}'], select[name='{0}'], button[name='{0}'], textarea[name='{0}']", name)];
+                context[name] :
+                context[String.Format("input[name='{0}'], select[name='{0}'], button[name='{0}'], textarea[name='{0}']", name)];
 
             
         }
 
         /// <summary>
-        /// (BETA) Update form values from the HTTP post data in the current HttpContext
+        /// (BETA) Update form values from the HTTP post data in the current HttpContext.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public static CQ RestorePost(this CQ obj)
+        ///
+        /// <param name="context">
+        /// The context in which to find process form elements
+        /// </param>
+        ///
+        /// <returns>
+        /// The context
+        /// </returns>
+
+        public static CQ RestorePost(this CQ context)
         {
 
-            return RestorePost(obj, HttpContext.Current.Request.Form);
+            return RestorePost(context, HttpContext.Current.Request.Form);
         }
 
         /// <summary>
-        /// (BETA) Update form values from the data in collection provided
+        /// (Beta) Update form values from the data in collection provided.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns>A CQ object with all form elements searched</returns>
+        ///
+        /// <param name="selection">
+        /// The selections set to update form values within; only child elements of elements in the
+        /// selection set will be processed.
+        /// </param>
+        /// <param name="postData">
+        /// Information describing the post.
+        /// </param>
+        ///
+        /// <returns>
+        /// A CQ object with all form elements searched.
+        /// </returns>
+
         public static CQ RestorePost(this CQ selection, NameValueCollection postData)
         {
             string selector = "input[name], select[name], button[name], textarea";
@@ -109,41 +162,65 @@ namespace CsQuery.ExtensionMethods.Forms
         }
 
         /// <summary>
-        /// (BETA) Update form values from the data in httpContext.Request.Form
+        /// (Alpha) Update form values from the data in httpContext.Request.Form.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns>A CQ object with all form elements searched</returns>
+        ///
+        /// <param name="selection">
+        /// The selections set to update form values within; only child elements of elements in the
+        /// selection set will be processed.
+        /// </param>
+        /// <param name="httpContext">
+        /// The HttpContext from which to obtain post data
+        /// </param>
+        ///
+        /// <returns>
+        /// A CQ object with all form elements searched.
+        /// </returns>
+
         public static CQ RestorePost(this CQ selection, HttpContext httpContext)
         {
             return RestorePost(selection,httpContext.Request.Form);
 
         }
+
         /// <summary>
-        /// Restore "value" to a single element
+        /// Restore "value" to a single element.
         /// </summary>
-        /// <param name="e"></param>
-        /// <param name="csQueryContext"></param>
-        /// <param name="value"></param>
-        private static void RestoreData(IDomElement e, CQ csQueryContext, string value)
+        ///
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the requested operation is invalid.
+        /// </exception>
+        ///
+        /// <param name="element">
+        /// The element to restore a value to
+        /// </param>
+        /// <param name="csQueryContext">
+        /// The context to which this element belongs
+        /// </param>
+        /// <param name="value">
+        /// The value to restore
+        /// </param>
+
+        private static void RestoreData(IDomElement element, CQ csQueryContext, string value)
         {
-            switch (e.NodeName)
+            switch (element.NodeNameID)
             {
-                case "TEXTAREA":
-                    e.InnerText = value;
+                case HtmlData.tagTEXTAREA:
+                    element.InnerText = value;
                     break;
-                case "INPUT":
-                    switch (e["type"])
+                case HtmlData.tagINPUT:
+                    switch (element["type"])
                     {
                         case "checkbox":
                         case "radio":
                             if (value != null && 
-                                ((e.Value ?? "on") == value))
+                                ((element.Value ?? "on") == value))
                             {
-                                e.SetAttribute("checked");
+                                element.SetAttribute("checked");
                             }
                             else
                             {
-                                e.RemoveAttribute("checked");
+                                element.RemoveAttribute("checked");
                             }
                             break;
                         case "hidden":
@@ -152,35 +229,50 @@ namespace CsQuery.ExtensionMethods.Forms
                         case "button":
                         case "submit":
                         case "image":
-                            e.SetAttribute("value", value);
+                            element.SetAttribute("value", value);
                             break;
                         case "file":
                             break;
                         default:
-                            e.SetAttribute("value", value);
+                            element.SetAttribute("value", value);
                             break;
                     }
                     break;
-                case "SELECT":
-                case "BUTTON":
-                    csQueryContext[e].Val(value);
+                case HtmlData.tagSELECT:
+                case HtmlData.tagBUTTON:
+                    csQueryContext[element].Val(value);
                     break;
                         
                 default:
-                    throw new InvalidOperationException(String.Format("An unknown element type was found while restoring post data: '{0}'", e.NodeName));
+                    throw new InvalidOperationException(String.Format("An unknown element type was found while restoring post data: '{0}'", element.NodeName));
             }
             
 
         }
+
         /// <summary>
         /// Build a dropdown list for each element in the selection set using name/value pairs from data.
-        /// Note tha the "key" becomes the "value" on the element, and the "value" becomes the text assocaited
-        /// with it.
+        /// Note tha the "key" becomes the "value" on the element, and the "value" becomes the text
+        /// assocaited with it.
         /// </summary>
-        /// <param name="selection"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public static CQ CreateDropDown(this CQ selection, IEnumerable<KeyValuePair<string, object>> data, string zeroText = null)
+        ///
+        /// <param name="selection">
+        /// The target on which to create the dropdown list
+        /// </param>
+        /// <param name="data">
+        /// The data source for the dropdown list
+        /// </param>
+        /// <param name="zeroText">
+        /// If non-null, the text for any zero value will be this instead of the enum's description.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object
+        /// </returns>
+
+        public static CQ CreateDropDown(this CQ selection, 
+            IEnumerable<KeyValuePair<string, object>> data, 
+            string zeroText = null)
         {
             foreach (var el in selection.Elements.Where(item => item.NodeName == "SELECT"))
             {
@@ -188,14 +280,35 @@ namespace CsQuery.ExtensionMethods.Forms
             }
             return selection;
         }
+
         /// <summary>
-        /// Create a list from an enum's values & descriptions
+        /// Create a list from an enum's values &amp; descriptions.
         /// </summary>
-        /// <param name="selection"></param>
-        /// <param name="zeroText">If non-null, the text for any zero value will be this instead of the enum's description</param>
-        /// <param name="format">When true, will attempt to format camelcased values</param>
-        /// <returns></returns>
-        public static CQ CreateDropDownFromEnum<T>(this CQ selection, string zeroText = null, bool format = false) where T : IConvertible
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown when one or more arguments have unsupported or illegal values.
+        /// </exception>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="selection">
+        /// The select element on which to create the list
+        /// </param>
+        /// <param name="zeroText">
+        /// If non-null, the text for any zero value will be this instead of the enum's description.
+        /// </param>
+        /// <param name="format">
+        /// When true, will attempt to format camelcased values.
+        /// </param>
+        ///
+        /// <returns>
+        /// The new drop down from enum&lt; t&gt;
+        /// </returns>
+
+        public static CQ CreateDropDownFromEnum<T>(this CQ selection, 
+            string zeroText = null, 
+            bool format = false) where T : IConvertible
         {
             if (!typeof(T).IsEnum)
             {
