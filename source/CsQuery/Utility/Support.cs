@@ -98,7 +98,9 @@ namespace CsQuery.Utility
             int start = rootedPath.IndexOf(findPath[0]);
             if (start < 0)
             {
-                return "";
+                throw new ArgumentException(String.Format("Unable to find path to \"{0}\" in base path \"{1}\" no matching parts.", 
+                    partialPath, 
+                    basePath));
             }
             else
             {

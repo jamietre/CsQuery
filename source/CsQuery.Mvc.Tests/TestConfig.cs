@@ -24,7 +24,9 @@ namespace CsQuery.Mvc.Tests
         [SetUp]
         public static void AssemblySetup()
         {
-            string appPath = Support.FindPathTo("CsQuery.Mvc.Tests");
+            string appPath = Path.GetDirectoryName(new System.Diagnostics.StackFrame(true).GetFileName());
+
+            //string appPath = Support.FindPathTo("CsQuery\\CsQuery.Mvc.Tests");
 
             Host = MvcAppHost.CreateApplicationHost<MvcTestApp>(appPath, appPath + "\\bin\\debug");
 

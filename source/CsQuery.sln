@@ -6,11 +6,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Csquery.Tests", "CsQuery.Tests\Csquery.Tests.csproj", "{F8920741-0BB4-4939-A774-0F9059B2B7F0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BE94EF7A-CD05-40ED-B94A-3C78F9A81C0A}"
-	ProjectSection(SolutionItems) = preProject
-		CsQuery.vsmdi = CsQuery.vsmdi
-		Local.testsettings = Local.testsettings
-		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsQuery.Mvc", "CsQuery.Mvc\CsQuery.Mvc.csproj", "{1697FBB9-9116-4FDF-8F92-25C2DE8DC39B}"
 EndProject
