@@ -20,11 +20,11 @@ namespace CsQuery.Tests
         public static void AssemblySetup()
         {
 
-            
-            var solutionFolderTry = Support.FindPathTo("./TestResults/");
+
+            var solutionFolderTry = Support.GetFilePath("./TestResults/");
             if (solutionFolderTry == "")
             {
-                solutionFolderTry = Support.FindPathTo("./CsQuery.Tests/");
+                solutionFolderTry = Support.GetFilePath("./CsQuery.Tests/");
             }
 
             CsQueryTest.SolutionDirectory = Support.CleanFilePath(solutionFolderTry+"/../");

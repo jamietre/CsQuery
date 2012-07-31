@@ -14,22 +14,99 @@ using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.Implementation
 {
-     
+      /// <summary>
+    /// Arguments for when a style is changed.
+    /// </summary>
+
+    public class StyleChangedArgs : EventArgs
+    {
+        public StyleChangedArgs(bool hasStyles)
+        {
+            HasStyles = hasStyles;
+        }
+        /// <summary>
+        /// Gets a value indicating whether this object has styles following the change.
+        /// </summary>
+
+        public bool HasStyles
+        {
+            get;
+            protected set;
+        }
+    }
+
+    /// <summary>
+    /// CSS style declaration.
+    /// </summary>
+
     public class CSSStyleDeclaration : IDictionary<string, string>, IEnumerable<KeyValuePair<string, string>>, ICSSStyleDeclaration
     {
         #region constructors
-        public CSSStyleDeclaration(DomElement owner)
-        {
-            Owner = owner;
-        }
-        #endregion
+
+        /// <summary>
+        /// Create a new CSSStyleDeclaration object with no styles.
+        /// </summary>
         
+        public CSSStyleDeclaration()
+        {
+
+        }
+
+        /// <summary>
+        /// Create a new CSSStyleDeclaration object for the text.
+        /// </summary>
+        ///
+        /// <param name="cssText">
+        /// The parsable textual representation of the declaration block (excluding the surrounding curly
+        /// braces). Setting this attribute will result in the parsing of the new value and resetting of
+        /// all the properties in the declaration block including the removal or addition of properties.
+        /// </param>
+
+        public CSSStyleDeclaration(string cssText)
+        {
+            SetStyles(cssText, true);
+        }
+
+        /// <summary>
+        /// Create a new CSSStyleDeclaration object for the text.
+        /// </summary>
+        ///
+        /// <param name="cssText">
+        /// The parsable textual representation of the declaration block (excluding the surrounding curly
+        /// braces). Setting this attribute will result in the parsing of the new value and resetting of
+        /// all the properties in the declaration block including the removal or addition of properties.
+        /// </param>
+        /// <param name="validate">
+        /// When true, validate against CSS3 rules.
+        /// </param>
+
+        public CSSStyleDeclaration(string cssText, bool validate)
+        {
+            SetStyles(cssText, validate);
+        }
+
+        /// <summary>
+        /// Create a new CSSStyleDeclaration object thatis a child of another rule.
+        /// </summary>
+        ///
+        /// <param name="parentRule">
+        /// The parent rule.
+        /// </param>
+
+        public CSSStyleDeclaration(ICSSRule parentRule)
+        {
+            ParentRule = parentRule;
+        }
+
+        #endregion
+
         #region private properties
-        protected DomElement Owner;
+
         /// <summary>
         /// Warning: Do not attempt to access _Styles directly from this class or any subclass to determine whether or 
         /// not there are styles, since it also depends on QuickSetStyles. Use HasStyles method instead.
         /// </summary>
+        
         private IDictionary<ushort, string> _Styles;
         protected string _QuickSetValue;
 
@@ -64,33 +141,55 @@ namespace CsQuery.Implementation
             {
                 bool hadStyles = HasStyles;
                 _QuickSetValue = value;
-                UpdateIndex(hadStyles);
+                DoOnHasStyleChanged(hadStyles);
+                //UpdateIndex(hadStyles);
             }
         }
         #endregion
 
         #region public properties
-        /// <summary>
-        /// Create a clone of this CSSStyleDeclaration object bound to the owner passed
-        /// </summary>
-        /// <param name="owner"></param>
-        /// <returns>CSSStyleDeclaration</returns>
-        public CSSStyleDeclaration Clone(DomElement owner)
-        {
-            CSSStyleDeclaration clone = new CSSStyleDeclaration(owner);
 
-            if (QuickSetValue != null)
+        /// <summary>
+        /// The CSS rule that contains this declaration block or null if this CSSStyleDeclaration is not
+        /// attached to a CSSRule.
+        /// </summary>
+
+        public ICSSRule ParentRule { get; protected set; }
+
+        /// <summary>
+        /// Event queue for all listeners interested in OnHasStyleChanged events.
+        /// </summary>
+
+        public event EventHandler<StyleChangedArgs> OnHasStyleChanged;
+
+        /// <summary>
+        /// The number of properties that have been explicitly set in this declaration block.
+        /// </summary>
+
+        public int Length
+        {
+            get
             {
-                clone.QuickSetValue = QuickSetValue;
+                return HasStyles ? Styles.Count : 0;
             }
-            else
+        }
+
+        /// <summary>
+        /// The parsable textual representation of the declaration block (excluding the surrounding curly
+        /// braces). Setting this attribute will result in the parsing of the new value and resetting of
+        /// all the properties in the declaration block including the removal or addition of properties.
+        /// </summary>
+
+        public string CssText
+        {
+            get
             {
-                foreach (KeyValuePair<ushort, string> kvp in Styles)
-                {
-                    clone.Styles.Add(kvp);
-                }
+                return this.ToString();
             }
-            return clone;
+            set
+            {
+                SetStyles(value);
+            }
         }
 
         /// <summary>
@@ -123,6 +222,7 @@ namespace CsQuery.Implementation
                 return keys;
             }
         }      
+
         public ICollection<string> Values
         {
             get { return Styles.Values; }
@@ -143,12 +243,22 @@ namespace CsQuery.Implementation
                 SetStyle(name, value, true);
             }
         }
+
         /// <summary>
-        /// Get or set the named style, optionally enabling strict mode
+        /// Get or set the named style, optionally enabling strict mode.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="strict"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="name">
+        /// The named style
+        /// </param>
+        /// <param name="strict">
+        /// When true, validate for CSS3
+        /// </param>
+        ///
+        /// <returns>
+        /// The indexed item.
+        /// </returns>
+
         public string this[string name, bool strict]
         {
             set
@@ -156,6 +266,7 @@ namespace CsQuery.Implementation
                 SetStyle(name, value, strict);
             }
         }
+
         public string Height
         {
             get
@@ -178,9 +289,36 @@ namespace CsQuery.Implementation
                 SetStyle("width", value, true);
             }
         }
+
         #endregion
 
         #region public methods
+
+        /// <summary>
+        /// Create a clone of this CSSStyleDeclaration object bound to the owner passed.
+        /// </summary>
+        ///
+        /// <returns>
+        /// CSSStyleDeclaration.
+        /// </returns>
+
+        public CSSStyleDeclaration Clone()
+        {
+            CSSStyleDeclaration clone = new CSSStyleDeclaration();
+
+            if (QuickSetValue != null)
+            {
+                clone.QuickSetValue = QuickSetValue;
+            }
+            else
+            {
+                foreach (KeyValuePair<ushort, string> kvp in Styles)
+                {
+                    clone.Styles.Add(kvp);
+                }
+            }
+            return clone;
+        }
 
         /// <summary>
         /// Sets all the styles from a single CSS style string. Any existing styles will be erased.
@@ -307,7 +445,7 @@ namespace CsQuery.Implementation
         {
             bool hadStyles = HasStyles;
             Styles[HtmlData.Tokenize(name)] = value;
-            UpdateIndex(hadStyles);
+            DoOnHasStyleChanged(hadStyles);
         }
 
         /// <summary>
@@ -541,32 +679,32 @@ namespace CsQuery.Implementation
         /// Adds, removes, or does nothing to the index depending on whether a change is needed
         /// </summary>
         /// <param name="previouslyHadStyles"></param>
-        protected void UpdateIndex(bool previouslyHadStyles)
-        {
-            if (HasStyles && !previouslyHadStyles)
-            {
-                AddToIndex();
-            }
-            else if (previouslyHadStyles && !HasStyles)
-            {
-                RemoveFromIndex();
-            }
-        }
-        protected void AddToIndex()
-        {
-            if (!Owner.IsDisconnected)
-            {
-                Owner.Document.DocumentIndex.AddToIndex(Owner.AttributeIndexKey(HtmlData.tagSTYLE), Owner);
-            }
-        }
+        //protected void UpdateIndex(bool previouslyHadStyles)
+        //{
+        //    if (HasStyles && !previouslyHadStyles)
+        //    {
+        //        AddToIndex();
+        //    }
+        //    else if (previouslyHadStyles && !HasStyles)
+        //    {
+        //        RemoveFromIndex();
+        //    }
+        //}
+        //protected void AddToIndex()
+        //{
+        //    if (!Owner.IsDisconnected)
+        //    {
+        //        Owner.Document.DocumentIndex.AddToIndex(Owner.AttributeIndexKey(HtmlData.tagSTYLE), Owner);
+        //    }
+        //}
 
-        protected void RemoveFromIndex()
-        {
-            if (!Owner.IsDisconnected)
-            {
-                Owner.Document.DocumentIndex.RemoveFromIndex(Owner.AttributeIndexKey(HtmlData.tagSTYLE));
-            }
-        }
+        //protected void RemoveFromIndex()
+        //{
+        //    if (!Owner.IsDisconnected)
+        //    {
+        //        Owner.Document.DocumentIndex.RemoveFromIndex(Owner.AttributeIndexKey(HtmlData.tagSTYLE));
+        //    }
+        //}
 
 
         
@@ -659,8 +797,19 @@ namespace CsQuery.Implementation
             }
             yield break;
         }
-       
-        
+
+        private void DoOnHasStyleChanged(bool hadStyles)
+        {
+            if (hadStyles != HasStyles)
+            {
+                var evt = OnHasStyleChanged;
+                if (evt != null)
+                {
+                    var args = new StyleChangedArgs(HasStyles);
+                    evt(this, args);
+                }
+            }
+        }
         #endregion
 
         #region interface members

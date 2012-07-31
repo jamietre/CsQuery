@@ -15,7 +15,6 @@ namespace CsQuery
     public interface IDomDocument : IDomContainer
     {
 
-
         /// <summary>
         /// An interface to the internal indexing methods. You generally should not use this.
         /// </summary>
@@ -34,6 +33,8 @@ namespace CsQuery
         /// </summary>
 
         DocType DocType { get; set; }
+
+        IList<ICSSStyleSheet> StyleSheets { get; }
 
         /// <summary>
         /// Gets or sets options for controlling how the output is rendered. All options are flags so

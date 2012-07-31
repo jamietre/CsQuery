@@ -83,7 +83,9 @@ namespace CsQuery.Implementation
 
         private List<Tuple<int, int>> OriginalStrings;
         private bool _settingDocType;
+        private IList<ICSSStyleSheet> _StyleSheets;
         private IDictionary<string, object> _Data;
+        
 
         protected CQ _Owner;
         protected DocType _DocType;
@@ -93,6 +95,17 @@ namespace CsQuery.Implementation
 
         #region public properties
 
+        public IList<ICSSStyleSheet> StyleSheets
+        {
+            get
+            {
+                if (_StyleSheets == null)
+                {
+                    _StyleSheets = new List<ICSSStyleSheet>();
+                }
+                return _StyleSheets;
+            }
+        }
 
         /// <summary>
         /// Exposes the Document as an IDomIndex object

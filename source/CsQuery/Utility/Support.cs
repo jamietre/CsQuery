@@ -23,7 +23,7 @@ namespace CsQuery.Utility
         /// <returns></returns>
         public static string GetFile(string fileName)
         {
-            string filePath = FindPathTo(fileName);
+            string filePath = GetFilePath(fileName);
             return File.ReadAllText(filePath);
         }
         /// <summary>
@@ -32,7 +32,7 @@ namespace CsQuery.Utility
         /// <param name="fileName"></param>
         public static FileStream GetFileStream(string fileName)
         {
-            string filePath = FindPathTo(fileName);
+            string filePath = GetFilePath(fileName);
             FileStream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
             return stream;
 
@@ -52,7 +52,7 @@ namespace CsQuery.Utility
         /// The file path.
         /// </returns>
 
-        public static string FindPathTo(string partialPath)
+        public static string GetFilePath(string partialPath)
         {
             if (Path.IsPathRooted(partialPath))
             {
@@ -70,7 +70,7 @@ namespace CsQuery.Utility
 
                 string callingAssPath = AppDomain.CurrentDomain.BaseDirectory;
 
-                filePath = FindPathTo(cleanFileName, callingAssPath);
+                filePath = GetFilePath(cleanFileName, callingAssPath);
                 return filePath;
 
             }
@@ -91,7 +91,7 @@ namespace CsQuery.Utility
         /// The full rooted path the the file
         /// </returns>
 
-        public static string FindPathTo(string partialPath, string basePath)
+        public static string GetFilePath(string partialPath, string basePath)
         {
             List<string> rootedPath = new List<string>(basePath.ToLower().Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries));
             List<string> findPath = new List<string>(partialPath.ToLower().Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries));

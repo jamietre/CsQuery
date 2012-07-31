@@ -8,9 +8,10 @@ using System.Text;
 namespace CsQuery.Implementation
 {
     /// <summary>
-    /// Alternate implementation of the IDictionary for attributes that uses no objects to see if this is important for performance.
-    /// (It doesn't seem to be). Not used as of 6/15/2012
+    /// Alternate implementation of the IDictionary for attributes that uses no objects to see if
+    /// this is important for performance. (It doesn't seem to be). Not used as of 6/15/2012.
     /// </summary>
+
     public class AttributeDictionary : IDictionary<ushort, string>
     {
         private const int arrayIncrements =1;

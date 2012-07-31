@@ -20,7 +20,7 @@ namespace CsQuery.Implementation
     /// </summary>
 
     public class DomElement : DomContainer<DomElement>, IDomElement, IDomObject, IDomNode, 
-        IAttributeCollection, ICSSStyleDeclaration
+        IAttributeCollection
     {
         #region private fields
 
@@ -201,13 +201,36 @@ namespace CsQuery.Implementation
             {
                 if (_Style == null)
                 {
-                    _Style = new CSSStyleDeclaration(this);
+                    _Style = new CSSStyleDeclaration();
+                    _Style.OnHasStyleChanged += new EventHandler<StyleChangedArgs>(_Style_OnHasStyleChanged);
+
                 }
                 return _Style;
             }
             protected set
             {
                 _Style = value;
+                _Style.OnHasStyleChanged += new EventHandler<StyleChangedArgs>(_Style_OnHasStyleChanged);
+                if (_Style != null && _Style.HasStyles)
+                {
+                    AttributeRemoveFromIndex(HtmlData.tagSTYLE);
+                }
+                else
+                {
+
+                }
+            }
+        }
+
+        void _Style_OnHasStyleChanged(object sender, StyleChangedArgs e)
+        {
+            if (e.HasStyles)
+            {
+                AttributeRemoveFromIndex(HtmlData.tagSTYLE);
+            }
+            else
+            {
+                AttributeAddToIndex(HtmlData.tagSTYLE);
             }
         }
 
@@ -865,7 +888,7 @@ namespace CsQuery.Implementation
             }
             if (HasStyles)
             {
-                clone.Style = Style.Clone(clone);
+                clone.Style = Style.Clone();
             }
             // will not create ChildNodes lazy object unless results are returned (this is why we don't use AddRange)
 
@@ -1074,7 +1097,7 @@ namespace CsQuery.Implementation
                     Id = value;
                     break;
                 case HtmlData.tagSTYLE:
-                    Style.SetStyles(value, false);
+                    Style = new CSSStyleDeclaration(value, false);
                     return;
                 default:
                     // Uncheck any other radio buttons
@@ -1103,7 +1126,7 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <param name="name">
-        /// .
+        /// The attribute name
         /// </param>
 
         public override void SetAttribute(string name)
@@ -1135,10 +1158,10 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <param name="tokenId">
-        /// .
+        /// THe attribute token
         /// </param>
         /// <param name="value">
-        /// .
+        /// The attribute value
         /// </param>
 
         protected void SetAttributeRaw(ushort tokenId, string value)
@@ -1160,7 +1183,7 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <param name="name">
-        /// .
+        /// The attribute name to remove
         /// </param>
         ///
         /// <returns>
@@ -1178,7 +1201,7 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <param name="tokenId">
-        /// .
+        /// The token for the attribute
         /// </param>
         ///
         /// <returns>

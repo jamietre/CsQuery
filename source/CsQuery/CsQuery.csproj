@@ -14,6 +14,8 @@
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <RestorePackages>true</RestorePackages>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -26,10 +28,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <RestorePackages>true</RestorePackages>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -154,7 +152,15 @@
     <Compile Include="CQ_jQuery\Has.cs" />
     <Compile Include="CQ_jQuery\Not.cs" />
     <Compile Include="CQ_jQuery\Parents.cs" />
+    <Compile Include="Dom\enumCSSRuleType.cs" />
+    <Compile Include="Dom\ICSSRule.cs" />
+    <Compile Include="Dom\ICSSStyleRule.cs" />
+    <Compile Include="Dom\ICSSStyleSheet.cs" />
+    <Compile Include="Dom\Implementation\CSSRule.cs" />
+    <Compile Include="Dom\Implementation\CSSStyleRule.cs" />
+    <Compile Include="Dom\Implementation\CSSStyleSheet.cs" />
     <Compile Include="Dom\Implementation\HtmlElements\HTMLLabelElement.cs" />
+    <Compile Include="Dom\Implementation\StyleSheet.cs" />
     <Compile Include="Dom\IReadOnlyCollection.cs" />
     <Compile Include="Dom\HtmlElements\IHTMLFormElement.cs" />
     <Compile Include="Dom\HtmlElements\IHTMLLabelElement.cs" />
@@ -183,7 +189,6 @@
     <Compile Include="Dom\IDomObjectT.cs" />
     <Compile Include="Dom\HtmlElements\IHTMLOptionsCollection.cs" />
     <Compile Include="Dom\Implementation\AttributeCollection.cs" />
-    <Compile Include="Dom\Implementation\AttributeCollection2.cs" />
     <Compile Include="Dom\IReadOnlyList.cs" />
     <Compile Include="Engine\CharacterEqualityComparer.cs" />
     <Compile Include="Engine\PseudoClassSelectors\enumQuotingRule.cs" />
@@ -292,7 +297,6 @@
     <Compile Include="Engine\Enums.cs" />
     <Compile Include="Engine\SelectorParser.cs" />
     <Compile Include="ExtensionMethods\Forms.cs" />
-    <Compile Include="Dom\Implementation\AttributeDictionary.cs" />
     <Compile Include="Utility\FastActivator.cs" />
     <Compile Include="Utility\Types.cs" />
     <Compile Include="Web\enumRequestState.cs" />

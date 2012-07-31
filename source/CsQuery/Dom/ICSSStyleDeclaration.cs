@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CsQuery.Implementation;
 
 namespace CsQuery
 {
@@ -12,11 +13,36 @@ namespace CsQuery
     public interface ICSSStyleDeclaration
     {
         /// <summary>
+        /// The number of properties that have been explicitly set in this declaration block.
+        /// </summary>
+
+        int Length { get; }
+
+        /// <summary>
+        /// The parsable textual representation of the declaration block (excluding the surrounding curly
+        /// braces). Setting this attribute will result in the parsing of the new value and resetting of
+        /// all the properties in the declaration block including the removal or addition of properties.
+        /// </summary>
+
+        string CssText { get; set; }
+
+        /// <summary>
+        /// The CSS rule that contains this declaration block or null if this CSSStyleDeclaration is not
+        /// attached to a CSSRule.
+        /// </summary>
+
+        ICSSRule ParentRule { get; }
+
+        event EventHandler<StyleChangedArgs> OnHasStyleChanged;
+
+        /// BELOW THIS IS LEGACY
+
+        /// <summary>
         /// Test whether a named style is defined on an element.
         /// </summary>
         ///
         /// <param name="styleName">
-        /// The name of the style
+        /// The name of the style.
         /// </param>
         ///
         /// <returns>
@@ -106,5 +132,9 @@ namespace CsQuery
         bool RemoveStyle(string name);
 
     }
+
+   
+
+    
 }
 
