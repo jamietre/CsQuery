@@ -33,9 +33,13 @@ namespace CsQuery
 
         ICSSRule ParentRule { get; }
 
-        event EventHandler<StyleChangedArgs> OnHasStyleChanged;
+        /// <summary>
+        /// Event raised when the HasStyles attribute changes
+        /// </summary>
 
-        /// BELOW THIS IS LEGACY
+        event EventHandler<StyleChangedArgs> OnHasStylesChanged;
+
+        // BELOW THIS IS LEGACY
 
         /// <summary>
         /// Test whether a named style is defined on an element.

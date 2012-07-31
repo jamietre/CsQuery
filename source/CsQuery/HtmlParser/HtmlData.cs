@@ -335,14 +335,15 @@ namespace CsQuery.HtmlParser
         public const ushort attrDISABLED = 47;
 
         /// <summary>
-        /// should match final tag above; for self-checking
-        /// </summary>
-
-        /// <summary>
         /// The METER element
         /// </summary>
 
         public const ushort tagMETER = 48;
+
+
+        /// <summary>
+        /// should match final tag above; for self-checking
+        /// </summary>
 
         private const ushort maxHardcodedTokenId = 48;
 
@@ -807,7 +808,7 @@ namespace CsQuery.HtmlParser
         /// Test if a node type has a VALUE property.
         /// </summary>
         ///
-        /// <param name="nodeNameToken">
+        /// <param name="nodeName">
         /// The node name token.
         /// </param>
         ///
@@ -821,11 +822,11 @@ namespace CsQuery.HtmlParser
         }
 
         /// <summary>
-        /// Test if a node type has a VALUE property
+        /// Test if a node type has a VALUE property.
         /// </summary>
         ///
-        /// <param name="attributeToken">
-        /// Token ID of the node type.
+        /// <param name="nodeNameToken">
+        /// Token ID of the node name.
         /// </param>
         ///
         /// <returns>

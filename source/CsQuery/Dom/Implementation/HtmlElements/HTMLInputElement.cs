@@ -119,6 +119,9 @@ namespace CsQuery.Implementation
         /// <param name="attributeId">
         /// Identifier for the attribute.
         /// </param>
+        /// <param name="value">
+        /// [out] The value.
+        /// </param>
         ///
         /// <returns>
         /// The attribute for matching.

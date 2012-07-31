@@ -31,7 +31,19 @@ namespace CsQuery.Utility
             }
         }
         
-        protected StringBuilder sb = new StringBuilder();
+        private StringBuilder sb = new StringBuilder();
+
+        /// <summary>
+        /// Serializes an object to JSON
+        /// </summary>
+        ///
+        /// <param name="value">
+        /// The object to serialize
+        /// </param>
+        ///
+        /// <returns>
+        /// A JSON string
+        /// </returns>
 
         public string Serialize(object value)
         {
@@ -39,17 +51,50 @@ namespace CsQuery.Utility
             SerializeImpl(value);
             return sb.ToString();
         }
+
+        /// <summary>
+        /// Deserializes a JSON string to an object of the specified type
+        /// </summary>
+        ///
+        /// <param name="value">
+        /// The JSON string
+        /// </param>
+        /// <param name="type">
+        /// The type of object to create
+        /// </param>
+        ///
+        /// <returns>
+        /// A new object of the specified type
+        /// </returns>
+
         public object Deserialize(string value, Type type)
         {
             return Serializer.Deserialize(value, type);
         }
+
+        /// <summary>
+        /// Deserializes a JSON string to an object of type T.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter defining the type of object to return.
+        /// </typeparam>
+        /// <param name="value">
+        /// The value.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new object of type T.
+        /// </returns>
+
         public T Deserialize<T>(string value)
         {
             return Serializer.Deserialize<T>(value);
         }
+
         #region private methods
 
-        protected void SerializeImpl(object value) {
+        private void SerializeImpl(object value) {
             //if ((value is IEnumerable && !value.IsExpando()) || value.IsImmutable())
             if (!Objects.IsExtendableType(value))
             {
@@ -80,7 +125,7 @@ namespace CsQuery.Utility
             }
         }
 
-        protected void valueToJSON(object value)
+        private void valueToJSON(object value)
         {
             if (Objects.IsImmutable(value))
             {
@@ -135,8 +180,19 @@ namespace CsQuery.Utility
             }
         }
 
+        /// <summary>
+        /// Test if value implements IDictionary&lt;,&gt;
+        /// </summary>
+        ///
+        /// <param name="value">
+        /// The value.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if a dictionary, false if not.
+        /// </returns>
 
-        protected bool IsDictionary(object value)
+        private bool IsDictionary(object value)
         {
             Type type = value.GetType();
 

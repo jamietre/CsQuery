@@ -202,7 +202,7 @@ namespace CsQuery.Implementation
                 if (_Style == null)
                 {
                     _Style = new CSSStyleDeclaration();
-                    _Style.OnHasStyleChanged += new EventHandler<StyleChangedArgs>(_Style_OnHasStyleChanged);
+                    _Style.OnHasStylesChanged += new EventHandler<StyleChangedArgs>(_Style_OnHasStylesChanged);
 
                 }
                 return _Style;
@@ -210,7 +210,7 @@ namespace CsQuery.Implementation
             protected set
             {
                 _Style = value;
-                _Style.OnHasStyleChanged += new EventHandler<StyleChangedArgs>(_Style_OnHasStyleChanged);
+                _Style.OnHasStylesChanged += new EventHandler<StyleChangedArgs>(_Style_OnHasStylesChanged);
                 if (_Style != null && _Style.HasStyles)
                 {
                     AttributeRemoveFromIndex(HtmlData.tagSTYLE);
@@ -222,7 +222,7 @@ namespace CsQuery.Implementation
             }
         }
 
-        void _Style_OnHasStyleChanged(object sender, StyleChangedArgs e)
+        void _Style_OnHasStylesChanged(object sender, StyleChangedArgs e)
         {
             if (e.HasStyles)
             {
@@ -1907,13 +1907,8 @@ namespace CsQuery.Implementation
         /// Enumerates all descendant elements in this collection.
         /// </summary>
         ///
-        /// <param name="parent">
-        /// The parent.
-        /// </param>
-        ///
         /// <returns>
-        /// An enumerator that allows foreach to be used to process descendant elements in this
-        /// collection.
+        /// A sequence of IDomElement objects
         /// </returns>
 
         internal IEnumerable<IDomElement> DescendantElements()
@@ -1964,6 +1959,9 @@ namespace CsQuery.Implementation
         ///
         /// <param name="attributeId">
         /// Identifier for the attribute.
+        /// </param>
+        /// <param name="value">
+        /// The matched value
         /// </param>
         ///
         /// <returns>

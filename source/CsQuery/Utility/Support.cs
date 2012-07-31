@@ -80,16 +80,21 @@ namespace CsQuery.Utility
         /// Given a rooted path to look within, and a partial path to a file, the full path to the file.
         /// </summary>
         ///
-        /// <param name="sourcePath">
-        /// The rooted path to match within
+        /// <exception cref="ArgumentException">
+        /// Thrown when one or more arguments have unsupported or illegal values.
+        /// </exception>
+        ///
+        /// <param name="partialPath">
+        /// The partial path to find.
         /// </param>
-        /// <param name="find">
-        /// The path/filename to find
+        /// <param name="basePath">
+        /// The rooted path to match within
         /// </param>
         ///
         /// <returns>
-        /// The full rooted path the the file
+        /// The full rooted path the the file.
         /// </returns>
+
 
         public static string GetFilePath(string partialPath, string basePath)
         {
@@ -339,6 +344,10 @@ namespace CsQuery.Utility
         /// Copies files matching a pattern.
         /// </summary>
         ///
+        /// <exception cref="ArgumentException">
+        /// Thrown when one or more arguments have unsupported or illegal values.
+        /// </exception>
+        ///
         /// <param name="source">
         /// Source for the.
         /// </param>
@@ -347,6 +356,9 @@ namespace CsQuery.Utility
         /// </param>
         /// <param name="overwrite">
         /// true to overwrite, false to preserve.
+        /// </param>
+        /// <param name="patterns">
+        /// One or more file matching patterns to match.
         /// </param>
 
         public static void CopyFiles(DirectoryInfo source,
@@ -373,6 +385,20 @@ namespace CsQuery.Utility
             }
         }
 
+        /// <summary>
+        /// Copies files matching a pattern. Existing files will be overwritten.
+        /// </summary>
+        ///
+        /// <param name="source">
+        /// Source directory for the files
+        /// </param>
+        /// <param name="destination">
+        /// Destination directory.
+        /// </param>
+        /// <param name="patterns">
+        /// One or more file matching patterns to match.
+        /// </param>
+
         public static void CopyFiles(DirectoryInfo source,
                     DirectoryInfo destination,
                      params string[] patterns)
@@ -384,11 +410,15 @@ namespace CsQuery.Utility
         /// Deletes the files in a directory matching one or more patterns (nonrecursive)
         /// </summary>
         ///
-        /// <param name="source">
-        /// Directory where files are located
+        /// <exception cref="ArgumentException">
+        /// Thrown when the directory is missing
+        /// </exception>
+        ///
+        /// <param name="directory">
+        /// Directory where files are located.
         /// </param>
         /// <param name="patterns">
-        /// A variable-length parameters list containing patterns.
+        /// One or more file matching patterns to delete
         /// </param>
 
         public static void DeleteFiles(DirectoryInfo directory, params string[] patterns)
@@ -585,10 +615,10 @@ namespace CsQuery.Utility
         }
 
         /// <summary>
-        /// Converts a value to an enum, assuming the enum is camelcased
+        /// Converts a value to an enum, assuming the enum is camelcased.
         /// </summary>
         ///
-        /// <typeparam name="T">
+        /// <typeparam name="TEnum">
         /// Generic type parameter.
         /// </typeparam>
         /// <param name="value">

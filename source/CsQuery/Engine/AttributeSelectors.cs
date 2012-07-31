@@ -113,10 +113,8 @@ namespace CsQuery.Engine
             }
         }
 
-      
-
         /// <summary>
-        /// Test whether a sentence contains a word
+        /// Test whether a sentence contains a word.
         /// </summary>
         ///
         /// <param name="sentence">
@@ -124,6 +122,9 @@ namespace CsQuery.Engine
         /// </param>
         /// <param name="word">
         /// The word.
+        /// </param>
+        /// <param name="comparer">
+        /// The comparer.
         /// </param>
         ///
         /// <returns>

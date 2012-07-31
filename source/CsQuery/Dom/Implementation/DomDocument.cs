@@ -37,11 +37,17 @@ namespace CsQuery.Implementation
             Populate(elements);
         }
 
-        
         /// <summary>
-        /// Create a new document from a character array of html
+        /// Create a new document from a character array of html.
         /// </summary>
-        /// <param name="html"></param>
+        ///
+        /// <param name="html">
+        /// The HTML
+        /// </param>
+        /// <param name="htmlParsingMode">
+        /// The HTML parsing mode.
+        /// </param>
+
         public DomDocument(char[] html, HtmlParsingMode htmlParsingMode)
         {
             InitializeDomDocument();
@@ -573,27 +579,29 @@ namespace CsQuery.Implementation
             return CreateNew<IDomDocument>();
         }
 
-        /// <summary>
-        /// Creates an IDomDocument that is derived from this one. The new type can also be a derived
-        /// type, such as IDomFragment. The new object will inherit DomRenderingOptions from this one.
-        /// </summary>
-        ///
-        /// <exception cref="ArgumentException">
-        /// Thrown when one or more arguments have unsupported or illegal values.
-        /// </exception>
-        ///
-        /// <typeparam name="T">
-        /// The type of object to create that is IDomDocument.
-        /// </typeparam>
-        /// <param name="html">
-        /// The HTML source for the new document.
-        /// </param>
-        ///
-        /// <returns>
-        /// A new, empty concrete class that is represented by the interface T, configured with the same
-        /// options as the current object.
-        /// </returns>
-
+         /// <summary>
+         /// Creates an IDomDocument that is derived from this one. The new type can also be a derived type,
+         /// such as IDomFragment. The new object will inherit DomRenderingOptions from this one.
+         /// </summary>
+         ///
+         /// <exception cref="ArgumentException">
+         /// Thrown when one or more arguments have unsupported or illegal values.
+         /// </exception>
+         ///
+         /// <typeparam name="T">
+         /// The type of object to create that is IDomDocument.
+         /// </typeparam>
+         /// <param name="html">
+         /// The HTML source for the new document.
+         /// </param>
+         /// <param name="htmlParsingMode">
+         /// The HTML parsing mode.
+         /// </param>
+         ///
+         /// <returns>
+         /// A new, empty concrete class that is represented by the interface T, configured with the same
+         /// options as the current object.
+         /// </returns>
   
          public IDomDocument CreateNew<T>(char[] html, HtmlParsingMode htmlParsingMode) where T : IDomDocument
          {

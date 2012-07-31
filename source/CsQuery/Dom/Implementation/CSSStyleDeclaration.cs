@@ -141,7 +141,7 @@ namespace CsQuery.Implementation
             {
                 bool hadStyles = HasStyles;
                 _QuickSetValue = value;
-                DoOnHasStyleChanged(hadStyles);
+                DoOnHasStylesChanged(hadStyles);
                 //UpdateIndex(hadStyles);
             }
         }
@@ -157,10 +157,10 @@ namespace CsQuery.Implementation
         public ICSSRule ParentRule { get; protected set; }
 
         /// <summary>
-        /// Event queue for all listeners interested in OnHasStyleChanged events.
+        /// Event queue for all listeners interested in OnHasStylesChanged events.
         /// </summary>
 
-        public event EventHandler<StyleChangedArgs> OnHasStyleChanged;
+        public event EventHandler<StyleChangedArgs> OnHasStylesChanged;
 
         /// <summary>
         /// The number of properties that have been explicitly set in this declaration block.
@@ -445,7 +445,7 @@ namespace CsQuery.Implementation
         {
             bool hadStyles = HasStyles;
             Styles[HtmlData.Tokenize(name)] = value;
-            DoOnHasStyleChanged(hadStyles);
+            DoOnHasStylesChanged(hadStyles);
         }
 
         /// <summary>
@@ -675,40 +675,7 @@ namespace CsQuery.Implementation
         #region private methods
 
 
-        /// <summary>
-        /// Adds, removes, or does nothing to the index depending on whether a change is needed
-        /// </summary>
-        /// <param name="previouslyHadStyles"></param>
-        //protected void UpdateIndex(bool previouslyHadStyles)
-        //{
-        //    if (HasStyles && !previouslyHadStyles)
-        //    {
-        //        AddToIndex();
-        //    }
-        //    else if (previouslyHadStyles && !HasStyles)
-        //    {
-        //        RemoveFromIndex();
-        //    }
-        //}
-        //protected void AddToIndex()
-        //{
-        //    if (!Owner.IsDisconnected)
-        //    {
-        //        Owner.Document.DocumentIndex.AddToIndex(Owner.AttributeIndexKey(HtmlData.tagSTYLE), Owner);
-        //    }
-        //}
-
-        //protected void RemoveFromIndex()
-        //{
-        //    if (!Owner.IsDisconnected)
-        //    {
-        //        Owner.Document.DocumentIndex.RemoveFromIndex(Owner.AttributeIndexKey(HtmlData.tagSTYLE));
-        //    }
-        //}
-
-
-        
-
+      
         protected string OptionList(CssStyle style)
         {
 
@@ -798,11 +765,11 @@ namespace CsQuery.Implementation
             yield break;
         }
 
-        private void DoOnHasStyleChanged(bool hadStyles)
+        private void DoOnHasStylesChanged(bool hadStyles)
         {
             if (hadStyles != HasStyles)
             {
-                var evt = OnHasStyleChanged;
+                var evt = OnHasStylesChanged;
                 if (evt != null)
                 {
                     var args = new StyleChangedArgs(HasStyles);

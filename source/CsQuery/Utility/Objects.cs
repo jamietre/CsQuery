@@ -1145,20 +1145,73 @@ namespace CsQuery
         {
             return ToExpando<T>(source, false);
         }
+
         /// <summary>
-        /// Converts a regular object to an expando object, or returns the source object if it is already an expando object.
-        /// If "deep" is true, child properties are cloned rather than referenced.
+        /// Converts a regular object to an expando object, or returns the source object if it is already
+        /// an expando object. If "deep" is true, child properties are cloned rather than referenced.
         /// </summary>
-        /// <param name="source"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="source">
+        /// The object to convert
+        /// </param>
+        /// <param name="deep">
+        /// When true, will clone properties that are objects.
+        /// </param>
+        ///
+        /// <returns>
+        /// The given data converted to a JsObject.
+        /// </returns>
+
         public static JsObject ToExpando(object source, bool deep)
         {
             return ToExpando<JsObject>(source, deep);
         }
+
+        /// <summary>
+        /// Converts this object to an expando object of type T.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// The type of object; must inherit IDynamicMetaObjectProvider and IDictionary&lt;string,
+        /// object&gt;
+        /// </typeparam>
+        /// <param name="source">
+        /// The object to convert
+        /// </param>
+        /// <param name="deep">
+        /// When true, will clone properties that are objects.
+        /// </param>
+        ///
+        /// <returns>
+        /// The given data converted to a T.
+        /// </returns>
+
         public static T ToExpando<T>(object source, bool deep) where T : IDictionary<string, object>, IDynamicMetaObjectProvider, new()
         {
             return ToExpando<T>(source, deep, new Type[] { });
         }
+
+        /// <summary>
+        /// Converts this object to an expando object of type T.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="source">
+        /// The object to convert.
+        /// </param>
+        /// <param name="deep">
+        /// When true, will clone properties that are objects.
+        /// </param>
+        /// <param name="ignoreAttributes">
+        /// A sequence of Attribute objects that, when any is found on a property, indicate that it should be ignored.
+        /// </param>
+        ///
+        /// <returns>
+        /// The given data converted to a T.
+        /// </returns>
+
         public static T ToExpando<T>(object source, bool deep, IEnumerable<Type> ignoreAttributes) where T : IDictionary<string, object>, IDynamicMetaObjectProvider, new()
         {
             if (Objects.IsExpando(source) && !deep)
@@ -1170,6 +1223,19 @@ namespace CsQuery
                 return ToNewExpando<T>(source, deep, ignoreAttributes);
             }
         }
+
+        /// <summary>
+        /// Clone an object. For value types, returns the value. For reference types, coverts to a
+        /// dynamic object.
+        /// </summary>
+        ///
+        /// <param name="obj">
+        /// The source object.
+        /// </param>
+        ///
+        /// <returns>
+        /// The value passed or a new dynamic object.
+        /// </returns>
 
         public static object CloneObject(object obj)
         {

@@ -9,7 +9,6 @@ using System.Web.Routing;
 using System.IO;
 using System.Reflection;
 using System.Web.Hosting;
-using Moq;
 using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.Mvc.Tests

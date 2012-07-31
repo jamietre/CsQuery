@@ -5,11 +5,27 @@ using System.Text;
 
 namespace CsQuery.StringScanner
 {
+    /// <summary>
+    /// Factory for StringScanner objects
+    /// </summary>
+
     public static class Scanner
     {
-        public static IStringScanner Create(string Text)
+        /// <summary>
+        /// Creates a new StringScanner from a string
+        /// </summary>
+        ///
+        /// <param name="Text">
+        /// The text.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new StringScsanner
+        /// </returns>
+
+        public static IStringScanner Create(string text)
         {
-            return new Implementation.StringScannerEngine(Text);
+            return new Implementation.StringScannerEngine(text);
         }
     }
 }

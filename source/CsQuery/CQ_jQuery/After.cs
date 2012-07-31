@@ -106,12 +106,29 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Insert every element in the selection at or after the index of each target (adding offset to the index).
-        /// If there is more than one target, the a clone is made of the selection for the 2nd and later targets.
+        /// Insert every element in the selection at or after the index of each target (adding offset to
+        /// the index). If there is more than one target, the a clone is made of the selection for the
+        /// 2nd and later targets.
         /// </summary>
-        /// <param name="target"></param>
-        /// <param name="offset"></param>
-        /// <returns></returns>
+        ///
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if attempting to add elements to a disconnected (parentless) sequence
+        /// </exception>
+        ///
+        /// <param name="target">
+        /// The target element
+        /// </param>
+        /// <param name="offset">
+        /// The offset from the target at which to begin inserting
+        /// </param>
+        /// <param name="insertedElements">
+        /// [out] The inserted elements.
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object
+        /// </returns>
+
         protected CQ InsertAtOffset(IEnumerable<IDomObject> target, int offset, out CQ insertedElements)
         {
             SelectionSet<IDomObject> sel = target as SelectionSet<IDomObject>;

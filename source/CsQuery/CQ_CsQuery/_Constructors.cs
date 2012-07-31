@@ -120,20 +120,39 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Create a new CsQuery object from HTML, and assign CSS from a JSON string, within a context
+        /// Create a new CsQuery object from a selector HTML, and assign CSS from a JSON string, within a context.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="context"></param>
+        ///
+        /// <param name="selector">
+        /// The 
+        /// </param>
+        /// <param name="cssJson">
+        /// The JSON containing CSS
+        /// </param>
+        /// <param name="context">
+        /// The context
+        /// </param>
+
         public CQ(string selector, string cssJson, CQ context)
         {
             _CQ(selector, context);
             AttrSet(cssJson);
         }
+
         /// <summary>
-        /// Create a new CsQuery object from HTML, and assign CSS, within a context
+        /// Create a new CsQuery object from a selector or HTML, and assign CSS, within a context.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="context"></param>
+        ///
+        /// <param name="selector">
+        /// The selector or HTML markup
+        /// </param>
+        /// <param name="css">
+        /// The object whose property names and values map to CSS
+        /// </param>
+        /// <param name="context">
+        /// The context
+        /// </param>
+
         public CQ(string selector, object css, CQ context)
         {
             _CQ(selector, context);

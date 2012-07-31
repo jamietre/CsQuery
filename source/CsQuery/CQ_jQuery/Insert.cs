@@ -192,12 +192,22 @@ namespace CsQuery
 
         #region private methods
 
-
         /// <summary>
-        /// Support for InsertAfter and InsertBefore. An offset of 0 will insert before the current element. 1 after.
+        /// Support for InsertAfter and InsertBefore. An offset of 0 will insert before the current
+        /// element. 1 after.
         /// </summary>
-        /// <param name="target"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="target">
+        /// The target object
+        /// </param>
+        /// <param name="offset">
+        /// The offset from the targe object to insert
+        /// </param>
+        ///
+        /// <returns>
+        /// The current CQ object
+        /// </returns>
+
         private CQ InsertAtOffset(IDomObject target, int offset)
         {
             int index = target.Index;

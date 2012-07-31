@@ -245,12 +245,8 @@ namespace CsQuery.Implementation
         /// Enumerates the element children of a node.
         /// </summary>
         ///
-        /// <param name="parent">
-        /// The parent.
-        /// </param>
-        ///
         /// <returns>
-        /// An enumerator.
+        /// An sequence of elements
         /// </returns>
 
         protected IEnumerable<DomElement> Children()

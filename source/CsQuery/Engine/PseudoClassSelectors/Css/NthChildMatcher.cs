@@ -203,10 +203,23 @@ namespace CsQuery.Engine
         }
 
         /// <summary>
-        /// Return the index of obj within its siblings, including only elements with the same node name
+        /// Return the index of obj within its siblings, including only elements with the same node name.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="obj">
+        /// The object to seek
+        /// </param>
+        /// <param name="onlyOfSameType">
+        /// true to only objects of the same NodeName should be considered
+        /// </param>
+        /// <param name="fromLast">
+        /// Count from the last element instead of the first.
+        /// </param>
+        ///
+        /// <returns>
+        /// The zero-based index of obj within its siblings (or its siblings of the same type)
+        /// </returns>
+
         private int IndexOf(IDomElement obj, bool onlyOfSameType, bool fromLast = false)
         {
             // get the index just for this type

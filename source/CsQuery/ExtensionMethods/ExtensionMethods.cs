@@ -332,25 +332,6 @@ namespace CsQuery.ExtensionMethods
             }
         }
 
-        /// <summary>
-        /// Reduce the set of matched elements to a subset beginning with the 0-based index provided.
-        /// </summary>
-        ///
-        /// <param name="array">
-        /// The array to act on.
-        /// </param>
-        /// <param name="start">
-        /// The 0-based index at which to begin selecting.
-        /// </param>
-        /// <param name="end">
-        /// The 0-based index of the element at which to stop selecting. The actual element at this
-        /// position is not included in the result.
-        /// </param>
-        ///
-        /// <returns>
-        /// A new array of the same type as the original.
-        /// </returns>
-
         #endregion
 
         #region Miscellaneous / CsQuery specific
@@ -375,6 +356,25 @@ namespace CsQuery.ExtensionMethods
             }
         }
 
+        /// <summary>
+        /// Reduce the set of matched elements to a subset beginning with the 0-based index provided.
+        /// </summary>
+        ///
+        /// <param name="array">
+        /// The array to act on.
+        /// </param>
+        /// <param name="start">
+        /// The 0-based index at which to begin selecting.
+        /// </param>
+        /// <param name="end">
+        /// The 0-based index of the element at which to stop selecting. The actual element at this
+        /// position is not included in the result.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new array of the same type as the original.
+        /// </returns>
+        
         public static Array Slice(this Array array, int start, int end)
         {
             // handle negative values

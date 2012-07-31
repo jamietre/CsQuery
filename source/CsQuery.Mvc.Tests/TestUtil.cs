@@ -7,7 +7,6 @@ using System.Security.Principal;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.IO;
-using Moq;
 using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.Mvc.Tests

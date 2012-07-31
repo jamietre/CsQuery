@@ -49,25 +49,55 @@ namespace CsQuery.StringScanner.Patterns
         }
         bool isQuoted;
 
+        /// <summary>
+        /// Initializes this object from a character array.
+        /// </summary>
+        ///
+        /// <param name="startIndex">
+        /// The start index.
+        /// </param>
+        /// <param name="sourceText">
+        /// Source text.
+        /// </param>
+
         public override void Initialize(int startIndex, char[] sourceText)
         {
             base.Initialize(startIndex, sourceText);
             isQuoted = false;
         }
+
         /// <summary>
-        /// When unquoted, this will terminate the string
+        /// When unquoted, this will terminate the string.
         /// </summary>
+
         public IEnumerable<char> Terminators
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Run the validation against the passed string.
+        /// </summary>
+        ///
+        /// <returns>
+        /// Returns true if the pattern defined by this class is successfully matched, and false if not.
+        /// </returns>
+
         public override bool Validate()
         {
             isQuoted = CharacterData.IsType(Source[StartIndex], CharacterType.Quote);
             return base.Validate();
         }
+
+        /// <summary>
+        /// Finishes a validation.
+        /// </summary>
+        ///
+        /// <returns>
+        /// true if the string matched the pattern defined by this instance, false if not.
+        /// </returns>
+
         protected override bool FinishValidate()
         {
             if (isQuoted)
@@ -91,11 +121,11 @@ namespace CsQuery.StringScanner.Patterns
         /// The current index.
         /// </param>
         /// <param name="current">
-        /// The current character
+        /// The current character.
         /// </param>
         ///
         /// <returns>
-        /// true to continue seeking
+        /// true to continue seeking.
         /// </returns>
 
         protected override bool Expect(ref int index, char current)

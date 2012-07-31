@@ -52,11 +52,24 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Return only keys at depth. Zero is the matching key.
+        /// Return all matching keys at the specified depth relative to the subkey, e.g. 0 will return
+        /// only the element that exactly matches the subkey.
         /// </summary>
-        /// <param name="subKey"></param>
-        /// <param name="depth"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="subKey">
+        /// The subkey to match.
+        /// </param>
+        /// <param name="depth">
+        /// The zero-based depth relative to the subkey's depth
+        /// </param>
+        /// <param name="descendants">
+        /// When true, include elements that are at a greater depth too
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence of TValue elements.
+        /// </returns>
+
         public IEnumerable<TValue> GetRange(string subKey, int depth, bool descendants)
         {
             if (depth == 0 && !descendants)

@@ -27,7 +27,7 @@ namespace CsQuery
 
         string Href { get; set; }
 
-        ///public MediaList Media { get; set; }
+        // public MediaList Media { get; set; }
 
         /// <summary>
         /// The node that associates this style sheet with the document. For HTML, this may be the
