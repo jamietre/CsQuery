@@ -24,9 +24,7 @@ The current release is 1.2. This release is primarily a bugfix release, but is s
 * It is the minimum version required for the new [CsQuery.Mvc](https://github.com/jamietre/CsQuery/tree/master/source/CsQuery.Mvc) framework.
 * It includes a change to the public API which will break code which *directly* instantiates `DomElement` objects. (This has never been recommended and will not affect any code which uses `CQ.Create` or `Document.CreateElement` methods; it only affects creation using `new` to create `DomElement` objects)
 
-Please review the [change log](https://github.com/jamietre/CsQuery/blob/master/source/README.md) for details on this release. 
-
-See [all CsQuery release notes.](http://blog.outsharked.com/search/label/csquery-release)
+See the [release notes for 1.2](http://blog.outsharked.com/2012/08/csquery-12-released.html) or review [all CsQuery release notes.](http://blog.outsharked.com/search/label/csquery-release)
 
 
 ### Documentation
