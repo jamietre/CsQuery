@@ -45,6 +45,35 @@ namespace CsQuery.Utility
         /// </summary>
         ///
         /// <param name="partialPath">
+        /// The partial path to find.
+        /// </param>
+        /// <param name="filePath">
+        /// [out] Full pathname of the file.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
+        public static bool TryGetFilePath(string partialPath, out string filePath)
+        {
+            try {
+                filePath = GetFilePath(partialPath);
+                return true;
+            }
+            catch(Exception e) {
+                filePath = "";
+                return false;
+            }
+        }
+        
+        /// <summary>
+        /// Given a partial path to a folder or file, try to find the full rooted path. The topmost part
+        /// of the partial path must be part of the current application path; e.g. there must be an
+        /// overlapping part on which to match.
+        /// </summary>
+        ///
+        /// <param name="partialPath">
         /// The partial path to find
         /// </param>
         ///

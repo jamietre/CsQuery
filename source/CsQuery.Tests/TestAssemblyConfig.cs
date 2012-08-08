@@ -21,8 +21,10 @@ namespace CsQuery.Tests
         {
 
 
-            var solutionFolderTry = Support.GetFilePath("./TestResults/");
-            if (solutionFolderTry == "")
+            string solutionFolderTry;
+            bool isMSTest = Support.TryGetFilePath("./TestResults/", out solutionFolderTry);
+
+            if (!isMSTest)
             {
                 solutionFolderTry = Support.GetFilePath("./CsQuery.Tests/");
             }
