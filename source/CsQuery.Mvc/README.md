@@ -8,33 +8,45 @@ Instructions for using this are below. To see it in action, just to look at the 
 
     Install-Package CsQuery.Mvc
 
-The framework consists of several classes. They are all found in the `CsQueryView` folder of the sample app:
-
-    CsQueryViewEngine.cs
-    CsQueryView.cs
-    CsQueryController.cs
-    ICsQueryController.cs
-
-Next, replace the default Razor engine with the CsQuery implementation, just add these two lines to `Application_Start()`. This won't change anything unless you specifically invoke CsQuery methods as described later.
+To use it, just replace the default Razor engine with the CsQuery implementation by adding the code below to `Application_Start()`':
 
     ViewEngines.Engines.Clear();
     ViewEngines.Engines.Add(new CsQueryViewEngine());
 
+You can also configure a special layout controller. This controller defines two methods that will be called when the layout is created but before the action-specific methods are invoked, and is invoked, and again after any action-specific methods have run. You configure a layout controller by creating the `CsQueryViewEngine` object with a generic type parameter that identifies it:
+
+    ViewEngines.Engines.Add(new CsQueryViewEngine<Controllers.LayoutController>());
+ 
+Each layout controller should have just two methods, `void Cq_Start()` and `void Cq_End()`. It must also implement `ICsQueryController` just like any other CsQuery.Mvc controller (see below). 
+
+Note that binding the CsQuery view engine will have no effect on your existing controllers; it's functionality only kicks in when a controller implements `ICsQueryController`.
 
 ####Using It
 
-To create a controller that can use CsQuery, just implement `ICsQueryController` in any controller. This exposes a new member of the controller:
+First, reference the assembly `CsQuery.Mvc` in your controller code:
 
-    public CQ Doc;
+    using CsQuery.Mvc;
+
+To create a controller that can use CsQuery, just implement `ICsQueryController` in any controller. Alternatively, you can just inherit `CsQuery.Mvc.CsQueryController` instead of the default `Controller`:
 
 
-Alternatively, just inherit `CsQuery.Mvc.CsQueryController` instead of the default `Controller`.
+    public class HomeController: CsQueryController
+    {
+        public ActionResult Index() {
+           ...
+        }
+        ...
+    }
+
+This interface exposes a single new property of the controller:
+
+    public CQ Doc {get;}
  
-You can create action methods that being with `Cq_` which will be called after the `ActionResult` is returned from an action. For example,
+Within a controller that implements `ICsQueryController`, you can create special action methods which will be called after the `ActionResult` is returned from an action. For example,
 
     public void Cq_Index() { .. }
 
-would be called whenever the action associated with the view `Index` was invoked. The `Doc` object will be populated with the HTML rendered from the action, which you may manipulate before it is output to the client.
+would be called after the action associated with the view `Index` was invoked. The `Doc` object will be populated with the HTML rendered from the action, which you may manipulate before it is output to the client.
 
 You can also bind CsQuery actions to partial views:
 
@@ -57,7 +69,9 @@ There are also two general purpose methods available:
 
 The `Cq_Start` method will be called before the action-specific method in a given controller regardless of the action; the `Cq_End` method likewise will be called afterwards. All the Cq methods are always called after any code is executed in the real action however - this handling doesn't begin until the `ActionResult` is returned.
 
-For example, this code would put a border around every div:
+####Example
+
+This code would put a 1 pixel red border around every div:
 
     public class HomeController : CsQueryController
     {

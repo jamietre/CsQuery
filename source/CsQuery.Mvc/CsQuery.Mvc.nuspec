@@ -12,10 +12,17 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>A custom view engine and controllers for using CsQuery directly in an ASP.NET MVC application</summary>
     <description>This framework automatically passed a CQ object created from the HTML markup of a page before it's rendered to special action methods in your controllers. Additionally, provides an HtmlHelper for using CsQuery directly from Razor views.
+
+    Documentation: https://github.com/jamietre/CsQuery/tree/master/source/CsQuery.Mvc
     </description>
     <releaseNotes>This is the first public release.</releaseNotes>
     <copyright>Copyright 2012</copyright>
     <tags>jquery html</tags>
+      <dependencies>
+        <group>
+            <dependency id="CsQuery" version="1.2.0" />
+        </group>
+      </dependencies>    
   </metadata>
     <files>
         <file src="bin\release\CsQuery.Mvc.dll" target="lib\net40" />

@@ -16,9 +16,11 @@ Version 1.2 is primarily a bug fix release, but also represents the minimum vers
 
 *Other Changes*
 
-**Breaking change:** The DOM element model has been revised to include interfaces and subclasses implementing node type specific behavior. That is, some element type (for example, `li` and `a`) that have properties with unique behavior may be implemented using a derived class rather than `DomElement`. 
+**Breaking change:** The DOM element model has been revised to include interfaces and subclasses implementing node type specific behavior. That is, some element type (for example, `li` and `a`) that have properties with unique behavior may be implemented using a derived class rather than `DomElement`.
 
 For this reason it is *no longer permitted* for client code to create instances of `DomElement` directly. Instead, the `DomElement.Create` factory method must be used to ensure that derived classes are returned for certain element types. Generally speaking, you shouldn't even be doing this - it has always been advisable to use `Document.CreateElement`. However there could be situations where you want to create an unbound element without any `CQ` object context. This is the way to do it now.
+
+Apart from the change in the constructor for `DomElement`, this only other scenario that would break existing code is testing an object's type explicitly against `typeof(DomElement)`. As long as you are testing for interfaces or using `is` to test an object's type this should not break anything. 
 
 
 ####Version 1.1.3.1
