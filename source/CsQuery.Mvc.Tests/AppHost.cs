@@ -60,8 +60,9 @@ namespace CsQuery.Mvc.Tests
         }
 
         /// <summary>
-        /// Gets or sets the full pathname of the application binaries, typically "~/bin/debug". These
-        /// will be copied to the application root folder, and deleted when the host is disposed.
+        /// Gets or sets the full pathname of the temporary application binaries (the same as the target
+        /// app path). These will be copied from the binary folder, and deleted when the host is
+        /// disposed.
         /// </summary>
 
         public DirectoryInfo TempBinPath { get; protected set; }
@@ -190,7 +191,7 @@ namespace CsQuery.Mvc.Tests
 
         public void Dispose()
         {
-            CsQuery.Utility.Support.DeleteFiles(AppBinPath, "*.pdb", "*.dll");
+            CsQuery.Utility.Support.DeleteFiles(TempBinPath, "*.pdb", "*.dll");
         }
     }
 }

@@ -19,14 +19,19 @@ namespace CsQuery.Mvc.Tests
     public class TestConfig
     {
         public static MvcAppHost Host;
-        
 
+#if DEBUG 
+        const string build = "debug";
+#else
+        const string build="release";
+#endif
+        
         [SetUp]
         public static void AssemblySetup()
         {
             string appPath = Path.GetDirectoryName(new System.Diagnostics.StackFrame(true).GetFileName());
 
-            Host = MvcAppHost.CreateApplicationHost<MvcTestApp>(appPath, appPath + "\\bin\\debug");
+            Host = MvcAppHost.CreateApplicationHost<MvcTestApp>(appPath, appPath + "\\bin\\"+build);
         }
 
         [TearDown]

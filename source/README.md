@@ -6,7 +6,9 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ### Change Log
 
-####Version 1.1.4 (development)
+####Version 1.2
+
+Version 1.2 is primarily a bug fix release, but also represents the minimum version needed for compatibility with the [CsQuery.Mvc](https://github.com/jamietre/CsQuery/tree/master/source/CsQuery.Mvc) framework. Additionally, there is a change to the public API that could be breaking (see "other changes" below). For this reason the version number has been changed to a new major release.
 
 *Bug Fixes*
 
@@ -14,9 +16,10 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 *Other Changes*
 
-Revised DOM element model to include interfaces and subclasses implementing element-specific behavior for elements. This is a bit of a hybrid since the core interface `IDomObject` already includes some non-global properties.
+**Breaking change:** The DOM element model has been revised to include interfaces and subclasses implementing node type specific behavior. That is, some element type (for example, `li` and `a`) that have properties with unique behavior may be implemented using a derived class rather than `DomElement`. 
 
-The goal is a balance between convenience of a single interface for the most common DOM element properties, while still permitting strongly-typed interfaces and overridden implemenations of non-global element behavior. It is unlikely any non-global members of the core interface will be removed to ensure backwards compatibility. Nor is it likely any more will be added; as the model is filled out to fulfill HTML5-compliant behavior, new interfaces will be developed.
+For this reason it is *no longer permitted* for client code to create instances of `DomElement` directly. Instead, the `DomElement.Create` factory method must be used to ensure that derived classes are returned for certain element types. Generally speaking, you shouldn't even be doing this - it has always been advisable to use `Document.CreateElement`. However there could be situations where you want to create an unbound element without any `CQ` object context. This is the way to do it now.
+
 
 ####Version 1.1.3.1
 
