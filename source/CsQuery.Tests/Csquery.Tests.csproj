@@ -24,6 +24,7 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -36,7 +37,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -227,14 +227,6 @@
     <Compile Include="jQuery\Sizzle\Element.cs" />
     <Compile Include="jQuery\Sizzle\SizzleTest.cs" />
     <Compile Include="TestAssemblyConfig.cs" />
-    <Compile Include="Performance\PerformanceTest.cs" />
-    <Compile Include="Performance\Tests\Performance_MediumDom.cs" />
-    <Compile Include="Performance\Tests\PerformanceShared.cs" />
-    <Compile Include="Performance\Tests\Performance_BigDom.cs" />
-    <Compile Include="Performance\Tests\Performance_SmallDom.cs" />
-    <Compile Include="Performance\PerfComparison.cs" />
-    <Compile Include="Performance\PerfData.cs" />
-    <Compile Include="Performance\PerfCompare.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support.cs" />
     <Compile Include="Csharp\Selectors\MiscellaneousSelectors.cs" />
@@ -268,9 +260,7 @@
       <Name>CsQuery</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Performance\Output\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
       <Visible>False</Visible>

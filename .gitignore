@@ -6,7 +6,8 @@ Build/
 WebSite/
 source/TestResults/
 source/CsQuery.Tests/Performance/Output/
-source/packages/
+source/CsQuery.PerformanceTests/Output/
+packages
 *.nupkg
 
 #################

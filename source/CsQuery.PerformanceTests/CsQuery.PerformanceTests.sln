@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsQuery", "..\CsQuery\CsQuery.csproj", "{C38DFFE9-321B-4941-B031-29D718AB5C31}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsQuery.PerformanceTests", "CsQuery.PerformanceTests\CsQuery.PerformanceTests.csproj", "{4886324B-F88B-435A-B21E-43821B5C4305}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C38DFFE9-321B-4941-B031-29D718AB5C31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C38DFFE9-321B-4941-B031-29D718AB5C31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C38DFFE9-321B-4941-B031-29D718AB5C31}.Debug|x64.ActiveCfg = Debug|x64
+		{C38DFFE9-321B-4941-B031-29D718AB5C31}.Debug|x64.Build.0 = Debug|x64
+		{C38DFFE9-321B-4941-B031-29D718AB5C31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C38DFFE9-321B-4941-B031-29D718AB5C31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C38DFFE9-321B-4941-B031-29D718AB5C31}.Release|x64.ActiveCfg = Release|x64
+		{C38DFFE9-321B-4941-B031-29D718AB5C31}.Release|x64.Build.0 = Release|x64
+		{4886324B-F88B-435A-B21E-43821B5C4305}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4886324B-F88B-435A-B21E-43821B5C4305}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4886324B-F88B-435A-B21E-43821B5C4305}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4886324B-F88B-435A-B21E-43821B5C4305}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4886324B-F88B-435A-B21E-43821B5C4305}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4886324B-F88B-435A-B21E-43821B5C4305}.Release|x64.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
