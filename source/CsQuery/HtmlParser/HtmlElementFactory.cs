@@ -361,7 +361,7 @@ namespace CsQuery.HtmlParser
 
                                     if (parentTagId ==0 && IsDocument) {
                                         if (newTagId != HtmlData.tagHTML) {
-                                            current.Element = new DomElement(HtmlData.tagHTML);
+                                            current.Element =DomElement.Create(HtmlData.tagHTML);
                                             current = current.AddNewChild();
                                             parentTagId = HtmlData.tagHTML;
                                         }

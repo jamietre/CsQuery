@@ -1,4 +1,6 @@
-﻿@{
+﻿@using CsQuery.Mvc;
+
+@{   
 
     ViewBag.Title = "Test Controller Home Page";
 }
@@ -9,3 +11,5 @@
     Content on Index Path
 </p>
 
+@Html.HtmlTag("div").AddClass("testclass").Attr("id", "test-cq-helper").Text("This is the inner text");
+@Html.HtmlTag("<div id='test-cq-helper2' class=testclass2></div>");

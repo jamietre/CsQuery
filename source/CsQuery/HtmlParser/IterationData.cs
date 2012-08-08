@@ -628,7 +628,7 @@ namespace CsQuery.HtmlParser
 
         public IterationData AddNewParent(ushort tagId, int pos)
         {
-            Element = new DomElement(tagId);
+            Element = DomElement.Create(tagId);
             ((DomElement)Parent.Element).ChildNodesInternal.AddAlways(Element);
             return AddNewChild(pos);
         }

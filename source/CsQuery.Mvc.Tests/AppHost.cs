@@ -56,8 +56,23 @@ namespace CsQuery.Mvc.Tests
             host.InitializeApplication<T>();
 
             return host;
+
         }
+
+        /// <summary>
+        /// Gets or sets the full pathname of the application binaries, typically "~/bin/debug". These
+        /// will be copied to the application root folder, and deleted when the host is disposed.
+        /// </summary>
+
         public DirectoryInfo AppBinPath { get; protected set; }
+
+        /// <summary>
+        /// Initializes the application host by invoking the global Application_Start method.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
 
         public void InitializeApplication<T>() where T: HttpApplication, new()
         {
@@ -67,6 +82,35 @@ namespace CsQuery.Mvc.Tests
             MethodInfo mi = globalType.GetMethod("Application_Start", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             mi.Invoke(global, new object[] { });
         }
+
+        /// <summary>
+        /// Renders an MVC view defined by a controller and named action.
+        /// </summary>
+        ///
+        /// <remarks>
+        /// The basis for this was taken from user http://stackoverflow.com/users/66372/eglasius 's answer
+        /// answer for this question:  
+        /// http://stackoverflow.com/questions/3702526/is-there-a-way-to-process-an-mvc-view-aspx-file-from-a-non-web-application
+        /// </remarks>
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown when the named action could not be found on the controller.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when there is already an application HTTP context.
+        /// </exception>
+        ///
+        /// <typeparam name="T">
+        /// Generic type of the controller.
+        /// </typeparam>
+        /// <param name="action">
+        /// The action name.
+        /// </param>
+        ///
+        /// <returns>
+        /// The HTML string produced by the action.
+        /// </returns>
+        
         public string RenderView<T>(string action)  where T: Controller, new()
         {
             // get method info
@@ -89,16 +133,19 @@ namespace CsQuery.Mvc.Tests
             var writer = new StringWriter();
 
             var httpContext = new HttpContext(new HttpRequest("", url, ""), new HttpResponse(writer));
-                
-            if (HttpContext.Current != null) throw new NotSupportedException("httpcontext was already set");
+
+            if (HttpContext.Current != null)
+            {
+                throw new InvalidOperationException("HttpContext was already set");
+            }
 
             HttpContext.Current = httpContext;
             var routeData = new RouteData();
             routeData.Values.Add("controller", controllerName);
             routeData.Values.Add("action", mi.Name);
+
             var controllerContext = new ControllerContext(new HttpContextWrapper(httpContext), routeData, controller);
             controller.ControllerContext = controllerContext;
-
 
             ActionResult res = (ActionResult)mi.Invoke(controller, new object[] { });
             

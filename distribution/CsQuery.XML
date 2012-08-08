@@ -4815,6 +4815,15 @@
              A string of HTML
              </returns>
         </member>
+        <member name="M:CsQuery.CQ.ToHtmlString">
+             <summary>
+             Returns the complete HTML-encoded string of the selection set. 
+             </summary>
+            
+             <returns>
+             An HTML-encoded string.
+             </returns>
+        </member>
         <member name="M:CsQuery.CQ.GetEnumerator">
              <summary>
              Returns an enumeration of the current selection set for this CQ object
@@ -10163,19 +10172,6 @@
             <summary>
             Default constructor.
             </summary>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.#ctor(System.String)">
-             <summary>
-             Create a new DOM element of a specified nodeName.
-             </summary>
-            
-             <exception cref="T:System.ArgumentException">
-             Thrown when a missing or empty nodeName is passed.
-             </exception>
-            
-             <param name="nodeName">
-             The NodeName for the element (upper case).
-             </param>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.#ctor(System.UInt16)">
              <summary>

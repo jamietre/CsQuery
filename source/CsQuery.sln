@@ -56,8 +56,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
+		BuildVersion_AssemblyInfoFilename = 
+		BuildVersion_UseGlobalSettings = False
 		BuildVersion_BuildVersioningStyle = None.None.None.Increment
-		BuildVersion_UseGlobalSettings = True
-		BuildVersion_AssemblyInfoFilename = CsQuery\Properties\AssemblyInfo.cs
 	EndGlobalSection
 EndGlobal

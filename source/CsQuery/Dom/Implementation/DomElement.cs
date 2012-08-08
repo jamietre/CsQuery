@@ -22,6 +22,7 @@ namespace CsQuery.Implementation
     public class DomElement : DomContainer<DomElement>, IDomElement, IDomObject, IDomNode, 
         IAttributeCollection
     {
+
         #region private fields
 
         //private string _PathID;
@@ -109,19 +110,19 @@ namespace CsQuery.Implementation
         /// The NodeName for the element (upper case).
         /// </param>
 
-        private DomElement(string nodeName)
-            : base()
-        {
-            if (String.IsNullOrEmpty(nodeName))
-            {
-                throw new ArgumentException("You must provide a NodeName when creating a DomElement.");
-            }
-            if (nodeName.ToLower() == "select")
-            {
-                throw new InvalidOperationException();
-            }
-            SetNodeName(nodeName);
-        }
+        //protected DomElement(string nodeName)
+        //    : base()
+        //{
+        //    if (String.IsNullOrEmpty(nodeName))
+        //    {
+        //        throw new ArgumentException("You must provide a NodeName when creating a DomElement.");
+        //    }
+        //    if (nodeName.ToLower() == "select")
+        //    {
+        //        throw new InvalidOperationException();
+        //    }
+        //    SetNodeName(nodeName);
+        //}
 
         /// <summary>
         /// Create a new DomElement node of a nodeTipe determined by a token ID.
@@ -130,8 +131,8 @@ namespace CsQuery.Implementation
         /// <param name="tokenId">
         /// Token represnting an existing tokenized node type.
         /// </param>
-        
-        public DomElement(ushort tokenId)
+
+        protected DomElement(ushort tokenId)
             : base()
         {
             _NodeNameID = tokenId;
