@@ -42,13 +42,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CsQuery, Version=1.1.3.30725, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\CsQuery.1.1.3.2\lib\net40\CsQuery.dll</HintPath>
-    </Reference>
-    <Reference Include="CsQuery.Mvc, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CsQuery.Mvc.1.0.5\lib\net40\CsQuery.Mvc.dll</HintPath>
-    </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web.WebPages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
@@ -158,7 +152,14 @@
     <Folder Include="Controllers\Sub\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
+    <ProjectReference Include="..\..\..\source\CsQuery.Mvc\CsQuery.Mvc.csproj">
+      <Project>{1697FBB9-9116-4FDF-8F92-25C2DE8DC39B}</Project>
+      <Name>CsQuery.Mvc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\source\CsQuery\CsQuery.csproj">
+      <Project>{C38DFFE9-321B-4941-B031-29D718AB5C31}</Project>
+      <Name>CsQuery</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

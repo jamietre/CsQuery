@@ -105,10 +105,6 @@
       <Project>{1697FBB9-9116-4FDF-8F92-25C2DE8DC39B}</Project>
       <Name>CsQuery.Mvc</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CsQuery.Tests\Csquery.Tests.csproj">
-      <Project>{F8920741-0BB4-4939-A774-0F9059B2B7F0}</Project>
-      <Name>Csquery.Tests</Name>
-    </ProjectReference>
     <ProjectReference Include="..\CsQuery\CsQuery.csproj">
       <Project>{C38DFFE9-321B-4941-B031-29D718AB5C31}</Project>
       <Name>CsQuery</Name>

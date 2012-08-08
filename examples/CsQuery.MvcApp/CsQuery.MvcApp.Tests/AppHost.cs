@@ -3,16 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
-using System.Security.Principal;
 using System.Web.Mvc;
+using System.Web.Hosting;
 using System.Web.Routing;
 using System.IO;
 using System.Reflection;
-using System.Web.Hosting;
 using CsQuery.ExtensionMethods.Internal;
 
-namespace CsQuery.Mvc.Tests
+namespace CsQuery.MvcApp.Tests
 {
+    /// <summary>
+    /// Mvc application host. An object representing an ApplicationHost environment for an MVC
+    /// project.
+    /// </summary>
+
     public class MvcAppHost : MarshalByRefObject, IDisposable
     {
         /// <summary>
@@ -35,33 +39,46 @@ namespace CsQuery.Mvc.Tests
         /// A new application host.
         /// </returns>
 
-        public static MvcAppHost CreateApplicationHost<T>(string applicationPath, string binPath) where T : HttpApplication, new()
+        public static MvcAppHost CreateApplicationHost<T>(string applicationPath, string binPath = null) where T : HttpApplication, new()
         {
 
             binPath = binPath ?? AppDomain.CurrentDomain.BaseDirectory;
 
             string destPath = applicationPath + "\\bin";
 
-            var bin = new DirectoryInfo(binPath);
+
             var binTarget = new DirectoryInfo(destPath);
 
-            CsQuery.Utility.Support.CopyFiles(bin, binTarget, "*.dll", "*.pdb");
+            // Copy files from the bin directory to the root if binPath parameter was provided
+            // 
+            if (binPath != null)
+            {
+                var bin = new DirectoryInfo(binPath);
+                CsQuery.Utility.Support.CopyFiles(bin, binTarget, "*.dll", "*.pdb");
+            }
+
 
             var host = (MvcAppHost)ApplicationHost.CreateApplicationHost(
                 typeof(MvcAppHost),
                 "/",
                 applicationPath);
 
-            host.TempBinPath = binTarget;
+
             host.InitializeApplication<T>();
+
+            if (binPath != null)
+            {
+                host.TempBinPath = binTarget;
+            }
 
             return host;
 
         }
 
         /// <summary>
-        /// Gets or sets the full pathname of the application binaries, typically "~/bin/debug". These
-        /// will be copied to the application root folder, and deleted when the host is disposed.
+        /// When set, indicates that binaries were copied to a temporary location for the application
+        /// host, e.g. they were not found in the root directory. This will cause them to be deleted when
+        /// the host is disposed.
         /// </summary>
 
         public DirectoryInfo TempBinPath { get; protected set; }
@@ -190,7 +207,10 @@ namespace CsQuery.Mvc.Tests
 
         public void Dispose()
         {
-            CsQuery.Utility.Support.DeleteFiles(AppBinPath, "*.pdb", "*.dll");
+            if (TempBinPath != null)
+            {
+                CsQuery.Utility.Support.DeleteFiles(TempBinPath, "*.pdb", "*.dll");
+            }
         }
     }
 }
