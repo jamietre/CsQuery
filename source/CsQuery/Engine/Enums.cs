@@ -105,9 +105,9 @@ namespace CsQuery.Engine
     public enum CombinatorType
     {
         /// <summary>
-        ///  This selector clause  and the prior one must match
+        ///  The results of this selector clause are grouped with the results of the prior, e.g. an "or" condition
         /// </summary>
-        And = 1,       
+        Grouped = 1,       
         
         /// <summary>
         /// The selector clause is applied to the results of the prior one.

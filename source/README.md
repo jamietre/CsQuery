@@ -6,6 +6,13 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ### Change Log
 
+####Version 1.2.1 (unreleased)
+
+*Bug Fixes*
+
+- [Issue #33](https://github.com/jamietre/CsQuery/issues/33) - [type="text"] selecting `input` elements with no type attribute. 
+- [Issue #31](https://github.com/jamietre/CsQuery/issues/31) - Tests don't work in NUnit. Remove performance tests from the main test suite to simplify test suite architecture
+
 ####Version 1.2
 
 Version 1.2 is primarily a bug fix release, but also represents the minimum version needed for compatibility with the [CsQuery.Mvc](https://github.com/jamietre/CsQuery/tree/master/source/CsQuery.Mvc) framework. Additionally, there is a change to the public API that could be breaking (see "other changes" below). For this reason the version number has been changed to a new major release.

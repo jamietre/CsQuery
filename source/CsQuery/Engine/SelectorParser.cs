@@ -80,17 +80,34 @@ namespace CsQuery.Engine
                                 AddTagSelector("input");
                                 AddTagSelector("textarea",true);
                                 AddTagSelector("select",true);
-                                AddInputSelector("button",true);
+                                AddTagSelector("button",true);
                                 break;
+                            case "text":
+                                StartNewSelector(SelectorType.AttributeValue | SelectorType.Tag);
+                                Current.Tag = "input";
+                                Current.AttributeSelectorType = AttributeSelectorType.Equals;
+                                Current.AttributeName = "type";
+                                Current.AttributeValue = "text";
+                                
+                                StartNewSelector(SelectorType.AttributeValue | SelectorType.Tag, CombinatorType.Grouped, Current.TraversalType);
+                                Current.Tag = "input";
+                                Current.AttributeSelectorType = AttributeSelectorType.NotExists;
+                                Current.AttributeName = "type";
+
+                                Current.SelectorType |= SelectorType.Tag;
+                            Current.Tag = "input";
+                                break;
+
                             case "checkbox":
                             case "radio":
                             case "button":
                             case "file":
-                            case "text":
                             case "image":
+                            case "password":
+                                AddInputSelector(key,"input");
+                                break;
                             case "reset":
                             case "submit":
-                            case "password":
                                 AddInputSelector(key);
                                 break;
                             case "checked":
@@ -197,7 +214,6 @@ namespace CsQuery.Engine
                                     case "!=":
                                         Current.AttributeSelectorType = AttributeSelectorType.NotEquals;
                                         // must matched manually - missing also validates as notEquals
-                                        
                                         break;
                                     case "|=":
                                         Current.SelectorType |= SelectorType.AttributeValue;
@@ -328,33 +344,38 @@ namespace CsQuery.Engine
             if (!combineWithPrevious) {
                 StartNewSelector(SelectorType.Tag);
             } else {
-                StartNewSelector(SelectorType.Tag,CombinatorType.And,Current.TraversalType);
+                StartNewSelector(SelectorType.Tag,CombinatorType.Grouped,Current.TraversalType);
             }
             Current.Tag = tagName;
         }
 
-        private void AddInputSelector(string type, bool combineWithPrevious=false)
+        private void AddInputSelector(string type, string tag=null,bool combineWithPrevious=false)
         {
+
             if (!combineWithPrevious)
             {
-                //StartNewSelector(SelectorType.AttributeExists);
                 StartNewSelector(SelectorType.AttributeValue);
 
             }
             else
             {
-                //StartNewSelector(SelectorType.AttributeExists, CombinatorType.And, Current.TraversalType);
-                StartNewSelector(SelectorType.AttributeValue, CombinatorType.And, Current.TraversalType);
+                StartNewSelector(SelectorType.AttributeValue, CombinatorType.Grouped, Current.TraversalType);
             }
-            //Current.SelectorType |= SelectorType.AttributeValue;
+
+            if (tag!=null)
+            {
+                Current.SelectorType |= SelectorType.Tag;
+                Current.Tag = tag;
+            }
 
             Current.AttributeSelectorType = AttributeSelectorType.Equals;
             Current.AttributeName = "type";
             Current.AttributeValue = type;
 
-            if (type == "button" && !Current.SelectorType.HasFlag(SelectorType.Tag))
+            if (type == "button")
             {
-                AddTagSelector("button",true);
+                StartNewSelector(SelectorType.Tag, CombinatorType.Grouped, Current.TraversalType);
+                Current.Tag = "button";
             }
 
         }

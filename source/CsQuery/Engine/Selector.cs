@@ -383,7 +383,7 @@ namespace CsQuery.Engine
                     {
                         output += ",";
                     }
-                    else if (selector.CombinatorType == CombinatorType.And)
+                    else if (selector.CombinatorType == CombinatorType.Grouped)
                     {
                         output += "&";
                     }

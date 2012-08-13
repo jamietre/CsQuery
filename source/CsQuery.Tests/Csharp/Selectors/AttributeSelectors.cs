@@ -49,5 +49,25 @@ namespace CsQuery.Tests.Csharp.Selectors
 
         }
 
+        /// <summary>
+        /// Default type value. Although "type='text'" is the default for input elements, CSS selectors only select on
+        /// attribute and should not return it.
+        /// </summary>
+
+        [Test, TestMethod]
+        public void DefaultTypeValue()
+        {
+            var dom = CQ.CreateDocument(@"<input id='input1' /><input id='input2' type='text' />");
+
+            Assert.AreEqual(1,dom["input[type=text]"].Length );
+            Assert.AreEqual(1,dom["[type=text]"].Length );
+            Assert.IsFalse(dom["#input1"].Is("[type=text]"));
+            Assert.IsTrue(dom["#input2"].Is("[type=text]"));
+
+
+        }
     }
+
+
+
 }

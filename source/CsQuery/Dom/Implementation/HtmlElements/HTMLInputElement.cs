@@ -127,31 +127,31 @@ namespace CsQuery.Implementation
         /// The attribute for matching.
         /// </returns>
 
-        internal override bool TryGetAttributeForMatching(ushort attributeId, out string value)
-        {
-            if (attributeId == HtmlData.attrTYPE)
-            {
-                if (!TryGetAttribute(attributeId, out value))
-                {
-                    value = "text";
-                }
-                return true;
-            }
-            else
-            {
-                return base.TryGetAttributeForMatching(attributeId, out value);
-            }
-        }
+        //internal override bool TryGetAttributeForMatching(ushort attributeId, out string value)
+        //{
+        //    if (attributeId == HtmlData.attrTYPE)
+        //    {
+        //        if (!TryGetAttribute(attributeId, out value))
+        //        {
+        //            value = "text";
+        //        }
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        return base.TryGetAttributeForMatching(attributeId, out value);
+        //    }
+        //}
 
-        protected override IEnumerable<ushort> IndexAttributesTokens()
-        {
-            if (!HasAttribute(HtmlData.attrTYPE)) {
-                yield return HtmlData.attrTYPE;
-            }
-            foreach (var item in base.IndexAttributesTokens())
-            {
-                yield return item;
-            }
-        }
+        //protected override IEnumerable<ushort> IndexAttributesTokens()
+        //{
+        //    if (!HasAttribute(HtmlData.attrTYPE)) {
+        //        yield return HtmlData.attrTYPE;
+        //    }
+        //    foreach (var item in base.IndexAttributesTokens())
+        //    {
+        //        yield return item;
+        //    }
+        //}
     }
 }

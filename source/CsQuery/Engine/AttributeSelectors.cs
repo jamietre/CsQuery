@@ -45,6 +45,7 @@ namespace CsQuery.Engine
                     case AttributeSelectorType.Exists:
                         return false;
                     case AttributeSelectorType.NotEquals:
+                    case AttributeSelectorType.NotExists:
                         return true;
                     default:
                         return false;
