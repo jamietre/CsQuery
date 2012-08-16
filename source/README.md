@@ -21,6 +21,7 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 *Changes*
 
 - Change internal type from List<T> to T[] for object deserialization methods. Testing unknown objects for enumerable types, and treating them as a sequence in those situations, is too risky. We should only treat actual arrays as JSON arrays.
+- Make Data(name,value) serialize string values without quotes so they can be read by jQuery Data().
 - Clean up XML documentation in Selector, IterationData, HtmlData, others
 
 ####Version 1.1.3
