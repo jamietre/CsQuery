@@ -518,7 +518,7 @@ namespace CsQuery
 
         protected bool AddSelection(IEnumerable<IDomObject> elements)
         {
-            bool result = false;
+            bool result = false; 
             foreach (IDomObject elm in elements)
             {
                 result = true;
