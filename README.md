@@ -40,8 +40,9 @@ If you can't seem to figure out how to use a particular method, in almost all ca
 ### Contents
 
 Most of CsQuery works like jQuery, as is it's intent, so please refer to the jQuery documentation for information on jQuery methods. 
-* Roadmap
-* Features
+
+* [Roadmap](https://github.com/jamietre/CsQuery#roadmap)
+* [Features](https://github.com/jamietre/CsQuery#features)
 * [Usage](https://github.com/jamietre/CsQuery#usage)
 	* [Creating a new DOM](https://github.com/jamietre/CsQuery#creating-a-new-dom)
 	* [Manipulate the DOM with jQuery methods](https://github.com/jamietre/CsQuery#manipulate-the-dom-with-jquery-methods)
