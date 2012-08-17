@@ -40,7 +40,7 @@ namespace CsQuery.MvcApp
             // [CsQuery] The following code must be added to enable to CsQuery engine
 
             ViewEngines.Engines.Clear();
-            ViewEngines.Engines.Add(new CsQueryViewEngine());
+            ViewEngines.Engines.Add(new CsQueryViewEngine<Controllers.LayoutController>());
         }
     }
 }

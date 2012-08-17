@@ -158,7 +158,7 @@ namespace CsQuery
         public static bool IsNumericType(Type type)
         {
             Type t = GetUnderlyingType(type);
-            return t.IsPrimitive && !(t == typeof(string) || t == typeof(char) || t==typeof(bool));
+            return t.IsPrimitive && !(t == typeof(string) || t == typeof(char) || t == typeof(bool));
         }
 
         /// <summary>
@@ -298,7 +298,7 @@ namespace CsQuery
             }
             else if (IsNumericType(value.GetType()))
             {
-                return NumberToDoubleOrInt((IConvertible)value);
+                return Support.NumberToDoubleOrInt((IConvertible)value);
             }
 
             string stringVal = value.ToString();
@@ -320,7 +320,7 @@ namespace CsQuery
             }
             else if (Double.TryParse(stringVal, out doubleVal))
             {
-                return NumberToDoubleOrInt(doubleVal);
+                return Support.NumberToDoubleOrInt(doubleVal);
             }
             else if (DateTime.TryParse(stringVal, out dateTimeVal))
             {
@@ -363,12 +363,26 @@ namespace CsQuery
             }
             return output;
         }
+
         /// <summary>
-        /// Convert an object of any value type to the specified type using any known means
+        /// Convert an object of any value type to the specified type using any known means.
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
+        ///
+        /// <exception cref="InvalidCastException">
+        /// Thrown when an object cannot be cast to a required type.
+        /// </exception>
+        ///
+        /// <param name="value">
+        /// The object to convert
+        /// </param>
+        /// <param name="type">
+        /// The target type
+        /// </param>
+        ///
+        /// <returns>
+        /// An object of the target type
+        /// </returns>
+
         public static object Convert(object value, Type type)
         {
             object output;
@@ -378,6 +392,25 @@ namespace CsQuery
             }
             return output;
         }
+
+        /// <summary>
+        /// Convert an object of any value type to the specified type using any known means.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="value">
+        /// The object to convert.
+        /// </param>
+        /// <param name="defaultValue">
+        /// (optional) the default value.
+        /// </param>
+        ///
+        /// <returns>
+        /// An object of the target type.
+        /// </returns>
+
         public static T Convert<T>(object value, T defaultValue)
         {
             T output;
@@ -387,6 +420,25 @@ namespace CsQuery
             }
             return output;
         }
+
+        /// <summary>
+        /// Try to convert any object to the specified type
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// The target type
+        /// </typeparam>
+        /// <param name="value">
+        /// The object or value to convert.
+        /// </param>
+        /// <param name="typedValue">
+        /// [out] The typed value.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
         public static bool TryConvert<T>(object value, out T typedValue)
         {
             object outVal;
@@ -402,6 +454,28 @@ namespace CsQuery
                 return false;
             }
         }
+
+        /// <summary>
+        /// Try to convert an object or value to a specified type, using a default value if the
+        /// conversion fails.
+        /// </summary>
+        ///
+        /// <param name="value">
+        /// The object or value to convert.
+        /// </param>
+        /// <param name="typedValue">
+        /// [out] The typed value.
+        /// </param>
+        /// <param name="type">
+        /// The type to convert to
+        /// </param>
+        /// <param name="defaultValue">
+        /// (optional) the default value.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
 
         public static bool TryConvert(object value, out object typedValue, Type type, object defaultValue = null)
         {
@@ -514,21 +588,36 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Returns an Object with the specified Type and whose value is equivalent to the specified object.
+        /// Returns an Object with the specified Type and whose value is equivalent to the specified
+        /// object.
         /// </summary>
-        /// <param name="value">An Object that implements the IConvertible interface.</param>
-        /// <param name="conversionType">The Type to which value is to be converted.</param>
-        /// <returns>An object whose Type is conversionType (or conversionType's underlying type if conversionType
-        /// is Nullable&lt;&gt;) and whose value is equivalent to value. -or- a null reference, if value is a null
-        /// reference and conversionType is not a value type.</returns>
+        ///
         /// <remarks>
-        /// This method exists as a workaround to System.Convert.ChangeType(Object, Type) which does not handle
-        /// nullables as of version 2.0 (2.0.50727.42) of the .NET Framework. The idea is that this method will
-        /// be deleted once Convert.ChangeType is updated in a future version of the .NET Framework to handle
-        /// nullable types, so we want this to behave as closely to Convert.ChangeType as possible.
-        /// This method was written by Peter Johnson at:
+        /// This method exists as a workaround to System.Convert.ChangeType(Object, Type) which does not
+        /// handle nullables as of version 2.0 (2.0.50727.42) of the .NET Framework. The idea is that
+        /// this method will be deleted once Convert.ChangeType is updated in a future version of the
+        /// .NET Framework to handle nullable types, so we want this to behave as closely to
+        /// Convert.ChangeType as possible. This method was written by Peter Johnson at:
         /// http://aspalliance.com/author.aspx?uId=1026.
         /// </remarks>
+        ///
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when one or more required arguments are null.
+        /// </exception>
+        ///
+        /// <param name="value">
+        /// An Object that implements the IConvertible interface.
+        /// </param>
+        /// <param name="conversionType">
+        /// The Type to which value is to be converted.
+        /// </param>
+        ///
+        /// <returns>
+        /// An object whose Type is conversionType (or conversionType's underlying type if conversionType
+        /// is Nullable&lt;&gt;) and whose value is equivalent to value. -or- a null reference, if value
+        /// is a null reference and conversionType is not a value type.
+        /// </returns>
+
         public static object ChangeType(object value, Type conversionType)
         {
             // Note: This if block was taken from Convert.ChangeType as is, and is needed here since we're
@@ -660,75 +749,58 @@ namespace CsQuery
             }
 
         }
+
+
         /// <summary>
-        /// Given a string, convert each uppercase letter to a "-" followed by the lower case letter.
-        /// E.g. "fontSize" becomes "font-size".
+        /// Return the default value for a type.
         /// </summary>
         ///
-        /// <param name="name">
-        /// The string to uncamelcase
+        /// <param name="type">
+        /// The type
         /// </param>
         ///
         /// <returns>
-        /// A string
+        /// An value or null
         /// </returns>
 
-        public static string FromCamelCase(string name)
-        {
-            int pos = 0;
-            StringBuilder output = new StringBuilder();
-
-            while (pos < name.Length)
-            {
-                char cur = name[pos];
-                if (cur >= 'A' && cur <= 'Z')
-                {
-                    if (pos != 0)
-                    {
-                        output.Append("-");
-                    }
-                    output.Append(cur.ToLower());
-                }
-                else
-                {
-                    output.Append(cur);
-                }
-                pos++;
-            }
-            return output.ToString();
-
-        }
-
-        /// <summary>
-        /// Converts a name from dashed-separators to camelCase.
-        /// </summary>
-        ///
-        /// <param name="name">
-        /// The string to camelCase.
-        /// </param>
-        ///
-        /// <returns>
-        /// a dased-separated string
-        /// </returns>
-
-        public static string ToCamelCase(string name)
-        {
-            int pos = 0;
-            while (pos < name.Length)
-            {
-                if (name[pos] =='-')
-                {
-                    name = name.Substring(0, pos) + name.Substring(pos, 1).ToUpper() + name.Substring(pos + 1);
-                    pos++;
-                }
-                pos++;
-            }
-            return name;
-        }
         public static object DefaultValue(Type type)
         {
-            return type.IsValueType ? 
-                Activator.CreateInstance(type) : null;
+            return type.IsValueType ?
+                CreateInstance(type) : null;
+        }
+
+        /// <summary>
+        /// Creates an instance of a type
+        /// </summary>
+        ///
+        /// <param name="type">
+        /// The type
+        /// </param>
+        ///
+        /// <returns>
+        /// The new instance.
+        /// </returns>
+
+        public static object CreateInstance(Type type)
+        {
+            return Utility.FastActivator.CreateInstance(type);
+        }
+
+        /// <summary>
+        /// Creates an instance of type
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        ///
+        /// <returns>
+        /// The new instance&lt; t&gt;
+        /// </returns>
+
+        public static T CreateInstance<T>() where T : class
+        {
+            return Utility.FastActivator.CreateInstance<T>();
         }
         /// <summary>
         /// Returns an enumerable of one element from an object
@@ -736,7 +808,7 @@ namespace CsQuery
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static IEnumerable<T> Enumerate<T>(T obj) 
+        public static IEnumerable<T> Enumerate<T>(T obj)
         {
             //List<T> list = new List<T>();
             if (obj != null)
@@ -747,11 +819,38 @@ namespace CsQuery
             //return list;
         }
 
+        /// <summary>
+        /// Returns an enumeration composed of each object in the parameter list.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// The generic type of the enumeration.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The sequence of objects.
+        /// </param>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process enumerate&lt; t&gt; in this
+        /// collection.
+        /// </returns>
+
         public static IEnumerable<T> Enumerate<T>(params T[] obj)
         {
             return obj;
         }
 
+        /// <summary>
+        /// Returns an empty sequence of the specified type.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// The generic type of the sequence.
+        /// </typeparam>
+        ///
+        /// <returns>
+        /// An empty sequence.
+        /// </returns>
 
         public static IEnumerable<T> EmptyEnumerable<T>()
         {
@@ -869,10 +968,10 @@ namespace CsQuery
                 // JavaScriptSerializer We will convert them to arrays that are either strongly typed, or
                 // object[]. We do this by seeing if everything is the same type first while adding it to an
                 // object list, then constructing an array. 
-                
+
                 IList<object> objectList = new List<object>();
-                    
-                Type onlyType=null;
+
+                Type onlyType = null;
                 bool same = true;
                 foreach (var val in (IEnumerable)value)
                 {
@@ -895,7 +994,7 @@ namespace CsQuery
                 {
                     // This means a single type was found, and we can create a strongly typed array
                     // If it's a list of objects, map again to the default dynamic type
-                    
+
                     if (typeof(IDictionary<string, object>).IsAssignableFrom(onlyType))
                     {
                         array = Array.CreateInstance(Config.DynamicObjectType, objectList.Count);
@@ -927,7 +1026,7 @@ namespace CsQuery
             {
                 return value;
             }
-            
+
 
         }
 
@@ -1011,11 +1110,11 @@ namespace CsQuery
         /// The target object itself, if non-null, or a new dynamic object, if the target is null
         /// </returns>
 
-        public static object Extend( bool deep, object target, params object[] inputObjects)
+        public static object Extend(bool deep, object target, params object[] inputObjects)
         {
             return ExtendImpl(null, deep, target, inputObjects);
         }
-       
+
         private static object ExtendImpl(HashSet<object> parents, bool deep, object target, params object[] inputObjects)
         {
             if (deep && parents == null)
@@ -1047,9 +1146,9 @@ namespace CsQuery
                     sources.Enqueue(src);
                 }
             }
-            
+
             // Create a new empty object if there's no existing target -- same as using {} as the jQuery parameter
-            
+
             if (target == null)
             {
                 target = FastActivator.CreateInstance(Config.DynamicObjectType);
@@ -1156,27 +1255,97 @@ namespace CsQuery
 
         public static JsObject ToExpando(object source)
         {
-            return ToExpando(source,false);
+            return ToExpando(source, false);
         }
-        public static T ToExpando<T>(object source) where T : IDynamicMetaObjectProvider, IDictionary<string,object>, new()
-        {
-            return ToExpando<T>(source,false);
-        }
+
         /// <summary>
-        /// Converts a regular object to an expando object, or returns the source object if it is already an expando object.
-        /// If "deep" is true, child properties are cloned rather than referenced.
+        /// Converts this object to a dynamic object of type T.
         /// </summary>
-        /// <param name="source"></param>
-        /// <returns></returns>
+        ///
+        /// <typeparam name="T">
+        /// The type of dynamic object to create; must inherit IDynamicMetaObjectProvider and
+        /// IDictionary&lt;string,object&gt;
+        /// </typeparam>
+        /// <param name="source">
+        /// The object to convert.
+        /// </param>
+        ///
+        /// <returns>
+        /// The given data converted to a T.
+        /// </returns>
+
+        public static T ToExpando<T>(object source) where T : IDynamicMetaObjectProvider, IDictionary<string, object>, new()
+        {
+            return ToExpando<T>(source, false);
+        }
+
+        /// <summary>
+        /// Converts a regular object to an expando object, or returns the source object if it is already
+        /// an expando object. If "deep" is true, child properties are cloned rather than referenced.
+        /// </summary>
+        ///
+        /// <param name="source">
+        /// The object to convert
+        /// </param>
+        /// <param name="deep">
+        /// When true, will clone properties that are objects.
+        /// </param>
+        ///
+        /// <returns>
+        /// The given data converted to a JsObject.
+        /// </returns>
+
         public static JsObject ToExpando(object source, bool deep)
         {
             return ToExpando<JsObject>(source, deep);
         }
-        public static T ToExpando<T>(object source, bool deep) where T : IDictionary<string,object>,IDynamicMetaObjectProvider, new()
+
+        /// <summary>
+        /// Converts this object to an expando object of type T.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// The type of object; must inherit IDynamicMetaObjectProvider and IDictionary&lt;string,
+        /// object&gt;
+        /// </typeparam>
+        /// <param name="source">
+        /// The object to convert
+        /// </param>
+        /// <param name="deep">
+        /// When true, will clone properties that are objects.
+        /// </param>
+        ///
+        /// <returns>
+        /// The given data converted to a T.
+        /// </returns>
+
+        public static T ToExpando<T>(object source, bool deep) where T : IDictionary<string, object>, IDynamicMetaObjectProvider, new()
         {
             return ToExpando<T>(source, deep, new Type[] { });
         }
-        public static T ToExpando<T>(object source, bool deep, IEnumerable<Type> ignoreAttributes) where T : IDictionary<string,object>, IDynamicMetaObjectProvider, new()
+
+        /// <summary>
+        /// Converts this object to an expando object of type T.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="source">
+        /// The object to convert.
+        /// </param>
+        /// <param name="deep">
+        /// When true, will clone properties that are objects.
+        /// </param>
+        /// <param name="ignoreAttributes">
+        /// A sequence of Attribute objects that, when any is found on a property, indicate that it should be ignored.
+        /// </param>
+        ///
+        /// <returns>
+        /// The given data converted to a T.
+        /// </returns>
+
+        public static T ToExpando<T>(object source, bool deep, IEnumerable<Type> ignoreAttributes) where T : IDictionary<string, object>, IDynamicMetaObjectProvider, new()
         {
             if (Objects.IsExpando(source) && !deep)
             {
@@ -1188,9 +1357,22 @@ namespace CsQuery
             }
         }
 
+        /// <summary>
+        /// Clone an object. For value types, returns the value. For reference types, coverts to a
+        /// dynamic object.
+        /// </summary>
+        ///
+        /// <param name="obj">
+        /// The source object.
+        /// </param>
+        ///
+        /// <returns>
+        /// The value passed or a new dynamic object.
+        /// </returns>
+
         public static object CloneObject(object obj)
         {
-            return CloneObject(obj,false);
+            return CloneObject(obj, false);
         }
 
         /// <summary>
@@ -1211,24 +1393,24 @@ namespace CsQuery
         public static object CloneObject(object obj, bool deep)
         {
             // a value type
-            
+
             if (Objects.IsImmutable(obj))
             {
                 return obj;
             }
-            else if (obj.GetType().IsArray || 
+            else if (obj.GetType().IsArray ||
                 IsExpando(obj))
             {
                 // CloneList hanldes IDictionary&lt;string,object&gt; types. 
-                
-                
+
+
                 return ((IEnumerable)obj).CloneList(deep);
-            } 
+            }
             else
             {
                 // TODO - check for existence of a "clone" method
                 // convert regular objects to expando objects
-                return (ToExpando(obj,true));
+                return (ToExpando(obj, true));
             }
         }
 
@@ -1253,21 +1435,25 @@ namespace CsQuery
 
         public static object DeleteProperty(object obj, string property)
         {
-            if (IsImmutable(obj)) {
+            if (IsImmutable(obj))
+            {
                 throw new ArgumentException("The object is a value type, it has no deletable properties.");
-            } else if (IsExpando(obj))
+            }
+            else if (IsExpando(obj))
             {
                 IDictionary<string, object> dict = (IDictionary<string, object>)obj;
                 dict.Remove(property);
                 return dict;
-            } else {
-                var target = CloneObject(obj); 
-                
+            }
+            else
+            {
+                var target = CloneObject(obj);
+
                 return DeleteProperty(target, property);
             }
         }
 
-   
+
         /// <summary>
         /// Implementation of "Extend" functionality
         /// </summary>
@@ -1312,7 +1498,7 @@ namespace CsQuery
                 else
                 {
                     // targetDic[name] = deep ? value.Clone(true) : value;
-                    value = CloneObject(value,true);
+                    value = CloneObject(value, true);
                 }
             }
 
@@ -1358,7 +1544,7 @@ namespace CsQuery
             }
 
         }
-       
+
         /// <summary>
         /// Implementation of object>expando
         /// </summary>
@@ -1367,7 +1553,7 @@ namespace CsQuery
         /// <param name="deep"></param>
         /// <param name="ignoreAttributes"></param>
         /// <returns></returns>
-        private static T ToNewExpando<T>(object source, bool deep, IEnumerable<Type> ignoreAttributes) where T : IDynamicMetaObjectProvider, IDictionary<string,object>, new()
+        private static T ToNewExpando<T>(object source, bool deep, IEnumerable<Type> ignoreAttributes) where T : IDynamicMetaObjectProvider, IDictionary<string, object>, new()
         {
             if (source == null)
             {
@@ -1411,7 +1597,8 @@ namespace CsQuery
             IEnumerable<MemberInfo> members = source.GetType().GetMembers(BindingFlags.Public | BindingFlags.Instance);
             foreach (var member in members)
             {
-                if (!IgnorePropertyNames.Contains(member.Name)) {
+                if (!IgnorePropertyNames.Contains(member.Name))
+                {
                     foreach (object attrObj in member.GetCustomAttributes(false))
                     {
                         Attribute attr = (Attribute)attrObj;
@@ -1425,12 +1612,13 @@ namespace CsQuery
 
                     object value = null;
                     bool skip = false;
-                
-                    if (member is PropertyInfo) 
+
+                    if (member is PropertyInfo)
                     {
                         PropertyInfo propInfo = (PropertyInfo)member;
                         if (propInfo.GetIndexParameters().Length == 0 &&
-                            propInfo.CanRead) {
+                            propInfo.CanRead)
+                        {
 
                             // wrap this because we are testing every single property - if it doesn't work we don't want to use it
                             try
@@ -1453,12 +1641,12 @@ namespace CsQuery
                     }
                     if (!skip)
                     {
-                        targetDict[name] = deep ? Objects.CloneObject(value,true) : value;
+                        targetDict[name] = deep ? Objects.CloneObject(value, true) : value;
                     }
                 }
             NextAttribute: { }
             }
-        
+
             return target;
         }
 
@@ -1491,23 +1679,7 @@ namespace CsQuery
             result = false;
             return false;
         }
-        /// <summary>
-        /// Return an int or double from any number
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        private static IConvertible NumberToDoubleOrInt(IConvertible value)
-        {
-            double val = (double)System.Convert.ChangeType(value, typeof(double));
-            if (val == Math.Floor(val))
-            {
-                return (int)val;
-            }
-            else
-            {
-                return val;
-            }
-        }
+
 
         #endregion
     }

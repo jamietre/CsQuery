@@ -5,7 +5,7 @@ using System.Web;
 using System.Text;
 using System.Reflection;
 using System.Diagnostics;
-
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
@@ -49,7 +49,7 @@ namespace CsQuery.Tests.Csharp.Miscellaneous
         
 
         [Test, TestMethod]
-        public void Encoding()
+        public void CharEncoding()
         {
             var res = CQ.Create("<div><span>x…</span></div>");
             Assert.AreEqual(res["div span"].Text(), "x"+(char)8230);
@@ -156,6 +156,20 @@ namespace CsQuery.Tests.Csharp.Miscellaneous
             var text = new CQ(elements).Text();
 
        }
+
+        /// <summary>
+        /// Index Out of Range parsing - unverified
+        /// </summary>
+
+        [Test, TestMethod]
+        public void Issue28()
+        {
+            var strFilePath = Support.GetFilePath(SolutionDirectory + "\\CsQuery.Tests\\Resources\\pupillogin.htm");
+
+            var objStreamReader = new StreamReader(strFilePath, Encoding.UTF8);
+            string str = objStreamReader.ReadToEnd();
+            var dom = CQ.Create(str);
+        }
         #region setup
         public override void FixtureSetUp()
         {

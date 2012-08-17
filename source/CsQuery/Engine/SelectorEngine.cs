@@ -139,7 +139,7 @@ namespace CsQuery.Engine
                 // we need to do exactly this for certain selector types (for example the jQuery :button
                 // selector). 
 
-                if (selector.CombinatorType != CombinatorType.And)
+                if (selector.CombinatorType != CombinatorType.Grouped)
                 {
                     selectionSource = GetSelectionSource(selector, context, lastResult);
                     lastResult = null;
@@ -154,6 +154,7 @@ namespace CsQuery.Engine
 #if DEBUG_PATH
 
                     if (selector.SelectorType.HasFlag(SelectorType.AttributeValue) 
+                        && selector.AttributeSelectorType != AttributeSelectorType.NotExists
                         && selector.AttributeSelectorType != AttributeSelectorType.NotEquals)
                     {
                         key = "!" + selector.AttributeName.ToLower();
@@ -186,7 +187,8 @@ namespace CsQuery.Engine
                     // We don't want to use the index for "NotEquals" selectors because a missing attribute
                     // is considered a valid match
                     
-                    if (selector.SelectorType.HasFlag(SelectorType.AttributeValue) 
+                    if (selector.SelectorType.HasFlag(SelectorType.AttributeValue)
+                        && selector.AttributeSelectorType != AttributeSelectorType.NotExists
                         && selector.AttributeSelectorType != AttributeSelectorType.NotEquals)
                     {
                         key = "!" + (char)HtmlData.Tokenize(selector.AttributeName);
@@ -309,7 +311,7 @@ namespace CsQuery.Engine
                 }
                 
                 lastResult = lastResult == null ?
-                    result : lastResult.Append(result); 
+                    result : lastResult.Concat(result); 
                 
             }
 

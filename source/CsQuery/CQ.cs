@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Reflection;
 using System.IO;
+using System.Web;
 using System.Web.Script.Serialization;
 using CsQuery.ExtensionMethods;
 using CsQuery.HtmlParser;
@@ -55,8 +56,9 @@ namespace CsQuery
     /// Methods which are not part of the jQuery API are found under the "CQ_CsQuery" folder.
     /// </implementation>
 
-    public partial class CQ : IEnumerable<IDomObject>
+    public partial class CQ : IEnumerable<IDomObject>, IHtmlString
     {
+
         #region private properties
 
         private Selector _Selector;
@@ -191,6 +193,24 @@ namespace CsQuery
         public override string ToString()
         {
             return SelectionHtml();
+        }
+
+        /// <summary>
+        /// Returns the complete HTML-encoded string of the selection set. 
+        /// </summary>
+        ///
+        /// <returns>
+        /// An HTML-encoded string.
+        /// </returns>
+
+        public string ToHtmlString()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (IDomObject elm in this)
+            {
+                elm.Render(sb);
+            }
+            return sb.ToString();
         }
 
         #endregion
@@ -498,7 +518,7 @@ namespace CsQuery
 
         protected bool AddSelection(IEnumerable<IDomObject> elements)
         {
-            bool result = false;
+            bool result = false; 
             foreach (IDomObject elm in elements)
             {
                 result = true;

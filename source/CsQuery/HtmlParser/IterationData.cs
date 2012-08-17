@@ -204,15 +204,15 @@ namespace CsQuery.HtmlParser
 
             if (WrapLiterals)
             {
-                DomElement wrapper = new DomElement("span");
-                wrapper.ChildNodes.AddAlways(literal);
+                DomElement wrapper = DomElement.Create("span");
+                wrapper.ChildNodesInternal.AddAlways(literal);
                 literal = wrapper;
             }
         
 
             if (Parent != null)
             {
-                Parent.Element.ChildNodes.AddAlways(literal);
+                ((DomElement)Parent.Element).ChildNodesInternal.AddAlways(literal);
                 Reset();
                 return false;
             }
@@ -287,7 +287,7 @@ namespace CsQuery.HtmlParser
 
             if (Parent != null)
             {
-                Parent.Element.ChildNodes.AddAlways(Element);
+                ((DomElement)Parent.Element).ChildNodesInternal.AddAlways(Element);
                 completeElement = null;
             }
             else if (!hasChildren)
@@ -628,8 +628,8 @@ namespace CsQuery.HtmlParser
 
         public IterationData AddNewParent(ushort tagId, int pos)
         {
-            Element = new DomElement(tagId);
-            Parent.Element.ChildNodes.AddAlways(Element);
+            Element = DomElement.Create(tagId);
+            ((DomElement)Parent.Element).ChildNodesInternal.AddAlways(Element);
             return AddNewChild(pos);
         }
 

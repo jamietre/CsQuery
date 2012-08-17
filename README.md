@@ -2,9 +2,7 @@
 
 ## CsQuery - .C# jQuery Port for .NET 4
 
-6/13/2012
-
-Release 1.1.3
+Release 1.2 - 8/8/2012
 
 CsQuery is a jQuery port for .NET 4. It implements all CSS2 & CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) has been ported to C#. 
 
@@ -21,9 +19,12 @@ The NuGet package will always reflect the release noted here. The code on GitHub
 
 ### Release Notes
 
-The current release is 1.1.3 (July 17, 2012). Read the complete [release notes for version 1.1.3](http://blog.outsharked.com/2012/07/csquery-113-released.html), or see [all release notes.](http://blog.outsharked.com/search/label/csquery-release)
+The current release is 1.2. This release is primarily a bugfix release, but is significant for two other reasones:
 
-There are no formal release notes for minor bugfix releases. For information on changes between significant releases, please review the detailed change log for in the [source code readme](https://github.com/jamietre/CsQuery/blob/master/source/README.md).
+* It is the minimum version required for the new [CsQuery.Mvc](https://github.com/jamietre/CsQuery/tree/master/source/CsQuery.Mvc) framework.
+* It includes a change to the public API which will break code which *directly* instantiates `DomElement` objects. (This has never been recommended and will not affect any code which uses `CQ.Create` or `Document.CreateElement` methods; it only affects creation using `new` to create `DomElement` objects)
+
+See the [release notes for 1.2](http://blog.outsharked.com/2012/08/csquery-12-released.html) or review [all CsQuery release notes.](http://blog.outsharked.com/search/label/csquery-release)
 
 
 ### Documentation
@@ -94,7 +95,7 @@ As of 6/12/2012, the project is feature-complete. In the coming weeks I will be 
 Most of CsQuery works like jQuery, as is it's intent, so please refer to the jQuery documentation for information on jQuery methods. 
 
 * Usage
-	* Creating a new DOM
+	* [Creating a new DOM](https://github.com/jamietre/CsQuery#creating-a-new-dom)
 	* Manipulate the DOM with jQuery methods
 	* Accessing DOM elements directly
 	* Output as HTML

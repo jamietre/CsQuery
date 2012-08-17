@@ -5,7 +5,6 @@ using System.Text;
 using NUnit.Framework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
-using CsQuery.Tests._Performance;
 using CsQuery.Tests;
 using CsQuery.Utility;
 using System.Reflection;
@@ -20,9 +19,11 @@ namespace CsQuery.Tests
         public static void AssemblySetup()
         {
 
-            
-            var solutionFolderTry = Support.GetFilePath("./TestResults/");
-            if (solutionFolderTry == "")
+
+            string solutionFolderTry;
+            bool isMSTest = Support.TryGetFilePath("./TestResults/", out solutionFolderTry);
+
+            if (!isMSTest)
             {
                 solutionFolderTry = Support.GetFilePath("./CsQuery.Tests/");
             }
@@ -33,7 +34,7 @@ namespace CsQuery.Tests
         [TearDown]
         public static void AssemblyTeardown()
         {
-            PerformanceTest.CleanupTestRun();
+            
         }
 
         /// <summary>

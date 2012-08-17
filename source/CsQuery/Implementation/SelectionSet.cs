@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.Implementation
@@ -85,7 +86,6 @@ namespace CsQuery.Implementation
         /// Cached count
         /// </summary>
 
-        private int _Count=-1;
         private bool _IsDirty;
 
         private SelectionSetOrder OriginalOrder;
@@ -220,11 +220,7 @@ namespace CsQuery.Implementation
                 {
                     return MutableList.Count;
                 } else {
-                    if (_Count == -1)
-                    {
-                        _Count = OriginalList.Count();
-                    }
-                    return _Count;
+                    return OriginalList.Count();
                 }
             }
         }
@@ -680,7 +676,6 @@ namespace CsQuery.Implementation
         private void Touch()
         {
             _IsDirty = true;
-
         }
 
         private void Clean()

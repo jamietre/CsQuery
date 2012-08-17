@@ -6,6 +6,8 @@ Build/
 WebSite/
 source/TestResults/
 source/CsQuery.Tests/Performance/Output/
+source/CsQuery.PerformanceTests/Output/
+packages
 *.nupkg
 
 #################
@@ -42,9 +44,6 @@ obj
 *.vspscc
 .builds
 *.dotCover
-
-## TODO: If you have NuGet Package Restore enabled, uncomment this
-#packages/
 
 # Visual C++ cache files
 ipch/

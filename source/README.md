@@ -6,22 +6,44 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ### Change Log
 
-####Version 1.1.3.1 (development)
+####Version 1.2.1 (unreleased)
+
+*Bug Fixes*
+
+- [Issue #33](https://github.com/jamietre/CsQuery/issues/33) - [type="text"] selecting `input` elements with no type attribute. 
+- [Issue #31](https://github.com/jamietre/CsQuery/issues/31) - Tests don't work in NUnit. Remove performance tests from the main test suite to simplify test suite architecture
+
+####Version 1.2
+
+Version 1.2 is primarily a bug fix release, but also represents the minimum version needed for compatibility with the [CsQuery.Mvc](https://github.com/jamietre/CsQuery/tree/master/source/CsQuery.Mvc) framework. Additionally, there is a change to the public API that could be breaking (see "other changes" below). For this reason the version number has been changed to a new major release.
+
+*Bug Fixes*
+
+- [Issue #27](https://github.com/jamietre/CsQuery/issues/27) - Some `Value` properties not implemented.
+
+*Other Changes*
+
+**Breaking change:** The DOM element model has been revised to include interfaces and subclasses implementing node type specific behavior. That is, some element type (for example, `li` and `a`) that have properties with unique behavior may be implemented using a derived class rather than `DomElement`.
+
+For this reason it is *no longer permitted* for client code to create instances of `DomElement` directly. Instead, the `DomElement.Create` factory method must be used to ensure that derived classes are returned for certain element types. Generally speaking, you shouldn't even be doing this - it has always been advisable to use `Document.CreateElement`. However there could be situations where you want to create an unbound element without any `CQ` object context. This is the way to do it now.
+
+Apart from the change in the constructor for `DomElement`, this only other scenario that would break existing code is testing an object's type explicitly against `typeof(DomElement)`. As long as you are testing for interfaces or using `is` to test an object's type this should not break anything. 
+
+
+####Version 1.1.3.1
 
 *Bug Fixes*
 
 - [Issue #25](https://github.com/jamietre/CsQuery/issues/25) - `CreateFromUrl` not accepting compressed content - [pull request #25 from @vitallium](https://github.com/jamietre/CsQuery/pull/26)
 - [Issue #23](https://github.com/jamietre/CsQuery/issues/23) - Possible index out of range parsing invalid HTML
 - [Issue #20](https://github.com/jamietre/CsQuery/issues/20) - selector engine doesn't recognize hex escape sequences - [pull request #22 from @vitallium](https://github.com/jamietre/CsQuery/pull/22)
+- Store string values without JSON-syntax quotes to match the format expected by jQuery when using `Data(name,value)` method. 
 
-*Enhancements*
+*Other Changes*
 
 - [Issue #24](https://github.com/jamietre/CsQuery/issues/24) - improve performance of substring extraction method in HTML parser
-
-*Changes*
-
-- Change internal type from List<T> to T[] for object deserialization methods. Testing unknown objects for enumerable types, and treating them as a sequence in those situations, is too risky. We should only treat actual arrays as JSON arrays.
-- Make Data(name,value) serialize string values without quotes so they can be read by jQuery Data().
+- Add `CsQuery.Config.DynamicObjectType` to specify default dynamic type when dynamic objects are created.
+- Change internal type from List<T> to T[] for JSON deserialization methods. Testing unknown objects for enumerable types, and treating them as a sequence in those situations, is too risky. We should only treat actual arrays as JSON arrays.
 - Clean up XML documentation in Selector, IterationData, HtmlData, others
 
 ####Version 1.1.3

@@ -7,7 +7,7 @@ using CsQuery.ExtensionMethods.Internal;
 namespace CsQuery.Engine.PseudoClassSelectors
 {
     /// <summary>
-    /// Mathches elements that have children containing the specified text
+    /// Matches elements that have children containing the specified text.
     /// </summary>
     ///
     /// <url>
@@ -16,6 +16,18 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
     public class Contains : PseudoSelectorFilter
     {
+        /// <summary>
+        /// Return elements from the selection that contain the text in the parameter
+        /// </summary>
+        ///
+        /// <param name="selection">
+        /// A sequence of elements
+        /// </param>
+        ///
+        /// <returns>
+        /// The elements from the sequence that contain the text
+        /// </returns>
+
         public override IEnumerable<IDomObject> Filter(IEnumerable<IDomObject> selection)
         {
             foreach (IDomObject el in selection)
@@ -27,6 +39,18 @@ namespace CsQuery.Engine.PseudoClassSelectors
             }
         }
 
+        /// <summary>
+        /// Test whether a single element contains the text passed in the selector's parameter
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it contains the text, false if not.
+        /// </returns>
+
         public override bool Matches(IDomObject element)
         {
             return element is IDomContainer ?
@@ -34,7 +58,7 @@ namespace CsQuery.Engine.PseudoClassSelectors
                 false;
         }
 
-        protected bool ContainsText(IDomObject source, string text)
+        private bool ContainsText(IDomObject source, string text)
         {
             foreach (IDomObject e in source.ChildNodes)
             {
@@ -56,6 +80,14 @@ namespace CsQuery.Engine.PseudoClassSelectors
             return false;
         }
 
+        /// <summary>
+        /// The maximum number of parameters that this selector can accept (1)
+        /// </summary>
+        ///
+        /// <value>
+        /// An integer.
+        /// </value>
+
         public override int MaximumParameterCount
         {
             get
@@ -63,6 +95,15 @@ namespace CsQuery.Engine.PseudoClassSelectors
                 return 1;
             }
         }
+
+        /// <summary>
+        /// The minimum number of parameters that this selector requires (1)
+        /// </summary>
+        ///
+        /// <value>
+        /// An integer.
+        /// </value>
+
         public override int MinimumParameterCount
         {
             get
@@ -80,9 +121,7 @@ namespace CsQuery.Engine.PseudoClassSelectors
         /// </param>
         ///
         /// <returns>
-        /// NeverQuoted to treat quotes as any other character; AlwaysQuoted to require that a quote
-        /// character bounds the parameter; or OptionallyQuoted to accept a string that can (but does not
-        /// have to be) quoted.
+        /// Always returns OptionallyQuoted
         /// </returns>
 
         protected override QuotingRule ParameterQuoted(int index)

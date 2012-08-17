@@ -28,6 +28,10 @@ namespace CsQuery.Web
         /// The request .
         /// </summary>
         PartialSuccess = 4,
+
+        /// <summary>
+        /// The request finished successfully.
+        /// </summary>
         Success = 5
     }
 }

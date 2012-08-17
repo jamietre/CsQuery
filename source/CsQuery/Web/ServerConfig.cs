@@ -10,10 +10,11 @@ namespace CsQuery.Web
     /// </summary>
     public class ServerConfig
     {
-        /// <summary>
-        /// Configure the "default default" settings
-        /// </summary>
-         static ServerConfig()
+         /// <summary>
+         /// Configure the "default default" settings.
+         /// </summary>
+
+        static ServerConfig()
         {
             _Default = new ServerConfig
             {
@@ -25,8 +26,9 @@ namespace CsQuery.Web
         private static ServerConfig _Default;
 
         /// <summary>
-        /// The default settings used when making remote requests
+        /// The default settings used when making remote requests.
         /// </summary>
+
         public static ServerConfig Default
         {
             get
@@ -35,11 +37,19 @@ namespace CsQuery.Web
             }
             
         }
+
         /// <summary>
-        /// Merge any non-null options into a new options object. 
+        /// Merge any non-null options into a new options object.
         /// </summary>
-        /// <param name="options"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="options">
+        /// The options
+        /// </param>
+        ///
+        /// <returns>
+        /// A new ServerConfig object
+        /// </returns>
+
         public static ServerConfig Merge(ServerConfig options) {
             ServerConfig config = ServerConfig.Default;
             if (options != null)
@@ -57,9 +67,16 @@ namespace CsQuery.Web
         }
 
         /// <summary>
-        /// Apply these options to a web request
+        /// Apply these options to a web request.
         /// </summary>
-        /// <param name="request"></param>
+        ///
+        /// <param name="options">
+        /// The options.
+        /// </param>
+        /// <param name="request">
+        /// The CsqWebRequest object to apply the options to.
+        /// </param>
+
         public static void Apply(ServerConfig options, CsqWebRequest request)
         {
             var opts = Merge(options);
@@ -73,11 +90,22 @@ namespace CsQuery.Web
             }
         }
 
-
+        /// <summary>
+        /// Gets or sets the user agent string that will be used to identify this service to the server
+        /// </summary>
 
         public string UserAgent { get; set; }
+
+        /// <summary>
+        /// Gets or sets the timeout after which an incomplete request will be aborted
+        /// </summary>
+
         public TimeSpan Timeout { get; set; }
-        
+
+        /// <summary>
+        /// Gets or sets the timeout (in seconds)  after which an incomplete request will be aborted
+        /// </summary>
+
         public double TimeoutSeconds
         {
 

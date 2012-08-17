@@ -107,12 +107,17 @@ namespace CsQuery
         /// </summary>
         ///
         /// <remarks>
-        /// When an object is cloned, it becomes disconnected, and is not bound to any IDomDocument or
-        /// IDomFragment. The only substantive difference between disconnected elements and elements
-        /// belonging to a Document is that they are not indexed.
+        /// Disconnected elements are not bound to a DomDocument object. This could be because
+        /// they were instantiated outside a document context, or were removed as a result of
+        /// an operation such as ReplaceWith.
         /// </remarks>
 
         bool IsDisconnected { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this object belongs is a fragmment and is bound to an 
+        /// IDomFragment object.
+        /// </summary>
 
         bool IsFragment { get; }
 

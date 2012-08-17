@@ -6,11 +6,27 @@ using System.Text;
 namespace CsQuery.Engine.PseudoClassSelectors
 {
     /// <summary>
-    /// Return only the last element from a selection
+    /// Return elements that don't match a selector.
     /// </summary>
+    ///
+    /// <url>
+    /// http://reference.sitepoint.com/css/pseudoclass-not
+    /// </url>
 
     public class Not : PseudoSelector, IPseudoSelectorFilter 
     {
+        /// <summary>
+        /// Return all elements that do not match the selector passed as a parameter to the :not()
+        /// selector.
+        /// </summary>
+        ///
+        /// <param name="selection">
+        /// The sequence of elements prior to this filter being applied.
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence of matching elements.
+        /// </returns>
 
         public IEnumerable<IDomObject> Filter(IEnumerable<IDomObject> selection)
         {
@@ -31,12 +47,20 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
         }
 
-        protected Selector SubSelector()
+        private Selector SubSelector()
         {
            return new Selector(String.Join(",", Parameters))
                 .SetTraversalType(TraversalType.Filter);
             
         }
+
+        /// <summary>
+        /// The maximum number of parameters that this selector can accept (1)
+        /// </summary>
+        ///
+        /// <value>
+        /// An integer.
+        /// </value>
 
         public override int MaximumParameterCount
         {
@@ -45,6 +69,15 @@ namespace CsQuery.Engine.PseudoClassSelectors
                 return 1;
             }
         }
+
+        /// <summary>
+        /// The minimum number of parameters that this selector requires (1)
+        /// </summary>
+        ///
+        /// <value>
+        /// An integer.
+        /// </value>
+
         public override int MinimumParameterCount
         {
             get

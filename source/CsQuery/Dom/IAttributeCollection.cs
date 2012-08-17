@@ -5,6 +5,10 @@ using System.Text;
 
 namespace CsQuery
 {
+    /// <summary>
+    /// Interface for methods to access the attributes on a DOM element.
+    /// </summary>
+
     public interface IAttributeCollection: IEnumerable<KeyValuePair<string,string>>
     {
         /// <summary>

@@ -8,11 +8,12 @@ using CsQuery.HtmlParser;
 namespace CsQuery
 {
     /// <summary>
-    /// An interface to a Document that represents an HTML document.
+    /// An interface to a DOM Document, the high-level representation of an HTML document. This is
+    /// analagous to the web browser "document" object.
     /// </summary>
+
     public interface IDomDocument : IDomContainer
     {
-
 
         /// <summary>
         /// An interface to the internal indexing methods. You generally should not use this.
@@ -32,6 +33,8 @@ namespace CsQuery
         /// </summary>
 
         DocType DocType { get; set; }
+
+        IList<ICSSStyleSheet> StyleSheets { get; }
 
         /// <summary>
         /// Gets or sets options for controlling how the output is rendered. All options are flags so
@@ -57,6 +60,23 @@ namespace CsQuery
         /// </url>
 
         IDomElement GetElementById(string id);
+
+        /// <summary>
+        /// Gets an element by identifier, and return a strongly-typed interface
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="id">
+        /// The identifier.
+        /// </param>
+        ///
+        /// <returns>
+        /// The element by id&lt; t&gt;
+        /// </returns>
+
+        T GetElementById<T>(string id) where T : IDomElement;
 
         /// <summary>
         /// Creates the specified HTML element.
@@ -173,7 +193,7 @@ namespace CsQuery
         /// https://developer.mozilla.org/en/DOM/element.getElementsByTagName
         /// </url>
 
-        IList<IDomElement> GetElementsByTagName(string tagName);
+        INodeList<IDomElement> GetElementsByTagName(string tagName);
 
         /// <summary>
         /// Return the body element for this Document.

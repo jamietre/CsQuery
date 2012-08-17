@@ -14,6 +14,7 @@ namespace CsQuery.Utility
     /// significant performance improvement over Activator.CreateInstance. Calling with a value type
     /// will be deferred to Activator.CreateInstance.
     /// </summary>
+    /// 
     ///
     /// <url>
     /// http://mironabramson.com/blog/post/2008/08/Fast-version-of-the-ActivatorCreateInstance-method-using-IL.aspx

@@ -84,8 +84,8 @@ namespace CsQuery.ExtensionMethods.Xml
         {
             switch (type)
             {
-                case CsQuery.NodeType.ATTRIBUTE_NODE:
-                    return XmlNodeType.Attribute;
+                //case CsQuery.NodeType.ATTRIBUTE_NODE:
+                //    return XmlNodeType.Attribute;
                 case CsQuery.NodeType.CDATA_SECTION_NODE:
                     return XmlNodeType.CDATA;
                 case CsQuery.NodeType.COMMENT_NODE:

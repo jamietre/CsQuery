@@ -16,6 +16,18 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
     public class OnlyOfType: PseudoSelectorChild
     {
+        /// <summary>
+        /// Test whether an element is the only element of its type among its siblings.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it matches, false if not.
+        /// </returns>
+
         public override bool Matches(IDomObject element)
         {
 
@@ -23,6 +35,19 @@ namespace CsQuery.Engine.PseudoClassSelectors
                .Where(item => item.NodeNameID == element.NodeNameID)
                .SingleOrDefaultAlways() != null;
         }
+
+        /// <summary>
+        /// Return the children of the parent element that are the only elements of that type among the
+        /// other children.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The parent element.
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence of children that match.
+        /// </returns>
 
         public override IEnumerable<IDomObject> ChildMatches(IDomContainer element)
         {

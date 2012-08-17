@@ -12,9 +12,11 @@ using CsQuery.Utility;
 namespace CsQuery.Implementation
 {
     /// <summary>
-    /// This was a hybrid dictionary implementation to see how much we could gain by not creating a new dictionary object except when there were more than 
-    /// x attributes. As it turns out this doesn't gain us much.
+    /// This was a hybrid dictionary implementation to see how much we could gain by not creating a
+    /// new dictionary object except when there were more than x attributes. As it turns out this
+    /// doesn't gain us much.
     /// </summary>
+
     public class AttributeCollection2 : IDictionary<string, string>, IEnumerable<KeyValuePair<string, string>>
     {
 

@@ -15,6 +15,18 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
     public class FirstOfType : PseudoSelectorChild
     {
+        /// <summary>
+        /// Test whether an element is the first child of its type
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it matches, false if not.
+        /// </returns>
+
         public override bool Matches(IDomObject element)
         {
 
@@ -22,6 +34,18 @@ namespace CsQuery.Engine.PseudoClassSelectors
               .Where(item => item.NodeNameID == element.NodeNameID)
               .FirstOrDefault() == element;
         }
+
+        /// <summary>
+        /// Return all children of the parameter element that are the first child of their type.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The parent element.
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence of children that match.
+        /// </returns>
 
         public override IEnumerable<IDomObject> ChildMatches(IDomContainer element)
         {

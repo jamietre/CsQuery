@@ -16,10 +16,35 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
     public class OnlyChild : PseudoSelectorChild
     {
+        /// <summary>
+        /// Test whether an element is the only child of its parent
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it matches, false if not.
+        /// </returns>
+
         public override bool Matches(IDomObject element)
         {
             return OnlyChildOrNull(element.ParentNode) == element;
         }
+
+        /// <summary>
+        /// Return the only child of the parent element, or nothing if there are zero or more than one
+        /// children.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The parent element.
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence of children that match.
+        /// </returns>
 
         public override IEnumerable<IDomObject> ChildMatches(IDomContainer element)
         {
@@ -30,7 +55,7 @@ namespace CsQuery.Engine.PseudoClassSelectors
             }
         }
 
-        protected IDomObject OnlyChildOrNull(IDomObject parent)
+        private IDomObject OnlyChildOrNull(IDomObject parent)
         {
             if (parent.NodeType == NodeType.DOCUMENT_NODE)
             {
@@ -41,7 +66,5 @@ namespace CsQuery.Engine.PseudoClassSelectors
                 return parent.ChildElements.SingleOrDefaultAlways();
             }
         }
-
-
     }
 }

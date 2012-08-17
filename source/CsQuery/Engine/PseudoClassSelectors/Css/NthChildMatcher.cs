@@ -191,22 +191,75 @@ namespace CsQuery.Engine
             return IndexMatches(IndexOf(element, false, fromLast), formula,fromLast);
         }
 
-        public IEnumerable<IDomObject> NthChildsOfTypeImpl(IDomContainer elm, string formula, bool fromLast = false)
-        {
-            
-            return GetMatchingChildren(elm, formula, null, fromLast);
-        }
+        /// <summary>
+        /// Enumerates nth children of the same type as the parent.
+        /// </summary>
+        ///
+        /// <remarks>
+        /// This could be implemented more efficiently, but it's a bit complicated because we need to keep track of n 
+        /// for each type of element		 
+        /// </remarks>
+        /// <param name="element">
+        /// The parent element.
+        /// </param>
+        /// <param name="formula">
+        /// The formula for determining n.
+        /// </param>
+        /// <param name="fromLast">
+        /// Count from the last element instead of the first.
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence of matching elements
+        /// </returns>
 
-        public IEnumerable<IDomObject> NthChilds(IDomContainer elm, string formula, bool fromLast = false)
+        public IEnumerable<IDomObject> NthChildsOfType(IDomContainer element, string formula, bool fromLast = false)
         {
-            return GetMatchingChildren(elm, formula, null, fromLast);
+            return element.ChildElements
+                .Where(item=>IsNthChildOfType(item,formula,fromLast));
         }
 
         /// <summary>
-        /// Return the index of obj within its siblings, including only elements with the same node name
+        /// Enumerates nth children in this collection.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="element">
+        /// The parent element.
+        /// </param>
+        /// <param name="formula">
+        /// The formula for determining n.
+        /// </param>
+        /// <param name="fromLast">
+        /// When true, count from the last element instead of the first.
+        /// </param>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process nth childs in this collection.
+        /// </returns>
+
+        public IEnumerable<IDomObject> NthChilds(IDomContainer element, string formula, bool fromLast = false)
+        {
+            return GetMatchingChildren(element, formula, null, fromLast);
+        }
+
+        /// <summary>
+        /// Return the index of obj within its siblings, including only elements with the same node name.
+        /// </summary>
+        ///
+        /// <param name="obj">
+        /// The object to seek
+        /// </param>
+        /// <param name="onlyOfSameType">
+        /// true to only objects of the same NodeName should be considered
+        /// </param>
+        /// <param name="fromLast">
+        /// Count from the last element instead of the first.
+        /// </param>
+        ///
+        /// <returns>
+        /// The zero-based index of obj within its siblings (or its siblings of the same type)
+        /// </returns>
+
         private int IndexOf(IDomElement obj, bool onlyOfSameType, bool fromLast = false)
         {
             // get the index just for this type
@@ -313,7 +366,7 @@ namespace CsQuery.Engine
         }
 
         /// <summary>
-        ///Return each child that matches an index returned by the forumla
+        /// Return each child that matches an index returned by the forumla.
         /// </summary>
         ///
         /// <param name="obj">
@@ -343,8 +396,7 @@ namespace CsQuery.Engine
         /// </param>
         ///
         /// <returns>
-        /// An enumerator that allows foreach to be used to process get matching children in this
-        /// collection.
+        /// Sequence of matching children.
         /// </returns>
 
         public IEnumerable<IDomObject> GetMatchingChildren(IDomContainer obj)
@@ -417,7 +469,7 @@ namespace CsQuery.Engine
         {
             if (fromLast)
             {
-                return nodeList[nodeList.Length - index - 1];
+                return nodeList[nodeList.Count - index - 1];
             }
             else
             {

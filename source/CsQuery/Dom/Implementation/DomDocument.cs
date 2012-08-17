@@ -37,11 +37,17 @@ namespace CsQuery.Implementation
             Populate(elements);
         }
 
-        
         /// <summary>
-        /// Create a new document from a character array of html
+        /// Create a new document from a character array of html.
         /// </summary>
-        /// <param name="html"></param>
+        ///
+        /// <param name="html">
+        /// The HTML
+        /// </param>
+        /// <param name="htmlParsingMode">
+        /// The HTML parsing mode.
+        /// </param>
+
         public DomDocument(char[] html, HtmlParsingMode htmlParsingMode)
         {
             InitializeDomDocument();
@@ -65,7 +71,7 @@ namespace CsQuery.Implementation
         {
             foreach (var item in elements)
             {
-                ChildNodes.AddAlways(item);
+                ChildNodesInternal.AddAlways(item);
             }
   
         }
@@ -83,7 +89,9 @@ namespace CsQuery.Implementation
 
         private List<Tuple<int, int>> OriginalStrings;
         private bool _settingDocType;
+        private IList<ICSSStyleSheet> _StyleSheets;
         private IDictionary<string, object> _Data;
+        
 
         protected CQ _Owner;
         protected DocType _DocType;
@@ -93,6 +101,17 @@ namespace CsQuery.Implementation
 
         #region public properties
 
+        public IList<ICSSStyleSheet> StyleSheets
+        {
+            get
+            {
+                if (_StyleSheets == null)
+                {
+                    _StyleSheets = new List<ICSSStyleSheet>();
+                }
+                return _StyleSheets;
+            }
+        }
 
         /// <summary>
         /// Exposes the Document as an IDomIndex object
@@ -392,16 +411,54 @@ namespace CsQuery.Implementation
             return OriginalStrings.Count - 1;
         }
 
+        /// <summary>
+        /// Returns a reference to the element by its ID.
+        /// </summary>
+        ///
+        /// <param name="id">
+        /// The identifier.
+        /// </param>
+        ///
+        /// <returns>
+        /// The element by identifier.
+        /// </returns>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/DOM/document.getElementById
+        /// </url>
+
         public IDomElement GetElementById(string id)
         {
-            // construct the selector manually so there's no syntax checking
+
+            return GetElementById<IDomElement>(id);
+        }
+
+        /// <summary>
+        /// Gets an element by identifier, and return a strongly-typed interface.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="id">
+        /// The identifier.
+        /// </param>
+        ///
+        /// <returns>
+        /// The element by id&lt; t&gt;
+        /// </returns>
+
+        public T GetElementById<T>(string id) where T: IDomElement
+        {
+
+            // construct the selector manually so there's no syntax checking as if it were a general-purpose selector
 
             SelectorClause selector = new SelectorClause();
             selector.SelectorType = SelectorType.ID;
             selector.ID = id;
 
             Selector selectors = new Selector(selector);
-            return (IDomElement)selectors.Select(Document).FirstOrDefault();
+            return (T)selectors.Select(Document).FirstOrDefault();
         }
 
         public IDomElement GetElementByTagName(string tagName)
@@ -410,10 +467,10 @@ namespace CsQuery.Implementation
             return (IDomElement)selectors.Select(Document).FirstOrDefault();
         }
 
-        public IList<IDomElement> GetElementsByTagName(string tagName)
+        public INodeList<IDomElement> GetElementsByTagName(string tagName)
         {
             Selector selectors = new Selector(tagName);
-            return (new List<IDomElement>(OnlyElements(selectors.Select(Document)))).AsReadOnly();
+            return new NodeList<IDomElement>(new List<IDomElement>(OnlyElements(selectors.Select(Document))));
         }
 
         public IDomElement QuerySelector(string selector)
@@ -428,9 +485,9 @@ namespace CsQuery.Implementation
             return (new List<IDomElement>(OnlyElements(selectors.Select(Document)))).AsReadOnly();
         }
 
-
-        public IDomElement CreateElement(string nodeName) {
-            return new DomElement(nodeName);
+        public IDomElement CreateElement(string nodeName) 
+        {
+            return DomElement.Create(nodeName);
         }
 
         public IDomText CreateTextNode(string text)
@@ -522,27 +579,29 @@ namespace CsQuery.Implementation
             return CreateNew<IDomDocument>();
         }
 
-        /// <summary>
-        /// Creates an IDomDocument that is derived from this one. The new type can also be a derived
-        /// type, such as IDomFragment. The new object will inherit DomRenderingOptions from this one.
-        /// </summary>
-        ///
-        /// <exception cref="ArgumentException">
-        /// Thrown when one or more arguments have unsupported or illegal values.
-        /// </exception>
-        ///
-        /// <typeparam name="T">
-        /// The type of object to create that is IDomDocument.
-        /// </typeparam>
-        /// <param name="html">
-        /// The HTML source for the new document.
-        /// </param>
-        ///
-        /// <returns>
-        /// A new, empty concrete class that is represented by the interface T, configured with the same
-        /// options as the current object.
-        /// </returns>
-
+         /// <summary>
+         /// Creates an IDomDocument that is derived from this one. The new type can also be a derived type,
+         /// such as IDomFragment. The new object will inherit DomRenderingOptions from this one.
+         /// </summary>
+         ///
+         /// <exception cref="ArgumentException">
+         /// Thrown when one or more arguments have unsupported or illegal values.
+         /// </exception>
+         ///
+         /// <typeparam name="T">
+         /// The type of object to create that is IDomDocument.
+         /// </typeparam>
+         /// <param name="html">
+         /// The HTML source for the new document.
+         /// </param>
+         /// <param name="htmlParsingMode">
+         /// The HTML parsing mode.
+         /// </param>
+         ///
+         /// <returns>
+         /// A new, empty concrete class that is represented by the interface T, configured with the same
+         /// options as the current object.
+         /// </returns>
   
          public IDomDocument CreateNew<T>(char[] html, HtmlParsingMode htmlParsingMode) where T : IDomDocument
          {

@@ -22,6 +22,24 @@ namespace CsQuery.Web
 
         #region constructor
 
+        /// <summary>
+        /// Constructor for CsQueryHttpContext. Usually, you should use WebForms.CreateFromRender to
+        /// create one of these.
+        /// </summary>
+        ///
+        /// <param name="context">
+        /// The context.
+        /// </param>
+        /// <param name="page">
+        /// The ASP.NET WebForms Page object bound to this context.
+        /// </param>
+        /// <param name="writer">
+        /// The writer.
+        /// </param>
+        /// <param name="renderMethod">
+        /// The render method.
+        /// </param>
+
         public CsQueryHttpContext(HttpContext context, Page page, HtmlTextWriter writer, Action<HtmlTextWriter> renderMethod)
         {
             Context = context;
@@ -42,6 +60,14 @@ namespace CsQuery.Web
         private StringWriter _sw;
         private List<AsyncPostbackData> _AsyncPostbackData;
 
+        /// <summary>
+        /// Gets or sets the current HttpContext.
+        /// </summary>
+        ///
+        /// <value>
+        /// The context.
+        /// </value>
+
         protected HttpContext Context
         {
             get
@@ -53,7 +79,16 @@ namespace CsQuery.Web
                 _Context = value;
             }
         }
-        protected HtmlTextWriter Writer
+
+        /// <summary>
+        /// Gets the writer.
+        /// </summary>
+        ///
+        /// <value>
+        /// The interim writer
+        /// </value>
+
+        private HtmlTextWriter Writer
         {
             get
             {
@@ -87,10 +122,14 @@ namespace CsQuery.Web
 
         #region public properties
 
-      
         /// <summary>
-        /// The CQ object representing the output from the Render method
+        /// The CQ object representing the output from the Render method.
         /// </summary>
+        ///
+        /// <value>
+        /// The dom.
+        /// </value>
+
         public CQ Dom { get; protected set; }
 
         /// <summary>
@@ -136,11 +175,10 @@ namespace CsQuery.Web
 
         #region public methods
 
-       
-
         /// <summary>
         /// Renders the DOM to the bound TextWriter.
         /// </summary>
+
         public void Render()
         {
             if (_AsyncPostbackData != null)
@@ -153,10 +191,6 @@ namespace CsQuery.Web
             else
             {
                 string content = Dom.Render();
-                if (_UserOutput != null)
-                {
-                    content += "<script type=\"text/javascript\">" + System.Environment.NewLine + UserOutput.ToString() + "</script>";
-                }
                 RealWriter.Write(content);
             }
         }
@@ -168,7 +202,6 @@ namespace CsQuery.Web
         /// <summary>
         /// Create a context from the bound method information
         /// </summary>
-        ///
         
         public void Create()
         {
@@ -234,48 +267,6 @@ namespace CsQuery.Web
 
         #endregion
 
-        protected StringBuilder UserOutput
-        {
-            get
-            {
-                if (_UserOutput == null)
-                {
-                    _UserOutput = new StringBuilder();
-                }
-                return _UserOutput;
-            }
-        } protected StringBuilder _UserOutput = null;
-
-        /// <summary>
-        /// Write json data to a global variable.
-        /// </summary>
-        ///
-        /// <param name="target">
-        /// Target for the.
-        /// </param>
-        /// <param name="data">
-        /// .
-        /// </param>
-
-        public void WriteJson(string target, object data)
-        {
-            UserOutput.Append(CsQueryHttpContext.JsonStringDef(target, data));
-
-
-        }
-
       
-        
-       
-        
-
-        internal static string JsonStringDef(string target, object data)
-        {
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            return target + "=$.parseJSON('" +
-                serializer.Serialize(data) +
-                "');" + System.Environment.NewLine;
-        }
-
     }
 }

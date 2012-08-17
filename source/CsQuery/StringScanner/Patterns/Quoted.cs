@@ -19,6 +19,13 @@ namespace CsQuery.StringScanner.Patterns
         
         char quoteChar;
 
+        /// <summary>
+        /// Run the validation against the passed string.
+        /// </summary>
+        ///
+        /// <returns>
+        /// Returns true if the pattern defined by this class is successfully matched, and false if not.
+        /// </returns>
 
         public override bool Validate()
         {
@@ -37,11 +44,35 @@ namespace CsQuery.StringScanner.Patterns
             }
             return FinishValidate();
         }
+
+        /// <summary>
+        /// Finishes a validation
+        /// </summary>
+        ///
+        /// <returns>
+        /// true if the string matched the pattern defined by this instance, false if not.
+        /// </returns>
+
         protected virtual bool FinishValidate(){ 
             //return the substring excluding the quotes
             Result = GetOuput(StartIndex, EndIndex, true, true);
             return true;
         }
+
+        /// <summary>
+        /// Assert that the current character matches the pattern defined by this object.
+        /// </summary>
+        ///
+        /// <param name="index">
+        ///  Zero-based index of the current position.
+        /// </param>
+        /// <param name="current">
+        /// The current character.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the pattern matches at this position, false if not.
+        /// </returns>
 
         protected virtual bool Expect(ref int index, char current)
         {
