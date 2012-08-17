@@ -37,6 +37,50 @@ I'm working on a web site for the project documentation, but in the meantime, th
 
 If you can't seem to figure out how to use a particular method, in almost all cases the API mimics the jQuery API, so you should start with the jQuery documentation. You could also look through the unit tests, which cover pretty much everything at some level, for simple examples of use.
 
+### Contents
+
+Most of CsQuery works like jQuery, as is it's intent, so please refer to the jQuery documentation for information on jQuery methods. 
+* Roadmap
+* Features
+* [Usage](https://github.com/jamietre/CsQuery#usage)
+	* [Creating a new DOM](https://github.com/jamietre/CsQuery#creating-a-new-dom)
+	* [Manipulate the DOM with jQuery methods](https://github.com/jamietre/CsQuery#manipulate-the-dom-with-jquery-methods)
+	* [Accessing DOM elements directly](https://github.com/jamietre/CsQuery#accessing-dom-elements-directly)
+	* [Output as HTML](https://github.com/jamietre/CsQuery#output-as-html)
+* [CsQuery vs. jQuery](https://github.com/jamietre/CsQuery#csquery-vs-jquery)
+	* [Creating a new DOM](https://github.com/jamietre/CsQuery#creating-a-new-dom-1)
+	* [C# objects vs. Javascript objects](https://github.com/jamietre/CsQuery#c-objects-vs-javascript-objects)
+    * [Important nonstandard methods](https://github.com/jamietre/CsQuery#important-nonstandard-methods)
+    * [Utility methods](https://github.com/jamietre/CsQuery#utility-methods)
+* [Promises](https://github.com/jamietre/CsQuery#promises)
+* [Options](https://github.com/jamietre/CsQuery#options)
+    * [Rendering Options](https://github.com/jamietre/CsQuery#rendering-options)
+    * [HTTP request options](https://github.com/jamietre/CsQuery#http-request-options)
+* [The CsQuery Object Model](https://github.com/jamietre/CsQuery#the-basics-of-the-csquery-object-model)
+    * [Overview](https://github.com/jamietre/CsQuery#overview)
+    * [Creating a CQ object from HTML](https://github.com/jamietre/CsQuery#creating-a-cq-object-from-html)
+* [The DOM (Document Object Model)](https://github.com/jamietre/CsQuery#the-dom-document-object-model)
+    * [Overview](https://github.com/jamietre/CsQuery#overview-1)
+    * [Referencing the "document" equivalent or DOM](https://github.com/jamietre/CsQuery#referencing-the-document-equivalent-or-dom)
+* [Performance](https://github.com/jamietre/CsQuery#performance)
+* [Shortcomings](https://github.com/jamietre/CsQuery#shortcomings)
+    * [General](https://github.com/jamietre/CsQuery#general)
+    * [Missing CSS Selectors](https://github.com/jamietre/CsQuery#missing-css-selectors)
+
+
+### Roadmap
+
+As of 6/12/2012, the project is feature-complete. All CSS3 selectors that don't depend on browser state have been implemented, and all jQuery DOM selection/manipulation methods have been implemented.
+
+The priorities for the future are:
+
+* Writing documentation; and establishing a web site for the project. 
+* Implement CSS4 selectors
+* Flesh out the DOM model according to HTML5 specs
+* Enhance HTML5 compliance of the parser
+
+If you are interested in this project and want to contribute anything, let me know or just make a pull request! 
+
 ### Features
 
 CsQuery is a .NET library that provides an implementation of the jQuery API and a document object model that simulates the browser DOM. 
@@ -85,39 +129,6 @@ jQuery extensions:
 	:selected					:contains(T)
 	:has(S)						:input
 
-### Roadmap
-
-As of 6/12/2012, the project is feature-complete. In the coming weeks I will be working on a little bit of cleanup; writing documentation; and establishing a web site for the project. 
-
-
-### Contents
-
-Most of CsQuery works like jQuery, as is it's intent, so please refer to the jQuery documentation for information on jQuery methods. 
-
-* [Usage](https://github.com/jamietre/CsQuery#usage)
-	* [Creating a new DOM](https://github.com/jamietre/CsQuery#creating-a-new-dom)
-	* [Manipulate the DOM with jQuery methods](https://github.com/jamietre/CsQuery#manipulate-the-dom-with-jquery-methods)
-	* [Accessing DOM elements directly](https://github.com/jamietre/CsQuery#accessing-dom-elements-directly)
-	* [Output as HTML](https://github.com/jamietre/CsQuery#output-as-html)
-* [CsQuery vs. jQuery](https://github.com/jamietre/CsQuery#csquery-vs-jquery)
-	* [Creating a new DOM](https://github.com/jamietre/CsQuery#creating-a-new-dom-1)
-	* [C# objects vs. Javascript objects](https://github.com/jamietre/CsQuery#c-objects-vs-javascript-objects)
-    * [Important nonstandard methods](https://github.com/jamietre/CsQuery#important-nonstandard-methods)
-    * [Utility methods](https://github.com/jamietre/CsQuery#utility-methods)
-* [Promises](https://github.com/jamietre/CsQuery#promises)
-* [Options](https://github.com/jamietre/CsQuery#options)
-    * [Rendering Options](https://github.com/jamietre/CsQuery#rendering-options)
-    * [HTTP request options](https://github.com/jamietre/CsQuery#http-request-options)
-* [The CsQuery Object Model](https://github.com/jamietre/CsQuery#the-basics-of-the-csquery-object-model)
-    * [Overview](https://github.com/jamietre/CsQuery#overview)
-    * [Creating a CQ object from HTML](https://github.com/jamietre/CsQuery#creating-a-cq-object-from-html)
-* [The DOM (Document Object Model)](https://github.com/jamietre/CsQuery#the-dom-document-object-model)
-    * [Overview](https://github.com/jamietre/CsQuery#overview-1)
-    * [Referencing the "document" equivalent or DOM](https://github.com/jamietre/CsQuery#referencing-the-document-equivalent-or-dom)
-* [Performance](https://github.com/jamietre/CsQuery#performance)
-* [Shortcomings](https://github.com/jamietre/CsQuery#shortcomings)
-    * [General](https://github.com/jamietre/CsQuery#general)
-    * [Missing CSS Selectors](https://github.com/jamietre/CsQuery#missing-css-selectors)
 
 ### Usage
 
