@@ -19,7 +19,7 @@ The NuGet package will always reflect the release noted here. The code on GitHub
 
 ### Release Notes
 
-The current release is 1.2. This release is primarily a bugfix release, but is significant for two other reasones:
+The current release is 1.2. This release is primarily a bugfix release, but is significant for two other reasons:
 
 * It is the minimum version required for the new [CsQuery.Mvc](https://github.com/jamietre/CsQuery/tree/master/source/CsQuery.Mvc) framework.
 * It includes a change to the public API which will break code which *directly* instantiates `DomElement` objects. (This has never been recommended and will not affect any code which uses `CQ.Create` or `Document.CreateElement` methods; it only affects creation using `new` to create `DomElement` objects)
@@ -29,17 +29,16 @@ See the [release notes for 1.2](http://blog.outsharked.com/2012/08/csquery-12-re
 
 ### Documentation
 
-I'm working on a web site for the project documentation, but in the meantime, this document covers basic usage. Also be sure to look at the example applications in the source repository. Additionally, I post about [CsQuery on my blog](http://blog.outsharked.com/search/label/csquery) from time to time. Here are a few tutorials from there:
+I'm (slowly) working on a web site for the project, but in the meantime, this document covers most aspects of common usage. Also be sure to look at the example applications in the source repository. Additionally, I post about [CsQuery on my blog](http://blog.outsharked.com/search/label/csquery) from time to time. Here are a few tutorials from there:
 
+* [Using the CsQuery MVC framework](http://blog.outsharked.com/2012/08/csquery-12-released.html) from the 1.2 release notes
  * [Implementing a custom filter selector](http://blog.outsharked.com/2012/07/csquery-113-released.html) from the 1.1.3 release notes
  * [Creating documents](http://blog.outsharked.com/2012/06/csquery-112-released.html) from the 1.1.2 release notes
  * [Loading content from the web](http://blog.outsharked.com/2012/06/async-web-gets-and-promises-in-csquery.html) asynchronously using promises
 
-If you can't seem to figure out how to use a particular method, in almost all cases the API mimics the jQuery API, so you should start with the jQuery documentation. You could also look through the unit tests, which cover pretty much everything at some level, for simple examples of use.
+If you can't seem to figure out how to use a particular method, in almost all cases the API mimics the jQuery API, so you should start with the jQuery documentation. You could also look through the unit tests, which cover pretty much everything at some level, for straightforward examples of use.
 
 ### Contents
-
-Most of CsQuery works like jQuery, as is it's intent, so please refer to the jQuery documentation for information on jQuery methods. 
 
 * [Roadmap](https://github.com/jamietre/CsQuery#roadmap)
 * [Features](https://github.com/jamietre/CsQuery#features)
@@ -71,14 +70,15 @@ Most of CsQuery works like jQuery, as is it's intent, so please refer to the jQu
 
 ### Roadmap
 
-As of 6/12/2012, the project is feature-complete. All CSS3 selectors that don't depend on browser state have been implemented, and all jQuery DOM selection/manipulation methods have been implemented.
+As of 6/12/2012, the project is feature-complete. All CSS3 selectors that don't depend on browser state have been implemented, and all jQuery DOM selection/manipulation methods have been implemented. See  [shortcomings](https://github.com/jamietre/CsQuery#shortcomings) for the specific exceptions.
 
-The priorities for the future are:
+The priorities for the future are, in this order:
 
 * Writing documentation; and establishing a web site for the project. 
-* Implement CSS4 selectors
-* Flesh out the DOM model according to HTML5 specs
+* Implement style sheet parser and API, which will allow complete programmatic access to styles (beyond those on the `style` attribute) and access to computed styles
+* Flesh out the DOM model (properties/methods of specific element types) according to HTML5 specs. (You can always access any attribute you want just as an attribute with a string value. This has to do with the actual implementation of specific DOM element interfaces, as you would access element properties in a browser DOM).
 * Enhance HTML5 compliance of the parser
+* Implement CSS4 selectors
 
 If you are interested in this project and want to contribute anything, let me know or just make a pull request! 
 
