@@ -31,7 +31,7 @@ See the [release notes for 1.2](http://blog.outsharked.com/2012/08/csquery-12-re
 
 I'm working on a web site for the project documentation, but in the meantime, this document covers basic usage. Also be sure to look at the example applications in the source repository. Additionally, I post about [CsQuery on my blog](http://blog.outsharked.com/search/label/csquery) from time to time. Here are a few tutorials from there:
 
- * [Implementing a custom filter selector](http://blog.outsharked.com/2012/06/csquery-112-released.html) from the 1.1.3 release notes
+ * [Implementing a custom filter selector](http://blog.outsharked.com/2012/07/csquery-113-released.html) from the 1.1.3 release notes
  * [Creating documents](http://blog.outsharked.com/2012/06/csquery-112-released.html) from the 1.1.2 release notes
  * [Loading content from the web](http://blog.outsharked.com/2012/06/async-web-gets-and-promises-in-csquery.html) asynchronously using promises
 
@@ -94,30 +94,30 @@ As of 6/12/2012, the project is feature-complete. In the coming weeks I will be 
 
 Most of CsQuery works like jQuery, as is it's intent, so please refer to the jQuery documentation for information on jQuery methods. 
 
-* Usage
+* [Usage](https://github.com/jamietre/CsQuery#usage)
 	* [Creating a new DOM](https://github.com/jamietre/CsQuery#creating-a-new-dom)
-	* Manipulate the DOM with jQuery methods
-	* Accessing DOM elements directly
-	* Output as HTML
-* CsQuery vs. jQuery
-	* Creating a new DOM
-	* C# objects vs. jQuery objects
-    * Important nonstandard methods
-    * Utility methods
-* Promises
-* Options
-    * Rendering Options
-    * HTTP request options
-* The CsQuery Object Model
-    * Overview
-    * Creating a CQ object from HTML
-* The DOM (Document Object Model)
-    * Overview
-    * Referencing the "document" equivalent or DOM
-* Performance
-* Shortcomings
-    * General
-    * Missing CSS Selectors
+	* [Manipulate the DOM with jQuery methods](https://github.com/jamietre/CsQuery#manipulate-the-dom-with-jquery-methods)
+	* [Accessing DOM elements directly](https://github.com/jamietre/CsQuery#accessing-dom-elements-directly)
+	* [Output as HTML](https://github.com/jamietre/CsQuery#output-as-html)
+* [CsQuery vs. jQuery](https://github.com/jamietre/CsQuery#csquery-vs-jquery)
+	* [Creating a new DOM](https://github.com/jamietre/CsQuery#creating-a-new-dom-1)
+	* [C# objects vs. Javascript objects](https://github.com/jamietre/CsQuery#c-objects-vs-javascript-objects)
+    * [Important nonstandard methods](https://github.com/jamietre/CsQuery#important-nonstandard-methods)
+    * [Utility methods](https://github.com/jamietre/CsQuery#utility-methods)
+* [Promises](https://github.com/jamietre/CsQuery#promises)
+* [Options](https://github.com/jamietre/CsQuery#options)
+    * [Rendering Options](https://github.com/jamietre/CsQuery#rendering-options)
+    * [HTTP request options](https://github.com/jamietre/CsQuery#http-request-options)
+* [The CsQuery Object Model](https://github.com/jamietre/CsQuery#the-basics-of-the-csquery-object-model)
+    * [Overview](https://github.com/jamietre/CsQuery#overview)
+    * [Creating a CQ object from HTML](https://github.com/jamietre/CsQuery#creating-a-cq-object-from-html)
+* [The DOM (Document Object Model)](https://github.com/jamietre/CsQuery#the-dom-document-object-model)
+    * [Overview](https://github.com/jamietre/CsQuery#overview-1)
+    * [Referencing the "document" equivalent or DOM](https://github.com/jamietre/CsQuery#referencing-the-document-equivalent-or-dom)
+* [Performance](https://github.com/jamietre/CsQuery#performance)
+* [Shortcomings](https://github.com/jamietre/CsQuery#shortcomings)
+    * [General](https://github.com/jamietre/CsQuery#general)
+    * [Missing CSS Selectors](https://github.com/jamietre/CsQuery#missing-css-selectors)
 
 ### Usage
 
@@ -312,7 +312,7 @@ this is about the same as:
 
 Just like jQuery, some methods return a new instance of CQ, typically, when that method results in a different selection set. Other methods return the same instance. But either way, they are bound to the same DOM. The rules for whether a new instance is returned, or the existing one is altered, are the same as for each method in jQuery.
 
-##### C# objects vs. jQuery objects
+##### C# objects vs. Javascript objects
 
 The object in Javascript is a fundamental language construct; it's amorphous, nonstatic nature and simple syntax makes it useful for lots of purposes. Some jQuery methods accept objects as a convenient way to define data structures. 
 
@@ -616,7 +616,7 @@ The CQ object, in addition to the familiar jQuery methods, uses the default prop
     var firstElementOfDom2 = dom[dom2[0]];
 
 
-##### Creating a CQ obejct from HTML
+##### Creating a CQ object from HTML
 
 The `Create` method works like the default `$` method.
 
@@ -664,6 +664,8 @@ I intend to clean up both of these situations. The breaking use of interfaces is
 ##### Overview
 
 CsQuery is built around an object model that mostly mimics the browser DOM. Every element in this model implements the most basic interface, `IDomNode`. The basic heirarchy looks like this:
+
+Note: As of 7/2012 this is outdated. There are derived types for specific HTML elements that inherit DomElement now. 
 
     IDomNode
         IDomObject
@@ -727,7 +729,7 @@ In the early stages of this project I had not much time to get it working "well 
 
 ##### Missing CSS selectors
 
-Some parts of the CSS selection language have not been implemented; in each case it's because the selector doesn't make sense without a browser UI context. The only exception is
+Some parts of the CSS3 specification have not been implemented; in each case it's because the selector doesn't make sense without a browser UI context. The only exception is
 
     :lang(C)
 
@@ -752,4 +754,7 @@ Complete list of other unimplemented pseudoselectors:
 	:after (pseudoelement)
                             
 Everything else (both browser & jQuery extensions) has been implemented.
+
+CSS4 will be added at some point.
+
 
