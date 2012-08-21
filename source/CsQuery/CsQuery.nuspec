@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>CsQuery</id>
-    <version>1.2.0.8</version>
+    <version>1.2.1</version>
     <title>CsQuery</title>
     <authors>James Treworgy</authors>
     <owners>James Treworgy</owners>
@@ -14,6 +14,9 @@
     <description>CsQuery is a CSS selector engine and jQuery port for .NET 4 and C#. It implements all CSS2 and CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. It includes an HTML parser, a document object model that mimics the browser DOM, and uses a subselect-capable index for fast operation.</description>
 <releaseNotes>
 Version 1.2 is the minimum required verison to use with the CsQuery.Mvc framework. It also contains bugfixes, and changes to the DomElement model that could break existing code. Before upgrading, please see the change log to see if your code could be affected.
+
+Version 1.2.1 removes IHtmlString interface from the core CQ object. This was added in 1.2, creating an unneeded requirement to reference System.Web in client projects. This functionality is only needed for HtmlHelpers in
+CsQuery.Mvc.
 
 Complete change log:
 https://github.com/jamietre/CsQuery/blob/master/source/README.md    

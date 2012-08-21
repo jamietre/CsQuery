@@ -56,7 +56,7 @@ namespace CsQuery
     /// Methods which are not part of the jQuery API are found under the "CQ_CsQuery" folder.
     /// </implementation>
 
-    public partial class CQ : IEnumerable<IDomObject>, IHtmlString
+    public partial class CQ : IEnumerable<IDomObject>
     {
 
         #region private properties

@@ -64,15 +64,15 @@ namespace CsQuery.Mvc
         /// A new CsQuery object.
         /// </returns>
 
-        public static CQ HtmlTag<T>(this HtmlHelper<T> helper, string html)
+        public static CqHtmlString HtmlTag<T>(this HtmlHelper<T> helper, string html)
         {
             if (html.Contains(" "))
             {
-                return new CQ(html);
+                return new CqHtmlString(html);
             }
             else
             {
-                return new CQ("<" + html + " />");
+                return new CqHtmlString("<" + html + " />");
             }
         }
     }

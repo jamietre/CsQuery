@@ -200,6 +200,7 @@
     <Compile Include="jsdom\Attributes.cs" />
     <Compile Include="jsdom\JsdomTest.cs" />
     <Compile Include="jsdom\Level2\Level2.cs" />
+    <Compile Include="WebIO\YahooParse.cs" />
     <Compile Include="WebIO\StressTests.cs" />
     <Compile Include="TestTests.cs" />
     <Compile Include="Csharp\HtmlParser\Classes.cs" />

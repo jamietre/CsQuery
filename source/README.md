@@ -6,10 +6,13 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ### Change Log
 
-####Version 1.2.1 (unreleased)
+####Version 1.2.1
 
 *Bug Fixes*
 
+- [Issue #36](https://github.com/jamietre/CsQuery/issues/36) - remove `IHtmlString` interface from CQ object
+- [Issue #35](https://github.com/jamietre/CsQuery/issues/35) - nth-last-of-type and nth-of-type could return incorrect results
+- [Issue #34](https://github.com/jamietre/CsQuery/issues/34) - After ReplaceWith, a CQ object which is source does not refer to its new location
 - [Issue #33](https://github.com/jamietre/CsQuery/issues/33) - [type="text"] selecting `input` elements with no type attribute. 
 - [Issue #31](https://github.com/jamietre/CsQuery/issues/31) - Tests don't work in NUnit. Remove performance tests from the main test suite to simplify test suite architecture
 
