@@ -197,10 +197,11 @@
     <Compile Include="Csharp\Selectors\Extensions.cs" />
     <Compile Include="Csharp\Utility\Support.cs" />
     <Compile Include="Csharp\Utility\FastActivator.cs" />
+    <Compile Include="Examples\Tables.cs" />
     <Compile Include="jsdom\Attributes.cs" />
     <Compile Include="jsdom\JsdomTest.cs" />
     <Compile Include="jsdom\Level2\Level2.cs" />
-    <Compile Include="WebIO\YahooParse.cs" />
+    <Compile Include="Examples\YahooParse.cs" />
     <Compile Include="WebIO\StressTests.cs" />
     <Compile Include="TestTests.cs" />
     <Compile Include="Csharp\HtmlParser\Classes.cs" />

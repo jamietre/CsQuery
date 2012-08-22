@@ -14,6 +14,14 @@ namespace CsQuery.Mvc
 
     public class CqHtmlString : CQ, IHtmlString
     {
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// The HTML.
+        /// </param>
+
         public CqHtmlString(string html): base(html)
         {
 
