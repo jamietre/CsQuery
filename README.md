@@ -31,9 +31,9 @@ See the [release notes for 1.2](http://blog.outsharked.com/2012/08/csquery-12-re
 I'm (slowly) working on a web site for the project, but in the meantime, this document covers most aspects of common usage. Also be sure to look at the example applications in the source repository. Additionally, I post about [CsQuery on my blog](http://blog.outsharked.com/search/label/csquery) from time to time. Here are a few tutorials from there:
 
 * [Using the CsQuery MVC framework](http://blog.outsharked.com/2012/08/csquery-12-released.html) from the 1.2 release notes
- * [Implementing a custom filter selector](http://blog.outsharked.com/2012/07/csquery-113-released.html) from the 1.1.3 release notes
- * [Creating documents](http://blog.outsharked.com/2012/06/csquery-112-released.html) from the 1.1.2 release notes
- * [Loading content from the web](http://blog.outsharked.com/2012/06/async-web-gets-and-promises-in-csquery.html) asynchronously using promises
+* [Implementing a custom filter selector](http://blog.outsharked.com/2012/07/csquery-113-released.html) from the 1.1.3 release notes
+* [Creating documents](http://blog.outsharked.com/2012/06/csquery-112-released.html) from the 1.1.2 release notes
+* [Loading content from the web](http://blog.outsharked.com/2012/06/async-web-gets-and-promises-in-csquery.html) asynchronously using promises
 
 If you can't seem to figure out how to use a particular method, in almost all cases the API mimics the jQuery API, so you should start with the jQuery documentation. You could also look through the unit tests, which cover pretty much everything at some level, for straightforward examples of use.
 
