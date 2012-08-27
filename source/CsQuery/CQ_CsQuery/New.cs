@@ -23,9 +23,23 @@ namespace CsQuery
 
         public CQ New()
         {
-            CQ csq = new CQ();
+            CQ csq = NewInstance();
             csq.CsQueryParent = this;
             return csq;
+        }
+
+        /// <summary>
+        /// Creates a new instance of the CQ object. This should be used inside CQ to create a new object
+        /// under all circumstances so it can be overridden by derived classes.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A new CQ object
+        /// </returns>
+
+        protected virtual CQ NewInstance()
+        {
+            return new CQ();
         }
     }
 }

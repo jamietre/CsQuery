@@ -76,7 +76,7 @@ namespace CsQuery
 
         public CQ Add(IEnumerable<IDomObject> elements)
         {
-            CQ res = new CQ(this);
+            CQ res = NewInstance(this);
             res.AddSelection(elements);
             return res;
         }

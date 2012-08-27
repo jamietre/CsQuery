@@ -29,7 +29,16 @@ namespace CsQuery
 
         public CQ EnsureCsQuery(IEnumerable<IDomObject> elements)
         {
-            return elements is CQ ? (CQ)elements : new CQ(elements);
+            if (elements is CQ)
+            {
+                return (CQ)elements;
+            }
+            else
+            {
+                var cq = NewInstance();
+                ConfigureNewInstance(cq,elements);
+                return cq;
+            }
         }
     }
 }

@@ -41,7 +41,7 @@ namespace CsQuery
         public CQ AppendTo(params string[] target)
         {
             CQ output;
-            new CQ(MergeSelections(target)).Append(SelectionSet, out output);
+            NewInstance(MergeSelections(target)).Append(SelectionSet, out output);
 
             return output;
 

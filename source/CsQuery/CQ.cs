@@ -195,24 +195,6 @@ namespace CsQuery
             return SelectionHtml();
         }
 
-        /// <summary>
-        /// Returns the complete HTML-encoded string of the selection set. 
-        /// </summary>
-        ///
-        /// <returns>
-        /// An HTML-encoded string.
-        /// </returns>
-
-        public string ToHtmlString()
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (IDomObject elm in this)
-            {
-                elm.Render(sb);
-            }
-            return sb.ToString();
-        }
-
         #endregion
 
         #region interface members
@@ -664,11 +646,11 @@ namespace CsQuery
             CQ output;
             if (String.IsNullOrEmpty(selector))
             {
-                output = new CQ(list, this);
+                output = NewInstance(list, this);
             }
             else
             {
-                output = new CQ(FilterElements(list, selector), this);
+                output = NewInstance(FilterElements(list, selector), this);
             }
             output.Order = order;
             return output;

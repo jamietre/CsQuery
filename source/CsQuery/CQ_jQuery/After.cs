@@ -132,10 +132,10 @@ namespace CsQuery
         protected CQ InsertAtOffset(IEnumerable<IDomObject> target, int offset, out CQ insertedElements)
         {
             CQ cq = target as CQ;
-            SelectionSet<IDomObject> sel = null;
+            SelectionSet<IDomObject> targetSelectionSet = null;
 
             if (cq!=null) {
-                sel = cq.SelectionSet;
+                targetSelectionSet = cq.SelectionSet;
             }
 
             bool isTargetCsQuery = cq != null;
@@ -144,8 +144,8 @@ namespace CsQuery
 
             // Copy the target list: it could change otherwise
             List<IDomObject> targets = new List<IDomObject>(target);
-            insertedElements = new CQ();
-            bool isEmptyTarget = sel.Count == 0;
+            insertedElements = NewInstance();
+            bool isEmptyTarget = targetSelectionSet.Count == 0;
 
             // bind the source to the target's document if it was itself a CsQuery object, and update its selection set to reflect the 
             // current document.
@@ -158,12 +158,12 @@ namespace CsQuery
             if (isTargetCsQuery && isEmptyTarget)
             {
                 // If appending items to an empty selection, just add them to the selection set
-                sel.AddRange(SelectionSet);
+                targetSelectionSet.AddRange(SelectionSet);
                 insertedElements.AddSelection(SelectionSet);
 
                 // selection set will be messed up if document was changed; rebuild it
-                SelectionSet.Clear();
-                SelectionSet.AddRange(insertedElements);
+                //SelectionSet.Clear();
+                //SelectionSet.AddRange(insertedElements);
             }
             else
             {
@@ -176,19 +176,19 @@ namespace CsQuery
                         {
                             throw new InvalidOperationException("You can't add elements to a disconnected element list, it must be in a selection set");
                         }
-                        int index = sel.IndexOf(el);
+                        int index = targetSelectionSet.IndexOf(el);
 
-                        sel.OutputOrder = SelectionSetOrder.OrderAdded;
+                        targetSelectionSet.OutputOrder = SelectionSetOrder.OrderAdded;
         
                         foreach (var item in SelectionSet)
                         {
-                            sel.Insert(index + offset, item);
+                            targetSelectionSet.Insert(index + offset, item);
                         }
                         insertedElements.AddSelection(SelectionSet);
 
                         // selection set will be messed up if document was changed; rebuild it
-                        SelectionSet.Clear();
-                        SelectionSet.AddRange(insertedElements);
+                        //SelectionSet.Clear();
+                        //SelectionSet.AddRange(insertedElements);
                     }
                     else
                     {
@@ -198,8 +198,8 @@ namespace CsQuery
                             InsertAtOffset(el, offset);
                             isFirst = false;
                             // selection set will be messed up if document was changed; rebuild it
-                            SelectionSet.Clear();
-                            SelectionSet.AddRange(insertedElements);
+                            //SelectionSet.Clear();
+                            //SelectionSet.AddRange(insertedElements);
                         }
                         else
                         {

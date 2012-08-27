@@ -27,7 +27,7 @@ namespace CsQuery
 
         public CQ Clone()
         {
-            CQ csq = new CQ();
+            CQ csq = NewInstance();
 
             foreach (var item in SelectionSet)
             {

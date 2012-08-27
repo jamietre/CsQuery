@@ -169,7 +169,6 @@ namespace CsQuery
         /// <returns></returns>
         public static CQ CreateDocument(string html)
         {
-
             return CreateDocument(Support.StringToCharArray(html));
         }
 
@@ -181,12 +180,10 @@ namespace CsQuery
         public static CQ CreateDocument(char[] html)
         {
             CQ csq = new CQ();
-            //html.csq.LoadDocument(html);
             csq.CreateNewDocument(html, HtmlParsingMode.Document);
             
             return csq;
         }
-
 
         /// <summary>
         /// UNTESTED!

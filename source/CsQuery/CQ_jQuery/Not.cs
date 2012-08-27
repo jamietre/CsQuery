@@ -33,7 +33,7 @@ namespace CsQuery
         public CQ Not(string selector)
         {
             var notSelector = new Selector(selector);
-            return new CQ(notSelector.Except(Document, SelectionSet));
+            return NewInstance(notSelector.Except(Document, SelectionSet));
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace CsQuery
 
         public CQ Not(IEnumerable<IDomObject> elements)
         {
-            CQ csq = new CQ(SelectionSet);
+            CQ csq = NewInstance(SelectionSet);
             csq.SelectionSet.ExceptWith(elements);
             csq.Selector = Selector;
             return csq;

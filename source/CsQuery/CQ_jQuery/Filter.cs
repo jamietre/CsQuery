@@ -33,7 +33,7 @@ namespace CsQuery
 
         public CQ Filter(string selector)
         {
-            return new CQ(FilterElements(SelectionSet, selector));
+            return NewInstance(FilterElements(SelectionSet, selector));
 
         }
 
@@ -77,7 +77,7 @@ namespace CsQuery
 
         public CQ Filter(IEnumerable<IDomObject> elements)
         {
-            CQ filtered = new CQ(this);
+            CQ filtered = NewInstance(this);
             filtered.SelectionSet.IntersectWith(elements);
             return filtered;
         }

@@ -79,8 +79,19 @@ namespace CsQuery
 
         public CQ(IDomObject element, CQ context)
         {
-            CsQueryParent = context;
-            SetSelection(element,SelectionSetOrder.OrderAdded);
+            ConfigureNewInstance(this, element, context);
+        }
+
+        private CQ NewInstance(IDomObject element, CQ context)
+        {
+            var cq = NewInstance();
+            ConfigureNewInstance(cq, element, context);
+            return cq;
+        }
+        private void ConfigureNewInstance(CQ dom, IDomObject element, CQ context)
+        {
+            dom.CsQueryParent = context;
+            dom.SetSelection(element, SelectionSetOrder.OrderAdded);
         }
         
         /// <summary>
@@ -90,9 +101,18 @@ namespace CsQuery
         /// <returns></returns>
         public CQ(string html)
         {
+            ConfigureNewInstance(this, html);
+        }
+        private CQ NewInstance(string html)
+        {
+            var cq = NewInstance();
+            ConfigureNewInstance(cq, html);
+            return cq;
+        }
+        private void ConfigureNewInstance(CQ dom, string html)
+        {
             CreateNewFragment(Support.StringToCharArray(html), HtmlParsingMode.Content);
         }
-
         /// <summary>
         /// Create a new CsQuery object using an existing instance and a selector. if the selector is null or missing, then
         /// it will contain no selection results.
@@ -169,13 +189,24 @@ namespace CsQuery
         /// <param name="elements"></param>
         public CQ(IEnumerable<IDomObject> elements)
         {
+            ConfigureNewInstance(this,elements);
+        }
+
+        private CQ NewInstance(IEnumerable<IDomObject> elements)
+        {
+            var cq = NewInstance();
+            ConfigureNewInstance(cq,elements);
+            return cq;
+        }
+        private void ConfigureNewInstance(CQ dom,IEnumerable<IDomObject> elements)
+        {
             var list = elements.ToList();
 
             if (elements is CQ)
             {
                 CQ asCq = (CQ)elements;
-                CsQueryParent = asCq;
-                Document = asCq.Document;
+                dom.CsQueryParent = asCq;
+                dom.Document = asCq.Document;
             }
             else
             {
@@ -185,12 +216,11 @@ namespace CsQuery
                 var el = elements.FirstOrDefault();
                 if (el != null)
                 {
-                    Document = el.Document;
+                    dom.Document = el.Document;
                 }
             }
-            SetSelection(list, SelectionSetOrder.OrderAdded);
+            dom.SetSelection(list, SelectionSetOrder.OrderAdded);
         }
-
         /// <summary>
         /// Create a new CsQuery object from a set of DOM elements, assigning the 2nd parameter as a context for this object.
         /// </summary>
@@ -204,8 +234,30 @@ namespace CsQuery
 
         public CQ(IEnumerable<IDomObject> elements, CQ context)
         {
-            CsQueryParent = context;
-            AddSelection(elements);
+            ConfigureNewInstance(this,elements, context);
+        }
+        private CQ NewInstance(IEnumerable<IDomObject> elements, CQ context)
+        {
+            var cq = NewInstance();
+            ConfigureNewInstance(cq,elements, context);
+            return cq;
+        }
+
+        /// <summary>
+        /// Configures a new instance for a sequence of elements and an existing context.
+        /// </summary>
+        ///
+        /// <param name="elements">
+        /// A sequence of elements.
+        /// </param>
+        /// <param name="context">
+        /// The context.
+        /// </param>
+
+        private void ConfigureNewInstance(CQ dom,IEnumerable<IDomObject> elements, CQ context)
+        {
+            dom.CsQueryParent = context;
+            dom.AddSelection(elements);
         }
 
         #endregion
@@ -314,7 +366,11 @@ namespace CsQuery
         protected void CreateNewFragment(char[] html, HtmlParsingMode htmlParsingMode)
         {
             Document = new DomFragment(html,htmlParsingMode);
-            SetSelection(Document.ChildNodes,SelectionSetOrder.Ascending);
+             
+            //  enumerate ChildNodes when creating a new fragment to be sure the selection set only
+            //  reflects the original document. 
+            
+            SetSelection(Document.ChildNodes.ToList(),SelectionSetOrder.Ascending);
             FinishCreatingNewDocument();
         }
 

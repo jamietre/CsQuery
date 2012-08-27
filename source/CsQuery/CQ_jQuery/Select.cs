@@ -122,7 +122,7 @@ namespace CsQuery
 
         public CQ Select(IDomObject element)
         {
-            CQ csq = new CQ(element, this);
+            CQ csq = NewInstance(element, this);
             return csq;
         }
 
@@ -168,7 +168,7 @@ namespace CsQuery
 
         public CQ Select(IEnumerable<IDomObject> elements)
         {
-            CQ csq = new CQ(elements, this);
+            CQ csq = NewInstance(elements, this);
             return csq;
         }
 
@@ -221,7 +221,7 @@ namespace CsQuery
             var selectors = new Selector(selector);
             var selection = selectors.Select(Document, context);
 
-            CQ csq = new CQ(selection, this);
+            CQ csq = NewInstance(selection, this);
             csq.Selector = selectors;
             return csq;
         }
@@ -281,7 +281,7 @@ namespace CsQuery
 
             IEnumerable<IDomObject> selection = selectors.Select(Document, context);
 
-            CQ csq = new CQ(selection, (CQ)this);
+            CQ csq = NewInstance(selection, (CQ)this);
             csq.Selector = selectors;
             return csq;
         }

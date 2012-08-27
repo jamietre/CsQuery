@@ -38,7 +38,7 @@ namespace CsQuery
                 }
             }
 
-            return new CQ(list, this);
+            return NewInstance(list, this);
         }
 
         

@@ -23,7 +23,7 @@ using CsQuery.Implementation;
 
 //        public CQ Save()
 //        {
-//            CQ csq = new CQ();
+//            CQ csq = NewInstance();
 //            csq.CsQueryParent = this;
 //            return csq;
 //        }

@@ -20,6 +20,10 @@ namespace CsQuery.Tests.Csharp
 
     public partial class Methods: CsQueryTest
     {
+        /// <summary>
+        /// When adding something from one document to another, the selection set should remain unchanged,
+        /// and refer to elements in the target document.
+        /// </summary>
 
         [Test, TestMethod]
         public void Append_AcrossDocuments()
@@ -28,13 +32,15 @@ namespace CsQuery.Tests.Csharp
             var div = CQ.Create("<div></div>")
                .AddClass("admin-content");
 
-            var editor = CQ.Create("<div></div>")
+            var span = CQ.Create("<span></span>")
                 .AddClass("admin-content-body");
 
-            div.Append(editor);
+            div.Append(span);
 
-            Assert.AreEqual(1, editor.Length);
-          
+            Assert.AreEqual(1, span.Length);
+
+            
+            Assert.AreEqual(div["span"][0], span[0]);
         }
 
 

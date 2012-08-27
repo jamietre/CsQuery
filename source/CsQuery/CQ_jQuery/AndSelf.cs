@@ -28,7 +28,7 @@ namespace CsQuery
 
         public CQ AndSelf()
         {
-            var csq = new CQ(this);
+            var csq = NewInstance(this);
             csq.Order = SelectionSetOrder.Ascending;
 
             if (CsQueryParent == null)
