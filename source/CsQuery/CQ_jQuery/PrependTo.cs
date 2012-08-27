@@ -35,7 +35,7 @@ namespace CsQuery
         {
 
             CQ output;
-            new CQ(MergeSelections(target)).Prepend(SelectionSet, out output);
+            NewInstance(MergeSelections(target)).Prepend(SelectionSet, out output);
 
             return output;
         }

@@ -17,6 +17,16 @@ namespace CsQuery.Mvc
         /// <summary>
         /// Default constructor.
         /// </summary>
+
+        public CqHtmlString()
+            : base()
+        {
+
+        }
+
+        /// <summary>
+        /// Create a CqHtmlString from HTML
+        /// </summary>
         ///
         /// <param name="html">
         /// The HTML.
@@ -25,6 +35,37 @@ namespace CsQuery.Mvc
         public CqHtmlString(string html): base(html)
         {
 
+        }
+
+        /// <summary>
+        /// Creates a new instance of the CqHtmlString object.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+
+        protected override CQ NewInstance()
+        {
+            return new CqHtmlString();
+        }
+
+        /// <summary>
+        /// Returns the complete HTML-encoded string of the selection set.
+        /// </summary>
+        ///
+        /// <returns>
+        /// An HTML-encoded string.
+        /// </returns>
+
+        public string ToHtmlString()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (IDomObject elm in this)
+            {
+                elm.Render(sb);
+            }
+            return sb.ToString();
         }
     }
 }

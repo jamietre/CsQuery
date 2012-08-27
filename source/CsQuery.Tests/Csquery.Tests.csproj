@@ -93,7 +93,7 @@
     <Compile Include="Csharp\ExtensionMethods\Xml.cs" />
     <Compile Include="Csharp\Methods\Before.cs" />
     <Compile Include="Csharp\Methods\ReplaceWith.cs" />
-    <Compile Include="Csharp\Methods\Last.cs" />
+    <Compile Include="Csharp\Documents\Last.cs" />
     <Compile Include="Csharp\Methods\First.cs" />
     <Compile Include="Csharp\Methods\ParentsUntil.cs" />
     <Compile Include="Csharp\Methods\Width.cs" />

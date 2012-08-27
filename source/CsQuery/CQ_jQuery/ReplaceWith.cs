@@ -40,7 +40,7 @@ namespace CsQuery
                 // track what was orignally scheduled for removal in case the set changes in "Before" b/c it's disconnected.
 
                 CQ newContent = EnsureCsQuery(MergeContent(content));
-                CQ replacing = new CQ(this);
+                CQ replacing = NewInstance(this);
 
                 Before(newContent);
                 SelectionSet.ExceptWith(replacing);

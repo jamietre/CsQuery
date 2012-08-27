@@ -68,6 +68,10 @@ namespace CsQuery.Tests.Csharp
 
             Assert.AreEqual(content[0], dom["*"].ElementAt(0));
             Assert.AreEqual(dom["#first"][0], dom["*"].ElementAt(1));
+
+            // make sure the selection set of dom did not change
+
+            Assert.AreEqual(dom.First()[0], dom["#first"][0]);
         }
 
 

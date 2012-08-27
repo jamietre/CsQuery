@@ -37,7 +37,7 @@ namespace CsQuery
             }
             if (index >= 0 && index < Length)
             {
-                return new CQ(SelectionSet[index], this);
+                return NewInstance(SelectionSet[index], this);
             }
             else
             {

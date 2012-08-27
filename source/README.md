@@ -6,6 +6,12 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ### Change Log
 
+####Version 1.2.2 (development)
+
+*Bug Fixes*
+
+- Enumerate the root elements to bind the selection set for documents created from HTML. Otherwise changes in the document will affect the default selection set.
+
 ####Version 1.2.1
 
 *Bug Fixes*
