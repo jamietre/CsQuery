@@ -209,7 +209,8 @@ namespace CsQuery
                 IDomElement target = GetTrueTarget(obj);
 
                 // must copy the enumerable first, since this can cause
-                // els to be removed from it
+                // els to be removed from it if they move across a document boundary
+                
                 List<IDomObject> list = new List<IDomObject>(elements);
                 foreach (var e in list)
                 {

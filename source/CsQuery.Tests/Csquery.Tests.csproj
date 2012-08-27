@@ -92,6 +92,7 @@
     <Compile Include="Csharp\Dom\SpecialElements.cs" />
     <Compile Include="Csharp\ExtensionMethods\Xml.cs" />
     <Compile Include="Csharp\Methods\Before.cs" />
+    <Compile Include="Csharp\Methods\Append.cs" />
     <Compile Include="Csharp\Methods\ReplaceWith.cs" />
     <Compile Include="Csharp\Methods\Last.cs" />
     <Compile Include="Csharp\Methods\First.cs" />
