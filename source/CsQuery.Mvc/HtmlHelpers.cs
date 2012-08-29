@@ -75,5 +75,51 @@ namespace CsQuery.Mvc
                 return new CqHtmlString("<" + html + " />");
             }
         }
+
+        /// <summary>
+        /// Includes a server-side javascript file inline.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="helper">
+        /// The current helper context.
+        /// </param>
+        /// <param name="script">
+        /// Full pathname of the server file.
+        /// </param>
+        ///
+        /// <returns>
+        /// An HtmlString.
+        /// </returns>
+
+        public static IHtmlString Script<T>(this HtmlHelper<T> helper, string script)
+        {
+            return new HtmlString(String.Format("<script class=\"csquery-script\" type=\"text/javascript\" src=\"{0}\" ></script>",script));
+        }
+
+        /// <summary>
+        /// Sets the script root for this page
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="helper">
+        /// The current helper context.
+        /// </param>
+        /// <param name="rootPath">
+        /// Full pathname of the root file.
+        /// </param>
+        ///
+        /// <returns>
+        /// .
+        /// </returns>
+
+        public static IHtmlString ScriptRoot<T>(this HtmlHelper<T> helper, string rootPath)
+        {
+            return new HtmlString(String.Format("<script class=\"csquery-script\" csquery root=\"{0}\" ></script>",rootPath));
+        }
     }
 }

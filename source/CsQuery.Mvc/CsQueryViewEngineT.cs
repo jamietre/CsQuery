@@ -19,6 +19,13 @@ namespace CsQuery.Mvc
     public class CsQueryViewEngine<T> : RazorViewEngine 
         where T: class, ICsQueryController
     {
+
+        /// <summary>
+        /// When true, activates script manager functionality
+        /// </summary>
+
+        public bool EnableScriptManager { get; set; }
+
         /// <summary>
         /// Creates a view by using the specified controller context and the paths of the view and master
         /// view, and invokes methods on a layout controller identified by the generic type of the class.
@@ -47,7 +54,8 @@ namespace CsQuery.Mvc
                 true,
                 base.FileExtensions,
                 base.ViewPageActivator,
-                false
+                false,
+                EnableScriptManager
             );
             view.LayoutController = Objects.CreateInstance<T>();
             return view;
@@ -77,7 +85,8 @@ namespace CsQuery.Mvc
                 false,
                 base.FileExtensions,
                 base.ViewPageActivator,
-                true
+                true,
+                EnableScriptManager
             );
         }
       

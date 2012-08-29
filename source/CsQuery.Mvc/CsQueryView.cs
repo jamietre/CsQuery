@@ -59,10 +59,14 @@ namespace CsQuery.Mvc
         /// true if this object is partial.
         /// </param>
 
-        public CsQueryView(ControllerContext controllerContext, string viewPath, string layoutPath, bool runViewStartPages, IEnumerable<string> viewStartFileExtensions, bool isPartial)
+        public CsQueryView(ControllerContext controllerContext, string viewPath, string layoutPath, bool runViewStartPages, IEnumerable<string> viewStartFileExtensions, 
+            bool isPartial,
+            bool scriptManagerEnabled
+            )
             : base(controllerContext, viewPath, layoutPath, runViewStartPages, viewStartFileExtensions)
         {
             IsPartial = isPartial;
+            ScriptManagerEnabled = scriptManagerEnabled;
         }
 
         /// <summary>
@@ -91,10 +95,14 @@ namespace CsQuery.Mvc
         /// true if this object is partial.
         /// </param>
 
-        public CsQueryView(ControllerContext controllerContext, string viewPath, string layoutPath, bool runViewStartPages, IEnumerable<string> viewStartFileExtensions, IViewPageActivator viewPageActivator, bool isPartial)
+        public CsQueryView(ControllerContext controllerContext, string viewPath, string layoutPath, bool runViewStartPages, IEnumerable<string> viewStartFileExtensions, IViewPageActivator viewPageActivator, 
+            bool isPartial,
+            bool scriptManagerEnabled
+            )
             : base(controllerContext, viewPath, layoutPath, runViewStartPages, viewStartFileExtensions, viewPageActivator)
         {
             IsPartial = isPartial;
+            ScriptManagerEnabled = scriptManagerEnabled;
         }
 
         #endregion
@@ -104,6 +112,8 @@ namespace CsQuery.Mvc
         private ICsQueryController _LayoutController;
 
         private bool IsPartial;
+
+        private bool ScriptManagerEnabled;
 
         /// <summary>
         /// A lookup of ClassName, indicating whether to bother with CQ for this controller
@@ -184,7 +194,7 @@ namespace CsQuery.Mvc
 
                         string currentAction = GetCurrentAction(viewContext);
                         string controllerName = GetControllerName(viewContext);
-
+                        
                         if (IsPartial)
                         {
                             // viewName is the name of the cshtml file with underscores e.g "ASP.namespace_subspace_shared__layout_cshtml"
@@ -242,12 +252,24 @@ namespace CsQuery.Mvc
                             mi.Invoke(LayoutController, null);
                         }
                     }
-                   
+
+
+                    if (ScriptManagerEnabled)
+                    {
+                        ManageScripts(cqDoc, (System.Web.Mvc.WebViewPage)instance);
+                    }
+
                     writer.Write(cqDoc.Render());
                     return;
                 }
             }
             base.RenderView(viewContext, writer, instance);
+        }
+
+        private void ManageScripts(CQ cqDoc, WebViewPage viewPage) {
+            ScriptManager mgr = new ScriptManager(cqDoc, viewPage);
+            mgr.ResolveScripts(HttpContext.Current);
+            
         }
 
         /// <summary>

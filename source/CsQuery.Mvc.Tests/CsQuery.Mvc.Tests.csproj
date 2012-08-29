@@ -78,6 +78,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Tests\ScriptManager.cs" />
     <Compile Include="Tests\HtmlHelpers.cs" />
     <Compile Include="Tests\Markup.cs" />
     <Compile Include="Controllers\Shared\LayoutController.cs" />
@@ -137,6 +138,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="scripts\libs\dep1.js" />
+    <Content Include="scripts\libs\dep2.js" />
+    <Content Include="scripts\libs\dep3.js" />
+    <Content Include="scripts\test-script.js" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

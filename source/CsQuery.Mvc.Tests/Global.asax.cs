@@ -39,7 +39,10 @@ namespace CsQuery.Mvc.Tests
             // [CsQuery] The following code must be added to enable to CsQuery engine
 
             ViewEngines.Engines.Clear();
-            ViewEngines.Engines.Add(new CsQueryViewEngine<Controllers.LayoutController>());
+
+            var engine = new CsQueryViewEngine<Controllers.LayoutController>();
+            engine.EnableScriptManager = true;
+            ViewEngines.Engines.Add(engine);
         }
     }
 }

@@ -11,6 +11,25 @@ namespace CsQuery.Mvc
     /// </summary>
     public class CsQueryViewEngine : RazorViewEngine
     {
+        
+        /// <summary>
+        /// Create a new CsQueryViewEngine
+        /// </summary>
+        
+        public static RazorViewEngine Create()
+        {
+            return new CsQueryViewEngine();
+        }
+
+        /// <summary>
+        /// Create a new CsQueryViewEngine using common controller of type T
+        /// </summary>
+
+        public static RazorViewEngine Create<T>() where T : class, ICsQueryController
+        {
+            return new CsQueryViewEngine<T>();
+        }
+
         /// <summary>
         /// Default constructor.
         /// </summary>
@@ -19,6 +38,12 @@ namespace CsQuery.Mvc
         {
 
         }
+
+        /// <summary>
+        /// When true, activates script manager functionality
+        /// </summary>
+        
+        public bool EnableScriptManager { get; set; }
 
         /// <summary>
         /// Creates a partial view using the specified controller context and partial path.
@@ -44,7 +69,8 @@ namespace CsQuery.Mvc
                 false,
                 base.FileExtensions,
                 base.ViewPageActivator,
-                true
+                true,
+                EnableScriptManager
             );
         }
 
@@ -76,7 +102,8 @@ namespace CsQuery.Mvc
                 true,
                 base.FileExtensions,
                 base.ViewPageActivator,
-                false
+                false,
+                EnableScriptManager
             );
         }
     }
