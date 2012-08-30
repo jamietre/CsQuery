@@ -96,7 +96,11 @@ namespace CsQuery.Mvc
 
         public static IHtmlString Script<T>(this HtmlHelper<T> helper, string script)
         {
-            return new HtmlString(String.Format("<script class=\"csquery-script\" type=\"text/javascript\" src=\"{0}\" ></script>",script));
+            string path = (script.StartsWith("~/") ? "" : "~/") +
+                script +
+                (script.EndsWith(".js") ? "" : ".js");
+
+            return new HtmlString(String.Format("<script class=\"csquery-script\" type=\"text/javascript\" src=\"{0}\" ></script>",path));
         }
 
         /// <summary>

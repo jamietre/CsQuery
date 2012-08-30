@@ -123,8 +123,10 @@ namespace CsQuery.Mvc
             bool started = false;
             bool finished = false;
 
-            string fileName = source + (source.EndsWith(".js") ? "" : ".js");
-
+            string fileName = (source.StartsWith("~/") ? "" : "~/") 
+                + source 
+                + (source.EndsWith(".js") ? "" : ".js");
+            
             using (StreamReader reader = new StreamReader(context.Server.MapPath(fileName)))
             {
                 while (!finished && (line = reader.ReadLine()) != null)
@@ -132,8 +134,10 @@ namespace CsQuery.Mvc
                     if (line.StartsWith("//using "))
                     {
                         started = true;
-
-                        yield return line.Substring(8).Trim();
+                        string depName= line.Substring(8).Trim();
+                        yield return Root
+                            + depName
+                            + (depName.EndsWith(".js") ? "" : ".js");
                     }
                     else if (line != "")
                     {

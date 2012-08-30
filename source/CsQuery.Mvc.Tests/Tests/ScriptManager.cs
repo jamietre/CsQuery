@@ -18,6 +18,9 @@ namespace CsQuery.Mvc.Tests
         {
             var doc = TestUtil.RenderViewCQ<TestController>("index");
 
+            var scripts = doc["script"];
+            Assert.AreEqual(10, scripts.Count());
+
         }
 
     }
