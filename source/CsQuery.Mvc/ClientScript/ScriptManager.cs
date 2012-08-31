@@ -8,7 +8,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.IO;
 
-namespace CsQuery.Mvc
+namespace CsQuery.Mvc.ClientScript
 {
     /// <summary>
     /// A class to manage JavaScript dependencies. Comments at the top of the file in the form
@@ -134,7 +134,12 @@ namespace CsQuery.Mvc
                     {
                         bundleUrl = bundleAlias + "_no_http_context";
                     }
-                    Bundles[coll] = bundleUrl;
+
+                    
+                    if (!Options.HasFlag(CsQueryViewEngineOptions.NoCacheBundles))
+                    {
+                        Bundles[coll] = bundleUrl;
+                    }
                 }
                 CQ scp = CQ.Create(String.Format("<script type=\"text/javascript\" class=\"csquery-generated\" src=\"{0}\"></script>", bundleUrl));
 

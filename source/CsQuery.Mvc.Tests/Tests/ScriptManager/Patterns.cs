@@ -1,0 +1,61 @@
+﻿using System;
+using System.Text;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Hosting;
+using System.Web.Optimization;
+using System.IO;
+using System.Text.RegularExpressions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using CsQuery.Mvc.Tests.Controllers;
+using CsQuery.Mvc;
+using CsQuery.Mvc.ClientScript;
+using CsQuery.ExtensionMethods.Internal;
+
+namespace CsQuery.Mvc.Tests
+{
+    [TestClass]
+    public class PatternsObject
+    {
+
+
+        private bool Matches(Regex regex, string text,string value)
+        {
+            var match = regex.Match(text);
+            return match.Success &&
+                value == match.Groups["dep"].Value;
+
+        }
+        [TestMethod]
+        public void Dependency()
+        {
+            var pat = Patterns.Dependency;
+
+            
+            Assert.IsTrue(Matches(pat,"using test","test"));           
+            Assert.IsTrue(Matches(pat,"    using test","test"));
+            Assert.IsTrue(Matches(pat,"\tusing test","test"));
+            Assert.IsTrue(Matches(pat,"\t using test","test"));
+            Assert.IsTrue(Matches(pat,"using test;","test"));
+            Assert.IsTrue(Matches(pat,"using test.test2","test.test2"));
+            Assert.IsTrue(Matches(pat, "using test.test2 ;", "test.test2"));
+            Assert.IsFalse(pat.IsMatch("xusing test;"));
+            Assert.IsFalse(pat.IsMatch("using test something"));
+
+            
+        }
+        [TestMethod]
+        public void FullLineComment()
+        {
+            var pat = Patterns.FullLineComment;
+
+            Assert.IsTrue(pat.IsMatch("// a comment"));
+            Assert.IsTrue(pat.IsMatch("   // a comment"));
+            Assert.IsFalse(pat.IsMatch("xxx   // a comment"));
+
+        }
+ 
+    }
+}

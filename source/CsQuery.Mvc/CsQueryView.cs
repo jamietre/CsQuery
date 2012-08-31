@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.IO;
 using System.Text;
 using System.Reflection;
+using CsQuery.Mvc.ClientScript;
 
 namespace CsQuery.Mvc
 {

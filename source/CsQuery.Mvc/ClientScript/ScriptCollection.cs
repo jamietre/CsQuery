@@ -9,14 +9,16 @@ using System.Web.Optimization;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace CsQuery.Mvc
+namespace CsQuery.Mvc.ClientScript
 {
     /// <summary>
-    /// Collection of scripts used by the ScriptManager
+    /// Collection of scripts used by the ScriptManager, and methods to process them
     /// </summary>
 
-    class ScriptCollection 
+    public class ScriptCollection: ICollection<string>
     {
+        #region constructor
+
         public ScriptCollection(PathList libraryPath, Func<string,string> mapPathFunc)
         {
             MapPath = mapPathFunc;
@@ -27,9 +29,9 @@ namespace CsQuery.Mvc
             ScriptSources = new HashSet<string>();
 
         }
+        #endregion
 
-        
-        protected Regex RegexDependency = new Regex(@"^\s*using (?<dep>.+)\s*;*$");
+        #region private properties
 
 
         protected PathList LibraryPath;
@@ -51,10 +53,13 @@ namespace CsQuery.Mvc
         /// </summary>
 
         protected List<string> DependenciesOrdered;
-
         
+        #endregion
+
+        #region public methods
+
         /// <summary>
-        /// Configures the inputs from a CQ object containing script elements
+        /// Adds inputs from all the scripts found in a CQ object
         /// </summary>
         ///
         /// <param name="scripts">
@@ -71,6 +76,7 @@ namespace CsQuery.Mvc
             scripts.RemoveClass("csquery-script");
         }
 
+
         /// <summary>
         /// Return dependencies found in the document.
         /// </summary>
@@ -83,6 +89,46 @@ namespace CsQuery.Mvc
         {
             return GetDependencies(ScriptSources, ignoreErrors);
         }
+
+
+        /// <summary>
+        /// Serves as a hash function for a particular type.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A hash code for the current <see cref="CsQuery.Mvc.ScriptCollection" />.
+        /// </returns>
+
+        public override int GetHashCode()
+        {
+            return ScriptSources.Select(item => item.GetHashCode()).Aggregate((cur, next) =>
+            {
+                return cur + next;
+            });
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="CsQuery.Mvc.ScriptCollection" /> is equal to the current
+        /// <see cref="CsQuery.Mvc.ScriptCollection" />. 
+        /// </summary>
+        ///
+        /// <param name="obj">
+        /// The object to compare with the current object.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the objects are the same; false otherwise.
+        /// </returns>
+
+        public override bool Equals(object obj)
+        {
+            return obj is ScriptCollection &&
+                ((ScriptCollection)obj).ScriptSources.SetEquals(ScriptSources);
+        }
+
+        #endregion
+
+        #region private methods
 
         /// <summary>
         /// Return dependencies found in a sequence of files.
@@ -179,7 +225,7 @@ namespace CsQuery.Mvc
                 while ((line = parser.ReadLine()) != null 
                     && !parser.AnyCodeYet)
                 {
-                    var match = RegexDependency.Match(line);
+                    var match = Patterns.Dependency.Match(line);
                     if (match.Success)
                     {
                         string depName= match.Groups["dep"].Value;
@@ -250,44 +296,6 @@ namespace CsQuery.Mvc
         }
 
         /// <summary>
-        /// Serves as a hash function for a particular type.
-        /// </summary>
-        ///
-        /// <returns>
-        /// A hash code for the current <see cref="CsQuery.Mvc.ScriptCollection" />.
-        /// </returns>
-
-        public override int GetHashCode()
-        {
-            return ScriptSources.Select(item => item.GetHashCode()).Aggregate((cur, next) =>
-            {
-                return cur + next;
-            });
-        }
-
-        /// <summary>
-        /// Determines whether the specified <see cref="CsQuery.Mvc.ScriptCollection" /> is equal to the current
-        /// <see cref="CsQuery.Mvc.ScriptCollection" />.
-        /// </summary>
-        ///
-        /// <param name="obj">
-        /// The object to compare with the current object.
-        /// </param>
-        ///
-        /// <returns>
-        /// true if the objects are the same; false otherwise.
-        /// </returns>
-
-        public override bool Equals(object obj)
-        {
-            return obj is ScriptCollection &&
-                ((ScriptCollection)obj).ScriptSources.SetEquals(ScriptSources);
-        }
-
-        #region private methods
-
-
-        /// <summary>
         /// Normalize dependency name: replaces . with slash and adds .js
         /// </summary>
         ///
@@ -302,6 +310,63 @@ namespace CsQuery.Mvc
         private string NormalizeDependencyName(string path)
         {
             return path.Replace(".", "/") + ".js";
+        }
+
+        #endregion
+
+        #region ICollection methods
+
+        /// <summary>
+        /// Adds a script path.
+        /// </summary>
+        ///
+        /// <param name="item">
+        /// The item to add.
+        /// </param>
+
+        public void Add(string item)
+        {
+            ScriptSources.Add(item);
+        }
+
+        public void Clear()
+        {
+            ScriptSources.Clear();
+        }
+
+        public bool Contains(string item)
+        {
+            return ScriptSources.Contains(item);
+        }
+
+        public void CopyTo(string[] array, int arrayIndex)
+        {
+            ScriptSources.CopyTo(array, arrayIndex);
+        }
+
+        public int Count
+        {
+            get { return ScriptSources.Count; }
+        }
+
+        public bool IsReadOnly
+        {
+            get { return false; }
+        }
+
+        public bool Remove(string item)
+        {
+            return ScriptSources.Remove(item);
+        }
+
+        public IEnumerator<string> GetEnumerator()
+        {
+            return ScriptSources.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         #endregion

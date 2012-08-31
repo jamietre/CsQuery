@@ -30,6 +30,12 @@ namespace CsQuery.Mvc
         /// <summary>
         /// When false, scripts will not be minified
         /// </summary>
-        NoMinifyScripts=8
+        NoMinifyScripts=8,
+
+        /// <summary>
+        /// When false, bundles will not be cached. (This is useful for debugging; otherwise, changes to javascript files
+        /// would not be refelected until the application is restarted)
+        /// </summary>
+        NoCacheBundles=16
     }
 }

@@ -31,7 +31,8 @@ namespace CsQuery.Mvc.Tests
 
             string script = Host.BundlesContentsForUrl(bundleUrl);
 
-            Assert.AreEqual("var dep3;\r\n;//using dep3\r\nvar dep1;\r\n;var dep2;;", script);
+            script = script.Replace("\r\n", "\n");
+            Assert.AreEqual("var dep3;\n;//using dep3\nvar dep1;\n;var dep2;;", script);
 
             //TestConfig.Host.ViewEngineOptions |= CsQueryViewEngineOptions.NoMinifyScripts;
 

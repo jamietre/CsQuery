@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
 
-namespace CsQuery.Mvc
+namespace CsQuery.Mvc.ClientScript
 {
     class ScriptParser: IDisposable
     {
@@ -15,13 +15,6 @@ namespace CsQuery.Mvc
 
         }
 
-        private static Regex RegexStartComment = new Regex(@"^\s*/\*(?<comment>.*)$");
-        private static Regex RegexEndComment = new Regex(@"^(?<comment>.*)\*/\s*$");
-        private static Regex RegexWhiteSpace= new Regex(@"^\s*$");
-
-        // matches "/* xxx */" or "// xxx", ignoring whitespace
-        private static Regex RegexFullLineComment = new Regex(@"^\s*//(?<comment>.*)$");
-        private static Regex RegexOneLineComment = new Regex(@"^\s*/\*(?<comment>.*)\*/$");
 
         public bool InMultilineComment { get; protected set; }
 
@@ -82,7 +75,7 @@ namespace CsQuery.Mvc
                 if (InMultilineComment)
                 {
                     
-                    Match endComment = RegexEndComment.Match(line);
+                    Match endComment = Patterns.EndComment.Match(line);
 
                     if (endComment.Success)
                     {
@@ -95,7 +88,7 @@ namespace CsQuery.Mvc
                 else
                 {
                     bool isFullLineComment = false;
-                    Match singleLineComment = RegexFullLineComment.Match(line);
+                    Match singleLineComment = Patterns.FullLineComment.Match(line);
 
                     bool isSingleLineComment = singleLineComment.Success;
                     Match fullLineComment = null;
@@ -108,13 +101,13 @@ namespace CsQuery.Mvc
                     if (!InMultilineComment) {
                         if (!isSingleLineComment)
                         {
-                            fullLineComment = RegexFullLineComment.Match(line);
+                            fullLineComment = Patterns.FullLineComment.Match(line);
                             isFullLineComment = fullLineComment.Success;
                         }
 
                         if (!isSingleLineComment && !isFullLineComment)
                         {
-                            startComment = RegexStartComment.Match(line);
+                            startComment = Patterns.StartComment.Match(line);
                             isStartComment = startComment.Success;
                         }
                     } 
@@ -133,8 +126,8 @@ namespace CsQuery.Mvc
                     } else if (isSingleLineComment) {
                         InComment = true;
                         line = singleLineComment.Groups["comment"].Value;
-                    } 
-                    else if (!AnyCodeYet && !RegexWhiteSpace.IsMatch(line))
+                    }
+                    else if (!AnyCodeYet && !Patterns.WhiteSpace.IsMatch(line))
                     {
                         AnyCodeYet = true;
                     }

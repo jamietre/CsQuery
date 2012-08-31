@@ -95,6 +95,7 @@
     <Compile Include="Tests\ScriptManager\BundleContents_NoMinimize.cs" />
     <Compile Include="Tests\AppHostBase.cs" />
     <Compile Include="Tests\ScriptManager\BundleContents_Minimize.cs" />
+    <Compile Include="Tests\ScriptManager\Patterns.cs" />
     <Compile Include="Tests\ScriptManager\ScriptHelper.cs" />
     <Compile Include="Tests\ScriptManager\LibraryPath.cs" />
     <Compile Include="Tests\ScriptManager\ScriptDependencies2.cs" />

@@ -9,6 +9,7 @@ using System.Web.Optimization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CsQuery.Mvc.Tests.Controllers;
 using CsQuery.Mvc;
+using CsQuery.Mvc.ClientScript;
 using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.Mvc.Tests

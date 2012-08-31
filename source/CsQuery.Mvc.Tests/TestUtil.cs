@@ -13,25 +13,34 @@ namespace CsQuery.Mvc.Tests
 {
     public class TestUtil
     {
+
         /// <summary>
-        /// Renders the view output into a CQ object
+        /// Like HttpContext.MapPath, except in the test context
         /// </summary>
         ///
-        /// <typeparam name="T">
-        /// Generic type parameter.
-        /// </typeparam>
-        /// <param name="action">
-        /// The action.
+        /// <param name="path">
+        /// Relative path to a file
         /// </param>
         ///
         /// <returns>
-        /// a CQ object
+        /// A hard filesystem path
         /// </returns>
 
-        //public static CQ RenderViewCQ<T>(string action, bool destroyContext=true) where T : Controller, new()
-        //{
-        //    return CQ.CreateFragment(TestConfig.Host.RenderView<T>(action,destroyContext));
-        //}
+        public static string MapPath(string path)
+        {
+            if (path.StartsWith("~/"))
+            {
+                path = path.Substring(2);
+            }
+            else if (path.StartsWith("/"))
+            {
+                path = path.Substring(1);
+            }
+
+            path = path.Replace("/", "\\");
+            return Path.Combine(TestConfig.AppPath, path);
+        }
+        
 
     }
 }

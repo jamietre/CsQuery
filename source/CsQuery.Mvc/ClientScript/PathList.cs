@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 
-namespace CsQuery.Mvc
+namespace CsQuery.Mvc.ClientScript
 {
     /// <summary>
     /// A list of virtual paths
