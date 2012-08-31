@@ -99,9 +99,9 @@ namespace CsQuery.Mvc
 
         #endregion
 
-        #region private methods
+        #region static methods
 
-        private string Normalize(string virtualPath)
+        public static string Normalize(string virtualPath)
         {
             if (!virtualPath.StartsWith("/") && !virtualPath.StartsWith("~/")) {
                 virtualPath = "~/"+virtualPath;

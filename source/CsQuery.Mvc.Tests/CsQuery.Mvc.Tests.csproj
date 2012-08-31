@@ -92,13 +92,14 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Tests\BundleContents_NoMinimize.cs" />
+    <Compile Include="Tests\ScriptManager\BundleContents_NoMinimize.cs" />
     <Compile Include="Tests\AppHostBase.cs" />
-    <Compile Include="Tests\BundleContents_Minimize.cs" />
-    <Compile Include="Tests\LibraryPath.cs" />
-    <Compile Include="Tests\ScriptDependencies2.cs" />
-    <Compile Include="Tests\ScriptDependenciesInvalid.cs" />
-    <Compile Include="Tests\ScriptDependencies.cs" />
+    <Compile Include="Tests\ScriptManager\BundleContents_Minimize.cs" />
+    <Compile Include="Tests\ScriptManager\ScriptHelper.cs" />
+    <Compile Include="Tests\ScriptManager\LibraryPath.cs" />
+    <Compile Include="Tests\ScriptManager\ScriptDependencies2.cs" />
+    <Compile Include="Tests\ScriptManager\ScriptDependenciesInvalid.cs" />
+    <Compile Include="Tests\ScriptManager\ScriptDependencies.cs" />
     <Compile Include="Tests\HtmlHelpers.cs" />
     <Compile Include="Tests\Markup.cs" />
     <Compile Include="Controllers\Shared\LayoutController.cs" />
@@ -114,6 +115,7 @@
     <None Include="Views\Index.cshtml" />
     <None Include="Views\Shared\_Layout.cshtml" />
     <None Include="Views\Test\Action1.cshtml" />
+    <None Include="Views\Test\Index3.cshtml" />
     <None Include="Views\Test\Index2.cshtml" />
     <None Include="Views\Test\InvalidDependencies.cshtml" />
     <None Include="Views\Test\Index.cshtml" />

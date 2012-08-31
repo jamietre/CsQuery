@@ -275,10 +275,10 @@ namespace CsQuery.Mvc
         }
 
         private void ManageScripts(CQ cqDoc, WebViewPage viewPage) {
-            ScriptManager mgr = new ScriptManager(cqDoc);
+            ScriptManager mgr = new ScriptManager();
             mgr.Options = Options;
             mgr.LibraryPath = LibraryPath;
-            mgr.ResolveScriptDependencies(HttpContext.Current);
+            mgr.ResolveScriptDependencies(cqDoc);
             
         }
 

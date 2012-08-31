@@ -77,7 +77,7 @@ namespace CsQuery.Mvc
         }
 
         /// <summary>
-        /// Includes a server-side javascript file inline.
+        /// Includes a Javascript file inline.
         /// </summary>
         ///
         /// <typeparam name="T">
@@ -89,18 +89,31 @@ namespace CsQuery.Mvc
         /// <param name="script">
         /// Full pathname of the server file.
         /// </param>
+        /// <param name="location">
+        /// (optional) The location of the script. This parameter can be used to move the script into the
+        /// &lt;head&gt; tag of the document.
+        /// </param>
         ///
         /// <returns>
         /// An HtmlString.
         /// </returns>
 
-        public static IHtmlString Script<T>(this HtmlHelper<T> helper, string script)
+        public static IHtmlString Script<T>(this HtmlHelper<T> helper, string script, ScriptLocations location=ScriptLocations.Inline)
         {
             string path = (script.StartsWith("~/") ? "" : "~/") +
                 script +
                 (script.EndsWith(".js") ? "" : ".js");
 
-            return new HtmlString(String.Format("<script class=\"csquery-script\" type=\"text/javascript\" src=\"{0}\" ></script>",path));
+            string template = "<script class=\"csquery-script\" type=\"text/javascript\" src=\"{0}\"{1}></script>";
+            string parms = "";
+            if (location == ScriptLocations.Head)
+            {
+                parms = "data-location=\"head\"";
+            }
+
+            return new HtmlString(String.Format(template,
+                path,
+                parms));
         }
     }
 }

@@ -17,9 +17,9 @@ namespace CsQuery.Mvc
 
     class ScriptCollection 
     {
-        public ScriptCollection(HttpContext context, PathList libraryPath)
+        public ScriptCollection(PathList libraryPath, Func<string,string> mapPathFunc)
         {
-            Context = context;
+            MapPath = mapPathFunc;
             LibraryPath = libraryPath;
             ResolvedDependencies = new HashSet<string>();
             Dependencies = new HashSet<string>();
@@ -33,7 +33,7 @@ namespace CsQuery.Mvc
 
 
         protected PathList LibraryPath;
-        protected HttpContext Context;
+        protected Func<string,string> MapPath;
         protected HashSet<string> ScriptSources;
         /// <summary>
         /// The file paths that have already been resolved
@@ -52,31 +52,7 @@ namespace CsQuery.Mvc
 
         protected List<string> DependenciesOrdered;
 
-        //protected string Root;
-
-        /// <summary>
-        /// Configures a root path for dependencies from a CQ object that should contain a single
-        /// script with an attribute "data-root".
-        /// </summary>
-        ///
-        /// <param name="rootScript">
-        /// The root script.
-        /// </param>
-
-        //public void AddRootFromCq(CQ rootScript)
-        //{
-        //    Root = "~/";
-        //    if (rootScript.Length ==1 )
-        //    {
-        //        Root = rootScript[0]["data-root"] + "/";
-        //        rootScript.Remove();
-        //    }
-        //    else if (rootScript.Length > 1)
-        //    {
-        //        throw new InvalidOperationException("There can be only one script with a \"data-root\" attribute.");
-        //    }
-        //}
-
+        
         /// <summary>
         /// Configures the inputs from a CQ object containing script elements
         /// </summary>
@@ -89,8 +65,9 @@ namespace CsQuery.Mvc
         {
             foreach (var script in scripts)
             {
-                ScriptSources.Add(script["src"]);
+                ScriptSources.Add(PathList.Normalize(script["src"]));
             }
+
             scripts.RemoveClass("csquery-script");
         }
 
@@ -159,8 +136,8 @@ namespace CsQuery.Mvc
         /// Thrown when the requested file is not present.
         /// </exception>
         ///
-        /// <param name="source">
-        /// The relative path to the file to analyze
+        /// <param name="scriptRelativePath">
+        /// The relative path to the file to analyze.
         /// </param>
         /// <param name="ignoreErrors">
         /// true to ignore errors.
@@ -170,23 +147,19 @@ namespace CsQuery.Mvc
         /// An enumerator that allows foreach to be used to process get dependencies in this collection.
         /// </returns>
 
-        protected IEnumerable<string> GetDependencies(string source, bool ignoreErrors)
+        protected IEnumerable<string> GetDependencies(string scriptRelativePath, bool ignoreErrors)
         {
-            
-            string relativeFileName = (source.StartsWith("~/") ? "" : "~/") 
-                + source 
-                + (source.EndsWith(".js") ? "" : ".js");
-
-            if (ResolvedDependencies.Contains(source))
+            if (ResolvedDependencies.Contains(scriptRelativePath))
             {
                 yield break;
             }
 
             string fileName;
-            
+            ScriptParser parser;
             try
             {
-                fileName = Context.Server.MapPath(relativeFileName);
+                fileName = MapPath(scriptRelativePath);
+                parser = new ScriptParser(fileName);
             }
             catch(FileNotFoundException e)
             {
@@ -200,7 +173,7 @@ namespace CsQuery.Mvc
                 }
             }
 
-            using (var parser = new ScriptParser(fileName)) 
+            using (parser) 
             {
                 string line;
                 while ((line = parser.ReadLine()) != null 
@@ -211,7 +184,7 @@ namespace CsQuery.Mvc
                     {
                         string depName= match.Groups["dep"].Value;
 
-                        string virtualPath = FindInLibaryPath(depName);
+                        string virtualPath = FindInLibaryPath(NormalizeDependencyName(depName));
                         if (virtualPath == null)
                         {
                             if (ignoreErrors)
@@ -234,7 +207,7 @@ namespace CsQuery.Mvc
                     }
                 }
             }
-            ResolvedDependencies.Add(source);
+            ResolvedDependencies.Add(scriptRelativePath);
         }
 
         /// <summary>
@@ -254,12 +227,9 @@ namespace CsQuery.Mvc
         /// </remarks>
 
 
-        private string FindInLibaryPath(string name)
+        private string FindInLibaryPath(string fileName)
         {
-            string fileName = name
-                            + (name.EndsWith(".js") ? "" : ".js");
-
-
+            
             foreach (var libPath in LibraryPath.ToList())
             {
 
@@ -289,7 +259,10 @@ namespace CsQuery.Mvc
 
         public override int GetHashCode()
         {
-            return ScriptSources.GetHashCode();
+            return ScriptSources.Select(item => item.GetHashCode()).Aggregate((cur, next) =>
+            {
+                return cur + next;
+            });
         }
 
         /// <summary>
@@ -313,10 +286,22 @@ namespace CsQuery.Mvc
 
         #region private methods
 
-        private string MapPath(string virtualPath)
-        {
-            return Context.Server.MapPath(virtualPath);
 
+        /// <summary>
+        /// Normalize dependency name: replaces . with slash and adds .js
+        /// </summary>
+        ///
+        /// <param name="path">
+        /// Full pathname of the file.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string
+        /// </returns>
+
+        private string NormalizeDependencyName(string path)
+        {
+            return path.Replace(".", "/") + ".js";
         }
 
         #endregion

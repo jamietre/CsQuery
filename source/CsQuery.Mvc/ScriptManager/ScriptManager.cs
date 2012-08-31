@@ -20,28 +20,43 @@ namespace CsQuery.Mvc
 
     public class ScriptManager
     {
+        #region constructor
+
+        /// <summary>
+        /// Default constructor; creates this ScriptManager for the active HttpContext
+        /// </summary>
+
+        public ScriptManager()
+        {
+            MapPath = HttpContext.Current.Server.MapPath;
+        }
+
+        public ScriptManager(Func<string,string> mapPathFunc)
+        {
+            MapPath = mapPathFunc;
+        }
+        
+
         /// <summary>
         /// Identifier used to generate unique IDs for the generated script bundles
         /// </summary>
 
         static int ScriptID;
 
-        ConcurrentDictionary<ScriptCollection, string> Bundles = new ConcurrentDictionary<ScriptCollection, string>();
-
-        CQ Doc;
-
         /// <summary>
-        /// Constructor.
+        /// Cache of bundles. If a ScriptCollection is built for a page that matches one built previously,
+        /// we will reuse the bundle rather than recreating the dependency table.
         /// </summary>
-        ///
-        /// <param name="doc">
-        /// The CQ document to be processed
-        /// </param>
 
-        public ScriptManager(CQ doc)
-        {
-            Doc = doc;
-        }
+        static ConcurrentDictionary<ScriptCollection, string> Bundles = new ConcurrentDictionary<ScriptCollection, string>();
+        
+        #endregion
+
+        #region private properties
+
+        private Func<string, string> MapPath;
+
+        #endregion
 
         /// <summary>
         /// Gets or sets options that control the operation of the ScriptManager.
@@ -56,32 +71,44 @@ namespace CsQuery.Mvc
         public PathList LibraryPath { get; set; }
 
         /// <summary>
-        /// Resolve all script dependencies in the bound CQ document
+        /// Resolve all script dependencies in the bound CQ document. Scripts that cotain a "data-
+        /// location='head'" attribute will be moved to the head.
         /// </summary>
         ///
-        /// <param name="context">
-        /// The context.
+        /// <param name="doc">
+        /// The document to resolve.
         /// </param>
 
-        public void ResolveScriptDependencies(HttpContext context)
+        public void ResolveScriptDependencies(CQ doc)
         {
             // 1) See if we have already build a bundle based on this set of scripts.
 
             HashSet<string> libraries = new HashSet<string>();
-
-            ScriptCollection coll = new ScriptCollection(context, LibraryPath);
-
-            //string rootSelector = "script[data-root]";
-            //coll.AddRootFromCq(Doc[rootSelector]);
 
             string scriptSelector = "script"
                 + (Options.HasFlag(CsQueryViewEngineOptions.ProcessAllScripts) ?
                     "" : ".csquery-script")
                     + "[src]";
 
-            CQ scripts = Doc[scriptSelector];
+            CQ scripts = doc[scriptSelector];
+
             if (scripts.Length > 0)
             {
+                // move scripts to head as needed first
+
+                var toMove = scripts.Filter("[data-location='head']");
+                if (toMove.Length > 0)
+                {
+                    var head = doc["head"];
+                    toMove.Each((el) =>
+                    {
+                        head.Append(el);
+                    });
+                }
+
+                // resolve dependencies
+
+                ScriptCollection coll = new ScriptCollection(LibraryPath,MapPath);
                 coll.AddFromCq(scripts);
 
                 string bundleUrl;
@@ -99,7 +126,14 @@ namespace CsQuery.Mvc
                     }
 
                     BundleTable.Bundles.Add(bundle);
-                    bundleUrl = BundleTable.Bundles.ResolveBundleUrl(bundleAlias);
+                    if (HttpContext.Current != null)
+                    {
+                        bundleUrl = BundleTable.Bundles.ResolveBundleUrl(bundleAlias);
+                    }
+                    else
+                    {
+                        bundleUrl = bundleAlias + "_no_http_context";
+                    }
                     Bundles[coll] = bundleUrl;
                 }
                 CQ scp = CQ.Create(String.Format("<script type=\"text/javascript\" class=\"csquery-generated\" src=\"{0}\"></script>", bundleUrl));
