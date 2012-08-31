@@ -11,12 +11,12 @@ using CsQuery.Mvc;
 namespace CsQuery.Mvc.Tests
 {
     [TestClass]
-    public class Markup
+    public class Markup: AppHostBase
     {
         [TestMethod]
         public void Index()
         {
-            var doc = TestUtil.RenderViewCQ<TestController>("index");
+            var doc = RenderView<TestController>("index");
 
             Common(doc);
 
@@ -29,7 +29,7 @@ namespace CsQuery.Mvc.Tests
         [TestMethod]
         public void Action1()
         {
-            var doc = TestUtil.RenderViewCQ<TestController>("action1");
+            var doc = RenderView<TestController>("action1");
 
             Common(doc);
 

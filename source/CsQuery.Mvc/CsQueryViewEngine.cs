@@ -11,7 +11,8 @@ namespace CsQuery.Mvc
     /// </summary>
     public class CsQueryViewEngine : RazorViewEngine
     {
-        
+        #region constructores
+
         /// <summary>
         /// Create a new CsQueryViewEngine
         /// </summary>
@@ -22,28 +23,66 @@ namespace CsQuery.Mvc
         }
 
         /// <summary>
-        /// Create a new CsQueryViewEngine using common controller of type T
-        /// </summary>
-
-        public static RazorViewEngine Create<T>() where T : class, ICsQueryController
-        {
-            return new CsQueryViewEngine<T>();
-        }
-
-        /// <summary>
         /// Default constructor.
         /// </summary>
 
         public CsQueryViewEngine()
         {
-
+            LibraryPath = new PathList();
+            LibraryPath.Add("~/scripts/lib");
         }
 
-        /// <summary>
-        /// When true, activates script manager functionality
-        /// </summary>
+        #endregion
+
+        #region private properties
+
+        private Type _LayoutControllerType;
+
+        #endregion
         
-        public bool EnableScriptManager { get; set; }
+        #region public properties
+
+
+        /// <summary>
+        /// Options for the CsQueryViewEngine
+        /// </summary>
+
+        public CsQueryViewEngineOptions Options { get; set; }
+
+        /// <summary>
+        /// List of relative paths to search for included files.
+        /// </summary>
+
+        public PathList LibraryPath { get; protected set; }
+
+        /// <summary>
+        /// When non-null, is controller type that is instantiated to control actions globally.
+        /// </summary>
+        ///
+        /// <value>
+        /// A type that implements ICsQueryController.
+        /// </value>
+
+        public Type LayoutControllerType 
+        {
+            get
+            {
+                return _LayoutControllerType;
+            }
+            set
+            {
+                if (!value.GetInterfaces().Contains(typeof(ICsQueryController)))
+                {
+                    throw new InvalidOperationException("The LayoutControllerType must implement ICsQueryController");
+                }
+                _LayoutControllerType = value;
+            }
+        }
+
+
+        #endregion
+
+        #region private methods
 
         /// <summary>
         /// Creates a partial view using the specified controller context and partial path.
@@ -62,16 +101,16 @@ namespace CsQuery.Mvc
 
         protected override IView CreatePartialView(ControllerContext controllerContext, string partialPath)
         {
-            return new CsQueryView(
+            return ConfigureView(new CsQueryView(
                 controllerContext,
                 partialPath,
                 null,
                 false,
                 base.FileExtensions,
                 base.ViewPageActivator,
-                true,
-                EnableScriptManager
-            );
+                true
+            ));
+           
         }
 
         /// <summary>
@@ -95,17 +134,32 @@ namespace CsQuery.Mvc
 
         protected override IView CreateView(ControllerContext controllerContext, string viewPath, string masterPath)
         {
-            return new CsQueryView(
+            return ConfigureView(new CsQueryView(
                 controllerContext,
                 viewPath,
                 masterPath,
                 true,
                 base.FileExtensions,
                 base.ViewPageActivator,
-                false,
-                EnableScriptManager
-            );
+                false
+            ));
         }
+
+        private CsQueryView ConfigureView(CsQueryView view)  
+        {
+            if (LayoutControllerType != null)
+            {
+                view.LayoutController = (ICsQueryController)CsQuery.Objects.CreateInstance(LayoutControllerType);
+            }
+            view.Options = Options;
+            view.LibraryPath = LibraryPath;
+            return view;
+
+        }
+
+        #endregion
+
+
     }
 
 

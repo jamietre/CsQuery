@@ -9,6 +9,7 @@ using System.Web.Routing;
 using System.IO;
 using System.Reflection;
 using System.Web.Hosting;
+using System.Web.Optimization;
 using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.Mvc.Tests
@@ -35,7 +36,7 @@ namespace CsQuery.Mvc.Tests
         /// A new application host.
         /// </returns>
 
-        public static MvcAppHost CreateApplicationHost<T>(string applicationPath, string binPath) where T : HttpApplication, new()
+        public static void SetupApplicationHost(string applicationPath, string binPath) 
         {
 
             binPath = binPath ?? AppDomain.CurrentDomain.BaseDirectory;
@@ -43,20 +44,51 @@ namespace CsQuery.Mvc.Tests
             string destPath = applicationPath + "\\bin";
 
             var bin = new DirectoryInfo(binPath);
-            var binTarget = new DirectoryInfo(destPath);
+            BinTarget = new DirectoryInfo(destPath);
+            ApplicationPath = applicationPath;
 
-            CsQuery.Utility.Support.CopyFiles(bin, binTarget, "*.dll", "*.pdb");
+            CsQuery.Utility.Support.CopyFiles(bin, BinTarget, "*.dll", "*.pdb");
 
+            
+        }
+
+        public static MvcAppHost CreateApplicationHost<T>() where T : HttpApplication, new()
+        {
+            
             var host = (MvcAppHost)ApplicationHost.CreateApplicationHost(
                 typeof(MvcAppHost),
                 "/",
-                applicationPath);
+                ApplicationPath);
 
-            host.TempBinPath = binTarget;
+            host.TempBinPath = BinTarget;
             host.InitializeApplication<T>();
 
             return host;
+        }
 
+        public static void CleanupApplicationHost() {
+            CsQuery.Utility.Support.DeleteFiles(BinTarget, "*.pdb", "*.dll");
+        }
+
+        private static DirectoryInfo BinTarget;
+
+        private static string ApplicationPath;
+        /// <summary>
+        /// Gets or sets the active HttpContext.
+        /// </summary>
+
+        private HttpContext Context { get; set; }
+
+        public CsQueryViewEngineOptions ViewEngineOptions
+        {
+            get
+            {
+                return CsQuery.Mvc.Tests.MvcTestApp.ViewEngine.Options;
+            }
+            set
+            {
+                CsQuery.Mvc.Tests.MvcTestApp.ViewEngine.Options = value;
+            }
         }
 
         /// <summary>
@@ -89,9 +121,10 @@ namespace CsQuery.Mvc.Tests
         /// </summary>
         ///
         /// <remarks>
-        /// The basis for this was taken from user http://stackoverflow.com/users/66372/eglasius 's answer
-        /// answer for this question:  
-        /// http://stackoverflow.com/questions/3702526/is-there-a-way-to-process-an-mvc-view-aspx-file-from-a-non-web-application
+        /// The basis for this was taken from user http://stackoverflow.com/users/66372/eglasius 's
+        /// answer answer for this question:  
+        /// http://stackoverflow.com/questions/3702526/is-there-a-way-to-process-an-mvc-view-aspx-file-
+        /// from-a-non-web-application.
         /// </remarks>
         ///
         /// <exception cref="ArgumentException">
@@ -107,54 +140,145 @@ namespace CsQuery.Mvc.Tests
         /// <param name="action">
         /// The action name.
         /// </param>
+        /// <param name="destroyContext">
+        /// true to destroy context.
+        /// </param>
         ///
         /// <returns>
-        /// The HTML string produced by the action.
+        /// The string of HTML
         /// </returns>
         
-        public string RenderView<T>(string action)  where T: Controller, new()
+        public string RenderView<T>(string action, bool destroyContext=true)  where T: Controller, new()
         {
             // get method info
 
             var mi = GetCaseInsensitiveMethod(typeof(T), action);
             if (mi == null)
             {
-                throw new ArgumentException(String.Format("Unable to find action {0} on controller {1}",
+                throw new ArgumentException(String.Format("Unable to find action \"{0}\" on controller \"{1}\"",
                     action,
-                    mi.Name));
+                    typeof(T).FullName));
             }
 
             string controllerName = ("."+typeof(T).FullName)
                 .BeforeLast("Controller").AfterLast(".");
 
             string path = controllerName + "/" + action;
-            string url = "http://mvc.test.abc/" + path;
+            //string url = "http://mvc.test.abc/" + path;
 
             var controller = new T();
-            var writer = new StringWriter();
+            //var writer = new StringWriter();
 
-            var httpContext = new HttpContext(new HttpRequest("", url, ""), new HttpResponse(writer));
+            //var httpContext = new HttpContext(new HttpRequest("", url, ""), new HttpResponse(writer));
+            
 
             if (HttpContext.Current != null)
             {
                 throw new InvalidOperationException("HttpContext was already set");
             }
 
-            HttpContext.Current = httpContext;
+            HttpResponse response;
+            StringWriter writer;
+            Context = GetHttpContext(out writer, out response);
+
+            HttpContext.Current = Context;
             var routeData = new RouteData();
             routeData.Values.Add("controller", controllerName);
             routeData.Values.Add("action", mi.Name);
 
-            var controllerContext = new ControllerContext(new HttpContextWrapper(httpContext), routeData, controller);
+            var controllerContext = new ControllerContext(new HttpContextWrapper(Context), routeData, controller);
             controller.ControllerContext = controllerContext;
 
             ActionResult res = (ActionResult)mi.Invoke(controller, new object[] { });
             
             res.ExecuteResult(controllerContext);
-            HttpContext.Current = null;
+
+            if (destroyContext)
+            {
+                ClearContext();
+            }
+
             return writer.ToString();
-            
         }
+
+        /// <summary>
+        /// Enumerates bundle files assicuated with a given bundleUrl for the active context.
+        /// </summary>
+        ///
+        /// <param name="url">
+        /// URL of the document.
+        /// </param>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process bundle files for URL in this
+        /// collection.
+        /// </returns>
+
+        public IEnumerable<string> BundleFilesForUrl(string url)
+        {
+            var bundle = BundleForUrl(url);
+
+            var bundleFiles = bundle.EnumerateFiles(BundleContextForUrl(url));
+            return bundleFiles.Select(item => item.FullName).ToList();
+        }
+
+        /// <summary>
+        /// Get the actual contents of the bundle.
+        /// </summary>
+        ///
+        /// <param name="url">
+        /// URL of the document.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string of javascript.
+        /// </returns>
+
+        public string BundlesContentsForUrl(string url)
+        {
+            var bundle = BundleForUrl(url);
+            var bundleContext = BundleContextForUrl(url);
+            
+            var content = bundle.GenerateBundleResponse(bundleContext).Content;
+            //var response = bundle.ApplyTransforms(bundleContext, content, bundle.EnumerateFiles(bundleContext));
+            //return response.Content;
+             return content;
+        }
+
+        /// <summary>
+        /// Gets the library path from the ViewEngine
+        /// </summary>
+
+        public IList<string> LibraryPath
+        {
+            get
+            {
+                return CsQuery.Mvc.Tests.MvcTestApp.ViewEngine.LibraryPath;
+            }
+        }
+
+
+        
+        /// <summary>
+        /// Clears the current HttpContext. This should be done when using methods that do not create
+        /// their own context.
+        /// </summary>
+
+        public void ClearContext()
+        {
+            HttpContext.Current = null;
+            Context = null;
+        }
+        /// <summary>
+        /// Cleans up temporary files created in the host environment
+        /// </summary>
+
+        public void Dispose()
+        {
+            ClearContext();
+        }
+
+        #region private methods
 
         /// <summary>
         /// Return MethodInfo for a named method with no parameters and a case-insensitive match for name.
@@ -177,7 +301,7 @@ namespace CsQuery.Mvc.Tests
             foreach (var mi in methods)
             {
                 if (mi.Name.Equals(method, StringComparison.CurrentCultureIgnoreCase) &&
-                    mi.GetParameters().Length==0)
+                    mi.GetParameters().Length == 0)
                 {
                     return mi;
                 }
@@ -185,13 +309,33 @@ namespace CsQuery.Mvc.Tests
             return null;
         }
 
-        /// <summary>
-        /// Cleans up temporary files created in the host environment
-        /// </summary>
-
-        public void Dispose()
+        private HttpContext GetHttpContext(out StringWriter writer, out HttpResponse response)
         {
-            CsQuery.Utility.Support.DeleteFiles(TempBinPath, "*.pdb", "*.dll");
+            string url = "http://mvc.test.abc/";
+            writer = new StringWriter();
+            response = new HttpResponse(writer);
+            var context = new HttpContext(new HttpRequest("", url, ""), response);
+            return context;
+
         }
+
+        private BundleContext BundleContextForUrl(string url)
+        {
+            return new BundleContext(new HttpContextWrapper(Context), BundleTable.Bundles, url);
+        }
+        private string PathOnlyFromUrl(string url)
+        {
+            string path = (url.StartsWith("~") ? "" : "~") + url.Before("?");
+            return path;
+        }
+        private Bundle BundleForUrl(string url)
+        {
+            string path = PathOnlyFromUrl(url);
+            var bundles = BundleTable.Bundles;
+            var bundle = bundles.GetRegisteredBundles().Where(item => item.Path == path).Single();
+            return bundle;
+        }
+        #endregion
+
     }
 }

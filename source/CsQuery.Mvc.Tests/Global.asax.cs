@@ -40,9 +40,14 @@ namespace CsQuery.Mvc.Tests
 
             ViewEngines.Engines.Clear();
 
-            var engine = new CsQueryViewEngine<Controllers.LayoutController>();
-            engine.EnableScriptManager = true;
-            ViewEngines.Engines.Add(engine);
+            ViewEngine = new CsQueryViewEngine();
+            ViewEngine.LayoutControllerType = typeof(Controllers.LayoutController);
+            ViewEngine.Options = CsQueryViewEngineOptions.EnableScriptManager;
+            ViewEngine.LibraryPath.Add("~/scripts/libs");
+            ViewEngine.LibraryPath.Add("~/scripts/libs2");
+            ViewEngines.Engines.Add(ViewEngine);
         }
+
+        public static CsQueryViewEngine ViewEngine { get; protected set; }
     }
 }

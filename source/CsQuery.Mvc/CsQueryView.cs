@@ -60,13 +60,11 @@ namespace CsQuery.Mvc
         /// </param>
 
         public CsQueryView(ControllerContext controllerContext, string viewPath, string layoutPath, bool runViewStartPages, IEnumerable<string> viewStartFileExtensions, 
-            bool isPartial,
-            bool scriptManagerEnabled
+            bool isPartial
             )
             : base(controllerContext, viewPath, layoutPath, runViewStartPages, viewStartFileExtensions)
         {
             IsPartial = isPartial;
-            ScriptManagerEnabled = scriptManagerEnabled;
         }
 
         /// <summary>
@@ -96,13 +94,11 @@ namespace CsQuery.Mvc
         /// </param>
 
         public CsQueryView(ControllerContext controllerContext, string viewPath, string layoutPath, bool runViewStartPages, IEnumerable<string> viewStartFileExtensions, IViewPageActivator viewPageActivator, 
-            bool isPartial,
-            bool scriptManagerEnabled
+            bool isPartial
             )
             : base(controllerContext, viewPath, layoutPath, runViewStartPages, viewStartFileExtensions, viewPageActivator)
         {
             IsPartial = isPartial;
-            ScriptManagerEnabled = scriptManagerEnabled;
         }
 
         #endregion
@@ -113,7 +109,7 @@ namespace CsQuery.Mvc
 
         private bool IsPartial;
 
-        private bool ScriptManagerEnabled;
+        
 
         /// <summary>
         /// A lookup of ClassName, indicating whether to bother with CQ for this controller
@@ -128,6 +124,18 @@ namespace CsQuery.Mvc
         #endregion
 
         #region public properties
+
+        /// <summary>
+        /// Gets or sets the strings in the library file search path. 
+        /// </summary>
+        
+        public PathList LibraryPath { get; set; }
+        
+        /// <summary>
+        /// Options for controlling the operation of the view
+        /// </summary>
+
+        public CsQueryViewEngineOptions Options { get; set; }
 
         /// <summary>
         /// Gets or sets the layout controller.
@@ -254,7 +262,7 @@ namespace CsQuery.Mvc
                     }
 
 
-                    if (ScriptManagerEnabled)
+                    if (Options.HasFlag(CsQueryViewEngineOptions.EnableScriptManager))
                     {
                         ManageScripts(cqDoc, (System.Web.Mvc.WebViewPage)instance);
                     }
@@ -267,8 +275,10 @@ namespace CsQuery.Mvc
         }
 
         private void ManageScripts(CQ cqDoc, WebViewPage viewPage) {
-            ScriptManager mgr = new ScriptManager(cqDoc, viewPage);
-            mgr.ResolveScripts(HttpContext.Current);
+            ScriptManager mgr = new ScriptManager(cqDoc);
+            mgr.Options = Options;
+            mgr.LibraryPath = LibraryPath;
+            mgr.ResolveScriptDependencies(HttpContext.Current);
             
         }
 

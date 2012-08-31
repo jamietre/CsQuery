@@ -13,9 +13,25 @@ namespace CsQuery.Mvc.Tests
 {
     public class TestUtil
     {
-        public static CQ RenderViewCQ<T>(string action) where T : Controller, new()
-        {
-            return CQ.CreateFragment(TestConfig.Host.RenderView<T>(action));
-        }
+        /// <summary>
+        /// Renders the view output into a CQ object
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="action">
+        /// The action.
+        /// </param>
+        ///
+        /// <returns>
+        /// a CQ object
+        /// </returns>
+
+        //public static CQ RenderViewCQ<T>(string action, bool destroyContext=true) where T : Controller, new()
+        //{
+        //    return CQ.CreateFragment(TestConfig.Host.RenderView<T>(action,destroyContext));
+        //}
+
     }
 }

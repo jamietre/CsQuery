@@ -1,1 +1,2 @@
-﻿var dep2;
+﻿//using dep1
+var dep2;

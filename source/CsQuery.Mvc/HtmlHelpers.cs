@@ -102,28 +102,5 @@ namespace CsQuery.Mvc
 
             return new HtmlString(String.Format("<script class=\"csquery-script\" type=\"text/javascript\" src=\"{0}\" ></script>",path));
         }
-
-        /// <summary>
-        /// Sets the script root for this page
-        /// </summary>
-        ///
-        /// <typeparam name="T">
-        /// Generic type parameter.
-        /// </typeparam>
-        /// <param name="helper">
-        /// The current helper context.
-        /// </param>
-        /// <param name="rootPath">
-        /// Full pathname of the root file.
-        /// </param>
-        ///
-        /// <returns>
-        /// .
-        /// </returns>
-
-        public static IHtmlString ScriptRoot<T>(this HtmlHelper<T> helper, string rootPath)
-        {
-            return new HtmlString(String.Format("<script class=\"csquery-script\" csquery root=\"{0}\" ></script>",rootPath));
-        }
     }
 }

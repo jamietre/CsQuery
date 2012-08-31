@@ -11,7 +11,7 @@ using CsQuery.Mvc;
 namespace CsQuery.Mvc.Tests
 {
     [TestClass]
-    public class HtmlHelpers
+    public class HtmlHelpers : AppHostBase
     {
         /// <summary>
         /// Ensure that HTML helper produces correct output. 
@@ -20,9 +20,7 @@ namespace CsQuery.Mvc.Tests
         [TestMethod]
         public void HtmlTag()
         {
-            var doc = TestUtil.RenderViewCQ<TestController>("index");
-
-
+            var doc = RenderView<TestController>("index");
 
             Assert.IsTrue(doc["#test-cq-helper"].HasClass("testclass"));
 

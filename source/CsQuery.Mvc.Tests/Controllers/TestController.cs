@@ -12,7 +12,11 @@ namespace CsQuery.Mvc.Tests.Controllers
 
         public ActionResult Index()
         {
+            return View();
+        }
 
+        public ActionResult Index2()
+        {
             return View();
         }
 
@@ -22,7 +26,12 @@ namespace CsQuery.Mvc.Tests.Controllers
             return View();
             
         }
+        public ActionResult InvalidDependencies()
+        {
 
+            return View();
+
+        }
 
         public void Cq_Index()
         {

@@ -18,26 +18,27 @@ namespace CsQuery.Mvc.Tests
     [SetUpFixture, TestClass]
     public class TestConfig
     {
-        public static MvcAppHost Host;
+        public static string AppPath {get; private set;}
+        //public static MvcAppHost Host;
 
 #if DEBUG 
-        const string build = "debug";
+        public static string Build = "debug";
 #else
-        const string build="release";
+        public static string Build="release";
 #endif
         
         [SetUp]
         public static void AssemblySetup()
         {
-            string appPath = Path.GetDirectoryName(new System.Diagnostics.StackFrame(true).GetFileName());
+            AppPath = Path.GetDirectoryName(new System.Diagnostics.StackFrame(true).GetFileName());
 
-            Host = MvcAppHost.CreateApplicationHost<MvcTestApp>(appPath, appPath + "\\bin\\"+build);
+            MvcAppHost.SetupApplicationHost(AppPath, AppPath + "\\bin\\" + Build);
         }
 
         [TearDown]
         public static void AssemblyTeardown()
         {
-            Host.Dispose();
+            MvcAppHost.CleanupApplicationHost();
         }
 
         /// <summary>
