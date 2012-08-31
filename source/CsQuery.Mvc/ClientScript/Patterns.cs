@@ -7,6 +7,7 @@ using System.IO;
 
 namespace CsQuery.Mvc.ClientScript
 {
+
     public static class Patterns
     {
         private static Regex RegexStartComment = new Regex(@"^\s*/\*(?<comment>.*)$");
@@ -17,7 +18,7 @@ namespace CsQuery.Mvc.ClientScript
         private static Regex RegexFullLineComment = new Regex(@"^\s*//(?<comment>.*)$");
         private static Regex RegexOneLineComment = new Regex(@"^\s*/\*(?<comment>.*)\*/$");
 
-        private static Regex RegexDependency = new Regex(@"^\s*using (?<dep>[a-zA-Z0-9\-\.]+)\s*;*\s*$");
+        private static Regex RegexDependency = new Regex(@"^\s*using (?<dep>.+?)\s*;*\s*$");
 
         /// <summary>
         /// Gets a regex matching a line that signfies a dependency, e.g. "using something"
