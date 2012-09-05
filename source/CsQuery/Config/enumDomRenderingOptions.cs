@@ -30,7 +30,22 @@ namespace CsQuery
         /// use quotes when they are necesssary to delimit the value (e.g. because it includes spaces or other quote characters)
         /// </summary>
         
-        QuoteAllAttributes = 4
+        QuoteAllAttributes = 4,
+
+
+        /// <summary>
+        /// When true, text will be minimally HTML encoded (e.g. carets and ampersands). 
+        /// </summary>
+        
+        HtmlEncodingMinimum = 8,
+
+        /// <summary>
+        /// When true, no HTML encoding of text nodes will be performed. This will supercede HtmlEncodingMinimum,
+        /// of both are present, and may create invalid HTML since carets will not be encoded.
+        /// </summary>
+        
+        HtmlEncodingNone=16
+        
         //,ValidateCss = 8
     }
  

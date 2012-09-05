@@ -59,7 +59,9 @@ namespace CsQuery.StringScanner
             setBit(charsHtmlSpace + "/>", (uint)CharacterType.HtmlTagOpenerEnd);
 
             // html tag any
-            setBit("<>/", (uint)CharacterType.HtmlTagAny);
+            setBit(charsHtmlTagAny, (uint)CharacterType.HtmlTagAny);
+
+            setBit(charsHtmlMustBeEncoded, (uint)CharacterType.HtmlMustBeEncoded);
 
             SetAlphaISO10646((uint)CharacterType.AlphaISO10646);
         }
@@ -91,13 +93,12 @@ namespace CsQuery.StringScanner
         const string charsEnclosing = "()[]{}<>`´“”«»";
         const string charsEscape = "\\";
         const string charsSeparators = ", |";
-
+        const string charsHtmlTagAny = "<>/";
+        const string charsHtmlMustBeEncoded = "<>&";
 
         private static uint[] characterFlags;
 
         #endregion
-
-        
 
         #region public properties/methods
 

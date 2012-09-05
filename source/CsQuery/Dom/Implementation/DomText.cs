@@ -63,12 +63,35 @@ namespace CsQuery.Implementation
                 textIndex = -1;
             }
         }
-        
+
+        /// <summary>
+        /// Renders this text node using document default rendering options
+        /// </summary>
+        ///
+        /// <returns>
+        /// A string of HTML-encoded text
+        /// </returns>
 
         public override string Render()
         {
-            return HtmlData.HtmlEncode(NodeValue);
+            var opts = DomRenderingOptions;
+
+            return HtmlData.HtmlEncode(NodeValue, 
+                opts.HasFlag(DomRenderingOptions.HtmlEncodingNone) ? 
+                    HtmlEncodingMethod.HtmlEncodingNone :
+                    opts.HasFlag(DomRenderingOptions.HtmlEncodingMinimum) ?
+                        HtmlEncodingMethod.HtmlEncodingMinimum :
+                        HtmlEncodingMethod.HtmlEncodingFull);
         }
+        
+        /// <summary>
+        /// Renders this text node using document default rendering options to the provided StringBuilder
+        /// </summary>
+        ///
+        /// <param name="sb">
+        /// A StringBuilder object
+        /// </param>
+
         public override void Render(StringBuilder sb)
         {
             sb.Append(Render());

@@ -505,6 +505,7 @@ namespace CsQuery.Implementation
             DomDocument clone = new DomDocument();
             clone.SourceHtml = SourceHtml;
             clone.OriginalStrings = OriginalStrings;
+            FinishConfiguringNew(clone);
 
             return clone;
         }

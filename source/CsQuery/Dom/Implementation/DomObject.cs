@@ -24,32 +24,19 @@ namespace CsQuery.Implementation
 
         private IDomDocument _Document;
 
-        /// <summary>
-        /// Flags indicating particular states regarding the owning document.
-        /// </summary>
-
-        [Flags]
-        protected enum DocumentInfo : byte
-        {
-            IsIndexed = 1,
-            IsDocument = 2,
-            IsConnected = 4,
-            IsParentTested = 8
-        }
-
-        /// <summary>
-        /// Information describing metadata about the element's owning document. This is essentially a
-        /// cache, it prevents us from having to check to see if there's an owning document and access it
-        /// directly. This is an optimizaton as this happens often.
-        /// </summary>
-
-        protected DocumentInfo DocInfo;
-
+      
         /// <summary>
         /// Backing property for index.
         /// </summary>
 
         private int _Index;
+
+        /// <summary>
+        /// The parent node. Do not expose this. _ParentNode should only be managed by the ParentNode
+        /// property.
+        /// </summary>
+
+        private IDomContainer _ParentNode;
 
 
         /// <summary>
@@ -63,11 +50,42 @@ namespace CsQuery.Implementation
         protected abstract IDomObject CloneImplementation();
 
         /// <summary>
-        /// The parent node. Do not expose this. _ParentNode should only be managed by the ParentNode
-        /// property.
+        /// Flags indicating particular states regarding the owning document.
         /// </summary>
 
-        private IDomContainer _ParentNode;
+        [Flags]
+        protected enum DocumentInfo : byte
+        {
+            IsIndexed = 1,
+            IsDocument = 2,
+            IsConnected = 4,
+            IsParentTested = 8
+        }
+
+
+        /// <summary>
+        /// Information describing metadata about the element's owning document. This is essentially a
+        /// cache, it prevents us from having to check to see if there's an owning document and access it
+        /// directly. This is an optimizaton as this happens often.
+        /// </summary>
+
+        protected DocumentInfo DocInfo;
+
+        /// <summary>
+        /// Gets options for controlling the DOM rendering from the bound document, or the default
+        /// options if there is no document.
+        /// </summary>
+        
+        protected DomRenderingOptions DomRenderingOptions
+        {
+            get
+            {
+                return Document == null ? 
+                    Config.DomRenderingOptions :
+                    Document.DomRenderingOptions;
+
+            }
+        }
 
         #endregion
         
@@ -1372,7 +1390,6 @@ namespace CsQuery.Implementation
 
 
         #endregion 
-
 
         #region option element properties
 

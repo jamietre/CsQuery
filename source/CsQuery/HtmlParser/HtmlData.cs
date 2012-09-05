@@ -1029,9 +1029,18 @@ namespace CsQuery.HtmlParser
         /// The encoded string
         /// </returns>
 
-        public static string HtmlEncode(string html)
+        public static string HtmlEncode(string html, HtmlEncodingMethod encodingMethod = HtmlEncodingMethod.HtmlEncodingFull)
         {
-            return System.Web.HttpUtility.HtmlEncode(html);
+            switch(encodingMethod) {
+                case HtmlEncodingMethod.HtmlEncodingFull:
+                    return System.Web.HttpUtility.HtmlEncode(html);
+                case HtmlEncodingMethod.HtmlEncodingMinimum:
+                    return HtmlEncodeMinimal(html);
+                case HtmlEncodingMethod.HtmlEncodingNone:
+                    return html;
+                default:
+                    throw new NotImplementedException("Unknown HtmlEncodingMethod");
+            }
 
         }
 
@@ -1357,6 +1366,58 @@ namespace CsQuery.HtmlParser
         #endregion
 
         #region private methods
+
+        /// <summary>
+        /// HTML encode minimally (only carets & ampersands)
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// The HTML to encode.
+        /// </param>
+        ///
+        /// <returns>
+        /// The encoded string
+        /// </returns>
+
+        private static string HtmlEncodeMinimal(string html) {
+            StringBuilder sb = new StringBuilder();
+            int pos = 0, 
+                lastPos=0,
+                len = html.Length;
+            while (pos < len)
+            {
+                char c = html[pos];
+                if (CharacterData.IsType(c, CharacterType.HtmlMustBeEncoded))
+                {
+                    if (lastPos<pos) {
+                        sb.Append(html.Substring(lastPos,pos));
+                    }
+                    sb.Append(HtmlEncode(c));
+                    lastPos = pos+1;
+                }
+                pos++;
+            }
+            if (lastPos < len)
+            {
+                sb.Append(html.Substring(lastPos));
+            }
+            return sb.ToString();
+        }
+
+        private static string HtmlEncode(char c)
+        {
+            switch (c)
+            {
+                case '<':
+                    return "&lt;";
+                case '>':
+                    return "&gt;";
+                case '&':
+                    return "&amp;";
+                default:
+                    return ""+c;
+            }
+        }
 
         /// <summary>
         /// For each value in "tokens" (ignoring case) sets the specified bit in the reference table.

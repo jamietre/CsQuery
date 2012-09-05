@@ -2392,16 +2392,15 @@
             A reference to the owning document. This is also the topmost node in the tree.
             </summary>
         </member>
-        <member name="F:CsQuery.Implementation.DomObject.DocInfo">
-            <summary>
-            Information describing metadata about the element's owning document. This is essentially a
-            cache, it prevents us from having to check to see if there's an owning document and access it
-            directly. This is an optimizaton as this happens often.
-            </summary>
-        </member>
         <member name="F:CsQuery.Implementation.DomObject._Index">
             <summary>
             Backing property for index.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Implementation.DomObject._ParentNode">
+            <summary>
+            The parent node. Do not expose this. _ParentNode should only be managed by the ParentNode
+            property.
             </summary>
         </member>
         <member name="M:CsQuery.Implementation.DomObject.CloneImplementation">
@@ -2413,10 +2412,11 @@
              A clone of this object.
              </returns>
         </member>
-        <member name="F:CsQuery.Implementation.DomObject._ParentNode">
+        <member name="F:CsQuery.Implementation.DomObject.DocInfo">
             <summary>
-            The parent node. Do not expose this. _ParentNode should only be managed by the ParentNode
-            property.
+            Information describing metadata about the element's owning document. This is essentially a
+            cache, it prevents us from having to check to see if there's an owning document and access it
+            directly. This is an optimizaton as this happens often.
             </summary>
         </member>
         <member name="M:CsQuery.Implementation.DomObject.Render">
@@ -2861,6 +2861,12 @@
              A copy of this object.
              </returns>
         </member>
+        <member name="P:CsQuery.Implementation.DomObject.DomRenderingOptions">
+            <summary>
+            Gets options for controlling the DOM rendering from the bound document, or the default
+            options if there is no document.
+            </summary>
+        </member>
         <member name="P:CsQuery.Implementation.DomObject.NodeType">
             <summary>
             Gets the type of the node.
@@ -3204,6 +3210,24 @@
             <summary>
             Defines an interface for elements whose defintion (not innerhtml) contain non-tag or attribute formed data
             </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomText.Render">
+             <summary>
+             Renders this text node using document default rendering options
+             </summary>
+            
+             <returns>
+             A string of HTML-encoded text
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomText.Render(System.Text.StringBuilder)">
+             <summary>
+             Renders this text node using document default rendering options to the provided StringBuilder
+             </summary>
+            
+             <param name="sb">
+             A StringBuilder object
+             </param>
         </member>
         <member name="T:CsQuery.IDomInvalidElement">
             <summary>
@@ -14350,6 +14374,41 @@
             CharacterInfo object bound to the character at the current index.
             </summary>
         </member>
+        <member name="F:CsQuery.StringScanner.CharacterType.Whitespace">
+            <summary>
+            Whitespace
+            </summary>
+        </member>
+        <member name="F:CsQuery.StringScanner.CharacterType.Alpha">
+            <summary>
+            Alpha charactersonly
+            </summary>
+        </member>
+        <member name="F:CsQuery.StringScanner.CharacterType.Number">
+            <summary>
+            Numeric characters only
+            </summary>
+        </member>
+        <member name="F:CsQuery.StringScanner.CharacterType.NumberPart">
+            <summary>
+            Numbers plus non-numeric characters that can be part of a number
+            </summary>
+        </member>
+        <member name="F:CsQuery.StringScanner.CharacterType.Lower">
+            <summary>
+            Lowercase only
+            </summary>
+        </member>
+        <member name="F:CsQuery.StringScanner.CharacterType.Upper">
+            <summary>
+            Uppercase only.
+            </summary>
+        </member>
+        <member name="F:CsQuery.StringScanner.CharacterType.HtmlMustBeEncoded">
+            <summary>
+            A character that must be HTML encoded to create valid HTML
+            </summary>
+        </member>
         <member name="M:CsQuery.EquationParser.Equations.CreateEquationOperand(System.String)">
             <summary>
             Create an operand by parsing a string. Like CreateEquation but does not wrap in an Equation object.
@@ -17194,6 +17253,17 @@
             use quotes when they are necesssary to delimit the value (e.g. because it includes spaces or other quote characters)
             </summary>
         </member>
+        <member name="F:CsQuery.DomRenderingOptions.HtmlEncodingMinimum">
+            <summary>
+            When true, text will be minimally HTML encoded (e.g. carets and ampersands). 
+            </summary>
+        </member>
+        <member name="F:CsQuery.DomRenderingOptions.HtmlEncodingNone">
+            <summary>
+            When true, no HTML encoding of text nodes will be performed. This will supercede HtmlEncodingMinimum,
+            of both are present, and may create invalid HTML since carets will not be encoded.
+            </summary>
+        </member>
         <member name="T:CsQuery.Engine.SelectorClause">
             <summary>
             A CSS selector parsed into it's component parts
@@ -18316,7 +18386,7 @@
              A baseXX encoded string 
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.HtmlData.HtmlEncode(System.String)">
+        <member name="M:CsQuery.HtmlParser.HtmlData.HtmlEncode(System.String,CsQuery.HtmlParser.HtmlEncodingMethod)">
              <summary>
              HtmlEncode the string (pass-thru to system; abstracted in case we want to change)
              </summary>
@@ -18436,6 +18506,7 @@
              tag is opened.
              </returns>
         </member>
+        <!-- Badly formed XML comment ignored for member "M:CsQuery.HtmlParser.HtmlData.HtmlEncodeMinimal(System.String)" -->
         <member name="M:CsQuery.HtmlParser.HtmlData.setBit(System.Collections.Generic.IEnumerable{System.String},CsQuery.HtmlParser.TokenProperties)">
              <summary>
              For each value in "tokens" (ignoring case) sets the specified bit in the reference table.
@@ -18670,6 +18741,21 @@
             will be pre-filtered by an attribute selector. This could be implemented using a pseudoclass
             type construct instead, e.g. as "visible" that traverses through parents, and inherits a
             default document-wide setting.
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParser.HtmlEncodingMethod.HtmlEncodingFull">
+            <summary>
+            Complete encoding for all non-ascii characters
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParser.HtmlEncodingMethod.HtmlEncodingMinimum">
+            <summary>
+            Only carets and ampersand as required to create valid HTML.
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParser.HtmlEncodingMethod.HtmlEncodingNone">
+            <summary>
+            No encoding.
             </summary>
         </member>
     </members>
