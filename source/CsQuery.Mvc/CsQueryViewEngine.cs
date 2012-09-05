@@ -48,7 +48,7 @@ namespace CsQuery.Mvc
         /// Options for the CsQueryViewEngine
         /// </summary>
 
-        public CsQueryViewEngineOptions Options { get; set; }
+        public ViewEngineOptions Options { get; set; }
 
         /// <summary>
         /// List of relative paths to search for included files.

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,5 +30,18 @@ namespace CsQuery.Mvc
             }
             return new HtmlString(sb.ToString());
         }
+
+        public static bool Any<T>(this IEnumerable list, Func<T,bool> predicate) 
+        {
+            foreach (var item in list)
+            {
+                if (item is T && predicate((T)item))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    
     }
 }

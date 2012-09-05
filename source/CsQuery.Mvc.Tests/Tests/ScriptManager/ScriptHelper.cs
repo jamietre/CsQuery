@@ -37,7 +37,7 @@ namespace CsQuery.Mvc.Tests
     </body>
 ");
             var mgr = new ScriptManager(MapPath);
-            mgr.Options = CsQueryViewEngineOptions.ProcessAllScripts | CsQueryViewEngineOptions.IgnoreMissingScripts;
+            mgr.Options = ViewEngineOptions.ProcessAllScripts | ViewEngineOptions.IgnoreMissingScripts;
 
             Assert.AreEqual(1,doc["head"].Children().Length);
             

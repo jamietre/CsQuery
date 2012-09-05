@@ -95,6 +95,7 @@
     <Compile Include="Tests\ScriptManager\BundleContents_NoMinimize.cs" />
     <Compile Include="Tests\AppHostBase.cs" />
     <Compile Include="Tests\ScriptManager\BundleContents_Minimize.cs" />
+    <Compile Include="Tests\ScriptManager\UsingOptions.cs" />
     <Compile Include="Tests\ScriptManager\Patterns.cs" />
     <Compile Include="Tests\ScriptManager\ScriptHelper.cs" />
     <Compile Include="Tests\ScriptManager\LibraryPath.cs" />
@@ -163,6 +164,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="scripts\test-script-3.js" />
+    <Content Include="scripts\libs2\dep5.js" />
     <Content Include="scripts\libs2\dep4.js" />
     <Content Include="scripts\test-script-2.js" />
     <Content Include="scripts\test-script-fail.js" />

@@ -62,7 +62,7 @@ namespace CsQuery.Mvc.ClientScript
         /// Gets or sets options that control the operation of the ScriptManager.
         /// </summary>
 
-        public CsQueryViewEngineOptions Options { get; set; }
+        public ViewEngineOptions Options { get; set; }
 
         /// <summary>
         /// Gets or sets the paths in the library search path
@@ -86,7 +86,7 @@ namespace CsQuery.Mvc.ClientScript
             HashSet<string> libraries = new HashSet<string>();
 
             string scriptSelector = "script"
-                + (Options.HasFlag(CsQueryViewEngineOptions.ProcessAllScripts) ?
+                + (Options.HasFlag(ViewEngineOptions.ProcessAllScripts) ?
                     "" : ".csquery-script")
                     + "[src]";
 
@@ -109,6 +109,7 @@ namespace CsQuery.Mvc.ClientScript
                 // resolve dependencies
 
                 ScriptCollection coll = new ScriptCollection(LibraryPath,MapPath);
+                coll.IgnoreErrors = Options.HasFlag(ViewEngineOptions.IgnoreMissingScripts);
                 coll.AddFromCq(scripts);
 
                 string bundleUrl;
@@ -120,9 +121,9 @@ namespace CsQuery.Mvc.ClientScript
                     
                     ScriptID++;
 
-                    foreach (var item in coll.GetDependencies(Options.HasFlag(CsQueryViewEngineOptions.IgnoreMissingScripts)))
+                    foreach (var item in coll.GetDependencies())
                     {
-                        bundle.Include(item);
+                        bundle.Include(item.Path);
                     }
 
                     BundleTable.Bundles.Add(bundle);
@@ -135,8 +136,8 @@ namespace CsQuery.Mvc.ClientScript
                         bundleUrl = bundleAlias + "_no_http_context";
                     }
 
-                    
-                    if (!Options.HasFlag(CsQueryViewEngineOptions.NoCacheBundles))
+
+                    if (!Options.HasFlag(ViewEngineOptions.NoCacheBundles))
                     {
                         Bundles[coll] = bundleUrl;
                     }
@@ -151,7 +152,7 @@ namespace CsQuery.Mvc.ClientScript
         {
             var bundle = new ScriptBundle(bundleAlias);
 
-            if (Options.HasFlag(CsQueryViewEngineOptions.NoMinifyScripts))
+            if (Options.HasFlag(ViewEngineOptions.NoMinifyScripts))
             {
                 bundle.Transforms.Clear();
             }

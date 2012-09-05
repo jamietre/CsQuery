@@ -35,9 +35,11 @@ namespace CsQuery.Mvc.Tests
         public void AutoRemoveMissing()
         {
             var doc = RenderView<TestController>("index",false);
+            var libPath = Host.LibraryPath.ToList();
 
             Assert.AreEqual(2, Host.LibraryPath.Count);
-            CollectionAssert.AreEqual(new string[] { "~/scripts/libs", "~/scripts/libs2" }, Host.LibraryPath.ToList());
+            
+            CollectionAssert.AreEqual(new string[] { "~/scripts/libs", "~/scripts/libs2" }, libPath);
 
         }
         [TestMethod]

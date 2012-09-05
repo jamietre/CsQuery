@@ -79,7 +79,7 @@ namespace CsQuery.Mvc.Tests
 
         private HttpContext Context { get; set; }
 
-        public CsQueryViewEngineOptions ViewEngineOptions
+        public ViewEngineOptions ViewEngineOptions
         {
             get
             {

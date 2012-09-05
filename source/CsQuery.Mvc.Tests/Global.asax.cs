@@ -42,7 +42,7 @@ namespace CsQuery.Mvc.Tests
 
             ViewEngine = new CsQueryViewEngine();
             ViewEngine.LayoutControllerType = typeof(Controllers.LayoutController);
-            ViewEngine.Options = CsQueryViewEngineOptions.EnableScriptManager;
+            ViewEngine.Options = ViewEngineOptions.EnableScriptManager;
             ViewEngine.LibraryPath.Add("~/scripts/libs");
             ViewEngine.LibraryPath.Add("~/scripts/libs2");
             ViewEngines.Engines.Add(ViewEngine);

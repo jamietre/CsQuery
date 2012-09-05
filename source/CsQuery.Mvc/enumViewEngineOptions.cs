@@ -10,7 +10,7 @@ namespace CsQuery.Mvc
     /// </summary>
 
     [Flags]
-    public enum CsQueryViewEngineOptions
+    public enum ViewEngineOptions
     {
         /// <summary>
         /// Enables script manager functionality to resolve dependencies.

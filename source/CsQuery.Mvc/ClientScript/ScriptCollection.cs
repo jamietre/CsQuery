@@ -15,7 +15,7 @@ namespace CsQuery.Mvc.ClientScript
     /// Collection of scripts used by the ScriptManager, and methods to process them
     /// </summary>
 
-    public class ScriptCollection: ICollection<string>
+    public class ScriptCollection: ICollection<ScriptRef>
     {
         #region constructor
 
@@ -23,11 +23,10 @@ namespace CsQuery.Mvc.ClientScript
         {
             MapPath = mapPathFunc;
             LibraryPath = libraryPath;
-            ResolvedDependencies = new HashSet<string>();
-            Dependencies = new HashSet<string>();
+            Scripts = new HashSet<ScriptRef>();
+            ResolvedDependencies = new Dictionary<string, ScriptRef>(); 
             DependenciesOrdered = new List<string>();
-            ScriptSources = new HashSet<string>();
-
+            //ScriptSources = new HashSet<ScriptRef>();
         }
         #endregion
 
@@ -36,17 +35,17 @@ namespace CsQuery.Mvc.ClientScript
 
         protected PathList LibraryPath;
         protected Func<string,string> MapPath;
-        protected HashSet<string> ScriptSources;
-        /// <summary>
-        /// The file paths that have already been resolved
-        /// </summary>
-        protected HashSet<string> ResolvedDependencies;
-
+        ///protected HashSet<ScriptRef> ScriptSources;
         /// <summary>
         /// The unique set of dependencies (hashset used to prevent duplication).
         /// </summary>
+        protected Dictionary<string, ScriptRef> ResolvedDependencies;
 
-        protected HashSet<string> Dependencies;
+        /// <summary>
+        /// The file paths at the top level (the members of this collection)
+        /// </summary>
+
+        protected HashSet<ScriptRef> Scripts;
 
         /// <summary>
         /// The dependencies in the order the were resolved
@@ -55,6 +54,16 @@ namespace CsQuery.Mvc.ClientScript
         protected List<string> DependenciesOrdered;
         
         #endregion
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to ignore errors.
+        /// </summary>
+        ///
+        /// <value>
+        /// true if ignore errors, false if not.
+        /// </value>
+
+        public bool IgnoreErrors { get; set; }
 
         #region public methods
 
@@ -70,10 +79,24 @@ namespace CsQuery.Mvc.ClientScript
         {
             foreach (var script in scripts)
             {
-                ScriptSources.Add(PathList.Normalize(script["src"]));
+                AddPath(script["src"]);
             }
 
             scripts.RemoveClass("csquery-script");
+        }
+
+        /// <summary>
+        /// Adds a script reference by path.
+        /// </summary>
+        ///
+        /// <param name="virtualPath">
+        /// Virtual path to the script.
+        /// </param>
+
+        public void AddPath(string virtualPath)
+        {
+            string normalPath = PathList.Normalize(virtualPath);
+            Scripts.Add(GetScriptRef(normalPath,normalPath));
         }
 
 
@@ -85,9 +108,9 @@ namespace CsQuery.Mvc.ClientScript
         /// An enumerator that allows foreach to be used to process get dependencies in this collection.
         /// </returns>
 
-        public IEnumerable<string> GetDependencies(bool ignoreErrors)
+        public IEnumerable<ScriptRef> GetDependencies()
         {
-            return GetDependencies(ScriptSources, ignoreErrors);
+            return GetDependencies(Scripts);
         }
 
 
@@ -101,7 +124,7 @@ namespace CsQuery.Mvc.ClientScript
 
         public override int GetHashCode()
         {
-            return ScriptSources.Select(item => item.GetHashCode()).Aggregate((cur, next) =>
+            return Scripts.Select(item => item.GetHashCode()).Aggregate((cur, next) =>
             {
                 return cur + next;
             });
@@ -122,8 +145,10 @@ namespace CsQuery.Mvc.ClientScript
 
         public override bool Equals(object obj)
         {
-            return obj is ScriptCollection &&
-                ((ScriptCollection)obj).ScriptSources.SetEquals(ScriptSources);
+            ScriptCollection other = obj as ScriptCollection;
+            return other != null &&
+                other.Scripts.Count == Count && 
+                other.Scripts.OrderBy(item=>item.Path).SequenceEqual(Scripts.OrderBy(item=>item.Path));
         }
 
         #endregion
@@ -149,18 +174,20 @@ namespace CsQuery.Mvc.ClientScript
         /// An enumerator that allows foreach to be used to process get dependencies in this collection.
         /// </returns>
 
-        protected IEnumerable<string> GetDependencies(IEnumerable<string> sources, bool ignoreErrors)
+        protected IEnumerable<ScriptRef> GetDependencies(IEnumerable<ScriptRef> sources)
         {
+            HashSet<string> FoundDependencies = new HashSet<string>();
+            List<ScriptRef> OrderedDependencies = new List<ScriptRef>();
 
-            foreach (string script in sources)
+            foreach (var script in sources)
             {
                 try
                 {
-                    foreach (var dep in GetDependencies(script, ignoreErrors))
+                    foreach (var dep in GetDependencies(script))
                     {
-                        if (Dependencies.Add(dep))
+                        if (FoundDependencies.Add(dep.Name))
                         {
-                            DependenciesOrdered.Add(dep);
+                            OrderedDependencies.Add(dep);
                         }
                     }
                 }
@@ -170,7 +197,101 @@ namespace CsQuery.Mvc.ClientScript
                         script));
                 }
             }
-            return DependenciesOrdered;
+            return OrderedDependencies;
+        }
+
+        /// <summary>
+        /// Gets a script reference given a path
+        /// </summary>
+        ///
+        /// <exception cref="FileNotFoundException">
+        /// Thrown when the requested file is not present.
+        /// </exception>
+        ///
+        /// <param name="scriptRelativePath">
+        /// The relative path to the file to analyze.
+        /// </param>
+        /// <param name="ignoreErrors">
+        /// true to ignore errors.
+        /// </param>
+        ///
+        /// <returns>
+        /// The script reference.
+        /// </returns>
+
+        protected ScriptRef GetScriptRef(string name,string virtualPath)
+        {
+            ScriptRef scriptRef;
+            virtualPath = NormalizeDependencyName(virtualPath);
+            name = NormalizeDependencyName(name);
+
+            if (ResolvedDependencies.TryGetValue(name, out scriptRef))
+            {
+                return scriptRef;
+            }
+
+            string fileName;
+            ScriptParser parser;
+            try
+            {
+                fileName = MapPath(virtualPath);
+                parser = new ScriptParser(fileName);
+            }
+            catch (FileNotFoundException e)
+            {
+                if (IgnoreErrors)
+                {
+                    return null;
+                }
+                else
+                {
+                    throw e;
+                }
+            }
+
+            scriptRef = new ScriptRef
+            {
+                Name = name,
+                Path = virtualPath
+            };
+            var options = new HashSet<string>();
+            
+            using (parser)
+            {
+                string line;
+                while ((line = parser.ReadLine()) != null
+                    && !parser.AnyCodeYet)
+                {
+                    var match = Patterns.Dependency.Match(line);
+                    var matchOptions = Patterns.Options.Match(line);
+
+                    if (match.Success)
+                    {
+                        string depName = match.Groups["dep"].Value;
+                        var optGroup = match.Groups["opt"];
+
+                        scriptRef.Dependencies.Add(new ScriptRef
+                        {
+                            Name = NormalizeDependencyName(depName),
+                            Path=null,
+                            NoCombine = optGroup.Captures.Any<string>(item=>item=="nocombine")
+                        });
+                    }
+                    else if (matchOptions.Success)
+                    {
+                        foreach (Group grp in matchOptions.Groups)
+                        {
+                            options.Add(grp.Value.ToLower());
+                        }
+                    }
+                }
+
+            }
+
+            scriptRef.NoCombine = options.Contains("nocombine");
+            ResolvedDependencies.Add(name,scriptRef);
+            return scriptRef;
+
         }
 
         /// <summary>
@@ -193,67 +314,46 @@ namespace CsQuery.Mvc.ClientScript
         /// An enumerator that allows foreach to be used to process get dependencies in this collection.
         /// </returns>
 
-        protected IEnumerable<string> GetDependencies(string scriptRelativePath, bool ignoreErrors)
+        protected IEnumerable<ScriptRef> GetDependencies(ScriptRef scriptRef)
         {
-            if (ResolvedDependencies.Contains(scriptRelativePath))
+            foreach (var dep in scriptRef.Dependencies)
             {
-                yield break;
-            }
 
-            string fileName;
-            ScriptParser parser;
-            try
-            {
-                fileName = MapPath(scriptRelativePath);
-                parser = new ScriptParser(fileName);
-            }
-            catch(FileNotFoundException e)
-            {
-                if (ignoreErrors)
+                ScriptRef depRef;
+                if (!ResolvedDependencies.TryGetValue(dep.Name, out depRef))
                 {
-                    yield break;
-                }
-                else
-                {
-                    throw e;
-                }
-            }
-
-            using (parser) 
-            {
-                string line;
-                while ((line = parser.ReadLine()) != null 
-                    && !parser.AnyCodeYet)
-                {
-                    var match = Patterns.Dependency.Match(line);
-                    if (match.Success)
+                    string virtualPath = FindInLibaryPath(dep.Name);
+                    if (virtualPath == null)
                     {
-                        string depName= match.Groups["dep"].Value;
-
-                        string virtualPath = FindInLibaryPath(NormalizeDependencyName(depName));
-                        if (virtualPath == null)
+                        if (IgnoreErrors)
                         {
-                            if (ignoreErrors)
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                throw new FileNotFoundException(String.Format("Unable to find dependency \"{0}\" in the LibraryPath.", depName));
-                            }
+                            continue;
                         }
-
-                        // yield inner dependencies first, since they should be loaded first.
-                        
-                        foreach (var innerDep in GetDependencies(virtualPath, ignoreErrors)) {
-                            yield return innerDep;
+                        else
+                        {
+                            throw new FileNotFoundException(String.Format("Unable to find dependency \"{0}\" in the LibraryPath.", dep.Path));
                         }
-
-                        yield return virtualPath;
                     }
+
+                    depRef = GetScriptRef(dep.Name, virtualPath);
                 }
+                // always update the path of the dependency to what we got from the cache -- it might get used.
+                dep.Path = depRef.Path;
+
+                foreach (var innerDep in GetDependencies(depRef))
+                {
+                    yield return innerDep;
+                }
+
+                // when returning the parent script, if NoCombine is not set on the cached version, then return the parent one instead,
+                // since it may have its own nocombine setting.
+
+                yield return depRef.NoCombine ?
+                    depRef :
+                    dep;
             }
-            ResolvedDependencies.Add(scriptRelativePath);
+            
+            
         }
 
         /// <summary>
@@ -289,12 +389,13 @@ namespace CsQuery.Mvc.ClientScript
 
                 if (File.Exists(path))
                 {
-                    return Path.Combine(libPath, fileName);
+                    return (libPath+"/"+ fileName).Replace("//","/");
                 }
             }
             return null;
         }
 
+        
         /// <summary>
         /// Normalize dependency name: replaces . with slash and adds .js
         /// </summary>
@@ -309,6 +410,9 @@ namespace CsQuery.Mvc.ClientScript
 
         private string NormalizeDependencyName(string path)
         {
+            if (path.EndsWith(".js")) {
+                path = path.Substring(0,path.Length-3);
+            }
             return path.Replace(".", "/") + ".js";
         }
 
@@ -324,29 +428,29 @@ namespace CsQuery.Mvc.ClientScript
         /// The item to add.
         /// </param>
 
-        public void Add(string item)
+        public void Add(ScriptRef item)
         {
-            ScriptSources.Add(item);
+            Scripts.Add(item);
         }
 
         public void Clear()
         {
-            ScriptSources.Clear();
+            Scripts.Clear();
         }
 
-        public bool Contains(string item)
+        public bool Contains(ScriptRef item)
         {
-            return ScriptSources.Contains(item);
+            return Scripts.Contains(item);
         }
 
-        public void CopyTo(string[] array, int arrayIndex)
+        public void CopyTo(ScriptRef[] array, int arrayIndex)
         {
-            ScriptSources.CopyTo(array, arrayIndex);
+            Scripts.CopyTo(array, arrayIndex);
         }
 
         public int Count
         {
-            get { return ScriptSources.Count; }
+            get { return Scripts.Count; }
         }
 
         public bool IsReadOnly
@@ -354,14 +458,14 @@ namespace CsQuery.Mvc.ClientScript
             get { return false; }
         }
 
-        public bool Remove(string item)
+        public bool Remove(ScriptRef item)
         {
-            return ScriptSources.Remove(item);
+            return Scripts.Remove(item);
         }
 
-        public IEnumerator<string> GetEnumerator()
+        public IEnumerator<ScriptRef> GetEnumerator()
         {
-            return ScriptSources.GetEnumerator();
+            return Scripts.GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

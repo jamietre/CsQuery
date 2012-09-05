@@ -136,7 +136,7 @@ namespace CsQuery.Mvc
         /// Options for controlling the operation of the view
         /// </summary>
 
-        public CsQueryViewEngineOptions Options { get; set; }
+        public ViewEngineOptions Options { get; set; }
 
         /// <summary>
         /// Gets or sets the layout controller.
@@ -263,7 +263,7 @@ namespace CsQuery.Mvc
                     }
 
 
-                    if (Options.HasFlag(CsQueryViewEngineOptions.EnableScriptManager))
+                    if (Options.HasFlag(ViewEngineOptions.EnableScriptManager))
                     {
                         ManageScripts(cqDoc, (System.Web.Mvc.WebViewPage)instance);
                     }

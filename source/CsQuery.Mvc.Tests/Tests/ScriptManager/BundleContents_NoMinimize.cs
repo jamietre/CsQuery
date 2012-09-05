@@ -19,7 +19,7 @@ namespace CsQuery.Mvc.Tests
         public BundleContents_NoMinimize()
             : base()
         {
-            Host.ViewEngineOptions |= CsQueryViewEngineOptions.NoMinifyScripts;
+            Host.ViewEngineOptions |= ViewEngineOptions.NoMinifyScripts;
 
         }
 

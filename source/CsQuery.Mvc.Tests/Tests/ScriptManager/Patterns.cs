@@ -45,7 +45,7 @@ namespace CsQuery.Mvc.Tests
 
             // a valid match - but should fail when looking up. We don't want to just not match things that start with "using"
             // but are invalid.
-            Assert.IsTrue(Matches(pat,"using test something", "test something"));
+            Assert.IsTrue(Matches(pat,"using test something", "test"));
 
 
             Assert.IsTrue(Matches(pat, "using test/test2", "test/test2"));

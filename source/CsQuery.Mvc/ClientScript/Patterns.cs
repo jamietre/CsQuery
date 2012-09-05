@@ -18,7 +18,11 @@ namespace CsQuery.Mvc.ClientScript
         private static Regex RegexFullLineComment = new Regex(@"^\s*//(?<comment>.*)$");
         private static Regex RegexOneLineComment = new Regex(@"^\s*/\*(?<comment>.*)\*/$");
 
-        private static Regex RegexDependency = new Regex(@"^\s*using (?<dep>.+?)\s*;*\s*$");
+        // match "using arg1 arg2;" ignoring whitespace around ;
+        private static Regex RegexDependency = new Regex(@"^\s*using\s+(?<dep>[%/\-A-Za-z0-9\.]+?)(\s+(?<opt>[A-Za-z0-9\./]+?))*\s*;*\s*$");
+        
+        // match "using-options aaaa bbbb xxxx;"
+        private static Regex RegexOptions = new Regex(@"^\s*using-options\s+([A-Za-z]+\s*)+\s*;*\s*$");
 
         /// <summary>
         /// Gets a regex matching a line that signfies a dependency, e.g. "using something"
@@ -33,6 +37,22 @@ namespace CsQuery.Mvc.ClientScript
             get
             {
                 return RegexDependency;
+            }
+        }
+
+        /// <summary>
+        /// Gets a regex matching a line with file options, e.g. "using-options something somethineelse"
+        /// </summary>
+        ///
+        /// <value>
+        /// A regex
+        /// </value>
+
+        public static Regex Options
+        {
+            get
+            {
+                return RegexOptions;
             }
         }
 

@@ -9195,6 +9195,21 @@
             Element is a form input control
             </summary>
         </member>
+        <member name="F:CsQuery.HtmlParser.HtmlEncodingMethod.HtmlEncodingFull">
+            <summary>
+            Complete encoding for all non-ascii characters
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParser.HtmlEncodingMethod.HtmlEncodingMinimum">
+            <summary>
+            Only carets and ampersand as required to create valid HTML.
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParser.HtmlEncodingMethod.HtmlEncodingNone">
+            <summary>
+            No encoding.
+            </summary>
+        </member>
         <member name="T:CsQuery.Engine.PseudoClassSelectors.Gt">
             <summary>
              Test whether an element appears after the specified position with the list.
@@ -18741,21 +18756,6 @@
             will be pre-filtered by an attribute selector. This could be implemented using a pseudoclass
             type construct instead, e.g. as "visible" that traverses through parents, and inherits a
             default document-wide setting.
-            </summary>
-        </member>
-        <member name="F:CsQuery.HtmlParser.HtmlEncodingMethod.HtmlEncodingFull">
-            <summary>
-            Complete encoding for all non-ascii characters
-            </summary>
-        </member>
-        <member name="F:CsQuery.HtmlParser.HtmlEncodingMethod.HtmlEncodingMinimum">
-            <summary>
-            Only carets and ampersand as required to create valid HTML.
-            </summary>
-        </member>
-        <member name="F:CsQuery.HtmlParser.HtmlEncodingMethod.HtmlEncodingNone">
-            <summary>
-            No encoding.
             </summary>
         </member>
     </members>
