@@ -340,12 +340,26 @@ namespace CsQuery.HtmlParser
 
         public const ushort tagMETER = 48;
 
-
         /// <summary>
-        /// should match final tag above; for self-checking
+        /// The IMG element
         /// </summary>
 
-        private const ushort maxHardcodedTokenId = 48;
+        public const ushort tagIMG = 49;
+
+        /// <summary>
+        /// The IMG element
+        /// </summary>
+
+        public const ushort tagLINK = 50;
+
+
+        // WHEN CHANGING THIS, YOU MUST UPDATE THE "hardcoded" ARRAY BELOW.
+
+        /// <summary>
+        /// should match final tag above; for self-checking.
+        /// </summary>
+        
+        private const ushort maxHardcodedTokenId = 50;
 
         // Unquoted attribute value syntax: http://dev.w3.org/html5/spec-LC/syntax.html#attributes-0
         // 
@@ -543,7 +557,7 @@ namespace CsQuery.HtmlParser
                 "unused","class","value","id","selected","readonly","checked","input","select","option","p","tr",
                 "td","th","head","body","dt","colgroup","dd","li","dl","table","optgroup","ul","ol","tbody","tfoot","thead","rt",
                 "rp","script","textarea","style","col","html","button","multiple","a","span","form","required","autofocus",
-                "type","progress","label","disabled","meter"
+                "type","progress","label","disabled","meter","img","link"
             };
 
             TokenIDs = new Dictionary<string, ushort>();

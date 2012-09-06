@@ -23,19 +23,65 @@ namespace CsQuery.Mvc.ClientScript
         #region constructor
 
         /// <summary>
-        /// Default constructor; creates this ScriptManager for the active HttpContext
+        /// Default constructor; creates this ScriptManager for the active HttpContext.MapPath
         /// </summary>
 
         public ScriptManager()
         {
-            MapPath = HttpContext.Current.Server.MapPath;
+            Initialize(null, null);
         }
 
-        public ScriptManager(Func<string,string> mapPathFunc)
+        /// <summary>
+        /// Default constructor; creates this ScriptManager for the specified library path &amp; MapPath
+        /// function.
+        /// </summary>
+        ///
+        /// <param name="libraryPath">
+        /// The paths in the library search path.
+        /// </param>
+        /// <param name="mapPathFunc">
+        /// The map path function.
+        /// </param>
+
+        public ScriptManager(PathList libraryPath, Func<string,string> mapPathFunc)
         {
-            MapPath = mapPathFunc;
+            if (mapPathFunc == null)
+            {
+                throw new ArgumentException("The MapPath function cannot be null.");
+            }
+            if (libraryPath == null)
+            {
+                throw new ArgumentException("The LibraryPath cannot be null.");
+            }
+            Initialize(libraryPath, mapPathFunc);   
         }
-        
+
+        /// <summary>
+        /// Creates this ScriptManager with an empty LibraryPath
+        /// </summary>
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown when one or more arguments have unsupported or illegal values.
+        /// </exception>
+        ///
+        /// <param name="mapPathFunc">
+        /// The map path function.
+        /// </param>
+
+        public ScriptManager(Func<string, string> mapPathFunc)
+        {
+            if (mapPathFunc == null)
+            {
+                throw new ArgumentException("The MapPath function cannot be null.");
+            }
+            Initialize(null, mapPathFunc);
+        }
+
+        private void Initialize(PathList libraryPath, Func<string, string> mapPathFunc)
+        {
+            MapPath = mapPathFunc ?? HttpContext.Current.Server.MapPath;
+            LibraryPath = libraryPath ?? new PathList();
+        }
 
         /// <summary>
         /// Identifier used to generate unique IDs for the generated script bundles
@@ -81,73 +127,133 @@ namespace CsQuery.Mvc.ClientScript
 
         public void ResolveScriptDependencies(CQ doc)
         {
-            // 1) See if we have already build a bundle based on this set of scripts.
+           
 
-            HashSet<string> libraries = new HashSet<string>();
+            string scriptSelector = "script[src][type='text/javascript'], link[type='text/css']";
+                
+            //+ (Options.HasFlag(ViewEngineOptions.ProcessAllScripts) ?
+            //        "" : ".csquery-script")
+            //        + "[src]";
 
-            string scriptSelector = "script"
-                + (Options.HasFlag(ViewEngineOptions.ProcessAllScripts) ?
-                    "" : ".csquery-script")
-                    + "[src]";
-
-            CQ scripts = doc[scriptSelector];
-
-            if (scripts.Length > 0)
+            // Filter out non-relative paths (remote URLs)
+            CQ scripts = doc[scriptSelector].Filter(item =>
             {
-                // move scripts to head as needed first
-
-                var toMove = scripts.Filter("[data-location='head']");
-                if (toMove.Length > 0)
-                {
-                    var head = doc["head"];
-                    toMove.Each((el) =>
-                    {
-                        head.Append(el);
-                    });
-                }
-
-                // resolve dependencies
-
-                ScriptCollection coll = new ScriptCollection(LibraryPath,MapPath);
-                coll.IgnoreErrors = Options.HasFlag(ViewEngineOptions.IgnoreMissingScripts);
-                coll.AddFromCq(scripts);
-
-                string bundleUrl;
-
-                if (!Bundles.TryGetValue(coll, out bundleUrl))
-                {
-                    string bundleAlias = "~/cq_" + ScriptID;
-                    var bundle = GetScriptBundle(bundleAlias);
-                    
-                    ScriptID++;
-
-                    foreach (var item in coll.GetDependencies())
-                    {
-                        bundle.Include(item.Path);
-                    }
-
-                    BundleTable.Bundles.Add(bundle);
-                    if (HttpContext.Current != null)
-                    {
-                        bundleUrl = BundleTable.Bundles.ResolveBundleUrl(bundleAlias);
-                    }
-                    else
-                    {
-                        bundleUrl = bundleAlias + "_no_http_context";
-                    }
+                return !PathList.IsRemoteUrl(item.UrlSource());
+            });
 
 
-                    if (!Options.HasFlag(ViewEngineOptions.NoCacheBundles))
-                    {
-                        Bundles[coll] = bundleUrl;
-                    }
-                }
-                CQ scp = CQ.Create(String.Format("<script type=\"text/javascript\" class=\"csquery-generated\" src=\"{0}\"></script>", bundleUrl));
 
-                scripts.First().Before(scp);
+            if (scripts.Length == 0)
+            {
+                return;
             }
+            
+            // move scripts to head as needed first
+
+            var toMove = scripts.Filter("[data-location='head']");
+            var head = doc["head"];
+
+            if (toMove.Length > 0)
+            {
+                
+                foreach (var item in toMove)
+                {
+                    if (item.ParentNode != head)
+                    {
+                        head.Append(item);
+                    }
+                }
+            }
+
+            // resolve dependencies
+
+            ScriptCollection coll = new ScriptCollection(LibraryPath,MapPath);
+            coll.IgnoreErrors = Options.HasFlag(ViewEngineOptions.IgnoreMissingScripts);
+
+            // identify the insertion point for the script bundle
+            var firstScriptEl = coll.AddFromCq(scripts);
+            var firstScript = firstScriptEl == null ? 
+                head.Children().First() : 
+                firstScriptEl.Cq();
+
+            string bundleUrl;
+            List<ScriptRef> dependencies = coll.GetDependencies()
+                .Where(item=>!coll.Contains(item))
+                .ToList();
+
+            // find the first script with dependencies
+            
+
+            // Now add scripts directly for depenencies marked as NoCombine.
+
+            foreach (var item in dependencies.Where(item => item.NoCombine))
+            {
+                firstScript.Before(GetScriptHtml(item.Path));
+                //scriptsOnPage.Add(item);
+            }
+
+            // Before creating the bundle, remove any duplicates of the same script on the page
+            
+            
+
+
+            bool hasBundle = Bundles.TryGetValue(coll, out bundleUrl);
+                
+            if (Options.HasFlag(ViewEngineOptions.NoCacheBundles) && hasBundle) {
+                string removeUrl = "~" + bundleUrl.Before("?");
+                BundleTable.Bundles.Remove(BundleTable.Bundles.GetBundleFor(removeUrl));
+                hasBundle = false;
+            } 
+
+            if (!hasBundle) {
+
+                string bundleAlias = "~/cq_" + ScriptID;
+                var bundle = GetScriptBundle(bundleAlias);
+                    
+                ScriptID++;
+
+                foreach (var item in dependencies.Where(item=>!item.NoCombine))                    
+                {
+                    bundle.Include(item.Path);
+                }
+
+                BundleTable.Bundles.Add(bundle);
+                if (HttpContext.Current != null)
+                {
+                    bundleUrl = BundleTable.Bundles.ResolveBundleUrl(bundleAlias);
+                }
+                else
+                {
+                    bundleUrl = bundleAlias + "_no_http_context";
+                }
+                Bundles[coll] = bundleUrl;
+            }
+
+            var scriptPlaceholder = scripts.First();
+
+          
+
+            // add bundle after all noncombined scripts
+
+            firstScript.Before(GetScriptHtml(bundleUrl));
+
+               
+            
         }
 
+        private CQ GetScriptHtml(string url)
+        {
+            string template;
+            if (url.EndsWith(".css"))
+            {
+                template = "<link rel=\"stylesheet\" type=\"text/css\" class=\"csquery-generated\" href=\"{0}\" />";
+            }
+            else
+            {
+                template = "<script type=\"text/javascript\" class=\"csquery-generated\" src=\"{0}\"></script>";
+            }
+            return CQ.CreateFragment(String.Format(template, url));
+        }
         private ScriptBundle GetScriptBundle(string bundleAlias)
         {
             var bundle = new ScriptBundle(bundleAlias);

@@ -27,7 +27,7 @@ namespace CsQuery.Mvc.Tests
             list.Add("~/libs2");
 
             var coll = new ScriptCollection(list, TestUtil.MapPath);
-            coll.AddPath("~/scripts/test-script-3");
+            coll.AddPath("~/scripts/test-script-3.js");
 
             Assert.AreEqual(coll.Count, 1);
 

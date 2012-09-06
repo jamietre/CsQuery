@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.IO;
 using System.Text.RegularExpressions;
+using CsQuery.Mvc;
 
 namespace CsQuery.Mvc.ClientScript
 {
@@ -19,33 +20,46 @@ namespace CsQuery.Mvc.ClientScript
     {
         #region constructor
 
+        /// <summary>
+        /// Constructor for Script Collection.
+        /// </summary>
+        ///
+        /// <param name="libraryPath">
+        /// A PathList object containing the libraries to search for dependencies.
+        /// </param>
+        /// <param name="mapPathFunc">
+        /// The MapPath function, e.g. HttpContext.Current.MapPath
+        /// </param>
+
         public ScriptCollection(PathList libraryPath, Func<string,string> mapPathFunc)
         {
             MapPath = mapPathFunc;
             LibraryPath = libraryPath;
             Scripts = new HashSet<ScriptRef>();
-            ResolvedDependencies = new Dictionary<string, ScriptRef>(); 
             DependenciesOrdered = new List<string>();
             //ScriptSources = new HashSet<ScriptRef>();
         }
         #endregion
 
         #region private properties
+        
+        private static ConcurrentDictionary<string, ScriptRef> ResolvedDependencies
+            = new ConcurrentDictionary<string, ScriptRef>(); 
+    
 
+        private  PathList LibraryPath;
+        private Func<string, string> MapPath;
 
-        protected PathList LibraryPath;
-        protected Func<string,string> MapPath;
-        ///protected HashSet<ScriptRef> ScriptSources;
         /// <summary>
         /// The unique set of dependencies (hashset used to prevent duplication).
         /// </summary>
-        protected Dictionary<string, ScriptRef> ResolvedDependencies;
+
 
         /// <summary>
         /// The file paths at the top level (the members of this collection)
         /// </summary>
 
-        protected HashSet<ScriptRef> Scripts;
+        private HashSet<ScriptRef> Scripts;
 
         /// <summary>
         /// The dependencies in the order the were resolved
@@ -68,21 +82,31 @@ namespace CsQuery.Mvc.ClientScript
         #region public methods
 
         /// <summary>
-        /// Adds inputs from all the scripts found in a CQ object
+        /// Adds inputs from all the scripts found in a CQ object.
         /// </summary>
         ///
         /// <param name="scripts">
         /// The scripts.
         /// </param>
+        ///
+        /// <returns>
+        /// The first script with dependencies
+        /// </returns>
 
-        public void AddFromCq(CQ scripts)
+        public IDomObject AddFromCq(CQ scripts)
         {
+            IDomObject first=null;
             foreach (var script in scripts)
             {
-                AddPath(script["src"]);
+                var scriptRef = AddPath(script.UrlSource());
+                if (scriptRef.Dependencies.Count > 0)
+                {
+                    first = script;
+                }
             }
 
             scripts.RemoveClass("csquery-script");
+            return first;
         }
 
         /// <summary>
@@ -93,10 +117,20 @@ namespace CsQuery.Mvc.ClientScript
         /// Virtual path to the script.
         /// </param>
 
-        public void AddPath(string virtualPath)
+        public ScriptRef AddPath(string virtualPath)
         {
-            string normalPath = PathList.Normalize(virtualPath);
-            Scripts.Add(GetScriptRef(normalPath,normalPath));
+            string name;
+
+            // if the path maps to something in our known libraries, 
+            // create a reference using its generic name, and not the full path.
+            
+            if (!LibraryPath.TryGetName(virtualPath,out name)) {
+                name=virtualPath;
+            }
+
+            var scriptRef = GetScriptRef(name, virtualPath);
+            Scripts.Add(scriptRef);
+            return scriptRef;
         }
 
 
@@ -119,7 +153,7 @@ namespace CsQuery.Mvc.ClientScript
         /// </summary>
         ///
         /// <returns>
-        /// A hash code for the current <see cref="CsQuery.Mvc.ScriptCollection" />.
+        /// A hash code for the current <see cref="CsQuery.Mvc.ClientScript.ScriptCollection" />.
         /// </returns>
 
         public override int GetHashCode()
@@ -131,8 +165,8 @@ namespace CsQuery.Mvc.ClientScript
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="CsQuery.Mvc.ScriptCollection" /> is equal to the current
-        /// <see cref="CsQuery.Mvc.ScriptCollection" />. 
+        /// Determines whether the specified <see cref="CsQuery.Mvc.ClientScript.ScriptCollection" /> is equal to the current
+        /// <see cref="CsQuery.Mvc.ClientScript.ScriptCollection" />.
         /// </summary>
         ///
         /// <param name="obj">
@@ -166,9 +200,6 @@ namespace CsQuery.Mvc.ClientScript
         /// <param name="sources">
         /// The sources.
         /// </param>
-        /// <param name="ignoreErrors">
-        /// true to ignore errors.
-        /// </param>
         ///
         /// <returns>
         /// An enumerator that allows foreach to be used to process get dependencies in this collection.
@@ -201,18 +232,18 @@ namespace CsQuery.Mvc.ClientScript
         }
 
         /// <summary>
-        /// Gets a script reference given a path
+        /// Gets a script reference given a path.
         /// </summary>
         ///
         /// <exception cref="FileNotFoundException">
         /// Thrown when the requested file is not present.
         /// </exception>
         ///
-        /// <param name="scriptRelativePath">
-        /// The relative path to the file to analyze.
+        /// <param name="name">
+        /// The name to use for this script.
         /// </param>
-        /// <param name="ignoreErrors">
-        /// true to ignore errors.
+        /// <param name="virtualPath">
+        /// Virtual path to the script.
         /// </param>
         ///
         /// <returns>
@@ -222,28 +253,24 @@ namespace CsQuery.Mvc.ClientScript
         protected ScriptRef GetScriptRef(string name,string virtualPath)
         {
             ScriptRef scriptRef;
-            virtualPath = NormalizeDependencyName(virtualPath);
-            name = NormalizeDependencyName(name);
+            string normalizedPath = PathList.NormalizePath(virtualPath);
+            string normalizedName= PathList.NormalizeName(name);
 
-            if (ResolvedDependencies.TryGetValue(name, out scriptRef))
+            if (ResolvedDependencies.TryGetValue(normalizedName, out scriptRef))
             {
                 return scriptRef;
             }
 
             string fileName;
-            ScriptParser parser;
+            ScriptParser parser=null;
             try
             {
-                fileName = MapPath(virtualPath);
+                fileName = MapPath(normalizedPath);
                 parser = new ScriptParser(fileName);
             }
             catch (FileNotFoundException e)
             {
-                if (IgnoreErrors)
-                {
-                    return null;
-                }
-                else
+                if (!IgnoreErrors)
                 {
                     throw e;
                 }
@@ -251,45 +278,54 @@ namespace CsQuery.Mvc.ClientScript
 
             scriptRef = new ScriptRef
             {
-                Name = name,
-                Path = virtualPath
+                Name = normalizedName,
+                Path = normalizedPath
             };
-            var options = new HashSet<string>();
-            
-            using (parser)
+
+            // Parser can be null if there was an error loading the script, but IgnoreErrors=true. If this
+            // is the case just skip everything, there will be no dependencies. 
+            // 
+            if (parser != null)
             {
-                string line;
-                while ((line = parser.ReadLine()) != null
-                    && !parser.AnyCodeYet)
+                var options = new HashSet<string>();
+
+                using (parser)
                 {
-                    var match = Patterns.Dependency.Match(line);
-                    var matchOptions = Patterns.Options.Match(line);
-
-                    if (match.Success)
+                    string line;
+                    while ((line = parser.ReadLine()) != null
+                        && !parser.AnyCodeYet)
                     {
-                        string depName = match.Groups["dep"].Value;
-                        var optGroup = match.Groups["opt"];
+                        var match = Patterns.Dependency.Match(line);
+                        var matchOptions = Patterns.Options.Match(line);
 
-                        scriptRef.Dependencies.Add(new ScriptRef
+                        if (match.Success)
                         {
-                            Name = NormalizeDependencyName(depName),
-                            Path=null,
-                            NoCombine = optGroup.Captures.Any<string>(item=>item=="nocombine")
-                        });
-                    }
-                    else if (matchOptions.Success)
-                    {
-                        foreach (Group grp in matchOptions.Groups)
+                            string depName = match.Groups["dep"].Value;
+                            var optGroup = match.Groups["opt"];
+
+                            scriptRef.Dependencies.Add(new ScriptRef
+                            {
+                                Name = PathList.NormalizeName(depName),
+                                Path = null,
+                                NoCombine = optGroup.Captures.Any<Capture>(item => item.Value == "nocombine")
+                            });
+                        }
+                        else if (matchOptions.Success)
                         {
-                            options.Add(grp.Value.ToLower());
+                            foreach (Group grp in matchOptions.Groups)
+                            {
+                                options.Add(grp.Value.ToLower());
+                            }
                         }
                     }
+
                 }
 
+                scriptRef.NoCombine = options.Contains("nocombine");
             }
-
-            scriptRef.NoCombine = options.Contains("nocombine");
-            ResolvedDependencies.Add(name,scriptRef);
+            
+            ResolvedDependencies[normalizedName] = scriptRef;
+            
             return scriptRef;
 
         }
@@ -303,11 +339,8 @@ namespace CsQuery.Mvc.ClientScript
         /// Thrown when the requested file is not present.
         /// </exception>
         ///
-        /// <param name="scriptRelativePath">
+        /// <param name="scriptRef">
         /// The relative path to the file to analyze.
-        /// </param>
-        /// <param name="ignoreErrors">
-        /// true to ignore errors.
         /// </param>
         ///
         /// <returns>
@@ -331,7 +364,7 @@ namespace CsQuery.Mvc.ClientScript
                         }
                         else
                         {
-                            throw new FileNotFoundException(String.Format("Unable to find dependency \"{0}\" in the LibraryPath.", dep.Path));
+                            throw new FileNotFoundException(String.Format("Unable to find dependency \"{0}\" in the LibraryPath.", dep.Name));
                         }
                     }
 
@@ -357,21 +390,21 @@ namespace CsQuery.Mvc.ClientScript
         }
 
         /// <summary>
-        /// Searches the LibraryPath for a match for this file
+        /// Searches the LibraryPath for a match for this file.
         /// </summary>
         ///
-        /// <param name="name">
-        /// The file name to search for.
+        /// <remarks>
+        /// TODO: Optimize this to cache information about which files are in which paths so we don't
+        /// have to look up every time. (Or is this worth it, since the overall bundles are cached?)
+        /// </remarks>
+        ///
+        /// <param name="fileName">
+        /// Filename of the file.
         /// </param>
         ///
         /// <returns>
         /// The found dependency.
         /// </returns>
-        /// <remarks>
-        /// TODO: Optimize this to cache information about which files are in which paths so we don't have to look up every time.
-        /// (Or is this worth it, since the overall bundles are cached?)
-        /// </remarks>
-
 
         private string FindInLibaryPath(string fileName)
         {
@@ -389,31 +422,10 @@ namespace CsQuery.Mvc.ClientScript
 
                 if (File.Exists(path))
                 {
-                    return (libPath+"/"+ fileName).Replace("//","/");
+                    return (libPath+fileName).Replace("//","/");
                 }
             }
             return null;
-        }
-
-        
-        /// <summary>
-        /// Normalize dependency name: replaces . with slash and adds .js
-        /// </summary>
-        ///
-        /// <param name="path">
-        /// Full pathname of the file.
-        /// </param>
-        ///
-        /// <returns>
-        /// A string
-        /// </returns>
-
-        private string NormalizeDependencyName(string path)
-        {
-            if (path.EndsWith(".js")) {
-                path = path.Substring(0,path.Length-3);
-            }
-            return path.Replace(".", "/") + ".js";
         }
 
         #endregion

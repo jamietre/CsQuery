@@ -18130,9 +18130,19 @@
             The METER element
             </summary>
         </member>
+        <member name="F:CsQuery.HtmlParser.HtmlData.tagIMG">
+            <summary>
+            The IMG element
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParser.HtmlData.tagLINK">
+            <summary>
+            The IMG element
+            </summary>
+        </member>
         <member name="F:CsQuery.HtmlParser.HtmlData.maxHardcodedTokenId">
             <summary>
-            should match final tag above; for self-checking
+            should match final tag above; for self-checking.
             </summary>
         </member>
         <member name="F:CsQuery.HtmlParser.HtmlData.NumberChars">

@@ -37,14 +37,19 @@ namespace CsQuery.Mvc.ClientScript
                 return _FileName;
             }
             protected set {
-                if (!File.Exists(value))
+                int qPos = value.IndexOf("?");
+                string fileName = qPos < 0 ?
+                    value :
+                    value.Substring(0, qPos);
+
+                if (!File.Exists(fileName))
                 {
                     throw new FileNotFoundException(String.Format("Dependency \"{0}\" could not be resolved in the file system.",
                         value));
                 }
 
-                _FileName = value;
-                StreamReader = new StreamReader(value);
+                _FileName = fileName;
+                StreamReader = new StreamReader(fileName);
             }
         }
 

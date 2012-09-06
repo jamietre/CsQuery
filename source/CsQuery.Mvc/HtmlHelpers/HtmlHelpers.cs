@@ -5,6 +5,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.IO;
+using CsQuery.Mvc.ClientScript;
 
 namespace CsQuery.Mvc
 {
@@ -100,9 +101,7 @@ namespace CsQuery.Mvc
 
         public static IHtmlString Script<T>(this HtmlHelper<T> helper, string script, ScriptLocations location=ScriptLocations.Inline)
         {
-            string path = (script.StartsWith("~/") ? "" : "~/") +
-                script +
-                (script.EndsWith(".js") ? "" : ".js");
+            string path = PathList.NormalizePath(PathList.NormalizeName(script));
 
             string template = "<script class=\"csquery-script\" type=\"text/javascript\" src=\"{0}\"{1}></script>";
             string parms = "";

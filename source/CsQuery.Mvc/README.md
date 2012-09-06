@@ -2,6 +2,8 @@
 
 CsQuery.MVC is a simple framework that lets you pipeline CsQuery into view rendering so you can perform manipulation of the HTML before it is finally rendered. This works by replacing the default view engine & controllers. 
 
+The frameworks also includes a component called the ScriptManager. There's a separate readme in this folder. This allows you to use a convention to indentify client script dependencies from within the script itself. The convention will automatically import all dependencies and wrap them in a single Bundle using MVC 4.0 bundles.
+
 Instructions for using this are below. To see it in action, just to look at the example MVC application under "examples", especially the `HomeController.cs` and `AboutController.cs` classes.
 
 ####Configuration

@@ -29,11 +29,11 @@ namespace CsQuery.Mvc.Tests
             CQ doc = CQ.Create(@"
 <html>
     <head>
-        <script src='~/script' class='inhead'></script>
+        <script type='text/javascript' src='~/script' class='inhead'></script>
     </head>
     <body>
         <div></div>
-        <script src='~/script' class='inbody' data-location='head'></script>
+        <script type='text/javascript' src='~/script' class='inbody' data-location='head'></script>
     </body>
 ");
             var mgr = new ScriptManager(MapPath);
