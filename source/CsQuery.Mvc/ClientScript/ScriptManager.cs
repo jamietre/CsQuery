@@ -168,6 +168,7 @@ namespace CsQuery.Mvc.ClientScript
             // resolve dependencies
 
             ScriptCollection coll = new ScriptCollection(LibraryPath,MapPath);
+            coll.NoCache = Options.HasFlag(ViewEngineOptions.NoCache);
             coll.IgnoreErrors = Options.HasFlag(ViewEngineOptions.IgnoreMissingScripts);
 
             // identify the insertion point for the script bundle
@@ -198,21 +199,30 @@ namespace CsQuery.Mvc.ClientScript
 
 
             bool hasBundle = Bundles.TryGetValue(coll, out bundleUrl);
-                
-            if (Options.HasFlag(ViewEngineOptions.NoCacheBundles) && hasBundle) {
-                string removeUrl = "~" + bundleUrl.Before("?");
-                BundleTable.Bundles.Remove(BundleTable.Bundles.GetBundleFor(removeUrl));
-                hasBundle = false;
-            } 
+
+            if (hasBundle) {
+                // when nocache is set, we will regenerate the bundle, but not change the script ID. The v=
+                // flag will be changed by BundleTable. 
+                if (Options.HasFlag(ViewEngineOptions.NoCache))
+                {
+                    string removeUrl = "~" + bundleUrl.Before("?");
+                    BundleTable.Bundles.Remove(BundleTable.Bundles.GetBundleFor(removeUrl));
+                    hasBundle = false;
+                    ScriptID++;
+                }
+            }
+            else
+            {
+                ScriptID++;
+            }
 
             if (!hasBundle) {
 
-                string bundleAlias = "~/cq_" + ScriptID;
+                string bundleAlias = "~/cqbundle" + ScriptID;
                 var bundle = GetScriptBundle(bundleAlias);
-                    
-                ScriptID++;
 
-                foreach (var item in dependencies.Where(item=>!item.NoCombine))                    
+                var activeDependencies = dependencies.Where(item => !item.NoCombine);
+                foreach (var item in activeDependencies)
                 {
                     bundle.Include(item.Path);
                 }
@@ -220,7 +230,7 @@ namespace CsQuery.Mvc.ClientScript
                 BundleTable.Bundles.Add(bundle);
                 if (HttpContext.Current != null)
                 {
-                    bundleUrl = BundleTable.Bundles.ResolveBundleUrl(bundleAlias);
+                    bundleUrl = BundleTable.Bundles.ResolveBundleUrl(bundleAlias, true);
                 }
                 else
                 {

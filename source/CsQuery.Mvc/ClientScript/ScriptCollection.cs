@@ -65,9 +65,22 @@ namespace CsQuery.Mvc.ClientScript
         /// The dependencies in the order the were resolved
         /// </summary>
 
-        protected List<string> DependenciesOrdered;
+        private List<string> DependenciesOrdered;
         
         #endregion
+
+        /// <summary>
+        /// When true, script dependencies will not be cached, and each script re-parsed every time the
+        /// page is loaded. Normally, scripts are only analyzed for dependencies the first time they are
+        /// accessed, and the cache is only reset when the application restarts. During development, this
+        /// is not convenient. Enabling this option will prevent caching.
+        /// </summary>
+        ///
+        /// <value>
+        /// The options.
+        /// </value>
+
+        public bool NoCache { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to ignore errors.
@@ -99,7 +112,7 @@ namespace CsQuery.Mvc.ClientScript
             foreach (var script in scripts)
             {
                 var scriptRef = AddPath(script.UrlSource());
-                if (scriptRef.Dependencies.Count > 0)
+                if (first==null && scriptRef.Dependencies.Count > 0)
                 {
                     first = script;
                 }
@@ -323,8 +336,11 @@ namespace CsQuery.Mvc.ClientScript
 
                 scriptRef.NoCombine = options.Contains("nocombine");
             }
-            
-            ResolvedDependencies[normalizedName] = scriptRef;
+
+            if (!NoCache)
+            {
+                ResolvedDependencies[normalizedName] = scriptRef;
+            }
             
             return scriptRef;
 
