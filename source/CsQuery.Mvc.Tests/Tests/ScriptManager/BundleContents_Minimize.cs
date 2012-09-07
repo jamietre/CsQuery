@@ -26,7 +26,7 @@ namespace CsQuery.Mvc.Tests
         public void BundleContents()
         {
             var doc = RenderView<TestController>("index");
-            var bundleUrl=  doc["script[src^=/cq_]"][0]["src"];
+            var bundleUrl=  doc["script[src^=/cqbundle]"][0]["src"];
 
             string script = Host.BundlesContentsForUrl(bundleUrl);
 

@@ -27,7 +27,7 @@ namespace CsQuery.Mvc.Tests
         [TestMethod]
         public void BundlingDetails2()
         {
-            var bundleScripts = Doc["script[src^=/cq_]"];
+            var bundleScripts = Doc["script[src^=/cqbundle]"];
             Assert.AreEqual(1, bundleScripts.Length);
             
             var bundleUrl = bundleScripts.Attr("src");

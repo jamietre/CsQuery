@@ -30,6 +30,11 @@ namespace CsQuery.Mvc.ClientScript
         {
             Initialize(null, null);
         }
+        static ScriptManager()
+        {
+
+            //BundleTable.EnableOptimizations = false;
+        }
 
         /// <summary>
         /// Default constructor; creates this ScriptManager for the specified library path &amp; MapPath
@@ -189,8 +194,7 @@ namespace CsQuery.Mvc.ClientScript
 
             foreach (var item in dependencies.Where(item => item.NoCombine))
             {
-                firstScript.Before(GetScriptHtml(item.Path));
-                //scriptsOnPage.Add(item);
+                firstScript.Before(GetScriptHtml(item.Path, item.ScriptHash));
             }
 
             // Before creating the bundle, remove any duplicates of the same script on the page
@@ -209,6 +213,17 @@ namespace CsQuery.Mvc.ClientScript
                     BundleTable.Bundles.Remove(BundleTable.Bundles.GetBundleFor(removeUrl));
                     hasBundle = false;
                     ScriptID++;
+                    // 
+                    //var bundleList = BundleTable.Bundles.ToList();
+                    //BundleTable.Bundles.Clear();
+                    //BundleTable.Bundles.ResetAll();
+                    //BundleTable.EnableOptimizations = false;
+
+                    //foreach (var oldBundle in bundleList)
+                    //{
+                    //    BundleTable.Bundles.Add(oldBundle);
+                    //}
+
                 }
             }
             else
@@ -227,6 +242,7 @@ namespace CsQuery.Mvc.ClientScript
                     bundle.Include(item.Path);
                 }
 
+               
                 BundleTable.Bundles.Add(bundle);
                 if (HttpContext.Current != null)
                 {
@@ -251,7 +267,7 @@ namespace CsQuery.Mvc.ClientScript
             
         }
 
-        private CQ GetScriptHtml(string url)
+        private CQ GetScriptHtml(string url, string hash=null)
         {
             string template;
             if (url.EndsWith(".css"))
@@ -262,6 +278,12 @@ namespace CsQuery.Mvc.ClientScript
             {
                 template = "<script type=\"text/javascript\" class=\"csquery-generated\" src=\"{0}\"></script>";
             }
+
+            if (!String.IsNullOrEmpty(hash))
+            {
+                url = url + "?v=" + hash;
+            }
+
             return CQ.CreateFragment(String.Format(template, url));
         }
         private ScriptBundle GetScriptBundle(string bundleAlias)
@@ -279,6 +301,7 @@ namespace CsQuery.Mvc.ClientScript
                     bundle.Transforms.Add(new JsMinify());
                 }
             }
+
             return bundle;
         }
     }

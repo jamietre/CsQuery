@@ -4,16 +4,32 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace CsQuery.Mvc.ClientScript
 {
     class ScriptParser: IDisposable
     {
+
+        #region constructor
+
         public  ScriptParser(string fileName)
         {
             FileName = fileName;
 
         }
+
+        #endregion
+
+        #region private properties
+
+        private TextReader StreamReader;
+        private string _FileName;
+        private string _FileData;
+
+        #endregion
+
+        #region public properties
 
 
         public bool InMultilineComment { get; protected set; }
@@ -29,9 +45,23 @@ namespace CsQuery.Mvc.ClientScript
 
         public bool InComment { get; protected set; }
 
-        private StreamReader StreamReader;
-        private string _FileName;
+        /// <summary>
+        /// The full text of the file
+        /// </summary>
 
+        public string FileData {get; protected set;}
+
+        /// <summary>
+        /// SHA1 has for the file data
+        /// </summary>
+
+        public string FileHash
+        {
+            get
+            {
+                return GetMD5Hash(FileData);
+            }
+        }
         public string FileName { 
             get {
                 return _FileName;
@@ -49,7 +79,8 @@ namespace CsQuery.Mvc.ClientScript
                 }
 
                 _FileName = fileName;
-                StreamReader = new StreamReader(fileName);
+                FileData = File.ReadAllText(fileName);
+                StreamReader = new StringReader(FileData);
             }
         }
 
@@ -62,6 +93,10 @@ namespace CsQuery.Mvc.ClientScript
         /// </value>
 
         public bool AnyCodeYet { get; protected set; }
+
+        #endregion
+
+        #region public methods
 
         /// <summary>
         /// Reads the next line from the file, stripping out comment markers (instead, setting the "InComment" property)
@@ -141,9 +176,31 @@ namespace CsQuery.Mvc.ClientScript
             return line;
         }
 
+        #endregion
+
+        #region private methods
+
+        private string GetMD5Hash(string input)
+        {
+            // step 1, calculate MD5 hash from input
+            MD5 md5 = System.Security.Cryptography.MD5.Create();
+            byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
+            byte[] hash = md5.ComputeHash(inputBytes);
+
+            // step 2, convert byte array to hex string
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < hash.Length; i++)
+            {
+                sb.Append(hash[i].ToString("x2"));
+            }
+            return sb.ToString();
+        }
+
         void IDisposable.Dispose()
         {
             StreamReader.Dispose();
         }
+
+        #endregion
     }
 }

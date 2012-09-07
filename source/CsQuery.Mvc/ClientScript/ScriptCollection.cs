@@ -332,9 +332,12 @@ namespace CsQuery.Mvc.ClientScript
                         }
                     }
 
+                    scriptRef.ScriptHash = parser.FileHash;
+                    scriptRef.NoCombine = options.Contains("nocombine");
+
                 }
 
-                scriptRef.NoCombine = options.Contains("nocombine");
+                
             }
 
             if (!NoCache)
@@ -385,21 +388,30 @@ namespace CsQuery.Mvc.ClientScript
                     }
 
                     depRef = GetScriptRef(dep.Name, virtualPath);
+                    
+                    
                 }
-                // always update the path of the dependency to what we got from the cache -- it might get used.
-                dep.Path = depRef.Path;
+
+                // When we resolve a dependency, whether it was created or resolved from the cache, update the
+                // active one with its settings, except for NoCombine which should only be updated when it's
+                // true for the resolved version. That is, we want to use the most conservative NoCombine so we
+                // don't combine if the script is included with that setting, or the script itself has that
+                // setting. If we just returned the ref we got from the cache, it would have incorrect
+                // NoCombine settings, and we don't want to alter the cached settings. 
+
+                dep.UpdateFrom(depRef);
+                if (depRef.NoCombine)
+                {
+                    dep.NoCombine = true;
+                }
 
                 foreach (var innerDep in GetDependencies(depRef))
                 {
                     yield return innerDep;
                 }
 
-                // when returning the parent script, if NoCombine is not set on the cached version, then return the parent one instead,
-                // since it may have its own nocombine setting.
 
-                yield return depRef.NoCombine ?
-                    depRef :
-                    dep;
+                yield return dep;
             }
             
             

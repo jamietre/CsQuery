@@ -35,7 +35,7 @@ namespace CsQuery.Mvc.Tests
 
             var bundleUrl = scripts[0]["src"];
             
-            string startsWith = "/cq_";
+            string startsWith = "/cqbundle";
             Assert.IsTrue(bundleUrl.StartsWith(startsWith));
 
             // ensure it has a valid "v=" string
@@ -49,7 +49,7 @@ namespace CsQuery.Mvc.Tests
         [TestMethod]
         public void BundlingDetails() 
         {
-            var bundleScripts = Doc["script[src^=/cq_]"];
+            var bundleScripts = Doc["script[src^=/cqbundle]"];
             Assert.AreEqual(1, bundleScripts.Length);
             
             var bundleUrl = bundleScripts.Attr("src");
