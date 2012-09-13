@@ -6,12 +6,22 @@ using System.Text;
 namespace CsQuery.Engine.PseudoClassSelectors
 {
     /// <summary>
-    /// Test whether an element is appears at the specified position with the list.
+    /// Test whether an element appears at the specified position with the list.
     /// </summary>
 
     public class Eq : Indexed
     {
-    
+        /// <summary>
+        /// Filter a sequence of elements, returning only the element at the specified position
+        /// </summary>
+        ///
+        /// <param name="selection">
+        /// A sequence of elements
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence containing one or zero elements
+        /// </returns>
 
         public override IEnumerable<IDomObject> Filter(IEnumerable<IDomObject> selection)
         {

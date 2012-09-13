@@ -12,6 +12,18 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
     public class Empty : PseudoSelectorFilter
     {
+        /// <summary>
+        /// Test whether the element is empty
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it has no non-whitespace children, false if not
+        /// </returns>
+
         public override bool Matches(IDomObject element)
         {
             // try to optimize this by checking for the least labor-intensive things first

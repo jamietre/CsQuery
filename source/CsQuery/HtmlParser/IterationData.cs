@@ -135,7 +135,13 @@ namespace CsQuery.HtmlParser
         public bool FindNextTag(char[] html)
         {
             Pos = html.CharIndexOf('<', Pos);
-            if (Pos < 0)
+
+            // only consider text to be HTML if a non-whitespace character follows a caret
+            if (Pos < 0 || 
+                (Pos>0 && 
+                    (Pos < html.Length && CharacterData.IsType(html[Pos+1],CharacterType.Whitespace) ||
+                    (Pos==html.Length-1))
+                ))
             {
                 // done - no new tags found
 
@@ -348,7 +354,7 @@ namespace CsQuery.HtmlParser
 
                         if (c == ' ')
                         {
-                            Pos++;
+                            return string.Empty;
                         }
                         else
                         {

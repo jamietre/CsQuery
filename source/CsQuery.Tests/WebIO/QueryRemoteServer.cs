@@ -43,12 +43,13 @@ namespace CsQuery.Tests._WebIO
             CQ.CreateFromUrlAsync("http://www.microsoft.com/en/us/default.aspx?redir=true",1, FinishRequest);
             Debug.WriteLine("Started Async Request 1 @" + DateTime.Now);
             AsyncStep |= 1;
+            
             CQ.CreateFromUrlAsync("http://www.cnn.com/", 2,FinishRequest);
             Debug.WriteLine("Started Async Request 2 @" + DateTime.Now);
             AsyncStep |= 2;
 
-            // Time out after 10 seconds
-            CQ.WaitForAsyncEvents(10000);
+            // Time out after 15 seconds
+            CQ.WaitForAsyncEvents(15000);
             AsyncStep |=4;
 
             Debug.WriteLine("Finished Test @" + DateTime.Now);

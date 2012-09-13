@@ -248,9 +248,11 @@ namespace CsQuery.HtmlParser
                                 int tagStartPos = current.Pos;
                                 
                                 string newTag=current.GetTagOpener(Html);
-                                
+
                                 if (newTag == String.Empty)
                                 {
+                            
+                            
                                     // It's a tag closer. Make sure it's the right one.
                                     current.Pos = tagStartPos + 1;
                                     ushort closeTagId = HtmlData.Tokenize(current.GetCloseTag(Html));

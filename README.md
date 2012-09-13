@@ -134,37 +134,49 @@ jQuery extensions:
 
 ##### Creating a new DOM
 
-*Create from a string of HTML*
 
-    var dom = CQ.Create(htmlString);
+Starting with version 1.1.2, there are three different methods for creating content. This reflects changes in the HTML parser to comply with [HTML5 specifications for handling optional tags](http://dev.w3.org/html5/spec/single-page.html#optional-tags). The difference between each method has to do with optional tag handling.
 
-Starting with version 1.1.2, there are two more methods for creating content. This reflects changes in the HTML parser to comply with [HTML5 specifications for handling optional tags](http://dev.w3.org/html5/spec/single-page.html#optional-tags). 
+Each of these methods has overloads for `string`, `char[]`, and `Stream` inputs. 
 
-The HTML and BODY tags are optional. If you load an HTML fragment in a browser, you'll notice when you look at the markup it its debugger, they have been created. CsQuery now does this, too. This ensures that selectors will return exactly the same results 
+*Create from memory *
 
-    CQ.Create(..)           // Create a content block
+    var dom = CQ.Create(..);   // Create content
 
-This method is meant to be used for complete HTML blocks but not documents, for example, a piece of content retrieved from a CMS that will be embedded in another document. Using this method, missing tags will be created according to the HTML5 spec EXCEPT for the `html` and `body` tags. Additionally, stranded text will be wrapped in `span` tags making it safe to insert into nodes that cannot have text directly as children.
+This is the most general-purpose method. It is meant to be used for complete HTML blocks or documents. Using this method, missing tags will be created according to the HTML5 spec EXCEPT for the `html` and `body` tags. That is, this method does *not* assume that the content is a complete document.  Additionally, orphaned text (any text appearing outside of a valid HTML tag) will be wrapped in `span` tags making it safe to insert into nodes that cannot have text directly as children.
 
-This method is the most general in purpose. It will work fine for fragments too -- though it may insert TBODY tags in tables. It will work fine for complete documents -- but it won't fill in missing HTML/BODY tags. It will basically not assume any particular purpose for the HTML, but still try to return complete markup.
-   
+This method will work fine for fragments -- and it will insert optional tags such as TBODY tags in tables. It will also work fine for complete documents -- but it won't fill in missing HTML/BODY tags. It will basically not assume any particular purpose for the HTML, but still try to return valid markup.
+
+* Create a document *
+
     CQ.CreateDocument(..)   // Create a document. 
 
-This method creates a complete HTML document. If the `html`, `body` or `head` tags are missing, they will be created. Stranded text nodes (e.g. outside of `body`) will be moved inside the body.
+This method assumes that the content is a complete HTML document and not a fragment. In addition to the handling of optional tags provided by the `Create` method, this method will ensure that any content is a complete HTML document. If the `html`, `body` or `head` tags are missing, they will be created. Stranded text nodes (e.g. outside of `body`) will be moved inside the body. 
+
+* Create a fragment *
     
     CQ.CreateFragment(..)   // Create a fragment. 
 
-This method interprets the content as a true fragment that you will use for any purpose. No attempt will be made to identify and create missing opening tags. Missing close tag rules still apply, though, since it's impossible to create a CQ document that is "incomplete." This method is the default handling for creating HTML from a selector, e.g. 
+This method interprets the content as a true fragment that you may use for any purpose. No attempt will be made to identify and create missing opening tags such as `tbody` -- the actual markup will be interpreted exactly as presented. Missing close tag rules still apply, though, since it's impossible to create a CQ document that has incomplete nodes. 
+
+When creating HTML from a selector using jQuery syntax, this is the method that will be used, e.g.
 
     var fragment = someCsQueryDocument.Select["<div /">];
 
+* Create from a file *
 
-*Load synchronously* 
+There are methods to create a document or just content from a file directly:
+
+    CQ.CreateFromFile(..)
+    CQ.CreateDocumentFromFile(..) 
+    
+
+*Load synchronously from a URL* 
 
     var dom = CQ.CreateFromUrl("http://www.jquery.com");
     
 
-*Load asynchronously (non-blocking)*
+*Load asynchronously (non-blocking) from a URL*
 
 CsQuery (as of 1.0 Beta 2) implements a basic Promise API for asynchronous callbacks. This can be used to create convenient constructs for managing asynchronous requests; see the "Promises" section below for more details.
    

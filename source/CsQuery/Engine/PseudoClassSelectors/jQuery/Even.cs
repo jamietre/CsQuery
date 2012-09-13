@@ -11,6 +11,18 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
     public class Even : PseudoSelector, IPseudoSelectorFilter
     {
+        /// <summary>
+        /// Filter a sequence of elements, returning only the elements at even-numbered ordinal positions
+        /// </summary>
+        ///
+        /// <param name="selection">
+        /// The sequence to filter
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence of elements
+        /// </returns>
+
         public IEnumerable<IDomObject> Filter(IEnumerable<IDomObject> selection)
         {
             int index = 0;
@@ -24,10 +36,5 @@ namespace CsQuery.Engine.PseudoClassSelectors
             }
         }
 
-
-        public bool Matches(IDomObject element)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -151,7 +151,11 @@ namespace CsQuery.Implementation
                 throw new InvalidOperationException("Cannot set parent for a DOM root node.");
             }
         }
-        
+
+        /// <summary>
+        /// The full path to this node. For Document nodes, this is always empty.
+        /// </summary>
+
         public override string Path
         {
             get
@@ -163,6 +167,7 @@ namespace CsQuery.Implementation
         /// <summary>
         /// The depth in the node tree at which this node occurs. This is always 0 for the DomDocument.
         /// </summary>
+
         public override int Depth
         {
             get
@@ -171,19 +176,31 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// A reference to the source HTML from which this document was created. The parsing engine does
+        /// not copy substrings from the original source to populate text nodes;
+        /// instead, it tracks the position &amp; length of each text node within the original document.
+        /// This improves performance during parsing.
+        /// </summary>
+
         public char[] SourceHtml
         {
             get;
             protected set;
         }
 
-        // Store for all text node content (to avoid overhead of allocation when cloning large numbers of objects)
-        //public List<string> TextContent = new List<string>();
+        /// <summary>
+        /// Gets or sets options for controlling the DOM rendering from the bound document.
+        /// </summary>
 
-        public DomRenderingOptions DomRenderingOptions
+        public new DomRenderingOptions DomRenderingOptions
         {
             get; set;
         }
+
+        /// <summary>
+        /// The DOM for this object. For Document objects, this returns the same object.
+        /// </summary>
 
         public override IDomDocument Document
         {
@@ -193,6 +210,10 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Gets the type of the node. For Document objects, this is always NodeType.DOCUMENT_NODE
+        /// </summary>
+
         public override NodeType NodeType
         {
             get
@@ -200,6 +221,10 @@ namespace CsQuery.Implementation
                 return NodeType.DOCUMENT_NODE;
             }
         }
+
+        /// <summary>
+        /// Gets the DOCUMENT_TYPE node for this document, or null if none exists.
+        /// </summary>
 
         public IDomDocumentType DocTypeNode
         {
@@ -217,8 +242,9 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Gets the DocType for this node. This can be changed through the DomDocument
+        /// Gets or sets the DocType for this node. This can be changed through the DomDocument.
         /// </summary>
+
         public DocType DocType
         {
             get
@@ -259,10 +285,19 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether HTML is allowed as a child of this element. For Document
+        /// nodes, this is always true.
+        /// </summary>
+
         public override bool InnerHtmlAllowed
         {
             get { return true; }
         }
+
+        /// <summary>
+        /// Any user data to be persisted with this DOM.
+        /// </summary>
 
         public IDictionary<string, object> Data
         {
