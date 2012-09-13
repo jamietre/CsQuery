@@ -139,7 +139,7 @@ Starting with version 1.1.2, there are three different methods for creating cont
 
 Each of these methods has overloads for `string`, `char[]`, and `Stream` inputs. 
 
-*Create from memory *
+#####Basic Method
 
     var dom = CQ.Create(..);   // Create content
 
@@ -147,13 +147,13 @@ This is the most general-purpose method. It is meant to be used for complete HTM
 
 This method will work fine for fragments -- and it will insert optional tags such as TBODY tags in tables. It will also work fine for complete documents -- but it won't fill in missing HTML/BODY tags. It will basically not assume any particular purpose for the HTML, but still try to return valid markup.
 
-* Create a document *
+#####Create a document
 
     CQ.CreateDocument(..)   // Create a document. 
 
 This method assumes that the content is a complete HTML document and not a fragment. In addition to the handling of optional tags provided by the `Create` method, this method will ensure that any content is a complete HTML document. If the `html`, `body` or `head` tags are missing, they will be created. Stranded text nodes (e.g. outside of `body`) will be moved inside the body. 
 
-* Create a fragment *
+#####Create a fragment
     
     CQ.CreateFragment(..)   // Create a fragment. 
 
@@ -163,7 +163,7 @@ When creating HTML from a selector using jQuery syntax, this is the method that 
 
     var fragment = someCsQueryDocument.Select["<div /">];
 
-* Create from a file *
+#####Create from a file
 
 There are methods to create a document or just content from a file directly:
 
@@ -171,12 +171,12 @@ There are methods to create a document or just content from a file directly:
     CQ.CreateDocumentFromFile(..) 
     
 
-*Load synchronously from a URL* 
+#####Create synchronously from a URL
 
     var dom = CQ.CreateFromUrl("http://www.jquery.com");
     
 
-*Load asynchronously (non-blocking) from a URL*
+#####Create asynchronously (non-blocking) from a URL
 
 CsQuery (as of 1.0 Beta 2) implements a basic Promise API for asynchronous callbacks. This can be used to create convenient constructs for managing asynchronous requests; see the "Promises" section below for more details.
    
