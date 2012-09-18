@@ -32,9 +32,16 @@ namespace CsQuery.Tests.Csharp.HtmlParser
             html = "a < b";
             dom = CQ.Create(html);
             Assert.AreEqual("a < b", dom.Render(DomRenderingOptions.HtmlEncodingNone));
-
-
         }
 
+        [Test,TestMethod]
+        public void TextOnly2()
+        {
+            string html = "a < bsdf <>";
+            var cs = CsQuery.CQ.Create(html);
+
+            Assert.AreEqual("a &lt; bsdf &lt;&gt;", cs.Render());
+            Assert.AreEqual("a &lt; bsdf &lt;&gt;", cs.Render(CsQuery.DomRenderingOptions.HtmlEncodingMinimum));
+        }
     }
 }

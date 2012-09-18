@@ -57,13 +57,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\drintl-trunk\packages\CsQuery.1.2.1.60\lib\net40\CsQuery.dll</HintPath>
     </Reference>
-    <Reference Include="IQMap, Version=1.0.1.28, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="IQMap, Version=1.0.1.31, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\drintl-trunk\packages\IQMap.1.0.1.28\lib\net40\IQMap.dll</HintPath>
+      <HintPath>..\..\..\..\drintl-trunk\packages\IQMap.1.0.1.31\lib\net40\IQMap.dll</HintPath>
     </Reference>
-    <Reference Include="IQObjectMapper, Version=1.0.5.26, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="IQObjectMapper, Version=1.0.5.30, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\drintl-trunk\packages\IQObjectMapper.1.0.5.26\lib\net40\IQObjectMapper.dll</HintPath>
+      <HintPath>..\..\..\..\drintl-trunk\packages\IQObjectMapper.1.0.5.30\lib\net40\IQObjectMapper.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>

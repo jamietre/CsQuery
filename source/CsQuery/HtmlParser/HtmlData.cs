@@ -1404,7 +1404,7 @@ namespace CsQuery.HtmlParser
                 if (CharacterData.IsType(c, CharacterType.HtmlMustBeEncoded))
                 {
                     if (lastPos<pos) {
-                        sb.Append(html.Substring(lastPos,pos));
+                        sb.Append(html.Substring(lastPos,pos-lastPos));
                     }
                     sb.Append(HtmlEncode(c));
                     lastPos = pos+1;

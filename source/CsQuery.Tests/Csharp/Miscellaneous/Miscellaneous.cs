@@ -16,12 +16,13 @@ using CsQuery.Utility;
 
 namespace CsQuery.Tests.Csharp.Miscellaneous
 {
-    
+
     [TestFixture, TestClass,Description("Misc. tests; from support and bug reports")]
     public class Miscellaneous: CsQueryTest
     {
+
         /// <summary>
-        /// REsolve a bug in nth-last type operations
+        /// Resolve a bug in nth-last type operations
         /// </summary>
         [Test, TestMethod]
         public void BigDomProblems()
