@@ -18,6 +18,7 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 *Other Changes*
 
 - Add new `DomRenderingOptions` to control encoding of text nodes per [Issue #38](https://github.com/jamietre/CsQuery/issues/38): `HtmlEncodingNone` does not HTMLencode textat all; `HtmlEncodingMinimum` encodes only carets and ampersands.
+- Add `CQ.HasAttr` method (CsQuery extension)
 
 ####Version 1.2.1
 

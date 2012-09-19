@@ -19,6 +19,11 @@ namespace CsQuery.Tests._WebIO
     [TestFixture, TestClass]
     public class _WebIO_QueryRemoteServer : CsQueryTest
     {
+        private KeyValuePair<string,string>[] urls = new KeyValuePair<string,string>[] {
+            new KeyValuePair<string,string>("https://github.com/jamietre/csquery","img[alt='GitHub']"),
+            new KeyValuePair<string,string>("http://www.cnn.com/","#cnn_hdr")
+        };
+        
         public override void FixtureSetUp()
         {
             base.FixtureSetUp();
@@ -28,23 +33,24 @@ namespace CsQuery.Tests._WebIO
         [Test,TestMethod]
         public void GetHtml()
         {
-            
-            Dom = CQ.CreateFromUrl("http://www.microsoft.com/en/us/default.aspx?redir=true");
+            var url = urls[0];
+
+            Dom = CQ.CreateFromUrl(url.Key);
 
             Assert.IsTrue(Dom.Document != null, "Dom was created");
-            var csq = Dom.Find(".hpMst_Stage");
-            Assert.IsTrue(csq.Length == 1, "I found an expected content container - if MS changed their web site this could fail.");
+            var csq = Dom.Find(url.Value);
+            Assert.IsTrue(csq.Length>0, "I found an expected content container - if Github changed their web site this could fail.");
         }
 
         private static int AsyncStep = 0;
         [Test, TestMethod]
         public void GetHtmlAsync()
         {
-            CQ.CreateFromUrlAsync("http://www.microsoft.com/en/us/default.aspx?redir=true",1, FinishRequest);
+            CQ.CreateFromUrlAsync(urls[0].Key, 1, FinishRequest);
             Debug.WriteLine("Started Async Request 1 @" + DateTime.Now);
             AsyncStep |= 1;
             
-            CQ.CreateFromUrlAsync("http://www.cnn.com/", 2,FinishRequest);
+            CQ.CreateFromUrlAsync(urls[1].Key, 2,FinishRequest);
             Debug.WriteLine("Started Async Request 2 @" + DateTime.Now);
             AsyncStep |= 2;
 
@@ -64,15 +70,15 @@ namespace CsQuery.Tests._WebIO
             bool p1resolved = false;
             bool p2resolved = false;
 
-            var promise1 = CQ.CreateFromUrlAsync("http://www.microsoft.com/en/us/default.aspx?redir=true")
+            var promise1 = CQ.CreateFromUrlAsync(urls[0].Key)
                 .Then(new Action<ICsqWebResponse>((resp)  => {
-                    Assert.IsTrue(resp.Dom.Find(".hpMst_Stage").Length == 1, "I found an expected content container - if MS changed their web site this could fail.");
+                    Assert.IsTrue(resp.Dom.Find(urls[0].Value).Length >0, "I found an expected content container - if MS changed their web site this could fail.");
                     p1resolved = true;
                 }));
 
-            var promise2 = CQ.CreateFromUrlAsync("http://www.cnn.com/").Then(new Action<ICsqWebResponse>((resp) =>
+            var promise2 = CQ.CreateFromUrlAsync(urls[1].Key).Then(new Action<ICsqWebResponse>((resp) =>
             {
-                Assert.IsTrue(resp.Dom.Find("#cnn_hdr").Length == 1, "I found an expected content container - if CNN changed their web site this could fail.");
+                Assert.IsTrue(resp.Dom.Find(urls[1].Value).Length >0, "I found an expected content container - if CNN changed their web site this could fail.");
                 p2resolved = true;
             }));
 
@@ -99,10 +105,10 @@ namespace CsQuery.Tests._WebIO
             bool p1resolved = false;
             bool p2rejected = false;
 
-            var promise1 = CQ.CreateFromUrlAsync("http://www.microsoft.com/en/us/default.aspx?redir=true")
+            var promise1 = CQ.CreateFromUrlAsync(urls[0].Key)
                 .Then(resp =>
                 {
-                    Assert.IsTrue(resp.Dom.Find(".hpMst_Stage").Length == 1, "I found an expected content container - if MS changed their web site this could fail.");
+                    Assert.IsTrue(resp.Dom.Find(urls[0].Value).Length > 0, "I found an expected content container - if MS changed their web site this could fail.");
                     p1resolved = true;
                 });
 
@@ -145,13 +151,13 @@ namespace CsQuery.Tests._WebIO
             if ((int)response.Id == 1)
             {
                 AsyncStep |= 8;
-                Assert.IsTrue(csq.Find(".hpMst_Stage").Length == 1, "I found an expected content container - if MS changed their web site this could fail.");
+                Assert.IsTrue(csq.Find(urls[0].Value).Length>0, "I found an expected content container - if Github changed their web site this could fail.");
 
             }
             if ((int)response.Id == 2)
             {
                 AsyncStep |= 16;
-                Assert.IsTrue(csq.Find("#cnn_hdr").Length == 1, "I found an expected content container - if CNN changed their web site this could fail.");
+                Assert.IsTrue(csq.Find(urls[1].Value).Length == 1, "I found an expected content container - if CNN changed their web site this could fail.");
             }
         
             Debug.WriteLine(String.Format("Received Async Response {0} @{1}", response.Id.ToString(),DateTime.Now));

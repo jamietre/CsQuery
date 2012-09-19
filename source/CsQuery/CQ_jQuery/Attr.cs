@@ -24,7 +24,7 @@ namespace CsQuery
         /// </param>
         ///
         /// <returns>
-        /// A string of the attribute value.
+        /// A string of the attribute value, or null if the attribute does not exist.
         /// </returns>
         ///
         /// <url>
@@ -33,9 +33,10 @@ namespace CsQuery
 
         public string Attr(string name)
         {
-            name = name.ToLower();
-            if (Length > 0)
+            if (Length > 0 && !string.IsNullOrEmpty(name))
             {
+                name = name.ToLower();
+
                 string value;
                 var el = this[0];
                 switch (name)
@@ -94,7 +95,8 @@ namespace CsQuery
         /// </param>
         ///
         /// <returns>
-        /// A strongly-typed value representing the attribute.
+        /// A strongly-typed value representing the attribute, or default(T) if the attribute does not
+        /// exist.
         /// </returns>
 
         public T Attr<T>(string name)
