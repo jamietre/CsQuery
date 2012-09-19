@@ -887,5 +887,10 @@
 		  description="Specifies whether the animation is running or paused"
 		  syntax="One of the animation-play-state values" enum="running paused"/>
 
+    <!-- Paged Media Module w3.org/TR/css3-page -->
+    <cssmd:property-def _locID="page" _locAttrData="description,syntax" type="string"
+                  description="Specifies a particular type of page where an element should be displayed"
+                  syntax="page identifier" />
+
   </cssmd:property-set>
 </cssmd:cssmd>
