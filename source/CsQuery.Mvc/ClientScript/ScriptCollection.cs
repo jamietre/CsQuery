@@ -51,11 +51,6 @@ namespace CsQuery.Mvc.ClientScript
         private Func<string, string> MapPath;
 
         /// <summary>
-        /// The unique set of dependencies (hashset used to prevent duplication).
-        /// </summary>
-
-
-        /// <summary>
         /// The file paths at the top level (the members of this collection)
         /// </summary>
 
@@ -473,35 +468,91 @@ namespace CsQuery.Mvc.ClientScript
             Scripts.Add(item);
         }
 
+        /// <summary>
+        /// Clears this object to its blank/initial state.
+        /// </summary>
+
         public void Clear()
         {
             Scripts.Clear();
         }
+
+        /// <summary>
+        /// Test whether the item is present in the collection
+        /// </summary>
+        ///
+        /// <param name="item">
+        /// The ScriptRef to test for containment.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the object is in this collection, false if not.
+        /// </returns>
 
         public bool Contains(ScriptRef item)
         {
             return Scripts.Contains(item);
         }
 
+        /// <summary>
+        /// Copies the collection to an array
+        /// </summary>
+        ///
+        /// <param name="array">
+        /// The array.
+        /// </param>
+        /// <param name="arrayIndex">
+        /// Zero-based index of the array.
+        /// </param>
+
         public void CopyTo(ScriptRef[] array, int arrayIndex)
         {
             Scripts.CopyTo(array, arrayIndex);
         }
+
+        /// <summary>
+        /// Gets the number of items in the ScriptCollection 
+        /// </summary>
 
         public int Count
         {
             get { return Scripts.Count; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this object is read only; a ScriptCollection is never read
+        /// only.
+        /// </summary>
+
         public bool IsReadOnly
         {
             get { return false; }
         }
 
+        /// <summary>
+        /// Removes the item from the script collection
+        /// </summary>
+        ///
+        /// <param name="item">
+        /// The item to remove.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the item was removed, false if it didn't exist
+        /// </returns>
+
         public bool Remove(ScriptRef item)
         {
             return Scripts.Remove(item);
         }
+
+        /// <summary>
+        /// Gets the enumerator.
+        /// </summary>
+        ///
+        /// <returns>
+        /// The enumerator.
+        /// </returns>
 
         public IEnumerator<ScriptRef> GetEnumerator()
         {

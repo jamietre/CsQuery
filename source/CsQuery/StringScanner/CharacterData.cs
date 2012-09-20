@@ -63,6 +63,8 @@ namespace CsQuery.StringScanner
 
             setBit(charsHtmlMustBeEncoded, (uint)CharacterType.HtmlMustBeEncoded);
 
+            setBit(charsHtmlSpace + ">", (uint)CharacterType.HtmlAttributeValueTerminator);
+
             SetAlphaISO10646((uint)CharacterType.AlphaISO10646);
         }
 

@@ -470,14 +470,35 @@ namespace CsQuery.HtmlParser
         }
 
         /// <summary>
-        /// Parse an HTML attribute construct: {x=["|']y["|]]} or just {x}) and add the attribute to the
+        /// Parse an HTML attribute construct: {x=["|']y["|']]} or just {x}) and add the attribute to the
         /// current element if successful. The placeholder should be tag opening construct but after the
         /// tag name. Upon exit it will be positioned after last character of attribute, or  positioned
         /// ON closing caret of tag opener if failed.
         /// </summary>
         ///
+        /// <remarks>
+        /// An unquoted attribute value is specified by providing the following parts in exactly the
+        /// following order:
+        /// 
+        /// - an attribute name
+        /// - zero or more space characters
+        /// - a single "=" character
+        /// - zero or more space characters
+        /// - an attribute value
+        /// 
+        /// Attribute value for unquoted:
+        /// 
+        /// - must not contain any literal space characters
+        /// - must not contain any """, "'", "=", "&gt;", "&lt;", or "`", characters
+        /// - must not be the empty string
+        /// 
+        /// In practice: Chrome allows all these characters embedded inside an unquoted value except &gt;
+        /// 
+        /// http://www.w3.org/TR/html-markup/syntax.html#attr-value-unquoted.
+        /// </remarks>
+        ///
         /// <param name="html">
-        /// The HTML
+        /// The HTML.
         /// </param>
         ///
         /// <returns>
@@ -555,7 +576,6 @@ namespace CsQuery.HtmlParser
                         {
                             switch (c)
                             {
-                                case '\\':
                                 case '>':
                                     finished = true;
                                     break;
@@ -577,7 +597,7 @@ namespace CsQuery.HtmlParser
                         break;
                     case 4: // parse the attribute until whitespace or closing quote
                         if ((isQuoted && c == quoteChar) ||
-                            (!isQuoted && CharacterData.IsType(c, CharacterType.HtmlTagOpenerEnd)))
+                            (!isQuoted && CharacterData.IsType(c, CharacterType.HtmlAttributeValueTerminator)))
                         {
                             aValue = html.SubstringBetween(valStart, Pos);
                             if (isQuoted)

@@ -7,10 +7,17 @@ using System.IO;
 
 namespace CsQuery.Mvc.ClientScript
 {
-
+    /// <summary>
+    /// A set of RegexPatterns used to parse JavaScript files
+    /// </summary>
     public static class Patterns
     {
         private static Regex RegexStartComment = new Regex(@"^\s*/\*(?<comment>.*)$");
+
+        /// <summary>
+        /// The regular expression end comment.
+        /// </summary>
+
         private static Regex RegexEndComment = new Regex(@"^(?<comment>.*)\*/\s*$");
         private static Regex RegexWhiteSpace = new Regex(@"^\s*$");
 

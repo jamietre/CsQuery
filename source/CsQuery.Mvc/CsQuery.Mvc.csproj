@@ -50,21 +50,6 @@
     <DocumentationFile>bin\Release\CsQuery.Mvc.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Antlr3.Runtime">
-      <HintPath>..\packages\WebGrease.1.1.0\lib\Antlr3.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="CsQuery, Version=1.2.1.60, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\drintl-trunk\packages\CsQuery.1.2.1.60\lib\net40\CsQuery.dll</HintPath>
-    </Reference>
-    <Reference Include="IQMap, Version=1.0.1.31, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\drintl-trunk\packages\IQMap.1.0.1.31\lib\net40\IQMap.dll</HintPath>
-    </Reference>
-    <Reference Include="IQObjectMapper, Version=1.0.5.30, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\drintl-trunk\packages\IQObjectMapper.1.0.5.30\lib\net40\IQObjectMapper.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
@@ -82,9 +67,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="TemplateTables">
-      <HintPath>..\..\..\..\drintl-trunk\packages\TemplateTables.1.0.2.16\lib\net40\TemplateTables.dll</HintPath>
-    </Reference>
     <Reference Include="WebGrease">
       <HintPath>..\packages\WebGrease.1.1.0\lib\WebGrease.dll</HintPath>
     </Reference>
@@ -136,10 +118,16 @@
   <ItemGroup>
     <Content Include="_TODO\Wrapping ObjectMapper.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CsQuery\CsQuery.csproj">
+      <Project>{c38dffe9-321b-4941-b031-29d718ab5c31}</Project>
+      <Name>CsQuery</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

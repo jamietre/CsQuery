@@ -25,7 +25,6 @@ namespace CsQuery.Mvc.ClientScript
 
         private TextReader StreamReader;
         private string _FileName;
-        private string _FileData;
 
         #endregion
 

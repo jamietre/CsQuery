@@ -22,6 +22,11 @@ namespace CsQuery.Mvc.ClientScript
 
         }
 
+        /// <summary>
+        /// A set of file extensions that are allowed for included files. These should not include the
+        /// dot, only the extension.
+        /// </summary>
+
         public static HashSet<string> AllowedExtensions { get; private set; }
 
         #region private properties
@@ -32,10 +37,33 @@ namespace CsQuery.Mvc.ClientScript
 
         #region public properties
 
+        /// <summary>
+        /// Return the ordinal index of the item
+        /// </summary>
+        ///
+        /// <param name="item">
+        /// The item.
+        /// </param>
+        ///
+        /// <returns>
+        /// An integer index
+        /// </returns>
+
         public int IndexOf(string item)
         {
             return InnerList.IndexOf(NormalizePath(item,true));
         }
+
+        /// <summary>
+        /// Inserts the item into the PathList at the specified position
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// Zero-based index of the.
+        /// </param>
+        /// <param name="item">
+        /// The item.
+        /// </param>
 
         public void Insert(int index, string item)
         {
@@ -46,10 +74,30 @@ namespace CsQuery.Mvc.ClientScript
             }
         }
 
+        /// <summary>
+        /// Removes at the item found at the specified index
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// Zero-based index of the.
+        /// </param>
+
         public void RemoveAt(int index)
         {
             InnerList.RemoveAt(index);
         }
+
+        /// <summary>
+        /// Indexer to get or set items within this collection using array index syntax.
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// Zero-based index of the entry to access.
+        /// </param>
+        ///
+        /// <returns>
+        /// The indexed item.
+        /// </returns>
 
         public string this[int index]
         {
@@ -63,6 +111,14 @@ namespace CsQuery.Mvc.ClientScript
             }
         }
 
+        /// <summary>
+        /// Adds the item to the PathList.
+        /// </summary>
+        ///
+        /// <param name="item">
+        /// The item.
+        /// </param>
+
         public void Add(string item)
         {
             string norm = NormalizePath(item,true);
@@ -72,35 +128,90 @@ namespace CsQuery.Mvc.ClientScript
             }
         }
 
+        /// <summary>
+        /// Clears this object to its blank/initial state.
+        /// </summary>
+
         public void Clear()
         {
             InnerList.Clear();
         }
+
+        /// <summary>
+        /// Test if the item is found in the PathList 
+        /// </summary>
+        ///
+        /// <param name="item">
+        /// The item.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the object is in this collection, false if not.
+        /// </returns>
 
         public bool Contains(string item)
         {
             return InnerList.Contains(NormalizePath(item,true));
         }
 
+        /// <summary>
+        /// Copies the contents of the PathList collection to an array
+        /// </summary>
+        ///
+        /// <param name="array">
+        /// The array.
+        /// </param>
+        /// <param name="arrayIndex">
+        /// Zero-based index of the array.
+        /// </param>
+
         public void CopyTo(string[] array, int arrayIndex)
         {
             InnerList.CopyTo(array, arrayIndex);
         }
+
+        /// <summary>
+        /// Gets the number of items in the PathList collection
+        /// </summary>
 
         public int Count
         {
             get { return InnerList.Count; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this object is read only.
+        /// </summary>
+
         public bool IsReadOnly
         {
             get { return false; }
         }
 
+        /// <summary>
+        /// Removes the given item from the PathList collection
+        /// </summary>
+        ///
+        /// <param name="item">
+        /// The item.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
         public bool Remove(string item)
         {
             return InnerList.Remove(NormalizePath(item,true));
         }
+
+        /// <summary>
+        /// Gets the enumerator.
+        /// </summary>
+        ///
+        /// <returns>
+        /// The enumerator.
+        /// </returns>
 
         public IEnumerator<string> GetEnumerator()
         {

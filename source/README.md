@@ -14,11 +14,13 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 - Enumerate the root elements to bind the selection set for documents created from HTML. Otherwise changes in the document will affect the default selection set.
 - [Issue #39](https://github.com/jamietre/CsQuery/issues/39): Incorrect parsing of orphaned open carets
 - Wrap Create methods using streams with Using to ensure they are disposed properly
+- [Issue #41](https://github.com/jamietre/CsQuery/issues/41) - Incorrect handling of "/" character in unquoted attribute values
 
 *Other Changes*
 
 - Add new `DomRenderingOptions` to control encoding of text nodes per [Issue #38](https://github.com/jamietre/CsQuery/issues/38): `HtmlEncodingNone` does not HTMLencode textat all; `HtmlEncodingMinimum` encodes only carets and ampersands.
 - Add `CQ.HasAttr` method (CsQuery extension)
+- Add CSS descriptor for Paged Media Module per [Pull Request #40](https://github.com/jamietre/CsQuery/pull/40) from @kaleb
 
 ####Version 1.2.1
 
