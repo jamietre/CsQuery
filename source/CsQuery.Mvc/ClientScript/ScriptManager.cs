@@ -190,7 +190,7 @@ namespace CsQuery.Mvc.ClientScript
             // find the first script with dependencies
             
 
-            // Now add scripts directly for depenencies marked as NoCombine.
+            // Now add scripts directly for dependencies marked as NoCombine.
 
             foreach (var item in dependencies.Where(item => item.NoCombine))
             {

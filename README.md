@@ -6,9 +6,9 @@ Release 1.2.1 - 8/21/2012
 
 CsQuery is a jQuery port for .NET 4. It implements all CSS2 & CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) has been ported to C#. 
 
-The project necessarily includes an HTML parser and an object model that represents the browser DOM. The goal of the parser is HTML5 compliance for optional tags and invalid markup handling. As of 1.1.2 it implements the optional tag rules and will generate missing tags.
+The project includes an HTML parser and object model that represents the browser DOM. The goal of the parser is HTML5 compliance for optional tags and invalid markup handling. As of 1.1.2 it implements the optional tag rules and will generate missing tags.
 
-The internal storage mechanism uses a subselect-capable index that can perform multipart selectors on large documents in milliseconds.
+The CSS selector engine fully indexes each document on tag name, id, class, and attribute. The index is subselect-capable, meaning that complex selectors will still be able to take advantage of the index (for any part of the selector that's indexed). [Performance](#performance) of selectors compared to other existing C# HTML parsing libraries is orders of magnitude faster.
 
 
 ### Installation
@@ -23,8 +23,16 @@ The current release is 1.2.1 This is a bugfix release.
 
 If you are updating from version 1.1.x, please note that versions 1.2.x includes a change to the public API which will break code which *directly* instantiates `DomElement` objects. (This has never been recommended and will not affect any code which uses `CQ.Create` or `Document.CreateElement` methods; it only affects creation using `new` to create `DomElement` objects)
 
-See the [release notes for 1.2](http://blog.outsharked.com/2012/08/csquery-12-released.html) or review [all CsQuery release notes.](http://blog.outsharked.com/search/label/csquery-release)
+There are detailed nodes for major releases:
 
+* [Release notes for 1.2](http://blog.outsharked.com/2012/08/csquery-12-released.html) 
+* [All CsQuery release notes](http://blog.outsharked.com/search/label/csquery-release)
+
+You can also review the change log to see more detail about specific changes, or notes on unreleased changes:
+
+* [Complete change log](https://github.com/jamietre/CsQuery/blob/master/source/README.md#source-code)
+
+For more information on the status of CsQuery's compliance with HTML5 spect, see the [HTML5 compliance notes](https://github.com/jamietre/CsQuery/blob/master/source/HTML5.md#html5-compliance)
 
 ### Documentation
 
