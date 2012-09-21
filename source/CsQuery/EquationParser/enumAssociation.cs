@@ -5,12 +5,29 @@ using System.Text;
 
 namespace CsQuery.EquationParser
 {
+    /// <summary>
+    /// Values that represent AssociationType; which determines how to group adjacent operands when
+    /// parsing an equation.
+    /// </summary>
+
     public enum AssociationType
     {
-        Addition= 1,          // lowest level of assocation
-        Multiplicaton =2,     // associate with others in group
-        Power = 3,            // never associate, use adjacent operands
-        Function = 4          // never associate, use parenthesized operands
+        /// <summary>
+        ///  Associate with other Addition operands
+        /// </summary>
+        Addition= 1,          
+        /// <summary>
+        ///  associate with other Multiplcation operands
+        /// </summary>
+        Multiplicaton =2,     
+        /// <summary>
+        /// never associate, associate only directly adjacent operands.
+        /// </summary>
+        Power = 3,           
+        /// <summary>
+        /// never associate, and use parenthesized operands.
+        /// </summary>
+        Function = 4      
 
     }
 }

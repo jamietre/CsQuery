@@ -15,6 +15,22 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
     public class Lang: PseudoSelectorChild
     {
+        /// <summary>
+        /// Test whether an element matches this selector.
+        /// </summary>
+        ///
+        /// <exception cref="NotImplementedException">
+        /// Thrown when the requested operation is unimplemented.
+        /// </exception>
+        ///
+        /// <param name="element">
+        /// The element to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it matches, false if not.
+        /// </returns>
+
         public override bool Matches(IDomObject element)
         {
            

@@ -11,6 +11,18 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
     public class Odd : PseudoSelector, IPseudoSelectorFilter
     {
+        /// <summary>
+        /// Filter the sequence of elements for only those in odd-number ordinal indices
+        /// </summary>
+        ///
+        /// <param name="selection">
+        /// The sequence of elements prior to this filter being applied.
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence of matching elements.
+        /// </returns>
+
         public IEnumerable<IDomObject> Filter(IEnumerable<IDomObject> selection)
         {
             int index = 0;

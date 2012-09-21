@@ -12,6 +12,13 @@ namespace CsQuery.Engine.PseudoClassSelectors
     
     public class Has : PseudoSelector, IPseudoSelectorFilter
     {
+        /// <summary>
+        /// Arguments for the "has" selector.
+        /// </summary>
+        ///
+        /// <value>
+        /// The arguments.
+        /// </value>
 
         public override string Arguments
         {
@@ -22,13 +29,29 @@ namespace CsQuery.Engine.PseudoClassSelectors
             set
             {
                 base.Arguments = value;
-                ChildSelector = new Selector(String.Join(",", Parameters));
+
+                // Parameter count is guaranteed to be 1
+                ChildSelector = new Selector(Parameters[0]);
             }
         }
 
+        /// <summary>
+        /// The child selector
+        /// </summary>
+
         protected Selector ChildSelector;
 
-        //protected HashSet<IDomObject> Cache;
+        /// <summary>
+        /// Return only the elements in the sequence whose children match the ChildSelector
+        /// </summary>
+        ///
+        /// <param name="selection">
+        /// The sequence of elements prior to this filter being applied.
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence of elements
+        /// </returns>
 
         public IEnumerable<IDomObject> Filter(IEnumerable<IDomObject> selection)
         {
@@ -65,7 +88,14 @@ namespace CsQuery.Engine.PseudoClassSelectors
         //        next = next.ParentNode;
         //    }
         //}
-        
+
+        /// <summary>
+        /// The maximum number of parameters that this selector can accept (1)
+        /// </summary>
+        ///
+        /// <value>
+        /// An integer.
+        /// </value>
 
         public override int MaximumParameterCount
         {
@@ -74,6 +104,15 @@ namespace CsQuery.Engine.PseudoClassSelectors
                 return 1;
             }
         }
+
+        /// <summary>
+        /// The minimum number of parameters that this selector requires (1)
+        /// </summary>
+        ///
+        /// <value>
+        /// An integer.
+        /// </value>
+
         public override int MinimumParameterCount
         {
             get

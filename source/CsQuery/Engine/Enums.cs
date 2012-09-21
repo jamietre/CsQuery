@@ -161,36 +161,110 @@ namespace CsQuery.Engine
     /// </summary>
     public enum PseudoClassType
     {
+        /// <summary>
+        /// Matches everything (no filter)
+        /// </summary>
         All = 1,
 
-        // jQuery pseudoclass selectors
-        // 
+        
+        /// <summary>
+        /// Filter for elements at even-numbered ordinal indices.
+        /// </summary>
         Even = 2, 
+        /// <summary>
+        /// Filter for elements at odd-numbered ordinal indices.
+        /// </summary>
         Odd = 3,
+        /// <summary>
+        /// Filter for only the first element in the selection.
+        /// </summary>
         First = 4,
+        /// <summary>
+        /// Filter for only the last element in the selection.
+        /// </summary>
         Last = 5,
+        /// <summary>
+        /// Filter for a specific ordinal index in the sequence.
+        /// </summary>
         IndexEquals = 6,
+        /// <summary>
+        /// Filter for elements appearing before a specific ordinal index.
+        /// </summary>
         IndexLessThan = 7,
+        /// <summary>
+        /// Filter for elements appearing after a specific ordinal index.
+        /// </summary>
         IndexGreaterThan = 8,
+        /// <summary>
+        /// Filter for elements that are parents.
+        /// </summary>
         Parent = 9,
+        /// <summary>
+        /// Filter for elements that are visible.
+        /// </summary>
         Visible = 10,
+        /// <summary>
+        /// Filter for elements that are not visible (including type=hidden).
+        /// </summary>
         Hidden = 11,
+        /// <summary>
+        /// Filter for header (H1-H6) tags.
+        /// </summary>
         Header = 12,
+        /// <summary>
+        /// Filter for elements that contain elements matching another selector.
+        /// </summary>
         Has = 13,
+        /// <summary>
+        /// Filter for elements that don't contain elements matching another selector.
+        /// </summary>
         Not = 14, 
         
         // CSS pseudoclass selectors
         
+        /// <summary>
+        /// Elements that are first children.
+        /// </summary>
         FirstChild = 20,
+        /// <summary>
+        /// Elements that are last children.
+        /// </summary>
         LastChild = 21,
+        /// <summary>
+        /// Elements that are nth children.
+        /// </summary>
         NthChild = 22,
+        /// <summary>
+        /// Elements that are the first child of their node type.
+        /// </summary>
         FirstOfType = 23,
+        /// <summary>
+        /// Elements that are the last child of their node type.
+        /// </summary>
         LastOfType = 24,
+        /// <summary>
+        /// Elements that are the nth child of their node type.
+        /// </summary>
         NthOfType = 25,
+        /// <summary>
+        /// Elements that are the nth to last child.
+        /// </summary>
         NthLastChild = 26,
+        /// <summary>
+        /// Elements that are the nth to last child of their node type
+        /// </summary>
         NthLastOfType = 27,
+        /// <summary>
+        /// Elements that are only children.
+        /// </summary>
         OnlyChild = 28,
+        /// <summary>
+        /// Elements that are the only children of their type.
+        /// </summary>
         OnlyOfType = 29,
+        /// <summary>
+        /// Elements that have no element or non-whitespace children.
+        /// </summary>
         Empty = 30
         
     }

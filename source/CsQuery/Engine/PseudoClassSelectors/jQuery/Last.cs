@@ -11,6 +11,18 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
     public class Last : PseudoSelector, IPseudoSelectorFilter
     {
+        /// <summary>
+        /// Filter for the last element in the selection set
+        /// </summary>
+        ///
+        /// <param name="selection">
+        /// The sequence of elements prior to this filter being applied.
+        /// </param>
+        ///
+        /// <returns>
+        /// The last element in the selection.
+        /// </returns>
+
         public IEnumerable<IDomObject> Filter(IEnumerable<IDomObject> selection)
         {
             var last = selection.LastOrDefault();

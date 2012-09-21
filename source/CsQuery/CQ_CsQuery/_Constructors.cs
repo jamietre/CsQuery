@@ -264,15 +264,19 @@ namespace CsQuery
 
         #region implicit constructors
 
-        ///// <summary>
-        ///// Create a new CQ object from html
-        ///// </summary>
-        ///// <param name="text"></param>
-        ///// <returns></returns>
-        //public static implicit operator CQ(string html)
-        //{
-        //    return CQ.Create(html);
-        //}
+        /// <summary>
+        /// Create a new CQ object from html.
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// A string of HTML
+        /// </param>
+
+
+        public static implicit operator CQ(string html)
+        {
+            return CQ.Create(html);
+        }
 
         ///// <summary>
         ///// Create a new CQ object from html

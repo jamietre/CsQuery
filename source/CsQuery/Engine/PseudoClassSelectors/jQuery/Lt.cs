@@ -11,6 +11,17 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
     public class Lt : Indexed
     {
+        /// <summary>
+        /// Filter the sequeence of elements for those with an ordinal index less than the Index value.
+        /// </summary>
+        ///
+        /// <param name="selection">
+        /// The sequence of elements prior to this filter being applied.
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence of matching elements.
+        /// </returns>
 
         public override IEnumerable<IDomObject> Filter(IEnumerable<IDomObject> selection)
         {

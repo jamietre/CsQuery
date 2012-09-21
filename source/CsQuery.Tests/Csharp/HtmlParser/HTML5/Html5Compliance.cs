@@ -195,14 +195,6 @@ namespace CsQuery.Tests.Csharp.HtmlParser
                 output);
         }
 
-        [Test, TestMethod]
-        public void UnquotedAttributeHandling()
-        {
-      
-            CQ doc = new CQ("<div custattribute=10/23/2012 id=\"tableSample\"><span>sample text</span></div>");
-            IDomElement obj = doc["#tableSample"].FirstElement();
 
-            Assert.AreEqual("10/23/2012", obj["custattribute"]);
-        }
     }
 }

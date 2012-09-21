@@ -11,12 +11,25 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
     public class Gt : Indexed
     {
+        /// <summary>
+        /// Filter the sequence to include only those elements with an ordinal index greater than the
+        /// value of the Index property.
+        /// </summary>
+        ///
+        /// <param name="selection">
+        /// The selection.
+        /// </param>
+        ///
+        /// <returns>
+        /// An filtered sequence
+        /// </returns>
+
         public override IEnumerable<IDomObject> Filter(IEnumerable<IDomObject> selection)
         {
             return IndexGreaterThan(selection, Index);
         }
 
-        public static IEnumerable<IDomObject> IndexGreaterThan(IEnumerable<IDomObject> list, int position)
+        private static IEnumerable<IDomObject> IndexGreaterThan(IEnumerable<IDomObject> list, int position)
         {
             int index = 0;
             foreach (IDomObject obj in list)

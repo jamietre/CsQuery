@@ -14,6 +14,18 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
     public class Hidden: PseudoSelectorFilter
     {
+        /// <summary>
+        /// Test whether an element is hidden.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it matches, false if not.
+        /// </returns>
+
         public override bool Matches(IDomObject element)
         {
             return !Visible.IsVisible(element);

@@ -4341,6 +4341,15 @@
              The context.
              </param>
         </member>
+        <member name="M:CsQuery.CQ.op_Implicit(System.String)~CsQuery.CQ">
+             <summary>
+             Create a new CQ object from html.
+             </summary>
+            
+             <param name="html">
+             A string of HTML
+             </param>
+        </member>
         <member name="M:CsQuery.CQ.CreateNewDocument">
             <summary>
             Bind this instance to a new empty DomDocument configured with the default options.
@@ -9318,12 +9327,42 @@
              A sequence of children that match.
              </returns>
         </member>
+        <member name="M:CsQuery.Engine.PseudoClassSelectors.Lang.Matches(CsQuery.IDomObject)">
+             <summary>
+             Test whether an element matches this selector.
+             </summary>
+            
+             <exception cref="T:System.NotImplementedException">
+             Thrown when the requested operation is unimplemented.
+             </exception>
+            
+             <param name="element">
+             The element to test.
+             </param>
+            
+             <returns>
+             true if it matches, false if not.
+             </returns>
+        </member>
         <member name="T:CsQuery.Engine.PseudoClassSelectors.Hidden">
             <summary>
             A pseudoselector that returns elements that are hidden. Visibility is defined by CSS: a
             nonzero opacity, a display that is not "hidden", and the absence of zero-valued width &amp;
             heights. Additionally, input elements of type "hidden" are always considered not visible.
             </summary>
+        </member>
+        <member name="M:CsQuery.Engine.PseudoClassSelectors.Hidden.Matches(CsQuery.IDomObject)">
+             <summary>
+             Test whether an element is hidden.
+             </summary>
+            
+             <param name="element">
+             The element to test.
+             </param>
+            
+             <returns>
+             true if it matches, false if not.
+             </returns>
         </member>
         <member name="T:CsQuery.Engine.PseudoClassSelectors.Visible">
             <summary>
@@ -9554,22 +9593,68 @@
             Return only the last element from a selection
             </summary>
         </member>
-        <member name="P:CsQuery.Engine.PseudoClassSelectors.Has.MaximumParameterCount">
+        <member name="F:CsQuery.Engine.PseudoClassSelectors.Has.ChildSelector">
+            <summary>
+            The child selector
+            </summary>
+        </member>
+        <member name="M:CsQuery.Engine.PseudoClassSelectors.Has.Filter(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
              <summary>
-             Adds a matched element to the cache. I'm not quite sure if this makes sense. The idea is that
-             you will often be checking children of something you just checked; probably we would have to
-             iterate through the results of the first subselector and add all the node trees to the root
-             for each result to the cache. Might not be worth it.
+             Return only the elements in the sequence whose children match the ChildSelector
+             </summary>
+            
+             <param name="selection">
+             The sequence of elements prior to this filter being applied.
+             </param>
+            
+             <returns>
+             A sequence of elements
+             </returns>
+        </member>
+        <member name="P:CsQuery.Engine.PseudoClassSelectors.Has.Arguments">
+             <summary>
+             Arguments for the "has" selector.
              </summary>
             
              <value>
-             The number of maximum parameters.
+             The arguments.
+             </value>
+        </member>
+        <member name="P:CsQuery.Engine.PseudoClassSelectors.Has.MaximumParameterCount">
+             <summary>
+             The maximum number of parameters that this selector can accept (1)
+             </summary>
+            
+             <value>
+             An integer.
+             </value>
+        </member>
+        <member name="P:CsQuery.Engine.PseudoClassSelectors.Has.MinimumParameterCount">
+             <summary>
+             The minimum number of parameters that this selector requires (1)
+             </summary>
+            
+             <value>
+             An integer.
              </value>
         </member>
         <member name="T:CsQuery.Engine.PseudoClassSelectors.Last">
             <summary>
             Return only the last element from a selection
             </summary>
+        </member>
+        <member name="M:CsQuery.Engine.PseudoClassSelectors.Last.Filter(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+             <summary>
+             Filter for the last element in the selection set
+             </summary>
+            
+             <param name="selection">
+             The sequence of elements prior to this filter being applied.
+             </param>
+            
+             <returns>
+             The last element in the selection.
+             </returns>
         </member>
         <member name="T:CsQuery.Engine.PseudoClassSelectors.First">
             <summary>
@@ -9612,20 +9697,96 @@
             Return only odd-numbered elements from the selection
             </summary>
         </member>
+        <member name="M:CsQuery.Engine.PseudoClassSelectors.Odd.Filter(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+             <summary>
+             Filter the sequence of elements for only those in odd-number ordinal indices
+             </summary>
+            
+             <param name="selection">
+             The sequence of elements prior to this filter being applied.
+             </param>
+            
+             <returns>
+             A sequence of matching elements.
+             </returns>
+        </member>
         <member name="T:CsQuery.Engine.PseudoClassSelectors.Indexed">
             <summary>
-            Test whether an element is appears at the specified position with the list.
+            Base class for jQuery filters that test whether an element appears at the specified position with the list.
             </summary>
+        </member>
+        <member name="M:CsQuery.Engine.PseudoClassSelectors.Indexed.Filter(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+             <summary>
+             Abstract implementation of the Filter method for the Index filter.
+             </summary>
+            
+             <param name="selection">
+             The sequence of elements prior to this filter being applied.
+             </param>
+            
+             <returns>
+             A sequence of matching elements.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Engine.PseudoClassSelectors.Indexed.Index">
+            <summary>
+            The zero-based index for which to test.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Engine.PseudoClassSelectors.Indexed.MaximumParameterCount">
+             <summary>
+             The maximum number of parameters that this selector can accept (1)
+             </summary>
+            
+             <value>
+             An integer.
+             </value>
+        </member>
+        <member name="P:CsQuery.Engine.PseudoClassSelectors.Indexed.MinimumParameterCount">
+             <summary>
+             The minimum number of parameters that this selector requires (1)
+             </summary>
+            
+             <value>
+             An integer.
+             </value>
         </member>
         <member name="T:CsQuery.Engine.PseudoClassSelectors.Gt">
             <summary>
              Test whether an element appears after the specified position with the list.
             </summary>
         </member>
+        <member name="M:CsQuery.Engine.PseudoClassSelectors.Gt.Filter(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+             <summary>
+             Filter the sequence to include only those elements with an ordinal index greater than the
+             value of the Index property.
+             </summary>
+            
+             <param name="selection">
+             The selection.
+             </param>
+            
+             <returns>
+             An filtered sequence
+             </returns>
+        </member>
         <member name="T:CsQuery.Engine.PseudoClassSelectors.Lt">
             <summary>
             Test whether an element appears before the specified position with the list.
             </summary>
+        </member>
+        <member name="M:CsQuery.Engine.PseudoClassSelectors.Lt.Filter(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+             <summary>
+             Filter the sequeence of elements for those with an ordinal index less than the Index value.
+             </summary>
+            
+             <param name="selection">
+             The sequence of elements prior to this filter being applied.
+             </param>
+            
+             <returns>
+             A sequence of matching elements.
+             </returns>
         </member>
         <member name="T:CsQuery.Engine.PseudoClassSelectors.Eq">
             <summary>
@@ -9688,10 +9849,41 @@
             <param name="parent"></param>
             <returns></returns>
         </member>
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.Header">
+            <summary>
+            The jQuery ":header" selector
+            </summary>
+        </member>
+        <member name="M:CsQuery.Engine.PseudoClassSelectors.Header.Matches(CsQuery.IDomObject)">
+             <summary>
+             Test whether an element is a header (H1-H6)
+             </summary>
+            
+             <param name="element">
+             The element to test.
+             </param>
+            
+             <returns>
+             true if it matches, false if not.
+             </returns>
+        </member>
         <member name="T:CsQuery.Engine.PseudoClassSelectors.Parent">
             <summary>
             Determines whether the target is a parent.
             </summary>
+        </member>
+        <member name="M:CsQuery.Engine.PseudoClassSelectors.Parent.Matches(CsQuery.IDomObject)">
+             <summary>
+             Test whether an element is a parent; e.g. has children.
+             </summary>
+            
+             <param name="element">
+             The element to test.
+             </param>
+            
+             <returns>
+             true if it matches, false if not.
+             </returns>
         </member>
         <member name="T:CsQuery.Engine.PseudoClassSelectors.Empty">
             <summary>
@@ -9926,6 +10118,32 @@
              A sequence of children that match.
              </returns>
         </member>
+        <member name="T:CsQuery.EquationParser.AssociationType">
+            <summary>
+            Values that represent AssociationType; which determines how to group adjacent operands when
+            parsing an equation.
+            </summary>
+        </member>
+        <member name="F:CsQuery.EquationParser.AssociationType.Addition">
+            <summary>
+             Associate with other Addition operands
+            </summary>
+        </member>
+        <member name="F:CsQuery.EquationParser.AssociationType.Multiplicaton">
+            <summary>
+             associate with other Multiplcation operands
+            </summary>
+        </member>
+        <member name="F:CsQuery.EquationParser.AssociationType.Power">
+            <summary>
+            never associate, associate only directly adjacent operands.
+            </summary>
+        </member>
+        <member name="F:CsQuery.EquationParser.AssociationType.Function">
+            <summary>
+            never associate, and use parenthesized operands.
+            </summary>
+        </member>
         <member name="T:CsQuery.EquationParser.OperationType">
             <summary>
             Values that represent OperationType for an arithmetic operator.
@@ -9961,12 +10179,48 @@
             Power or ^.
             </summary>
         </member>
+        <member name="M:CsQuery.EquationParser.Equations.CreateEquation``1(System.String)">
+             <summary>
+             Creates an equation returning a specic type from a string
+             </summary>
+            
+             <typeparam name="T">
+             The type of value returned by the equation.
+             </typeparam>
+             <param name="text">
+             The text of the equation.
+             </param>
+            
+             <returns>
+             The new equation&lt; t&gt;
+             </returns>
+        </member>
+        <member name="M:CsQuery.EquationParser.Equations.CreateEquation(System.String)">
+             <summary>
+             Creates a new equation from a string.
+             </summary>
+            
+             <param name="text">
+             The text of the equation
+             </param>
+            
+             <returns>
+             The new equation.
+             </returns>
+        </member>
         <member name="M:CsQuery.EquationParser.Equations.CreateEquationOperand(System.String)">
-            <summary>
-            Create an operand by parsing a string. Like CreateEquation but does not wrap in an Equation object.
-            </summary>
-            <param name="text"></param>
-            <returns></returns>
+             <summary>
+             Create an operand by parsing a string. Like CreateEquation but does not wrap in an Equation
+             object.
+             </summary>
+            
+             <param name="text">
+             The operand text
+             </param>
+            
+             <returns>
+             The new equation operand.
+             </returns>
         </member>
         <member name="P:CsQuery.EquationParser.IFunction.Name">
             <summary>
@@ -12294,6 +12548,131 @@
             <summary>
             Position-type selectors match one or more element children of another element. The selection engine can either access all 
             matching children, or test a particular element for matching a selector
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.All">
+            <summary>
+            Matches everything (no filter)
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.Even">
+            <summary>
+            Filter for elements at even-numbered ordinal indices.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.Odd">
+            <summary>
+            Filter for elements at odd-numbered ordinal indices.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.First">
+            <summary>
+            Filter for only the first element in the selection.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.Last">
+            <summary>
+            Filter for only the last element in the selection.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.IndexEquals">
+            <summary>
+            Filter for a specific ordinal index in the sequence.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.IndexLessThan">
+            <summary>
+            Filter for elements appearing before a specific ordinal index.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.IndexGreaterThan">
+            <summary>
+            Filter for elements appearing after a specific ordinal index.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.Parent">
+            <summary>
+            Filter for elements that are parents.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.Visible">
+            <summary>
+            Filter for elements that are visible.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.Hidden">
+            <summary>
+            Filter for elements that are not visible (including type=hidden).
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.Header">
+            <summary>
+            Filter for header (H1-H6) tags.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.Has">
+            <summary>
+            Filter for elements that contain elements matching another selector.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.Not">
+            <summary>
+            Filter for elements that don't contain elements matching another selector.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.FirstChild">
+            <summary>
+            Elements that are first children.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.LastChild">
+            <summary>
+            Elements that are last children.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.NthChild">
+            <summary>
+            Elements that are nth children.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.FirstOfType">
+            <summary>
+            Elements that are the first child of their node type.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.LastOfType">
+            <summary>
+            Elements that are the last child of their node type.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.NthOfType">
+            <summary>
+            Elements that are the nth child of their node type.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.NthLastChild">
+            <summary>
+            Elements that are the nth to last child.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.NthLastOfType">
+            <summary>
+            Elements that are the nth to last child of their node type
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.OnlyChild">
+            <summary>
+            Elements that are only children.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.OnlyOfType">
+            <summary>
+            Elements that are the only children of their type.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.PseudoClassType.Empty">
+            <summary>
+            Elements that have no element or non-whitespace children.
             </summary>
         </member>
         <member name="T:CsQuery.Engine.SelectorParser">

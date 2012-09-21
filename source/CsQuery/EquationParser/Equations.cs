@@ -19,6 +19,22 @@ namespace CsQuery.EquationParser
         {
             return new Equation<T>(operand);
         }
+
+        /// <summary>
+        /// Creates an equation returning a specic type from a string
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// The type of value returned by the equation.
+        /// </typeparam>
+        /// <param name="text">
+        /// The text of the equation.
+        /// </param>
+        ///
+        /// <returns>
+        /// The new equation&lt; t&gt;
+        /// </returns>
+
         public static Equation<T> CreateEquation<T>(string text) where T : IConvertible
         {
             IEquationParser parser = new EquationParser.Implementation.EquationParserEngine();
@@ -27,6 +43,19 @@ namespace CsQuery.EquationParser
             Equation<T> equation = new Equation<T>(operand);
             return equation;
         }
+
+        /// <summary>
+        /// Creates a new equation from a string.
+        /// </summary>
+        ///
+        /// <param name="text">
+        /// The text of the equation
+        /// </param>
+        ///
+        /// <returns>
+        /// The new equation.
+        /// </returns>
+
         public static Equation CreateEquation(string text)
         {
             IEquationParser parser = new EquationParser.Implementation.EquationParserEngine();
@@ -35,11 +64,20 @@ namespace CsQuery.EquationParser
             Equation equation = new Equation(operand);
             return equation;
         }
+
         /// <summary>
-        /// Create an operand by parsing a string. Like CreateEquation but does not wrap in an Equation object.
+        /// Create an operand by parsing a string. Like CreateEquation but does not wrap in an Equation
+        /// object.
         /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="text">
+        /// The operand text
+        /// </param>
+        ///
+        /// <returns>
+        /// The new equation operand.
+        /// </returns>
+
         public static Equation CreateEquationOperand(string text)
         {
             IEquationParser parser = new EquationParser.Implementation.EquationParserEngine();
