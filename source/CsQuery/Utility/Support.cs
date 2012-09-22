@@ -359,6 +359,7 @@ namespace CsQuery.Utility
             }
         }
 
+
         /// <summary>
         /// Convert a string to a char array, if not null.
         /// </summary>
@@ -377,6 +378,8 @@ namespace CsQuery.Utility
                 null :
                 html.ToCharArray();
         }
+
+
 
         /// <summary>
         /// Copies files matching a pattern.

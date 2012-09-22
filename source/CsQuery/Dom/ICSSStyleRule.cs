@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CsQuery.Dom
+namespace CsQuery
 {
     /// <summary>
     /// Interface for a CSS style rule.

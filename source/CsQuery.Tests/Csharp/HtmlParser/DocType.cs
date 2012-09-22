@@ -18,16 +18,16 @@ namespace CsQuery.Tests.Csharp.HtmlParser
         [Test, TestMethod]
         public void TestDocType()
         {
-            var dom = CQ.Create("<!doctype html >");
+            var dom = CQ.CreateDocument("<!doctype html >");
 
             Assert.AreEqual(DocType.HTML5, dom.Document.DocType);
             Assert.AreEqual("<!DOCTYPE html>", dom[0].Render());
 
-            dom = CQ.Create("<!doctype html PUBLIC \"-//W3C//DTD XHTML 1.0 >");
+            dom = CQ.CreateDocument("<!doctype html PUBLIC \"-//W3C//DTD XHTML 1.0 >");
             Assert.AreEqual(DocType.XHTML, dom.Document.DocType);
 
             dom.Document.DocType = DocType.HTML5;
-            Assert.AreEqual("<!DOCTYPE html>", dom.First().Render());
+            Assert.AreEqual("<!DOCTYPE html><html><head></head><body></body></html>", dom.First().Render());
 
         }
     }

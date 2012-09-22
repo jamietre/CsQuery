@@ -19,9 +19,22 @@ namespace CsQuery.Tests.Csharp.HtmlParser.HTML5
 {
 
     [TestFixture, TestClass]
-    public class BrokenTags1 : CsQueryTest
+    public class FragmentContext : CsQueryTest
     {
+        [Test, TestMethod]
+        public void Table()
+        {
+            var dom = CQ.CreateFragment(@"<tr><td>test</td></tr>");
+            Assert.AreEqual("<tr><td>test</td></tr>", dom.Render());
 
-     
+        }
+
+        [Test, TestMethod]
+        public void TableCell()
+        {
+            var dom = CQ.CreateFragment(@"<td>test</td>");
+            Assert.AreEqual("<td>test</td>", dom.Render());
+
+        }
     }
 }

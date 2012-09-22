@@ -78,6 +78,10 @@
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HtmlParser, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\HtmlParser.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
@@ -268,6 +272,8 @@
     <Compile Include="ExtensionMethods\Xml\CqXmlNode.cs" />
     <Compile Include="ExtensionMethods\Xml\Xml.cs" />
     <Compile Include="ExtensionMethods\Xml\CqXmlNodeList.cs" />
+    <Compile Include="HtmlParserSharp\CsQueryDomBuilder.cs" />
+    <Compile Include="HtmlParserSharp\ElementFactory.cs" />
     <Compile Include="HtmlParser\enumElementScope.cs" />
     <Compile Include="HtmlParser\enumHtmlEncodingMethod.cs" />
     <Compile Include="HtmlParser\enumHtmlParsingMode.cs" />
@@ -426,6 +432,14 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="HtmlParser.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HtmlParser.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if not $(ConfigurationName) ==Release GOTO finished
@@ -441,7 +455,7 @@ xcopy $(TargetDir)CsQuery.xml $(SolutionDir)..\Distribution /Y
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

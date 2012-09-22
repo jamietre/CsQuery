@@ -155,14 +155,18 @@ namespace CsQuery
         /// </summary>
         ///
         /// <param name="html">
-        /// A string of HTML
+        /// A string of HTML.
+        /// </param>
+        /// <param name="elementContext">
+        /// (optional) context for the element; this determines how parsing rules are applied. If null,
+        /// it will be considered in a legal context.
         /// </param>
         ///
         /// <returns>
         /// The new fragment.
         /// </returns>
 
-        public static CQ CreateFragment(string html)
+        public static CQ CreateFragment(string html, string elementContext=null)
         {
             return CQ.CreateFragment(Support.StringToCharArray(html));
         }
@@ -183,7 +187,7 @@ namespace CsQuery
         {
             CQ csq = new CQ();
             //csq.LoadFragment(html);
-            csq.CreateNewFragment(html, HtmlParsingMode.Fragment);
+            csq.CreateNewFragment(html.AsString(), HtmlParsingMode.Fragment);
             return csq;
         }
 
@@ -256,7 +260,7 @@ namespace CsQuery
         public static CQ CreateDocument(char[] html)
         {
             CQ csq = new CQ();
-            csq.CreateNewDocument(html, HtmlParsingMode.Document);
+            csq.CreateNewDocument(html.AsString(), HtmlParsingMode.Document);
             
             return csq;
         }

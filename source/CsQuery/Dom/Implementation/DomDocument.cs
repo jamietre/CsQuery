@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 using CsQuery.Utility;
@@ -16,6 +17,37 @@ namespace CsQuery.Implementation
     /// </summary>
     public class DomDocument : DomContainer<DomDocument>, IDomDocument, IDomIndex
     {
+        #region static methods 
+
+        public static IDomDocument Create()
+        {
+            return new DomDocument();
+        }
+
+        public static IDomDocument Create(IEnumerable<IDomObject> elements, HtmlParsingMode mode = HtmlParsingMode.Content)
+        {
+            DomDocument doc = mode == HtmlParsingMode.Document ?
+                new DomDocument() :
+                new DomFragment();
+
+            doc.InitializeDomDocument();
+            doc.Populate(elements);
+            return doc;
+        }
+
+        public static IDomDocument Create(string html, HtmlParsingMode htmlParsingMode = HtmlParsingMode.Content)
+        {
+            return ElementFactory.Create(html, htmlParsingMode);
+        }
+
+        public static IDomDocument Create(Stream html, HtmlParsingMode htmlParsingMode = HtmlParsingMode.Content)
+        {
+            return ElementFactory.Create(html, htmlParsingMode);
+        }
+
+
+        #endregion
+
         #region constructors
 
         /// <summary>
@@ -27,15 +59,6 @@ namespace CsQuery.Implementation
             InitializeDomDocument();
         }
 
-        /// <summary>
-        /// Create a new document from a sequence of elements
-        /// </summary>
-        /// <param name="elements"></param>
-        public DomDocument(IEnumerable<IDomObject> elements): base()
-        {
-            InitializeDomDocument();
-            Populate(elements);
-        }
 
         /// <summary>
         /// Create a new document from a character array of html.
@@ -48,24 +71,24 @@ namespace CsQuery.Implementation
         /// The HTML parsing mode.
         /// </param>
 
-        public DomDocument(char[] html, HtmlParsingMode htmlParsingMode)
-        {
-            InitializeDomDocument();
-            Populate(html, htmlParsingMode);
-        }
+        //public DomDocument(char[] html, HtmlParsingMode htmlParsingMode)
+        //{
+        //    InitializeDomDocument();
+        //    Populate(html, htmlParsingMode);
+        //}
 
-        private void Populate(char[] html, HtmlParsingMode htmlParsingMode)
-        {
+        //private void Populate(char[] html, HtmlParsingMode htmlParsingMode)
+        //{
 
-            if (html != null && html.Length > 0)
-            {
-                SourceHtml = html;
-            }
+        //    if (html != null && html.Length > 0)
+        //    {
+        //        SourceHtml = html;
+        //    }
 
-            HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(this);
-            Populate(factory.Parse(htmlParsingMode));
+        //    HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(this);
+        //    Populate(factory.Parse(htmlParsingMode));
 
-        }
+        //}
 
         private void Populate(IEnumerable<IDomObject> elements)
         {
@@ -73,7 +96,7 @@ namespace CsQuery.Implementation
             {
                 ChildNodesInternal.AddAlways(item);
             }
-  
+
         }
 
         private void InitializeDomDocument()
@@ -535,6 +558,29 @@ namespace CsQuery.Implementation
             return new DomComment(comment);
         }
 
+        /// <summary>
+        /// Creates the document type node. 
+        /// </summary>
+        ///
+        /// <param name="type">
+        /// The type.
+        /// </param>
+        /// <param name="publicIdentifier">
+        /// Public identifier
+        /// </param>
+        /// <param name="systemIdentifier">
+        /// System identifier
+        /// </param>
+        ///
+        /// <returns>
+        /// The new document type.
+        /// </returns>
+
+        public IDomDocumentType CreateDocumentType(string type, string publicIdentifier, string systemIdentifier)
+        {
+            return new DomDocumentType(type, publicIdentifier, systemIdentifier);
+        }
+
         public override DomDocument Clone()
         {
             DomDocument clone = new DomDocument();
@@ -639,28 +685,29 @@ namespace CsQuery.Implementation
          /// options as the current object.
          /// </returns>
   
-         public IDomDocument CreateNew<T>(char[] html, HtmlParsingMode htmlParsingMode) where T : IDomDocument
-         {
-            IDomDocument newDoc;
-            if (typeof(T) == typeof(IDomDocument))
-            {
-                newDoc = new DomDocument(html, htmlParsingMode);
+        // public IDomDocument CreateNew<T>(char[] html, HtmlParsingMode htmlParsingMode) where T : IDomDocument
+        // {
+        //    IDomDocument newDoc = DomDocument.Create(html.AsString(),htmlParsingMode);
 
-            }
-            else if (typeof(T) == typeof(IDomFragment))
-            {
-                newDoc = new DomFragment(html, htmlParsingMode);
-            }
+        //    if (typeof(T) == typeof(IDomDocument))
+        //    {
+        //        newDoc = Dnew DomDocument(html, htmlParsingMode);
+
+        //    }
+        //    else if (typeof(T) == typeof(IDomFragment))
+        //    {
+        //        newDoc = new DomFragment(html, htmlParsingMode);
+        //    }
            
-            else
-            {
-                throw new ArgumentException(String.Format("I don't know about an IDomDocument subclass \"{1}\"",
-                    typeof(T).ToString()));
-            }
+        //    else
+        //    {
+        //        throw new ArgumentException(String.Format("I don't know about an IDomDocument subclass \"{1}\"",
+        //            typeof(T).ToString()));
+        //    }
 
-            FinishConfiguringNew(newDoc);
-            return newDoc;
-        }
+        //    FinishConfiguringNew(newDoc);
+        //    return newDoc;
+        //}
 
         /// <summary>
         /// Creates an IDomDocument that is derived from this one. The new type can also be a derived
@@ -688,12 +735,13 @@ namespace CsQuery.Implementation
             IDomDocument newDoc;
             if (typeof(T) == typeof(IDomDocument))
             {
-                newDoc = new DomDocument(elements);
+                //newDoc = new DomDocument(elements);
+                newDoc = DomDocument.Create(elements,HtmlParsingMode.Document);
 
             }
             else if (typeof(T) == typeof(IDomFragment))
             {
-                newDoc = new DomFragment(elements);
+                newDoc = DomDocument.Create(elements, HtmlParsingMode.Fragment);
             }
            
             else
