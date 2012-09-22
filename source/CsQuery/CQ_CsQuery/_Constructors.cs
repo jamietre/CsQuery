@@ -35,7 +35,7 @@ namespace CsQuery
 
         public CQ(char[] html)
         {
-            CreateNewFragment(html, HtmlParsingMode.Content);
+            CreateNewFragment(html.AsString(), HtmlParsingMode.Auto);
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace CsQuery
         }
         private void ConfigureNewInstance(CQ dom, string html)
         {
-            CreateNewFragment(Support.StringToCharArray(html), HtmlParsingMode.Content);
+            CreateNewFragment(html, HtmlParsingMode.Auto);
         }
         /// <summary>
         /// Create a new CsQuery object using an existing instance and a selector. if the selector is null or missing, then
@@ -350,10 +350,10 @@ namespace CsQuery
         /// The HTML parsing mode.
         /// </param>
 
-        protected void CreateNewDocument(char[] html, HtmlParsingMode htmlParsingMode)
+        protected void CreateNewDocument(string html, HtmlParsingMode htmlParsingMode)
         {
             //Document = new DomDocument(html,htmlParsingMode);
-            Document = DomDocument.Create(html.AsString(),HtmlParsingMode.Document);
+            Document = DomDocument.Create(html,HtmlParsingMode.Document);
             HtmlParser.Obsolete.HtmlElementFactory.ReorganizeStrandedTextNodes(Document);
             AddSelection(Document.ChildNodes);
             FinishCreatingNewDocument();
@@ -370,10 +370,10 @@ namespace CsQuery
         /// The HTML parsing mode.
         /// </param>
 
-        protected void CreateNewFragment(char[] html, HtmlParsingMode htmlParsingMode)
+        protected void CreateNewFragment(string html, HtmlParsingMode htmlParsingMode)
         {
             //Document = new DomFragment(html,htmlParsingMode);
-            Document = DomDocument.Create(html.AsString(),htmlParsingMode);
+            Document = DomDocument.Create(html,htmlParsingMode);
              
             //  enumerate ChildNodes when creating a new fragment to be sure the selection set only
             //  reflects the original document. 

@@ -187,7 +187,7 @@ namespace CsQuery
         {
             CQ csq = new CQ();
             //csq.LoadFragment(html);
-            csq.CreateNewFragment(html, HtmlParsingMode.Fragment);
+            csq.CreateNewFragment(html.AsString(), HtmlParsingMode.Fragment);
             return csq;
         }
 
@@ -260,7 +260,7 @@ namespace CsQuery
         public static CQ CreateDocument(char[] html)
         {
             CQ csq = new CQ();
-            csq.CreateNewDocument(html, HtmlParsingMode.Document);
+            csq.CreateNewDocument(html.AsString(), HtmlParsingMode.Document);
             
             return csq;
         }

@@ -59,17 +59,24 @@ namespace CsQuery.Tests.Csharp.HtmlParser
             Assert.AreEqual("<div>xxxxx</div>", output.Render(), "trailing text with broken tag");
 
             output = CreateFromHtml("<input type=\"text>text<div> value=\"x\"><div>xxx");
-            Assert.AreEqual("<input type=\"text>text<div> value=\" x /><div>xxx</div>", output.Render(), "some messed up attributes -- keeps open til closing quote, tosses unexpected quote");
+            
+            //Assert.AreEqual("<input type=\"text>text<div> value=\" x /><div>xxx</div>", output.Render(), "some messed up attributes -- keeps open til closing quote, tosses unexpected quote");
+            // test changed for validator.nu parser - this is correct now! The attribute name should actually be 'x"'
+            Assert.AreEqual("<input type=\"text>text<div> value=\" x\"=\"\" /><div>xxx</div>", output.Render(), "some messed up attributes -- keeps open til closing quote, tosses unexpected quote");
 
             // when an unexpected close tag is found:
             // 1) Try to match to an open tag above. If found, close everything currently open.
             // 2) If not matched, treat as text.
             
             output = CreateFromHtml("<div><span>xxxxx</div><ul><li>before</span>after<crap type=\"x\">");
-            Assert.AreEqual("<div><span>xxxxx</span></div><ul><li>before&lt;/span&gt;after<crap type=\"x\"></crap></li></ul>", output.Render(), "broken tag rules");
+            //Assert.AreEqual("<div><span>xxxxx</span></div><ul><li>before&lt;/span&gt;after<crap type=\"x\"></crap></li></ul>", output.Render(), "broken tag rules");
+            //  another test correct now - matches chrome output
+            Assert.AreEqual("<div><span>xxxxx</span></div><ul><li>beforeafter<crap type=\"x\"></crap></li></ul>", output.Render(), "broken tag rules");
 
-            // TODO: Need to be able to enforce child rules for elements like LI, TD, etc. This should force a close of the open LI tag.
-            //output = CreateFromHtml("<div><span>xxxxx</div><ul><li>before</span>after<crap type=\"x\"><li>implicit close");
+            // In Chrome, the final text "implicit close" is thrown out. I don't know why but validator.nu seems to be doing it right
+            
+            output = CreateFromHtml("<div><span>xxxxx</div><ul><li>before</span>after<crap type=\"x\"><li>implicit close");
+            Assert.AreEqual("<div><span>xxxxx</span></div><ul><li>beforeafter<crap type=\"x\"></crap></li><li>implicit close</li></ul>", output.Render(), "broken tag rules");
         }
 
 

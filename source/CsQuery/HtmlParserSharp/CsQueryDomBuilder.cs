@@ -135,8 +135,8 @@ namespace CsQuery.HtmlParser
         {
             isFragment = fragment;
             document = fragment ?
-                new DomDocument() :
-                new DomFragment();
+                new DomFragment() :
+                new DomDocument();
         }
 
         protected override void ReceiveDocumentMode(DocumentMode mode, String publicIdentifier,

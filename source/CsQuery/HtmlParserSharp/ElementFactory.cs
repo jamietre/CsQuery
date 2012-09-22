@@ -6,6 +6,7 @@ using HtmlParserSharp.Common;
 using CsQuery;
 using CsQuery.Utility;
 using CsQuery.StringScanner;
+using CsQuery.HtmlParser;
 using HtmlParserSharp;
 
 namespace CsQuery.HtmlParser
@@ -62,33 +63,16 @@ namespace CsQuery.HtmlParser
         private static IDictionary<string, string> DefaultContext;
         private Tokenizer tokenizer;
         private DomTreeBuilder treeBuilder;
-        private bool autoSetContext = false;
         private HtmlParsingMode HtmlParsingMode;
 
         #endregion
 
         #region public methods
 
-        public IDomDocument Parse(TextReader reader, HtmlParsingMode mode=HtmlParsingMode.Document)
+        public IDomDocument Parse(TextReader reader, HtmlParsingMode mode=HtmlParsingMode.Auto)
         {
             HtmlParsingMode = mode;
             Reset();
-
-            switch (mode)
-            {
-                
-                case HtmlParsingMode.Document:
-                    break;
-                case HtmlParsingMode.Content:
-                    treeBuilder.SetFragmentContext("body");
-                    break;
-                case HtmlParsingMode.Fragment:
-                    //treeBuilder.SetFragmentContext("body");
-                    autoSetContext = true;
-                    break;
-                default:
-                    throw new NotImplementedException("Unknown parsing mode.");
-            }
             Tokenize(reader);
 
             return treeBuilder.Document;
@@ -97,6 +81,26 @@ namespace CsQuery.HtmlParser
         #endregion
 
         #region private methods
+
+        private void ConfigureTreeBuilderForParsingMode()
+        {
+            
+            switch (HtmlParsingMode)
+            {
+
+                case HtmlParsingMode.Document:
+                    treeBuilder.DoctypeExpectation = DoctypeExpectation.Auto;
+                    break;
+                case HtmlParsingMode.Content:
+                    treeBuilder.SetFragmentContext("body");
+                    treeBuilder.DoctypeExpectation = DoctypeExpectation.Html;
+                    break;
+                case HtmlParsingMode.Fragment:
+                    treeBuilder.DoctypeExpectation = DoctypeExpectation.Html;
+                    HtmlParsingMode = HtmlParsingMode.Auto;
+                    break;
+            }
+        }
 
         private static void SetDefaultContext(string tags, string context)
         {
@@ -172,13 +176,24 @@ namespace CsQuery.HtmlParser
             }
             return GetContext(tag);
         }
-
-        private void Reset()
+        private void InitializeTreeBuilder()
         {
             treeBuilder = new DomTreeBuilder();
-            tokenizer = new Tokenizer(treeBuilder, false);
+
+            treeBuilder.NamePolicy = XmlViolationPolicy.Allow;
             treeBuilder.IsIgnoringComments = false;
-            treeBuilder.DoctypeExpectation = DoctypeExpectation.Auto;
+            
+            // DocTypeExpectation should be set later depending on fragment/content/document selection
+
+
+        }
+        private void Reset()
+        {
+            InitializeTreeBuilder();
+
+            tokenizer = new Tokenizer(treeBuilder, false);
+            
+            
 
             // optionally: report errors and more
 
@@ -199,11 +214,14 @@ namespace CsQuery.HtmlParser
                 throw new ArgumentNullException("reader was null.");
             }
 
-            if (!autoSetContext)
+            if (HtmlParsingMode != HtmlParsingMode.Auto)
             {
+                ConfigureTreeBuilderForParsingMode();
                 tokenizer.Start();
             }
+
             bool swallowBom = true;
+
 
             try
             {
@@ -213,11 +231,23 @@ namespace CsQuery.HtmlParser
                 int len = -1;
                 if ((len = reader.Read(buffer, 0, buffer.Length)) != 0)
                 {
-                    if (autoSetContext)
+                    if (HtmlParsingMode == HtmlParser.HtmlParsingMode.Auto)
                     {
                         string ctx = GetContext(buffer);
-                        treeBuilder.SetFragmentContext( ctx);
-                        autoSetContext = false;
+                        switch (ctx)
+                        {
+                            case "html":
+                                HtmlParsingMode = HtmlParsingMode.Document;
+                                break;
+                            case "body":
+                                HtmlParsingMode = HtmlParser.HtmlParsingMode.Content;
+                                break;
+                            default:
+                                HtmlParsingMode = HtmlParser.HtmlParsingMode.Fragment;
+                                treeBuilder.SetFragmentContext(ctx);
+                                break;
+                        }
+                        ConfigureTreeBuilderForParsingMode();
                         tokenizer.Start();
                     }
 

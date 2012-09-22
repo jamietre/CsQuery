@@ -39,9 +39,10 @@ namespace CsQuery.Tests.Csharp.Manipulation
             // TODO this test doesn't exactly match Chrome. The mismatched closing <p> tag before "first_div" is treated as an empty <p></p> block
             // by chrome. This is probably a part of the spec we don't yet deal with.
 
-            Assert.AreEqual(30, Dom["*"].Length, "Found correct number of elements in the DOM");
-            Assert.AreEqual(26, Dom["body *"].Length, "Found correct number of elements in the DOM");
-            Assert.AreEqual(8, Dom["body > *"].Length, "Found correct number of elements in the DOM");
+            // changed from 30 to 31 when using validator.nu parser (chrome=31, not sure what missing el was before)
+            Assert.AreEqual(31, Dom["*"].Length, "Found correct number of elements in the DOM");
+            Assert.AreEqual(27, Dom["body *"].Length, "Found correct number of elements in the DOM");
+            Assert.AreEqual(9, Dom["body > *"].Length, "Found correct number of elements in the DOM");
         }
         [Test,TestMethod]
         public void InputCheckbox()
