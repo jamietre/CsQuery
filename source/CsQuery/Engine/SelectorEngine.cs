@@ -89,13 +89,14 @@ namespace CsQuery.Engine
             if (firstSelector.SelectorType == SelectorType.HTML)
             {
 
-                HtmlParser.HtmlElementFactory factory = 
-                    new HtmlParser.HtmlElementFactory(firstSelector.Html);
+                //HtmlParser.HtmlElementFactory factory = 
+                //    new HtmlParser.HtmlElementFactory(firstSelector.Html);
 
                 // Return the factory ouptut as a list because otherwise the enumerator could end up
                 // as the actual source of the selection, meaning it would get re-parsed each time
                 
-                return factory.ParseAsFragment();
+                //return factory.ParseAsFragment();
+                return CsQuery.Implementation.DomDocument.Create(firstSelector.Html, HtmlParsingMode.Fragment).ChildNodes.ToList();
             } 
 
             // this holds any results that carried over from the previous loop for chaining

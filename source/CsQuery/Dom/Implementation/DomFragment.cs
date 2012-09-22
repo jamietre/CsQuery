@@ -17,15 +17,15 @@ namespace CsQuery.Implementation
             : base()
         {
         }
-        public DomFragment(IEnumerable<IDomObject> elements): base(elements)
-        {
+        //public DomFragment(IEnumerable<IDomObject> elements): base(elements)
+        //{
         
-        }
-        public DomFragment(char[] html, HtmlParsingMode htmlParsingMode)
-            : base(html, htmlParsingMode)
-        {
+        //}
+        //public DomFragment(char[] html, HtmlParsingMode htmlParsingMode)
+        //    : base(html, htmlParsingMode)
+        //{
             
-        }
+        //}
         
         public override NodeType NodeType
         {

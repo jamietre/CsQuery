@@ -333,7 +333,8 @@ namespace CsQuery
 
         protected void CreateNewFragment(IEnumerable<IDomObject> elements)
         {
-            Document = new DomFragment(elements.Clone());
+
+            Document = DomDocument.Create(elements.Clone(), HtmlParsingMode.Fragment);
             AddSelection(Document.ChildNodes);
             FinishCreatingNewDocument();
         }
@@ -351,8 +352,9 @@ namespace CsQuery
 
         protected void CreateNewDocument(char[] html, HtmlParsingMode htmlParsingMode)
         {
-            Document = new DomDocument(html,htmlParsingMode);
-            HtmlElementFactory.ReorganizeStrandedTextNodes(Document);
+            //Document = new DomDocument(html,htmlParsingMode);
+            Document = DomDocument.Create(html.AsString(),HtmlParsingMode.Document);
+            HtmlParser.Obsolete.HtmlElementFactory.ReorganizeStrandedTextNodes(Document);
             AddSelection(Document.ChildNodes);
             FinishCreatingNewDocument();
         }
@@ -370,7 +372,8 @@ namespace CsQuery
 
         protected void CreateNewFragment(char[] html, HtmlParsingMode htmlParsingMode)
         {
-            Document = new DomFragment(html,htmlParsingMode);
+            //Document = new DomFragment(html,htmlParsingMode);
+            Document = DomDocument.Create(html.AsString(),htmlParsingMode);
              
             //  enumerate ChildNodes when creating a new fragment to be sure the selection set only
             //  reflects the original document. 

@@ -9,7 +9,7 @@ using CsQuery.ExtensionMethods.Internal;
 using CsQuery.Implementation;
 using CsQuery.StringScanner;
 
-namespace CsQuery.HtmlParser
+namespace CsQuery.HtmlParser.Obsolete
 {
     /// <summary>
     /// The HTML parser

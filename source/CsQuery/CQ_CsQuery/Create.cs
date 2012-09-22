@@ -155,14 +155,18 @@ namespace CsQuery
         /// </summary>
         ///
         /// <param name="html">
-        /// A string of HTML
+        /// A string of HTML.
+        /// </param>
+        /// <param name="elementContext">
+        /// (optional) context for the element; this determines how parsing rules are applied. If null,
+        /// it will be considered in a legal context.
         /// </param>
         ///
         /// <returns>
         /// The new fragment.
         /// </returns>
 
-        public static CQ CreateFragment(string html)
+        public static CQ CreateFragment(string html, string elementContext=null)
         {
             return CQ.CreateFragment(Support.StringToCharArray(html));
         }

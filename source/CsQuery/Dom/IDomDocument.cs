@@ -133,6 +133,27 @@ namespace CsQuery
         IDomComment CreateComment(string comment);
 
         /// <summary>
+        /// Creates a document type node.
+        /// </summary>
+        ///
+        /// <param name="type">
+        /// The type.
+        /// </param>
+        /// <param name="publicIdentifier">
+        /// The public type identifier.
+        /// </param>
+        /// <param name="systemIdentifier">
+        /// The system type identifier.
+        /// </param>
+        ///
+        /// <returns>
+        /// The new document type.
+        /// </returns>
+
+        IDomDocumentType CreateDocumentType(string type, string publicIdentifier, string systemIdentifier);
+
+
+        /// <summary>
         /// Returns the first element within the document (using depth-first pre-order traversal of the
         /// document's nodes) that matches the specified group of selectors.
         /// </summary>

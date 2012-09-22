@@ -78,6 +78,10 @@
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HtmlParser, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\HtmlParser.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
@@ -268,6 +272,8 @@
     <Compile Include="ExtensionMethods\Xml\CqXmlNode.cs" />
     <Compile Include="ExtensionMethods\Xml\Xml.cs" />
     <Compile Include="ExtensionMethods\Xml\CqXmlNodeList.cs" />
+    <Compile Include="HtmlParserSharp\CsQueryDomBuilder.cs" />
+    <Compile Include="HtmlParserSharp\ElementFactory.cs" />
     <Compile Include="HtmlParser\enumElementScope.cs" />
     <Compile Include="HtmlParser\enumHtmlEncodingMethod.cs" />
     <Compile Include="HtmlParser\enumHtmlParsingMode.cs" />
@@ -425,6 +431,14 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="HtmlParser.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HtmlParser.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
