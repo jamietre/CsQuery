@@ -10488,6 +10488,27 @@
             Extension methods for converting to XML
             </summary>
         </member>
+        <member name="T:CsQuery.HtmlParser.ElementScope">
+            <summary>
+            The Element Parsing scope 
+            </summary>
+            <url>http://dev.w3.org/html5/spec/parsing.html#stack-of-open-elements</url>
+        </member>
+        <member name="F:CsQuery.HtmlParser.ElementScope.Default">
+            <summary>
+            The normal (default) state; means content / looking for tags.
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParser.ElementScope.TagStart">
+            <summary>
+            The tokenizer is inside an opening tag and parsing attributes.
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParser.ElementScope.Finished">
+            <summary>
+            The tokenizer is finished parsing this node.
+            </summary>
+        </member>
         <member name="F:CsQuery.HtmlParser.HtmlEncodingMethod.HtmlEncodingFull">
             <summary>
             Complete encoding for all non-ascii characters

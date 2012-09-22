@@ -92,6 +92,7 @@
     <Compile Include="Csharp\Dom\DomElement.cs" />
     <Compile Include="Csharp\Dom\SpecialElements.cs" />
     <Compile Include="Csharp\ExtensionMethods\Xml.cs" />
+    <Compile Include="Csharp\HtmlParser\HTML5\BrokenTags1.cs" />
     <Compile Include="Csharp\HtmlParser\HTML5\EdgeCases.cs" />
     <Compile Include="Csharp\HtmlParser\TextHandling.cs" />
     <Compile Include="Csharp\Methods\HasAttr.cs" />

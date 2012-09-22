@@ -278,6 +278,7 @@ namespace CsQuery
             return CQ.Create(html);
         }
 
+       
         ///// <summary>
         ///// Create a new CQ object from html
         ///// </summary>

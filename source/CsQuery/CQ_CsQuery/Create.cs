@@ -66,7 +66,13 @@ namespace CsQuery
         public static CQ Create(IDomObject element)
         {
             CQ csq = new CQ();
-            csq.CreateNewFragment(Objects.Enumerate(element));
+            if (element is IDomDocument) {
+                csq.Document = (IDomDocument)element;
+                csq.AddSelection(csq.Document.ChildNodes);
+                csq.FinishCreatingNewDocument();
+            } else {
+                csq.CreateNewFragment(Objects.Enumerate(element));
+            }
             return csq;
         }
 

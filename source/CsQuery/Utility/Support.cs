@@ -269,7 +269,16 @@ namespace CsQuery.Utility
             {
                 output = output.Substring(0, output.Length - 1);
             }
-            return output + "\\";
+            // add trailing slashes if it's not a file
+
+            if (output.LastIndexOf(".") < output.LastIndexOf("\\"))
+            {
+                return output + "\\";
+            }
+            else
+            {
+                return output;
+            }
         }
 
         /// <summary>
