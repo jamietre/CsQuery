@@ -583,15 +583,17 @@ namespace CsQuery.Tests.jQuery
 
 
             //[CsQuery] Fragments have no parent node
-            //Assert.IsTrue( (int)divs[0].ParentNode.NodeType ==11, "Make sure the first element is still the disconnected node." );
-            Assert.IsTrue(divs[0].ParentNode==null, "Make sure the first element is still the disconnected node.");
+            Assert.IsTrue( (int)divs[0].ParentNode.NodeType ==11, "Make sure the first element is still the disconnected node." );
+            //Assert.IsTrue(divs[0].ParentNode==null, "Make sure the first element is still the disconnected node.");
 
             divs = jQuery("<div>test</div>").Add("#sndp");
-            //Assert.AreEqual((int)divs[0].ParentNode.NodeType, 11, "Make sure the first element is still the disconnected node." );
-            Assert.AreEqual(divs[0].ParentNode,  null, "Make sure the first element is still the disconnected node.");
+            Assert.AreEqual((int)divs[0].ParentNode.NodeType, 11, "Make sure the first element is still the disconnected node." );
+            //Assert.AreEqual(divs[0].ParentNode,  null, "Make sure the first element is still the disconnected node.");
 
             divs = jQuery("#sndp").Add("<div/>");
-            Assert.AreEqual(divs[1].ParentNode,null, "Make sure the first element is still the disconnected node.");
+            
+            //Assert.AreEqual(divs[1].ParentNode,null, "Make sure the first element is still the disconnected node.");
+            Assert.AreEqual((int)divs[1].ParentNode.NodeType, 11, "Make sure the first element is still the disconnected node.");
 
             var tmp = jQuery("<div/>");
 

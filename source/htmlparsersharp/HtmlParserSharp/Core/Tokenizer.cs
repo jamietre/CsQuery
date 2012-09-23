@@ -5923,8 +5923,9 @@ namespace HtmlParserSharp.Core
 									continue;
 							}
 						}
-					breakDoctypesystemidentifierdoublequotedloop:
-						goto case AFTER_DOCTYPE_SYSTEM_IDENTIFIER;
+                    // next 2 lines were unreachable; commented out
+					//breakDoctypesystemidentifierdoublequotedloop:
+					//	goto case AFTER_DOCTYPE_SYSTEM_IDENTIFIER;
 					// FALLTHRU DON'T REORDER
 					case AFTER_DOCTYPE_SYSTEM_IDENTIFIER:
 						/*afterdoctypesystemidentifierloop:*/

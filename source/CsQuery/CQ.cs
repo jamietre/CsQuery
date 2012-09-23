@@ -240,15 +240,15 @@ namespace CsQuery
             set
             {
                 _CsQueryParent = value;
-                if (value != null)
+                
+                // only rebind Document when it's missing; e.g. upon creating a new document.
+                
+                if (value != null && _Document==null)
                 {
                     Document = value.Document;
                 }
-                else
-                {
-                    Document = null;
-                }
-                ClearSelections();
+
+                //ClearSelections();
             }
         }
 

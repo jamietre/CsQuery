@@ -40,16 +40,34 @@ namespace CsQuery.HtmlParser
             }
         }
 
+        private IDomObject previousParent;
+        private IDomObject previousLastChild;
+        private int lastChildCount;
+
         override protected void AppendCharacters(IDomObject parent, string text)
         {
-            //IDomObject lastChild = parent.LastChild;
-            //if (lastChild != null && lastChild.NodeType == NodeType.TEXT_NODE)
-            //{
-            //    IDomText lastAsText = (IDomText)lastChild;
-            //    lastAsText.NodeValue += text;
-            //    return;
-            //}
-            parent.AppendChild(document.CreateTextNode(text));
+            IDomObject lastChild;
+            if (previousParent == parent && lastChildCount == parent.ChildNodes.Count)
+            {
+                lastChild = previousLastChild;
+            }
+            else
+            {
+                lastChild = parent.LastChild;
+
+            }
+
+            if (lastChild != null && lastChild.NodeType == NodeType.TEXT_NODE)
+            {
+                IDomText lastAsText = (IDomText)lastChild;
+                lastAsText.NodeValue += text;
+            }
+            else
+            {
+                parent.AppendChild(document.CreateTextNode(text));
+            }
+            previousLastChild = lastChild;
+            lastChildCount = parent.ChildNodes.Count;
         }
 
         override protected void AppendChildrenToNewParent(IDomObject oldParent, IDomObject newParent)

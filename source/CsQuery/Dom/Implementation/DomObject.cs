@@ -119,7 +119,9 @@ namespace CsQuery.Implementation
         {
             get 
             {
-                throw new Exception("NodeNameID is not applicable to this node type.");
+                // This used to throw an exception; for consistency with NodeName (returning null) changed to 0
+                // 9/22/2012. Caused test failure when integrating validator.nu parser (since everything has a root now)
+                return 0;
             } 
         }
 

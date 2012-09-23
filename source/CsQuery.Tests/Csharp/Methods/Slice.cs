@@ -19,7 +19,7 @@ namespace CsQuery.Tests.Csharp
     public partial class Methods
     {
 
-        CQ testDom = CQ.Create("<el1 /><el2 /><el3 /><el4 /><el5 />");
+        CQ testDom = CQ.Create("<el1></el1><el2></el2><el3></el3><el4></el4><el5></el5>");
         [Test, TestMethod]
         public void Slice()
         {

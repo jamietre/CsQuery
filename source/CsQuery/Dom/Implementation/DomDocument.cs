@@ -59,7 +59,6 @@ namespace CsQuery.Implementation
             InitializeDomDocument();
         }
 
-
         /// <summary>
         /// Create a new document from a character array of html.
         /// </summary>
@@ -101,9 +100,11 @@ namespace CsQuery.Implementation
 
         private void InitializeDomDocument()
         {
+            Document.DomRenderingOptions = CsQuery.Config.DomRenderingOptions;
             ChildNodes.Clear();
             SelectorXref.Clear();
             OriginalStrings = new List<Tuple<int, int>>();
+            
         }
 
         #endregion

@@ -25,6 +25,7 @@ namespace CsQuery
         {
             CQ csq = NewInstance();
             csq.CsQueryParent = this;
+            
             return csq;
         }
 

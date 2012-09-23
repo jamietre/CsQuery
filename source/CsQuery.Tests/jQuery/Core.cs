@@ -60,7 +60,12 @@ namespace CsQuery.Tests.jQuery
             Assert.AreEqual(0, img.Parent().Length, "Make sure that the generated HTML has no parent.");
             
             var div = jQuery("<div/><hr/><code/><b/>");
-            Assert.AreEqual(4, div.Length, "Correct number of elements generated for div hr code b");
+            // apparently jQuery parses <div/> differently than the actual browser parser when using innerHTML;
+            // it seems to me that consistency with the browser is more important than supporting <div/> the same way
+            // as jquery
+            // 
+            //Assert.AreEqual(4, div.Length, "Correct number of elements generated for div hr code b");
+            Assert.AreEqual("<div><hr /><code><b></b></code></div>", div.RenderSelection());
             Assert.AreEqual(0, div.Parent().Length, "Make sure that the generated HTML has no parent." );
             
             // why would I want to do this?
@@ -102,8 +107,7 @@ namespace CsQuery.Tests.jQuery
             //    }
             //    equals( elem[0].defaultValue, "TEST", "Ensure cached nodes are cloned properly (Bug #6655)" );
 
-            // This is different than the original tests - we actually want to PRESERVE whitespace/characters so we can reproduce the DOM (or sections of it) exactly.
-            Assert.AreEqual(3, CQ.CreateFragment(" <div/> ").Length, "Make sure whitespace is NOT trimmed.");
+            Assert.AreEqual(2, CQ.CreateFragment(" <div/> ").Length, "Make sure whitespace is trimmed.");
             Assert.AreEqual(3, CQ.CreateFragment(" a<div/>b ").Length, "Make sure whitespace and other characters are NOT trimmed.");
             
             // Unnecessary
@@ -149,8 +153,8 @@ namespace CsQuery.Tests.jQuery
         {
             Assert.IsTrue(jQuery("<link rel='stylesheet'/>").Length>0, "Creating a link");
 
-            Assert.AreEqual(jQuery("<script/>")[0].ParentNode,null,"Create a script");
-            
+            //Assert.AreEqual(jQuery("<script/>")[0].ParentNode,null,"Create a script");
+            Assert.AreEqual(jQuery("<script/>")[0].ParentNode.NodeType, NodeType.DOCUMENT_FRAGMENT_NODE, "Create a script");
             Assert.IsTrue(jQuery("<input/>").Attr("type", "hidden").Length>0, "Create an input and set the type.");
 
             var j = CQ.CreateFragment("<span>hi</span> there <!-- mon ami -->");

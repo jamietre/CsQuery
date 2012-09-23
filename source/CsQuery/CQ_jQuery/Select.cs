@@ -63,13 +63,21 @@ namespace CsQuery
 
         public CQ Select(string selector)
         {
+            CQ csq;
+            var sel = new Selector(selector);
+            if (sel.IsHmtl)
+            {
+                csq = CQ.CreateFragment(selector);
+                csq.CsQueryParent = this;
+            }
+            else
+            {
 
-            CQ csq = New();
-            csq.Selector = new Selector(selector);
-            csq.SetSelection(csq.Selector.Select(Document),
-                csq.Selector.IsHmtl ?
-                    SelectionSetOrder.OrderAdded :
-                    SelectionSetOrder.Ascending);
+                csq = New();
+                csq.Selector = sel;
+                csq.SetSelection(csq.Selector.Select(Document),
+                        SelectionSetOrder.Ascending);
+            }
             return csq;
             
         }

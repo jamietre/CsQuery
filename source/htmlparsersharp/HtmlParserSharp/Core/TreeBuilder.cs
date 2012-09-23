@@ -320,7 +320,8 @@ namespace HtmlParserSharp.Core
 			// [NOCPP[
 			html4 = false;
 			idLocations.Clear();
-			wantingComments = false;
+            // removed - this overrides end-user settings, resuling in no comments always
+			//wantingComments = false;
 			// ]NOCPP]
 			Start(fragment);
 			charBufferLen = 0;

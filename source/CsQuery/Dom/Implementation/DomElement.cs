@@ -1857,7 +1857,10 @@ namespace CsQuery.Implementation
 
         protected void RenderAttribute(StringBuilder sb, string name, string value, bool quoteAll)
         {
-            if (value != null)
+            // validator.nu: as it turns out "" and missing are synonymous
+            // don't ever render attr=""
+            
+            if (value != null && value!="")
             {
                 string quoteChar;
                 string attrText = HtmlData.AttributeEncode(value,

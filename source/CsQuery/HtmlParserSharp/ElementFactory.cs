@@ -23,10 +23,7 @@ namespace CsQuery.HtmlParser
 
         static ElementFactory()
         {
-            DefaultContext = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
-            SetDefaultContext("tbody,thead", "table");
-            SetDefaultContext("tr", "tbody");
-            SetDefaultContext("td,th", "tr");
+            ConfigureDefaultContextMap();
         }
 
 
@@ -237,6 +234,7 @@ namespace CsQuery.HtmlParser
                         switch (ctx)
                         {
                             case "html":
+                            case "!doctype":
                                 HtmlParsingMode = HtmlParsingMode.Document;
                                 break;
                             case "body":
@@ -302,6 +300,22 @@ namespace CsQuery.HtmlParser
             {
                 tokenizer.End();
             }
+        }
+
+        /// <summary>
+        /// Configure default context: creates a default context for arbitrary fragments so they are valid no matter what, 
+        /// so that true fragments can be created without concern for the context
+        /// </summary>
+
+        private static void ConfigureDefaultContextMap()
+        {
+            DefaultContext = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
+            SetDefaultContext("tbody,thead", "table");
+            SetDefaultContext("tr", "tbody");
+            SetDefaultContext("td,th", "tr");
+            SetDefaultContext("option,optgroup", "select");
+
+
         }
         #endregion
 

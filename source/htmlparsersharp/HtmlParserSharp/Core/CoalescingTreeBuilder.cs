@@ -25,23 +25,31 @@ using System;
 
 namespace HtmlParserSharp.Core
 {
+   
+
 	/// <summary>
 	/// A common superclass for tree builders that coalesce their text nodes.
 	/// </summary>
 	public abstract class CoalescingTreeBuilder<T> : TreeBuilder<T> where T : class
 	{
+        private const int bufGrowBy = 10240;
 		protected override void AccumulateCharacters(char[] buf, int start, int length)
 		{
-			int newLen = charBufferLen + length;
-			if (newLen > charBuffer.Length)
+
+			if (charBufferLen + length > charBuffer.Length)
 			{
-				char[] newBuf = new char[newLen];
+                int newLen = charBufferLen + Math.Max(length, bufGrowBy);
+
+                char[] newBuf = new char[newLen];
 				Array.Copy(charBuffer, newBuf, charBufferLen);
 				charBuffer = null; // release the old buffer in C++
 				charBuffer = newBuf;
+            }
+            if (length>0) {
+                Array.Copy(buf, start, charBuffer, charBufferLen, length);
+                charBufferLen += length;
 			}
-			Array.Copy(buf, start, charBuffer, charBufferLen, length);
-			charBufferLen = newLen;
+			
 		}
 
 		override protected void AppendCharacters(T parent, char[] buf, int start, int length)

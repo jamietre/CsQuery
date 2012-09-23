@@ -15,7 +15,7 @@ namespace CsQuery.Tests.Csharp.HtmlParser
     public class Rendering: CsQueryTest 
     {
 
-        protected string node = "<div class='a b c c' attr1='{\"somejson\": \"someval\"}'";
+        protected string node = "<div class='a b c c' attr1='{\"somejson\": \"someval\"}'>";
 
         [TestMethod, Test]
         public void HtmlCleanup()
@@ -41,14 +41,14 @@ namespace CsQuery.Tests.Csharp.HtmlParser
         {
             string test1html = "<input type=\"text\" id=\"\" checked custom=\"sometext\">";
             var dom = CQ.CreateFragment(test1html);
-            Assert.AreEqual("<input id=\"\" type=\"text\" checked custom=\"sometext\" />", dom.Render(), "Missing & boolean attributes are parsed & render correctly");
+            Assert.AreEqual("<input id type=\"text\" checked custom=\"sometext\" />", dom.Render(), "Missing & boolean attributes are parsed & render correctly");
 
             // remove "quote all attributes"
             dom.Document.DomRenderingOptions = 0;
 
-            Assert.AreEqual("<input id=\"\" type=text checked custom=sometext />", dom.Render(), "Missing & boolean attributes are parsed & render correctly");
+            Assert.AreEqual("<input id type=text checked custom=sometext />", dom.Render(), "Missing & boolean attributes are parsed & render correctly");
 
-            dom = CQ.CreateFragment("<div id='test' quotethis=\"must've\" class=\"one two\" data='\"hello\"' noquote=\"regulartext\"");
+            dom = CQ.CreateFragment("<div id='test' quotethis=\"must've\" class=\"one two\" data='\"hello\"' noquote=\"regulartext\">");
             dom.Document.DomRenderingOptions = 0;
 
             var expected = "<div id=test class=\"one two\" quotethis=\"must've\" data='\"hello\"' noquote=regulartext></div>";

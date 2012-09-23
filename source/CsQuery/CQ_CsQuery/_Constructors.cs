@@ -213,7 +213,7 @@ namespace CsQuery
                 // not actually a CQ object, we can get the Document the els are bound to from one of the
                 // elements. 
 
-                var el = elements.FirstOrDefault();
+                var el = list.FirstOrDefault();
                 if (el != null)
                 {
                     dom.Document = el.Document;
@@ -310,7 +310,6 @@ namespace CsQuery
         protected void CreateNewDocument()
         {
             Document = new DomDocument();
-            FinishCreatingNewDocument();
         }
 
         /// <summary>
@@ -320,7 +319,6 @@ namespace CsQuery
         protected void CreateNewFragment()
         {
             Document = new DomFragment();
-            FinishCreatingNewDocument();
         }
 
         /// <summary>
@@ -336,7 +334,6 @@ namespace CsQuery
 
             Document = DomDocument.Create(elements.Clone(), HtmlParsingMode.Fragment);
             AddSelection(Document.ChildNodes);
-            FinishCreatingNewDocument();
         }
 
         /// <summary>
@@ -356,7 +353,6 @@ namespace CsQuery
             Document = DomDocument.Create(html,HtmlParsingMode.Document);
             HtmlParser.Obsolete.HtmlElementFactory.ReorganizeStrandedTextNodes(Document);
             AddSelection(Document.ChildNodes);
-            FinishCreatingNewDocument();
         }
 
         /// <summary>
@@ -379,18 +375,8 @@ namespace CsQuery
             //  reflects the original document. 
             
             SetSelection(Document.ChildNodes.ToList(),SelectionSetOrder.Ascending);
-            FinishCreatingNewDocument();
         }
 
-        /// <summary>
-        /// Apply the default rendering options to the new document.
-        /// </summary>
-
-        private void FinishCreatingNewDocument()
-        {
-            Document.DomRenderingOptions = CsQuery.Config.DomRenderingOptions;
-        }
-        
         #endregion
     }
 }

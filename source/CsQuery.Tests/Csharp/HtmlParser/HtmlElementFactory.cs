@@ -62,7 +62,7 @@ namespace CsQuery.Tests.Csharp.HtmlParser
             
             //Assert.AreEqual("<input type=\"text>text<div> value=\" x /><div>xxx</div>", output.Render(), "some messed up attributes -- keeps open til closing quote, tosses unexpected quote");
             // test changed for validator.nu parser - this is correct now! The attribute name should actually be 'x"'
-            Assert.AreEqual("<input type=\"text>text<div> value=\" x\"=\"\" /><div>xxx</div>", output.Render(), "some messed up attributes -- keeps open til closing quote, tosses unexpected quote");
+            Assert.AreEqual("<input type=\"text>text<div> value=\" x\" /><div>xxx</div>", output.Render(), "some messed up attributes -- keeps open til closing quote, tosses unexpected quote");
 
             // when an unexpected close tag is found:
             // 1) Try to match to an open tag above. If found, close everything currently open.
