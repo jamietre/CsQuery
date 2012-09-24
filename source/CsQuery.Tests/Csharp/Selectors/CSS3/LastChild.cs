@@ -21,6 +21,8 @@ namespace CsQuery.Tests.Csharp.Selectors
         public void LastChild()
         {
 
+            var Dom = this.Dom.Clone();
+
             var res = Dom["body > [id] > :last-child"]; // two elements with IDs
             Assert.AreEqual(q("textarea", "test-show-last"), res, "last-child with child works");
 

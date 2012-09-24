@@ -322,13 +322,17 @@
              A new CQ object
              </returns>
         </member>
-        <member name="M:CsQuery.CQ.CreateFragment(System.String)">
+        <member name="M:CsQuery.CQ.CreateFragment(System.String,System.String)">
              <summary>
              Creeate a new fragment from HTML text.
              </summary>
             
              <param name="html">
-             A string of HTML
+             A string of HTML.
+             </param>
+             <param name="elementContext">
+             (optional) context for the element; this determines how parsing rules are applied. If null,
+             it will be considered in a legal context.
              </param>
             
              <returns>
@@ -1406,7 +1410,7 @@
              .
              </returns>
         </member>
-        <member name="M:CsQuery.CQ.InsertAtOffset(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},System.Int32,CsQuery.CQ@)">
+        <member name="M:CsQuery.CQ.InsertAtOffset(CsQuery.CQ,System.Int32,CsQuery.CQ@)">
              <summary>
              Insert every element in the selection at or after the index of each target (adding offset to
              the index). If there is more than one target, the a clone is made of the selection for the
@@ -2859,6 +2863,19 @@
              <url>
              http://api.jquery.com/jQuery/#jQuery1
              </url>
+        </member>
+        <member name="M:CsQuery.CQ.ExpandSelfClosingTags(System.String)">
+             <summary>
+             Parses an HTML snippet so self-closing HTML tags are expanded (except those that cannot have children)
+             </summary>
+            
+             <param name="html">
+             The HTML.
+             </param>
+            
+             <returns>
+             The string with the items expanded
+             </returns>
         </member>
         <member name="M:CsQuery.CQ.Filter(System.String)">
              <summary>
@@ -4369,7 +4386,7 @@
              The elements to provide the source for this object's DOM.
              </param>
         </member>
-        <member name="M:CsQuery.CQ.CreateNewDocument(System.Char[],CsQuery.HtmlParser.HtmlParsingMode)">
+        <member name="M:CsQuery.CQ.CreateNewDocument(System.String,CsQuery.HtmlParser.HtmlParsingMode)">
              <summary>
              Bind this instance to a new DomDocument created from HTML using the specified parsing mode.
              </summary>
@@ -4381,7 +4398,7 @@
              The HTML parsing mode.
              </param>
         </member>
-        <member name="M:CsQuery.CQ.CreateNewFragment(System.Char[],CsQuery.HtmlParser.HtmlParsingMode)">
+        <member name="M:CsQuery.CQ.CreateNewFragment(System.String,CsQuery.HtmlParser.HtmlParsingMode)">
              <summary>
              Bind this instance to a new DomFragment created from HTML using the specified parsing mode.
              </summary>
@@ -4392,11 +4409,6 @@
              <param name="htmlParsingMode">
              The HTML parsing mode.
              </param>
-        </member>
-        <member name="M:CsQuery.CQ.FinishCreatingNewDocument">
-            <summary>
-            Apply the default rendering options to the new document.
-            </summary>
         </member>
         <member name="M:CsQuery.CQ.ToJSON(System.Object)">
              <summary>
@@ -4753,7 +4765,7 @@
             null.
             </summary>
         </member>
-        <member name="T:CsQuery.Dom.ICSSStyleRule">
+        <member name="T:CsQuery.ICSSStyleRule">
              <summary>
              Interface for a CSS style rule.
              </summary>
@@ -4762,13 +4774,13 @@
              http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleRule
              </url>
         </member>
-        <member name="P:CsQuery.Dom.ICSSStyleRule.SelectorText">
+        <member name="P:CsQuery.ICSSStyleRule.SelectorText">
             <summary>
             The textual representation of the selector for the rule set. The implementation may have
             stripped out insignificant whitespace while parsing the selector.
             </summary>
         </member>
-        <member name="P:CsQuery.Dom.ICSSStyleRule.Style">
+        <member name="P:CsQuery.ICSSStyleRule.Style">
             <summary>
             The declaration-block of this rule set.
             </summary>
@@ -4808,7 +4820,7 @@
             Gets the CSS rules for this style sheet.
             </summary>
         </member>
-        <member name="T:CsQuery.Dom.Implementation.CSSRule">
+        <member name="T:CsQuery.Implementation.CSSRule">
              <summary>
              Interface for icss rule.
              </summary>
@@ -4817,7 +4829,7 @@
              http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSRule
              </url>
         </member>
-        <member name="M:CsQuery.Dom.Implementation.CSSRule.#ctor(CsQuery.ICSSStyleSheet,CsQuery.ICSSRule)">
+        <member name="M:CsQuery.Implementation.CSSRule.#ctor(CsQuery.ICSSStyleSheet,CsQuery.ICSSRule)">
              <summary>
              Constructor for a CSS rule.
              </summary>
@@ -4829,18 +4841,18 @@
              The parent rule.
              </param>
         </member>
-        <member name="P:CsQuery.Dom.Implementation.CSSRule.Type">
+        <member name="P:CsQuery.Implementation.CSSRule.Type">
             <summary>
             Gets the type of rule.
             </summary>
         </member>
-        <member name="P:CsQuery.Dom.Implementation.CSSRule.CssText">
+        <member name="P:CsQuery.Implementation.CSSRule.CssText">
             <summary>
             The parsable textual representation of the rule. This reflects the current state of the rule
             and not its initial value.
             </summary>
         </member>
-        <member name="P:CsQuery.Dom.Implementation.CSSRule.ParentStyleSheet">
+        <member name="P:CsQuery.Implementation.CSSRule.ParentStyleSheet">
              <summary>
              The style sheet that contains this rule.
              </summary>
@@ -4849,7 +4861,7 @@
              The parent style sheet.
              </value>
         </member>
-        <member name="P:CsQuery.Dom.Implementation.CSSRule.ParentRule">
+        <member name="P:CsQuery.Implementation.CSSRule.ParentRule">
              <summary>
              If this rule is contained inside another rule (e.g. a style rule inside an @media block),
              this is the containing rule. If this rule is not nested inside any other rules, this returns
@@ -4860,7 +4872,7 @@
              The parent rule.
              </value>
         </member>
-        <member name="T:CsQuery.Dom.Implementation.CSSStyleRule">
+        <member name="T:CsQuery.Implementation.CSSStyleRule">
              <summary>
              A CSS style rule.
              </summary>
@@ -4869,7 +4881,7 @@
              http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleRule
              </url>
         </member>
-        <member name="M:CsQuery.Dom.Implementation.CSSStyleRule.#ctor(CsQuery.ICSSStyleSheet,CsQuery.ICSSRule)">
+        <member name="M:CsQuery.Implementation.CSSStyleRule.#ctor(CsQuery.ICSSStyleSheet,CsQuery.ICSSRule)">
              <summary>
              Constructor.
              </summary>
@@ -4881,24 +4893,24 @@
              The parent rule.
              </param>
         </member>
-        <member name="P:CsQuery.Dom.Implementation.CSSStyleRule.SelectorText">
+        <member name="P:CsQuery.Implementation.CSSStyleRule.SelectorText">
             <summary>
             The textual representation of the selector for the rule set. The implementation may have
             stripped out insignificant whitespace while parsing the selector.
             </summary>
         </member>
-        <member name="P:CsQuery.Dom.Implementation.CSSStyleRule.Style">
+        <member name="P:CsQuery.Implementation.CSSStyleRule.Style">
             <summary>
             The declaration-block of this rule set.
             </summary>
         </member>
-        <member name="P:CsQuery.Dom.Implementation.CSSStyleRule.CssText">
+        <member name="P:CsQuery.Implementation.CSSStyleRule.CssText">
             <summary>
             The parsable textual representation of the rule. This reflects the current state of the rule
             and not its initial value.
             </summary>
         </member>
-        <member name="T:CsQuery.Dom.Implementation.CSSStyleSheet">
+        <member name="T:CsQuery.Implementation.CSSStyleSheet">
              <summary>
              A CSS style sheet.
              </summary>
@@ -4907,7 +4919,7 @@
              http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleSheet
              </url>
         </member>
-        <member name="M:CsQuery.Dom.Implementation.CSSStyleSheet.#ctor(CsQuery.IDomElement)">
+        <member name="M:CsQuery.Implementation.CSSStyleSheet.#ctor(CsQuery.IDomElement)">
              <summary>
              Constructor.
              </summary>
@@ -4916,18 +4928,18 @@
              The node that owns this item.
              </param>
         </member>
-        <member name="P:CsQuery.Dom.Implementation.CSSStyleSheet.Disabled">
+        <member name="P:CsQuery.Implementation.CSSStyleSheet.Disabled">
             <summary>
             Indicates whether the style sheet is applied to the document.
             </summary>
         </member>
-        <member name="P:CsQuery.Dom.Implementation.CSSStyleSheet.Href">
+        <member name="P:CsQuery.Implementation.CSSStyleSheet.Href">
             <summary>
             If the style sheet is a linked style sheet, the value of its attribute is its location. For
             inline style sheets, the value of this attribute is null.
             </summary>
         </member>
-        <member name="P:CsQuery.Dom.Implementation.CSSStyleSheet.OwnerNode">
+        <member name="P:CsQuery.Implementation.CSSStyleSheet.OwnerNode">
              <summary>
              The node that associates this style sheet with the document. For HTML, this may be the
              corresponding LINK or STYLE element.
@@ -4937,7 +4949,7 @@
              The owner node.
              </value>
         </member>
-        <member name="P:CsQuery.Dom.Implementation.CSSStyleSheet.Type">
+        <member name="P:CsQuery.Implementation.CSSStyleSheet.Type">
              <summary>
              This specifies the style sheet language for this style sheet. This will always be "text/css".
              </summary>
@@ -4946,7 +4958,7 @@
              The type.
              </value>
         </member>
-        <member name="P:CsQuery.Dom.Implementation.CSSStyleSheet.CssRules">
+        <member name="P:CsQuery.Implementation.CSSStyleSheet.CssRules">
              <summary>
              Gets the CSS rules for this style sheet.
              </summary>
@@ -4955,14 +4967,15 @@
              The CSS rules.
              </value>
         </member>
-        <member name="T:CsQuery.Implementation.HTMLLabelElement">
-             <summary>
-             A LABEL element.
-             </summary>
-            
-             <url>
-             http://dev.w3.org/html5/spec/single-page.html#the-label-element
-             </url>
+        <member name="T:CsQuery.Implementation.HTMLStyleElement">
+            <summary>
+            A STYLE element
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.HTMLRawInnerTextElementBase">
+            <summary>
+            An HTML text area element.
+            </summary>
         </member>
         <member name="T:CsQuery.Implementation.DomElement">
             <summary>
@@ -6602,6 +6615,28 @@
              An enumerator 
              </returns>
         </member>
+        <member name="M:CsQuery.Implementation.DomContainer`1.RenderTextNodes(System.Text.StringBuilder)">
+             <summary>
+             Renders the contents of the text nodes to the passed StringBuilder.
+             </summary>
+            
+             <param name="sb">
+             The stringbuilder
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomContainer`1.RenderChildTextNode(CsQuery.IDomObject,System.Text.StringBuilder)">
+             <summary>
+             Renders the child text node. This can be overridden for non-default text handling by some
+             element types (e.g. textarea)
+             </summary>
+            
+             <param name="textNode">
+             The text node.
+             </param>
+             <param name="sb">
+             The stringbuilder.
+             </param>
+        </member>
         <member name="P:CsQuery.Implementation.DomContainer`1.ChildNodes">
             <summary>
             Returns all children (including inner HTML as objects);
@@ -7663,6 +7698,40 @@
              int
              </returntype>
         </member>
+        <member name="P:CsQuery.Implementation.HTMLRawInnerTextElementBase.Value">
+            <summary>
+            The value of the TEXTAREA's contents
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLRawInnerTextElementBase.InnerText">
+            <summary>
+            For TEXTAREA elements, InnerText doesn't actually do anything, whereas Value is the InnerText.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.HTMLStyleElement.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.HTMLScriptElement">
+            <summary>
+            A SCRIPT
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.HTMLScriptElement.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.HTMLLabelElement">
+             <summary>
+             A LABEL element.
+             </summary>
+            
+             <url>
+             http://dev.w3.org/html5/spec/single-page.html#the-label-element
+             </url>
+        </member>
         <member name="T:CsQuery.IHTMLLabelElement">
              <summary>
              A LABEL element.
@@ -8362,16 +8431,6 @@
         <member name="T:CsQuery.Implementation.HTMLTextAreaElement">
             <summary>
             An HTML text area element.
-            </summary>
-        </member>
-        <member name="M:CsQuery.Implementation.HTMLTextAreaElement.#ctor">
-            <summary>
-            Default constructor.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLTextAreaElement.Value">
-            <summary>
-            The value of the TEXTAREA's contents
             </summary>
         </member>
         <member name="T:CsQuery.Implementation.HTMLOptionElement">
@@ -10486,6 +10545,73 @@
         <member name="T:CsQuery.ExtensionMethods.Xml.ExtensionMethods">
             <summary>
             Extension methods for converting to XML
+            </summary>
+        </member>
+        <member name="T:CsQuery.HtmlParser.DomTreeBuilder">
+            <summary>
+            The tree builder glue for building a tree through the public DOM APIs.
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParser.DomTreeBuilder.document">
+            <summary>
+            The current doc.
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParser.DomTreeBuilder.isFragment">
+            <summary>
+            This is a fragment
+            </summary>
+        </member>
+        <member name="M:CsQuery.HtmlParser.DomTreeBuilder.InsertFosterParentedCharacters(System.String,CsQuery.IDomObject,CsQuery.IDomObject)">
+            <summary>
+            Return the document fragment.
+            </summary>
+            <returns>The document fragment</returns>
+        </member>
+        <member name="P:CsQuery.HtmlParser.DomTreeBuilder.Document">
+            <summary>
+            Returns the document.
+            </summary>
+            <returns>The document</returns>
+        </member>
+        <member name="T:CsQuery.HtmlParser.ElementFactory">
+            <summary>
+            This is a simple API for the parsing process.
+            Part of this is a port of the nu.validator.htmlparser.io.Driver class.
+            The parser currently ignores the encoding in the html source and parses everything as UTF-8.
+            </summary>
+            
+        </member>
+        <member name="M:CsQuery.HtmlParser.ElementFactory.GetContext(System.String)">
+             <summary>
+             Gets a default context for a tag
+             </summary>
+            
+             <param name="tag">
+             The tag.
+             </param>
+            
+             <returns>
+             The context.
+             </returns>
+        </member>
+        <member name="M:CsQuery.HtmlParser.ElementFactory.GetContext(System.Char[])">
+             <summary>
+             Gets a context by inspecting the beginning of a character array
+             </summary>
+            
+             <param name="buffer">
+             The buffer.
+             </param>
+            
+             <returns>
+             The context.
+             </returns>
+        </member>
+        <member name="M:CsQuery.HtmlParser.ElementFactory.ConfigureDefaultContextMap">
+            <summary>
+            Configure default context: creates a default context for arbitrary fragments so they are valid no matter what, 
+            so that true fragments can be created without concern for the context
             </summary>
         </member>
         <member name="T:CsQuery.HtmlParser.ElementScope">
@@ -14205,6 +14331,25 @@
              https://developer.mozilla.org/en/DOM/document.createComment
              </url>
         </member>
+        <member name="M:CsQuery.IDomDocument.CreateDocumentType(System.String,System.String,System.String)">
+             <summary>
+             Creates a document type node.
+             </summary>
+            
+             <param name="type">
+             The type.
+             </param>
+             <param name="publicIdentifier">
+             The public type identifier.
+             </param>
+             <param name="systemIdentifier">
+             The system type identifier.
+             </param>
+            
+             <returns>
+             The new document type.
+             </returns>
+        </member>
         <member name="M:CsQuery.IDomDocument.QuerySelector(System.String)">
              <summary>
              Returns the first element within the document (using depth-first pre-order traversal of the
@@ -14379,13 +14524,7 @@
             Create a new, empty DOM document
             </summary>
         </member>
-        <member name="M:CsQuery.Implementation.DomDocument.#ctor(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
-            <summary>
-            Create a new document from a sequence of elements
-            </summary>
-            <param name="elements"></param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomDocument.#ctor(System.Char[],CsQuery.HtmlParser.HtmlParsingMode)">
+        <member name="M:CsQuery.Implementation.DomDocument.Populate(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
              <summary>
              Create a new document from a character array of html.
              </summary>
@@ -14471,29 +14610,23 @@
              The element by id&lt; t&gt;
              </returns>
         </member>
-        <member name="M:CsQuery.Implementation.DomDocument.CreateNew``1(System.Char[],CsQuery.HtmlParser.HtmlParsingMode)">
+        <member name="M:CsQuery.Implementation.DomDocument.CreateDocumentType(System.String,System.String,System.String)">
              <summary>
-             Creates an IDomDocument that is derived from this one. The new type can also be a derived type,
-             such as IDomFragment. The new object will inherit DomRenderingOptions from this one.
+             Creates the document type node. 
              </summary>
             
-             <exception cref="T:System.ArgumentException">
-             Thrown when one or more arguments have unsupported or illegal values.
-             </exception>
-            
-             <typeparam name="T">
-             The type of object to create that is IDomDocument.
-             </typeparam>
-             <param name="html">
-             The HTML source for the new document.
+             <param name="type">
+             The type.
              </param>
-             <param name="htmlParsingMode">
-             The HTML parsing mode.
+             <param name="publicIdentifier">
+             Public identifier
+             </param>
+             <param name="systemIdentifier">
+             System identifier
              </param>
             
              <returns>
-             A new, empty concrete class that is represented by the interface T, configured with the same
-             options as the current object.
+             The new document type.
              </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomDocument.CreateNew``1(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
@@ -14676,6 +14809,40 @@
         <member name="T:CsQuery.Implementation.DomDocumentType">
             <summary>
             A special type for the DOCTYPE node
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocumentType.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocumentType.#ctor(CsQuery.DocType)">
+             <summary>
+             Constructor to create based on one of several common predefined types.
+             </summary>
+            
+             <param name="docType">
+             Type of the document.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocumentType.#ctor(System.String,System.String,System.String)">
+             <summary>
+             Constructor to create a specific document type node
+             </summary>
+            
+             <param name="type">
+             The type.
+             </param>
+             <param name="publicIdentifier">
+             Identifier for the public.
+             </param>
+             <param name="systemIdentifier">
+             Identifier for the system.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocumentType.SetDocType(CsQuery.DocType)">
+            <summary>
+            Sets document type data values from a doc type
             </summary>
         </member>
         <member name="T:CsQuery.Implementation.StyleChangedArgs">
@@ -16583,56 +16750,56 @@
             <param name="deep"></param>
             <returns></returns>
         </member>
-        <member name="T:CsQuery.HtmlParser.IterationData">
+        <member name="T:CsQuery.HtmlParser.Obsolete.IterationData">
             <summary>
             A class encapsulating the state of an HTML parser element.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.IterationData.WrapLiterals">
+        <member name="F:CsQuery.HtmlParser.Obsolete.IterationData.WrapLiterals">
             <summary>
             When true, literals that are not the child of another element should be wrapped in a
             "span" block.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.IterationData.InsertionMode">
+        <member name="F:CsQuery.HtmlParser.Obsolete.IterationData.InsertionMode">
             <summary>
             The insertion mode active at this time.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.IterationData.TokenizerState">
+        <member name="F:CsQuery.HtmlParser.Obsolete.IterationData.TokenizerState">
             <summary>
             State of the tokenizer.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.IterationData.Parent">
+        <member name="F:CsQuery.HtmlParser.Obsolete.IterationData.Parent">
             <summary>
             The parent object to this object.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.IterationData.Element">
+        <member name="F:CsQuery.HtmlParser.Obsolete.IterationData.Element">
             <summary>
             The DomObject that this IterationData is creating.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.IterationData.Pos">
+        <member name="F:CsQuery.HtmlParser.Obsolete.IterationData.Pos">
             <summary>
             The current placeholder/pointer position.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.IterationData.HtmlStart">
+        <member name="F:CsQuery.HtmlParser.Obsolete.IterationData.HtmlStart">
             <summary>
             The starting position of content (inner HTML) for this element. When a non-text character is
             found, the content from this position until the curren pointer position will be mapped to a
             text node.
             </summary>
         </member>
-        <member name="M:CsQuery.HtmlParser.IterationData.Reset">
+        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.Reset">
             <summary>
             Use this to prepare the iterator object to continue finding siblings. It retains the parent.
             It just avoids having to recreate an instance of this object for the next tag.
             </summary>
         </member>
-        <member name="M:CsQuery.HtmlParser.IterationData.Reset(System.Int32)">
+        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.Reset(System.Int32)">
              <summary>
              Use this to prepare the iterator object to continue finding siblings. It retains the parent.
              It just avoids having to recreate an instance of this object for the next tag.
@@ -16642,7 +16809,7 @@
              The index position to which to reset the pointer.
              </param>
         </member>
-        <member name="M:CsQuery.HtmlParser.IterationData.ReadText(System.Char[])">
+        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.ReadText(System.Char[])">
              <summary>
              Read content from the current position as text only (if InsertionMode.Text)
              </summary>
@@ -16651,7 +16818,7 @@
              The HTML.
              </param>
         </member>
-        <member name="M:CsQuery.HtmlParser.IterationData.FindNextTag(System.Char[])">
+        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.FindNextTag(System.Char[])">
              <summary>
              Advance the pointer to the next caret, or past the end if none is found.
              </summary>
@@ -16664,7 +16831,7 @@
              true if it succeeds, false if it fails.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.IterationData.TryGetLiteral(CsQuery.HtmlParser.HtmlElementFactory,CsQuery.IDomObject@)">
+        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.TryGetLiteral(CsQuery.HtmlParser.Obsolete.HtmlElementFactory,CsQuery.IDomObject@)">
              <summary>
              Returns a literal object for the text between HtmlStart (the last position of the end of a
              tag) and the current position. If !AllowLiterals then it's wrapped in a span.
@@ -16681,7 +16848,7 @@
              true if it succeeds, false if it fails.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.IterationData.CloseElement(CsQuery.HtmlParser.HtmlElementFactory)">
+        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.CloseElement(CsQuery.HtmlParser.Obsolete.HtmlElementFactory)">
              <summary>
              Close out this element. This method will return true if something can be yielded; this this
              means it's got a parent at the top of the heirarchy. Otherwise it's just closed but false is
@@ -16696,7 +16863,7 @@
              An enumerator that allows foreach to be used to process close element in this collection.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.IterationData.FinishTagOpener(System.Char[],CsQuery.IDomObject@)">
+        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.FinishTagOpener(System.Char[],CsQuery.IDomObject@)">
              <summary>
              Call when attribute parsing is finished; either adds this to the parent, or yields it if
              complete &amp; no parent. The return value indicates whether there are any children.
@@ -16713,7 +16880,7 @@
              true if it succeeds, false if it fails.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.IterationData.GetTagOpener(System.Char[])">
+        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.GetTagOpener(System.Char[])">
              <summary>
              Returns the tag name. The placeholder should be on the opening caret of a tag, and upon exit
              will be on the first stop character (e.g. space after the tag name)
@@ -16727,7 +16894,7 @@
              The new tag name.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.IterationData.GetCloseTag(System.Char[])">
+        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.GetCloseTag(System.Char[])">
              <summary>
              Return the current closing tag. Expects the placeholder to be _after_ an opening caret for a
              close tag, and returns the tag name. Upon exit, the placeholder is at the next position after
@@ -16742,7 +16909,7 @@
              The close tag.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.IterationData.GetOpenText(System.Char[])">
+        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.GetOpenText(System.Char[])">
              <summary>
              Returns all text from the current position up to but not including the next opening caret.
              The placeholder will be on the opening caret.
@@ -16756,7 +16923,7 @@
              The open text, or null if the placeholder is already at a caret.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.IterationData.GetTagAttribute(System.Char[])">
+        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.GetTagAttribute(System.Char[])">
              <summary>
              Parse an HTML attribute construct: {x=["|']y["|']]} or just {x}) and add the attribute to the
              current element if successful. The placeholder should be tag opening construct but after the
@@ -16793,7 +16960,7 @@
              true if it succeeds, false if it fails.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.IterationData.AddNewParent(System.UInt16,System.Int32)">
+        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.AddNewParent(System.UInt16,System.Int32)">
              <summary>
              Add a new parent of type tagId. In other words, wrap the current element in a new element.
              </summary>
@@ -16809,7 +16976,7 @@
              The iteration data representing the current element (replaces the
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.IterationData.AddNewChild">
+        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.AddNewChild">
              <summary>
              Adds a new child to this item, and returns it.
              </summary>
@@ -16818,7 +16985,7 @@
              New IterationData that is a child of the current IterationData.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.IterationData.AddNewChild(System.Int32)">
+        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.AddNewChild(System.Int32)">
              <summary>
              Adds a new child to this item, and returns it
              </summary>
@@ -16831,7 +16998,7 @@
              New IterationData that is a child of the current IterationData
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.IterationData.MoveOutsideTag(System.Char[])">
+        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.MoveOutsideTag(System.Char[])">
              <summary>
              Move pointer to the first character after the closing caret of this tag.
              </summary>
@@ -16844,7 +17011,7 @@
              Returns True if there are children.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.IterationData.ParentTagID">
+        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.ParentTagID">
              <summary>
              Gets the token for the parent node to this node.
              </summary>
@@ -17922,23 +18089,23 @@
             Gets a list of clauses in this selector
             </summary>
         </member>
-        <member name="T:CsQuery.HtmlParser.HtmlElementFactory">
+        <member name="T:CsQuery.HtmlParser.Obsolete.HtmlElementFactory">
             <summary>
             The HTML parser
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.HtmlElementFactory.GenerateOptionalElements">
+        <member name="F:CsQuery.HtmlParser.Obsolete.HtmlElementFactory.GenerateOptionalElements">
             <summary>
             When true, HTML5 optional elements will be created automatically. This spefically excludes 
             HTML, HEAD, TITLE, and BODY. Use IsFragment=true to create those.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.HtmlElementFactory.WrapRootTextNodes">
+        <member name="F:CsQuery.HtmlParser.Obsolete.HtmlElementFactory.WrapRootTextNodes">
             <summary>
             When true, text nodes that are not the child of another elment will be wrapped in SPAN tags
             </summary>
         </member>
-        <member name="M:CsQuery.HtmlParser.HtmlElementFactory.ParseAsDocument">
+        <member name="M:CsQuery.HtmlParser.Obsolete.HtmlElementFactory.ParseAsDocument">
              <summary>
              Parse with options for a full HTML document.
              </summary>
@@ -17947,7 +18114,7 @@
              A list of IDomObject elements; the topmost sequence of the DOM.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.HtmlElementFactory.ParseAsFragment">
+        <member name="M:CsQuery.HtmlParser.Obsolete.HtmlElementFactory.ParseAsFragment">
              <summary>
              Parse with options for fragment.
              </summary>
@@ -17956,7 +18123,7 @@
              A list of IDomObject elements; the topmost sequence of the fragment.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.HtmlElementFactory.ParseAsContent">
+        <member name="M:CsQuery.HtmlParser.Obsolete.HtmlElementFactory.ParseAsContent">
              <summary>
              Parse with options for content (generate most optional elements but not document wrapping
              HTML/BODY)
@@ -17966,7 +18133,7 @@
              A list of IDomObject elements; the topmost sequence of the document.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.HtmlElementFactory.Parse(CsQuery.HtmlParser.HtmlParsingMode)">
+        <member name="M:CsQuery.HtmlParser.Obsolete.HtmlElementFactory.Parse(CsQuery.HtmlParser.HtmlParsingMode)">
              <summary>
              Parse the HTML, and return it, based on options set.
              </summary>
@@ -17983,7 +18150,7 @@
              A List of IDomObject elements; the topmost sequence of the document.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.HtmlElementFactory.Parse">
+        <member name="M:CsQuery.HtmlParser.Obsolete.HtmlElementFactory.Parse">
              <summary>
              Parse the HTML, and return it, based on options set.
              </summary>
@@ -17998,7 +18165,7 @@
              repeatedly as the original enumerator is accessed directly by clients..
              </implementation>
         </member>
-        <member name="M:CsQuery.HtmlParser.HtmlElementFactory.ParseImplementation">
+        <member name="M:CsQuery.HtmlParser.Obsolete.HtmlElementFactory.ParseImplementation">
              <summary>
              Parse the HTML, and return it, based on options set.
              </summary>
@@ -18007,12 +18174,12 @@
              An enumerator of the top-level elements.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.HtmlElementFactory.ReorganizeStrandedTextNodes(CsQuery.IDomDocument)">
+        <member name="M:CsQuery.HtmlParser.Obsolete.HtmlElementFactory.ReorganizeStrandedTextNodes(CsQuery.IDomDocument)">
             <summary>
             In the future I will update the parser to do this directly, since this requires binding to a Document to work.
             </summary>
         </member>
-        <member name="P:CsQuery.HtmlParser.HtmlElementFactory.IsDocument">
+        <member name="P:CsQuery.HtmlParser.Obsolete.HtmlElementFactory.IsDocument">
             <summary>
             When true, HTML5 optional elements will be created automatically. This should be false for fragments.
             </summary>

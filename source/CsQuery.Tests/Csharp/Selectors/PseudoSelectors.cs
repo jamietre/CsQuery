@@ -20,7 +20,7 @@ namespace CsQuery.Tests.Csharp.Selectors
     /// </summary>
 
     [TestFixture, TestClass]
-    public class PseudoSelector : CsQueryTest
+    public abstract class PseudoSelector : CsQueryTest
     {
         /// <summary>
         /// Used by all tests in the partial class. This happens to be the first one we set up. 

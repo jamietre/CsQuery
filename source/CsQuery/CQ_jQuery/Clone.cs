@@ -27,7 +27,9 @@ namespace CsQuery
 
         public CQ Clone()
         {
+
             CQ csq = NewInstance();
+            csq.Document = Document.CreateNew();
 
             foreach (var item in SelectionSet)
             {

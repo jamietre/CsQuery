@@ -43,8 +43,11 @@ namespace CsQuery.Tests.Csharp.Selectors
         public void NthChildOfType_Children()
         {
             var res = Dom["body > span > :nth-of-type(1)"];
+
+            var expected = Dom[".profile-triangle, .profile-link, input[name=stuff], #textarea"];
+
             CollectionAssert.AreEqual(
-                Dom[".profile-triangle, .profile-link, input[name=stuff], #textarea"], 
+                expected, 
                 res);
 
         }

@@ -147,13 +147,13 @@ namespace CsQuery.Implementation
                     throw new InvalidOperationException("The DocType must have a name, e.g. html");
                 }
 
-                if (parts.Length >= 2)
-                {
-                    publicIdentifier = parts[1];
-                }
                 if (parts.Length >= 3)
                 {
-                    systemIdentifier = String.Join(" ", parts.Skip(2));
+                    publicIdentifier = parts[2];
+                }
+                if (parts.Length >= 4)
+                {
+                    systemIdentifier = String.Join(" ", parts.Skip(3));
                 }
                 SetDocType(docTypeName,publicIdentifier,systemIdentifier);
             }

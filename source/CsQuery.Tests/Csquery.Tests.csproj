@@ -208,6 +208,9 @@
     <Compile Include="Csharp\Selectors\jQuery\Hidden.cs" />
     <Compile Include="Csharp\Selectors\jQuery\Visible.cs" />
     <Compile Include="Csharp\Selectors\jQuery\Parent.cs" />
+    <Compile Include="Csharp\Selectors\PseudoSelectors.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Csharp\Selectors\RegexExtension.cs" />
     <Compile Include="Csharp\Selectors\Extensions.cs" />
     <Compile Include="Csharp\Utility\Support.cs" />
@@ -234,7 +237,6 @@
     <Compile Include="Csharp\Promises\Promises.cs" />
     <Compile Include="Csharp\Selectors\Combinators.cs" />
     <Compile Include="Csharp\Selectors\AttributeSelectors.cs" />
-    <Compile Include="Csharp\Selectors\PseudoSelectors.cs" />
     <Compile Include="Csharp\Miscellaneous\Miscellaneous.cs" />
     <Compile Include="Csharp\Utility\JSON\FromDictionary.cs" />
     <Compile Include="Csharp\EquationParser\Expressions.cs" />
