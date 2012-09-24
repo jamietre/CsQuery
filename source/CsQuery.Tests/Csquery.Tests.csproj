@@ -102,6 +102,7 @@
     <Compile Include="Csharp\HtmlParser\HTML5\FragmentContext.cs" />
     <Compile Include="Csharp\HtmlParser\HTML5\EdgeCases.cs" />
     <Compile Include="Csharp\HtmlParser\TextHandling.cs" />
+    <Compile Include="Csharp\Methods\Select.cs" />
     <Compile Include="Csharp\Methods\HasAttr.cs" />
     <Compile Include="Csharp\Methods\Before.cs" />
     <Compile Include="Csharp\Methods\Append.cs" />

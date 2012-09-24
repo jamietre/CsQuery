@@ -60,12 +60,10 @@ namespace CsQuery.Tests.jQuery
             Assert.AreEqual(0, img.Parent().Length, "Make sure that the generated HTML has no parent.");
             
             var div = jQuery("<div/><hr/><code/><b/>");
-            // apparently jQuery parses <div/> differently than the actual browser parser when using innerHTML;
-            // it seems to me that consistency with the browser is more important than supporting <div/> the same way
-            // as jquery
-            // 
-            //Assert.AreEqual(4, div.Length, "Correct number of elements generated for div hr code b");
-            Assert.AreEqual("<div><hr /><code><b></b></code></div>", div.RenderSelection());
+            
+            Assert.AreEqual(4, div.Length, "Correct number of elements generated for div hr code b");
+            Assert.AreEqual("<div></div><hr /><code></code><b></b>", div.RenderSelection());
+            
             Assert.AreEqual(0, div.Parent().Length, "Make sure that the generated HTML has no parent." );
             
             // why would I want to do this?
@@ -108,7 +106,7 @@ namespace CsQuery.Tests.jQuery
             //    equals( elem[0].defaultValue, "TEST", "Ensure cached nodes are cloned properly (Bug #6655)" );
 
             Assert.AreEqual(2, CQ.CreateFragment(" <div/> ").Length, "Make sure whitespace is trimmed.");
-            Assert.AreEqual(3, CQ.CreateFragment(" a<div/>b ").Length, "Make sure whitespace and other characters are NOT trimmed.");
+            Assert.AreEqual(3, CQ.CreateFragment(" a<div></div>b ").Length, "Make sure whitespace and other characters are NOT trimmed.");
             
             // Unnecessary
             

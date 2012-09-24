@@ -77,8 +77,7 @@ namespace CsQuery
 
         public CQ Before(IEnumerable<IDomObject> elements)
         {
-            EnsureCsQuery(elements).InsertAtOffset(this, 0);
-            return this;
+            return EnsureCsQuery(elements).InsertAtOffset(this, 0);
         }
 
     }

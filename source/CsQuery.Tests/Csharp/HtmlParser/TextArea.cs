@@ -31,8 +31,7 @@ namespace CsQuery.Tests.Csharp.HtmlParser
             var dom = TestDom("TextAreaTest");
             var ta= dom["textarea"];
 
-            string expected = @"
-<a href=""http://www.test.com/"" target=""_blank"">
+            string expected = @"<a href=""http://www.test.com/"" target=""_blank"">
 <img src=""http://www.test.com/image.jpg"" style=""border:0"">
 </a>
 ";

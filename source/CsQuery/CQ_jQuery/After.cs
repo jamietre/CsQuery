@@ -77,8 +77,7 @@ namespace CsQuery
 
         public CQ After(IEnumerable<IDomObject> elements)
         {
-            EnsureCsQuery(elements).InsertAtOffset(this, 1);
-            return this;
+            return EnsureCsQuery(elements).InsertAtOffset(this, 1);
         }
         #endregion
 
@@ -102,7 +101,7 @@ namespace CsQuery
         protected CQ InsertAtOffset(IEnumerable<IDomObject> target, int offset)
         {
             CQ ignore;
-            return InsertAtOffset(target, offset, out ignore);
+            return InsertAtOffset(EnsureCsQuery(target), offset, out ignore);
         }
 
         /// <summary>
@@ -129,69 +128,53 @@ namespace CsQuery
         /// The current CQ object
         /// </returns>
 
-        protected CQ InsertAtOffset(IEnumerable<IDomObject> target, int offset, out CQ insertedElements)
+        protected CQ InsertAtOffset(CQ target, int offset, out CQ insertedElements)
         {
-            CQ cq = target as CQ;
-            SelectionSet<IDomObject> targetSelectionSet = null;
-
-            if (cq!=null) {
-                targetSelectionSet = cq.SelectionSet;
-            }
-
-            bool isTargetCsQuery = cq != null;
             
+            bool isTargetDisconnected = target.CsQueryParent != null && target.Document != target.CsQueryParent.Document;
+
             bool isFirst = true;
 
             // Copy the target list: it could change otherwise
             List<IDomObject> targets = new List<IDomObject>(target);
             insertedElements = NewInstance();
-            bool isEmptyTarget = targetSelectionSet.Count == 0;
+            
 
             // bind the source to the target's document if it was itself a CsQuery object, and update its selection set to reflect the 
             // current document.
 
-            if (isTargetCsQuery)
-            {
-                Document = cq.Document;
-            }
+            Document = target.Document;
 
-            if (isTargetCsQuery && isEmptyTarget)
-            {
-                // If appending items to an empty selection, just add them to the selection set
-                targetSelectionSet.AddRange(SelectionSet);
-                insertedElements.AddSelection(SelectionSet);
-
-                // selection set will be messed up if document was changed; rebuild it
-                //SelectionSet.Clear();
-                //SelectionSet.AddRange(insertedElements);
-            }
-            else
-            {
-                foreach (var el in targets)
+                if (isTargetDisconnected)
                 {
-                    if (el.IsDisconnected)
+                    // When the target is disconnected, just append elements to the selection set, not to the DOM
+                    
+                    CQ result = New();
+                    result.CsQueryParent = this.CsQueryParent;
+
+                    if (offset == 0)
                     {
-                        // Disconnected items are added to the selection set (if that's the target)
-                        if (!isTargetCsQuery)
-                        {
-                            throw new InvalidOperationException("You can't add elements to a disconnected element list, it must be in a selection set");
-                        }
-                        int index = targetSelectionSet.IndexOf(el);
-
-                        targetSelectionSet.OutputOrder = SelectionSetOrder.OrderAdded;
-        
-                        foreach (var item in SelectionSet)
-                        {
-                            targetSelectionSet.Insert(index + offset, item);
-                        }
-                        insertedElements.AddSelection(SelectionSet);
-
-                        // selection set will be messed up if document was changed; rebuild it
-                        //SelectionSet.Clear();
-                        //SelectionSet.AddRange(insertedElements);
+                        result.AddSelection(Selection);
                     }
-                    else
+                    result.AddSelection(target);
+                    if (offset == 1)
                     {
+                        result.AddSelection(Selection);
+                    }
+                    result.SelectionSet.OutputOrder = SelectionSetOrder.OrderAdded;
+                    insertedElements.AddSelection(Selection);
+                    return result;
+                    // selection set will be messed up if document was changed; rebuild it
+                    //SelectionSet.Clear();
+                    //SelectionSet.AddRange(insertedElements);
+                }
+                else
+                {
+
+                    foreach (var el in targets)
+                    {
+                    
+                    
                         if (isFirst)
                         {
                             insertedElements.AddSelection(SelectionSet);
@@ -203,17 +186,17 @@ namespace CsQuery
                         }
                         else
                         {
-                            var clone = Clone();
+                            var clone = this.Clone();
                             clone.InsertAtOffset(el, offset);
                             insertedElements.AddSelection(clone);
                         }
+                    
                     }
                 }
-            }
 
 
 
-            return this;
+            return target;
         }
         #endregion
     }

@@ -27,9 +27,9 @@ namespace CsQuery.Engine.PseudoClassSelectors
         public override bool Matches(IDomObject element)
         {
             // try to optimize this by checking for the least labor-intensive things first
-            if (element.HasChildren)
+            if (!element.HasChildren)
             {
-                return false;
+                return true;
             }
             else
             {

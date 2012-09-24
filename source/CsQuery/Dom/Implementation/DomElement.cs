@@ -157,7 +157,11 @@ namespace CsQuery.Implementation
                 case HtmlData.tagSELECT:
                     return new HTMLSelectElement();
                 case HtmlData.tagTEXTAREA:
-                    return new HTMLTextAreaElement();                
+                    return new HTMLTextAreaElement();
+                case HtmlData.tagSTYLE:
+                    return new HTMLStyleElement();
+                case HtmlData.tagSCRIPT:
+                    return new HTMLScriptElement();
                 default:
                     return new DomElement(nodeNameId);
             }
@@ -665,13 +669,7 @@ namespace CsQuery.Implementation
                 else
                 {
                     StringBuilder sb = new StringBuilder();
-                    foreach (IDomObject elm in ChildNodes)
-                    {
-                        if (elm.NodeType == NodeType.TEXT_NODE)
-                        {
-                            elm.Render(sb);
-                        }
-                    }
+                    RenderTextNodes(sb);
                     return sb.ToString();
                 }
             }
@@ -679,7 +677,7 @@ namespace CsQuery.Implementation
             {
                 if (!InnerTextAllowed)
                 {
-                    throw new InvalidOperationException(String.Format("You can't set the innerHTML for a {0} element.", NodeName));
+                    throw new InvalidOperationException(String.Format("You can't set the InnerText for a {0} element.", NodeName));
                 }
                 IDomText text;
                 if (!InnerHtmlAllowed)
@@ -694,6 +692,8 @@ namespace CsQuery.Implementation
                 ChildNodes.Add(text);
             }
         }
+
+        
 
         /// <summary>
         /// The index excluding text nodes.

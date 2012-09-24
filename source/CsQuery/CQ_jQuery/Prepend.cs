@@ -107,30 +107,29 @@ namespace CsQuery
             insertedElements = New();
             bool first = true;
 
-            foreach (var target in Elements)
+            // For the first iteration, the elements can be moved. For successive iterations, a clone must
+            // be insterted. 
+
+            List<IDomObject> list = elements.ToList();
+            int index = 0;
+            
+            foreach (var child in Elements)
             {
+               // Make sure they didn't really mean to add to a tbody or something
+                IDomElement target = GetTrueTarget(child );
 
-                // For the first iteration, the elements can be moved. For successive iterations, a clone must
-                // be insterted. 
-
-                IEnumerable<IDomObject> content =
-                    first ?
-                        elements :
-                        EnsureCsQuery(OnlyElements(elements)).Clone().SelectionSet;
-
-
-                int index = 0;
-                foreach (var addedItem in content)
+                foreach (var e in list)
                 {
-                    target.ChildNodes.Insert(index++, addedItem);
-                    insertedElements.SelectionSet.Add(addedItem);
+                    IDomObject toInsert = first ? e : e.Clone();
+
+                    target.ChildNodes.Insert(index++, toInsert);
+                    insertedElements.SelectionSet.Add(toInsert);
                 }
                 first = false;
             }
             return this;
-        }
 
-        
+        }
 
     }
 }

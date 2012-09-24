@@ -119,6 +119,7 @@ namespace CsQuery.Implementation
             //RemoveParent(item);
             if (item.ParentNode != null)
             {
+
                 item.Remove();
             }
             if (index == InnerList.Count)

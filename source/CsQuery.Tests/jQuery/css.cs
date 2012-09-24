@@ -50,7 +50,7 @@ namespace CsQuery.Tests.jQuery
             Assert.AreEqual( div.Css("width"), "4px", "Width on disconnected node." );
             Assert.AreEqual( div.Css("height"), "4px", "Height on disconnected node." );
 
-            var div2 = jQuery( "<div style='display:none;'><input type='text' style='height:20px;'/><textarea style='height:20px;'/><div style='height:20px;'></div></div>")
+            var div2 = jQuery( "<div style='display:none;'><input type='text' style='height:20px;'/><textarea style='height:20px;'></textarea><div style='height:20px;'></div></div>")
                 .AppendTo("body");
 
             Assert.AreEqual( div2.Find("input").Css("height"), "20px", "Height on hidden input." );

@@ -182,7 +182,7 @@ namespace CsQuery.Tests.Csharp.Attributes
             Assert.AreEqual("<div test=\"someValue\"></div>",el.Render());
 
             el.SetAttribute("test", "");
-            Assert.AreEqual("<div test=\"\"></div>", el.Render());
+            Assert.AreEqual("<div test></div>", el.Render());
             
             el.SetAttribute("test", null);
             Assert.AreEqual("<div></div>", el.Render());

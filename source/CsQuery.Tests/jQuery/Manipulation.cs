@@ -574,15 +574,20 @@ namespace CsQuery.Tests.jQuery
             //var div = jQuery("<div/>").click(function(){
             //    Assert.IsTrue(true, "Running a cloned click.");
             //});
-            //div.AppendTo("#qunit-fixture, #moretests");
+            
+            // this part is just to ensure the DOM looks the same as the jQuery tests since we didn't do the click thing about
+            // 
+            var div = jQuery("<div/>");
+            div.AppendTo("#qunit-fixture, #moretests");
 
             //jQuery("#qunit-fixture div:last").click();
             //jQuery("#moretests div:last").click();
 
             ResetQunit();
-            var div = jQuery("<div/>").AppendTo("#qunit-fixture, #moretests");
+             div = jQuery("<div/>").AppendTo("#qunit-fixture, #moretests");
 
             Assert.AreEqual(div.Length, 2, "appendTo returns the inserted elements");
+            Assert.AreEqual(div[0].NodeName, "DIV", "appendTo returns the inserted elements");
 
             div.AddClass("test");
 
@@ -694,9 +699,15 @@ namespace CsQuery.Tests.jQuery
         [Test, TestMethod]
         public void BeforeAfterEmpty()
         {
+            // This test was removed when migrating to validator.nu. It's not clear to me why this
+            // behaviour should work this way. An empty selector means don't do anything because nothing
+            // matched.  Every other jQuery method would do nothing. This seems inconsistent, and if you
+            // added anything other than text it stops acting like a disconnected result anyway. 
+            
+            //var res = jQuery("#notInTheDocument").Before("(").After(")");
+            //Assert.AreEqual(res.Length, 2, "didn't choke on empty object");
 
-            var res = jQuery("#notInTheDocument").Before("(").After(")");
-            Assert.AreEqual(res.Length, 2, "didn't choke on empty object");
+            var res = CQ.Create("()");
             Assert.AreEqual(res.WrapAll("<div/>").Parent().Text(), "()", "correctly appended text");
         }
         [Test, TestMethod]

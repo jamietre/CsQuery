@@ -31,6 +31,7 @@ namespace CsQuery
 
         public CQ ReplaceWith(params string[] content)
         {
+            CQ output = this;
             if (Length > 0)
             {
                 // Before allows adding of new content to an empty selector. To ensure consistency with jQuery
@@ -42,12 +43,12 @@ namespace CsQuery
                 CQ newContent = EnsureCsQuery(MergeContent(content));
                 CQ replacing = NewInstance(this);
 
-                Before(newContent);
-                SelectionSet.ExceptWith(replacing);
+                output = Before(newContent);
+                output.SelectionSet.ExceptWith(replacing);
                 replacing.Remove();
 
             }
-            return this;
+            return output;
         }
 
         /// <summary>

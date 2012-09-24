@@ -203,15 +203,18 @@ namespace CsQuery
         {
             insertedElements = New();
             bool first = true;
+
+            // must copy the enumerable first, since this can cause
+            // els to be removed from it if they move across a document boundary
+
+            List<IDomObject> list = new List<IDomObject>(elements);
+
             foreach (var obj in Elements)
             {
                 // Make sure they didn't really mean to add to a tbody or something
                 IDomElement target = GetTrueTarget(obj);
 
-                // must copy the enumerable first, since this can cause
-                // els to be removed from it if they move across a document boundary
-                
-                List<IDomObject> list = new List<IDomObject>(elements);
+
                 foreach (var e in list)
                 {
                     IDomObject toInsert = first ? e : e.Clone();

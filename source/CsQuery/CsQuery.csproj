@@ -163,6 +163,9 @@
     <Compile Include="Dom\Implementation\CSSRule.cs" />
     <Compile Include="Dom\Implementation\CSSStyleRule.cs" />
     <Compile Include="Dom\Implementation\CSSStyleSheet.cs" />
+    <Compile Include="Dom\Implementation\HtmlElements\HTMLStyleElement.cs" />
+    <Compile Include="Dom\Implementation\HtmlElements\HTMLRawInnerTextElementBase.cs" />
+    <Compile Include="Dom\Implementation\HtmlElements\HTMLScriptElement.cs" />
     <Compile Include="Dom\Implementation\HtmlElements\HTMLLabelElement.cs" />
     <Compile Include="Dom\Implementation\StyleSheet.cs" />
     <Compile Include="Dom\IReadOnlyCollection.cs" />

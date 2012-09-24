@@ -53,8 +53,11 @@ namespace CsQuery.HtmlParser
             }
             else
             {
-                lastChild = parent.LastChild;
 
+                lastChild = parent.LastChild;
+                previousParent = parent;
+                previousLastChild = lastChild;
+                lastChildCount = parent.ChildNodes.Count;
             }
 
             if (lastChild != null && lastChild.NodeType == NodeType.TEXT_NODE)
@@ -66,8 +69,6 @@ namespace CsQuery.HtmlParser
             {
                 parent.AppendChild(document.CreateTextNode(text));
             }
-            previousLastChild = lastChild;
-            lastChildCount = parent.ChildNodes.Count;
         }
 
         override protected void AppendChildrenToNewParent(IDomObject oldParent, IDomObject newParent)

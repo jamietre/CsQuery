@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using HtmlParserSharp.Core;
 using HtmlParserSharp.Common;
 using CsQuery;
+using CsQuery.Implementation;
 using CsQuery.Utility;
 using CsQuery.StringScanner;
 using CsQuery.HtmlParser;
@@ -32,7 +33,7 @@ namespace CsQuery.HtmlParser
         #region static methods
 
         public static IDomDocument Create(string html, HtmlParsingMode mode=HtmlParsingMode.Content) {
-            using (var reader = new StringReader(html)) {
+            using (var reader = new StringReader(html ?? "")) {
                 return Parser.Parse(reader,mode);
             }
         }
@@ -68,6 +69,11 @@ namespace CsQuery.HtmlParser
 
         public IDomDocument Parse(TextReader reader, HtmlParsingMode mode=HtmlParsingMode.Auto)
         {
+            if (reader.Peek() < 0)
+            {
+                return new DomFragment();
+            }
+
             HtmlParsingMode = mode;
             Reset();
             Tokenize(reader);
@@ -233,15 +239,14 @@ namespace CsQuery.HtmlParser
                         string ctx = GetContext(buffer);
                         switch (ctx)
                         {
-                            case "html":
-                            case "!doctype":
+                            case "*document":
                                 HtmlParsingMode = HtmlParsingMode.Document;
                                 break;
-                            case "body":
-                                HtmlParsingMode = HtmlParser.HtmlParsingMode.Content;
+                            case "*content":
+                                HtmlParsingMode = HtmlParsingMode.Content;
                                 break;
                             default:
-                                HtmlParsingMode = HtmlParser.HtmlParsingMode.Fragment;
+                                HtmlParsingMode = HtmlParsingMode.Fragment;
                                 treeBuilder.SetFragmentContext(ctx);
                                 break;
                         }
@@ -310,11 +315,25 @@ namespace CsQuery.HtmlParser
         private static void ConfigureDefaultContextMap()
         {
             DefaultContext = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
-            SetDefaultContext("tbody,thead", "table");
+            SetDefaultContext("tbody,thead,tfoot,colgroup,caption", "table");
+            SetDefaultContext("col", "colgroup");
             SetDefaultContext("tr", "tbody");
             SetDefaultContext("td,th", "tr");
+
             SetDefaultContext("option,optgroup", "select");
 
+            SetDefaultContext("dt,dd", "dl");
+            SetDefaultContext("li", "ol");
+
+            SetDefaultContext("meta", "head");
+            SetDefaultContext("title", "head");
+            SetDefaultContext("head", "html");
+
+            // pass these through; they will dictate high-level parsing mode
+            
+            SetDefaultContext("html", "*document");
+            SetDefaultContext("!doctype", "*document");
+            SetDefaultContext("body", "*content");
 
         }
         #endregion

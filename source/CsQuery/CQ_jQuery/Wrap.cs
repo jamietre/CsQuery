@@ -280,6 +280,7 @@ namespace CsQuery
                 IDomObject nextEl = null;
                 IDomElement innerEl = null;
                 IDomElement innerElRoot = null;
+
                 foreach (IDomObject el in SelectionSet)
                 {
 

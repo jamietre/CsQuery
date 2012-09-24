@@ -198,9 +198,50 @@ namespace CsQuery.Implementation
             {
                 foreach (IDomObject e in ChildNodes)
                 {
-                    e.Render(sb, options);
+                    if (e.NodeType == NodeType.TEXT_NODE)
+                    {
+                        RenderChildTextNode(e, sb);
+                    }
+                    else
+                    {
+                        e.Render(sb, options);
+                    }
                 }
             }
+        }
+
+        /// <summary>
+        /// Renders the contents of the text nodes to the passed StringBuilder.
+        /// </summary>
+        ///
+        /// <param name="sb">
+        /// The stringbuilder
+        /// </param>
+
+        protected void RenderTextNodes(StringBuilder sb)
+        {
+            foreach (IDomObject elm in ChildNodes.Where(item => item.NodeType == NodeType.TEXT_NODE))
+            {
+                RenderChildTextNode(elm, sb);
+            }
+
+        }
+
+        /// <summary>
+        /// Renders the child text node. This can be overridden for non-default text handling by some
+        /// element types (e.g. textarea)
+        /// </summary>
+        ///
+        /// <param name="textNode">
+        /// The text node.
+        /// </param>
+        /// <param name="sb">
+        /// The stringbuilder.
+        /// </param>
+
+        protected virtual void RenderChildTextNode(IDomObject textNode, StringBuilder sb)
+        {
+            textNode.Render(sb);
         }
 
         // Just didn't use the / and the +. A three character ID will permit over 250,000 possible children at each level

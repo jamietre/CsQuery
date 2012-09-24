@@ -73,7 +73,7 @@ namespace CsQuery.Engine
                         break;
                     case ':':
                         scanner.Next();
-                        string key = scanner.Get(MatchFunctions.PseudoSelector);
+                        string key = scanner.Get(MatchFunctions.PseudoSelector).ToLower();
                         switch (key)
                         {
                             case "input":

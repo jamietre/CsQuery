@@ -10,31 +10,13 @@ namespace CsQuery.Implementation
     /// An HTML text area element.
     /// </summary>
 
-    public class HTMLTextAreaElement : DomElement
+    public class HTMLTextAreaElement : HTMLRawInnerTextElementBase
     {
-        /// <summary>
-        /// Default constructor.
-        /// </summary>
-
-        public HTMLTextAreaElement()
-            : base(HtmlData.tagTEXTAREA)
+       
+        public HTMLTextAreaElement(): base(HtmlData.tagTEXTAREA)
         {
+
         }
 
-        /// <summary>
-        /// The value of the TEXTAREA's contents
-        /// </summary>
-
-        public override string Value
-        {
-            get
-            {
-                return InnerText;
-            }
-            set
-            {
-                base.Value = value;
-            }
-        }
     }
 }

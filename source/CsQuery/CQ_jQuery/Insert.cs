@@ -67,7 +67,7 @@ namespace CsQuery
         public CQ InsertAfter(IEnumerable<IDomObject> target)
         {
             CQ output;
-            InsertAtOffset(target, 1, out output);
+            InsertAtOffset(EnsureCsQuery(target), 1, out output);
             return output;
         }
 
@@ -184,7 +184,7 @@ namespace CsQuery
         public CQ InsertBefore(IEnumerable<IDomObject> target)
         {
             CQ output;
-            InsertAtOffset(target, 0, out output);
+            InsertAtOffset(EnsureCsQuery(target), 0, out output);
             return output;
         }
 

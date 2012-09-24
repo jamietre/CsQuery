@@ -33,28 +33,35 @@ namespace CsQuery.Tests.jQuery.Sizzle
         [Test, TestMethod]
         public void ChildAndAdjacent()
         {
-            t( "Child", "p > a",  Arrays.String("simon1","google","groups","mark","yahoo","simon") );
-            t( "Child", "p> a",  Arrays.String("simon1","google","groups","mark","yahoo","simon") );
-            t( "Child", "p >a",  Arrays.String("simon1","google","groups","mark","yahoo","simon") );
-            t( "Child", "p>a",  Arrays.String("simon1","google","groups","mark","yahoo","simon") );
-            t( "Child w/ Class", "p > a.blog",  Arrays.String("mark","simon") );
-            t( "All Children", "code > *", Arrays.String("anchor1","anchor2") );
-            t( "All Grandchildren", "p > * > *",  Arrays.String("anchor1","anchor2") );
-            t( "Adjacent", "#qunit-fixture a + a",  Arrays.String("groups") );
-            t( "Adjacent", "#qunit-fixture a +a",  Arrays.String("groups") );
-            t( "Adjacent", "#qunit-fixture a+ a",  Arrays.String("groups") );
-            t( "Adjacent", "#qunit-fixture a+a",  Arrays.String("groups") );
-            t( "Adjacent", "p + p",  Arrays.String("ap","en","sap") );
-            t( "Adjacent", "p#firstp + p", Arrays.String("ap") );
-            t( "Adjacent", "p[lang=en] + p",  Arrays.String("sap") );
-            t( "Adjacent", "a.GROUPS + code + a",  Arrays.String("mark") );
-            t( "Comma, Child, and Adjacent", "#qunit-fixture a + a, code > a",  Arrays.String("groups","anchor1","anchor2") );
-            t( "Element Preceded By", "#qunit-fixture p ~ div",  Arrays.String("foo", "moretests","tabindex-tests", "liveHandlerOrder", "siblingTest") );
-            t( "Element Preceded By", "#first ~ div",  Arrays.String("moretests","tabindex-tests", "liveHandlerOrder", "siblingTest") );
-            t( "Element Preceded By", "#groups ~ a",  Arrays.String("mark") );
-            t( "Element Preceded By", "#length ~ input",  Arrays.String("idTest") );
-            t( "Element Preceded By", "#siblingfirst ~ em",  Arrays.String("siblingnext"));
-            t( "Element Preceded By, Containing", "#liveHandlerOrder ~ div em:contains('1')", Arrays.String("siblingfirst") );
+           
+	        t( "Child", "p > a",Arrays.String("simon1","google","groups","mark","yahoo","simon") );
+	        t( "Child", "p> a",Arrays.String("simon1","google","groups","mark","yahoo","simon") );
+	        t( "Child", "p >a",Arrays.String("simon1","google","groups","mark","yahoo","simon") );
+	        t( "Child", "p>a",Arrays.String("simon1","google","groups","mark","yahoo","simon") );
+	        t( "Child w/ Class", "p > a.blog",Arrays.String("mark","simon") );
+	        t( "All Children", "code > *",Arrays.String("anchor1","anchor2") );
+	        t( "All Grandchildren", "p > * > *",Arrays.String("anchor1","anchor2") );
+	        t( "Adjacent", "#qunit-fixture a + a",Arrays.String("groups") );
+	        t( "Adjacent", "#qunit-fixture a +a",Arrays.String("groups") );
+	        t( "Adjacent", "#qunit-fixture a+ a",Arrays.String("groups") );
+	        t( "Adjacent", "#qunit-fixture a+a",Arrays.String("groups") );
+	        t( "Adjacent", "p + p",Arrays.String("ap","en","sap") );
+	        t( "Adjacent", "p#firstp + p",Arrays.String("ap") );
+	        t( "Adjacent", "p[lang=en] + p",Arrays.String("sap") );
+	        t( "Adjacent", "a.GROUPS + code + a",Arrays.String("mark") );
+	        t( "Comma, Child, and Adjacent", "#qunit-fixture a + a, code > a",Arrays.String("groups","anchor1","anchor2") );
+	        t( "Element Preceded By", "#qunit-fixture p ~ div",Arrays.String("foo", "moretests","tabindex-tests", "liveHandlerOrder", "siblingTest") );
+	        t( "Element Preceded By", "#first ~ div",Arrays.String("moretests","tabindex-tests", "liveHandlerOrder", "siblingTest") );
+	        t( "Element Preceded By", "#groups ~ a",Arrays.String("mark") );
+	        t( "Element Preceded By", "#length ~ input",Arrays.String("idTest") );
+	        t( "Element Preceded By", "#siblingfirst ~ em",Arrays.String("siblingnext", "siblingthird") );
+	        t( "Element Preceded By (multiple)", "#siblingTest em ~ em ~ em ~ span",Arrays.String("siblingspan") );
+            t("Element Preceded By, Containing", "#liveHandlerOrder ~ div em:contains('1')", Arrays.String("siblingfirst"));
+
+	       
+
+
+
         }
 
         [Test, TestMethod]
@@ -63,8 +70,20 @@ namespace CsQuery.Tests.jQuery.Sizzle
 
             var siblingFirst = document.GetElementById("siblingfirst");
 
-            CollectionAssert.AreEqual(Sizzle["~ em", siblingFirst], q("siblingnext"), "Element Preceded By with a context.");
-            CollectionAssert.AreEqual( Sizzle["+ em", siblingFirst], q("siblingnext"), "Element Directly Preceded By with a context." );
+
+	        CollectionAssert.AreEqual( Sizzle["~ em", siblingFirst], q("siblingnext", "siblingthird"), "Element Preceded By with a context." );
+	        CollectionAssert.AreEqual( Sizzle["+ em", siblingFirst], q("siblingnext"), "Element Directly Preceded By with a context." );
+	        CollectionAssert.AreEqual( Sizzle["~ em:first", siblingFirst], q("siblingnext"), "Element Preceded By positional with a context." );
+
+	        var en = document.GetElementById("en");
+	         CollectionAssert.AreEqual( Sizzle["+ p, a", en], q("yahoo", "sap"), "Compound selector with context, beginning with sibling test." );
+	         CollectionAssert.AreEqual( Sizzle["a, + p", en], q("yahoo", "sap"), "Compound selector with context, containing sibling test." );
+
+	        t( "Multiple combinators selects all levels", "#siblingTest em *", Arrays.String("siblingchild", "siblinggrandchild", "siblinggreatgrandchild") );
+	        t( "Multiple combinators selects all levels", "#siblingTest > em *", Arrays.String("siblingchild", "siblinggrandchild", "siblinggreatgrandchild") );
+	        t( "Multiple sibling combinators doesn't miss general siblings", "#siblingTest > em:first-child + em ~ span", Arrays.String("siblingspan"));
+	        t( "Combinators are not skipped when mixing general and specific", "#siblingTest > em:contains('x') + em ~ span", Arrays.String());
+
 
             Assert.AreEqual(Sizzle["#listWithTabIndex"].Length, 1, "Parent div for next test is found via ID (#8310)");
             Assert.AreEqual(Sizzle["#listWithTabIndex li:eq(2) ~ li"].Length, 1, "Find by general sibling combinator (#8310)");

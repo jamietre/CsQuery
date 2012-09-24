@@ -189,9 +189,11 @@ namespace CsQuery.Tests.Csharp.HtmlParser
                 ""2"" cellpadding=""2"" width=""100%""><span"+(char)10+"id=test></span></table>";
             var dom = CQ.CreateFragment(test);
 
+
+            // this also tests how the mis-nested span is handled; chrome moves it before the table.
             var output = dom.Render();
             Assert.AreEqual(
-                @"<table border=""0"" cellspacing=""2"" cellpadding=""2"" width=""100%""><span id=""test""></span></table>",
+                @"<span id=""test""></span><table border=""0"" cellspacing=""2"" cellpadding=""2"" width=""100%""></table>",
                 output);
         }
 

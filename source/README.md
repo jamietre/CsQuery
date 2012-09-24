@@ -15,6 +15,7 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 - [Issue #39](https://github.com/jamietre/CsQuery/issues/39): Incorrect parsing of orphaned open carets
 - Wrap Create methods using streams with Using to ensure they are disposed properly
 - [Issue #41](https://github.com/jamietre/CsQuery/issues/41) - Incorrect handling of "/" character in unquoted attribute values
+- :empty could return false when non-text or non-element nodes are present
 
 *Other Changes*
 

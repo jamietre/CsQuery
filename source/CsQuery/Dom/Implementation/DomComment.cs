@@ -43,14 +43,14 @@ namespace CsQuery.Implementation
         // there must be some reason for this... something to do with the parser
         // ahh, old code. TODO: figure this out, probably refactor/remove
 
-        private string TagOpener
-        {
-            get { return IsQuoted ? "<!--" : "<!"; }
-        }
-        private string TagCloser
-        {
-            get { return IsQuoted ? "-->" : ">"; }
-        }
+        //private string TagOpener
+        //{
+        //    get { return IsQuoted ? "<!--" : "<!"; }
+        //}
+        //private string TagCloser
+        //{
+        //    get { return IsQuoted ? "-->" : ">"; }
+        //}
 
         #endregion
 
@@ -174,7 +174,7 @@ namespace CsQuery.Implementation
 
         private string GetComment(string innerText)
         {
-            return TagOpener + innerText + TagCloser;
+            return "<!--" + innerText + "-->";
         }
 
         #endregion

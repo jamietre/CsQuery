@@ -18,67 +18,69 @@ namespace CsQuery.Tests.jQuery.Sizzle
     /// Tests from sizzle.js test suite as of June 13, 2011
     /// https://github.com/jquery/sizzle/tree/master/test
     /// </summary>
-    [TestClass, TestFixture]
+   
+    [TestClass,TestFixture]
     public class Sizzle_PseudoChild : SizzleTest
     {
-
-        [Test, TestMethod]
-        public void ChildAndAdjacent()
+        [Test,TestMethod]
+        public void PseudoChild()
         {
-            t("Nth-child", "#qunit-fixture form#form > *:nth-child(2)", Arrays.String("text1"));
-            t("Not Nth Child", "#qunit-fixture p:not(:nth-child(1))", Arrays.String("ap", "en", "sap", "first"));
+	        t( "First Child", "#qunit-fixture p:first-child",Arrays.String("firstp","sndp") );
+	        t( "First Child (case-insensitive)", "#qunit-fixture p:FIRST-CHILD",Arrays.String("firstp","sndp"));
+	        t( "Last Child", "p:last-child",Arrays.String("sap") );
+	        t( "Only Child", "#qunit-fixture a:only-child",Arrays.String("simon1","anchor1","yahoo","anchor2","liveLink1","liveLink2") );
+	        t( "Empty", "ul:empty",Arrays.String("firstUL") );
+            t("Empty with comment node", "ol:empty", Arrays.String("qunit-tests", "empty"));
+	        t( "Is A Parent", "#qunit-fixture p:parent",Arrays.String("firstp","ap","sndp","en","sap","first") );
 
-            t( "First Child", "#qunit-fixture p:first-child", Arrays.String("firstp","sndp") );
-            t( "Last Child", "p:last-child",Arrays.String("sap") );
-            t( "Only Child", "#qunit-fixture a:only-child", Arrays.String("simon1","anchor1","yahoo","anchor2","liveLink1","liveLink2") );
-            t( "Empty", "ul:empty", Arrays.String("firstUL") );
-            t( "Is A Parent", "#qunit-fixture p:parent", Arrays.String("firstp","ap","sndp","en","sap","first") );
+	        t( "First Child", "p:first-child",Arrays.String("firstp","sndp") );
+	        t( "First Child", ".nothiddendiv div:first-child",Arrays.String("nothiddendivchild") );
+	        t( "Nth Child", "p:nth-child(1)",Arrays.String("firstp","sndp") );
+	        t( "Nth Child With Whitespace", "p:nth-child( 1 )",Arrays.String("firstp","sndp") );
+	        t( "Not Nth Child", "#qunit-fixture p:not(:nth-child(1))",Arrays.String("ap","en","sap","first") );
 
-            t( "First Child", "p:first-child",Arrays.String("firstp","sndp") );
-            t( "Nth Child", "p:nth-child(1)", Arrays.String("firstp","sndp") );
-            t( "Nth Child With Whitespace", "p:nth-child( 1 )", Arrays.String("firstp","sndp") );
-           
+	        // Verify that the child position isn't being cached improperly
+	        var firstChildren = jQuery("p:first-child").Before("<div></div>");
 
-            // Verify that the child position isn't being cached improperly
-            jQuery("p:first-child").After("<div></div>");
-            jQuery("p:first-child").Before("<div></div>").Next().Remove();
-
-            t( "First Child", "p:first-child");
+	        t( "No longer First Child", "p:nth-child(1)",Arrays.String() );
+	        firstChildren.Prev().Remove();
+	        t( "Restored First Child", "p:nth-child(1)",Arrays.String("firstp","sndp") );
 
             ResetQunit();
 
-            t("Last Child", "p:last-child", Arrays.String("sap"));
-            t( "Last Child", "#qunit-fixture a:last-child", Arrays.String("simon1","anchor1","mark","yahoo","anchor2","simon","liveLink1","liveLink2") );
+	        t( "Last Child", "p:last-child",Arrays.String("sap") );
+	        t( "Last Child", "#qunit-fixture a:last-child",Arrays.String("simon1","anchor1","mark","yahoo","anchor2","simon","liveLink1","liveLink2") );
 
-            t( "Nth-child", "#qunit-fixture form#form > :nth-child(2)", Arrays.String("text1") );
-            
-            
+	        t( "Nth-child", "#qunit-fixture form#form > *:nth-child(2)",Arrays.String("text1") );
+	        t( "Nth-child", "#qunit-fixture form#form > :nth-child(2)",Arrays.String("text1") );
 
-            t( "Nth-child", "#form select:first option:nth-child(-1)");
-            t( "Nth-child", "#form select:first option:nth-child(3)", Arrays.String("option1c") );
-            t( "Nth-child", "#form select:first option:nth-child(0n+3)", Arrays.String("option1c") );
-            t( "Nth-child", "#form select:first option:nth-child(1n+0)", Arrays.String("option1a", "option1b", "option1c", "option1d") );
-            t( "Nth-child", "#form select:first option:nth-child(1n)", Arrays.String("option1a", "option1b", "option1c", "option1d") );
-            t( "Nth-child", "#form select:first option:nth-child(n)", Arrays.String("option1a", "option1b", "option1c", "option1d") );
-            
-            t( "Nth-child", "#form select:first option:nth-child(even)", Arrays.String("option1b", "option1d") );
-            t( "Nth-child", "#form select:first option:nth-child(odd)", Arrays.String("option1a", "option1c"));
-            t( "Nth-child", "#form select:first option:nth-child(2n)", Arrays.String("option1b", "option1d"));
-            t( "Nth-child", "#form select:first option:nth-child(2n+1)", Arrays.String("option1a", "option1c") );
-            t( "Nth-child", "#form select:first option:nth-child(2n + 1)", Arrays.String("option1a", "option1c") );
-            
-            t( "Nth-child", "#form select:first option:nth-child(3n)", Arrays.String("option1c"));
-            t( "Nth-child", "#form select:first option:nth-child(3n+1)", Arrays.String("option1a", "option1d") );
-            t( "Nth-child", "#form select:first option:nth-child(3n+2)", Arrays.String("option1b"));
-            t( "Nth-child", "#form select:first option:nth-child(3n+3)", Arrays.String("option1c"));
-            t( "Nth-child", "#form select:first option:nth-child(3n-1)", Arrays.String("option1b"));
-            t( "Nth-child", "#form select:first option:nth-child(3n-2)", Arrays.String("option1a", "option1d") );
-            t( "Nth-child", "#form select:first option:nth-child(3n-3)", Arrays.String("option1c"));
-            t( "Nth-child", "#form select:first option:nth-child(3n+0)", Arrays.String("option1c"));
-            
-        }
+	        t( "Nth-child", "#form select:first option:nth-child(-1)",Arrays.String() );
+	        t( "Nth-child", "#form select:first option:nth-child(3)",Arrays.String("option1c") );
+	        t( "Nth-child(case-insensitive)", "#form select:first option:NTH-child(3)",Arrays.String("option1c") );
+	        t( "Nth-child", "#form select:first option:nth-child(0n+3)",Arrays.String("option1c") );
+	        t( "Nth-child", "#form select:first option:nth-child(1n+0)",Arrays.String("option1a", "option1b", "option1c", "option1d") );
+	        t( "Nth-child", "#form select:first option:nth-child(1n)",Arrays.String("option1a", "option1b", "option1c", "option1d") );
+	        t( "Nth-child", "#form select:first option:nth-child(n)",Arrays.String("option1a", "option1b", "option1c", "option1d") );
+	        t( "Nth-child", "#form select:first option:nth-child(even)",Arrays.String("option1b", "option1d") );
+	        t( "Nth-child", "#form select:first option:nth-child(odd)",Arrays.String("option1a", "option1c") );
+	        t( "Nth-child", "#form select:first option:nth-child(2n)",Arrays.String("option1b", "option1d") );
+	        t( "Nth-child", "#form select:first option:nth-child(2n+1)",Arrays.String("option1a", "option1c") );
+	        t( "Nth-child", "#form select:first option:nth-child(2n + 1)",Arrays.String("option1a", "option1c") );
+	        t( "Nth-child", "#form select:first option:nth-child(+2n + 1)",Arrays.String("option1a", "option1c") );
+	        t( "Nth-child", "#form select:first option:nth-child(3n)",Arrays.String("option1c") );
+	        t( "Nth-child", "#form select:first option:nth-child(3n+1)",Arrays.String("option1a", "option1d") );
+	        t( "Nth-child", "#form select:first option:nth-child(3n+2)",Arrays.String("option1b") );
+	        t( "Nth-child", "#form select:first option:nth-child(3n+3)",Arrays.String("option1c") );
+	        t( "Nth-child", "#form select:first option:nth-child(3n-1)",Arrays.String("option1b") );
+	        t( "Nth-child", "#form select:first option:nth-child(3n-2)",Arrays.String("option1a", "option1d") );
+	        t( "Nth-child", "#form select:first option:nth-child(3n-3)",Arrays.String("option1c") );
+	        t( "Nth-child", "#form select:first option:nth-child(3n+0)",Arrays.String("option1c") );
+	        t( "Nth-child", "#form select:first option:nth-child(-1n+3)",Arrays.String("option1a", "option1b", "option1c") );
+	        t( "Nth-child", "#form select:first option:nth-child(-n+3)",Arrays.String("option1a", "option1b", "option1c") );
+	        t( "Nth-child", "#form select:first option:nth-child(-1n + 3)",Arrays.String("option1a", "option1b", "option1c") );
+                }
 
-        [Test, TestMethod]
+       [Test, TestMethod]
         public void NthChildWithLeadingOperator()
         {
             t("Nth-child", "#form select:first option:nth-child(+n)", Arrays.String("option1a", "option1b", "option1c", "option1d"));
@@ -88,7 +90,7 @@ namespace CsQuery.Tests.jQuery.Sizzle
             t("Nth-child", "#form select:first option:nth-child(-1n + 3)", Arrays.String("option1a", "option1b", "option1c"));
 
         }
-        [Test, TestMethod]
+       [Test, TestMethod]
         public void Miscellaneous()
         {
 
@@ -104,7 +106,7 @@ namespace CsQuery.Tests.jQuery.Sizzle
             
             t( "Text Contains", "a:contains(Google Groups)", Arrays.String("groups") );
 
-            // [CsQuery] We don't at this time allow constructst like "a:contains(Google Groups(link))"
+            //Array.String(CsQuery] We don't at this time allow constructst like "a:contains(Google Groups(link))"
             // without quoting (e.g. inner parsing of parens without quotes). Deal with it. This is changed
             // from the original to quote the selection. 
             
@@ -167,7 +169,7 @@ namespace CsQuery.Tests.jQuery.Sizzle
             //document.body.removeChild( input );
         }
 
-        [Test, TestMethod]
+      [Test, TestMethod]
         public void MultipleSubSelections()
         {          
 
@@ -176,7 +178,7 @@ namespace CsQuery.Tests.jQuery.Sizzle
             //t( "Not - multiple", "#form option:not(:contains(Nothing),#option1b,:selected)", 
             //    Arrays.String("option1c", "option1d", "option2b", "option2c", "option3d", "option3e", "option4e", "option5b", "option5c"));
                 
-            // [CsQuery] option5a is implicity selected and not caught with out selector. 
+            //Array.String(CsQuery] option5a is implicity selected and not caught with out selector. 
 
             t( "Not - multiple", "#form option:not(:contains(Nothing),#option1b,:selected)", 
                 Arrays.String("option1c", "option1d", "option2b", "option2c", "option3d", "option3e", "option4e", "option5a","option5b", "option5c"));
@@ -211,7 +213,7 @@ namespace CsQuery.Tests.jQuery.Sizzle
 
         }
 
-        [Test, TestMethod]
+       [Test, TestMethod]
         public void PseudoPosition()
         {
 
@@ -219,7 +221,7 @@ namespace CsQuery.Tests.jQuery.Sizzle
             t("Check position filtering", "div#nothiddendiv:eq(0)", Arrays.String("nothiddendiv"));
 
 
-            // [CsQuery] nth is not documented. Therefore we have not implemented it.
+            //Array.String(CsQuery] nth is not documented. Therefore we have not implemented it.
             //t( "nth Element", "#qunit-fixture p:nth(1)", Arrays.String("ap") );
 
             t( "First Element", "#qunit-fixture p:first", Arrays.String("firstp") );
@@ -243,7 +245,7 @@ namespace CsQuery.Tests.jQuery.Sizzle
             t( "Check element position", "div div:eq(0)", Arrays.String("nothiddendivchild") );
             t( "Check element position", "div div:eq(5)", Arrays.String("t2037") );
             
-            // [CsQuery] It's not at all clear how jQuery is getting "fx-queue" at position 28; running 'div div' shows it at 15.
+            //Array.String(CsQuery] It's not at all clear how jQuery is getting "fx-queue" at position 28; running 'div div' shows it at 15.
             // Think this is a bug in jQuery. :eq refers to the position in a selection set, so it should be in the set so far
             // which is 15.
 
@@ -255,7 +257,7 @@ namespace CsQuery.Tests.jQuery.Sizzle
             t( "Check element position", "div#nothiddendiv:first > div:first", Arrays.String("nothiddendivchild") );
         }
 
-        [Test, TestMethod]
+      [Test, TestMethod]
         public void PseudoForm()
         {
 
@@ -272,7 +274,7 @@ namespace CsQuery.Tests.jQuery.Sizzle
             t( "Form element :checkbox:checked", "#form :checkbox:checked", Arrays.String("check1") );
             t( "Form element :radio:checked, :checkbox:checked", "#form :radio:checked, #form :checkbox:checked", Arrays.String("radio2", "check1") );
 
-            // [CsQuery] option1a and option5a are not selected per note on option groups above
+            //Array.String(CsQuery] option1a and option5a are not selected per note on option groups above
 
             t("Selected Option Element", "#form option:selected", Arrays.String( "option2d", "option3b", "option3c", "option4b", "option4c", "option4d"));
             //t( "Selected Option Element", "#form option:selected", Arrays.String("option1a","option2d","option3b","option3c","option4b","option4c","option4d","option5a") );
