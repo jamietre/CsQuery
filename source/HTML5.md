@@ -2,7 +2,7 @@
 
 CsQuery is being developed towards HTML5 compliance. CsQuery is not a web browser, but an HTML parser, so these goals are primarily oriented towards parsing and some parts of the Document Object Model:
 
-* Complete implementation of the HTML5 parsing rules for optional closing tags and invalid markup. This means that the DOM which CsQuery presents you with should mimic the DOM you would access from the same markup in a fully HTML5-compliant browser.
+* As of Version 1.3, the HTML parser is HTML5 compliant. The old parser has been replaced with Patrick Reisert's C# port of the validator.nu parser. 
 * Partial implementation of the DOM. I'm not trying to make CsQuery's DOM respond to "events" and so on. This would be a nice future, in that it could one day become part of a server-side .NET headless browser with this functionality. But the goals in the short term are the ability to parse and work with HTML and expect the same results as if you were accessing it from a client -- without any interaction of the sort that would be client initiated.
 
 ####Status
