@@ -82,7 +82,7 @@ namespace CsQuery
         public CQ ParentsUntil(IEnumerable<IDomElement> elements, string filter = null)
         {
 
-            CQ output = New();
+            CQ output = NewCqInDomain();
             HashSet<IDomElement> targets = new HashSet<IDomElement>(elements);
 
             var filtered = FilterElementsIgnoreNull(ParentsImpl(Elements, targets), filter);

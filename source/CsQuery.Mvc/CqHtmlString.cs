@@ -45,7 +45,7 @@ namespace CsQuery.Mvc
         /// A new CQ object.
         /// </returns>
 
-        protected override CQ NewInstance()
+        protected override CQ NewCqUnbound()
         {
             return new CqHtmlString();
         }

@@ -86,7 +86,7 @@ namespace CsQuery
 
         private CQ FindImpl(Selector selector)
         {
-            CQ csq = New();
+            CQ csq = NewCqInDomain();
             csq.AddSelection(selector.Select(Document, this));
             csq.Selector = selector;
             return csq;

@@ -201,7 +201,7 @@ namespace CsQuery
 
         private CQ Append(IEnumerable<IDomObject> elements, out CQ insertedElements)
         {
-            insertedElements = New();
+            insertedElements = NewCqInDomain();
             bool first = true;
 
             // must copy the enumerable first, since this can cause

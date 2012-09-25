@@ -84,7 +84,7 @@ namespace CsQuery
 
         private CQ NewInstance(IDomObject element, CQ context)
         {
-            var cq = NewInstance();
+            var cq = NewCqUnbound();
             ConfigureNewInstance(cq, element, context);
             return cq;
         }
@@ -105,7 +105,7 @@ namespace CsQuery
         }
         private CQ NewInstance(string html)
         {
-            var cq = NewInstance();
+            var cq = NewCqUnbound();
             ConfigureNewInstance(cq, html);
             return cq;
         }
@@ -194,7 +194,7 @@ namespace CsQuery
 
         private CQ NewInstance(IEnumerable<IDomObject> elements)
         {
-            var cq = NewInstance();
+            var cq = NewCqUnbound();
             ConfigureNewInstance(cq,elements);
             return cq;
         }
@@ -238,7 +238,7 @@ namespace CsQuery
         }
         private CQ NewInstance(IEnumerable<IDomObject> elements, CQ context)
         {
-            var cq = NewInstance();
+            var cq = NewCqUnbound();
             ConfigureNewInstance(cq,elements, context);
             return cq;
         }

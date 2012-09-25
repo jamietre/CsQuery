@@ -20,7 +20,9 @@ namespace CsQuery.Tests.Csharp.Selectors
         [Test, TestMethod]
         public void LastChild()
         {
-
+            // this test modifies DOM; clone it first because it can break other tests in this class
+            // when running concurrently
+            
             var Dom = this.Dom.Clone();
 
             var res = Dom["body > [id] > :last-child"]; // two elements with IDs

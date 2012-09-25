@@ -48,7 +48,7 @@ namespace CsQuery
         {
             if (SelectionSet.Count == 0)
             {
-                return New();
+                return NewCqInDomain();
             }
             else
             {

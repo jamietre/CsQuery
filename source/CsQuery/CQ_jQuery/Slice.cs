@@ -71,7 +71,7 @@ namespace CsQuery
                 end = SelectionSet.Count;
             }
 
-            CQ output = New();
+            CQ output = NewCqInDomain();
 
             for (int i = start; i < end; i++)
             {

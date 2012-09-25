@@ -88,7 +88,7 @@ namespace CsQuery
                     Document :
                     CsQueryParent.Document;
 
-                csq = New();
+                csq = NewCqInDomain();
                 csq.Selector = sel;
                 csq.SetSelection(csq.Selector.Select(selectorSource),
                         SelectionSetOrder.Ascending);

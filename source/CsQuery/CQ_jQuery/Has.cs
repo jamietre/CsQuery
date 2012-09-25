@@ -32,7 +32,7 @@ namespace CsQuery
 
         public CQ Has(string selector)
         {
-            var csq = New();
+            var csq = NewCqInDomain();
 
             foreach (IDomObject obj in SelectionSet)
             {
@@ -83,7 +83,7 @@ namespace CsQuery
 
         public CQ Has(IEnumerable<IDomObject> elements)
         {
-            var csq = New();
+            var csq = NewCqInDomain();
             foreach (IDomObject obj in SelectionSet)
             {
                 if (obj.Cq().Find(elements).Length > 0)

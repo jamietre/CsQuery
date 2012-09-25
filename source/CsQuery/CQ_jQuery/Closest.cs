@@ -82,7 +82,7 @@ namespace CsQuery
             // 
             HashSet<IDomObject> elementSet = new HashSet<IDomObject>(elements); 
 
-            CQ csq = New();
+            CQ csq = NewCqInDomain();
 
             foreach (var el in SelectionSet)
             {

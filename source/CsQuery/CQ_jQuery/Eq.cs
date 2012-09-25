@@ -41,7 +41,7 @@ namespace CsQuery
             }
             else
             {
-                return New();
+                return NewCqInDomain();
             }
         }
         

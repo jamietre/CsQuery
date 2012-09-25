@@ -137,7 +137,7 @@ namespace CsQuery
 
             // Copy the target list: it could change otherwise
             List<IDomObject> targets = new List<IDomObject>(target);
-            insertedElements = NewInstance();
+            insertedElements = NewCqUnbound();
             
 
             // bind the source to the target's document if it was itself a CsQuery object, and update its selection set to reflect the 
@@ -149,7 +149,7 @@ namespace CsQuery
                 {
                     // When the target is disconnected, just append elements to the selection set, not to the DOM
                     
-                    CQ result = New();
+                    CQ result = NewCqInDomain();
                     result.CsQueryParent = this.CsQueryParent;
 
                     if (offset == 0)

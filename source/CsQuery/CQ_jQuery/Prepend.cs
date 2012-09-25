@@ -104,7 +104,7 @@ namespace CsQuery
 
         public CQ Prepend(IEnumerable<IDomObject> elements, out CQ insertedElements)
         {
-            insertedElements = New();
+            insertedElements = NewCqInDomain();
             bool first = true;
 
             // For the first iteration, the elements can be moved. For successive iterations, a clone must

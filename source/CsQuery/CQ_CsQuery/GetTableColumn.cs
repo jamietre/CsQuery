@@ -25,7 +25,7 @@ namespace CsQuery
         public CQ GetTableColumn()
         {
             var els = this.Filter("th,td");
-            CQ result = New();
+            CQ result = NewCqInDomain();
             foreach (var el in els)
             {
                 var elCq = el.Cq();
@@ -50,7 +50,7 @@ namespace CsQuery
 
         public CQ GetTableColumn(int column)
         {
-            CQ result = New();
+            CQ result = NewCqInDomain();
             foreach (var el in FilterElements(this, "table"))
             {
 

@@ -26,20 +26,20 @@ namespace CsQuery.Tests.Csharp.Manipulation
             var dom = TestDom("TestHtml");
 
             CQ hlinks = dom.Select("#hlinks-user");
-            int spanCount = hlinks.Find("span").Length;
+
             CQ clone = hlinks.Clone();
 
-            Assert.AreEqual(hlinks.Find("*").Length+1, clone.Select("*").Length,"Clone has same total elements as original");
+            Assert.AreEqual(hlinks.Find("*").Length, clone.Find("*").Length,"Clone has same total elements as original");
+
 
             CQ newHome = dom.Select("#hidden-div");
             
-            spanCount = newHome.Find("span").Length;
-            int cloneSpanCount = clone.Select("span").Length;
+            var spanCount = newHome.Find("span").Length;
+            int cloneSpanCount = clone.Find("span").Length;
 
             Assert.AreEqual(1, newHome.Children().Length, "Sanity check - target has 1 child");
             newHome.Append(clone);
             Assert.AreEqual(2, newHome.Children().Length, "Target has 2 children after cloning");
-            Assert.AreEqual(spanCount+cloneSpanCount, newHome.Find("span").Length, "Same # of spans in the clone");
         }
 
         /// <summary>

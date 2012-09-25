@@ -662,7 +662,7 @@
              A string of HTML.
              </returns>
         </member>
-        <member name="M:CsQuery.CQ.New">
+        <member name="M:CsQuery.CQ.NewCqInDomain">
              <summary>
              Create a new, empty CsQuery object bound to this domain.
              </summary>
@@ -671,7 +671,7 @@
              A new CQ object.
              </returns>
         </member>
-        <member name="M:CsQuery.CQ.NewInstance">
+        <member name="M:CsQuery.CQ.NewCqUnbound">
              <summary>
              Creates a new instance of the CQ object. This should be used inside CQ to create a new object
              under all circumstances so it can be overridden by derived classes.
@@ -14610,6 +14610,124 @@
              The element by id&lt; t&gt;
              </returns>
         </member>
+        <member name="M:CsQuery.Implementation.DomDocument.GetElementByTagName(System.String)">
+             <summary>
+             Gets element by tag name.
+             </summary>
+            
+             <param name="tagName">
+             Name of the tag.
+             </param>
+            
+             <returns>
+             The element by tag name.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.GetElementsByTagName(System.String)">
+             <summary>
+             Returns a list of elements with the given tag name. The subtree underneath the specified
+             element is searched, excluding the element itself.
+             </summary>
+            
+             <param name="tagName">
+             Name of the tag.
+             </param>
+            
+             <returns>
+             The element by tag name.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/element.getElementsByTagName
+             </url>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.QuerySelector(System.String)">
+             <summary>
+             Returns the first element within the document (using depth-first pre-order traversal of the
+             document's nodes) that matches the specified group of selectors.
+             </summary>
+            
+             <param name="selector">
+             The selector.
+             </param>
+            
+             <returns>
+             An element, the first that matches the selector.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/En/DOM/Document.querySelector
+             </url>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.QuerySelectorAll(System.String)">
+             <summary>
+             Returns a list of the elements within the document (using depth-first pre-order traversal of
+             the document's nodes) that match the specified group of selectors.
+             </summary>
+            
+             <param name="selector">
+             The selector.
+             </param>
+            
+             <returns>
+             A sequence of elements matching the selector.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Document.querySelectorAll
+             </url>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.CreateElement(System.String)">
+             <summary>
+             Creates a new Element node.
+             </summary>
+            
+             <param name="nodeName">
+             Name of the node.
+             </param>
+            
+             <returns>
+             The new element.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/document.createElement
+             </url>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.CreateTextNode(System.String)">
+             <summary>
+             Creates a new Text node.
+             </summary>
+            
+             <param name="text">
+             The text.
+             </param>
+            
+             <returns>
+             The new text node.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/document.createTextNode
+             </url>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.CreateComment(System.String)">
+             <summary>
+             Creates a new comment node.
+             </summary>
+            
+             <param name="comment">
+             The comment.
+             </param>
+            
+             <returns>
+             The new comment.
+             </returns>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/document.createComment
+             </url>
+        </member>
         <member name="M:CsQuery.Implementation.DomDocument.CreateDocumentType(System.String,System.String,System.String)">
              <summary>
              Creates the document type node. 
@@ -14627,6 +14745,24 @@
             
              <returns>
              The new document type.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.Clone">
+             <summary>
+             Makes a deep copy of this object.
+             </summary>
+            
+             <returns>
+             A copy of this object.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.CloneChildren">
+             <summary>
+             Clones the child elements of this document
+             </summary>
+            
+             <returns>
+             A sequence of cloned elements
              </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomDocument.CreateNew``1(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">

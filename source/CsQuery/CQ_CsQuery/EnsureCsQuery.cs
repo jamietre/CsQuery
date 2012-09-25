@@ -35,7 +35,7 @@ namespace CsQuery
             }
             else
             {
-                var cq = NewInstance();
+                var cq = NewCqUnbound();
                 ConfigureNewInstance(cq,elements);
                 return cq;
             }

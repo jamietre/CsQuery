@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace CsQuery.Implementation
 {
@@ -63,11 +64,15 @@ namespace CsQuery.Implementation
 
         #region private properties
 
+        private static Regex DocTypeRegex = new Regex(
+                @"^\s*([a-zA-Z0-9]+)\s+[a-zA-Z]+(\s+""(.*?)"")*\s*$", 
+            RegexOptions.IgnoreCase);
         private string DocTypeName { get; set; }
         private string PublicIdentifier {get; set;}
         private string SystemIdentifier { get; set; }
 
         #endregion
+        
         public override NodeType NodeType
         {
             get { return NodeType.DOCUMENT_TYPE_NODE; }
@@ -109,52 +114,32 @@ namespace CsQuery.Implementation
         {
             get
             {
-                //if (_DocType == 0)
-                //{
-                //    return _NonAttributeData;
-                //}
-                //else
-                //{
-                //    switch (_DocType)
-                //    {
-                //        case DocType.HTML5:
-                //            return "html";
-                //        case DocType.XHTML:
-                //            return "html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"";
-                //        case DocType.HTML4:
-                //            return "html PUBLIC \"-//W3C//DTD HTML 4.01 Frameset//EN\" \"http://www.w3.org/TR/html4/frameset.dtd\"";
-                //        default:
-                //            throw new NotImplementedException("Unimplemented doctype");
-                //    }
-
-                //}
                 return DocTypeName +
-                    (!String.IsNullOrEmpty(PublicIdentifier) ? " " + PublicIdentifier : "") +
-                    (!String.IsNullOrEmpty(SystemIdentifier) ? " " + SystemIdentifier : "");
+                    (!String.IsNullOrEmpty(PublicIdentifier) ? " \"" + PublicIdentifier +"\"": "") +
+                    (!String.IsNullOrEmpty(SystemIdentifier) ? " \"" + SystemIdentifier +"\"": "");
 
             }
             set
             {
-                string docTypeName;
+                string docTypeName="";
                 string publicIdentifier="";
                 string systemIdentifier="";
 
-                string[] parts = value.Split(' ');
-                if (parts.Length >= 1)
+                MatchCollection matches = DocTypeRegex.Matches(value);
+                if (matches.Count > 0)
                 {
-                    docTypeName = parts[0];
-                } else {
-                    throw new InvalidOperationException("The DocType must have a name, e.g. html");
+                    docTypeName = matches[0].Groups[1].Value;
+                    if (matches[0].Groups.Count ==4 )
+                    {
+                        var grp = matches[0].Groups[3];
+                        publicIdentifier = grp.Captures[0].Value;
+                        if (grp.Captures.Count > 1)
+                        {
+                            systemIdentifier = grp.Captures[1].Value;
+                        }
+                    }
                 }
-
-                if (parts.Length >= 3)
-                {
-                    publicIdentifier = parts[2];
-                }
-                if (parts.Length >= 4)
-                {
-                    systemIdentifier = String.Join(" ", parts.Skip(3));
-                }
+              
                 SetDocType(docTypeName,publicIdentifier,systemIdentifier);
             }
         }
@@ -214,32 +199,7 @@ namespace CsQuery.Implementation
             }
         }
         protected string _NonAttributeData = String.Empty;
-        //protected DocType GetDocType()
-        //{
-        //    string data = NonAttributeData.Trim().ToLower();
-        //    // strip off trailing slashes - easy mistake to make
-        //    if (data.LastIndexOf("/") == data.Length - 1)
-        //    {
-        //        data = data.Substring(0, data.Length - 1).Trim();
-        //    }
-        //    if (data == "html")
-        //    {
-        //        return DocType.HTML5;
-        //    }
-        //    else if (data.IndexOf("xhtml 1") >= 0)
-        //    {
-        //        return DocType.XHTML;
-        //    }
-        //    else if (data.IndexOf("html 4") >= 0)
-        //    {
-        //        return DocType.HTML4;
-        //    }
-        //    else
-        //    {
-        //        return DocType.Unknown;
-        //    }
-        //}
-
+        
 
         public override bool InnerHtmlAllowed
         {
@@ -267,10 +227,13 @@ namespace CsQuery.Implementation
         public override DomDocumentType Clone()
         {
             DomDocumentType clone = new DomDocumentType();
-            clone.NonAttributeData = NonAttributeData;
+            clone.PublicIdentifier = PublicIdentifier;
+            clone.SystemIdentifier = SystemIdentifier;
+            clone.DocTypeName = DocTypeName;
             clone.DocType = DocType;
             return clone;
         }
+
 
         IDomNode IDomNode.Clone()
         {

@@ -254,7 +254,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                foreach (IDomObject obj in Document.ChildNodes)
+                foreach (IDomObject obj in ChildNodes)
                 {
                     if (obj.NodeType == NodeType.DOCUMENT_TYPE_NODE)
                     {
@@ -262,6 +262,17 @@ namespace CsQuery.Implementation
                     }
                 }
                 return null;
+            }
+            set
+            {
+                var docTypeNode = DocTypeNode;
+                if (docTypeNode != null)
+                {
+                    docTypeNode.Remove();
+                }
+
+                ChildNodes.Add(value);
+
             }
         }
 
@@ -520,11 +531,40 @@ namespace CsQuery.Implementation
             return (T)selectors.Select(Document).FirstOrDefault();
         }
 
+        /// <summary>
+        /// Gets element by tag name.
+        /// </summary>
+        ///
+        /// <param name="tagName">
+        /// Name of the tag.
+        /// </param>
+        ///
+        /// <returns>
+        /// The element by tag name.
+        /// </returns>
+
         public IDomElement GetElementByTagName(string tagName)
         {
             Selector selectors = new Selector(tagName);
             return (IDomElement)selectors.Select(Document).FirstOrDefault();
         }
+
+        /// <summary>
+        /// Returns a list of elements with the given tag name. The subtree underneath the specified
+        /// element is searched, excluding the element itself.
+        /// </summary>
+        ///
+        /// <param name="tagName">
+        /// Name of the tag.
+        /// </param>
+        ///
+        /// <returns>
+        /// The element by tag name.
+        /// </returns>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/DOM/element.getElementsByTagName
+        /// </url>
 
         public INodeList<IDomElement> GetElementsByTagName(string tagName)
         {
@@ -532,11 +572,45 @@ namespace CsQuery.Implementation
             return new NodeList<IDomElement>(new List<IDomElement>(OnlyElements(selectors.Select(Document))));
         }
 
+        /// <summary>
+        /// Returns the first element within the document (using depth-first pre-order traversal of the
+        /// document's nodes) that matches the specified group of selectors.
+        /// </summary>
+        ///
+        /// <param name="selector">
+        /// The selector.
+        /// </param>
+        ///
+        /// <returns>
+        /// An element, the first that matches the selector.
+        /// </returns>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/En/DOM/Document.querySelector
+        /// </url>
+
         public IDomElement QuerySelector(string selector)
         {
             Selector selectors = new Selector(selector);
             return OnlyElements(selectors.Select(Document)).FirstOrDefault();
         }
+
+        /// <summary>
+        /// Returns a list of the elements within the document (using depth-first pre-order traversal of
+        /// the document's nodes) that match the specified group of selectors.
+        /// </summary>
+        ///
+        /// <param name="selector">
+        /// The selector.
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence of elements matching the selector.
+        /// </returns>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/DOM/Document.querySelectorAll
+        /// </url>
 
         public IList<IDomElement> QuerySelectorAll(string selector)
         {
@@ -544,15 +618,63 @@ namespace CsQuery.Implementation
             return (new List<IDomElement>(OnlyElements(selectors.Select(Document)))).AsReadOnly();
         }
 
+        /// <summary>
+        /// Creates a new Element node.
+        /// </summary>
+        ///
+        /// <param name="nodeName">
+        /// Name of the node.
+        /// </param>
+        ///
+        /// <returns>
+        /// The new element.
+        /// </returns>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/DOM/document.createElement
+        /// </url>
+
         public IDomElement CreateElement(string nodeName) 
         {
             return DomElement.Create(nodeName);
         }
 
+        /// <summary>
+        /// Creates a new Text node.
+        /// </summary>
+        ///
+        /// <param name="text">
+        /// The text.
+        /// </param>
+        ///
+        /// <returns>
+        /// The new text node.
+        /// </returns>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/DOM/document.createTextNode
+        /// </url>
+
         public IDomText CreateTextNode(string text)
         {
             return new DomText(text);
         }
+
+        /// <summary>
+        /// Creates a new comment node.
+        /// </summary>
+        ///
+        /// <param name="comment">
+        /// The comment.
+        /// </param>
+        ///
+        /// <returns>
+        /// The new comment.
+        /// </returns>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/DOM/document.createComment
+        /// </url>
 
         public IDomComment CreateComment(string comment)
         {
@@ -582,21 +704,31 @@ namespace CsQuery.Implementation
             return new DomDocumentType(type, publicIdentifier, systemIdentifier);
         }
 
+        /// <summary>
+        /// Makes a deep copy of this object.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A copy of this object.
+        /// </returns>
+
         public override DomDocument Clone()
         {
             DomDocument clone = new DomDocument();
-            clone.SourceHtml = SourceHtml;
-            clone.OriginalStrings = OriginalStrings;
+            //clone.SourceHtml = SourceHtml;
+            //clone.OriginalStrings = OriginalStrings;
             FinishConfiguringNew(clone);
 
             return clone;
         }
 
-        public override string ToString()
-        {
-            return "DOM Root (" + DocType.ToString() + ", " + DescendantCount().ToString() + " elements)";
-        }
-
+        /// <summary>
+        /// Clones the child elements of this document
+        /// </summary>
+        ///
+        /// <returns>
+        /// A sequence of cloned elements
+        /// </returns>
 
         public override IEnumerable<IDomObject> CloneChildren()
         {
@@ -610,6 +742,10 @@ namespace CsQuery.Implementation
             yield break;
         }
 
+        public override string ToString()
+        {
+            return "DOM Root (" + DocType.ToString() + ", " + DescendantCount().ToString() + " elements)";
+        }
         #endregion
 
         #region private methods
@@ -662,53 +798,7 @@ namespace CsQuery.Implementation
             return CreateNew<IDomDocument>();
         }
 
-         /// <summary>
-         /// Creates an IDomDocument that is derived from this one. The new type can also be a derived type,
-         /// such as IDomFragment. The new object will inherit DomRenderingOptions from this one.
-         /// </summary>
-         ///
-         /// <exception cref="ArgumentException">
-         /// Thrown when one or more arguments have unsupported or illegal values.
-         /// </exception>
-         ///
-         /// <typeparam name="T">
-         /// The type of object to create that is IDomDocument.
-         /// </typeparam>
-         /// <param name="html">
-         /// The HTML source for the new document.
-         /// </param>
-         /// <param name="htmlParsingMode">
-         /// The HTML parsing mode.
-         /// </param>
-         ///
-         /// <returns>
-         /// A new, empty concrete class that is represented by the interface T, configured with the same
-         /// options as the current object.
-         /// </returns>
-  
-        // public IDomDocument CreateNew<T>(char[] html, HtmlParsingMode htmlParsingMode) where T : IDomDocument
-        // {
-        //    IDomDocument newDoc = DomDocument.Create(html.AsString(),htmlParsingMode);
-
-        //    if (typeof(T) == typeof(IDomDocument))
-        //    {
-        //        newDoc = Dnew DomDocument(html, htmlParsingMode);
-
-        //    }
-        //    else if (typeof(T) == typeof(IDomFragment))
-        //    {
-        //        newDoc = new DomFragment(html, htmlParsingMode);
-        //    }
-           
-        //    else
-        //    {
-        //        throw new ArgumentException(String.Format("I don't know about an IDomDocument subclass \"{1}\"",
-        //            typeof(T).ToString()));
-        //    }
-
-        //    FinishConfiguringNew(newDoc);
-        //    return newDoc;
-        //}
+       
 
         /// <summary>
         /// Creates an IDomDocument that is derived from this one. The new type can also be a derived

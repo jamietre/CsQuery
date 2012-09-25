@@ -526,7 +526,7 @@ namespace CsQuery
 
         protected CQ MapRangeToNewCQ(IEnumerable<IDomObject> source, Func<IDomObject, IEnumerable<IDomObject>> del)
         {
-            CQ output = New();
+            CQ output = NewCqInDomain();
             foreach (var item in source)
             {
                 output.SelectionSet.AddRange(del(item));

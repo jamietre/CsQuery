@@ -25,7 +25,7 @@ namespace CsQuery
         /// Gets the document type node for this document, or null if none exists.
         /// </summary>
 
-        IDomDocumentType DocTypeNode {get;}
+        IDomDocumentType DocTypeNode { get; set; }
 
         /// <summary>
         /// Returns the document type of this document. If no DOCTYPE node exists, this will return the default

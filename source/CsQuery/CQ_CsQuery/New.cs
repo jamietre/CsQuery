@@ -21,9 +21,9 @@ namespace CsQuery
         /// A new CQ object.
         /// </returns>
 
-        public CQ New()
+        public CQ NewCqInDomain()
         {
-            CQ csq = NewInstance();
+            CQ csq = NewCqUnbound();
             csq.CsQueryParent = this;
             
             return csq;
@@ -38,7 +38,7 @@ namespace CsQuery
         /// A new CQ object
         /// </returns>
 
-        protected virtual CQ NewInstance()
+        protected virtual CQ NewCqUnbound()
         {
             return new CQ();
         }

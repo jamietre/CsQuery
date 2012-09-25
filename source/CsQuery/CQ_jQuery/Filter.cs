@@ -106,7 +106,7 @@ namespace CsQuery
 
         public CQ Filter(Func<IDomObject, bool> function)
         {
-            CQ output = New();
+            CQ output = NewCqInDomain();
 
             List<IDomObject> filteredList = new List<IDomObject>();
             foreach (IDomObject obj in SelectionSet)
@@ -143,7 +143,7 @@ namespace CsQuery
 
         public CQ Filter(Func<IDomObject, int, bool> function)
         {
-            CQ output = New();
+            CQ output = NewCqInDomain();
             List<IDomObject> filteredList = new List<IDomObject>();
 
             int index = 0;

@@ -30,11 +30,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                if (_ChildNodes == null)
-                {
-                    _ChildNodes = new ChildNodeList(this);
-                }
-                return _ChildNodes;
+                return ChildNodesInternal;
             }
         }
 

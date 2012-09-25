@@ -29,7 +29,7 @@ namespace CsQuery
 
         public CQ End()
         {
-            return CsQueryParent ?? New();
+            return CsQueryParent ?? NewCqInDomain();
         }
         
 
