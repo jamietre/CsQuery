@@ -1,0 +1,3 @@
+[submodule "source/HtmlParserSharp"]
+	path = source/HtmlParserSharp
+	url = https://github.com/jamietre/HtmlParserSharp.git
