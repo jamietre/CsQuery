@@ -14,9 +14,16 @@ namespace CsQuery.HtmlParser
     /// </summary>
     public static class HtmlStyles
     {
+        /// <summary>
+        /// Dictionary mapping style names to CssStyle style definitions
+        /// </summary>
+
         public static Dictionary<string, CssStyle> StyleDefs = new Dictionary<string, CssStyle>();
+        
         private static char[] StringSep = new char[] { ' ' };
-        public static string CssDefs = "css3.xml";
+        
+        private static string CssDefs = "css3.xml";
+
         static HtmlStyles()
         {
             XmlDocument xDoc = new XmlDocument();

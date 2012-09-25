@@ -6,7 +6,7 @@ Release 1.2.1 - 8/21/2012
 
 CsQuery is a jQuery port for .NET 4. It implements all CSS2 & CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) has been ported to C#. 
 
-The project includes an HTML parser and object model that represents the browser DOM. The goal of the parser is HTML5 compliance for optional tags and invalid markup handling. As of 1.1.2 it implements the optional tag rules and will generate missing tags.
+As of Version 1.3 (unreleased) CsQuery uses a C# port of the [validator.nu HTML parser](http://about.validator.nu/htmlparser/). This provides an extremely high degree of DOM compatibility with modern browsers.
 
 The CSS selector engine fully indexes each document on tag name, id, class, and attribute. The index is subselect-capable, meaning that complex selectors will still be able to take advantage of the index (for any part of the selector that's indexed). [Performance](#performance) of selectors compared to other existing C# HTML parsing libraries is orders of magnitude faster.
 

@@ -9,7 +9,7 @@ using CsQuery.ExtensionMethods.Internal;
 using CsQuery.Implementation;
 using CsQuery.StringScanner;
 
-namespace CsQuery.HtmlParser.Obsolete
+namespace CsQuery.HtmlParser.Deprecated
 {
     /// <summary>
     /// The HTML parser
@@ -22,7 +22,7 @@ namespace CsQuery.HtmlParser.Obsolete
         public HtmlElementFactory(IDomDocument document)
         {
             Document = document;
-            SetHtml(document.DocumentIndex.SourceHtml);
+            //SetHtml(document.DocumentIndex.SourceHtml);
             IsBound = true;
         }
 

@@ -72,10 +72,8 @@ namespace CsQuery
 
             if (sel.IsHmtl)
             {
-                csq = CQ.CreateFragment(ExpandSelfClosingTags(selector));
-                // when creating a fragment as a selector, the selection set is a living document
-                // REMOVED - causes other problems.
-                //csq.SetSelection(csq.Document.ChildNodes);
+                csq = CQ.Create(selector);
+
                 csq.CsQueryParent = this;
             }
             else
@@ -338,50 +336,5 @@ namespace CsQuery
                 return Select(selector, context);
             }
         }
-
-        /// <summary>
-        /// Parses an HTML snippet so self-closing HTML tags are expanded (except those that cannot have children)
-        /// </summary>
-        ///
-        /// <param name="html">
-        /// The HTML.
-        /// </param>
-        ///
-        /// <returns>
-        /// The string with the items expanded
-        /// </returns>
-
-        protected string ExpandSelfClosingTags(string html)
-        {
-            return SelfClosingTag.Replace(html, match=>{
-                var keyword = match.Groups[1].Value;
-                if (HtmlData.ChildrenAllowed(keyword))
-                {
-                    return "<" + keyword + "></" + keyword + ">";
-                }
-                else
-                {
-                    return match.Value;
-                }
-            });
-        }
-
-        private string GetKeywordOnly(string matchString)
-        {
-            int pos = matchString.IndexOfAny(SelfClosingTagStoppers);
-            if (pos > 0)
-            {
-                return matchString.Substring(0, pos);
-            }
-            else
-            {
-                return matchString;
-            }
-            
-        }
-
-        private static readonly char[] SelfClosingTagStoppers = (CharacterData.charsHtmlSpaceArray.Concat('/')).ToArray();
-
-        private static readonly Regex SelfClosingTag = new Regex(@"<([a-zA-z]\w*)\s?/>");
     }
 }

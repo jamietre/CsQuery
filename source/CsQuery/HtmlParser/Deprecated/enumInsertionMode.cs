@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CsQuery.HtmlParser
+namespace CsQuery.HtmlParser.Deprecated
 {
 
     public enum InsertionMode : byte

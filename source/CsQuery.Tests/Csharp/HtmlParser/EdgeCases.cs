@@ -15,7 +15,7 @@ using CsQuery;
 using CsQuery.HtmlParser;
 using CsQuery.Utility;
 
-namespace CsQuery.Tests.Csharp.HtmlParser.HTML5
+namespace CsQuery.Tests.Csharp.HtmlParser
 {
 
     [TestFixture, TestClass]
@@ -41,7 +41,7 @@ namespace CsQuery.Tests.Csharp.HtmlParser.HTML5
         public void CaretsInAttributes()
         {
             CQ doc = "<div><img src=\"test.png\" alt=\">\" /></div>";
-            Assert.AreEqual("<div><img src=\"test.png\" alt=\">\" /></div>",doc.Render());
+            Assert.AreEqual("<div><img src=\"test.png\" alt=\">\"></div>",doc.Render());
         }
     }
 }

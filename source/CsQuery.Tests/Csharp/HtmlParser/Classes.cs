@@ -29,7 +29,7 @@ namespace CsQuery.Tests.Csharp.HtmlParser
         [Test, TestMethod]
         public void ClassNameCase()
         {
-            var dom = CQ.CreateFragment("<div class=\"class1 CLASS2 claSS3\" />");
+            var dom = CQ.CreateFragment("<div class=\"class1 CLASS2 claSS3\" x=\"y\" />");
             var el= dom.Select("div").FirstElement();
 
             Assert.AreEqual(3,el.Classes.Count());

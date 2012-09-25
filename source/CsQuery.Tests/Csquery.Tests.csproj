@@ -99,10 +99,10 @@
     <Compile Include="Csharp\Dom\DomElement.cs" />
     <Compile Include="Csharp\Dom\SpecialElements.cs" />
     <Compile Include="Csharp\ExtensionMethods\Xml.cs" />
-    <Compile Include="Csharp\HtmlParser\HTML5\FragmentContext.cs" />
-    <Compile Include="Csharp\HtmlParser\HTML5\EdgeCases.cs" />
+    <Compile Include="Csharp\HtmlParser\PreProcessing.cs" />
+    <Compile Include="Csharp\HtmlParser\FragmentContext.cs" />
+    <Compile Include="Csharp\HtmlParser\EdgeCases.cs" />
     <Compile Include="Csharp\HtmlParser\TextHandling.cs" />
-    <Compile Include="Csharp\Methods\Select.cs" />
     <Compile Include="Csharp\Methods\HasAttr.cs" />
     <Compile Include="Csharp\Methods\Before.cs" />
     <Compile Include="Csharp\Methods\Append.cs" />
@@ -216,6 +216,7 @@
     <Compile Include="Csharp\Utility\Support.cs" />
     <Compile Include="Csharp\Utility\FastActivator.cs" />
     <Compile Include="Examples\Tables.cs" />
+    <Compile Include="Implementation\StringCombiner.cs" />
     <Compile Include="jsdom\Attributes.cs" />
     <Compile Include="jsdom\JsdomTest.cs" />
     <Compile Include="jsdom\Level2\Level2.cs" />
@@ -225,7 +226,7 @@
     <Compile Include="Csharp\HtmlParser\Classes.cs" />
     <Compile Include="Csharp\HtmlParser\HtmlDomData.cs" />
     <Compile Include="Csharp\HtmlParser\HtmlBigDomTest.cs" />
-    <Compile Include="Csharp\HtmlParser\HTML5\Html5Compliance.cs" />
+    <Compile Include="Csharp\HtmlParser\Html5Compliance.cs" />
     <Compile Include="Csharp\HtmlParser\DocType.cs" />
     <Compile Include="Csharp\EquationParser\Functions.cs" />
     <Compile Include="Csharp\EquationParser\Utility.cs" />

@@ -649,7 +649,8 @@ namespace CsQuery.Implementation
                 }
                 ChildNodes.Clear();
 
-                CQ csq = CQ.CreateFragment(value);
+
+                CQ csq = CQ.CreateFragment(value, NodeName);
                 ChildNodes.AddRange(csq.Document.ChildNodes);
             }
         }

@@ -34,14 +34,17 @@ namespace CsQuery.Tests.Csharp.HtmlParser
         public void BasicCreate()
         {
 
-            var output = CreateFromHtml("<div/>");
+            var output = CreateFromHtml("<div></div>");
+            Assert.AreEqual("<div></div>", output.Render(), "Basic element creation");
+
+            output = CreateFromHtml("<div/>");
             Assert.AreEqual("<div></div>", output.Render(), "Basic element creation");
 
             output = CreateFromHtml("<div><span></div>");
             Assert.AreEqual("<div><span></span></div>", output.Render(), "broken closing tag");
             
             output = CreateFromHtml("<div><input type=text><ul><li>item1<li>item2</div>");
-            Assert.AreEqual("<div><input type=\"text\" /><ul><li>item1</li><li>item2</li></ul></div>", output.Render(), "broken closing tag");
+            Assert.AreEqual("<div><input type=\"text\"><ul><li>item1</li><li>item2</li></ul></div>", output.Render(), "broken closing tag");
 
             output = CreateFromHtml("<div><span>yyy</div>xxx");
             Assert.AreEqual("<div><span>yyy</span></div>xxx", output.Render(), "broken closing tag + trailing text");
@@ -62,7 +65,7 @@ namespace CsQuery.Tests.Csharp.HtmlParser
             
             //Assert.AreEqual("<input type=\"text>text<div> value=\" x /><div>xxx</div>", output.Render(), "some messed up attributes -- keeps open til closing quote, tosses unexpected quote");
             // test changed for validator.nu parser - this is correct now! The attribute name should actually be 'x"'
-            Assert.AreEqual("<input type=\"text>text<div> value=\" x\" /><div>xxx</div>", output.Render(), "some messed up attributes -- keeps open til closing quote, tosses unexpected quote");
+            Assert.AreEqual("<input type=\"text>text<div> value=\" x\"><div>xxx</div>", output.Render(), "some messed up attributes -- keeps open til closing quote, tosses unexpected quote");
 
             // when an unexpected close tag is found:
             // 1) Try to match to an open tag above. If found, close everything currently open.

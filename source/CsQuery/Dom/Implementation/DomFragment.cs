@@ -12,6 +12,30 @@ namespace CsQuery.Implementation
     /// </summary>
     public class DomFragment : DomDocument, IDomFragment
     {
+        /// <summary>
+        /// Creates a new fragment in a given context.
+        /// </summary>
+        ///
+        /// <param name="elements">
+        /// The elements.
+        /// </param>
+        /// <param name="context">
+        /// (optional) the context. If omitted, will be automatically determined.
+        /// </param>
+        /// <param name="docType">
+        /// (optional) type of the document.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new fragment
+        /// </returns>
+
+        public static IDomDocument Create(string html,
+           string context=null,
+           DocType docType = DocType.HTML5)
+        {
+            return ElementFactory.Create(html, HtmlParsingMode.FragmentWithSelfClosingTags, docType);
+        }
 
         public DomFragment()
             : base()

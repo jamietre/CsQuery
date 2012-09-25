@@ -26,9 +26,10 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return textIndex >= 0 ?
-                    stringRef.DocumentIndex.GetTokenizedString(textIndex)
-                        : unboundText;
+                //return textIndex >= 0 ?
+                //    stringRef.DocumentIndex.GetTokenizedString(textIndex)
+                //        : unboundText;
+                return unboundText;
             }
         }
         public override string NodeName

@@ -21,7 +21,6 @@ namespace CsQuery
 
         public CQ()
         {
-
         }
 
         /// <summary>
@@ -33,9 +32,9 @@ namespace CsQuery
         /// The html of the new document.
         /// </param>
 
-        public CQ(char[] html)
+        public CQ(char[] html, HtmlParsingMode parsingMode= HtmlParsingMode.Auto, DocType docType = DocType.HTML5)
         {
-            CreateNewFragment(html.AsString(), HtmlParsingMode.Auto);
+            CreateNewFragment(this,html.AsString(),parsingMode,docType);
         }
 
         /// <summary>
@@ -82,62 +81,44 @@ namespace CsQuery
             ConfigureNewInstance(this, element, context);
         }
 
-        private CQ NewInstance(IDomObject element, CQ context)
-        {
-            var cq = NewCqUnbound();
-            ConfigureNewInstance(cq, element, context);
-            return cq;
-        }
-        private void ConfigureNewInstance(CQ dom, IDomObject element, CQ context)
-        {
-            dom.CsQueryParent = context;
-            dom.SetSelection(element, SelectionSetOrder.OrderAdded);
-        }
-        
         /// <summary>
-        /// Create a new CQ object from an HTML character array 
+        /// Create a new CQ object from an HTML character array.
         /// </summary>
-        /// <param name="html"></param>
-        /// <returns></returns>
-        public CQ(string html)
+        ///
+        /// <param name="html">
+        /// The HTML source
+        /// </param>
+        /// <param name="mode">
+        /// (optional) the mode.
+        /// </param>
+        /// <param name="docType">
+        /// (optional) type of the document.
+        /// </param>
+
+
+        public CQ(string html, HtmlParsingMode mode = HtmlParsingMode.Auto, DocType docType = DocType.HTML5)
         {
-            ConfigureNewInstance(this, html);
+            CreateNewFragment(this,html, mode, docType);
         }
-        private CQ NewInstance(string html)
-        {
-            var cq = NewCqUnbound();
-            ConfigureNewInstance(cq, html);
-            return cq;
-        }
-        private void ConfigureNewInstance(CQ dom, string html)
-        {
-            CreateNewFragment(html, HtmlParsingMode.Auto);
-        }
+
         /// <summary>
-        /// Create a new CsQuery object using an existing instance and a selector. if the selector is null or missing, then
-        /// it will contain no selection results.
+        /// Create a new CsQuery object using an existing instance and a selector. if the selector is
+        /// null or missing, then it will contain no selection results.
         /// </summary>
-        /// <param name="selector">A valid CSS selector</param>
-        /// <param name="context">The context</param>
+        ///
+        /// <param name="selector">
+        /// A valid CSS selector.
+        /// </param>
+        /// <param name="context">
+        /// The context.
+        /// </param>
+
         public CQ(string selector, CQ context)
         {
-            _CQ(selector,context);
+            ConfigureNewInstance(selector,context);
         }
 
-        private void _CQ(string selector, CQ context) {
-             CsQueryParent = context;
-
-            if (!String.IsNullOrEmpty(selector))
-            {
-                Selector = new Selector(selector);
-
-                SetSelection(Selector.Select(Document, context),
-                    Selector.IsHmtl ?
-                        SelectionSetOrder.OrderAdded :
-                        SelectionSetOrder.Ascending);
-            }
-            
-        }
+       
 
         /// <summary>
         /// Create a new CsQuery object from a selector HTML, and assign CSS from a JSON string, within a context.
@@ -155,7 +136,7 @@ namespace CsQuery
 
         public CQ(string selector, string cssJson, CQ context)
         {
-            _CQ(selector, context);
+            ConfigureNewInstance(selector, context);
             AttrSet(cssJson);
         }
 
@@ -175,52 +156,26 @@ namespace CsQuery
 
         public CQ(string selector, object css, CQ context)
         {
-            _CQ(selector, context);
+            ConfigureNewInstance(selector, context);
             AttrSet(css);
         }
-        
-
 
         /// <summary>
-        /// Create a new CsQuery object from an existing CsQuery object (or any set of DOM elements).
-        /// If the source is a unassociated list of DOM elements, the context of the first element will become
-        /// the context of the new CsQuery object.
+        /// Create a new CsQuery object from an existing CsQuery object (or any set of DOM elements). If
+        /// the source is a unassociated list of DOM elements, the context of the first element will
+        /// become the context of the new CsQuery object.
         /// </summary>
-        /// <param name="elements"></param>
+        ///
+        /// <param name="elements">
+        /// A sequence of elements to populate the object
+        /// </param>
+
         public CQ(IEnumerable<IDomObject> elements)
         {
             ConfigureNewInstance(this,elements);
         }
 
-        private CQ NewInstance(IEnumerable<IDomObject> elements)
-        {
-            var cq = NewCqUnbound();
-            ConfigureNewInstance(cq,elements);
-            return cq;
-        }
-        private void ConfigureNewInstance(CQ dom,IEnumerable<IDomObject> elements)
-        {
-            var list = elements.ToList();
-
-            if (elements is CQ)
-            {
-                CQ asCq = (CQ)elements;
-                dom.CsQueryParent = asCq;
-                dom.Document = asCq.Document;
-            }
-            else
-            {
-                // not actually a CQ object, we can get the Document the els are bound to from one of the
-                // elements. 
-
-                var el = list.FirstOrDefault();
-                if (el != null)
-                {
-                    dom.Document = el.Document;
-                }
-            }
-            dom.SetSelection(list, SelectionSetOrder.OrderAdded);
-        }
+       
         /// <summary>
         /// Create a new CsQuery object from a set of DOM elements, assigning the 2nd parameter as a context for this object.
         /// </summary>
@@ -236,30 +191,8 @@ namespace CsQuery
         {
             ConfigureNewInstance(this,elements, context);
         }
-        private CQ NewInstance(IEnumerable<IDomObject> elements, CQ context)
-        {
-            var cq = NewCqUnbound();
-            ConfigureNewInstance(cq,elements, context);
-            return cq;
-        }
-
-        /// <summary>
-        /// Configures a new instance for a sequence of elements and an existing context.
-        /// </summary>
-        ///
-        /// <param name="elements">
-        /// A sequence of elements.
-        /// </param>
-        /// <param name="context">
-        /// The context.
-        /// </param>
-
-        private void ConfigureNewInstance(CQ dom,IEnumerable<IDomObject> elements, CQ context)
-        {
-            dom.CsQueryParent = context;
-            dom.AddSelection(elements);
-        }
-
+       
+    
         #endregion
 
         #region implicit constructors
@@ -347,11 +280,9 @@ namespace CsQuery
         /// The HTML parsing mode.
         /// </param>
 
-        protected void CreateNewDocument(string html, HtmlParsingMode htmlParsingMode)
+        protected void CreateNewDocument(string html, HtmlParsingMode htmlParsingMode, DocType docType)
         {
-            //Document = new DomDocument(html,htmlParsingMode);
-            Document = DomDocument.Create(html,HtmlParsingMode.Document);
-            HtmlParser.Obsolete.HtmlElementFactory.ReorganizeStrandedTextNodes(Document);
+            Document = DomDocument.Create(html,HtmlParsingMode.Document,docType);
             AddSelection(Document.ChildNodes);
         }
 
@@ -359,24 +290,167 @@ namespace CsQuery
         /// Bind this instance to a new DomFragment created from HTML using the specified parsing mode.
         /// </summary>
         ///
+        /// <param name="target">
+        /// The target.
+        /// </param>
         /// <param name="html">
         /// The HTML.
         /// </param>
-        /// <param name="htmlParsingMode">
+        /// <param name="parsingMode">
         /// The HTML parsing mode.
         /// </param>
+        /// <param name="docType">
+        /// (optional) type of the document.
+        /// </param>
 
-        protected void CreateNewFragment(string html, HtmlParsingMode htmlParsingMode)
+        protected void CreateNewFragment(CQ target,
+            string html, 
+            HtmlParsingMode parsingMode, 
+            DocType docType)
         {
-            //Document = new DomFragment(html,htmlParsingMode);
-            Document = DomDocument.Create(html,htmlParsingMode);
+            target.Document = DomDocument.Create(html,parsingMode,docType);
+
              
             //  enumerate ChildNodes when creating a new fragment to be sure the selection set only
             //  reflects the original document. 
             
-            SetSelection(Document.ChildNodes.ToList(),SelectionSetOrder.Ascending);
+            target.SetSelection(Document.ChildNodes.ToList(),SelectionSetOrder.Ascending);
         }
 
+        /// <summary>
+        /// Bind this instance to a new DomFragment created from HTML in a specific HTML tag context
+        /// </summary>
+        ///
+        /// <param name="target">
+        /// The target.
+        /// </param>
+        /// <param name="html">
+        /// The HTML.
+        /// </param>
+        /// <param name="context">
+        /// The context.
+        /// </param>
+        /// <param name="docType">
+        /// (optional) type of the document.
+        /// </param>
+
+        protected void CreateNewFragment(CQ target,
+          string html,
+          string context,
+          DocType docType)
+        {
+            target.Document = DomFragment.Create(html, context,docType);
+
+            //  enumerate ChildNodes when creating a new fragment to be sure the selection set only
+            //  reflects the original document. 
+
+            target.SetSelection(Document.ChildNodes.ToList(), SelectionSetOrder.Ascending);
+        }
+
+        private CQ NewInstance(string html)
+        {
+            var cq = NewCqUnbound();
+            CreateNewFragment(cq, html,HtmlParsingMode.Auto,DocType.HTML5);
+            return cq;
+        }
+
+        private CQ NewInstance(IEnumerable<IDomObject> elements, CQ context)
+        {
+            var cq = NewCqUnbound();
+            ConfigureNewInstance(cq, elements, context);
+            return cq;
+        }
+
+
+
+        /// <summary>
+        /// Configures a new instance for a sequence of elements and an existing context.
+        /// </summary>
+        ///
+        /// <param name="elements">
+        /// A sequence of elements.
+        /// </param>
+        /// <param name="context">
+        /// The context.
+        /// </param>
+
+        private void ConfigureNewInstance(CQ dom, IEnumerable<IDomObject> elements, CQ context)
+        {
+            dom.CsQueryParent = context;
+            dom.AddSelection(elements);
+        }
+
+        private CQ NewInstance(IEnumerable<IDomObject> elements)
+        {
+            var cq = NewCqUnbound();
+            ConfigureNewInstance(cq, elements);
+            return cq;
+        }
+
+        private void ConfigureNewInstance(CQ dom, IEnumerable<IDomObject> elements)
+        {
+            var list = elements.ToList();
+
+            if (elements is CQ)
+            {
+                CQ asCq = (CQ)elements;
+                dom.CsQueryParent = asCq;
+                dom.Document = asCq.Document;
+            }
+            else
+            {
+                // not actually a CQ object, we can get the Document the els are bound to from one of the
+                // elements. 
+
+                var el = list.FirstOrDefault();
+                if (el != null)
+                {
+                    dom.Document = el.Document;
+                }
+            }
+            dom.SetSelection(list, SelectionSetOrder.OrderAdded);
+        }
+
+        /// <summary>
+        /// Configures a new instance for a sequence of elements and an existing context.
+        /// </summary>
+        ///
+        /// <param name="selector">
+        /// A valid CSS selector.
+        /// </param>
+        /// <param name="context">
+        /// The context.
+        /// </param>
+
+        private void ConfigureNewInstance(string selector, CQ context)
+        {
+            CsQueryParent = context;
+
+            if (!String.IsNullOrEmpty(selector))
+            {
+                Selector = new Selector(selector);
+
+                SetSelection(Selector.Select(Document, context),
+                    Selector.IsHmtl ?
+                        SelectionSetOrder.OrderAdded :
+                        SelectionSetOrder.Ascending);
+            }
+
+        }
+
+        private CQ NewInstance(IDomObject element, CQ context)
+        {
+            var cq = NewCqUnbound();
+            ConfigureNewInstance(cq, element, context);
+            return cq;
+        }
+
+        private void ConfigureNewInstance(CQ dom, IDomObject element, CQ context)
+        {
+            dom.CsQueryParent = context;
+            dom.SetSelection(element, SelectionSetOrder.OrderAdded);
+        }
+        
         #endregion
     }
 }

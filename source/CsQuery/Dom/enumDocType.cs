@@ -16,7 +16,7 @@ namespace CsQuery
         /// </summary>
         HTML5 = 1,
         /// <summary>
-        /// HTML4
+        /// HTML 4 Transitional
         /// </summary>
         HTML4 = 2,
         /// <summary>
@@ -26,6 +26,11 @@ namespace CsQuery
         /// <summary>
         /// An unsupported document type.
         /// </summary>
-        Unknown = 4
+        Unknown = 4,
+        /// <summary>
+        /// HTML 4 Strict
+        /// </summary>
+        HTML4Strict = 5
+
     }
 }

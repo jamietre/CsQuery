@@ -59,7 +59,7 @@ namespace CsQuery.Tests
         [TestFixtureSetUp]
         public virtual void FixtureSetUp()
         {
-            CQ.DefaultDocType = DocType.XHTML;
+            //CQ.DefaultDocType = DocType.XHTML;
         }
 
 

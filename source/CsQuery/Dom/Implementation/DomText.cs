@@ -35,15 +35,15 @@ namespace CsQuery.Implementation
         {
             get { return NodeType.TEXT_NODE; }
         }
-        protected int textIndex=-1;
+        //protected int textIndex=-1;
         // for use during initial construction from char array
-        public void SetTextIndex(IDomDocument dom, int index)
-        {
-            textIndex = index;
-            // create a hard reference to the DOM from which we are mapping our string data. Otherwise if this
-            // is moved to another dom, it will break
-            stringRef = dom;
-        }
+        //public void SetTextIndex(IDomDocument dom, int index)
+        //{
+        //    textIndex = index;
+        //    // create a hard reference to the DOM from which we are mapping our string data. Otherwise if this
+        //    // is moved to another dom, it will break
+        //    stringRef = dom;
+        //}
 
         protected IDomDocument stringRef = null;
 
@@ -53,14 +53,15 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return textIndex >= 0 ?
-                    HtmlData.HtmlDecode(stringRef.DocumentIndex.GetTokenizedString(textIndex))
-                        : unboundText;
+                //return textIndex >= 0 ?
+                //    HtmlData.HtmlDecode(stringRef.DocumentIndex.GetTokenizedString(textIndex))
+                //        : unboundText;
+                return unboundText;
             }
             set
             {
                unboundText =value;
-                textIndex = -1;
+               //textIndex = -1;
             }
         }
 
@@ -99,7 +100,7 @@ namespace CsQuery.Implementation
         public override DomText Clone()
         {
             DomText domText = new DomText();
-            domText.textIndex = textIndex;
+            //domText.textIndex = textIndex;
             domText.unboundText = unboundText;
             domText.stringRef = stringRef;
             return domText;

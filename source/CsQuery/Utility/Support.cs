@@ -361,27 +361,6 @@ namespace CsQuery.Utility
 
 
         /// <summary>
-        /// Convert a string to a char array, if not null.
-        /// </summary>
-        ///
-        /// <param name="html">
-        /// The string.
-        /// </param>
-        ///
-        /// <returns>
-        /// The converted string, or null
-        /// </returns>
-
-        public static char[] StringToCharArray(string html)
-        {
-            return String.IsNullOrEmpty(html) ?
-                null :
-                html.ToCharArray();
-        }
-
-
-
-        /// <summary>
         /// Copies files matching a pattern.
         /// </summary>
         ///

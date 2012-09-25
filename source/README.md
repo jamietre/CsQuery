@@ -6,7 +6,12 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ### Change Log
 
-####Version 1.2.2 (development)
+####Version 1.3 (development)
+
+- Switched to validator.nu HTML parser
+- Add overrides to `Create` methods to provide parsing options
+
+####Version 1.2.2 (unreleased)
 
 *Bug Fixes*
 

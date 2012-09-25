@@ -5,7 +5,7 @@ using System.Text;
 using CsQuery.Implementation;
 using CsQuery.StringScanner;
 
-namespace CsQuery.HtmlParser.Obsolete
+namespace CsQuery.HtmlParser.Deprecated
 {
     /// <summary>
     /// A class encapsulating the state of an HTML parser element.
@@ -198,15 +198,15 @@ namespace CsQuery.HtmlParser.Obsolete
             }
             literal = lit;
 
-            if (factory.IsBound)
-            {
-                lit.SetTextIndex(factory.Document, factory.Document.DocumentIndex.TokenizeString(HtmlStart, Pos - HtmlStart));
-            }
-            else
-            {
+            //if (factory.IsBound)
+            //{
+            //    lit.SetTextIndex(factory.Document, factory.Document.DocumentIndex.TokenizeString(HtmlStart, Pos - HtmlStart));
+            //}
+            //else
+            //{
                 string text = factory.Html.SubstringBetween(HtmlStart, Pos);
                 literal.NodeValue = HtmlData.HtmlDecode(text);
-            }
+            //}
 
             if (WrapLiterals)
             {

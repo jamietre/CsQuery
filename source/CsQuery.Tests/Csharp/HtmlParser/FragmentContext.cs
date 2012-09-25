@@ -15,7 +15,7 @@ using CsQuery;
 using CsQuery.HtmlParser;
 using CsQuery.Utility;
 
-namespace CsQuery.Tests.Csharp.HtmlParser.HTML5
+namespace CsQuery.Tests.Csharp.HtmlParser
 {
 
     [TestFixture, TestClass]

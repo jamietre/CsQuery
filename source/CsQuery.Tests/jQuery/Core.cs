@@ -62,7 +62,7 @@ namespace CsQuery.Tests.jQuery
             var div = jQuery("<div/><hr/><code/><b/>");
             
             Assert.AreEqual(4, div.Length, "Correct number of elements generated for div hr code b");
-            Assert.AreEqual("<div></div><hr /><code></code><b></b>", div.RenderSelection());
+            Assert.AreEqual("<div></div><hr><code></code><b></b>", div.RenderSelection());
             
             Assert.AreEqual(0, div.Parent().Length, "Make sure that the generated HTML has no parent." );
             
@@ -105,7 +105,7 @@ namespace CsQuery.Tests.jQuery
             //    }
             //    equals( elem[0].defaultValue, "TEST", "Ensure cached nodes are cloned properly (Bug #6655)" );
 
-            Assert.AreEqual(2, CQ.CreateFragment(" <div/> ").Length, "Make sure whitespace is trimmed.");
+            Assert.AreEqual(3, CQ.CreateFragment(" <div/> ").Length, "Make sure whitespace is trimmed.");
             Assert.AreEqual(3, CQ.CreateFragment(" a<div></div>b ").Length, "Make sure whitespace and other characters are NOT trimmed.");
             
             // Unnecessary

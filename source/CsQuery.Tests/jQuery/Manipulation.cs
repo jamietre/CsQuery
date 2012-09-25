@@ -1112,11 +1112,10 @@ namespace CsQuery.Tests.jQuery
 
             //Assert.AreEqual( div.Children().Length, 2, "Make sure two child nodes exist." );
             
-           // NOTE: This appears to be an implementation difference; validator.nu does NOT close the div with a built-in close
-           // tag
-           //Assert.AreEqual( div.Children().Children().Length, 1, "Make sure that a grandchild exists." );
-            Assert.AreEqual("<div id=\"parent_1\"><div id=\"child_1\"></div><div id=\"parent_2\"></div></div>", 
-                div.Html());
+
+            Assert.AreEqual( div.Children().Children().Length, 1, "Make sure that a grandchild exists." );
+            // Assert.AreEqual("<div id=\"parent_1\"><div id=\"child_1\"></div><div id=\"parent_2\"></div></div>", 
+            // div.Html());
 
             var space = jQuery("<div/>").Html(valueObj("&#160;"))[0].InnerHTML;
             Assert.IsTrue("/^\xA0$|^&nbsp;$|^&#160;$/".RegexTest(space), "Make sure entities are passed through correctly.");

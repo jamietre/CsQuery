@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CsQuery.HtmlParser
+namespace CsQuery.HtmlParser.Deprecated
 {
     /// <summary>
-    /// The Element Parsing scope 
+    /// Values that represent the current state of the tokenizer for an IterationData object
     /// </summary>
-    /// <url>http://dev.w3.org/html5/spec/parsing.html#stack-of-open-elements</url>
 
-    public enum ElementScope : byte
+    public enum TokenizerState : byte
     {
         /// <summary>
         /// The normal (default) state; means content / looking for tags.

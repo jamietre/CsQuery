@@ -571,7 +571,7 @@ namespace CsQuery
             List<IDomObject> allContent = new List<IDomObject>();
             foreach (var item in content)
             {
-                allContent.AddRange(CQ.CreateFragment(item));
+                allContent.AddRange(CQ.Create(item));
             }
             return allContent;
         }

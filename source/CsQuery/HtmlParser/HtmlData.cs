@@ -645,8 +645,15 @@ namespace CsQuery.HtmlParser
         /// <summary>
         /// This type does not allow HTML children. Some of these types may allow text but not HTML.
         /// </summary>
-        /// <param name="nodeId"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="nodeId">
+        /// The token ID
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
         public static bool HtmlChildrenNotAllowed(ushort nodeId)
         {
             return (nodeId & NonSpecialTokenMask) == 0 &&
@@ -655,8 +662,7 @@ namespace CsQuery.HtmlParser
         }
 
         /// <summary>
-        /// Test whether this type does not allow HTML children. Some of these types may allow text but
-        /// not HTML.
+        /// This type does not allow HTML children. Some of these types may allow text but not HTML.
         /// </summary>
         ///
         /// <param name="nodeName">
@@ -677,11 +683,11 @@ namespace CsQuery.HtmlParser
         /// </summary>
         ///
         /// <param name="tokenId">
-        /// The token ID
+        /// The token ID.
         /// </param>
         ///
         /// <returns>
-        /// true if it succeeds, false if it fails.
+        /// When false, this element type may never have children.
         /// </returns>
 
         public static bool ChildrenAllowed(ushort tokenId)
@@ -695,7 +701,7 @@ namespace CsQuery.HtmlParser
         }
 
         /// <summary>
-        /// Test whether this element can have text contents
+        /// Test whether this element can have children.
         /// </summary>
         ///
         /// <param name="nodeName">
@@ -703,7 +709,7 @@ namespace CsQuery.HtmlParser
         /// </param>
         ///
         /// <returns>
-        /// true if it text is allowed, false if not
+        /// When false, this element type may never have children.
         /// </returns>
 
         public static bool ChildrenAllowed(string nodeName)

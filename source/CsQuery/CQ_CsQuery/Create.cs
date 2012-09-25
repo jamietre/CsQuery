@@ -87,9 +87,9 @@ namespace CsQuery
         /// A new CQ object
         /// </returns>
 
-        public static CQ Create(string html)
+        public static CQ Create(string html, HtmlParsingMode mode=HtmlParsingMode.Auto, DocType docType=DocType.HTML5)
         {
-            return new CQ(html);
+            return new CQ(html, mode, docType);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace CsQuery
 
         public static CQ Create(string html, object quickSet)
         {
-            CQ csq = CQ.CreateFragment(html);
+            CQ csq = CQ.Create(html);
             return csq.AttrSet(quickSet, true);
         }
 
@@ -165,10 +165,35 @@ namespace CsQuery
         /// The new fragment.
         /// </returns>
 
-        public static CQ CreateFragment(string html, string elementContext=null)
+        public static CQ CreateFragment(string html)
         {
-            return CQ.CreateFragment(Support.StringToCharArray(html));
+            CQ cq = new CQ();
+            cq.CreateNewFragment(cq, html, HtmlParsingMode.FragmentWithSelfClosingTags, DocType.HTML5);
+            return cq;
         }
+
+        /// <summary>
+        /// Creeate a new fragment from HTML text, in the context of a specific HTML tag
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// A string of HTML.
+        /// </param>
+        /// <param name="context">
+        /// The HTML tag name which is the context
+        /// </param>
+        ///
+        /// <returns>
+        /// The new fragment.
+        /// </returns>
+
+        public static CQ CreateFragment(string html, string context)
+        {
+            CQ cq = new CQ();
+            cq.CreateNewFragment(cq, html, context, DocType.HTML5);
+            return cq;
+        }
+
 
         /// <summary>
         /// Create a new fragment from HTML text.
@@ -184,10 +209,7 @@ namespace CsQuery
 
         public static CQ CreateFragment(char[] html)
         {
-            CQ csq = new CQ();
-            //csq.LoadFragment(html);
-            csq.CreateNewFragment(html.AsString(), HtmlParsingMode.Fragment);
-            return csq;
+            return CreateFragment(html.AsString());
         }
 
         /// <summary>
@@ -241,7 +263,11 @@ namespace CsQuery
 
         public static CQ CreateDocument(string html)
         {
-            return CreateDocument(Support.StringToCharArray(html));
+            CQ csq = new CQ();
+            csq.CreateNewDocument(html, HtmlParsingMode.Document, DocType.HTML5);
+
+            return csq;
+            
         }
 
         /// <summary>
@@ -258,10 +284,7 @@ namespace CsQuery
 
         public static CQ CreateDocument(char[] html)
         {
-            CQ csq = new CQ();
-            csq.CreateNewDocument(html.AsString(), HtmlParsingMode.Document);
-            
-            return csq;
+            return CreateDocument(html.AsString());
         }
 
         /// <summary>

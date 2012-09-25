@@ -24,25 +24,36 @@ namespace CsQuery.Implementation
             return new DomDocument();
         }
 
-        public static IDomDocument Create(IEnumerable<IDomObject> elements, HtmlParsingMode mode = HtmlParsingMode.Content)
+        public static IDomDocument Create(IEnumerable<IDomObject> elements, 
+            HtmlParsingMode parsingMode = HtmlParsingMode.Content,
+            DocType docType = DocType.HTML5)
         {
-            DomDocument doc = mode == HtmlParsingMode.Document ?
+            DomDocument doc = parsingMode == HtmlParsingMode.Document ?
                 new DomDocument() :
                 new DomFragment();
 
+            // only set a DocType node for documents. Doesn't make sense for 
+            if (parsingMode == HtmlParsingMode.Document)
+            {
+                doc.DocType = docType;
+            }
             doc.InitializeDomDocument();
             doc.Populate(elements);
             return doc;
         }
 
-        public static IDomDocument Create(string html, HtmlParsingMode htmlParsingMode = HtmlParsingMode.Content)
+        public static IDomDocument Create(string html, 
+            HtmlParsingMode htmlParsingMode = HtmlParsingMode.Auto,
+            DocType docType = DocType.HTML5)
         {
-            return ElementFactory.Create(html, htmlParsingMode);
+            return ElementFactory.Create(html, htmlParsingMode,docType);
         }
 
-        public static IDomDocument Create(Stream html, HtmlParsingMode htmlParsingMode = HtmlParsingMode.Content)
+        public static IDomDocument Create(Stream html, 
+            HtmlParsingMode htmlParsingMode = HtmlParsingMode.Content,
+            DocType docType = DocType.HTML5)
         {
-            return ElementFactory.Create(html, htmlParsingMode);
+            return ElementFactory.Create(html, htmlParsingMode, docType);
         }
 
 
@@ -53,6 +64,7 @@ namespace CsQuery.Implementation
         /// <summary>
         /// Create a new, empty DOM document
         /// </summary>
+        /// 
         public DomDocument()
             : base()
         {
@@ -60,36 +72,14 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Create a new document from a character array of html.
+        /// Populates this instance with the sequence of elements
         /// </summary>
         ///
-        /// <param name="html">
-        /// The HTML
-        /// </param>
-        /// <param name="htmlParsingMode">
-        /// The HTML parsing mode.
+        /// <param name="elements">
+        /// The elements that are the source for the new document.
         /// </param>
 
-        //public DomDocument(char[] html, HtmlParsingMode htmlParsingMode)
-        //{
-        //    InitializeDomDocument();
-        //    Populate(html, htmlParsingMode);
-        //}
-
-        //private void Populate(char[] html, HtmlParsingMode htmlParsingMode)
-        //{
-
-        //    if (html != null && html.Length > 0)
-        //    {
-        //        SourceHtml = html;
-        //    }
-
-        //    HtmlElementFactory factory = new HtmlParser.HtmlElementFactory(this);
-        //    Populate(factory.Parse(htmlParsingMode));
-
-        //}
-
-        private void Populate(IEnumerable<IDomObject> elements)
+        protected void Populate(IEnumerable<IDomObject> elements)
         {
             foreach (var item in elements)
             {
@@ -98,20 +88,29 @@ namespace CsQuery.Implementation
 
         }
 
-        private void InitializeDomDocument()
+        /// <summary>
+        /// Initializes an instance to the default state
+        /// </summary>
+
+        protected void InitializeDomDocument()
         {
-            Document.DomRenderingOptions = CsQuery.Config.DomRenderingOptions;
+            Document.DomRenderingOptions = CsQuery.Config.DomRenderingOptions;           
+        }
+
+        /// <summary>
+        /// Clears this object to its blank/initial state.
+        /// </summary>
+
+        protected void Clear()
+        {
             ChildNodes.Clear();
             SelectorXref.Clear();
-            OriginalStrings = new List<Tuple<int, int>>();
-            
         }
 
         #endregion
 
         #region private properties
 
-        private List<Tuple<int, int>> OriginalStrings;
         private bool _settingDocType;
         private IList<ICSSStyleSheet> _StyleSheets;
         private IDictionary<string, object> _Data;
@@ -198,19 +197,6 @@ namespace CsQuery.Implementation
             {
                 return 0;
             }
-        }
-
-        /// <summary>
-        /// A reference to the source HTML from which this document was created. The parsing engine does
-        /// not copy substrings from the original source to populate text nodes;
-        /// instead, it tracks the position &amp; length of each text node within the original document.
-        /// This improves performance during parsing.
-        /// </summary>
-
-        public char[] SourceHtml
-        {
-            get;
-            protected set;
         }
 
         /// <summary>
@@ -316,7 +302,6 @@ namespace CsQuery.Implementation
                     _DocType = value;
                 }
                 _settingDocType = false;
-
             }
         }
 
@@ -467,18 +452,6 @@ namespace CsQuery.Implementation
         public IEnumerable<IDomObject> QueryIndex(string subKey)
         {
             return SelectorXref.GetRange(subKey);
-        }
-
-        public virtual string GetTokenizedString(int index)
-        {
-            var range = OriginalStrings[index];
-            return SourceHtml.Substring(range.Item1, range.Item2);
-        }
-
-        public int TokenizeString(int start, int length)
-        {
-            OriginalStrings.Add(new Tuple<int,int>(start,length));
-            return OriginalStrings.Count - 1;
         }
 
         /// <summary>
