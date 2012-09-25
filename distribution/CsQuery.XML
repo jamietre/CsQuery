@@ -267,7 +267,7 @@
              A new CQ object
              </returns>
         </member>
-        <member name="M:CsQuery.CQ.Create(System.String)">
+        <member name="M:CsQuery.CQ.Create(System.String,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
              <summary>
              Creeate a new CQ object from an HTML string.
              </summary>
@@ -322,7 +322,7 @@
              A new CQ object
              </returns>
         </member>
-        <member name="M:CsQuery.CQ.CreateFragment(System.String,System.String)">
+        <member name="M:CsQuery.CQ.CreateFragment(System.String)">
              <summary>
              Creeate a new fragment from HTML text.
              </summary>
@@ -333,6 +333,22 @@
              <param name="elementContext">
              (optional) context for the element; this determines how parsing rules are applied. If null,
              it will be considered in a legal context.
+             </param>
+            
+             <returns>
+             The new fragment.
+             </returns>
+        </member>
+        <member name="M:CsQuery.CQ.CreateFragment(System.String,System.String)">
+             <summary>
+             Creeate a new fragment from HTML text, in the context of a specific HTML tag
+             </summary>
+            
+             <param name="html">
+             A string of HTML.
+             </param>
+             <param name="context">
+             The HTML tag name which is the context
              </param>
             
              <returns>
@@ -2864,19 +2880,6 @@
              http://api.jquery.com/jQuery/#jQuery1
              </url>
         </member>
-        <member name="M:CsQuery.CQ.ExpandSelfClosingTags(System.String)">
-             <summary>
-             Parses an HTML snippet so self-closing HTML tags are expanded (except those that cannot have children)
-             </summary>
-            
-             <param name="html">
-             The HTML.
-             </param>
-            
-             <returns>
-             The string with the items expanded
-             </returns>
-        </member>
         <member name="M:CsQuery.CQ.Filter(System.String)">
              <summary>
              Reduce the set of matched elements to those that match the selector or pass the function's
@@ -4236,7 +4239,7 @@
             Creates a new, empty CQ object.
             </summary>
         </member>
-        <member name="M:CsQuery.CQ.#ctor(System.Char[])">
+        <member name="M:CsQuery.CQ.#ctor(System.Char[],CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
              <summary>
              Create a new CQ object from an HTML character array. Synonymous with
              <see cref="M:CsQuery.CQ.Create(System.Char[])"/>
@@ -4281,20 +4284,33 @@
              The context.
              </param>
         </member>
-        <member name="M:CsQuery.CQ.#ctor(System.String)">
-            <summary>
-            Create a new CQ object from an HTML character array 
-            </summary>
-            <param name="html"></param>
-            <returns></returns>
+        <member name="M:CsQuery.CQ.#ctor(System.String,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
+             <summary>
+             Create a new CQ object from an HTML character array.
+             </summary>
+            
+             <param name="html">
+             The HTML source
+             </param>
+             <param name="mode">
+             (optional) the mode.
+             </param>
+             <param name="docType">
+             (optional) type of the document.
+             </param>
         </member>
         <member name="M:CsQuery.CQ.#ctor(System.String,CsQuery.CQ)">
-            <summary>
-            Create a new CsQuery object using an existing instance and a selector. if the selector is null or missing, then
-            it will contain no selection results.
-            </summary>
-            <param name="selector">A valid CSS selector</param>
-            <param name="context">The context</param>
+             <summary>
+             Create a new CsQuery object using an existing instance and a selector. if the selector is
+             null or missing, then it will contain no selection results.
+             </summary>
+            
+             <param name="selector">
+             A valid CSS selector.
+             </param>
+             <param name="context">
+             The context.
+             </param>
         </member>
         <member name="M:CsQuery.CQ.#ctor(System.String,System.String,CsQuery.CQ)">
              <summary>
@@ -4327,12 +4343,15 @@
              </param>
         </member>
         <member name="M:CsQuery.CQ.#ctor(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
-            <summary>
-            Create a new CsQuery object from an existing CsQuery object (or any set of DOM elements).
-            If the source is a unassociated list of DOM elements, the context of the first element will become
-            the context of the new CsQuery object.
-            </summary>
-            <param name="elements"></param>
+             <summary>
+             Create a new CsQuery object from an existing CsQuery object (or any set of DOM elements). If
+             the source is a unassociated list of DOM elements, the context of the first element will
+             become the context of the new CsQuery object.
+             </summary>
+            
+             <param name="elements">
+             A sequence of elements to populate the object
+             </param>
         </member>
         <member name="M:CsQuery.CQ.#ctor(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},CsQuery.CQ)">
              <summary>
@@ -4344,18 +4363,6 @@
              </param>
              <param name="context">
              A CQ object that will be assigned as the context for this one.
-             </param>
-        </member>
-        <member name="M:CsQuery.CQ.ConfigureNewInstance(CsQuery.CQ,System.Collections.Generic.IEnumerable{CsQuery.IDomObject},CsQuery.CQ)">
-             <summary>
-             Configures a new instance for a sequence of elements and an existing context.
-             </summary>
-            
-             <param name="elements">
-             A sequence of elements.
-             </param>
-             <param name="context">
-             The context.
              </param>
         </member>
         <member name="M:CsQuery.CQ.op_Implicit(System.String)~CsQuery.CQ">
@@ -4386,7 +4393,7 @@
              The elements to provide the source for this object's DOM.
              </param>
         </member>
-        <member name="M:CsQuery.CQ.CreateNewDocument(System.String,CsQuery.HtmlParser.HtmlParsingMode)">
+        <member name="M:CsQuery.CQ.CreateNewDocument(System.String,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
              <summary>
              Bind this instance to a new DomDocument created from HTML using the specified parsing mode.
              </summary>
@@ -4398,16 +4405,64 @@
              The HTML parsing mode.
              </param>
         </member>
-        <member name="M:CsQuery.CQ.CreateNewFragment(System.String,CsQuery.HtmlParser.HtmlParsingMode)">
+        <member name="M:CsQuery.CQ.CreateNewFragment(CsQuery.CQ,System.String,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
              <summary>
              Bind this instance to a new DomFragment created from HTML using the specified parsing mode.
              </summary>
             
+             <param name="target">
+             The target.
+             </param>
              <param name="html">
              The HTML.
              </param>
-             <param name="htmlParsingMode">
+             <param name="parsingMode">
              The HTML parsing mode.
+             </param>
+             <param name="docType">
+             (optional) type of the document.
+             </param>
+        </member>
+        <member name="M:CsQuery.CQ.CreateNewFragment(CsQuery.CQ,System.String,System.String,CsQuery.DocType)">
+             <summary>
+             Bind this instance to a new DomFragment created from HTML in a specific HTML tag context
+             </summary>
+            
+             <param name="target">
+             The target.
+             </param>
+             <param name="html">
+             The HTML.
+             </param>
+             <param name="context">
+             The context.
+             </param>
+             <param name="docType">
+             (optional) type of the document.
+             </param>
+        </member>
+        <member name="M:CsQuery.CQ.ConfigureNewInstance(CsQuery.CQ,System.Collections.Generic.IEnumerable{CsQuery.IDomObject},CsQuery.CQ)">
+             <summary>
+             Configures a new instance for a sequence of elements and an existing context.
+             </summary>
+            
+             <param name="elements">
+             A sequence of elements.
+             </param>
+             <param name="context">
+             The context.
+             </param>
+        </member>
+        <member name="M:CsQuery.CQ.ConfigureNewInstance(System.String,CsQuery.CQ)">
+             <summary>
+             Configures a new instance for a sequence of elements and an existing context.
+             </summary>
+            
+             <param name="selector">
+             A valid CSS selector.
+             </param>
+             <param name="context">
+             The context.
              </param>
         </member>
         <member name="M:CsQuery.CQ.ToJSON(System.Object)">
@@ -8898,6 +8953,66 @@
              The element.
              </param>
         </member>
+        <member name="M:CsQuery.IDomIndex.AddToIndex(CsQuery.IDomIndexedNode)">
+             <summary>
+             Adds an element to the index.
+             </summary>
+            
+             <param name="element">
+             The element.
+             </param>
+        </member>
+        <member name="M:CsQuery.IDomIndex.RemoveFromIndex(System.String)">
+             <summary>
+             Removes an element from the index
+             </summary>
+            
+             <param name="key">
+             The index key. This should be a unique path to the element in the Document tree. The format
+             is determined by environmental settings. This is for internal use.
+             </param>
+        </member>
+        <member name="M:CsQuery.IDomIndex.RemoveFromIndex(CsQuery.IDomIndexedNode)">
+             <summary>
+             Removes an element from the index.
+             </summary>
+            
+             <param name="element">
+             The element.
+             </param>
+        </member>
+        <member name="M:CsQuery.IDomIndex.QueryIndex(System.String,System.Int32,System.Boolean)">
+             <summary>
+             Queries the index
+             </summary>
+            
+             <param name="subKey">
+             The sub key.
+             </param>
+             <param name="depth">
+             The depth.
+             </param>
+             <param name="includeDescendants">
+             true to include, false to exclude the descendants.
+             </param>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process query index in this collection.
+             </returns>
+        </member>
+        <member name="M:CsQuery.IDomIndex.QueryIndex(System.String)">
+             <summary>
+             Queries the index.
+             </summary>
+            
+             <param name="subKey">
+             The sub key.
+             </param>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process query index in this collection.
+             </returns>
+        </member>
         <member name="P:CsQuery.IDomIndex.SelectorXref">
             <summary>
             The primary selection index.
@@ -10547,28 +10662,28 @@
             Extension methods for converting to XML
             </summary>
         </member>
-        <member name="T:CsQuery.HtmlParser.DomTreeBuilder">
+        <member name="T:CsQuery.HtmlParser.CsQueryTreeBuilder">
             <summary>
             The tree builder glue for building a tree through the public DOM APIs.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.DomTreeBuilder.document">
+        <member name="F:CsQuery.HtmlParser.CsQueryTreeBuilder.document">
             <summary>
             The current doc.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.DomTreeBuilder.isFragment">
+        <member name="F:CsQuery.HtmlParser.CsQueryTreeBuilder.isFragment">
             <summary>
             This is a fragment
             </summary>
         </member>
-        <member name="M:CsQuery.HtmlParser.DomTreeBuilder.InsertFosterParentedCharacters(System.String,CsQuery.IDomObject,CsQuery.IDomObject)">
+        <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.InsertFosterParentedCharacters(System.String,CsQuery.IDomObject,CsQuery.IDomObject)">
             <summary>
             Return the document fragment.
             </summary>
             <returns>The document fragment</returns>
         </member>
-        <member name="P:CsQuery.HtmlParser.DomTreeBuilder.Document">
+        <member name="P:CsQuery.HtmlParser.CsQueryTreeBuilder.Document">
             <summary>
             Returns the document.
             </summary>
@@ -10581,6 +10696,27 @@
             The parser currently ignores the encoding in the html source and parses everything as UTF-8.
             </summary>
             
+        </member>
+        <member name="M:CsQuery.HtmlParser.ElementFactory.#cctor">
+            <summary>
+            Static constructor.
+            </summary>
+        </member>
+        <member name="M:CsQuery.HtmlParser.ElementFactory.Parse(System.IO.TextReader)">
+             <summary>
+             Given a TextReader, create a new IDomDocument from the input
+             </summary>
+            
+             <param name="reader">
+             The HTML input
+             </param>
+             <param name="mode">
+             (optional) the parsing mode.
+             </param>
+            
+             <returns>
+             A populated IDomDocument
+             </returns>
         </member>
         <member name="M:CsQuery.HtmlParser.ElementFactory.GetContext(System.String)">
              <summary>
@@ -10595,17 +10731,21 @@
              The context.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.ElementFactory.GetContext(System.Char[])">
+        <member name="M:CsQuery.HtmlParser.ElementFactory.GetContextFromStream(System.IO.TextReader,System.String@)">
              <summary>
-             Gets a context by inspecting the beginning of a character array
+             Gets a context by inspecting the beginning of a stream. Will restore the stream to its
+             unaltered state.
              </summary>
             
-             <param name="buffer">
-             The buffer.
+             <param name="reader">
+             The HTML input.
+             </param>
+             <param name="context">
+             [out] The context (e.g. the valid parent of the first tag name found).
              </param>
             
              <returns>
-             The context.
+             The a new TextReader which is a clone of the original.
              </returns>
         </member>
         <member name="M:CsQuery.HtmlParser.ElementFactory.ConfigureDefaultContextMap">
@@ -10614,25 +10754,14 @@
             so that true fragments can be created without concern for the context
             </summary>
         </member>
-        <member name="T:CsQuery.HtmlParser.ElementScope">
+        <member name="P:CsQuery.HtmlParser.ElementFactory.FragmentContext">
             <summary>
-            The Element Parsing scope 
-            </summary>
-            <url>http://dev.w3.org/html5/spec/parsing.html#stack-of-open-elements</url>
-        </member>
-        <member name="F:CsQuery.HtmlParser.ElementScope.Default">
-            <summary>
-            The normal (default) state; means content / looking for tags.
+            Gets or sets a context for the fragment, e.g. a tag name
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.ElementScope.TagStart">
+        <member name="T:CsQuery.HtmlParser.HtmlPreprocessor">
             <summary>
-            The tokenizer is inside an opening tag and parsing attributes.
-            </summary>
-        </member>
-        <member name="F:CsQuery.HtmlParser.ElementScope.Finished">
-            <summary>
-            The tokenizer is finished parsing this node.
+            Functions for preprocessing HTML.
             </summary>
         </member>
         <member name="F:CsQuery.HtmlParser.HtmlEncodingMethod.HtmlEncodingFull">
@@ -10650,22 +10779,52 @@
             No encoding.
             </summary>
         </member>
-        <member name="T:CsQuery.HtmlParser.TokenizerState">
+        <member name="T:CsQuery.HtmlParser.HtmlParsingMode">
+            <summary>
+            The methodology applied when parsing strings of HTML
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParser.HtmlParsingMode.Auto">
+            <summary>
+            Automatically detect the document type. When no DocType node is provided, will default to FragmentWithSelfClosingTags.
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParser.HtmlParsingMode.Fragment">
+            <summary>
+            A fragment whose context is determined by the first tag.
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParser.HtmlParsingMode.Content">
+            <summary>
+            A content block, assumed to be in BODY context.
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParser.HtmlParsingMode.Document">
+            <summary>
+            A complete document; the HTML and BODY tag constructs will be addded if missing..
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParser.HtmlParsingMode.FragmentWithSelfClosingTags">
+            <summary>
+            A fragment, but will be preprocessed to permit self-closing tags of any kind
+            </summary>
+        </member>
+        <member name="T:CsQuery.HtmlParser.Deprecated.TokenizerState">
             <summary>
             Values that represent the current state of the tokenizer for an IterationData object
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.TokenizerState.Default">
+        <member name="F:CsQuery.HtmlParser.Deprecated.TokenizerState.Default">
             <summary>
             The normal (default) state; means content / looking for tags.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.TokenizerState.TagStart">
+        <member name="F:CsQuery.HtmlParser.Deprecated.TokenizerState.TagStart">
             <summary>
             The tokenizer is inside an opening tag and parsing attributes.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.TokenizerState.Finished">
+        <member name="F:CsQuery.HtmlParser.Deprecated.TokenizerState.Finished">
             <summary>
             The tokenizer is finished parsing this node.
             </summary>
@@ -10727,6 +10886,11 @@
             A dictionary of valid styles, based on a Visual Studio format XML schema. 
             </summary>
         </member>
+        <member name="F:CsQuery.HtmlParser.HtmlStyles.StyleDefs">
+            <summary>
+            Dictionary mapping style names to CssStyle style definitions
+            </summary>
+        </member>
         <member name="F:CsQuery.HtmlParser.TokenProperties.BlockElement">
             <summary>
             the element is an HTML block-level element
@@ -10776,6 +10940,162 @@
             <summary>
             Element is a form input control
             </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.TextReaderCombiner">
+            <summary>
+            Creates a virtual TextReader from several other streams.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.TextReaderCombiner.#ctor(System.IO.TextReader[])">
+             <summary>
+             Create a new virtual TextReader by combining, in sequence, the streams provided as parameters to the constructor
+             </summary>
+            
+             <param name="readers">
+             A variable-length parameters list containing readers.
+             </param>
+        </member>
+        <member name="F:CsQuery.Implementation.TextReaderCombiner.Readers">
+            <summary>
+            The readers.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.TextReaderCombiner.Close">
+            <summary>
+            Closes the <see cref="T:System.IO.TextReader" /> and releases any system resources associated
+            with the TextReader.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.TextReaderCombiner.Dispose(System.Boolean)">
+             <summary>
+             Releases the unmanaged resources used by the <see cref="T:System.IO.TextReader" /> and
+             optionally releases the managed resources.
+             </summary>
+            
+             <param name="disposing">
+             true to release both managed and unmanaged resources; false to release only unmanaged
+             resources.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.TextReaderCombiner.Peek">
+             <summary>
+             Reads the next character without changing the state of the reader or the character source.
+             Returns the next available character without actually reading it from the input stream.
+             </summary>
+            
+             <returns>
+             An integer representing the next character to be read, or -1 if no more characters are
+             available or the stream does not support seeking.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.TextReaderCombiner.Read">
+             <summary>
+             Reads the next character from the input stream and advances the character position by one
+             character.
+             </summary>
+            
+             <returns>
+             The next character from the input stream, or -1 if no more characters are available. The
+             default implementation returns -1.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.TextReaderCombiner.Read(System.Char[],System.Int32,System.Int32)">
+             <summary>
+             Reads a maximum of <paramref name="count" /> characters from the current stream and writes
+             the data to <paramref name="buffer" />, beginning at <paramref name="index" />.
+             </summary>
+            
+             <param name="buffer">
+             When this method returns, contains the specified character array with the values between
+             <paramref name="index" /> and (<paramref name="index" /> + <paramref name="count" /> - 1)
+             replaced by the characters read from the current source.
+             </param>
+             <param name="index">
+             The position in <paramref name="buffer" /> at which to begin writing.
+             </param>
+             <param name="count">
+             The maximum number of characters to read. If the end of the stream is reached before
+             <paramref name="count" /> of characters is read into <paramref name="buffer" />, the current
+             method returns.
+             </param>
+            
+             <returns>
+             The number of characters that have been read. The number will be less than or equal to
+             <paramref name="count" />, depending on whether the data is available within the stream. This
+             method returns zero if called when no more characters are left to read.
+             </returns>
+            
+             ### <exception cref="T:System.ArgumentNullException">
+             <paramref name="buffer" /> is null.
+             </exception>
+             ### <exception cref="T:System.ArgumentException">
+             The buffer length minus <paramref name="index" /> is less than <paramref name="count" />.
+             </exception>
+             ### <exception cref="T:System.ArgumentOutOfRangeException">
+             <paramref name="index" /> or <paramref name="count" /> is negative.
+             </exception>
+             ### <exception cref="T:System.ObjectDisposedException">
+             The <see cref="T:System.IO.TextReader" /> is closed.
+             </exception>
+             ### <exception cref="T:System.IO.IOException">
+             An I/O error occurs.
+             </exception>
+        </member>
+        <member name="M:CsQuery.Implementation.TextReaderCombiner.ReadBlock(System.Char[],System.Int32,System.Int32)">
+             <summary>
+             Reads a maximum of <paramref name="count" /> characters from the current stream, and writes
+             the data to <paramref name="buffer" />, beginning at <paramref name="index" />.
+             </summary>
+            
+             <param name="buffer">
+             When this method returns, this parameter contains the specified character array with the
+             values between <paramref name="index" /> and (<paramref name="index" /> +
+             <paramref name="count" /> -1) replaced by the characters read from the current source.
+             </param>
+             <param name="index">
+             The position in <paramref name="buffer" /> at which to begin writing.
+             </param>
+             <param name="count">
+             The maximum number of characters to read.
+             </param>
+            
+             <returns>
+             The position of the underlying stream is advanced by the number of characters that were read
+             into <paramref name="buffer" />.The number of characters that have been read. The number will
+             be less than or equal to <paramref name="count" />, depending on whether all input characters
+             have been read.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.TextReaderCombiner.ReadLine">
+             <summary>
+             Reads a line of characters from the current stream and returns the data as a string. Note:
+             this method will not combine data from two boundary streams into a single line; the end of a
+             stream is always the end of a line. This could result in stream corruption (e.g. the addition
+             of newlines between streams) when using this method.
+             </summary>
+            
+             <returns>
+             The next line from the input stream, or null if all characters have been read.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.TextReaderCombiner.ReadToEnd">
+             <summary>
+             Reads all characters from the current position to the end of the TextReader and returns them
+             as one string.
+             </summary>
+            
+             <returns>
+             A string containing all characters from the current position to the end of the TextReader.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.TextReaderCombiner.NextReader">
+             <summary>
+             Advance to the next reader
+             </summary>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
         </member>
         <member name="T:CsQuery.StringScanner.CharacterData">
             <summary>
@@ -13995,7 +14315,7 @@
         </member>
         <member name="F:CsQuery.DocType.HTML4">
             <summary>
-            HTML4
+            HTML 4 Transitional
             </summary>
         </member>
         <member name="F:CsQuery.DocType.XHTML">
@@ -14006,6 +14326,11 @@
         <member name="F:CsQuery.DocType.Unknown">
             <summary>
             An unsupported document type.
+            </summary>
+        </member>
+        <member name="F:CsQuery.DocType.HTML4Strict">
+            <summary>
+            HTML 4 Strict
             </summary>
         </member>
         <member name="T:CsQuery.DomRenderingOptions">
@@ -14523,18 +14848,26 @@
             <summary>
             Create a new, empty DOM document
             </summary>
+            
         </member>
         <member name="M:CsQuery.Implementation.DomDocument.Populate(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
              <summary>
-             Create a new document from a character array of html.
+             Populates this instance with the sequence of elements
              </summary>
             
-             <param name="html">
-             The HTML
+             <param name="elements">
+             The elements that are the source for the new document.
              </param>
-             <param name="htmlParsingMode">
-             The HTML parsing mode.
-             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.InitializeDomDocument">
+            <summary>
+            Initializes an instance to the default state
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.Clear">
+            <summary>
+            Clears this object to its blank/initial state.
+            </summary>
         </member>
         <member name="M:CsQuery.Implementation.DomDocument.AddToIndex(CsQuery.IDomIndexedNode)">
             <summary>
@@ -14807,14 +15140,6 @@
             The depth in the node tree at which this node occurs. This is always 0 for the DomDocument.
             </summary>
         </member>
-        <member name="P:CsQuery.Implementation.DomDocument.SourceHtml">
-            <summary>
-            A reference to the source HTML from which this document was created. The parsing engine does
-            not copy substrings from the original source to populate text nodes;
-            instead, it tracks the position &amp; length of each text node within the original document.
-            This improves performance during parsing.
-            </summary>
-        </member>
         <member name="P:CsQuery.Implementation.DomDocument.DomRenderingOptions">
             <summary>
             Gets or sets options for controlling the DOM rendering from the bound document.
@@ -14850,6 +15175,25 @@
             <summary>
             Any user data to be persisted with this DOM.
             </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomFragment.Create(System.String,System.String,CsQuery.DocType)">
+             <summary>
+             Creates a new fragment in a given context.
+             </summary>
+            
+             <param name="elements">
+             The elements.
+             </param>
+             <param name="context">
+             (optional) the context. If omitted, will be automatically determined.
+             </param>
+             <param name="docType">
+             (optional) type of the document.
+             </param>
+            
+             <returns>
+             A new fragment
+             </returns>
         </member>
         <member name="P:CsQuery.Implementation.DomFragment.IsIndexed">
             <summary>
@@ -15588,16 +15932,21 @@
             </summary>
         </member>
         <member name="M:CsQuery.HtmlParser.HtmlData.HtmlChildrenNotAllowed(System.UInt16)">
-            <summary>
-            This type does not allow HTML children. Some of these types may allow text but not HTML.
-            </summary>
-            <param name="nodeId"></param>
-            <returns></returns>
+             <summary>
+             This type does not allow HTML children. Some of these types may allow text but not HTML.
+             </summary>
+            
+             <param name="nodeId">
+             The token ID
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
         </member>
         <member name="M:CsQuery.HtmlParser.HtmlData.HtmlChildrenNotAllowed(System.String)">
              <summary>
-             Test whether this type does not allow HTML children. Some of these types may allow text but
-             not HTML.
+             This type does not allow HTML children. Some of these types may allow text but not HTML.
              </summary>
             
              <param name="nodeName">
@@ -15614,16 +15963,16 @@
              </summary>
             
              <param name="tokenId">
-             The token ID
+             The token ID.
              </param>
             
              <returns>
-             true if it succeeds, false if it fails.
+             When false, this element type may never have children.
              </returns>
         </member>
         <member name="M:CsQuery.HtmlParser.HtmlData.ChildrenAllowed(System.String)">
              <summary>
-             Test whether this element can have text contents
+             Test whether this element can have children.
              </summary>
             
              <param name="nodeName">
@@ -15631,7 +15980,7 @@
              </param>
             
              <returns>
-             true if it text is allowed, false if not
+             When false, this element type may never have children.
              </returns>
         </member>
         <member name="M:CsQuery.HtmlParser.HtmlData.IsBlock(System.UInt16)">
@@ -16886,56 +17235,56 @@
             <param name="deep"></param>
             <returns></returns>
         </member>
-        <member name="T:CsQuery.HtmlParser.Obsolete.IterationData">
+        <member name="T:CsQuery.HtmlParser.Deprecated.IterationData">
             <summary>
             A class encapsulating the state of an HTML parser element.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.Obsolete.IterationData.WrapLiterals">
+        <member name="F:CsQuery.HtmlParser.Deprecated.IterationData.WrapLiterals">
             <summary>
             When true, literals that are not the child of another element should be wrapped in a
             "span" block.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.Obsolete.IterationData.InsertionMode">
+        <member name="F:CsQuery.HtmlParser.Deprecated.IterationData.InsertionMode">
             <summary>
             The insertion mode active at this time.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.Obsolete.IterationData.TokenizerState">
+        <member name="F:CsQuery.HtmlParser.Deprecated.IterationData.TokenizerState">
             <summary>
             State of the tokenizer.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.Obsolete.IterationData.Parent">
+        <member name="F:CsQuery.HtmlParser.Deprecated.IterationData.Parent">
             <summary>
             The parent object to this object.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.Obsolete.IterationData.Element">
+        <member name="F:CsQuery.HtmlParser.Deprecated.IterationData.Element">
             <summary>
             The DomObject that this IterationData is creating.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.Obsolete.IterationData.Pos">
+        <member name="F:CsQuery.HtmlParser.Deprecated.IterationData.Pos">
             <summary>
             The current placeholder/pointer position.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.Obsolete.IterationData.HtmlStart">
+        <member name="F:CsQuery.HtmlParser.Deprecated.IterationData.HtmlStart">
             <summary>
             The starting position of content (inner HTML) for this element. When a non-text character is
             found, the content from this position until the curren pointer position will be mapped to a
             text node.
             </summary>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.Reset">
+        <member name="M:CsQuery.HtmlParser.Deprecated.IterationData.Reset">
             <summary>
             Use this to prepare the iterator object to continue finding siblings. It retains the parent.
             It just avoids having to recreate an instance of this object for the next tag.
             </summary>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.Reset(System.Int32)">
+        <member name="M:CsQuery.HtmlParser.Deprecated.IterationData.Reset(System.Int32)">
              <summary>
              Use this to prepare the iterator object to continue finding siblings. It retains the parent.
              It just avoids having to recreate an instance of this object for the next tag.
@@ -16945,7 +17294,7 @@
              The index position to which to reset the pointer.
              </param>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.ReadText(System.Char[])">
+        <member name="M:CsQuery.HtmlParser.Deprecated.IterationData.ReadText(System.Char[])">
              <summary>
              Read content from the current position as text only (if InsertionMode.Text)
              </summary>
@@ -16954,7 +17303,7 @@
              The HTML.
              </param>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.FindNextTag(System.Char[])">
+        <member name="M:CsQuery.HtmlParser.Deprecated.IterationData.FindNextTag(System.Char[])">
              <summary>
              Advance the pointer to the next caret, or past the end if none is found.
              </summary>
@@ -16967,7 +17316,7 @@
              true if it succeeds, false if it fails.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.TryGetLiteral(CsQuery.HtmlParser.Obsolete.HtmlElementFactory,CsQuery.IDomObject@)">
+        <member name="M:CsQuery.HtmlParser.Deprecated.IterationData.TryGetLiteral(CsQuery.HtmlParser.Deprecated.HtmlElementFactory,CsQuery.IDomObject@)">
              <summary>
              Returns a literal object for the text between HtmlStart (the last position of the end of a
              tag) and the current position. If !AllowLiterals then it's wrapped in a span.
@@ -16984,7 +17333,7 @@
              true if it succeeds, false if it fails.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.CloseElement(CsQuery.HtmlParser.Obsolete.HtmlElementFactory)">
+        <member name="M:CsQuery.HtmlParser.Deprecated.IterationData.CloseElement(CsQuery.HtmlParser.Deprecated.HtmlElementFactory)">
              <summary>
              Close out this element. This method will return true if something can be yielded; this this
              means it's got a parent at the top of the heirarchy. Otherwise it's just closed but false is
@@ -16999,7 +17348,7 @@
              An enumerator that allows foreach to be used to process close element in this collection.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.FinishTagOpener(System.Char[],CsQuery.IDomObject@)">
+        <member name="M:CsQuery.HtmlParser.Deprecated.IterationData.FinishTagOpener(System.Char[],CsQuery.IDomObject@)">
              <summary>
              Call when attribute parsing is finished; either adds this to the parent, or yields it if
              complete &amp; no parent. The return value indicates whether there are any children.
@@ -17016,7 +17365,7 @@
              true if it succeeds, false if it fails.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.GetTagOpener(System.Char[])">
+        <member name="M:CsQuery.HtmlParser.Deprecated.IterationData.GetTagOpener(System.Char[])">
              <summary>
              Returns the tag name. The placeholder should be on the opening caret of a tag, and upon exit
              will be on the first stop character (e.g. space after the tag name)
@@ -17030,7 +17379,7 @@
              The new tag name.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.GetCloseTag(System.Char[])">
+        <member name="M:CsQuery.HtmlParser.Deprecated.IterationData.GetCloseTag(System.Char[])">
              <summary>
              Return the current closing tag. Expects the placeholder to be _after_ an opening caret for a
              close tag, and returns the tag name. Upon exit, the placeholder is at the next position after
@@ -17045,7 +17394,7 @@
              The close tag.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.GetOpenText(System.Char[])">
+        <member name="M:CsQuery.HtmlParser.Deprecated.IterationData.GetOpenText(System.Char[])">
              <summary>
              Returns all text from the current position up to but not including the next opening caret.
              The placeholder will be on the opening caret.
@@ -17059,7 +17408,7 @@
              The open text, or null if the placeholder is already at a caret.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.GetTagAttribute(System.Char[])">
+        <member name="M:CsQuery.HtmlParser.Deprecated.IterationData.GetTagAttribute(System.Char[])">
              <summary>
              Parse an HTML attribute construct: {x=["|']y["|']]} or just {x}) and add the attribute to the
              current element if successful. The placeholder should be tag opening construct but after the
@@ -17096,7 +17445,7 @@
              true if it succeeds, false if it fails.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.AddNewParent(System.UInt16,System.Int32)">
+        <member name="M:CsQuery.HtmlParser.Deprecated.IterationData.AddNewParent(System.UInt16,System.Int32)">
              <summary>
              Add a new parent of type tagId. In other words, wrap the current element in a new element.
              </summary>
@@ -17112,7 +17461,7 @@
              The iteration data representing the current element (replaces the
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.AddNewChild">
+        <member name="M:CsQuery.HtmlParser.Deprecated.IterationData.AddNewChild">
              <summary>
              Adds a new child to this item, and returns it.
              </summary>
@@ -17121,7 +17470,7 @@
              New IterationData that is a child of the current IterationData.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.AddNewChild(System.Int32)">
+        <member name="M:CsQuery.HtmlParser.Deprecated.IterationData.AddNewChild(System.Int32)">
              <summary>
              Adds a new child to this item, and returns it
              </summary>
@@ -17134,7 +17483,7 @@
              New IterationData that is a child of the current IterationData
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.MoveOutsideTag(System.Char[])">
+        <member name="M:CsQuery.HtmlParser.Deprecated.IterationData.MoveOutsideTag(System.Char[])">
              <summary>
              Move pointer to the first character after the closing caret of this tag.
              </summary>
@@ -17147,7 +17496,7 @@
              Returns True if there are children.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.IterationData.ParentTagID">
+        <member name="M:CsQuery.HtmlParser.Deprecated.IterationData.ParentTagID">
              <summary>
              Gets the token for the parent node to this node.
              </summary>
@@ -18225,23 +18574,23 @@
             Gets a list of clauses in this selector
             </summary>
         </member>
-        <member name="T:CsQuery.HtmlParser.Obsolete.HtmlElementFactory">
+        <member name="T:CsQuery.HtmlParser.Deprecated.HtmlElementFactory">
             <summary>
             The HTML parser
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.Obsolete.HtmlElementFactory.GenerateOptionalElements">
+        <member name="F:CsQuery.HtmlParser.Deprecated.HtmlElementFactory.GenerateOptionalElements">
             <summary>
             When true, HTML5 optional elements will be created automatically. This spefically excludes 
             HTML, HEAD, TITLE, and BODY. Use IsFragment=true to create those.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.Obsolete.HtmlElementFactory.WrapRootTextNodes">
+        <member name="F:CsQuery.HtmlParser.Deprecated.HtmlElementFactory.WrapRootTextNodes">
             <summary>
             When true, text nodes that are not the child of another elment will be wrapped in SPAN tags
             </summary>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.HtmlElementFactory.ParseAsDocument">
+        <member name="M:CsQuery.HtmlParser.Deprecated.HtmlElementFactory.ParseAsDocument">
              <summary>
              Parse with options for a full HTML document.
              </summary>
@@ -18250,7 +18599,7 @@
              A list of IDomObject elements; the topmost sequence of the DOM.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.HtmlElementFactory.ParseAsFragment">
+        <member name="M:CsQuery.HtmlParser.Deprecated.HtmlElementFactory.ParseAsFragment">
              <summary>
              Parse with options for fragment.
              </summary>
@@ -18259,7 +18608,7 @@
              A list of IDomObject elements; the topmost sequence of the fragment.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.HtmlElementFactory.ParseAsContent">
+        <member name="M:CsQuery.HtmlParser.Deprecated.HtmlElementFactory.ParseAsContent">
              <summary>
              Parse with options for content (generate most optional elements but not document wrapping
              HTML/BODY)
@@ -18269,7 +18618,7 @@
              A list of IDomObject elements; the topmost sequence of the document.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.HtmlElementFactory.Parse(CsQuery.HtmlParser.HtmlParsingMode)">
+        <member name="M:CsQuery.HtmlParser.Deprecated.HtmlElementFactory.Parse(CsQuery.HtmlParser.HtmlParsingMode)">
              <summary>
              Parse the HTML, and return it, based on options set.
              </summary>
@@ -18286,7 +18635,7 @@
              A List of IDomObject elements; the topmost sequence of the document.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.HtmlElementFactory.Parse">
+        <member name="M:CsQuery.HtmlParser.Deprecated.HtmlElementFactory.Parse">
              <summary>
              Parse the HTML, and return it, based on options set.
              </summary>
@@ -18301,7 +18650,7 @@
              repeatedly as the original enumerator is accessed directly by clients..
              </implementation>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.HtmlElementFactory.ParseImplementation">
+        <member name="M:CsQuery.HtmlParser.Deprecated.HtmlElementFactory.ParseImplementation">
              <summary>
              Parse the HTML, and return it, based on options set.
              </summary>
@@ -18310,12 +18659,12 @@
              An enumerator of the top-level elements.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.Obsolete.HtmlElementFactory.ReorganizeStrandedTextNodes(CsQuery.IDomDocument)">
+        <member name="M:CsQuery.HtmlParser.Deprecated.HtmlElementFactory.ReorganizeStrandedTextNodes(CsQuery.IDomDocument)">
             <summary>
             In the future I will update the parser to do this directly, since this requires binding to a Document to work.
             </summary>
         </member>
-        <member name="P:CsQuery.HtmlParser.Obsolete.HtmlElementFactory.IsDocument">
+        <member name="P:CsQuery.HtmlParser.Deprecated.HtmlElementFactory.IsDocument">
             <summary>
             When true, HTML5 optional elements will be created automatically. This should be false for fragments.
             </summary>
@@ -18699,19 +19048,6 @@
             
              <returns>
              A character array.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Utility.Support.StringToCharArray(System.String)">
-             <summary>
-             Convert a string to a char array, if not null.
-             </summary>
-            
-             <param name="html">
-             The string.
-             </param>
-            
-             <returns>
-             The converted string, or null
              </returns>
         </member>
         <member name="M:CsQuery.Utility.Support.CopyFiles(System.IO.DirectoryInfo,System.IO.DirectoryInfo,System.Boolean,System.String[])">
