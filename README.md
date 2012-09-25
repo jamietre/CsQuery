@@ -84,7 +84,6 @@ The priorities for the future are, in this order:
 * Writing documentation; and establishing a web site for the project. 
 * Implement style sheet parser and API, which will allow complete programmatic access to styles (beyond those on the `style` attribute) and access to computed styles
 * Flesh out the DOM model (properties/methods of specific element types) according to HTML5 specs. (You can always access any attribute you want just as an attribute with a string value. This has to do with the actual implementation of specific DOM element interfaces, as you would access element properties in a browser DOM).
-* Enhance HTML5 compliance of the parser
 * Implement CSS4 selectors
 
 If you are interested in this project and want to contribute anything, let me know or just make a pull request! 
@@ -143,19 +142,24 @@ jQuery extensions:
 ##### Creating a new DOM
 
 
-Starting with version 1.1.2, there are three different methods for creating content. This reflects changes in the HTML parser to comply with [HTML5 specifications for handling optional tags](http://dev.w3.org/html5/spec/single-page.html#optional-tags). The difference between each method has to do with optional tag handling.
-
-Each of these methods has overloads for `string`, `char[]`, and `Stream` inputs. 
 
 #####Basic Method
 
     var dom = CQ.Create(..);   // Create content
 
-This is the most general-purpose method. It is meant to be used for complete HTML blocks or documents. Using this method, missing tags will be created according to the HTML5 spec EXCEPT for the `html` and `body` tags. That is, this method does *not* assume that the content is a complete document.  Additionally, orphaned text (any text appearing outside of a valid HTML tag) will be wrapped in `span` tags making it safe to insert into nodes that cannot have text directly as children.
+Creates content, automatically determining context. That is, HTML content can be: a complete document, general content that can be inserted in the `body` of a document, or context-specific content that can only exist in a certain tag context (e.g. `tr` can only be within a `tbody` or `thead` context).
 
-This method will work fine for fragments -- and it will insert optional tags such as TBODY tags in tables. It will also work fine for complete documents -- but it won't fill in missing HTML/BODY tags. It will basically not assume any particular purpose for the HTML, but still try to return valid markup.
+There are overloads for accepting `string` and  `Stream` inputs. You can also specify the handling using optional parameters:
+
+    Create(string html, HtmlParsingMode mode=HtmlParsingMode.Auto, DocType docType=DocType.HTML5)
+
+The `HtmlParsingMode` parameter instructs CsQuery to treat your input as a complete document (meaning `html`, `head`, `title` and `body` tags will be added, if missing); a content block (meaning, it's treated as if it were inserted below a `body`); or a fragment, whose context will be determined by the first tag int he markup. The `DocType` parameter allows you to instruct the parser to use HTML4 parsing rules, if desired. Generally, though, it's sufficient to let CsQuery figure out your intent from the markup that is passed.
+
+There are also other methods for specific handling. Generally speaking, these just call `Create` with specific options.
 
 #####Create a document
+
+This method forces the content to be treated as a complete document.
 
     CQ.CreateDocument(..)   // Create a document. 
 
@@ -163,6 +167,8 @@ This method assumes that the content is a complete HTML document and not a fragm
 
 #####Create a fragment
     
+This method forces the content to be treated as a fragment.
+
     CQ.CreateFragment(..)   // Create a fragment. 
 
 This method interprets the content as a true fragment that you may use for any purpose. No attempt will be made to identify and create missing opening tags such as `tbody` -- the actual markup will be interpreted exactly as presented. Missing close tag rules still apply, though, since it's impossible to create a CQ document that has incomplete nodes. 

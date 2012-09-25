@@ -144,9 +144,9 @@ namespace CsQuery
         /// A new CQ object
         /// </returns>
 
-        public static CQ Create(Stream stream)
+        public static CQ Create(Stream html, HtmlParsingMode mode=HtmlParsingMode.Auto, DocType docType=DocType.HTML5)
         {
-            return Create(Support.StreamToCharArray(stream));
+            return new CQ(html, mode, docType);
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace CsQuery
         public static CQ CreateFragment(string html)
         {
             CQ cq = new CQ();
-            cq.CreateNewFragment(cq, html, HtmlParsingMode.FragmentWithSelfClosingTags, DocType.HTML5);
+            cq.CreateNew(cq, html, HtmlParsingMode.FragmentWithSelfClosingTags, DocType.HTML5);
             return cq;
         }
 
@@ -226,7 +226,9 @@ namespace CsQuery
 
         public static CQ CreateFragment(Stream html)
         {
-            return CreateFragment(Support.StreamToCharArray(html));
+            CQ cq = new CQ();
+            cq.CreateNew(cq, html,HtmlParsingMode.FragmentWithSelfClosingTags, DocType.HTML5);
+            return cq;
         }
 
         /// <summary>
@@ -264,8 +266,8 @@ namespace CsQuery
         public static CQ CreateDocument(string html)
         {
             CQ csq = new CQ();
-            csq.CreateNewDocument(html, HtmlParsingMode.Document, DocType.HTML5);
-
+            csq.Document = DomDocument.Create(html, HtmlParsingMode.Document);
+            csq.AddSelection(csq.Document.ChildNodes);
             return csq;
             
         }
@@ -301,7 +303,10 @@ namespace CsQuery
 
         public static CQ CreateDocument(Stream html)
         {
-            return CreateDocument(Support.StreamToCharArray(html));
+            CQ csq = new CQ();
+            csq.Document = DomDocument.Create(html, HtmlParsingMode.Document);
+            csq.AddSelection(csq.Document.ChildNodes);
+            return csq;
         }
 
         /// <summary>

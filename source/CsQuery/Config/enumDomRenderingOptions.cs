@@ -13,10 +13,11 @@ namespace CsQuery
     public enum DomRenderingOptions
     {
         /// <summary>
-        /// Indicates that unexpected HTML closing tags should be removed from the DOM. The alternative is to leave them, which will
-        /// generally cause browsers to display them as text.
+        /// This option only appies to the old HTML parser. It is obsolete, has no effect, and will be
+        /// removed in a future version of CsQuery.
         /// </summary>
         
+        [Obsolete]
         RemoveMismatchedCloseTags = 1,
         
         /// <summary>

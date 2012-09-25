@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using CsQuery.Utility;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
@@ -24,6 +25,47 @@ namespace CsQuery
         }
 
         /// <summary>
+        /// Create a new CQ object from an HTML string.
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// The HTML source
+        /// </param>
+        /// <param name="mode">
+        /// (optional) the mode.
+        /// </param>
+        /// <param name="docType">
+        /// (optional) type of the document.
+        /// </param>
+
+
+        public CQ(string html, HtmlParsingMode mode = HtmlParsingMode.Auto, DocType docType = DocType.HTML5)
+        {
+            CreateNew(this, html, mode, docType);
+        }
+
+        /// <summary>
+        /// Create a new CQ object from an HTML stream.
+        /// <see cref="CQ.Create(char[])"/>
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// The html of the new document.
+        /// </param>
+        /// <param name="mode">
+        /// (optional) the mode.
+        /// </param>
+        /// <param name="docType">
+        /// (optional) type of the document.
+        /// </param>
+
+        public CQ(Stream html, HtmlParsingMode mode = HtmlParsingMode.Auto, DocType docType = DocType.HTML5)
+        {
+            CreateNew(this, html, mode, docType);
+        }
+
+
+        /// <summary>
         /// Create a new CQ object from an HTML character array. Synonymous with
         /// <see cref="CQ.Create(char[])"/>
         /// </summary>
@@ -31,11 +73,19 @@ namespace CsQuery
         /// <param name="html">
         /// The html of the new document.
         /// </param>
+        /// <param name="parsingMode">
+        /// The HTML parsing mode.
+        /// </param>
+        /// <param name="docType">
+        /// (optional) type of the document.
+        /// </param>
 
         public CQ(char[] html, HtmlParsingMode parsingMode= HtmlParsingMode.Auto, DocType docType = DocType.HTML5)
         {
-            CreateNewFragment(this,html.AsString(),parsingMode,docType);
+            CreateNew(this,html.AsString(),parsingMode,docType);
         }
+
+
 
         /// <summary>
         /// Create a new CQ object wrapping a single element.
@@ -81,25 +131,8 @@ namespace CsQuery
             ConfigureNewInstance(this, element, context);
         }
 
-        /// <summary>
-        /// Create a new CQ object from an HTML character array.
-        /// </summary>
-        ///
-        /// <param name="html">
-        /// The HTML source
-        /// </param>
-        /// <param name="mode">
-        /// (optional) the mode.
-        /// </param>
-        /// <param name="docType">
-        /// (optional) type of the document.
-        /// </param>
+      
 
-
-        public CQ(string html, HtmlParsingMode mode = HtmlParsingMode.Auto, DocType docType = DocType.HTML5)
-        {
-            CreateNewFragment(this,html, mode, docType);
-        }
 
         /// <summary>
         /// Create a new CsQuery object using an existing instance and a selector. if the selector is
@@ -269,22 +302,6 @@ namespace CsQuery
             AddSelection(Document.ChildNodes);
         }
 
-        /// <summary>
-        /// Bind this instance to a new DomDocument created from HTML using the specified parsing mode.
-        /// </summary>
-        ///
-        /// <param name="html">
-        /// The HTML.
-        /// </param>
-        /// <param name="htmlParsingMode">
-        /// The HTML parsing mode.
-        /// </param>
-
-        protected void CreateNewDocument(string html, HtmlParsingMode htmlParsingMode, DocType docType)
-        {
-            Document = DomDocument.Create(html,HtmlParsingMode.Document,docType);
-            AddSelection(Document.ChildNodes);
-        }
 
         /// <summary>
         /// Bind this instance to a new DomFragment created from HTML using the specified parsing mode.
@@ -303,7 +320,7 @@ namespace CsQuery
         /// (optional) type of the document.
         /// </param>
 
-        protected void CreateNewFragment(CQ target,
+        protected void CreateNew(CQ target,
             string html, 
             HtmlParsingMode parsingMode, 
             DocType docType)
@@ -334,12 +351,42 @@ namespace CsQuery
         /// (optional) type of the document.
         /// </param>
 
+        protected void CreateNew(CQ target,
+          Stream html,
+          HtmlParsingMode parsingMode,
+          DocType docType)
+        {
+            target.Document = DomDocument.Create(html, parsingMode, docType);
+
+            //  enumerate ChildNodes when creating a new fragment to be sure the selection set only
+            //  reflects the original document. 
+
+            target.SetSelection(Document.ChildNodes.ToList(), SelectionSetOrder.Ascending);
+        }
+
+        /// <summary>
+        /// Bind this instance to a new DomFragment created from HTML using the specified parsing mode.
+        /// </summary>
+        ///
+        /// <param name="target">
+        /// The target.
+        /// </param>
+        /// <param name="html">
+        /// The HTML.
+        /// </param>
+        /// <param name="context">
+        /// The context.
+        /// </param>
+        /// <param name="docType">
+        /// (optional) type of the document.
+        /// </param>
+
         protected void CreateNewFragment(CQ target,
           string html,
           string context,
           DocType docType)
         {
-            target.Document = DomFragment.Create(html, context,docType);
+            target.Document = DomFragment.Create(html, context, docType);
 
             //  enumerate ChildNodes when creating a new fragment to be sure the selection set only
             //  reflects the original document. 
@@ -350,7 +397,7 @@ namespace CsQuery
         private CQ NewInstance(string html)
         {
             var cq = NewCqUnbound();
-            CreateNewFragment(cq, html,HtmlParsingMode.Auto,DocType.HTML5);
+            CreateNew(cq, html,HtmlParsingMode.Auto,DocType.HTML5);
             return cq;
         }
 

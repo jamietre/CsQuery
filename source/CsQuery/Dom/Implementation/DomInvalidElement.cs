@@ -5,6 +5,7 @@ using System.Text;
 
 namespace CsQuery.Implementation
 {
+    [Obsolete]
     public class DomInvalidElement : DomText, IDomInvalidElement
     {
         public DomInvalidElement()
