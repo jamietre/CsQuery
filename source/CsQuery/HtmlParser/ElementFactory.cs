@@ -13,11 +13,9 @@ using HtmlParserSharp;
 namespace CsQuery.HtmlParser
 {
     /// <summary>
-    /// This is a simple API for the parsing process.
-    /// Part of this is a port of the nu.validator.htmlparser.io.Driver class.
-    /// The parser currently ignores the encoding in the html source and parses everything as UTF-8.
+    /// Element factory to build a CsQuery DOM using HtmlParserSharp.
     /// </summary>
-    /// 
+
     public class ElementFactory
     {
         #region constructors
@@ -36,12 +34,48 @@ namespace CsQuery.HtmlParser
 
         #region static methods
 
+        /// <summary>
+        /// Creates a new document from a string of HTML using the options passed
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// The HTML.
+        /// </param>
+        /// <param name="parsingMode">
+        /// (optional) the parsing mode.
+        /// </param>
+        /// <param name="docType">
+        /// (optional) type of the document.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new document
+        /// </returns>
+
         public static IDomDocument Create(string html, HtmlParsingMode parsingMode=HtmlParsingMode.Auto, DocType docType=DocType.HTML5) {
 
             using (var reader = new StringReader(html ?? "")) {
                 return GetNewParser(parsingMode,docType).Parse(reader);
             }
         }
+
+        /// <summary>
+        /// Creates a new document from a Stream of HTML using the options passed.
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// The HTML.
+        /// </param>
+        /// <param name="parsingMode">
+        /// (optional) the parsing mode.
+        /// </param>
+        /// <param name="docType">
+        /// (optional) type of the document.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new document.
+        /// </returns>
 
         public static IDomDocument Create(Stream html, HtmlParsingMode parsingMode = HtmlParsingMode.Auto, DocType docType = DocType.HTML5)
         {
@@ -77,11 +111,20 @@ namespace CsQuery.HtmlParser
 
         #region public properties
 
+        /// <summary>
+        /// Gets or sets the HTML parsing mode.
+        /// </summary>
+
         public HtmlParsingMode HtmlParsingMode
         {
             get;
             set;
         }
+
+        /// <summary>
+        /// Gets or sets the type of the document.
+        /// </summary>
+
         public DocType DocType
         {
             get;
@@ -102,18 +145,15 @@ namespace CsQuery.HtmlParser
         #region public methods
 
         /// <summary>
-        /// Given a TextReader, create a new IDomDocument from the input
+        /// Given a TextReader, create a new IDomDocument from the input.
         /// </summary>
         ///
         /// <param name="reader">
-        /// The HTML input
-        /// </param>
-        /// <param name="mode">
-        /// (optional) the parsing mode.
+        /// The HTML input.
         /// </param>
         ///
         /// <returns>
-        /// A populated IDomDocument
+        /// A populated IDomDocument.
         /// </returns>
 
         public IDomDocument Parse(TextReader reader)

@@ -240,17 +240,23 @@
              A new CQ object
              </returns>
         </member>
-        <member name="M:CsQuery.CQ.Create(System.Char[])">
+        <member name="M:CsQuery.CQ.Create(System.Char[],CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
              <summary>
              Create a new CQ object from an HTML character array.
              </summary>
             
              <param name="html">
-             The HTML source for the document
+             The HTML source for the document.
+             </param>
+             <param name="mode">
+             (optional) the HTML parsing mode.
+             </param>
+             <param name="docType">
+             (optional) type of the document.
              </param>
             
              <returns>
-             A new CQ object
+             A new CQ object.
              </returns>
         </member>
         <member name="M:CsQuery.CQ.Create(CsQuery.IDomObject)">
@@ -273,11 +279,17 @@
              </summary>
             
              <param name="html">
-             A string containing HTML
+             A string containing HTML.
+             </param>
+             <param name="mode">
+             (optional) the HTML parsing mode.
+             </param>
+             <param name="docType">
+             (optional) type of the document.
              </param>
             
              <returns>
-             A new CQ object
+             A new CQ object.
              </returns>
         </member>
         <member name="M:CsQuery.CQ.Create(System.String,System.Object)">
@@ -314,12 +326,18 @@
              Create a new CQ object from a stream of HTML, treating the HTML as a content document.
              </summary>
             
-             <param name="stream">
-             An open Stream
+             <param name="html">
+             An open Stream.
+             </param>
+             <param name="mode">
+             (optional) the mode.
+             </param>
+             <param name="docType">
+             (optional) type of the document.
              </param>
             
              <returns>
-             A new CQ object
+             A new CQ object.
              </returns>
         </member>
         <member name="M:CsQuery.CQ.CreateFragment(System.String)">
@@ -330,10 +348,6 @@
              <param name="html">
              A string of HTML.
              </param>
-             <param name="elementContext">
-             (optional) context for the element; this determines how parsing rules are applied. If null,
-             it will be considered in a legal context.
-             </param>
             
              <returns>
              The new fragment.
@@ -341,7 +355,7 @@
         </member>
         <member name="M:CsQuery.CQ.CreateFragment(System.String,System.String)">
              <summary>
-             Creeate a new fragment from HTML text, in the context of a specific HTML tag
+             Creeate a new fragment from HTML text, in the context of a specific HTML tag.
              </summary>
             
              <param name="html">
@@ -4260,7 +4274,7 @@
         <member name="M:CsQuery.CQ.#ctor(System.IO.Stream,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
              <summary>
              Create a new CQ object from an HTML stream.
-             <see cref="M:CsQuery.CQ.Create(System.Char[])"/>
+             <see cref="!:CQ.Create(char[])"/>
              </summary>
             
              <param name="html">
@@ -4276,7 +4290,7 @@
         <member name="M:CsQuery.CQ.#ctor(System.Char[],CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
              <summary>
              Create a new CQ object from an HTML character array. Synonymous with
-             <see cref="M:CsQuery.CQ.Create(System.Char[])"/>
+             <see cref="!:CQ.Create(char[])"/>
              </summary>
             
              <param name="html">
@@ -4438,7 +4452,7 @@
         </member>
         <member name="M:CsQuery.CQ.CreateNew(CsQuery.CQ,System.IO.Stream,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
              <summary>
-             Bind this instance to a new DomFragment created from HTML in a specific HTML tag context
+             Bind this instance to a new DomFragment created from HTML in a specific HTML tag context.
              </summary>
             
              <param name="target">
@@ -4447,8 +4461,8 @@
              <param name="html">
              The HTML.
              </param>
-             <param name="context">
-             The context.
+             <param name="parsingMode">
+             The HTML parsing mode.
              </param>
              <param name="docType">
              (optional) type of the document.
@@ -4456,7 +4470,7 @@
         </member>
         <member name="M:CsQuery.CQ.CreateNewFragment(CsQuery.CQ,System.String,System.String,CsQuery.DocType)">
              <summary>
-             Bind this instance to a new DomFragment created from HTML using the specified parsing mode.
+             Bind this instance to a new DomFragment created from HTML using the specified parsing mode and element context
              </summary>
             
              <param name="target">
@@ -4466,7 +4480,7 @@
              The HTML.
              </param>
              <param name="context">
-             The context.
+             The context (e.g. an HTML tag name)
              </param>
              <param name="docType">
              (optional) type of the document.
@@ -11976,31 +11990,63 @@
         </member>
         <member name="T:CsQuery.HtmlParser.ElementFactory">
             <summary>
-            This is a simple API for the parsing process.
-            Part of this is a port of the nu.validator.htmlparser.io.Driver class.
-            The parser currently ignores the encoding in the html source and parses everything as UTF-8.
+            Element factory to build a CsQuery DOM using HtmlParserSharp.
             </summary>
-            
         </member>
         <member name="M:CsQuery.HtmlParser.ElementFactory.#cctor">
             <summary>
             Static constructor.
             </summary>
         </member>
-        <member name="M:CsQuery.HtmlParser.ElementFactory.Parse(System.IO.TextReader)">
+        <member name="M:CsQuery.HtmlParser.ElementFactory.Create(System.String,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
              <summary>
-             Given a TextReader, create a new IDomDocument from the input
+             Creates a new document from a string of HTML using the options passed
              </summary>
             
-             <param name="reader">
-             The HTML input
+             <param name="html">
+             The HTML.
              </param>
-             <param name="mode">
+             <param name="parsingMode">
              (optional) the parsing mode.
+             </param>
+             <param name="docType">
+             (optional) type of the document.
              </param>
             
              <returns>
-             A populated IDomDocument
+             A new document
+             </returns>
+        </member>
+        <member name="M:CsQuery.HtmlParser.ElementFactory.Create(System.IO.Stream,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
+             <summary>
+             Creates a new document from a Stream of HTML using the options passed.
+             </summary>
+            
+             <param name="html">
+             The HTML.
+             </param>
+             <param name="parsingMode">
+             (optional) the parsing mode.
+             </param>
+             <param name="docType">
+             (optional) type of the document.
+             </param>
+            
+             <returns>
+             A new document.
+             </returns>
+        </member>
+        <member name="M:CsQuery.HtmlParser.ElementFactory.Parse(System.IO.TextReader)">
+             <summary>
+             Given a TextReader, create a new IDomDocument from the input.
+             </summary>
+            
+             <param name="reader">
+             The HTML input.
+             </param>
+            
+             <returns>
+             A populated IDomDocument.
              </returns>
         </member>
         <member name="M:CsQuery.HtmlParser.ElementFactory.GetContext(System.String)">
@@ -12037,6 +12083,16 @@
             <summary>
             Configure default context: creates a default context for arbitrary fragments so they are valid no matter what, 
             so that true fragments can be created without concern for the context
+            </summary>
+        </member>
+        <member name="P:CsQuery.HtmlParser.ElementFactory.HtmlParsingMode">
+            <summary>
+            Gets or sets the HTML parsing mode.
+            </summary>
+        </member>
+        <member name="P:CsQuery.HtmlParser.ElementFactory.DocType">
+            <summary>
+            Gets or sets the type of the document.
             </summary>
         </member>
         <member name="P:CsQuery.HtmlParser.ElementFactory.FragmentContext">

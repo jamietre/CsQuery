@@ -335,7 +335,7 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Bind this instance to a new DomFragment created from HTML in a specific HTML tag context
+        /// Bind this instance to a new DomFragment created from HTML in a specific HTML tag context.
         /// </summary>
         ///
         /// <param name="target">
@@ -344,12 +344,13 @@ namespace CsQuery
         /// <param name="html">
         /// The HTML.
         /// </param>
-        /// <param name="context">
-        /// The context.
+        /// <param name="parsingMode">
+        /// The HTML parsing mode.
         /// </param>
         /// <param name="docType">
         /// (optional) type of the document.
         /// </param>
+
 
         protected void CreateNew(CQ target,
           Stream html,
@@ -365,7 +366,7 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Bind this instance to a new DomFragment created from HTML using the specified parsing mode.
+        /// Bind this instance to a new DomFragment created from HTML using the specified parsing mode and element context
         /// </summary>
         ///
         /// <param name="target">
@@ -375,7 +376,7 @@ namespace CsQuery
         /// The HTML.
         /// </param>
         /// <param name="context">
-        /// The context.
+        /// The context (e.g. an HTML tag name)
         /// </param>
         /// <param name="docType">
         /// (optional) type of the document.

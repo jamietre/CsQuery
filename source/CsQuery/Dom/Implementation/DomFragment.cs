@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using CsQuery.ExtensionMethods;
 using CsQuery.HtmlParser;
 
@@ -34,7 +35,15 @@ namespace CsQuery.Implementation
            string context=null,
            DocType docType = DocType.HTML5)
         {
-            return ElementFactory.Create(html, HtmlParsingMode.FragmentWithSelfClosingTags, docType);
+            var factory = new ElementFactory();
+            factory.FragmentContext = context;
+            factory.HtmlParsingMode = HtmlParsingMode.FragmentWithSelfClosingTags;
+            factory.DocType = docType;
+            
+            using (var reader = new StringReader(html))
+            {
+                return factory.Parse(new StringReader(html));
+            }
         }
 
         public DomFragment()

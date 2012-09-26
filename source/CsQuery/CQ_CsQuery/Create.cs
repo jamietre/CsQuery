@@ -38,16 +38,22 @@ namespace CsQuery
         /// </summary>
         ///
         /// <param name="html">
-        /// The HTML source for the document
+        /// The HTML source for the document.
+        /// </param>
+        /// <param name="mode">
+        /// (optional) the HTML parsing mode.
+        /// </param>
+        /// <param name="docType">
+        /// (optional) type of the document.
         /// </param>
         ///
         /// <returns>
-        /// A new CQ object
+        /// A new CQ object.
         /// </returns>
 
-        public static CQ Create(char[] html)
+        public static CQ Create(char[] html, HtmlParsingMode mode=HtmlParsingMode.Auto, DocType docType=DocType.HTML5)
         {
-            return new CQ(html);
+            return new CQ(html,mode,docType);
         }
 
         /// <summary>
@@ -80,11 +86,17 @@ namespace CsQuery
         /// </summary>
         ///
         /// <param name="html">
-        /// A string containing HTML
+        /// A string containing HTML.
+        /// </param>
+        /// <param name="mode">
+        /// (optional) the HTML parsing mode.
+        /// </param>
+        /// <param name="docType">
+        /// (optional) type of the document.
         /// </param>
         ///
         /// <returns>
-        /// A new CQ object
+        /// A new CQ object.
         /// </returns>
 
         public static CQ Create(string html, HtmlParsingMode mode=HtmlParsingMode.Auto, DocType docType=DocType.HTML5)
@@ -136,13 +148,20 @@ namespace CsQuery
         /// Create a new CQ object from a stream of HTML, treating the HTML as a content document.
         /// </summary>
         ///
-        /// <param name="stream">
-        /// An open Stream
+        /// <param name="html">
+        /// An open Stream.
+        /// </param>
+        /// <param name="mode">
+        /// (optional) the mode.
+        /// </param>
+        /// <param name="docType">
+        /// (optional) type of the document.
         /// </param>
         ///
         /// <returns>
-        /// A new CQ object
+        /// A new CQ object.
         /// </returns>
+
 
         public static CQ Create(Stream html, HtmlParsingMode mode=HtmlParsingMode.Auto, DocType docType=DocType.HTML5)
         {
@@ -156,14 +175,11 @@ namespace CsQuery
         /// <param name="html">
         /// A string of HTML.
         /// </param>
-        /// <param name="elementContext">
-        /// (optional) context for the element; this determines how parsing rules are applied. If null,
-        /// it will be considered in a legal context.
-        /// </param>
         ///
         /// <returns>
         /// The new fragment.
         /// </returns>
+
 
         public static CQ CreateFragment(string html)
         {
@@ -173,7 +189,7 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Creeate a new fragment from HTML text, in the context of a specific HTML tag
+        /// Creeate a new fragment from HTML text, in the context of a specific HTML tag.
         /// </summary>
         ///
         /// <param name="html">

@@ -27,6 +27,13 @@ namespace CsQuery.Tests.Csharp.HtmlParser
             var dom = CQ.CreateFragment(@"<tr><td>test</td></tr>");
             Assert.AreEqual("<tr><td>test</td></tr>", dom.Render());
 
+            dom = CQ.CreateFragment(@"<tr><td>test</td></tr>", "body");
+            Assert.AreEqual("test", dom.Render());
+
+
+            dom = CQ.CreateFragment("<tr><td>test</td></tr>", "tr");
+            Assert.AreEqual("<td>test</td>", dom.Render());
+
         }
 
         [Test, TestMethod]
@@ -34,6 +41,10 @@ namespace CsQuery.Tests.Csharp.HtmlParser
         {
             var dom = CQ.CreateFragment(@"<td>test</td>");
             Assert.AreEqual("<td>test</td>", dom.Render());
+
+            dom = CQ.CreateFragment(@"<td>test</td>","td");
+            Assert.AreEqual("test", dom.Render());
+
 
         }
     }
