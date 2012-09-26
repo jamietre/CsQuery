@@ -37,7 +37,7 @@ namespace CsQuery
         /// Event raised when the HasStyles attribute changes
         /// </summary>
 
-        event EventHandler<StyleChangedArgs> OnHasStylesChanged;
+        event EventHandler<CSSStyleChangedArgs> OnHasStylesChanged;
 
         // BELOW THIS IS LEGACY
 

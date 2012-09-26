@@ -161,6 +161,7 @@
     <Compile Include="Dom\ICSSStyleRule.cs" />
     <Compile Include="Dom\ICSSStyleSheet.cs" />
     <Compile Include="Dom\Implementation\CSSRule.cs" />
+    <Compile Include="Dom\Implementation\CSSStyleChangedArgs.cs" />
     <Compile Include="Dom\Implementation\CSSStyleRule.cs" />
     <Compile Include="Dom\Implementation\CSSStyleSheet.cs" />
     <Compile Include="Dom\Implementation\HtmlElements\HTMLStyleElement.cs" />
@@ -300,7 +301,7 @@
     <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\TreeBuilder.cs" />
     <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\TreeBuilderConstants.cs" />
     <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\UTF16Buffer.cs" />
-    <Compile Include="HtmlParserSharp\HtmlParserSharp\TreeBuilders\DomTreeBuilder.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\TreeBuilders\XmlTreeBuilder.cs" />
     <Compile Include="HtmlParser\CsQueryTreeBuilder.cs" />
     <Compile Include="HtmlParser\ElementFactory.cs" />
     <Compile Include="HtmlParser\HtmlPreprocessor.cs" />
@@ -477,7 +478,7 @@ xcopy $(TargetDir)CsQuery.xml $(SolutionDir)..\Distribution /Y
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

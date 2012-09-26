@@ -10,6 +10,7 @@ namespace CsQuery.Implementation
     /// <summary>
     /// Used for literal text (not part of a tag)
     /// </summary>
+    [Obsolete]
     public class DomInnerText : DomText, IDomInnerText
     {
         public DomInnerText()
@@ -26,10 +27,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                //return textIndex >= 0 ?
-                //    stringRef.DocumentIndex.GetTokenizedString(textIndex)
-                //        : unboundText;
-                return unboundText;
+                return nodeValue;
             }
         }
         public override string NodeName

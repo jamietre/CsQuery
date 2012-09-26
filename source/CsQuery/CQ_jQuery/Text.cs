@@ -188,10 +188,10 @@ namespace CsQuery
                 // Element types that cannot have HTML contents should not have the value encoded.
                 // use DomInnerText node for those node types to preserve the raw text value
 
-                IDomText textEl = el.InnerHtmlAllowed ?
-                    new DomText(text) :
-                    new DomInnerText(text);
-
+                //IDomText textEl = el.InnerHtmlAllowed ?
+                //    new DomText(text) :
+                //    new DomInnerText(text);
+                IDomText textEl = new DomText(text);
                 el.ChildNodes.Add(textEl);
             }
 

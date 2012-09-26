@@ -110,33 +110,38 @@ namespace CsQuery
         /// 2nd and later targets.
         /// </summary>
         ///
-        /// <exception cref="InvalidOperationException">
-        /// Thrown if attempting to add elements to a disconnected (parentless) sequence
-        /// </exception>
+        /// <remarks>
+        /// This is a helper for Before and After. There is special handling when the target is not part
+        /// of a DOM. Instead of altering the DOM, this method will alter the selection set, and return a
+        /// CQ object that contains the new sequence. Normally, it would return the same CQ object (but
+        /// alter the DOM).
+        /// </remarks>
         ///
         /// <param name="target">
-        /// The target element
+        /// The target element.
         /// </param>
         /// <param name="offset">
-        /// The offset from the target at which to begin inserting
+        /// The offset from the target at which to begin inserting.
         /// </param>
         /// <param name="insertedElements">
         /// [out] The inserted elements.
         /// </param>
         ///
         /// <returns>
-        /// The current CQ object
+        /// The current CQ object.
         /// </returns>
 
         protected CQ InsertAtOffset(CQ target, int offset, out CQ insertedElements)
         {
             
-            bool isTargetDisconnected = target.CsQueryParent != null && target.Document != target.CsQueryParent.Document;
+            // Copy the target list: it could change otherwise
+            List<IDomObject> targets = new List<IDomObject>(target);
+            bool isTargetDisconnected = (target.CsQueryParent != null && target.Document != target.CsQueryParent.Document) ||
+                targets.Any(item => item.ParentNode == null);
 
             bool isFirst = true;
 
-            // Copy the target list: it could change otherwise
-            List<IDomObject> targets = new List<IDomObject>(target);
+            
             insertedElements = NewCqUnbound();
             
 
@@ -145,57 +150,50 @@ namespace CsQuery
 
             Document = target.Document;
 
-                if (isTargetDisconnected)
-                {
-                    // When the target is disconnected, just append elements to the selection set, not to the DOM
+            if (isTargetDisconnected)
+            {
+                // When the target is disconnected, just append elements to the selection set, not to the DOM
                     
-                    CQ result = NewCqInDomain();
-                    result.CsQueryParent = this.CsQueryParent;
+                CQ result = NewCqInDomain();
+                result.CsQueryParent = this.CsQueryParent;
 
-                    if (offset == 0)
-                    {
-                        result.AddSelection(Selection);
-                    }
-                    result.AddSelection(target);
-                    if (offset == 1)
-                    {
-                        result.AddSelection(Selection);
-                    }
-                    result.SelectionSet.OutputOrder = SelectionSetOrder.OrderAdded;
-                    insertedElements.AddSelection(Selection);
-                    return result;
-                    // selection set will be messed up if document was changed; rebuild it
-                    //SelectionSet.Clear();
-                    //SelectionSet.AddRange(insertedElements);
+                if (offset == 0)
+                {
+                    result.AddSelection(Selection);
                 }
-                else
-                {
+                result.AddSelection(target);
 
-                    foreach (var el in targets)
-                    {
-                    
-                    
-                        if (isFirst)
-                        {
-                            insertedElements.AddSelection(SelectionSet);
-                            InsertAtOffset(el, offset);
-                            isFirst = false;
-                            // selection set will be messed up if document was changed; rebuild it
-                            //SelectionSet.Clear();
-                            //SelectionSet.AddRange(insertedElements);
-                        }
-                        else
-                        {
-                            var clone = this.Clone();
-                            clone.InsertAtOffset(el, offset);
-                            insertedElements.AddSelection(clone);
-                        }
-                    
-                    }
+                if (offset == 1)
+                {
+                    result.AddSelection(Selection);
                 }
 
+                result.SelectionSet.OutputOrder = SelectionSetOrder.OrderAdded;
+                insertedElements.AddSelection(Selection);
+                return result;
+            }
+            else
+            {
 
-
+                foreach (var el in targets)
+                {
+                    bool isElDisconnected = el.ParentNode == null;
+                    
+                    if (isFirst)
+                    {
+                        insertedElements.AddSelection(SelectionSet);
+                        InsertAtOffset(el, offset);
+                        isFirst = false;
+                    }
+                    else
+                    {
+                        var clone = this.Clone();
+                        clone.InsertAtOffset(el, offset);
+                        insertedElements.AddSelection(clone);
+                    }
+                    
+                }
+            }
             return target;
         }
         #endregion

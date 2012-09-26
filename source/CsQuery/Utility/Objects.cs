@@ -841,6 +841,23 @@ namespace CsQuery
         }
 
         /// <summary>
+        /// Enumerates a sequence of objects
+        /// </summary>
+        ///
+        /// <param name="obj">
+        /// The sequence
+        /// </param>
+        ///
+        /// <returns>
+        /// An enumeration.
+        /// </returns>
+
+        public static IEnumerable Enumerate(params object[] obj)
+        {
+            return obj;
+        }
+
+        /// <summary>
         /// Returns an empty sequence of the specified type.
         /// </summary>
         ///

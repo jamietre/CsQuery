@@ -181,7 +181,7 @@ namespace CsQuery.Implementation
                 if (_Style == null)
                 {
                     _Style = new CSSStyleDeclaration();
-                    _Style.OnHasStylesChanged += new EventHandler<StyleChangedArgs>(_Style_OnHasStylesChanged);
+                    _Style.OnHasStylesChanged += new EventHandler<CSSStyleChangedArgs>(_Style_OnHasStylesChanged);
 
                 }
                 return _Style;
@@ -189,7 +189,7 @@ namespace CsQuery.Implementation
             protected set
             {
                 _Style = value;
-                _Style.OnHasStylesChanged += new EventHandler<StyleChangedArgs>(_Style_OnHasStylesChanged);
+                _Style.OnHasStylesChanged += new EventHandler<CSSStyleChangedArgs>(_Style_OnHasStylesChanged);
                 if (_Style != null && _Style.HasStyles)
                 {
                     AttributeRemoveFromIndex(HtmlData.tagSTYLE);
@@ -201,7 +201,7 @@ namespace CsQuery.Implementation
             }
         }
 
-        void _Style_OnHasStylesChanged(object sender, StyleChangedArgs e)
+        void _Style_OnHasStylesChanged(object sender, CSSStyleChangedArgs e)
         {
             if (e.HasStyles)
             {
@@ -680,15 +680,16 @@ namespace CsQuery.Implementation
                 {
                     throw new InvalidOperationException(String.Format("You can't set the InnerText for a {0} element.", NodeName));
                 }
-                IDomText text;
-                if (!InnerHtmlAllowed)
-                {
-                    text = new DomInnerText(value);
-                }
-                else
-                { 
-                    text = new DomText(value);
-                }
+                //IDomText text;
+                //if (!InnerHtmlAllowed)
+                //{
+                //    text = new DomInnerText(value);
+                //}
+                //else
+                //{ 
+                //    text = new DomText(value);
+                //}
+                IDomText text = new DomText(value);
                 ChildNodes.Clear();
                 ChildNodes.Add(text);
             }

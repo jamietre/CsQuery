@@ -12,8 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{31C60C
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtmlParserSharp", "..\htmlparsersharp\HtmlParserSharp\HtmlParserSharp.csproj", "{FD150915-D34F-436A-92C1-80AA505DA754}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,12 +34,6 @@ Global
 		{4886324B-F88B-435A-B21E-43821B5C4305}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4886324B-F88B-435A-B21E-43821B5C4305}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4886324B-F88B-435A-B21E-43821B5C4305}.Release|x64.ActiveCfg = Release|Any CPU
-		{FD150915-D34F-436A-92C1-80AA505DA754}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FD150915-D34F-436A-92C1-80AA505DA754}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FD150915-D34F-436A-92C1-80AA505DA754}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{FD150915-D34F-436A-92C1-80AA505DA754}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FD150915-D34F-436A-92C1-80AA505DA754}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FD150915-D34F-436A-92C1-80AA505DA754}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -43,5 +43,29 @@ namespace CsQuery.Tests.Csharp.HtmlParser
             CQ doc = "<div><img src=\"test.png\" alt=\">\" /></div>";
             Assert.AreEqual("<div><img src=\"test.png\" alt=\">\"></div>",doc.Render());
         }
+
+        [Test,TestMethod]
+        public void UnwrapWithoutParent() {
+            string s = "This is <b> a big</b> text";
+            var f = CQ.Create(s);
+
+            Assert.DoesNotThrow(() =>
+            {
+                f["b"].Unwrap().Render();
+            });
+        }
+
+        [Test, TestMethod]
+        public void DisconnectedBefore()
+        {
+            string s = "This is <b> a big</b> text";
+            var dom = CQ.Create(s);
+            var res = dom[dom.Document];
+            var el = dom.Document.CreateElement("code");
+
+            res =  res.Before(el);
+            CollectionAssert.AreEqual(Objects.Enumerate(el,dom.Document),res.ToList());
+        }
     }
+
 }

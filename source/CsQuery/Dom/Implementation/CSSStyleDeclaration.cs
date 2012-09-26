@@ -14,26 +14,6 @@ using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.Implementation
 {
-      /// <summary>
-    /// Arguments for when a style is changed.
-    /// </summary>
-
-    public class StyleChangedArgs : EventArgs
-    {
-        public StyleChangedArgs(bool hasStyles)
-        {
-            HasStyles = hasStyles;
-        }
-        /// <summary>
-        /// Gets a value indicating whether this object has styles following the change.
-        /// </summary>
-
-        public bool HasStyles
-        {
-            get;
-            protected set;
-        }
-    }
 
     /// <summary>
     /// CSS style declaration.
@@ -160,7 +140,7 @@ namespace CsQuery.Implementation
         /// Event queue for all listeners interested in OnHasStylesChanged events.
         /// </summary>
 
-        public event EventHandler<StyleChangedArgs> OnHasStylesChanged;
+        public event EventHandler<CSSStyleChangedArgs> OnHasStylesChanged;
 
         /// <summary>
         /// The number of properties that have been explicitly set in this declaration block.
@@ -772,7 +752,7 @@ namespace CsQuery.Implementation
                 var evt = OnHasStylesChanged;
                 if (evt != null)
                 {
-                    var args = new StyleChangedArgs(HasStyles);
+                    var args = new CSSStyleChangedArgs(HasStyles);
                     evt(this, args);
                 }
             }
