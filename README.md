@@ -1,25 +1,43 @@
 ![DocumentUp](http://www.outsharked.com/csquery/images/csquery-logo-small.gif)
 
-## CsQuery - .C# jQuery Port for .NET 4
 
-Release 1.2.1 - 8/21/2012
+
+## CsQuery - .C# jQuery Port for .NET 4
 
 CsQuery is a jQuery port for .NET 4. It implements all CSS2 & CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) has been ported to C#. 
 
-As of Version 1.3 (unreleased) CsQuery uses a C# port of the [validator.nu HTML parser](http://about.validator.nu/htmlparser/). This is the same code used in the Gecko browser engine. This should result in CsQuery creating a highly HTML5 standards-compliant DOM from markup, and an identical DOM to any Gecko-based browser.
+As of Version 1.3 (unreleased as of Septmber 25, 2012) CsQuery uses a C# port of the [validator.nu HTML parser](http://about.validator.nu/htmlparser/). This is the same code used in the Gecko browser engine. This should result in CsQuery creating a highly HTML5 standards-compliant DOM from markup, and an identical DOM to any Gecko-based browser.
 
 The CSS selector engine fully indexes each document on tag name, id, class, and attribute. The index is subselect-capable, meaning that complex selectors will still be able to take advantage of the index (for any part of the selector that's indexed). [Performance](#performance) of selectors compared to other existing C# HTML parsing libraries is orders of magnitude faster.
 
-
 ### Installation
+
+**Latest release: Version 1.2.1 (August 21, 2012)**
+
+To install the latest release from NuGet package manager:
 
     PM> Install-Package CsQuery
 
-The NuGet package will always reflect the release noted here. The code on GitHub may contain changes since the last NuGet release.
+To install manually, add a reference to `CsQuery.DLL`. 
+
+### Source Code Notes
+
+This repository contains a submodule for [HtmlParserSharp](https://github.com/jamietre/HtmlParserSharp). This configuration has been chosen to allow the HTML parser project to be completely independent of CsQuery, while still allowing CsQuery to include it directly and compile to a single DLL. In the future, I may change this architecture to include the parser as a binary dependency instead.
+
+To clone the repostory you will need a couple extra steps. First create a clone as usual:
+    
+    git clone https://github.com/jamietre/CsQuery.git csquery
+
+Next initialize and clone the submodule:
+
+	git submodule in1it
+    git submodule update
+
+You should be able to compile everything now. 
 
 ### Release Notes
 
-The current release is 1.2.1 This is a bugfix release.
+The latest release is 1.2.1 This is a bugfix release.
 
 If you are updating from version 1.1.x, please note that versions 1.2.x includes a change to the public API which will break code which *directly* instantiates `DomElement` objects. (This has never been recommended and will not affect any code which uses `CQ.Create` or `Document.CreateElement` methods; it only affects creation using `new` to create `DomElement` objects)
 
@@ -77,7 +95,7 @@ If you can't seem to figure out how to use a particular method, in almost all ca
 
 ### Roadmap
 
-As of 6/12/2012, the project is feature-complete. All CSS3 selectors that don't depend on browser state have been implemented, and all jQuery DOM selection/manipulation methods have been implemented. See  [shortcomings](https://github.com/jamietre/CsQuery#shortcomings) for the specific exceptions.
+As of 6/12/2012, all CSS3 selectors that don't depend on browser state have been implemented, and all jQuery DOM selection/manipulation methods have been implemented. See  [shortcomings](https://github.com/jamietre/CsQuery#shortcomings) for the specific exceptions.
 
 The priorities for the future are, in this order:
 
