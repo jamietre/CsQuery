@@ -1433,22 +1433,25 @@
              2nd and later targets.
              </summary>
             
-             <exception cref="T:System.InvalidOperationException">
-             Thrown if attempting to add elements to a disconnected (parentless) sequence
-             </exception>
+             <remarks>
+             This is a helper for Before and After. There is special handling when the target is not part
+             of a DOM. Instead of altering the DOM, this method will alter the selection set, and return a
+             CQ object that contains the new sequence. Normally, it would return the same CQ object (but
+             alter the DOM).
+             </remarks>
             
              <param name="target">
-             The target element
+             The target element.
              </param>
              <param name="offset">
-             The offset from the target at which to begin inserting
+             The offset from the target at which to begin inserting.
              </param>
              <param name="insertedElements">
              [out] The inserted elements.
              </param>
             
              <returns>
-             The current CQ object
+             The current CQ object.
              </returns>
         </member>
         <member name="M:CsQuery.CQ.Closest(System.String)">
@@ -4955,6 +4958,25 @@
              The parent rule.
              </value>
         </member>
+        <member name="T:CsQuery.Implementation.CSSStyleChangedArgs">
+            <summary>
+            Arguments for when a style is changed.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.CSSStyleChangedArgs.#ctor(System.Boolean)">
+             <summary>
+             Constructor.
+             </summary>
+            
+             <param name="hasStyles">
+             A value indicating whether this object has styles following the change.
+             </param>
+        </member>
+        <member name="P:CsQuery.Implementation.CSSStyleChangedArgs.HasStyles">
+            <summary>
+            Gets a value indicating whether this object has styles following the change.
+            </summary>
+        </member>
         <member name="T:CsQuery.Implementation.CSSStyleRule">
              <summary>
              A CSS style rule.
@@ -5981,6 +6003,20 @@
              https://developer.mozilla.org/en/DOM/Node.appendChild
              </url>
         </member>
+        <member name="M:CsQuery.Implementation.DomObject.AppendChildUnsafe(CsQuery.IDomObject)">
+             <summary>
+             Appends a child without checking to see if its already a member of the DOM. For use in DOM
+             construction to avoid unneeded overhead.
+             </summary>
+            
+             <exception cref="T:System.InvalidOperationException">
+             Thrown when the requested operation is invalid.
+             </exception>
+            
+             <param name="element">
+             The element to append.
+             </param>
+        </member>
         <member name="M:CsQuery.Implementation.DomObject.RemoveChild(CsQuery.IDomObject)">
              <summary>
              Removes a child node from the DOM. Returns removed node.
@@ -6697,6 +6733,24 @@
              <returns>
              An enumerator 
              </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomContainer`1.AppendChild(CsQuery.IDomObject)">
+             <summary>
+             Appends a child.
+             </summary>
+            
+             <param name="item">
+             The item.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomContainer`1.AppendChildUnsafe(CsQuery.IDomObject)">
+             <summary>
+             Appends a child without checking if it already exists.c
+             </summary>
+            
+             <param name="item">
+             The item.
+             </param>
         </member>
         <member name="M:CsQuery.Implementation.DomContainer`1.RenderTextNodes(System.Text.StringBuilder)">
              <summary>
@@ -8593,6 +8647,11 @@
              <url>
              https://developer.mozilla.org/en/XUL/Property/type
              </url>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLInputElement.HasChildren">
+            <summary>
+            Gets a value indicating whether this object has children. For input elements, this is always false.
+            </summary>
         </member>
         <member name="T:CsQuery.Implementation.HtmlAnchorElement">
              <summary>
@@ -11908,12 +11967,6 @@
             <summary>
             This is a fragment
             </summary>
-        </member>
-        <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.InsertFosterParentedCharacters(System.String,CsQuery.IDomObject,CsQuery.IDomObject)">
-            <summary>
-            Return the document fragment.
-            </summary>
-            <returns>The document fragment</returns>
         </member>
         <member name="P:CsQuery.HtmlParser.CsQueryTreeBuilder.Document">
             <summary>
@@ -16394,7 +16447,7 @@
         </member>
         <member name="P:CsQuery.Implementation.DomDocument.DocType">
             <summary>
-            Gets or sets the DocType for this node. This can be changed through the DomDocument.
+            Gets the DocType for this document. 
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomDocument.InnerHtmlAllowed">
@@ -16555,16 +16608,6 @@
         <member name="M:CsQuery.Implementation.DomDocumentType.SetDocType(CsQuery.DocType)">
             <summary>
             Sets document type data values from a doc type
-            </summary>
-        </member>
-        <member name="T:CsQuery.Implementation.StyleChangedArgs">
-            <summary>
-            Arguments for when a style is changed.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.StyleChangedArgs.HasStyles">
-            <summary>
-            Gets a value indicating whether this object has styles following the change.
             </summary>
         </member>
         <member name="T:CsQuery.Implementation.CSSStyleDeclaration">
@@ -20814,6 +20857,19 @@
              <returns>
              An enumerator that allows foreach to be used to process enumerate&lt; t&gt; in this
              collection.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Objects.Enumerate(System.Object[])">
+             <summary>
+             Enumerates a sequence of objects
+             </summary>
+            
+             <param name="obj">
+             The sequence
+             </param>
+            
+             <returns>
+             An enumeration.
              </returns>
         </member>
         <member name="M:CsQuery.Objects.EmptyEnumerable``1">
