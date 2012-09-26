@@ -32,7 +32,7 @@ namespace CsQuery
         /// document type defined through the CsQuery.Options variable.
         /// </summary>
 
-        DocType DocType { get; set; }
+        DocType DocType { get; }
 
         IList<ICSSStyleSheet> StyleSheets { get; }
 

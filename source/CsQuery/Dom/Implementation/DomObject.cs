@@ -945,6 +945,23 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
+        /// Appends a child without checking to see if its already a member of the DOM. For use in DOM
+        /// construction to avoid unneeded overhead.
+        /// </summary>
+        ///
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the requested operation is invalid.
+        /// </exception>
+        ///
+        /// <param name="element">
+        /// The element to append.
+        /// </param>
+
+        internal virtual void AppendChildUnsafe(IDomObject element) 
+        {
+            throw new InvalidOperationException("This type of element does not have children.");
+        }
+        /// <summary>
         /// Removes a child node from the DOM. Returns removed node.
         /// </summary>
         ///

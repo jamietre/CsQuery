@@ -32,7 +32,8 @@ namespace CsQuery.Implementation
                 new DomDocument() :
                 new DomFragment();
 
-            // only set a DocType node for documents. Doesn't make sense for 
+            // only set a DocType node for documents.
+             
             if (parsingMode == HtmlParsingMode.Document)
             {
                 doc.DocType = docType;
@@ -111,7 +112,7 @@ namespace CsQuery.Implementation
 
         #region private properties
 
-        private bool _settingDocType;
+        //private bool _settingDocType;
         private IList<ICSSStyleSheet> _StyleSheets;
         private IDictionary<string, object> _Data;
         
@@ -257,13 +258,13 @@ namespace CsQuery.Implementation
                     docTypeNode.Remove();
                 }
 
-                ChildNodes.Add(value);
+                ChildNodes.Insert(0,value);
 
             }
         }
 
         /// <summary>
-        /// Gets or sets the DocType for this node. This can be changed through the DomDocument.
+        /// Gets the DocType for this document. 
         /// </summary>
 
         public DocType DocType
@@ -286,22 +287,26 @@ namespace CsQuery.Implementation
                     return CQ.DefaultDocType;
                 }
             }
-            set
+            protected set
             {
-                // Keep synchronized with DocTypeNode
-                if (_settingDocType) return;
-                _settingDocType = true;
                 _DocType = value;
-                IDomDocumentType docType = DocTypeNode;
-                if (docType != null)
-                {
-                    DocTypeNode.DocType = value;
-                }
-                else
-                {
-                    _DocType = value;
-                }
-                _settingDocType = false;
+            //{
+            //    // Keep synchronized with DocTypeNode
+            //    if (_settingDocType) return;
+
+            //    _settingDocType = true;
+            //    _DocType = value;
+            //    IDomDocumentType docType = DocTypeNode;
+
+            //    if (docType != null)
+            //    {
+            //        DocTypeNode.DocType = value;
+            //    }
+            //    else
+            //    {
+            //        _DocType = value;
+            //    }
+            //    _settingDocType = false;
             }
         }
 

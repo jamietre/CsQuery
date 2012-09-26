@@ -211,14 +211,14 @@ namespace CsQuery.HtmlParser.Deprecated
             if (WrapLiterals)
             {
                 DomElement wrapper = DomElement.Create("span");
-                wrapper.ChildNodesInternal.AddAlways(literal);
+                wrapper.AppendChildUnsafe(literal);
                 literal = wrapper;
             }
         
 
             if (Parent != null)
             {
-                ((DomElement)Parent.Element).ChildNodesInternal.AddAlways(literal);
+                ((DomElement)Parent.Element).AppendChildUnsafe(literal);
                 Reset();
                 return false;
             }
@@ -293,7 +293,7 @@ namespace CsQuery.HtmlParser.Deprecated
 
             if (Parent != null)
             {
-                ((DomElement)Parent.Element).ChildNodesInternal.AddAlways(Element);
+                ((DomElement)Parent.Element).AppendChildUnsafe(Element);
                 completeElement = null;
             }
             else if (!hasChildren)
@@ -655,7 +655,7 @@ namespace CsQuery.HtmlParser.Deprecated
         public IterationData AddNewParent(ushort tagId, int pos)
         {
             Element = DomElement.Create(tagId);
-            ((DomElement)Parent.Element).ChildNodesInternal.AddAlways(Element);
+            ((DomElement)Parent.Element).AppendChildUnsafe(Element);
             return AddNewChild(pos);
         }
 

@@ -26,7 +26,7 @@ namespace CsQuery.Tests.Csharp.HtmlParser
             dom = CQ.CreateDocument("<!doctype html PUBLIC \"-//W3C//DTD XHTML 1.0 >");
             Assert.AreEqual(DocType.XHTML, dom.Document.DocType);
 
-            dom.Document.DocType = DocType.HTML5;
+            dom.Document.DocTypeNode = dom.Document.CreateDocumentType("html", "", "");
             Assert.AreEqual("<!DOCTYPE html><html><head></head><body></body></html>", dom.First().Render());
 
         }

@@ -38,7 +38,7 @@ namespace CsQuery.Implementation
         /// The child nodes as a concete object.
         /// </summary>
 
-        internal ChildNodeList ChildNodesInternal
+        protected ChildNodeList ChildNodesInternal
         {
             get
             {
@@ -98,14 +98,9 @@ namespace CsQuery.Implementation
         {
             get
             {
-                if (HasChildren)
-                {
-                    return ChildNodes[ChildNodes.Count - 1];
-                }
-                else
-                {
-                    return null;
-                }
+                return HasChildren ?
+                    ChildNodes[ChildNodes.Count - 1] :
+                    null;
             }
         }
         public override IDomElement LastElementChild
@@ -127,9 +122,31 @@ namespace CsQuery.Implementation
                 return null;
             }
         }
+
+        /// <summary>
+        /// Appends a child.
+        /// </summary>
+        ///
+        /// <param name="item">
+        /// The item.
+        /// </param>
+
         public override void AppendChild(IDomObject item)
         {
             ChildNodes.Add(item);
+        }
+
+        /// <summary>
+        /// Appends a child without checking if it already exists.c
+        /// </summary>
+        ///
+        /// <param name="item">
+        /// The item.
+        /// </param>
+
+        internal override void AppendChildUnsafe(IDomObject item)
+        {
+            ChildNodesInternal.AddAlways(item);
         }
         public override void RemoveChild(IDomObject item)
         {

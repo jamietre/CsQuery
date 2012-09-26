@@ -13,7 +13,7 @@ namespace CsQuery.HtmlParser
     /// <summary>
     /// The tree builder glue for building a tree through the public DOM APIs.
     /// </summary>
-    class CsQueryTreeBuilder : CoalescingTreeBuilder<IDomObject>
+    class CsQueryTreeBuilder : CoalescingTreeBuilder<DomObject>
     {
         
         /// <summary>
@@ -27,7 +27,8 @@ namespace CsQuery.HtmlParser
 
         private bool isFragment;
 
-        override protected void AddAttributesToElement(IDomObject element, HtmlAttributes attributes)
+
+        override protected void AddAttributesToElement(DomObject element, HtmlAttributes attributes)
         {
             for (int i = 0; i < attributes.Length; i++)
             {
@@ -40,23 +41,24 @@ namespace CsQuery.HtmlParser
         }
 
 
-        override protected void AppendCharacters(IDomObject parent, string text)
+        override protected void AppendCharacters(DomObject parent, string text)
         {
-
-            IDomObject lastChild = parent.LastChild;
-            if (lastChild == null || lastChild.NodeType != NodeType.TEXT_NODE)
+            IDomText lastChild = parent.LastChild as IDomText;
+            if (lastChild != null)
             {
-                lastChild = document.CreateTextNode(text);
-                parent.AppendChild(lastChild);
-            } else {
                 ((IDomText)lastChild).NodeValue += text;
+                
+            } else {
+                lastChild = document.CreateTextNode(text);
+                parent.AppendChildUnsafe(lastChild);
             }
         }
 
-        override protected void AppendChildrenToNewParent(IDomObject oldParent, IDomObject newParent)
+        override protected void AppendChildrenToNewParent(DomObject oldParent, DomObject newParent)
         {
             while (oldParent.HasChildren)
             {
+                // cannot use unsafe method here - this method specifically moves children
                 newParent.AppendChild(oldParent.FirstChild);
             }
         }
@@ -65,24 +67,23 @@ namespace CsQuery.HtmlParser
         {
             var doctype = document.CreateDocumentType(name,publicIdentifier,systemIdentifier);
 
-            document.AppendChild(doctype);
+            document.AppendChildUnsafe(doctype);
         }
 
-        override protected void AppendComment(IDomObject parent, String comment)
+        override protected void AppendComment(DomObject parent, String comment)
         {
-            //parent.AppendChild(document.CreateComment(comment));
-            parent.AppendChild(new DomComment(comment));
+            parent.AppendChildUnsafe(new DomComment(comment));
         }
 
         override protected void AppendCommentToDocument(String comment)
         {
-            document.AppendChild(document.CreateComment(comment));
+            document.AppendChildUnsafe(document.CreateComment(comment));
         }
 
-        override protected IDomObject CreateElement(string ns, string name, HtmlAttributes attributes)
+        override protected DomObject CreateElement(string ns, string name, HtmlAttributes attributes)
         {
             // ns is not used
-            IDomElement rv = document.CreateElement(name);
+            DomElement rv = DomElement.Create(name);
             for (int i = 0; i < attributes.Length; i++)
             {
 
@@ -96,17 +97,17 @@ namespace CsQuery.HtmlParser
             return rv;
         }
 
-        override protected IDomObject CreateHtmlElementSetAsRoot(HtmlAttributes attributes)
+        override protected DomObject CreateHtmlElementSetAsRoot(HtmlAttributes attributes)
         {
             if (!isFragment)
             {
-                IDomElement rv = document.CreateElement("html");
+                DomElement rv = DomElement.Create("html");
                 for (int i = 0; i < attributes.Length; i++)
                 {
                     string attributeName = AttributeName(attributes.GetLocalName(i), attributes.GetURI(i));
                     rv.SetAttribute(attributeName, attributes.GetValue(i));
                 }
-                document.AppendChild(rv);
+                document.AppendChildUnsafe(rv);
                 return rv;
             }
             else
@@ -115,19 +116,19 @@ namespace CsQuery.HtmlParser
             }
         }
 
-        override protected void AppendElement(IDomObject child, IDomObject newParent)
+        override protected void AppendElement(DomObject child, DomObject newParent)
         {
-            newParent.AppendChild(child);
+           newParent.AppendChildUnsafe(child);
         }
 
-        override protected bool HasChildren(IDomObject element)
+        override protected bool HasChildren(DomObject element)
         {
             return element.HasChildren;
         }
 
-        override protected IDomObject CreateElement(string ns, string name, HtmlAttributes attributes, IDomObject form)
+        override protected DomObject CreateElement(string ns, string name, HtmlAttributes attributes, DomObject form)
         {
-            IDomObject rv = CreateElement(ns, name, attributes);
+            DomObject rv = CreateElement(ns, name, attributes);
             //rv.setUserData("nu.validator.form-pointer", form, null); // TODO
             return rv;
         }
@@ -158,27 +159,12 @@ namespace CsQuery.HtmlParser
             }
         }
 
-        /// <summary>
-        /// Return the document fragment.
-        /// </summary>
-        /// <returns>The document fragment</returns>
-        //internal IDomFragment getDocumentFragment()
-        //{
-            //IDomFragment rv = new DomFragment();
-            //IDomObject rootElt = document;
-            //while (rootElt.HasChildren)
-            //{
-            //    rv.AppendChild(rootElt.FirstChild);
-            //}
-            //document = null;
-            //return rv;
-        //}
-
-        override protected void InsertFosterParentedCharacters(string text, IDomObject table, IDomObject stackParent)
+        override protected void InsertFosterParentedCharacters(string text, DomObject table, DomObject stackParent)
         {
             IDomObject parent = table.ParentNode;
             if (parent != null)
-            { // always an element if not null
+            { 
+                // always an element if not null
                 IDomObject previousSibling = table.PreviousSibling;
                 if (previousSibling != null
                         && previousSibling.NodeType == NodeType.TEXT_NODE)
@@ -190,30 +176,35 @@ namespace CsQuery.HtmlParser
                 parent.InsertBefore(document.CreateTextNode(text), table);
                 return;
             }
-            IDomObject lastChild = stackParent.LastChild;
-            if (lastChild != null && lastChild.NodeType == NodeType.TEXT_NODE)
+            // fall through
+            
+            IDomText lastChild = stackParent.LastChild as IDomText;
+            if (lastChild != null)
             {
-                IDomText lastAsText = (IDomText)lastChild;
-                lastAsText.NodeValue += text;
+                lastChild.NodeValue += text;
                 return;
             }
-            stackParent.AppendChild(document.CreateTextNode(text));
+            else
+            {
+                stackParent.AppendChildUnsafe(document.CreateTextNode(text));
+            }
         }
 
-        override protected void InsertFosterParentedChild(IDomObject child, IDomObject table, IDomObject stackParent)
+        override protected void InsertFosterParentedChild(DomObject child, DomObject table, DomObject stackParent)
         {
             IDomObject parent = table.ParentNode;
             if (parent != null)
-            { // always an element if not null
+            { 
+                // always an element if not null
                 parent.InsertBefore(child, table);
             }
             else
             {
-                stackParent.AppendChild(child);
+                stackParent.AppendChildUnsafe(child);
             }
         }
 
-        override protected void DetachFromParent(IDomObject element)
+        override protected void DetachFromParent(DomObject element)
         {
             IDomObject parent = element.ParentNode;
             if (parent != null)
@@ -224,12 +215,9 @@ namespace CsQuery.HtmlParser
 
         private string AttributeName(string localName, string uri)
         {
-
-            string attributeName = localName;
-
             return String.IsNullOrEmpty(uri) ?
-                attributeName :
-                attributeName += ":" + uri;
+                localName :
+                localName += ":" + uri;
         }
     }
 }

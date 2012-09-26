@@ -97,9 +97,9 @@ namespace CsQuery.Implementation
 
                 return _DocType;
             }
-            set
+            protected set
             {
-                SetDocType(value);
+                _DocType = value;
             }
         }
 

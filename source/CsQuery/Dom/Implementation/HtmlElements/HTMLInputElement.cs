@@ -119,6 +119,18 @@ namespace CsQuery.Implementation
             return base.IndexKeys();
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this object has children. For input elements, this is always false.
+        /// </summary>
+
+        public override bool HasChildren
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         ///// <summary>
         ///// Gets an attribute value for matching, accounting for default values of special attribute
         ///// types.
