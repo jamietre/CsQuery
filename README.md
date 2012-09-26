@@ -30,7 +30,7 @@ To clone the repostory you will need a couple extra steps. First create a clone 
 
 Next initialize and clone the submodule:
 
-	git submodule in1it
+	git submodule init
     git submodule update
 
 You should be able to compile everything now. 
