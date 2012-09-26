@@ -53,9 +53,6 @@
     <Reference Include="Accessibility">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
-    <Reference Include="Antlr3.Runtime, Version=3.3.1.7705, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\WebGrease.1.1.0\lib\Antlr3.Runtime.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -129,7 +126,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CsQuery.Mvc\CsQuery.Mvc.csproj">
-      <Project>{1697FBB9-9116-4FDF-8F92-25C2DE8DC39B}</Project>
+      <Project>{1697fbb9-9116-4fdf-8f92-25c2de8dc39b}</Project>
       <Name>CsQuery.Mvc</Name>
     </ProjectReference>
     <ProjectReference Include="..\CsQuery\CsQuery.csproj">
