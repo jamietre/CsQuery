@@ -50,7 +50,7 @@ You can also review the change log to see more detail about specific changes, or
 
 * [Complete change log](https://github.com/jamietre/CsQuery/blob/master/source/README.md#source-code)
 
-For more information on the status of CsQuery's compliance with HTML5 spect, see the [HTML5 compliance notes](https://github.com/jamietre/CsQuery/blob/master/source/HTML5.md#html5-compliance)
+For more information on the status of CsQuery's compliance with HTML5 spec, see the [HTML5 compliance notes](https://github.com/jamietre/CsQuery/blob/master/source/HTML5.md#html5-compliance)
 
 ### Documentation
 
