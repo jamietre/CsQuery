@@ -309,7 +309,7 @@
              A new CQ object
              </returns>
         </member>
-        <member name="M:CsQuery.CQ.Create(System.IO.Stream)">
+        <member name="M:CsQuery.CQ.Create(System.IO.Stream,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
              <summary>
              Create a new CQ object from a stream of HTML, treating the HTML as a content document.
              </summary>
@@ -4239,6 +4239,37 @@
             Creates a new, empty CQ object.
             </summary>
         </member>
+        <member name="M:CsQuery.CQ.#ctor(System.String,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
+             <summary>
+             Create a new CQ object from an HTML string.
+             </summary>
+            
+             <param name="html">
+             The HTML source
+             </param>
+             <param name="mode">
+             (optional) the mode.
+             </param>
+             <param name="docType">
+             (optional) type of the document.
+             </param>
+        </member>
+        <member name="M:CsQuery.CQ.#ctor(System.IO.Stream,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
+             <summary>
+             Create a new CQ object from an HTML stream.
+             <see cref="M:CsQuery.CQ.Create(System.Char[])"/>
+             </summary>
+            
+             <param name="html">
+             The html of the new document.
+             </param>
+             <param name="mode">
+             (optional) the mode.
+             </param>
+             <param name="docType">
+             (optional) type of the document.
+             </param>
+        </member>
         <member name="M:CsQuery.CQ.#ctor(System.Char[],CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
              <summary>
              Create a new CQ object from an HTML character array. Synonymous with
@@ -4247,6 +4278,12 @@
             
              <param name="html">
              The html of the new document.
+             </param>
+             <param name="parsingMode">
+             The HTML parsing mode.
+             </param>
+             <param name="docType">
+             (optional) type of the document.
              </param>
         </member>
         <member name="M:CsQuery.CQ.#ctor(CsQuery.IDomObject)">
@@ -4282,21 +4319,6 @@
              </param>
              <param name="context">
              The context.
-             </param>
-        </member>
-        <member name="M:CsQuery.CQ.#ctor(System.String,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
-             <summary>
-             Create a new CQ object from an HTML character array.
-             </summary>
-            
-             <param name="html">
-             The HTML source
-             </param>
-             <param name="mode">
-             (optional) the mode.
-             </param>
-             <param name="docType">
-             (optional) type of the document.
              </param>
         </member>
         <member name="M:CsQuery.CQ.#ctor(System.String,CsQuery.CQ)">
@@ -4393,19 +4415,7 @@
              The elements to provide the source for this object's DOM.
              </param>
         </member>
-        <member name="M:CsQuery.CQ.CreateNewDocument(System.String,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
-             <summary>
-             Bind this instance to a new DomDocument created from HTML using the specified parsing mode.
-             </summary>
-            
-             <param name="html">
-             The HTML.
-             </param>
-             <param name="htmlParsingMode">
-             The HTML parsing mode.
-             </param>
-        </member>
-        <member name="M:CsQuery.CQ.CreateNewFragment(CsQuery.CQ,System.String,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
+        <member name="M:CsQuery.CQ.CreateNew(CsQuery.CQ,System.String,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
              <summary>
              Bind this instance to a new DomFragment created from HTML using the specified parsing mode.
              </summary>
@@ -4423,9 +4433,27 @@
              (optional) type of the document.
              </param>
         </member>
-        <member name="M:CsQuery.CQ.CreateNewFragment(CsQuery.CQ,System.String,System.String,CsQuery.DocType)">
+        <member name="M:CsQuery.CQ.CreateNew(CsQuery.CQ,System.IO.Stream,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
              <summary>
              Bind this instance to a new DomFragment created from HTML in a specific HTML tag context
+             </summary>
+            
+             <param name="target">
+             The target.
+             </param>
+             <param name="html">
+             The HTML.
+             </param>
+             <param name="context">
+             The context.
+             </param>
+             <param name="docType">
+             (optional) type of the document.
+             </param>
+        </member>
+        <member name="M:CsQuery.CQ.CreateNewFragment(CsQuery.CQ,System.String,System.String,CsQuery.DocType)">
+             <summary>
+             Bind this instance to a new DomFragment created from HTML using the specified parsing mode.
              </summary>
             
              <param name="target">
@@ -10662,6 +10690,1210 @@
             Extension methods for converting to XML
             </summary>
         </member>
+        <member name="T:HtmlParserSharp.Common.DoctypeExpectation">
+            <summary>
+            Used for indicating desired behavior with legacy doctypes.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Common.DoctypeExpectation.Html">
+            <summary>
+            Be a pure HTML5 parser.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Common.DoctypeExpectation.Html401Transitional">
+            <summary>
+            Require the HTML 4.01 Transitional public id. Turn on HTML4-specific
+            additional errors regardless of doctype.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Common.DoctypeExpectation.Html401Strict">
+            <summary>
+            Require the HTML 4.01 Transitional public id and a system id. Turn on
+            HTML4-specific additional errors regardless of doctype.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Common.DoctypeExpectation.Auto">
+            <summary>
+            Treat the doctype required by HTML 5, doctypes with the HTML 4.01 Strict
+            public id and doctypes with the HTML 4.01 Transitional public id and a
+            system id as non-errors. Turn on HTML4-specific additional errors if the
+            public id is the HTML 4.01 Strict or Transitional public id.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Common.DoctypeExpectation.NoDoctypeErrors">
+            <summary>
+            Never enable HTML4-specific error checks. Never report any doctype
+            condition as an error. (Doctype tokens in wrong places will be
+            reported as errors, though.) The application may decide what to log
+            in response to calls to  <code>DocumentModeHanler</code>. This mode
+            is meant for doing surveys on existing content.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Common.DocumentMode.StandardsMode">
+            <summary>
+            The Standards Mode
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Common.DocumentMode.AlmostStandardsMode">
+            <summary>
+            The Limited Quirks Mode aka. The Almost Standards Mode
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Common.DocumentMode.QuirksMode">
+             <summary>
+             The Quirks Mode
+             </summary>
+            
+        </member>
+        <member name="M:HtmlParserSharp.Common.DocumentModeEventArgs.#ctor(HtmlParserSharp.Common.DocumentMode,System.String,System.String,System.Boolean)">
+            <summary>
+            Receive notification of the document mode.
+            </summary>
+            <param name="mode">The document mode.</param>
+            <param name="publicIdentifier">The public identifier of the doctype or <c>null</c> if unavailable.</param>
+            <param name="systemIdentifier">The system identifier of the doctype or <c>null</c> if unavailable.</param>
+            <param name="html4SpecificAdditionalErrorChecks"><c>true</c>  if HTML 4-specific checks were enabled,
+            <c>false</c> otherwise</param>
+        </member>
+        <member name="T:HtmlParserSharp.Common.ITokenHandler">
+            <summary>
+            <code>Tokenizer</code> reports tokens through this interface.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Common.ITokenHandler.StartTokenization(HtmlParserSharp.Core.Tokenizer)">
+            <summary>
+            This method is called at the start of tokenization before any other
+            methods on this interface are called. Implementations should hold the
+            reference to the <code>Tokenizer</code> in order to set the content
+            model flag and in order to be able to query for <code>Locator</code> data.
+            </summary>
+            <param name="self">The Tokenizer.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Common.ITokenHandler.Doctype(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Receive a doctype token.
+            </summary>
+            <param name="name">The name.</param>
+            <param name="publicIdentifier">The public identifier.</param>
+            <param name="systemIdentifier">The system identifier.</param>
+            <param name="forceQuirks">Whether the token is correct.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Common.ITokenHandler.StartTag(HtmlParserSharp.Core.ElementName,HtmlParserSharp.Core.HtmlAttributes,System.Boolean)">
+            <summary>
+            Receive a start tag token.
+            </summary>
+            <param name="eltName">The tag name.</param>
+            <param name="attributes">The attributes.</param>
+            <param name="selfClosing">TODO</param>
+        </member>
+        <member name="M:HtmlParserSharp.Common.ITokenHandler.EndTag(HtmlParserSharp.Core.ElementName)">
+            <summary>
+            Receive an end tag token.
+            </summary>
+            <param name="eltName">The tag name.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Common.ITokenHandler.Comment(System.Char[],System.Int32,System.Int32)">
+            <summary>
+            Receive a comment token. The data is junk if the<code>wantsComments()</code>
+            returned <code>false</code>.
+            </summary>
+            <param name="buf">The buffer holding the data.</param>
+            <param name="start">The offset into the buffer.</param>
+            <param name="length">The number of code units to read.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Common.ITokenHandler.Characters(System.Char[],System.Int32,System.Int32)">
+            <summary>
+            Receive character tokens. This method has the same semantics as the SAX
+            method of the same name.
+            </summary>
+            <param name="buf">A buffer holding the data.</param>
+            <param name="start">The offset into the buffer.</param>
+            <param name="length">The number of code units to read.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Common.ITokenHandler.ZeroOriginatingReplacementCharacter">
+            <summary>
+            Reports a U+0000 that's being turned into a U+FFFD.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Common.ITokenHandler.Eof">
+            <summary>
+            The end-of-file token.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Common.ITokenHandler.EndTokenization">
+            <summary>
+            The perform final cleanup.
+            </summary>
+        </member>
+        <member name="P:HtmlParserSharp.Common.ITokenHandler.WantsComments">
+            <summary>
+            If this handler implementation cares about comments, return <code>true</code>.
+            If not, return <code>false</code>
+            </summary>
+            <returns>Whether this handler wants comments</returns>
+        </member>
+        <member name="P:HtmlParserSharp.Common.ITokenHandler.IsCDataSectionAllowed">
+            <summary>
+            Checks if the CDATA sections are allowed.
+            </summary>
+            <returns><c>true</c> if CDATA sections are allowed</returns>
+        </member>
+        <member name="T:HtmlParserSharp.Common.XmlViolationPolicy">
+            <summary>
+            Policy for XML 1.0 violations.
+            </summary>
+            
+        </member>
+        <member name="F:HtmlParserSharp.Common.XmlViolationPolicy.Allow">
+            <summary>
+            Conform to HTML 5, allow XML 1.0 to be violated.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Common.XmlViolationPolicy.Fatal">
+            <summary>
+            Halt when something cannot be mapped to XML 1.0.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Common.XmlViolationPolicy.AlterInfoset">
+            <summary>
+            Be non-conforming and alter the infoset to fit
+            XML 1.0 when something would otherwise not be
+            mappable to XML 1.0.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.AttributeName.HTML">
+            <summary>
+            The mode value for HTML.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.AttributeName.MATHML">
+            <summary>
+            The mode value for MathML.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.AttributeName.SVG">
+            <summary>
+            The mode value for SVG.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.AttributeName.HTML_LANG">
+            <summary>
+            The mode value for lang-mapping HTML.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.AttributeName.ALL_NO_NS">
+            <summary>
+            An array representing no namespace regardless of namespace mode (HTML,
+            SVG, MathML, lang-mapping HTML) used.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.AttributeName.XMLNS_NS">
+            <summary>
+            An array that has no namespace for the HTML mode but the XMLNS namespace
+            for the SVG and MathML modes.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.AttributeName.XML_NS">
+            <summary>
+            An array that has no namespace for the HTML mode but the XML namespace
+            for the SVG and MathML modes.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.AttributeName.XLINK_NS">
+            <summary>
+            An array that has no namespace for the HTML mode but the XLink namespace
+            for the SVG and MathML modes.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.AttributeName.LANG_NS">
+            <summary>
+            An array that has no namespace for the HTML, SVG and MathML modes but has
+            the XML namespace for the lang-mapping HTML mode.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.AttributeName.ALL_NO_PREFIX">
+            <summary>
+            An array for no prefixes in any mode.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.AttributeName.XMLNS_PREFIX">
+            <summary>
+            An array for no prefixe in the HTML mode and the 
+            <code>xmlns</code> prefix in the SVG and MathML modes.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.AttributeName.XLINK_PREFIX">
+            <summary>
+            An array for no prefixe in the HTML mode and the 
+            <code>xlink</code>
+            prefix in the SVG and MathML modes.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.AttributeName.XML_PREFIX">
+            <summary>
+            An array for no prefixe in the HTML mode and the 
+            <code>xml</code> prefix in the SVG and MathML modes.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Core.AttributeName.SVG_DIFFERENT(System.String,System.String)">
+            <summary>
+            An initialization helper for having a one name in the SVG mode and
+            another name in the other modes.
+            </summary>
+            <param name="name">The name for the non-SVG modes</param>
+            <param name="camel">The name for the SVG mode</param>
+            <returns>The initialized name array</returns>
+        </member>
+        <member name="M:HtmlParserSharp.Core.AttributeName.MATH_DIFFERENT(System.String,System.String)">
+            <summary>
+            An initialization helper for having a one name in the MathML mode and
+            another name in the other modes.
+            </summary>
+            <param name="name">The name for the non-MathML modes</param>
+            <param name="camel">The name for the MathML mode</param>
+            <returns>The initialized name array</returns>
+        </member>
+        <member name="M:HtmlParserSharp.Core.AttributeName.COLONIFIED_LOCAL(System.String,System.String)">
+            <summary>
+            An initialization helper for having a different local name in the HTML
+            mode and the SVG and MathML modes.
+            </summary>
+            <param name="name">The name for the HTML mode</param>
+            <param name="suffix">The name for the SVG and MathML modes</param>
+            <returns>The initialized name array</returns>
+        </member>
+        <member name="M:HtmlParserSharp.Core.AttributeName.SAME_LOCAL(System.String)">
+            <summary>
+            An initialization helper for having the same local name in all modes.
+            </summary>
+            <param name="name">The name</param>
+            <returns>The initialized name array</returns>
+        </member>
+        <member name="M:HtmlParserSharp.Core.AttributeName.NameByBuffer(System.Char[],System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Returns an attribute name by buffer.
+            <p/>
+            C++ ownership: The return value is either released by the caller if the
+            attribute is a duplicate or the ownership is transferred to
+            HtmlAttributes and released upon clearing or destroying that object.
+            </summary>
+            <param name="buf">The buffer</param>
+            <param name="offset">ignored</param>
+            <param name="length">Length of data</param>
+            <param name="checkNcName">Whether to check ncnameness</param>
+            <returns>An <code>AttributeName</code> corresponding to the argument data</returns>
+        </member>
+        <member name="M:HtmlParserSharp.Core.AttributeName.BufToHash(System.Char[],System.Int32)">
+            <summary>
+            This method has to return a unique integer for each well-known
+            lower-cased attribute name.
+            </summary>
+            <param name="buf">The buffer.</param>
+            <param name="len">The length.</param>
+            <returns></returns>
+        </member>
+        <member name="F:HtmlParserSharp.Core.AttributeName.uri">
+            <summary>
+            The namespaces indexable by mode.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.AttributeName.local">
+            <summary>
+            The local names indexable by mode.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.AttributeName.prefix">
+            <summary>
+            The prefixes indexably by mode.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.AttributeName.qName">
+            <summary>
+            The qnames indexable by mode.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Core.AttributeName.#ctor(System.String[],System.String[],System.String[],System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HtmlParserSharp.Core.AttributeName"/> class (The startup-time constructor). 
+            </summary>
+            <param name="uri">The namespace.</param>
+            <param name="local">The local name.</param>
+            <param name="prefix">The prefix.</param>
+            <param name="flags">The flags.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Core.AttributeName.CreateAttributeName(System.String,System.Boolean)">
+            <summary>
+            Creates an <code>AttributeName</code> for a local name.
+            </summary>
+            <param name="name">The name.</param>
+            <param name="checkNcName">Whether to check ncnameness.</param>
+            <returns>An <code>AttributeName</code></returns>
+        </member>
+        <member name="M:HtmlParserSharp.Core.AttributeName.CloneAttributeName">
+            <summary>
+            TODO: remove this (?)
+            Clones the attribute using an interner. Returns 
+            <code>this</code> in Java and for non-dynamic instances in C++.
+            </summary>
+            <param name="interner">An interner</param>
+            <returns>A clone</returns>
+        </member>
+        <member name="M:HtmlParserSharp.Core.AttributeName.Create(System.String)">
+            <summary>
+            Creator for use when the XML violation policy requires an attribute name
+            to be changed.
+            </summary>
+            <param name="name">The name.</param>
+            <returns>The name of the attribute to create</returns>
+        </member>
+        <member name="M:HtmlParserSharp.Core.AttributeName.IsNcName(System.Int32)">
+            <summary>
+            Determines whether this name is an XML 1.0 4th ed. NCName.
+            </summary>
+            <param name="mode">The SVG/MathML/HTML mode</param>
+            <returns>
+              <c>true</c> if if this is an NCName in the given mode; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="F:HtmlParserSharp.Core.AttributeName.D">
+            **
+        </member>
+        <member name="P:HtmlParserSharp.Core.AttributeName.IsXmlns">
+            <summary>
+            Queries whether this is an <code>xmlns</code> attribute.
+            </summary>
+            <returns>
+              <c>true</c> if this is an <code>xmlns</code> attribute; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="P:HtmlParserSharp.Core.AttributeName.IsCaseFolded">
+            <summary>
+            Determines whether this attribute has a case-folded value in the HTML4 mode
+            of the parser.
+            </summary>
+            <returns>
+              <c>true</c> if the value is case-folded; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:HtmlParserSharp.Core.CoalescingTreeBuilder`1">
+            <summary>
+            A common superclass for tree builders that coalesce their text nodes.
+            </summary>
+        </member>
+        <member name="T:HtmlParserSharp.Core.ITreeBuilderState`1">
+            <summary>
+            Interface for exposing the state of the HTML5 tree builder so that the
+            interface can be implemented by the tree builder itself and by snapshots.
+            </summary>
+        </member>
+        <member name="P:HtmlParserSharp.Core.ITreeBuilderState`1.Stack">
+            <summary>
+            Gets the stack.
+            </summary>
+            <returns>The stack</returns>
+        </member>
+        <member name="P:HtmlParserSharp.Core.ITreeBuilderState`1.ListOfActiveFormattingElements">
+            <summary>
+            Gets the list of active formatting elements.
+            </summary>
+            <returns>The list of active formatting elements.</returns>
+        </member>
+        <member name="P:HtmlParserSharp.Core.ITreeBuilderState`1.FormPointer">
+            <summary>
+            Gets the form pointer.
+            </summary>
+            <returns>The form pointer</returns>
+        </member>
+        <member name="P:HtmlParserSharp.Core.ITreeBuilderState`1.HeadPointer">
+            <summary>
+            Gets the head pointer.
+            </summary>
+            <returns>The head pointer.</returns>
+        </member>
+        <member name="P:HtmlParserSharp.Core.ITreeBuilderState`1.DeepTreeSurrogateParent">
+            <summary>
+            Gets the deep tree surrogate parent.
+            </summary>
+            <returns>The deep tree surrogate parent.</returns>
+        </member>
+        <member name="P:HtmlParserSharp.Core.ITreeBuilderState`1.Mode">
+            <summary>
+            Gets the mode.
+            </summary>
+            <returns>The mode.</returns>
+        </member>
+        <member name="P:HtmlParserSharp.Core.ITreeBuilderState`1.OriginalMode">
+            <summary>
+            Gets the original mode.
+            </summary>
+            <returns>The original mode.</returns>
+        </member>
+        <member name="P:HtmlParserSharp.Core.ITreeBuilderState`1.IsFramesetOk">
+            <summary>
+            Determines whether the frameset is OK.
+            </summary>
+            <returns>
+              <c>true</c> if the frameset is OK; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="P:HtmlParserSharp.Core.ITreeBuilderState`1.IsNeedToDropLF">
+            <summary>
+            Determines whether we need to drop LF.
+            </summary>
+            <returns>
+              <c>true</c> if we need to drop LF; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="P:HtmlParserSharp.Core.ITreeBuilderState`1.IsQuirks">
+            <summary>
+            Determines whether this instance is in quirks mode.
+            </summary>
+            <returns>
+              <c>true</c> if this instance is in quirks mode; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="F:HtmlParserSharp.Core.TreeBuilder`1.framesetOk">
+            <summary>
+            Used only when moving back to IN_BODY.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.TreeBuilder`1.deepTreeSurrogateParent">
+            Used to work around Gecko limitations. Not used in Java.
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.Fatal">
+            <summary>
+            Reports an condition that would make the infoset incompatible with XML
+            1.0 as fatal.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.Err(System.String)">
+            <summary>
+            Reports a Parse Error.
+            </summary>
+            <param name="message">The message.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.ErrNoCheck(System.String)">
+            <summary>
+            Reports a Parse Error without checking if an error handler is present.
+            </summary>
+            <param name="message">The message.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.ErrStrayStartTag(System.String)">
+            <summary>
+            Reports a stray start tag.
+            </summary>
+            <param name="name">The name of the stray tag.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.ErrStrayEndTag(System.String)">
+            <summary>
+            Reports a stray end tag.
+            </summary>
+            <param name="name">The name of the stray tag.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.ErrUnclosedElements(System.Int32,System.String)">
+            <summary>
+            Reports a state when elements expected to be closed were not.
+            </summary>
+            <param name="eltPos">The position of the start tag on the stack of the element
+            being closed.</param>
+            <param name="name">The name of the end tag.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.ErrUnclosedElementsImplied(System.Int32,System.String)">
+            <summary>
+            Reports a state when elements expected to be closed ahead of an implied
+            end tag but were not.
+            </summary>
+            <param name="eltPos">The position of the start tag on the stack of the element
+            being closed.</param>
+            <param name="name">The name of the end tag.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.ErrUnclosedElementsCell(System.Int32)">
+            <summary>
+            Reports a state when elements expected to be closed ahead of an implied
+            table cell close.
+            </summary>
+            <param name="eltPos">The position of the start tag on the stack of the element
+            being closed.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.ErrEndWithUnclosedElements(System.String)">
+            <summary>
+            Reports arriving at/near end of document with unclosed elements remaining.
+            </summary>
+            <param name="message">The message.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.ReportUnclosedElementNameAndLocation(System.Int32)">
+            <summary>
+            Reports the name and location of an unclosed element.
+            </summary>
+            <param name="pos">The position.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.Warn(System.String)">
+            <summary>
+            Reports a warning
+            </summary>
+            <param name="message">The message.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.Comment(System.Char[],System.Int32,System.Int32)">
+            <summary>
+            Receive a comment token. The data is junk if the<code>wantsComments()</code>
+            returned <code>false</code>.
+            </summary>
+            <param name="buf">The buffer holding the data.</param>
+            <param name="start">The offset into the buffer.</param>
+            <param name="length">The number of code units to read.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.Characters(System.Char[],System.Int32,System.Int32)">
+            <summary>
+            Receive character tokens. This method has the same semantics as the SAX
+            method of the same name.
+            </summary>
+            <param name="buf">A buffer holding the data.</param>
+            <param name="start">The offset into the buffer.</param>
+            <param name="length">The number of code units to read.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.ZeroOriginatingReplacementCharacter">
+            <summary>
+            Reports a U+0000 that's being turned into a U+FFFD.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.Eof">
+            <summary>
+            The end-of-file token.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.EndTokenization">
+            <summary>
+            The perform final cleanup.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.AddAttributesToBody(HtmlParserSharp.Core.HtmlAttributes)">
+            <summary>
+            Attempt to add attribute to the body element.
+            </summary>
+            <param name="attributes">The attributes.</param>
+            <returns><c>true</c> if the attributes were added</returns>
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.SetFragmentContext(System.String)">
+            The argument MUST be an interned string or <code>null</code>.
+            
+            @param context
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.SetFragmentContext(System.String,System.String,`0,System.Boolean)">
+            The argument MUST be an interned string or <code>null</code>.
+            
+            @param context
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.FlushCharacters">
+            <summary>
+            Flushes the pending characters. Public for document.write use cases only.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Core.TreeBuilder`1.NewSnapshot">
+            <summary>
+            Creates a comparable snapshot of the tree builder state. Snapshot
+            creation is only supported immediately after a script end tag has been
+            processed. In C++ the caller is responsible for calling
+            <code>delete</code> on the returned object.
+            </summary>
+            <returns>A snapshot</returns>
+        </member>
+        <member name="P:HtmlParserSharp.Core.TreeBuilder`1.HtmlParserSharp#Common#ITokenHandler#WantsComments">
+            <summary>
+            If this handler implementation cares about comments, return <code>true</code>.
+            If not, return <code>false</code>
+            </summary>
+            <returns>
+            Whether this handler wants comments
+            </returns>
+        </member>
+        <member name="P:HtmlParserSharp.Core.TreeBuilder`1.IsCDataSectionAllowed">
+            <summary>
+            Checks if the CDATA sections are allowed.
+            </summary>
+            <returns>
+              <c>true</c> if CDATA sections are allowed
+            </returns>
+        </member>
+        <member name="P:HtmlParserSharp.Core.TreeBuilder`1.ListOfActiveFormattingElements">
+            <summary>
+            Gets the list of active formatting elements.
+            </summary>
+        </member>
+        <member name="P:HtmlParserSharp.Core.TreeBuilder`1.Stack">
+            <summary>
+            Gets the stack.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.ElementName.GROUP_MASK">
+            <summary>
+            The mask for extracting the dispatch group.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.ElementName.CUSTOM">
+            <summary>
+            Indicates that the element is not a pre-interned element. Forbidden
+            on preinterned elements.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.ElementName.SPECIAL">
+            <summary>
+            Indicates that the element is in the "special" category. This bit
+            should not be pre-set on MathML or SVG specials--only on HTML specials.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.ElementName.FOSTER_PARENTING">
+            <summary>
+            The element is foster-parenting. This bit should be pre-set on elements
+            that are foster-parenting as HTML.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.ElementName.SCOPING">
+            <summary>
+            The element is scoping. This bit should be pre-set on elements
+            that are scoping as HTML.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.ElementName.SCOPING_AS_SVG">
+            <summary>
+            The element is scoping as SVG.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.ElementName.SCOPING_AS_MATHML">
+            <summary>
+            The element is scoping as MathML.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.ElementName.HTML_INTEGRATION_POINT">
+            <summary>
+            The element is an HTML integration point.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.ElementName.OPTIONAL_END_TAG">
+            <summary>
+            The element has an optional end tag.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.ElementName.flags">
+            <summary>
+            The lowest 7 bits are the dispatch group. The high bits are flags.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Core.ElementName.BufToHash(System.Char[],System.Int32)">
+            <summary>
+            This method has to return a unique integer for each well-known
+            lower-cased element name.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.ElementName.A">
+            **
+        </member>
+        <member name="T:HtmlParserSharp.Core.HtmlAttributes">
+            <summary>
+            Be careful with this class. QName is the name in from HTML tokenization.
+            Otherwise, please refer to the interface doc.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Core.HtmlAttributes.GetIndex(HtmlParserSharp.Core.AttributeName)">
+            <summary>
+            Only use with a static argument
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Core.HtmlAttributes.GetValue(HtmlParserSharp.Core.AttributeName)">
+            <summary>
+            Only use with static argument.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Core.HtmlAttributes.ClearWithoutReleasingContents">
+            <summary>
+            This is only used for <code>AttributeName</code> ownership transfer
+            in the isindex case to avoid freeing custom names twice in C++.
+            </summary>
+        </member>
+        <member name="T:HtmlParserSharp.Core.ILocator">
+            <summary>
+            Interface for getting the current line and column
+            (Corresponds to the SAX Locator interface).
+            This is implemented by Locator and Tokenizer.
+            </summary>
+        </member>
+        <member name="T:HtmlParserSharp.Core.Portability">
+            <summary>
+            Class for C++ portability.
+            TODO: Remove this
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Core.Portability.NewLocalNameFromBuffer(System.Char[],System.Int32,System.Int32)">
+            <summary>
+            Allocates a new local name object. In C++, the refcount must be set up in such a way that
+            calling <code>releaseLocal</code> on the return value balances the refcount set by this method.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Core.StackNode`1.#ctor(System.Int32,System.String,System.String,`0,System.String,HtmlParserSharp.Core.HtmlAttributes,HtmlParserSharp.Core.TaintableLocator)">
+            <summary>
+            Constructor for copying. This doesn't take another <code>StackNode</code>
+            because in C++ the caller is reponsible for reobtaining the local names
+            from another interner.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Core.StackNode`1.#ctor(HtmlParserSharp.Core.ElementName,`0,HtmlParserSharp.Core.TaintableLocator)">
+            <summary>
+            Short hand for well-known HTML elements.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Core.StackNode`1.#ctor(HtmlParserSharp.Core.ElementName,`0,HtmlParserSharp.Core.HtmlAttributes,HtmlParserSharp.Core.TaintableLocator)">
+            <summary>
+            Constructor for HTML formatting elements.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Core.StackNode`1.#ctor(HtmlParserSharp.Core.ElementName,`0,System.String,HtmlParserSharp.Core.TaintableLocator)">
+            <summary>
+            The common-case HTML constructor.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Core.StackNode`1.#ctor(HtmlParserSharp.Core.ElementName,System.String,`0,HtmlParserSharp.Core.TaintableLocator)">
+            <summary>
+            Constructor for SVG elements. Note that the order of the arguments is
+            what distinguishes this from the HTML constructor. This is ugly, but
+            AFAICT the least disruptive way to make this work with Java's generics
+            and without unnecessary branches. :-(
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Core.StackNode`1.#ctor(HtmlParserSharp.Core.ElementName,`0,System.String,System.Boolean,HtmlParserSharp.Core.TaintableLocator)">
+            <summary>
+            Constructor for MathML.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Core.StackNode`1.ToString">
+            <summary>
+            Returns a <see cref="T:System.String"/> that represents this instance.
+            </summary>
+            <returns>
+            A <see cref="T:System.String"/> that represents this instance.
+            </returns>
+        </member>
+        <member name="P:HtmlParserSharp.Core.StateSnapshot`1.Stack">
+            <summary>
+            Gets the stack.
+            </summary>
+        </member>
+        <member name="P:HtmlParserSharp.Core.StateSnapshot`1.ListOfActiveFormattingElements">
+            <summary>
+            Gets the list of active formatting elements.
+            </summary>
+        </member>
+        <member name="P:HtmlParserSharp.Core.StateSnapshot`1.Mode">
+            <summary>
+            Gets the mode.
+            </summary>
+        </member>
+        <member name="P:HtmlParserSharp.Core.StateSnapshot`1.OriginalMode">
+            <summary>
+            Gets the original mode.
+            </summary>
+        </member>
+        <member name="P:HtmlParserSharp.Core.StateSnapshot`1.IsFramesetOk">
+            <summary>
+            Gets a value indicating whether this instance is frameset ok.
+            </summary>
+            <value>
+            	<c>true</c> if this instance is frameset ok; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:HtmlParserSharp.Core.StateSnapshot`1.IsNeedToDropLF">
+            <summary>
+            Gets a value indicating whether this instance is need to drop LF.
+            </summary>
+            <value>
+            	<c>true</c> if this instance is need to drop LF; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:HtmlParserSharp.Core.StateSnapshot`1.IsQuirks">
+            <summary>
+            Gets a value indicating whether this instance is quirks.
+            </summary>
+            <value>
+              <c>true</c> if this instance is quirks; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="T:HtmlParserSharp.Core.Tokenizer">
+            <summary>
+            An implementation of
+            http://www.whatwg.org/specs/web-apps/current-work/multipage/tokenization.html
+            This class implements the <code>Locator</code> interface. This is not an
+            incidental implementation detail: Users of this class are encouraged to make
+            use of the <code>Locator</code> nature.
+            By default, the tokenizer may report data that XML 1.0 bans. The tokenizer
+            can be configured to treat these conditions as fatal or to coerce the infoset
+            to something that XML 1.0 allows.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.LEAD_OFFSET">
+            <summary>
+            Magic value for UTF-16 operations.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.BUFFER_GROW_BY">
+            <summary>
+            Buffer growth parameter.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.LT_GT">
+            <summary>
+            UTF-16 code unit array containing less than and greater than for emitting
+            those characters on certain parse errors.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.LT_SOLIDUS">
+            <summary>
+            UTF-16 code unit array containing less than and solidus for emitting
+            those characters on certain parse errors.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.RSQB_RSQB">
+            <summary>
+            UTF-16 code unit array containing ]] for emitting those characters on
+            state transitions.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.REPLACEMENT_CHARACTER">
+            <summary>
+            Array version of U+FFFD.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.SPACE">
+            <summary>
+            Array version of space.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.LF">
+            <summary>
+            Array version of line feed.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.CDATA_LSQB">
+            <summary>
+            "CDATA[" as <code>char[]</code>
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.OCTYPE">
+            <summary>
+            "octype" as <code>char[]</code>
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.UBLIC">
+            <summary>
+            "ublic" as <code>char[]</code>
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.YSTEM">
+            <summary>
+            "ystem" as  <code>char[]</code>
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.lastCR">
+            Whether the previous char read was CR.
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.strBuf">
+            Buffer for short identifiers.
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.strBufLen">
+            Number of significant <code>char</code>s in <code>strBuf</code>.
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.longStrBuf">
+            Buffer for long strings.
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.longStrBufLen">
+            Number of significant <code>char</code>s in <code>longStrBuf</code>.
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.bmpChar">
+            Buffer for expanding NCRs falling into the Basic Multilingual Plane.
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.astralChar">
+            Buffer for expanding astral NCRs.
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.endTagExpectation">
+            The element whose end tag closes the current CDATA or RCDATA element.
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.endTag">
+            <code>true</code> if tokenizing an end tag
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.tagName">
+            The current tag token name.
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.attributeName">
+            The current attribute name.
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.wantsComments">
+            Whether comment tokens are emitted.
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.html4">
+            <code>true</code> when HTML4-specific additional errors are requested.
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.metaBoundaryPassed">
+            Whether the stream is past the first 512 bytes.
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.doctypeName">
+            The name of the current doctype token.
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.publicIdentifier">
+            The public id of the current doctype token.
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.systemIdentifier">
+            The system id of the current doctype token.
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.attributes">
+            The attribute holder.
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.contentSpacePolicy">
+            The policy for vertical tab and form feed.
+        </member>
+        <member name="F:HtmlParserSharp.Core.Tokenizer.commentPolicy">
+            The policy for comments.
+        </member>
+        <member name="M:HtmlParserSharp.Core.Tokenizer.#ctor(HtmlParserSharp.Common.ITokenHandler)">
+            The constructor.
+            
+            @param tokenHandler
+                       the handler for receiving tokens
+        </member>
+        <member name="M:HtmlParserSharp.Core.Tokenizer.SetStateAndEndTagExpectation(System.Int32,System.String)">
+            Sets the tokenizer state and the associated element name. This should 
+            only ever used to put the tokenizer into one of the states that have
+            a special end tag expectation.
+            
+            @param specialTokenizerState
+                       the tokenizer state to set
+            @param endTagExpectation
+                       the expected end tag for transitioning back to normal
+        </member>
+        <member name="M:HtmlParserSharp.Core.Tokenizer.SetStateAndEndTagExpectation(System.Int32,HtmlParserSharp.Core.ElementName)">
+            Sets the tokenizer state and the associated element name. This should 
+            only ever used to put the tokenizer into one of the states that have
+            a special end tag expectation.
+            
+            @param specialTokenizerState
+                       the tokenizer state to set
+            @param endTagExpectation
+                       the expected end tag for transitioning back to normal
+        </member>
+        <member name="M:HtmlParserSharp.Core.Tokenizer.AppendStrBuf(System.Char)">
+            Appends to the smaller buffer.
+            
+            @param c
+                       the UTF-16 code unit to append
+        </member>
+        <member name="M:HtmlParserSharp.Core.Tokenizer.StrBufToDoctypeName">
+            Returns the short buffer as a local name. The return value is released in
+            emitDoctypeToken().
+            
+            @return the smaller buffer as local name
+        </member>
+        <member name="M:HtmlParserSharp.Core.Tokenizer.EmitStrBuf">
+            Emits the smaller buffer as character tokens.
+            
+            @throws SAXException
+                        if the token handler threw
+        </member>
+        <member name="M:HtmlParserSharp.Core.Tokenizer.AppendLongStrBuf(System.Char)">
+            Appends to the larger buffer.
+            
+            @param c
+                       the UTF-16 code unit to append
+        </member>
+        <member name="M:HtmlParserSharp.Core.Tokenizer.AppendStrBufToLongStrBuf">
+            Append the contents of the smaller buffer to the larger one.
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:HtmlParserSharp.Core.Tokenizer.LongStrBufToString" -->
+        <member name="M:HtmlParserSharp.Core.Tokenizer.EmitComment(System.Int32,System.Int32)">
+            <summary>
+            Emits the current comment token.
+            </summary>
+            <param name="provisionalHyphens">The provisional hyphens.</param>
+            <param name="pos">The position.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Core.Tokenizer.FlushChars(System.Char[],System.Int32)">
+            <summary>
+            Flushes coalesced character tokens.
+            </summary>
+            <param name="buf">The buffer.</param>
+            <param name="pos">The position.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Core.Tokenizer.Fatal(System.String)">
+            Reports an condition that would make the infoset incompatible with XML
+            1.0 as fatal.
+            
+            @param message
+                       the message
+            @throws SAXException
+            @throws SAXParseException
+        </member>
+        <member name="M:HtmlParserSharp.Core.Tokenizer.Err(System.String)">
+            Reports a Parse Error.
+            
+            @param message
+                       the message
+            @throws SAXException
+        </member>
+        <member name="M:HtmlParserSharp.Core.Tokenizer.Warn(System.String)">
+            Reports a warning
+            
+            @param message
+                       the message
+            @throws SAXException
+        </member>
+        <member name="M:HtmlParserSharp.Core.Tokenizer.ResetAttributes">
+            
+        </member>
+        <member name="M:HtmlParserSharp.Core.Tokenizer.EmitOrAppendTwo(System.Char[],System.Int32)">
+            @param val
+            @throws SAXException
+        </member>
+        <member name="M:HtmlParserSharp.Core.Tokenizer.SetTransitionBaseOffset(System.Int32)">
+            <summary>
+            Sets an offset to be added to the position reported to
+            <code>TransitionHandler</code>.
+            </summary>
+            <param name="offset">The offset.</param>
+        </member>
+        <member name="P:HtmlParserSharp.Core.Tokenizer.IsMappingLangToXmlLang">
+            Returns the mappingLangToXmlLang.
+            
+            @return the mappingLangToXmlLang
+        </member>
+        <member name="P:HtmlParserSharp.Core.Tokenizer.CommentPolicy">
+            Sets the commentPolicy.
+            
+            @param commentPolicy
+                       the commentPolicy to set
+        </member>
+        <member name="P:HtmlParserSharp.Core.Tokenizer.ContentNonXmlCharPolicy">
+            Sets the contentNonXmlCharPolicy.
+            
+            @param contentNonXmlCharPolicy
+                       the contentNonXmlCharPolicy to set
+        </member>
+        <member name="P:HtmlParserSharp.Core.Tokenizer.ContentSpacePolicy">
+            Sets the contentSpacePolicy.
+            
+            @param contentSpacePolicy
+                       the contentSpacePolicy to set
+        </member>
+        <member name="P:HtmlParserSharp.Core.Tokenizer.XmlnsPolicy">
+            Sets the xmlnsPolicy.
+            
+            @param xmlnsPolicy
+                       the xmlnsPolicy to set
+        </member>
+        <member name="P:HtmlParserSharp.Core.Tokenizer.Html4ModeCompatibleWithXhtml1Schemata">
+            Sets the html4ModeCompatibleWithXhtml1Schemata.
+            
+            @param html4ModeCompatibleWithXhtml1Schemata
+                       the html4ModeCompatibleWithXhtml1Schemata to set
+        </member>
+        <member name="P:HtmlParserSharp.Core.Tokenizer.LineNumber">
+            @see org.xml.sax.Locator#getLineNumber()
+        </member>
+        <member name="P:HtmlParserSharp.Core.Tokenizer.ColumnNumber">
+            @see org.xml.sax.Locator#getColumnNumber()
+        </member>
+        <member name="P:HtmlParserSharp.Core.Tokenizer.IsAlreadyComplainedAboutNonAscii">
+            Returns the alreadyComplainedAboutNonAscii.
+            
+            @return the alreadyComplainedAboutNonAscii
+        </member>
+        <member name="P:HtmlParserSharp.Core.Tokenizer.IsNextCharOnNewLine">
+            Returns the nextCharOnNewLine.
+            
+            @return the nextCharOnNewLine
+        </member>
+        <member name="P:HtmlParserSharp.Core.Tokenizer.Line">
+            Returns the line.
+            
+            @return the line
+        </member>
+        <member name="P:HtmlParserSharp.Core.Tokenizer.Col">
+            Returns the col.
+            
+            @return the col
+        </member>
+        <member name="T:HtmlParserSharp.Core.TreeBuilderConstants">
+            <summary>
+            Moved the constants (and pseude-enums) out of the TreeBuilder class.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.Core.TreeBuilderConstants.REPLACEMENT_CHARACTER">
+            <summary>
+            Array version of U+FFFD.
+            </summary>
+        </member>
+        <member name="T:HtmlParserSharp.Core.UTF16Buffer">
+            <summary>
+            An UTF-16 buffer that knows the start and end indeces of its unconsumed
+            content.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.Core.UTF16Buffer.#ctor(System.Char[],System.Int32,System.Int32)">
+            <summary>
+            Constructor for wrapping an existing UTF-16 code unit array.
+            </summary>
+            <param name="buffer">The backing buffer.</param>
+            <param name="start">The index of the first character to consume.</param>
+            <param name="end">The index immediately after the last character to consume.</param>
+        </member>
+        <member name="M:HtmlParserSharp.Core.UTF16Buffer.Adjust(System.Boolean)">
+            <summary>
+            Adjusts the start index to skip over the first character if it is a line
+            feed and the previous character was a carriage return.
+            </summary>
+            <param name="lastWasCR">Whether the previous character was a carriage return.</param>
+        </member>
+        <member name="P:HtmlParserSharp.Core.UTF16Buffer.Buffer">
+            <summary>
+            Gets the backing store of the buffer. May be larger than the logical content
+            of this <code>UTF16Buffer</code>.
+            </summary>
+        </member>
+        <member name="P:HtmlParserSharp.Core.UTF16Buffer.Start">
+            <summary>
+            Gets or sets the index of the first unconsumed character in the backing buffer.
+            </summary>
+        </member>
+        <member name="P:HtmlParserSharp.Core.UTF16Buffer.End">
+            <summary>
+            Gets or sets the index of the slot immediately after the last character in the backing
+            buffer that is part of the logical content of this <code>UTF16Buffer</code>.
+            </summary>
+        </member>
+        <member name="P:HtmlParserSharp.Core.UTF16Buffer.HasMore">
+            <summary>
+            Determines whether this instance has data left.
+            </summary>
+            <returns>
+              <c>true</c> if there's data left; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="T:HtmlParserSharp.XmlTreeBuilder">
+            <summary>
+            The tree builder glue for building a tree through the public DOM APIs.
+            </summary>
+        </member>
+        <member name="F:HtmlParserSharp.XmlTreeBuilder.document">
+            <summary>
+            The current doc.
+            </summary>
+        </member>
+        <member name="M:HtmlParserSharp.XmlTreeBuilder.getDocumentFragment">
+            <summary>
+            Return the document fragment.
+            </summary>
+            <returns>The document fragment</returns>
+        </member>
+        <member name="P:HtmlParserSharp.XmlTreeBuilder.Document">
+            <summary>
+            Returns the document.
+            </summary>
+            <returns>The document</returns>
+        </member>
         <member name="T:CsQuery.HtmlParser.CsQueryTreeBuilder">
             <summary>
             The tree builder glue for building a tree through the public DOM APIs.
@@ -14340,8 +15572,8 @@
         </member>
         <member name="F:CsQuery.DomRenderingOptions.RemoveMismatchedCloseTags">
             <summary>
-            Indicates that unexpected HTML closing tags should be removed from the DOM. The alternative is to leave them, which will
-            generally cause browsers to display them as text.
+            This option only appies to the old HTML parser. It is obsolete, has no effect, and will be
+            removed in a future version of CsQuery.
             </summary>
         </member>
         <member name="F:CsQuery.DomRenderingOptions.RemoveComments">

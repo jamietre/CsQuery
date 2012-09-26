@@ -271,6 +271,36 @@
     <Compile Include="ExtensionMethods\Xml\CqXmlNode.cs" />
     <Compile Include="ExtensionMethods\Xml\Xml.cs" />
     <Compile Include="ExtensionMethods\Xml\CqXmlNodeList.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Common\Attributes.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Common\DoctypeExpectation.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Common\DocumentMode.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Common\DocumentModeEventArgs.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Common\EncodingDetectedEventArgs.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Common\ITokenHandler.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Common\ParserErrorEventArgs.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Common\XmlViolationPolicy.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\AttributeName.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\CharsetState.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\CoalescingTreeBuilder.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\DispatchGroup.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\ElementName.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\HtmlAttributes.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\ILocator.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\InsertionMode.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\ITreeBuilderState.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\Locator.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\NamedCharacterAccel.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\NamedCharacters.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\NCName.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\Portability.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\StackNode.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\StateSnapshot.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\TaintableLocator.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\Tokenizer.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\TreeBuilder.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\TreeBuilderConstants.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\UTF16Buffer.cs" />
+    <Compile Include="HtmlParserSharp\HtmlParserSharp\TreeBuilders\DomTreeBuilder.cs" />
     <Compile Include="HtmlParser\CsQueryTreeBuilder.cs" />
     <Compile Include="HtmlParser\ElementFactory.cs" />
     <Compile Include="HtmlParser\HtmlPreprocessor.cs" />
@@ -432,12 +462,6 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\htmlparsersharp\HtmlParserSharp\HtmlParserSharp.csproj">
-      <Project>{fd150915-d34f-436a-92c1-80aa505da754}</Project>
-      <Name>HtmlParserSharp</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if not $(ConfigurationName) ==Release GOTO finished
@@ -453,7 +477,7 @@ xcopy $(TargetDir)CsQuery.xml $(SolutionDir)..\Distribution /Y
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
