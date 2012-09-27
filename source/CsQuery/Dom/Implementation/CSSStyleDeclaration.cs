@@ -534,7 +534,7 @@ namespace CsQuery.Implementation
             {
                 switch (style.Type)
                 {
-                    case CssStyleType.UnitOption:
+                    case CSSStyleType.UnitOption:
                         if (!style.Options.Contains(value))
                         {
                             try
@@ -548,14 +548,14 @@ namespace CsQuery.Implementation
                             }
                         }
                         break;
-                    case CssStyleType.Option:
+                    case CSSStyleType.Option:
                         if (!style.Options.Contains(value))
                         {
                             throw new ArgumentException("The value '" + value + "' is not allowed for attribute '"
                                 + name + "'. Valid options are: " + OptionList(style));
                         }
                         break;
-                    case CssStyleType.Unit:
+                    case CSSStyleType.Unit:
                         value = ValidateUnitString(name, value);
                         break;
                     default:

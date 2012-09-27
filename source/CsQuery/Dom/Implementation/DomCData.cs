@@ -33,7 +33,7 @@ namespace CsQuery.Implementation
         {
             get { return NodeType.CDATA_SECTION_NODE; }
         }
-        public override string Render()
+        public override string Render(DomRenderingOptions options = DomRenderingOptions.Default)
         {
             return GetHtml(NonAttributeData);
         }

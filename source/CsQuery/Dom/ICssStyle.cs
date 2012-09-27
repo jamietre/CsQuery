@@ -9,7 +9,7 @@ namespace CsQuery
     /// A single CSS style definition.
     /// </summary>
     
-    public interface ICssStyle
+    public interface ICSSStyle
     {
         /// <summary>
         /// The name of the style
@@ -21,7 +21,7 @@ namespace CsQuery
         /// The type of data contained by this style.
         /// </summary>
 
-        CssStyleType Type { get; set; }
+        CSSStyleType Type { get; set; }
 
         /// <summary>
         /// Gets or sets a format required by this style

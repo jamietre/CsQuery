@@ -1,12 +1,9 @@
-﻿// file:	Dom\Implementation\DomElement.cs
-//
-// summary:	Implements the dom element class
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Diagnostics;
 using CsQuery.StringScanner;
 using CsQuery.HtmlParser;
@@ -636,8 +633,11 @@ namespace CsQuery.Implementation
                 }
                 else
                 {
+                    
                     StringBuilder sb = new StringBuilder();
-                    base.Render(sb, Document == null ? CQ.DefaultDomRenderingOptions : Document.DomRenderingOptions);
+                    StringWriter writer = new StringWriter(sb);
+
+                    RenderChildren(writer,CQ.DefaultDomRenderingOptions);
                     return sb.ToString();
                 }
             }
@@ -670,7 +670,13 @@ namespace CsQuery.Implementation
                 else
                 {
                     StringBuilder sb = new StringBuilder();
-                    RenderTextNodes(sb);
+                    StringWriter writer = new StringWriter(sb);
+
+                    foreach (IDomObject elm in ChildNodes.Where(item => item.NodeType == NodeType.TEXT_NODE))
+                    {
+                        RenderChildTextNode(elm, writer,0);
+                    }
+
                     return sb.ToString();
                 }
             }
@@ -680,18 +686,9 @@ namespace CsQuery.Implementation
                 {
                     throw new InvalidOperationException(String.Format("You can't set the InnerText for a {0} element.", NodeName));
                 }
-                //IDomText text;
-                //if (!InnerHtmlAllowed)
-                //{
-                //    text = new DomInnerText(value);
-                //}
-                //else
-                //{ 
-                //    text = new DomText(value);
-                //}
-                IDomText text = new DomText(value);
+
                 ChildNodes.Clear();
-                ChildNodes.Add(text);
+                ChildNodes.Add(new DomText(value));
             }
         }
 
@@ -762,6 +759,15 @@ namespace CsQuery.Implementation
         
         #region public methods
 
+        public override string Render(DomRenderingOptions options = DomRenderingOptions.Default)
+        {
+
+            StringBuilder sb = new StringBuilder();
+            StringWriter sw = new StringWriter(sb);
+            GetHtml(options, sw, true);
+            return sw.ToString();
+        }
+
         /// <summary>
         /// Renders this object.
         /// </summary>
@@ -774,9 +780,17 @@ namespace CsQuery.Implementation
         /// </param>
 
         public override void Render(StringBuilder sb, DomRenderingOptions options)
-        {
-            GetHtml(options, sb, true);
+        {MergeOptions(ref options);
+            StringWriter writer = new StringWriter(sb);
+            Render(writer,options);
         }
+
+        public override void Render(TextWriter writer, DomRenderingOptions options)
+        {
+            
+            GetHtml(options, writer, true);
+        }
+
 
         /// <summary>
         /// Returns the HTML for this element, but ignoring children/innerHTML.
@@ -788,9 +802,10 @@ namespace CsQuery.Implementation
 
         public override string ElementHtml()
         {
-            StringBuilder sb = new StringBuilder();
-            GetHtml(Document == null ? CQ.DefaultDomRenderingOptions : Document.DomRenderingOptions, sb, false);
-            return sb.ToString();
+            StringWriter writer = new StringWriter();
+
+            GetHtml(Document == null ? CQ.DefaultDomRenderingOptions : Document.DomRenderingOptions, writer, false);
+            return writer.ToString();
         }
 
         /// <summary>
@@ -1770,32 +1785,34 @@ namespace CsQuery.Implementation
         /// true to include, false to exclude the children.
         /// </param>
 
-        protected void GetHtml(DomRenderingOptions options, StringBuilder sb, bool includeChildren)
+        protected void GetHtml(DomRenderingOptions options, TextWriter writer, bool includeChildren)
         {
+            MergeOptions(ref options);
+
             bool quoteAll = options.HasFlag(DomRenderingOptions.QuoteAllAttributes);
 
-            sb.Append("<");
+            writer.Write("<");
             string nodeName = NodeName.ToLower();
-            sb.Append(nodeName);
+            writer.Write(nodeName);
             // put ID first. Must use GetAttribute since the Id property defaults to ""
             string id = GetAttribute(HtmlData.IDAttrId, null);
             
             if (id != null)
             {
-                sb.Append(" ");
-                RenderAttribute(sb, "id", id, quoteAll);
+                writer.Write(" ");
+                RenderAttribute(writer, "id", id, quoteAll);
             }
             if (HasStyles)
             {
-                sb.Append(" style=\"");
-                sb.Append(Style.ToString());
-                sb.Append("\"");
+                writer.Write(" style=\"");
+                writer.Write(Style.ToString());
+                writer.Write("\"");
             }
             if (HasClasses)
             {
-                sb.Append(" class=\"");
-                sb.Append(ClassName);
-                sb.Append("\"");
+                writer.Write(" class=\"");
+                writer.Write(ClassName);
+                writer.Write("\"");
             }
 
             if (HasInnerAttributes)
@@ -1804,38 +1821,38 @@ namespace CsQuery.Implementation
                 {
                     if (kvp.Key != "id")
                     {
-                        sb.Append(" ");
-                        RenderAttribute(sb, kvp.Key, kvp.Value, quoteAll);
+                        writer.Write(" ");
+                        RenderAttribute(writer, kvp.Key, kvp.Value, quoteAll);
                     }
                 }
             }
             if (InnerHtmlAllowed || InnerTextAllowed )
             {
-                sb.Append(">");
+                writer.Write(">");
                 if (includeChildren)
                 {
-                    base.Render(sb, options);
+                    base.Render(writer, options);
                 }
                 else
                 {
-                    sb.Append(HasChildren ?
+                    writer.Write(HasChildren ?
                             "..." :
                             String.Empty);
                 }
-                sb.Append("</");
-                sb.Append(nodeName);
-                sb.Append(">");
+                writer.Write("</");
+                writer.Write(nodeName);
+                writer.Write(">");
             }
             else
             {
 
                 if ((Document == null ? CQ.DefaultDocType : Document.DocType)== DocType.XHTML)
                 {
-                    sb.Append(" />");
+                    writer.Write(" />");
                 }
                 else
                 {
-                    sb.Append(">");
+                    writer.Write(">");
                 }
             }
         }
@@ -1857,7 +1874,7 @@ namespace CsQuery.Implementation
         /// true to require quotes around the attribute value, false to use quotes only if needed.
         /// </param>
 
-        protected void RenderAttribute(StringBuilder sb, string name, string value, bool quoteAll)
+        protected void RenderAttribute(TextWriter writer, string name, string value, bool quoteAll)
         {
             // validator.nu: as it turns out "" and missing are synonymous
             // don't ever render attr=""
@@ -1868,15 +1885,15 @@ namespace CsQuery.Implementation
                 string attrText = HtmlData.AttributeEncode(value,
                     quoteAll,
                     out quoteChar);
-                sb.Append(name.ToLower());
-                sb.Append("=");
-                sb.Append(quoteChar);
-                sb.Append(attrText);
-                sb.Append(quoteChar);
+                writer.Write(name.ToLower());
+                writer.Write("=");
+                writer.Write(quoteChar);
+                writer.Write(attrText);
+                writer.Write(quoteChar);
             }
             else
             {
-                sb.Append(name);
+                writer.Write(name);
             }
         }
         #endregion

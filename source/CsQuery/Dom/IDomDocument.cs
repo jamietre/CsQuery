@@ -37,10 +37,10 @@ namespace CsQuery
         IList<ICSSStyleSheet> StyleSheets { get; }
 
         /// <summary>
-        /// Gets or sets options for controlling how the output is rendered. All options are flags so
-        /// multiple values can be set with "option1 | option2 ...".
+        /// Deprecated: options will be specificed as a Render parameter
         /// </summary>
 
+        [Obsolete]
         DomRenderingOptions DomRenderingOptions { get; set; }
 
         /// <summary>

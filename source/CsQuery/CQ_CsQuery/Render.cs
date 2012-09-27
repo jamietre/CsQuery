@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using CsQuery.Utility;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
@@ -52,8 +53,26 @@ namespace CsQuery
 
         public string Render()
         {
-            return Document.Render();
+            return Document.Render(Document.DomRenderingOptions);
         }
+
+        /// <summary>
+        /// Render the complete DOM with specific options.
+        /// </summary>
+        ///
+        /// <param name="renderingOptions">
+        /// The options flags in effect.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string of HTML
+        /// </returns>
+
+        public string Render(DomRenderingOptions options = DomRenderingOptions.Default)
+        {
+            return Document.Render(options);
+        }
+
 
         /// <summary>
         /// Render the entire document, parsed through a formatter passed using the parameter.
@@ -79,26 +98,13 @@ namespace CsQuery
 
         public string Render(IOutputFormatter format)
         {
-            return format.Format(this);
+            StringBuilder sb= new StringBuilder();
+            StringWriter writer = new StringWriter(sb);
+
+            format.Format(this,writer);
+            return sb.ToString();
         }
 
-        /// <summary>
-        /// Render the complete DOM with specific options.
-        /// </summary>
-        ///
-        /// <param name="renderingOptions">
-        /// The options flags in effect.
-        /// </param>
-        ///
-        /// <returns>
-        /// A string of HTML
-        /// </returns>
-
-        public string Render(DomRenderingOptions renderingOptions)
-        {
-            Document.DomRenderingOptions = renderingOptions;
-            return Render();
-        }
 
         /// <summary>
         /// Render the entire document, parsed through a formatter passed using the parameter, with the
@@ -116,10 +122,32 @@ namespace CsQuery
         /// A string of HTML.
         /// </returns>
 
-        public string Render(IOutputFormatter formatter, DomRenderingOptions renderingOptions)
+        public string Render(IOutputFormatter formatter, DomRenderingOptions options)
         {
-            Document.DomRenderingOptions = renderingOptions;
-            return Render(formatter);
+            return Render(formatter,options);
+        }
+
+        /// <summary>
+        /// Render the entire document, parsed through a formatter passed using the parameter, with the
+        /// specified options.
+        /// </summary>
+        ///
+        /// <param name="sb">
+        /// The sb.
+        /// </param>
+        /// <param name="options">
+        /// (optional) options for controlling the operation.
+        /// </param>
+
+        public void Render(StringBuilder sb, DomRenderingOptions options = DomRenderingOptions.Default)
+        {
+            Document.Render(sb, options);
+        }
+
+
+        public void Render(TextWriter writer, DomRenderingOptions options = DomRenderingOptions.Default)
+        {
+            Document.Render(writer, options);
         }
     }
 }

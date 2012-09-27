@@ -105,7 +105,7 @@ namespace CsQuery.Implementation
 
         protected DocType _DocType = 0;
 
-        public override string Render()
+        public override string Render(DomRenderingOptions options = DomRenderingOptions.Default)
         {
             return "<!DOCTYPE " + NonAttributeData + ">";
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using CsQuery.HtmlParser;
 using CsQuery.ExtensionMethods;
 
@@ -76,16 +77,16 @@ namespace CsQuery.Implementation
         /// options if there is no document.
         /// </summary>
         
-        protected DomRenderingOptions DomRenderingOptions
-        {
-            get
-            {
-                return Document == null ? 
-                    Config.DomRenderingOptions :
-                    Document.DomRenderingOptions;
+        //protected DomRenderingOptions DomRenderingOptions
+        //{
+        //    get
+        //    {
+        //        return Document == null ? 
+        //            Config.DomRenderingOptions :
+        //            Document.DomRenderingOptions;
 
-            }
-        }
+        //    }
+        //}
 
         #endregion
         
@@ -832,7 +833,7 @@ namespace CsQuery.Implementation
         /// a string of HTML
         /// </returns>
 
-        public abstract string Render();
+        public abstract string Render(DomRenderingOptions options=DomRenderingOptions.Default);
 
         /// <summary>
         /// Renders the complete HTML for this element to a StringBuilder.
@@ -842,25 +843,25 @@ namespace CsQuery.Implementation
         /// An existing StringBuilder instance to append this element's HTML.
         /// </param>
 
-        public virtual void Render(StringBuilder sb)
+        public virtual void Render(StringBuilder sb, DomRenderingOptions options = DomRenderingOptions.Default)
         {
-            sb.Append(Render());
+            sb.Append(Render(options));
         }
 
         /// <summary>
-        /// Renders the complete HTML for this element to a StringBuilder using specified options.
+        /// Renders the complete HTML for this element to a TextWriter.
         /// </summary>
         ///
-        /// <param name="sb">
+        /// <param name="writer">
         /// An existing StringBuilder instance to append this element's HTML.
         /// </param>
         /// <param name="options">
-        /// Options for controlling the operation.
+        /// (optional) options for controlling the operation.
         /// </param>
 
-        public virtual void Render(StringBuilder sb, DomRenderingOptions options)
+        public virtual void Render(TextWriter writer, DomRenderingOptions options = DomRenderingOptions.Default)
         {
-            sb.Append(Render());
+            writer.Write(Render(options));
         }
 
         /// <summary>
@@ -1491,6 +1492,22 @@ namespace CsQuery.Implementation
         #endregion
 
         #region private methods
+
+        /// <summary>
+        /// Merge options with defaults when needed
+        /// </summary>
+        ///
+        /// <param name="options">
+        /// (optional) options for controlling the operation.
+        /// </param>
+
+        protected void MergeOptions(ref DomRenderingOptions options)
+        {
+            if (options.HasFlag(DomRenderingOptions.Default))
+            {
+                options = CsQuery.Config.DomRenderingOptions | options & ~(DomRenderingOptions.Default);
+            }
+        }
 
         /// <summary>
         /// Updates the cached Document and property flags.

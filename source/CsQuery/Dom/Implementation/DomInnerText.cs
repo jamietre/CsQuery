@@ -38,7 +38,7 @@ namespace CsQuery.Implementation
             }
         }
 
-        public override string Render()
+        public override string Render(DomRenderingOptions options=DomRenderingOptions.Default)
         {
             // do NOT HtmlEncode unlike DomText
             return NodeValue;

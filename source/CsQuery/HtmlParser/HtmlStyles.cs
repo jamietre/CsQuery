@@ -44,9 +44,9 @@ namespace CsQuery.HtmlParser
                 type = el.Attributes["type"].Value;
                 switch (type)
                 {
-                    case "length": st.Type = CssStyleType.Unit; break;
-                    case "color": st.Type = CssStyleType.Color; break;
-                    case "composite": st.Type = CssStyleType.Composite;
+                    case "length": st.Type = CSSStyleType.Unit; break;
+                    case "color": st.Type = CSSStyleType.Color; break;
+                    case "composite": st.Type = CSSStyleType.Composite;
                         st.Format = el.Attributes["syntax"].Value;
                         break;
                     case "enum":
@@ -54,21 +54,21 @@ namespace CsQuery.HtmlParser
                         
                         if (type == "enum-length")
                         {
-                            st.Type = CssStyleType.UnitOption;
+                            st.Type = CSSStyleType.UnitOption;
                         } else {
-                            st.Type=CssStyleType.Option;
+                            st.Type = CSSStyleType.Option;
                         }
                         st.Options = new HashSet<string>(el.Attributes["enum"].Value
                             .Split(StringSep, StringSplitOptions.RemoveEmptyEntries));
                         break;
                     case "font":
-                        st.Type = CssStyleType.Font;
+                        st.Type = CSSStyleType.Font;
                         break;
                     case "string":
-                        st.Type = CssStyleType.String;
+                        st.Type = CSSStyleType.String;
                         break;
                     case "url":
-                        st.Type = CssStyleType.Url;
+                        st.Type = CSSStyleType.Url;
                         break;
                     default:
                         throw new NotImplementedException("Error parsing css xml: unknown type '" + type + "'");

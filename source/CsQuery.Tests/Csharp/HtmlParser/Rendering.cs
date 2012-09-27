@@ -44,15 +44,13 @@ namespace CsQuery.Tests.Csharp.HtmlParser
             Assert.AreEqual("<input id type=\"text\" checked custom=\"sometext\">", dom.Render(), "Missing & boolean attributes are parsed & render correctly");
 
             // remove "quote all attributes"
-            dom.Document.DomRenderingOptions = 0;
 
-            Assert.AreEqual("<input id type=text checked custom=sometext>", dom.Render(), "Missing & boolean attributes are parsed & render correctly");
+            Assert.AreEqual("<input id type=text checked custom=sometext>", dom.Render(DomRenderingOptions.None), "Missing & boolean attributes are parsed & render correctly");
 
             dom = CQ.CreateFragment("<div id='test' quotethis=\"must've\" class=\"one two\" data='\"hello\"' noquote=\"regulartext\">");
-            dom.Document.DomRenderingOptions = 0;
 
             var expected = "<div id=test class=\"one two\" quotethis=\"must've\" data='\"hello\"' noquote=regulartext></div>";
-            Assert.AreEqual(expected, dom.Render(), "Handle various quoting situations");
+            Assert.AreEqual(expected, dom.Render(DomRenderingOptions.None), "Handle various quoting situations");
 
             // go back to test 1
             dom = CQ.CreateFragment(test1html);

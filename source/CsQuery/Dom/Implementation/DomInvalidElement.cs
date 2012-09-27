@@ -21,7 +21,7 @@ namespace CsQuery.Implementation
         //    : base(domTextIndex)
         //{
         //}
-        public override string Render()
+        public override string Render(DomRenderingOptions options = DomRenderingOptions.Default)
         {
             if (Document != null &&
                 Document.DomRenderingOptions.HasFlag(DomRenderingOptions.RemoveMismatchedCloseTags))

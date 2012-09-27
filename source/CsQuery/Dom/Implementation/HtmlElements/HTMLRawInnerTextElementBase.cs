@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using CsQuery.HtmlParser;
 
 namespace CsQuery.Implementation
@@ -20,7 +21,7 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// The value of the TEXTAREA's contents
+        /// The value of the HTMLRawInnerTextElementBase's contents
         /// </summary>
 
         public override string Value
@@ -36,7 +37,7 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// For TEXTAREA elements, InnerText doesn't actually do anything, whereas Value is the InnerText.
+        /// For HTMLRawInnerTextElementBase elements, InnerText doesn't actually do anything, whereas Value is the InnerText.
         /// </summary>
 
         public new string InnerText
@@ -51,9 +52,24 @@ namespace CsQuery.Implementation
             }
         }
 
-        protected override void RenderChildTextNode(IDomObject textNode, StringBuilder sb)
+        /// <summary>
+        /// Renders the child text node. DomRenderingOptions are ignored when rendering
+        /// HTMLRawInnerTextElementBase-derived objects.
+        /// </summary>
+        ///
+        /// <param name="textNode">
+        /// The text node.
+        /// </param>
+        /// <param name="writer">
+        /// The writer.
+        /// </param>
+        /// <param name="options">
+        /// This paremeter is ignored.
+        /// </param>
+
+        protected override void RenderChildTextNode(IDomObject textNode, TextWriter writer, DomRenderingOptions options)
         {
-            sb.Append(textNode.NodeValue);
+            writer.Write(textNode.NodeValue);
         }
 
 

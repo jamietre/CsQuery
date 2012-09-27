@@ -13,6 +13,16 @@ namespace CsQuery
     public enum DomRenderingOptions
     {
         /// <summary>
+        /// No option flags. This is not the same as "default", but rather explicitly uses "false" values for all flags.
+        /// </summary>
+        None=0,
+
+        /// <summary>
+        /// Render with default options as determined by CsQuery.Config.DomRenderingOptions
+        /// </summary>
+        Default = 32,
+
+        /// <summary>
         /// This option only appies to the old HTML parser. It is obsolete, has no effect, and will be
         /// removed in a future version of CsQuery.
         /// </summary>
@@ -46,8 +56,6 @@ namespace CsQuery
         /// </summary>
         
         HtmlEncodingNone=16
-        
-        //,ValidateCss = 8
     }
  
 }

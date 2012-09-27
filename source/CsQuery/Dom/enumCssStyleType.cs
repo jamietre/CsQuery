@@ -9,7 +9,7 @@ namespace CsQuery
     /// Values that represent data types of CSS Styles.
     /// </summary>
 
-    public enum CssStyleType: byte
+    public enum CSSStyleType: byte
     {
         /// <summary>
         /// A unit 

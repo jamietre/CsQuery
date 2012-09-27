@@ -201,10 +201,11 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Gets or sets options for controlling the DOM rendering from the bound document.
+        /// Deprecated; pass options on Render() command
         /// </summary>
 
-        public new DomRenderingOptions DomRenderingOptions
+        [Obsolete]
+        public DomRenderingOptions DomRenderingOptions
         {
             get; set;
         }

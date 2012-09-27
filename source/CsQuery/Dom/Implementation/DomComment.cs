@@ -138,10 +138,10 @@ namespace CsQuery.Implementation
         /// A string of HTML
         /// </returns>
 
-        public override string Render()
+        public override string Render(DomRenderingOptions options = DomRenderingOptions.Default)
         {
             if (Document != null
-                && Document.DomRenderingOptions.HasFlag(DomRenderingOptions.RemoveComments))
+                && options.HasFlag(DomRenderingOptions.RemoveComments))
             {
                 return String.Empty;
             }

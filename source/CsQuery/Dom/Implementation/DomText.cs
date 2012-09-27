@@ -58,14 +58,12 @@ namespace CsQuery.Implementation
         /// A string of HTML-encoded text
         /// </returns>
 
-        public override string Render()
+        public override string Render(DomRenderingOptions options = DomRenderingOptions.Default)
         {
-            var opts = DomRenderingOptions;
-
-            return HtmlData.HtmlEncode(NodeValue, 
-                opts.HasFlag(DomRenderingOptions.HtmlEncodingNone) ? 
+            return HtmlData.HtmlEncode(NodeValue,
+                options.HasFlag(DomRenderingOptions.HtmlEncodingNone) ? 
                     HtmlEncodingMethod.HtmlEncodingNone :
-                    opts.HasFlag(DomRenderingOptions.HtmlEncodingMinimum) ?
+                    options.HasFlag(DomRenderingOptions.HtmlEncodingMinimum) ?
                         HtmlEncodingMethod.HtmlEncodingMinimum :
                         HtmlEncodingMethod.HtmlEncodingFull);
         }
@@ -78,9 +76,9 @@ namespace CsQuery.Implementation
         /// A StringBuilder object
         /// </param>
 
-        public override void Render(StringBuilder sb)
+        public override void Render(StringBuilder sb, DomRenderingOptions options = DomRenderingOptions.Default)
         {
-            sb.Append(Render());
+            sb.Append(Render(options));
         }
         public override DomText Clone()
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using CsQuery;
 using CsQuery.StringScanner;
 using CsQuery.ExtensionMethods.Internal;
@@ -17,18 +18,16 @@ namespace CsQuery.OutputFormatters
         protected bool endingBlock = false;
         protected bool skipWhitespace = false;
 
-        public string Format(CQ selection)
+        public void Format(CQ selection,TextWriter writer)
         {
             stringInfo = CharacterData.CreateStringInfo();
 
-            StringBuilder sb = new StringBuilder();
             foreach (IDomObject obj in selection) {
-                AddContents(sb,obj);
+                AddContents(writer,obj);
             }
-            return sb.ToString();
         }
 
-        protected void AddContents(StringBuilder sb, IDomObject startEl)
+        protected void AddContents(TextWriter writer, IDomObject startEl)
         {
 
             if (startEl.HasChildren)
@@ -48,14 +47,14 @@ namespace CsQuery.OutputFormatters
                             // always add if there's actually content
                             endingBlock = false;
                             skipWhitespace = false;
-                            sb.Append(val);
+                            writer.Write(val);
                         } else {
                             // just whitespace
                             if (!skipWhitespace)
                             {
                                 // if not an ending block convert all whitespace to a single space, and
                                 // act like it was an ending block (preventing further whitespace from being added)
-                                sb.Append(" ");
+                                writer.Write(" ");
                                 skipWhitespace = true;
                             }
                         }
@@ -66,44 +65,44 @@ namespace CsQuery.OutputFormatters
                         // first add any inner contents
                         if (el.NodeName != "HEAD" && el.NodeName != "STYLE" && el.NodeName != "SCRIPT")
                         {
-                            AddContents(sb, el);
+                            AddContents(writer, el);
 
                             switch (elNode.NodeName)
                             {
                                 case "BR":
-                                    sb.Append(System.Environment.NewLine);
+                                    writer.Write(System.Environment.NewLine);
                                     skipWhitespace = true;
                                     break;
                                 case "PRE":
-                                    sb.Append(el.Render());
+                                    writer.Write(el.Render());
                                     break;
                                 case "A":
-                                    sb.Append(el.Cq().Children().RenderSelection() + " (" + el["href"] + ")");
+                                    writer.Write(el.Cq().Children().RenderSelection() + " (" + el["href"] + ")");
                                     break;
                                 default:
-                                    if (elNode.IsBlock)
-                                    {
-                                        if (!endingBlock)
-                                        {
-                                            // erase ending whitespace -- scan backwards until non-whitespace
-                                            int i = sb.Length - 1;
-                                            int count = 0;
-                                            while (i >= 0 && CharacterData.IsType(sb[i], CharacterType.Whitespace))
-                                            {
-                                                i--;
-                                                count++;
-                                            }
-                                            if (i < sb.Length - 1)
-                                            {
-                                                sb.Remove(i + 1, count);
-                                            }
+                                    //if (elNode.IsBlock)
+                                    //{
+                                    //    if (!endingBlock)
+                                    //    {
+                                    //        // erase ending whitespace -- scan backwards until non-whitespace
+                                    //        int i = sb.Length - 1;
+                                    //        int count = 0;
+                                    //        while (i >= 0 && CharacterData.IsType(sb[i], CharacterType.Whitespace))
+                                    //        {
+                                    //            i--;
+                                    //            count++;
+                                    //        }
+                                    //        if (i < sb.Length - 1)
+                                    //        {
+                                    //            sb.Remove(i + 1, count);
+                                    //        }
 
-                                            endingBlock = true;
-                                            skipWhitespace = true;
-                                            sb.Append(System.Environment.NewLine + System.Environment.NewLine);
-                                        }
+                                    //        endingBlock = true;
+                                    //        skipWhitespace = true;
+                                    //        sb.Append(System.Environment.NewLine + System.Environment.NewLine);
+                                    //    }
 
-                                    }
+                                    //}
                                     break;
                             }
                         }

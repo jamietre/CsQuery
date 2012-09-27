@@ -10,6 +10,11 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 - Switched to validator.nu HTML parser
 - Add overrides to `Create` methods to provide parsing options
+- Change of `CssStyleType` to `CSSStyleType` (and interface) for consistency with browser DOM "CSS" convention
+- Deprecate Document.DomRenderingOptions
+- Change IOutputFormatter interface to a more generic `TextWriter` processor
+- Add `TextWriter` and `StringBuilder` overloads to `Render` methods
+- Add `Save` method
 
 ####Version 1.2.2 (unreleased)
 
