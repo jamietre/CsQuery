@@ -5,6 +5,7 @@ using System.Web;
 using System.Text;
 using System.Reflection;
 using System.Diagnostics;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
@@ -65,6 +66,28 @@ namespace CsQuery.Tests.Csharp.HtmlParser
 
             res =  res.Before(el);
             CollectionAssert.AreEqual(Objects.Enumerate(el,dom.Document),res.ToList());
+        }
+
+        /// <summary>
+        /// Issue #48
+        /// </summary>
+
+        [Test, TestMethod]
+        public void PossibleMemLeak()
+        {
+
+            //string url = "http://www.ebay.com/itm/SAMSUNG-GALAXY-S-II-GT-I9100-UNLOCKED-UNBRANDED-BLACK-2-9100-NEW-BOX-/280958752199?pt=Cell_Phones&hash=item416a7255c7";
+            //var data = CQ.CreateFromUrlAsync(url).Then(success=>{
+            //    File.WriteAllText("c:\\temp\\samsung.html",success.Html);
+            //});
+
+            var timer = DateTime.Now;
+            var dom = TestDom("samsung-ebay.htm");
+
+            Assert.AreEqual(1,dom["#TopPanelDF"].Length);
+            Assert.AreEqual(1, dom["#JSDF"].Length);
+            Assert.IsTrue(DateTime.Now - timer < TimeSpan.FromSeconds(1));
+
         }
     }
 
