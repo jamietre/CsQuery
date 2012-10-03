@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using CsQuery.Output;
 
 namespace CsQuery
 {
@@ -65,7 +66,7 @@ namespace CsQuery
         /// a string of HTML
         /// </returns>
 
-        string Render(DomRenderingOptions options=DomRenderingOptions.Default);
+        string Render(IOutputFormatter formatter);
 
         /// <summary>
         /// Renders the complete HTML for this element to a StringBuilder

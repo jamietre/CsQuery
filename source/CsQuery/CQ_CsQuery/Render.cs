@@ -9,6 +9,7 @@ using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 using CsQuery.Engine;
 using CsQuery.Implementation;
+using CsQuery.Output;
 
 namespace CsQuery
 {

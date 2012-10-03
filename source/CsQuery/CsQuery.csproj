@@ -313,10 +313,13 @@
     <Compile Include="HtmlParser\HtmlStyles.cs" />
     <Compile Include="HtmlParser\enumTokenProperties.cs" />
     <Compile Include="Implementation\TextReaderCombiner.cs" />
+    <Compile Include="Output\OutputFormatterDefault.cs" />
+    <Compile Include="Output\HtmlEncoderMinimum.cs" />
     <Compile Include="Output\HtmlEncoderBase.cs" />
-    <Compile Include="Output\DefaultHtmlEncoder.cs" />
+    <Compile Include="Output\HtmlEncoderDefault.cs" />
     <Compile Include="Output\IHtmlEncoder.cs" />
     <Compile Include="Output\Indented.cs" />
+    <Compile Include="Output\OutputFormatters.cs" />
     <Compile Include="StringScanner\CharacterData.cs" />
     <Compile Include="StringScanner\enumCharacterType.cs" />
     <Compile Include="StringScanner\ExtensionMethods.cs" />

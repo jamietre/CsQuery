@@ -31,6 +31,17 @@ namespace CsQuery.Output
 
         protected virtual bool TryEncode(char c, out string encoded);
 
+        /// <summary>
+        /// Encodes text as HTML, writing the processed output to the TextWriter.
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// The text to be encoded.
+        /// </param>
+        /// <param name="output">
+        /// The target for the ouput.
+        /// </param>
+
         public virtual void Encode(string html, TextWriter output)
         {
             StringBuilder sb = new StringBuilder();
@@ -51,6 +62,17 @@ namespace CsQuery.Output
                 }
             }
         }
+
+        /// <summary>
+        /// Decodes a string of HTML to text.
+        /// </summary>
+        ///
+        /// <param name="value">
+        /// The HTML to be decoded.
+        /// </param>
+        /// <param name="output">
+        /// The target for the ouput.
+        /// </param>
 
         public virtual void Decode(string value, TextWriter output)
         {

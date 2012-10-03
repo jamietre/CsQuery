@@ -1064,23 +1064,6 @@ namespace CsQuery.HtmlParser
 
         }
 
-        /// <summary>
-        /// HTML decode the string (pass-thru to system; abstracted in case we want to change)
-        /// </summary>
-        ///
-        /// <param name="html">
-        /// The HTML to decode
-        /// </param>
-        ///
-        /// <returns>
-        /// The decoded string
-        /// </returns>
-
-        public static string HtmlDecode(string html)
-        {
-            return System.Web.HttpUtility.HtmlDecode(html);
-        }
-
 
         /// <summary>
         /// Encode text as part of an attribute

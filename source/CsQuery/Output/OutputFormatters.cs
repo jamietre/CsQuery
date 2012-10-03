@@ -5,7 +5,12 @@ using System.Text;
 
 namespace CsQuery.Output
 {
-    class OutputFormatters
+    public static class OutputFormatters
     {
+        public IOutputFormatter Default(IHtmlEncoder encoder = null)
+        {
+            encoder = encoder ?? new HtmlEncoderDefault();
+            return new OutputFormatterDefault(encoder);
+        }
     }
 }

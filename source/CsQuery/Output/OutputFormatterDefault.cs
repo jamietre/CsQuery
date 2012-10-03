@@ -7,13 +7,37 @@ using CsQuery;
 using CsQuery.StringScanner;
 using CsQuery.ExtensionMethods.Internal;
 
-namespace CsQuery.OutputFormatters
+namespace CsQuery.Output
 {
     /// <summary>
     /// Removes all extraneous whitespace
     /// </summary>
-    public class FormatPlainText: IOutputFormatter
+    public class OutputFormatterDefault: IOutputFormatter
     {
+        /// <summary>
+        /// Create a new formatter using the default HtmlEncoder
+        /// </summary>
+
+        public OutputFormatterDefault()
+        {
+            HtmlEncoder = new HtmlEncoderDefault();
+        }
+
+        /// <summary>
+        /// Create a new formatter using the specified HtmlEncoder.
+        /// </summary>
+        ///
+        /// <param name="encoder">
+        /// The encoder.
+        /// </param>
+
+        public OutputFormatterDefault(IHtmlEncoder encoder)
+        {
+            HtmlEncoder = encoder;
+        }
+
+        protected IHtmlEncoder HtmlEncoder;
+
         protected IStringInfo stringInfo;
         protected bool endingBlock = false;
         protected bool skipWhitespace = false;
