@@ -89,6 +89,17 @@ namespace CsQuery.Tests.Csharp.HtmlParser
             Assert.IsTrue(DateTime.Now - timer < TimeSpan.FromSeconds(1));
 
         }
+
+        [Test, TestMethod]
+        public void RountripEncoding()
+        {
+
+            string html = "<span>Test &nbsp; nbsp</span>";
+            var dom = CQ.Create(html);
+            var output = dom.Render(DomRenderingOptions.HtmlEncodingMinimum).Replace(""+(char)160, "&nbsp;");
+            Assert.AreEqual(html, output);
+
+        }
     }
 
 }

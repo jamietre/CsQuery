@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace CsQuery
+namespace CsQuery.Output
 {
     public interface IOutputFormatter
     {

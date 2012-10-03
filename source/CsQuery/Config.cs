@@ -42,7 +42,8 @@ namespace CsQuery
         public static StartupOptions StartupOptions = StartupOptions.LookForExtensions;
 
         /// <summary>
-        /// Default document type.
+        /// Default document type. This is the parsing mode that will be used when creating documents
+        /// that have no DocType and no mode is explicitly defined.
         /// </summary>
         
         public static DocType DocType = DocType.HTML5;

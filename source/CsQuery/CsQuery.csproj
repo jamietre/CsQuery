@@ -313,7 +313,10 @@
     <Compile Include="HtmlParser\HtmlStyles.cs" />
     <Compile Include="HtmlParser\enumTokenProperties.cs" />
     <Compile Include="Implementation\TextReaderCombiner.cs" />
-    <Compile Include="OutputFormatters\Indented.cs" />
+    <Compile Include="Output\HtmlEncoderBase.cs" />
+    <Compile Include="Output\DefaultHtmlEncoder.cs" />
+    <Compile Include="Output\IHtmlEncoder.cs" />
+    <Compile Include="Output\Indented.cs" />
     <Compile Include="StringScanner\CharacterData.cs" />
     <Compile Include="StringScanner\enumCharacterType.cs" />
     <Compile Include="StringScanner\ExtensionMethods.cs" />
@@ -345,8 +348,8 @@
     <Compile Include="Web\enumRequestState.cs" />
     <Compile Include="Web\ICsqWebRequestMetadata.cs" />
     <Compile Include="Web\WebForms.cs" />
-    <Compile Include="OutputFormatters\IOutputFormatter.cs" />
-    <Compile Include="OutputFormatters\FormatPlainText.cs" />
+    <Compile Include="Output\IOutputFormatter.cs" />
+    <Compile Include="Output\FormatPlainText.cs" />
     <Compile Include="Promises\WhenAll.cs" />
     <Compile Include="Promises\When.cs" />
     <Compile Include="Promises\DeferredT.cs" />
@@ -478,7 +481,7 @@ xcopy $(TargetDir)CsQuery.xml $(SolutionDir)..\Distribution /Y
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
