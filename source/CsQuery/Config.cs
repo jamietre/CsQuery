@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Dynamic;
 using CsQuery.Engine;
+using CsQuery.Output;
 
 namespace CsQuery
 {
@@ -18,22 +19,51 @@ namespace CsQuery
         static Config()
         {
             DynamicObjectType = typeof(JsObject);
-
+            _DomRenderingOptions =   DomRenderingOptions.QuoteAllAttributes;
         }
+
         #endregion
 
         #region private properties
 
-        private static Type _DynamicObjectType;
+        /// <summary>
+        /// Internal to avoid Obsolete warning from DomRenderingOptions until we remove it
+        /// </summary>
 
+        internal static DomRenderingOptions _DomRenderingOptions;
+        private static Type _DynamicObjectType;
+        private static Type _OutputFormatterType;
+        private static IOutputFormatter GetOutputFormatter()
+        {
+
+            return new OutputFormatterDefault(DomRenderingOptions, new HtmlEncoderDefault());
+        }
         #endregion
 
         /// <summary>
-        /// The default rendering options. These are flags.
+        /// The default rendering options. This is obsolete: though these values are currently used in
+        /// the constuction of the default OutputFormatter, you should control default output handling
+        /// using the OutputFormatter property instead. This property will only work now if the default
+        /// value of OutputFormatter has not been changed.
         /// </summary>
 
-        public static DomRenderingOptions DomRenderingOptions =
-            DomRenderingOptions.QuoteAllAttributes;
+        [Obsolete]
+        public static DomRenderingOptions DomRenderingOptions  {
+            get {
+                return _DomRenderingOptions;
+            }
+            set {
+                _DomRenderingOptions = value;
+            }
+        }
+
+        /// <summary>
+        /// A delegate that returns a new instance of the default output formatter to use for rendering
+        /// when none is otherwise specified.
+        /// </summary>
+
+        public static Func<IOutputFormatter> OutputFormatter;
+
 
         /// <summary>
         /// The default startup options. These are flags. 

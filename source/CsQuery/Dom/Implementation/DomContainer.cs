@@ -193,50 +193,36 @@ namespace CsQuery.Implementation
             }
         }
 
-        public override string Render(DomRenderingOptions options = DomRenderingOptions.Default)
-        {
-            StringBuilder sb = new StringBuilder();
-            Render(sb, options);
-            return sb.ToString();
-        }
 
-        public override void Render(System.IO.TextWriter writer, DomRenderingOptions options = DomRenderingOptions.Default)
-        {
+        /// <summary>
+        /// Renders the children.
+        /// </summary>
+        ///
+        /// <param name="writer">
+        /// The writer.
+        /// </param>
+        /// <param name="options">
+        /// Options for controlling the operation.
+        /// </param>
 
-            // if Default flag is set then merge these options with the defaults (e.g. so specific ones can be overridden)
-            // otherwise just use them. If they only set the default flag, that will result in just the defaults being used
+        //protected virtual void RenderChildren(TextWriter writer, DomRenderingOptions options)
+        //{
+        //    if (HasChildren)
+        //    {
+        //        foreach (IDomObject e in ChildNodes)
+        //        {
+        //            if (e.NodeType == NodeType.TEXT_NODE)
+        //            {
+        //                RenderChildTextNode(e, writer, options);
+        //            }
+        //            else
+        //            {
+        //                e.Render(writer, options);
+        //            }
+        //        }
+        //    } 
 
-            if (options.HasFlag(DomRenderingOptions.Default))
-            {
-                options = CQ.DefaultDomRenderingOptions | options & ~DomRenderingOptions.Default;
-            }
-
-            RenderChildren(writer, options);
-        }
-
-        public override void Render(StringBuilder sb, DomRenderingOptions options=DomRenderingOptions.Default)
-        {
-            Render(new StringWriter(sb), options);
-        }
-
-        protected virtual void RenderChildren(TextWriter writer, DomRenderingOptions options)
-        {
-            if (HasChildren)
-            {
-                foreach (IDomObject e in ChildNodes)
-                {
-                    if (e.NodeType == NodeType.TEXT_NODE)
-                    {
-                        RenderChildTextNode(e, writer, options);
-                    }
-                    else
-                    {
-                        e.Render(writer, options);
-                    }
-                }
-            } 
-
-        }
+        //}
 
         /// <summary>
         /// Renders the child text node. This can be overridden for non-default text handling by some
@@ -250,10 +236,10 @@ namespace CsQuery.Implementation
         /// The stringbuilder.
         /// </param>
 
-        protected virtual void RenderChildTextNode(IDomObject textNode, TextWriter writer, DomRenderingOptions options)
-        {
-            textNode.Render(writer, options);
-        }
+        //protected virtual void RenderChildTextNode(IDomObject textNode, TextWriter writer, DomRenderingOptions options)
+        //{
+        //    textNode.Render(writer, options);
+        //}
 
         // Just didn't use the / and the +. A three character ID will permit over 250,000 possible children at each level
         // so that should be plenty

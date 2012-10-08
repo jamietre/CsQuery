@@ -52,7 +52,7 @@ namespace CsQuery.Output
                     if (c > 160)
                     {
                         // decimal numeric entity
-                        encoded = "&#" + ((int)c).ToString(System.Globalization.CultureInfo.InvariantCulture) + ";";
+                        encoded = EncodeNumeric(c);
                         return true;
                     }
                     else
@@ -61,6 +61,16 @@ namespace CsQuery.Output
                         return false;
                     }
             }
+        }
+        protected override bool TryEncodeAstralPlane(int c, out string encoded)
+        {
+            encoded = EncodeNumeric(c);
+            return true;
+        }
+
+        protected string EncodeNumeric(int value)
+        {
+            return "&#" + (value).ToString(System.Globalization.CultureInfo.InvariantCulture) + ";";
         }
     }
 }

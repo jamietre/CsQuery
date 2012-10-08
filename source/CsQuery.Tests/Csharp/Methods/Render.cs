@@ -31,18 +31,18 @@ namespace CsQuery.Tests.Csharp
             dom["span"].Text(textIn);
 
             var text = dom.Render();
-            Assert.AreEqual("<span>&gt;&lt;&amp;&#160;&#230;&#248;&#229;</span>", text);
+            Assert.AreEqual("<span>&gt;&lt;&amp;&nbsp;&#230;&#248;&#229;</span>", text);
 
-            text = dom.Render(DomRenderingOptions.HtmlEncodingMinimum);
+            //text = dom.Render(DomRenderingOptions.HtmlEncodingMinimum);
+            text = dom.Render(OutputFormatters.Create(HtmlEncoders.Minimum));
+
             Assert.AreEqual("<span>&gt;&lt;&amp;" + (char)160 + "æøå</span>", text);
 
             var noEncoding = "<span>" + textIn + "</span>";
-            text = dom.Render(DomRenderingOptions.HtmlEncodingNone);
+            //text = dom.Render(DomRenderingOptions.HtmlEncodingNone);
+             text = dom.Render(OutputFormatters.Create(HtmlEncoders.None));
             Assert.AreEqual(noEncoding, text);
 
-            text = dom.Render(DomRenderingOptions.HtmlEncodingNone | DomRenderingOptions.HtmlEncodingMinimum);
-
-            Assert.AreEqual(noEncoding, text);
         }
    }
 }

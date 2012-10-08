@@ -14,6 +14,7 @@ using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
 using CsQuery.HtmlParser;
 using CsQuery.Utility;
+using CsQuery.Output;
 
 namespace CsQuery.Tests.Csharp.HtmlParser
 {
@@ -31,7 +32,8 @@ namespace CsQuery.Tests.Csharp.HtmlParser
 
             html = "a < b";
             dom = CQ.Create(html);
-            Assert.AreEqual("a < b", dom.Render(DomRenderingOptions.HtmlEncodingNone));
+            //Assert.AreEqual("a < b", dom.Render(DomRenderingOptions.HtmlEncodingNone));
+            Assert.AreEqual("a < b", dom.Render(OutputFormatters.Create(HtmlEncoders.None)));
         }
 
         [Test,TestMethod]
@@ -41,7 +43,7 @@ namespace CsQuery.Tests.Csharp.HtmlParser
             var cs = CsQuery.CQ.Create(html);
 
             Assert.AreEqual("a &lt; bsdf &lt;&gt;", cs.Render());
-            Assert.AreEqual("a &lt; bsdf &lt;&gt;", cs.Render(CsQuery.DomRenderingOptions.HtmlEncodingMinimum));
+            Assert.AreEqual("a &lt; bsdf &lt;&gt;", cs.Render(OutputFormatters.Create(HtmlEncoders.Minimum)));
         }
     }
 }

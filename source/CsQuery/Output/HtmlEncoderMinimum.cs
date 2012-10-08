@@ -11,7 +11,7 @@ namespace CsQuery.Output
     /// interpretation (less-than, greater-than, ampersand). Everthing else is passed through.
     /// </summary>
 
-    public class HtmlEncoderDefault: HtmlEncoderBase
+    public class HtmlEncoderMinimum: HtmlEncoderBase
     {
         /// <summary>
         /// Determines of a character must be encoded; if so, encodes it as the output parameter and
@@ -43,8 +43,15 @@ namespace CsQuery.Output
                     encoded = "&amp;";
                     return true; ;
                 default:
+                    encoded = null;
                     return false;
             }
+        }
+
+        protected override bool TryEncodeAstralPlane(int c, out string encoded)
+        {
+            encoded = null;
+            return false;
         }
     }
 }

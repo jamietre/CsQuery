@@ -9,6 +9,7 @@ using CsQuery.StringScanner;
 using CsQuery.HtmlParser;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
+using CsQuery.Output;
 
 namespace CsQuery.Implementation
 {
@@ -633,11 +634,11 @@ namespace CsQuery.Implementation
                 }
                 else
                 {
-                    
+                    var formatter = new OutputFormatterDefault();
                     StringBuilder sb = new StringBuilder();
                     StringWriter writer = new StringWriter(sb);
+                    formatter.RenderChildren(this, writer);
 
-                    RenderChildren(writer,CQ.DefaultDomRenderingOptions);
                     return sb.ToString();
                 }
             }
@@ -669,12 +670,13 @@ namespace CsQuery.Implementation
                 }
                 else
                 {
+                    var formatter = OutputFormatters.Default;
                     StringBuilder sb = new StringBuilder();
-                    StringWriter writer = new StringWriter(sb);
+                    StringWriter sw = new StringWriter(sb);
 
                     foreach (IDomObject elm in ChildNodes.Where(item => item.NodeType == NodeType.TEXT_NODE))
                     {
-                        RenderChildTextNode(elm, writer,0);
+                        formatter.Render(elm, sw);
                     }
 
                     return sb.ToString();
@@ -755,41 +757,10 @@ namespace CsQuery.Implementation
                 }
             }
         }
+
         #endregion
         
         #region public methods
-
-        public override string Render(DomRenderingOptions options = DomRenderingOptions.Default)
-        {
-
-            StringBuilder sb = new StringBuilder();
-            StringWriter sw = new StringWriter(sb);
-            GetHtml(options, sw, true);
-            return sw.ToString();
-        }
-
-        /// <summary>
-        /// Renders this object.
-        /// </summary>
-        ///
-        /// <param name="sb">
-        /// The sb.
-        /// </param>
-        /// <param name="options">
-        /// Options for controlling the operation.
-        /// </param>
-
-        public override void Render(StringBuilder sb, DomRenderingOptions options)
-        {MergeOptions(ref options);
-            StringWriter writer = new StringWriter(sb);
-            Render(writer,options);
-        }
-
-        public override void Render(TextWriter writer, DomRenderingOptions options)
-        {
-            
-            GetHtml(options, writer, true);
-        }
 
 
         /// <summary>
@@ -802,11 +773,14 @@ namespace CsQuery.Implementation
 
         public override string ElementHtml()
         {
-            StringWriter writer = new StringWriter();
 
-            GetHtml(Document == null ? CQ.DefaultDomRenderingOptions : Document.DomRenderingOptions, writer, false);
+            var formatter = new OutputFormatterDefault();
+            StringWriter writer = new StringWriter();
+            formatter.RenderElement(this,writer, false);
             return writer.ToString();
+            
         }
+
 
         /// <summary>
         /// Returns all the keys that should be in the index for this item (keys for class, tag,
@@ -1290,7 +1264,7 @@ namespace CsQuery.Implementation
         /// The attribute.
         /// </returns>
 
-        protected string GetAttribute(ushort tokenId)
+        internal string GetAttribute(ushort tokenId)
         {
             return GetAttribute(tokenId, null);
         }
@@ -1332,7 +1306,7 @@ namespace CsQuery.Implementation
         /// The attribute.
         /// </returns>
 
-        protected string GetAttribute(ushort tokenId, string defaultValue)
+        internal string GetAttribute(ushort tokenId, string defaultValue)
         {
 
             string value = null;
@@ -1771,131 +1745,7 @@ namespace CsQuery.Implementation
 #endif
         }
 
-        /// <summary>
-        /// Gets the HTML representation of this element and its children
-        /// </summary>
-        ///
-        /// <param name="options">
-        /// Options for how to render the HTML.
-        /// </param>
-        /// <param name="sb">
-        /// A StringBuilder object to which append the output.
-        /// </param>
-        /// <param name="includeChildren">
-        /// true to include, false to exclude the children.
-        /// </param>
-
-        protected void GetHtml(DomRenderingOptions options, TextWriter writer, bool includeChildren)
-        {
-            MergeOptions(ref options);
-
-            bool quoteAll = options.HasFlag(DomRenderingOptions.QuoteAllAttributes);
-
-            writer.Write("<");
-            string nodeName = NodeName.ToLower();
-            writer.Write(nodeName);
-            // put ID first. Must use GetAttribute since the Id property defaults to ""
-            string id = GetAttribute(HtmlData.IDAttrId, null);
-            
-            if (id != null)
-            {
-                writer.Write(" ");
-                RenderAttribute(writer, "id", id, quoteAll);
-            }
-            if (HasStyles)
-            {
-                writer.Write(" style=\"");
-                writer.Write(Style.ToString());
-                writer.Write("\"");
-            }
-            if (HasClasses)
-            {
-                writer.Write(" class=\"");
-                writer.Write(ClassName);
-                writer.Write("\"");
-            }
-
-            if (HasInnerAttributes)
-            {
-                foreach (var kvp in InnerAttributes)
-                {
-                    if (kvp.Key != "id")
-                    {
-                        writer.Write(" ");
-                        RenderAttribute(writer, kvp.Key, kvp.Value, quoteAll);
-                    }
-                }
-            }
-            if (InnerHtmlAllowed || InnerTextAllowed )
-            {
-                writer.Write(">");
-                if (includeChildren)
-                {
-                    base.Render(writer, options);
-                }
-                else
-                {
-                    writer.Write(HasChildren ?
-                            "..." :
-                            String.Empty);
-                }
-                writer.Write("</");
-                writer.Write(nodeName);
-                writer.Write(">");
-            }
-            else
-            {
-
-                if ((Document == null ? CQ.DefaultDocType : Document.DocType)== DocType.XHTML)
-                {
-                    writer.Write(" />");
-                }
-                else
-                {
-                    writer.Write(">");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Render an attribute
-        /// </summary>
-        ///
-        /// <param name="sb">
-        /// A StringBuilder to append the attributes to
-        /// </param>
-        /// <param name="name">
-        /// The name of the attribute
-        /// </param>
-        /// <param name="value">
-        /// The attribute value
-        /// </param>
-        /// <param name="quoteAll">
-        /// true to require quotes around the attribute value, false to use quotes only if needed.
-        /// </param>
-
-        protected void RenderAttribute(TextWriter writer, string name, string value, bool quoteAll)
-        {
-            // validator.nu: as it turns out "" and missing are synonymous
-            // don't ever render attr=""
-            
-            if (value != null && value!="")
-            {
-                string quoteChar;
-                string attrText = HtmlData.AttributeEncode(value,
-                    quoteAll,
-                    out quoteChar);
-                writer.Write(name.ToLower());
-                writer.Write("=");
-                writer.Write(quoteChar);
-                writer.Write(attrText);
-                writer.Write(quoteChar);
-            }
-            else
-            {
-                writer.Write(name);
-            }
-        }
+        
         #endregion
 
         #region internal methods

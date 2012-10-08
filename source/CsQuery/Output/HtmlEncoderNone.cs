@@ -7,10 +7,11 @@ using System.IO;
 namespace CsQuery.Output
 {
     /// <summary>
-    /// Interface for HTML encoder/decoder
+    /// Minimum HTML encoder. This only parses the absolute minimum required for correct
+    /// interpretation (less-than, greater-than, ampersand). Everthing else is passed through.
     /// </summary>
 
-    public interface IHtmlEncoder
+    public class HtmlEncoderNone: IHtmlEncoder
     {
         /// <summary>
         /// Encodes text as HTML, writing the processed output to the TextWriter.
@@ -20,10 +21,13 @@ namespace CsQuery.Output
         /// The text to be encoded.
         /// </param>
         /// <param name="output">
-        /// The target for the ouput
+        /// The target for the ouput.
         /// </param>
 
-        void Encode(string text, TextWriter output);
-
+        public void Encode(string text, TextWriter output)
+        {
+            output.Write(text);
+        }
+       
     }
 }

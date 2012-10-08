@@ -56,7 +56,7 @@ namespace CsQuery.Tests.Csharp.HtmlParser
             Assert.AreEqual("<div>a space&amp;&lt;div&gt;--that was text</div>", output.Render(), "special characters");
 
             output = CreateFromHtml("<div>&nbsp;spacer&nbsp;</div>");
-            Assert.AreEqual("<div>&#160;spacer&#160;</div>", output.Render(), "special characters 2");
+            Assert.AreEqual("<div>&nbsp;spacer&nbsp;</div>", output.Render(), "special characters 2");
 
             output = CreateFromHtml("<div>xxxxx");
             Assert.AreEqual("<div>xxxxx</div>", output.Render(), "trailing text with broken tag");
@@ -88,7 +88,7 @@ namespace CsQuery.Tests.Csharp.HtmlParser
         {
 
             string html = Support.GetFile(TestDomPath("HTML Standard"));
-
+            
             var dom = CQ.Create(html);
             string output = dom.Render();
             var dom2 = CQ.Create(output);

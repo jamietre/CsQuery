@@ -26,13 +26,14 @@ namespace CsQuery
         /// DEPRECATED. Please use CsQuery.Config.DomRenderingOptions. 
         /// </summary>
         
+        [Obsolete]
         public static DomRenderingOptions DefaultDomRenderingOptions 
         {
             get {
-                return Config.DomRenderingOptions;
+                return Config._DomRenderingOptions;
             }
             set {
-                Config.DomRenderingOptions = value;
+                Config._DomRenderingOptions = value;
             }
         }
 

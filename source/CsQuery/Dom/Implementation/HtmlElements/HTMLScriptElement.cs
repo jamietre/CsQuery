@@ -10,7 +10,7 @@ namespace CsQuery.Implementation
     /// A SCRIPT
     /// </summary>
 
-    public class HTMLScriptElement : HTMLRawInnerTextElementBase
+    public class HTMLScriptElement : DomElement
     {
         /// <summary>
         /// Default constructor

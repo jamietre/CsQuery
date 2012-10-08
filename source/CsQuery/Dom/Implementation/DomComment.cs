@@ -128,57 +128,6 @@ namespace CsQuery.Implementation
 
         #endregion
 
-        #region public methods
-
-        /// <summary>
-        /// Renders this object.
-        /// </summary>
-        ///
-        /// <returns>
-        /// A string of HTML
-        /// </returns>
-
-        public override string Render(DomRenderingOptions options = DomRenderingOptions.Default)
-        {
-            if (Document != null
-                && options.HasFlag(DomRenderingOptions.RemoveComments))
-            {
-                return String.Empty;
-            }
-            else
-            {
-                return GetComment(NonAttributeData);
-            }
-        }
-
-
-
-        /// <summary>
-        /// Convert this object into a string representation.
-        /// </summary>
-        ///
-        /// <returns>
-        /// This object as a string.
-        /// </returns>
-
-        public override string ToString()
-        {
-            string innerText = NonAttributeData.Length > 80 ? NonAttributeData.Substring(0, 80) + " ... " : NonAttributeData;
-            return GetComment(innerText);
-        }
-
-        #endregion
-
-        #region private methods
-
-
-        private string GetComment(string innerText)
-        {
-            return "<!--" + innerText + "-->";
-        }
-
-        #endregion
-
         #region IDomSpecialElement Members
 
         public string NonAttributeData

@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using CsQuery.HtmlParser;
 using CsQuery.ExtensionMethods;
+using CsQuery.Output;
 
 namespace CsQuery.Implementation
 {
@@ -824,6 +825,54 @@ namespace CsQuery.Implementation
 
         #region public methods
 
+        /// <summary>
+        /// Renders the complete HTML for this element, including its children.
+        /// </summary>
+        ///
+        /// <returns>
+        /// a string of HTML.
+        /// </returns>
+
+        public virtual string Render()
+        {
+            return Render(OutputFormatters.Default);
+        }
+
+        /// <summary>
+        /// Renders the complete HTML for this element, including its children, using the specified
+        /// OutputFormatter.
+        /// </summary>
+        ///
+        /// <param name="formatter">
+        /// The formatter.
+        /// </param>
+        ///
+        /// <returns>
+        /// a string of HTML.
+        /// </returns>
+
+        public virtual void Render(IOutputFormatter formatter, TextWriter writer)
+        {
+            formatter.Render(this,writer);
+        }
+
+        /// <summary>
+        /// Renders the complete HTML for this element, including its children, using the specified
+        /// OutputFormatter.
+        /// </summary>
+        ///
+        /// <param name="formatter">
+        /// The formatter.
+        /// </param>
+        ///
+        /// <returns>
+        /// a string of HTML.
+        /// </returns>
+
+        public virtual string Render(IOutputFormatter formatter)
+        {
+            return formatter.Render(this);
+        }
 
         /// <summary>
         /// Renders the complete HTML for this element, including its children.
@@ -833,23 +882,34 @@ namespace CsQuery.Implementation
         /// a string of HTML
         /// </returns>
 
-        public abstract string Render(DomRenderingOptions options=DomRenderingOptions.Default);
+        public virtual string Render(DomRenderingOptions options)
+        {
+            var formatter = new OutputFormatterDefault(options, HtmlEncoders.Default);
+            return formatter.Render(this);
+
+        }
 
         /// <summary>
-        /// Renders the complete HTML for this element to a StringBuilder.
+        /// Renders the complete HTML for this element to a StringBuilder. Note: This obsolete and will
+        /// be removed; please use Render(IOutputFormatter).
         /// </summary>
         ///
         /// <param name="sb">
         /// An existing StringBuilder instance to append this element's HTML.
         /// </param>
+        /// <param name="options">
+        /// (optional) options for controlling the operation.
+        /// </param>
 
+        [Obsolete]
         public virtual void Render(StringBuilder sb, DomRenderingOptions options = DomRenderingOptions.Default)
         {
             sb.Append(Render(options));
         }
 
         /// <summary>
-        /// Renders the complete HTML for this element to a TextWriter.
+        /// Renders the complete HTML for this element to a TextWriter. Note: This obsolete and will
+        /// be removed; please use Render(IOutputFormatter).
         /// </summary>
         ///
         /// <param name="writer">
@@ -859,6 +919,7 @@ namespace CsQuery.Implementation
         /// (optional) options for controlling the operation.
         /// </param>
 
+        [Obsolete]
         public virtual void Render(TextWriter writer, DomRenderingOptions options = DomRenderingOptions.Default)
         {
             writer.Write(Render(options));
@@ -1505,7 +1566,7 @@ namespace CsQuery.Implementation
         {
             if (options.HasFlag(DomRenderingOptions.Default))
             {
-                options = CsQuery.Config.DomRenderingOptions | options & ~(DomRenderingOptions.Default);
+                options = CsQuery.Config._DomRenderingOptions | options & ~(DomRenderingOptions.Default);
             }
         }
 

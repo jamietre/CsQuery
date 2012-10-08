@@ -6,7 +6,12 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ### Change Log
 
-####Version 1.3 (development)
+####Version 1.3 Beta 2
+
+- Build out `IOutputFormatter` interface/methods and move element rendering implementations to OutputFormatters.. Some `Render` methods have been marked as obsolete now.
+- Add astral plane UTF handling for HTML decoder
+
+####Version 1.3 Beta 1
 
 - Switched to validator.nu HTML parser
 - Add overrides to `Create` methods to provide parsing options

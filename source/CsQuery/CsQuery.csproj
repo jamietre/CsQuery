@@ -165,7 +165,6 @@
     <Compile Include="Dom\Implementation\CSSStyleRule.cs" />
     <Compile Include="Dom\Implementation\CSSStyleSheet.cs" />
     <Compile Include="Dom\Implementation\HtmlElements\HTMLStyleElement.cs" />
-    <Compile Include="Dom\Implementation\HtmlElements\HTMLRawInnerTextElementBase.cs" />
     <Compile Include="Dom\Implementation\HtmlElements\HTMLScriptElement.cs" />
     <Compile Include="Dom\Implementation\HtmlElements\HTMLLabelElement.cs" />
     <Compile Include="Dom\Implementation\StyleSheet.cs" />
@@ -313,6 +312,9 @@
     <Compile Include="HtmlParser\HtmlStyles.cs" />
     <Compile Include="HtmlParser\enumTokenProperties.cs" />
     <Compile Include="Implementation\TextReaderCombiner.cs" />
+    <Compile Include="Output\HtmlEncoders.cs" />
+    <Compile Include="Output\HtmlEncoderNone.cs" />
+    <Compile Include="Output\OutputFormatterBase.cs" />
     <Compile Include="Output\OutputFormatterDefault.cs" />
     <Compile Include="Output\HtmlEncoderMinimum.cs" />
     <Compile Include="Output\HtmlEncoderBase.cs" />

@@ -33,19 +33,8 @@ namespace CsQuery.Implementation
         {
             get { return NodeType.CDATA_SECTION_NODE; }
         }
-        public override string Render(DomRenderingOptions options = DomRenderingOptions.Default)
-        {
-            return GetHtml(NonAttributeData);
-        }
-        protected string GetHtml(string innerText)
-        {
-            return "<![CDATA[" + innerText + ">";
-        }
-        public override string ToString()
-        {
-            string innerText = NonAttributeData.Length > 80 ? NonAttributeData.Substring(0, 80) + " ... " : NonAttributeData;
-            return GetHtml(innerText);
-        }
+
+
         #region IDomSpecialElement Members
 
         public string NonAttributeData
@@ -89,9 +78,6 @@ namespace CsQuery.Implementation
             return Clone();
         }
         #endregion
-
-       
-        
 
       
     }

@@ -96,8 +96,39 @@ namespace CsQuery.Tests.Csharp.HtmlParser
 
             string html = "<span>Test &nbsp; nbsp</span>";
             var dom = CQ.Create(html);
-            var output = dom.Render(DomRenderingOptions.HtmlEncodingMinimum).Replace(""+(char)160, "&nbsp;");
+            var output = dom.Render(OutputFormatters.Create(HtmlEncoders.Minimum)).Replace(""+(char)160, "&nbsp;");
             Assert.AreEqual(html, output);
+
+        }
+
+        /// <summary>
+        /// Issue #50.
+        /// 
+        /// Right now an empty class attribute will be removed. This is actually a bug (but shouldn't
+        /// matter for most purposes), but for full compliance, an empty class attribute should be
+        /// allowed and kept.
+        /// </summary>
+
+        [Test, TestMethod]
+        public void ClassAndStyleAsBoolean()
+        {
+
+            string html = @"<span class="""" style="""">Test </span><div class style><br /></div>";
+            var dom = CQ.Create(html);
+            var output = dom.Render(OutputFormatters.Create(HtmlEncoders.Minimum)).Replace("" + (char)160, "&nbsp;");
+            Assert.AreEqual(@"<span style>Test </span><div style><br></div>", output);
+
+        }
+
+        [Test, TestMethod]
+        public void Utf8_HighValues()
+        {
+
+            string html = @"<span>&#55449;&#56580;</span>";
+            var dom = CQ.Create(html);
+            var output = dom.Render();
+
+            Assert.AreEqual(@"<span>&#65533;&#65533;</span>", output);
 
         }
     }

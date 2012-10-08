@@ -101,8 +101,10 @@ namespace CsQuery
         {
             StringBuilder sb= new StringBuilder();
             StringWriter writer = new StringWriter(sb);
-
-            format.Format(this,writer);
+            foreach (var element in Document.ChildNodes)
+            {
+                format.Render(element, writer);
+            }
             return sb.ToString();
         }
 

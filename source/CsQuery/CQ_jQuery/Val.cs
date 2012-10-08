@@ -95,7 +95,7 @@ namespace CsQuery
                 switch (e.NodeNameID)
                 {
                     case HtmlData.tagTEXTAREA:
-                        return e.InnerText;
+                        return e.Value;
                     case HtmlData.tagINPUT:
                         string val = e.GetAttribute("value", String.Empty);
                         switch (e.GetAttribute("type", String.Empty))

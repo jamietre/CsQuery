@@ -95,7 +95,7 @@ namespace CsQuery.Implementation
 
         protected void InitializeDomDocument()
         {
-            Document.DomRenderingOptions = CsQuery.Config.DomRenderingOptions;           
+            Document.DomRenderingOptions = CsQuery.Config._DomRenderingOptions;           
         }
 
         /// <summary>
