@@ -142,7 +142,7 @@ namespace CsQuery.HtmlParser
         }
 
         protected override void ReceiveDocumentMode(DocumentMode mode, String publicIdentifier,
-                String systemIdentifier, bool html4SpecificAdditionalErrorChecks)
+                String systemIdentifier, bool html4SpecificAddcionalErrorChecks)
         {
             //document.setUserData("nu.validator.document-mode", mode, null); // TODO
         }

@@ -86,5 +86,28 @@ namespace CsQuery.Tests.Csharp.HtmlParser
             Assert.AreEqual("<div>Romney dice que Ch&#225;vez expande la tiran&#237;a</div>", dom.Render());
 
         }
+
+        /// <summary>
+        /// Allow self closing tags - added feature to ITokenHandler implemenation in HtmlParserSharp to
+        /// permit self-closing tags, if desired.
+        /// </summary>
+
+        [Test, TestMethod]
+        public void AllowSelfClosing()
+        {
+
+            string html = @"<input /><span /><g />";
+            var dom = CQ.Create(html, HtmlParsingMode.Fragment, HtmlParsingOptions.AllowselfClosingTags);
+            var output = dom.Render();
+
+            Assert.AreEqual(@"<input><span></span><g></g>", output);
+
+            dom = CQ.Create(html, HtmlParsingMode.Fragment, HtmlParsingOptions.None);
+            output = dom.Render();
+
+            // should nest the self-closed tags (default html5 behavior)
+            Assert.AreEqual(@"<input><span><g></g></span>", output);
+
+        }
     }
 }

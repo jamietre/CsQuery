@@ -44,17 +44,19 @@ namespace CsQuery.Implementation
         }
 
         public static IDomDocument Create(string html, 
-            HtmlParsingMode htmlParsingMode = HtmlParsingMode.Auto,
+            HtmlParsingMode parsingMode = HtmlParsingMode.Auto,
+            HtmlParsingOptions parsingOptions = HtmlParsingOptions.None,
             DocType docType = DocType.HTML5)
         {
-            return ElementFactory.Create(html, htmlParsingMode,docType);
+            return ElementFactory.Create(html, parsingMode, parsingOptions, docType);
         }
 
         public static IDomDocument Create(Stream html, 
-            HtmlParsingMode htmlParsingMode = HtmlParsingMode.Content,
+            HtmlParsingMode parsingMode= HtmlParsingMode.Content,
+            HtmlParsingOptions parsingOptions= HtmlParsingOptions.None,
             DocType docType = DocType.HTML5)
         {
-            return ElementFactory.Create(html, htmlParsingMode, docType);
+            return ElementFactory.Create(html, parsingMode,parsingOptions, docType);
         }
 
 

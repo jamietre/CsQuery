@@ -131,6 +131,7 @@ namespace CsQuery.Tests.Csharp.HtmlParser
             Assert.AreEqual(@"<span>&#65533;&#65533;</span>", output);
 
         }
+
     }
 
 }

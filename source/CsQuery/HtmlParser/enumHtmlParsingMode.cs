@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CsQuery.HtmlParser
+namespace CsQuery
 {
     /// <summary>
     /// The methodology applied when parsing strings of HTML
@@ -27,10 +27,6 @@ namespace CsQuery.HtmlParser
         /// <summary>
         /// A complete document; the HTML and BODY tag constructs will be addded if missing..
         /// </summary>
-        Document = 3,
-        /// <summary>
-        /// A fragment, but will be preprocessed to permit self-closing tags of any kind
-        /// </summary>
-        FragmentWithSelfClosingTags=4
+        Document = 3
     }
 }

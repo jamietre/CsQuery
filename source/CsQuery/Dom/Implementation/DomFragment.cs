@@ -37,7 +37,8 @@ namespace CsQuery.Implementation
         {
             var factory = new ElementFactory();
             factory.FragmentContext = context;
-            factory.HtmlParsingMode = HtmlParsingMode.FragmentWithSelfClosingTags;
+            factory.HtmlParsingMode = HtmlParsingMode.Fragment;
+            factory.HtmlParsingOptions = HtmlParsingOptions.AllowselfClosingTags;
             factory.DocType = docType;
             
             using (var reader = new StringReader(html))

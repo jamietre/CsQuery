@@ -52,10 +52,13 @@ namespace CsQuery.HtmlParser
         /// A new document
         /// </returns>
 
-        public static IDomDocument Create(string html, HtmlParsingMode parsingMode=HtmlParsingMode.Auto, DocType docType=DocType.HTML5) {
+        public static IDomDocument Create(string html, 
+            HtmlParsingMode parsingMode=HtmlParsingMode.Auto, 
+            HtmlParsingOptions options= HtmlParsingOptions.None,
+            DocType docType=DocType.HTML5) {
 
             using (var reader = new StringReader(html ?? "")) {
-                return GetNewParser(parsingMode,docType).Parse(reader);
+                return GetNewParser(parsingMode,options,docType).Parse(reader);
             }
         }
 
@@ -77,12 +80,15 @@ namespace CsQuery.HtmlParser
         /// A new document.
         /// </returns>
 
-        public static IDomDocument Create(Stream html, HtmlParsingMode parsingMode = HtmlParsingMode.Auto, DocType docType = DocType.HTML5)
+        public static IDomDocument Create(Stream html, 
+            HtmlParsingMode parsingMode = HtmlParsingMode.Auto,
+            HtmlParsingOptions parsingOptions = HtmlParsingOptions.None,
+            DocType docType = DocType.HTML5)
         {
             
             using (var reader = new StreamReader(html))
             {
-                return GetNewParser(parsingMode,docType).Parse(reader);
+                return GetNewParser(parsingMode, parsingOptions, docType).Parse(reader);
             }
         }
 
@@ -90,11 +96,12 @@ namespace CsQuery.HtmlParser
         {
             return new ElementFactory();
         }
-        private static ElementFactory GetNewParser(HtmlParsingMode parsingMode, DocType docType)
+        private static ElementFactory GetNewParser(HtmlParsingMode parsingMode, HtmlParsingOptions parsingOptions, DocType docType)
         {
             var parser = new ElementFactory();
             parser.HtmlParsingMode = parsingMode;
             parser.DocType = docType;
+            parser.HtmlParsingOptions = parsingOptions;
             return parser;
        }
 
@@ -120,7 +127,15 @@ namespace CsQuery.HtmlParser
             get;
             set;
         }
+        /// <summary>
+        /// Gets or sets the HTML parsing mode.
+        /// </summary>
 
+        public HtmlParsingOptions HtmlParsingOptions
+        {
+            get;
+            set;
+        }
         /// <summary>
         /// Gets or sets the type of the document.
         /// </summary>
@@ -165,15 +180,15 @@ namespace CsQuery.HtmlParser
 
             TextReader source = reader;
 
-            if (HtmlParsingMode == HtmlParser.HtmlParsingMode.Auto || 
-                ((HtmlParsingMode == HtmlParser.HtmlParsingMode.Fragment || HtmlParsingMode == HtmlParser.HtmlParsingMode.FragmentWithSelfClosingTags )
+            if (HtmlParsingMode == HtmlParsingMode.Auto || 
+                ((HtmlParsingMode == HtmlParsingMode.Fragment )
                     && String.IsNullOrEmpty(FragmentContext)))
             {
 
                 string ctx;
                 source= GetContextFromStream(source, out ctx);
 
-                if (HtmlParsingMode == HtmlParser.HtmlParsingMode.Auto)
+                if (HtmlParsingMode == HtmlParsingMode.Auto)
                 {
                     switch (ctx)
                     {
@@ -185,13 +200,13 @@ namespace CsQuery.HtmlParser
                             HtmlParsingMode = HtmlParsingMode.Content;
                             break;
                         default:
-                            HtmlParsingMode = HtmlParsingMode.FragmentWithSelfClosingTags;
+                            HtmlParsingMode = HtmlParsingMode.Fragment;
+                            HtmlParsingOptions = HtmlParsingOptions.AllowselfClosingTags;
                             break;
                     }
                 }
 
-                if (HtmlParsingMode == HtmlParser.HtmlParsingMode.Fragment ||
-                    HtmlParsingMode== HtmlParser.HtmlParsingMode.FragmentWithSelfClosingTags) 
+                if (HtmlParsingMode == HtmlParsingMode.Fragment) 
                 {
                     FragmentContext = ctx;
                 }
@@ -199,10 +214,10 @@ namespace CsQuery.HtmlParser
             
 
 
-            if (HtmlParsingMode == HtmlParser.HtmlParsingMode.FragmentWithSelfClosingTags)
-            {
-                source = new StringReader(HtmlPreprocessor.ExpandSelfClosingTags(source.ReadToEnd()));
-            }
+            //if (HtmlParsingMode == HtmlParser.HtmlParsingMode.Fragment)
+            //{
+            //    source = new StringReader(HtmlPreprocessor.ExpandSelfClosingTags(source.ReadToEnd()));
+            //}
 
             Reset();
             Tokenize(source);
@@ -228,7 +243,6 @@ namespace CsQuery.HtmlParser
                     treeBuilder.DoctypeExpectation = DoctypeExpectation.Html;
                     break;
                 case HtmlParsingMode.Fragment:
-                case HtmlParsingMode.FragmentWithSelfClosingTags:
                     treeBuilder.DoctypeExpectation = DoctypeExpectation.Html;
                     treeBuilder.SetFragmentContext(FragmentContext);
                     HtmlParsingMode = HtmlParsingMode.Auto;
@@ -330,7 +344,8 @@ namespace CsQuery.HtmlParser
             treeBuilder = new CsQueryTreeBuilder();
 
             treeBuilder.NamePolicy = XmlViolationPolicy.Allow;
-            treeBuilder.IsIgnoringComments = false;
+            treeBuilder.WantsComments = !HtmlParsingOptions.HasFlag(HtmlParsingOptions.IgnoreComments);
+            treeBuilder.AllowSelfClosingTags = HtmlParsingOptions.HasFlag(HtmlParsingOptions.AllowselfClosingTags);
             
             // DocTypeExpectation should be set later depending on fragment/content/document selection
 

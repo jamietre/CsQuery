@@ -34,6 +34,23 @@ namespace CsQuery
         }
 
         /// <summary>
+        /// Create a new CQ object from a single element. Unlike the constructor method
+        /// <see cref="CsQuery.CQ"/> this new objet is not bound to any context from the element.
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// A string containing HTML.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+
+        public static CQ Create(string html)
+        {
+            return new CQ(html,HtmlParsingMode.Auto,HtmlParsingOptions.None,DocType.HTML5);
+        }
+        /// <summary>
         /// Create a new CQ object from an HTML character array.
         /// </summary>
         ///
@@ -51,9 +68,12 @@ namespace CsQuery
         /// A new CQ object.
         /// </returns>
 
-        public static CQ Create(char[] html, HtmlParsingMode mode=HtmlParsingMode.Auto, DocType docType=DocType.HTML5)
+        [Obsolete]
+        public static CQ Create(char[] html)
         {
-            return new CQ(html,mode,docType);
+            var cq = new CQ();
+            cq.CreateNew(cq, html.AsString(), HtmlParsingMode.Auto, HtmlParsingOptions.None,DocType.HTML5); ;
+            return cq;
         }
 
         /// <summary>
@@ -99,9 +119,12 @@ namespace CsQuery
         /// A new CQ object.
         /// </returns>
 
-        public static CQ Create(string html, HtmlParsingMode mode=HtmlParsingMode.Auto, DocType docType=DocType.HTML5)
+        public static CQ Create(string html, 
+            HtmlParsingMode parsingMode=HtmlParsingMode.Auto, 
+            HtmlParsingOptions parsingOptions= HtmlParsingOptions.None,
+            DocType docType=DocType.HTML5)
         {
-            return new CQ(html, mode, docType);
+            return new CQ(html, parsingMode, parsingOptions, docType);
         }
 
         /// <summary>
@@ -144,6 +167,11 @@ namespace CsQuery
             return csq;
         }
 
+        public static CQ Create(Stream html)
+        {
+            return Create(html, HtmlParsingMode.Auto, HtmlParsingOptions.None, DocType.HTML5);
+        }
+
         /// <summary>
         /// Create a new CQ object from a stream of HTML, treating the HTML as a content document.
         /// </summary>
@@ -163,9 +191,12 @@ namespace CsQuery
         /// </returns>
 
 
-        public static CQ Create(Stream html, HtmlParsingMode mode=HtmlParsingMode.Auto, DocType docType=DocType.HTML5)
+        public static CQ Create(Stream html, 
+            HtmlParsingMode parsingMode=HtmlParsingMode.Auto, 
+            HtmlParsingOptions parsingOptions = HtmlParsingOptions.None,
+            DocType docType=DocType.HTML5)
         {
-            return new CQ(html, mode, docType);
+            return new CQ(html, parsingMode,parsingOptions, docType);
         }
 
         /// <summary>
@@ -184,7 +215,7 @@ namespace CsQuery
         public static CQ CreateFragment(string html)
         {
             CQ cq = new CQ();
-            cq.CreateNew(cq, html, HtmlParsingMode.FragmentWithSelfClosingTags, DocType.HTML5);
+            cq.CreateNew(cq, html, HtmlParsingMode.Fragment,HtmlParsingOptions.AllowselfClosingTags, DocType.HTML5);
             return cq;
         }
 
@@ -243,7 +274,7 @@ namespace CsQuery
         public static CQ CreateFragment(Stream html)
         {
             CQ cq = new CQ();
-            cq.CreateNew(cq, html,HtmlParsingMode.FragmentWithSelfClosingTags, DocType.HTML5);
+            cq.CreateNew(cq, html,HtmlParsingMode.Fragment,HtmlParsingOptions.AllowselfClosingTags, DocType.HTML5);
             return cq;
         }
 

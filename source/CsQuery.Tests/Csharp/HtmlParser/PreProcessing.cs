@@ -28,7 +28,7 @@ namespace CsQuery.Tests.Csharp.HtmlParser.HTML5
             var dom = CQ.Create(testHtml,HtmlParsingMode.Fragment);
             Assert.AreEqual("<div><span><bad></bad></span></div>", dom.Render());
 
-            dom = CQ.Create(testHtml, HtmlParsingMode.FragmentWithSelfClosingTags);
+            dom = CQ.Create(testHtml, HtmlParsingMode.Fragment,HtmlParsingOptions.AllowselfClosingTags);
             Assert.AreEqual("<div></div><span></span><bad></bad>", dom.Render());
         }
 
@@ -41,11 +41,14 @@ namespace CsQuery.Tests.Csharp.HtmlParser.HTML5
             Assert.AreEqual("<div id=\"some stuff\"></div><span></span><bad></bad>", dom.Render());
 
 
-            // jQuery gets this wrong too
+            // jQuery gets this wrong -- probably uses a regex similar to the one CsQuery used to use 
+            // to blow up self-closed tags before parsing. CsQuery now handles them in the parser itself
+            // so this works right
+            
             testHtml = @"<fake id=""some stuff"" val="">"" /><b></b><span/><bad />";
 
             dom = CQ.Create(testHtml);
-            Assert.AreEqual(@"<fake id=""some stuff"" val="">""><b></b><span></span><bad></bad></fake>", dom.Render());
+            Assert.AreEqual(@"<fake id=""some stuff"" val="">""></fake><b></b><span></span><bad></bad>", dom.Render());
 
 
             // Removing the caret, it works
@@ -63,7 +66,7 @@ namespace CsQuery.Tests.Csharp.HtmlParser.HTML5
             Assert.AreEqual(1, dom["*"].Length);
             Assert.AreEqual(DocType.HTML5, dom.Document.DocType);
 
-            dom = CQ.Create("<div></div>",HtmlParsingMode.Document,DocType.HTML4);
+            dom = CQ.Create("<div></div>",HtmlParsingMode.Document,HtmlParsingOptions.None,DocType.HTML4);
             Assert.AreEqual(1, dom.Document.ChildNodes.Length);
             Assert.AreEqual(4, dom["*"].Length);
 
