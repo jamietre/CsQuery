@@ -9,9 +9,15 @@
             Global configuration and defaults
             </summary>
         </member>
-        <member name="F:CsQuery.Config.DomRenderingOptions">
+        <member name="F:CsQuery.Config._DomRenderingOptions">
             <summary>
-            The default rendering options. These are flags.
+            Internal to avoid Obsolete warning from DomRenderingOptions until we remove it
+            </summary>
+        </member>
+        <member name="F:CsQuery.Config.OutputFormatter">
+            <summary>
+            A delegate that returns a new instance of the default output formatter to use for rendering
+            when none is otherwise specified.
             </summary>
         </member>
         <member name="F:CsQuery.Config.StartupOptions">
@@ -21,7 +27,16 @@
         </member>
         <member name="F:CsQuery.Config.DocType">
             <summary>
-            Default document type.
+            Default document type. This is the parsing mode that will be used when creating documents
+            that have no DocType and no mode is explicitly defined.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Config.DomRenderingOptions">
+            <summary>
+            The default rendering options. This is obsolete: though these values are currently used in
+            the constuction of the default OutputFormatter, you should control default output handling
+            using the OutputFormatter property instead. This property will only work now if the default
+            value of OutputFormatter has not been changed.
             </summary>
         </member>
         <member name="P:CsQuery.Config.DynamicObjectType">
@@ -240,7 +255,21 @@
              A new CQ object
              </returns>
         </member>
-        <member name="M:CsQuery.CQ.Create(System.Char[],CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
+        <member name="M:CsQuery.CQ.Create(System.String)">
+             <summary>
+             Create a new CQ object from a single element. Unlike the constructor method
+             <see cref="T:CsQuery.CQ"/> this new objet is not bound to any context from the element.
+             </summary>
+            
+             <param name="html">
+             A string containing HTML.
+             </param>
+            
+             <returns>
+             A new CQ object.
+             </returns>
+        </member>
+        <member name="M:CsQuery.CQ.Create(System.Char[])">
              <summary>
              Create a new CQ object from an HTML character array.
              </summary>
@@ -273,7 +302,7 @@
              A new CQ object
              </returns>
         </member>
-        <member name="M:CsQuery.CQ.Create(System.String,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
+        <member name="M:CsQuery.CQ.Create(System.String,CsQuery.HtmlParsingMode,CsQuery.HtmlParsingOptions,CsQuery.DocType)">
              <summary>
              Creeate a new CQ object from an HTML string.
              </summary>
@@ -321,7 +350,7 @@
              A new CQ object
              </returns>
         </member>
-        <member name="M:CsQuery.CQ.Create(System.IO.Stream,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
+        <member name="M:CsQuery.CQ.Create(System.IO.Stream,CsQuery.HtmlParsingMode,CsQuery.HtmlParsingOptions,CsQuery.DocType)">
              <summary>
              Create a new CQ object from a stream of HTML, treating the HTML as a content document.
              </summary>
@@ -471,6 +500,15 @@
             
              <returns>
              The new from file.
+             </returns>
+        </member>
+        <member name="M:CsQuery.CQ.Save(System.String,CsQuery.DomRenderingOptions)">
+             <summary>
+             Save the current Document to an HTML file.
+             </summary>
+            
+             <returns>
+             A new CQ object.
              </returns>
         </member>
         <member name="M:CsQuery.CQ.MakeRoot">
@@ -740,7 +778,20 @@
              A string of HTML.
              </returns>
         </member>
-        <member name="M:CsQuery.CQ.Render(CsQuery.IOutputFormatter)">
+        <member name="M:CsQuery.CQ.Render(CsQuery.DomRenderingOptions)">
+             <summary>
+             Render the complete DOM with specific options.
+             </summary>
+            
+             <param name="renderingOptions">
+             The options flags in effect.
+             </param>
+            
+             <returns>
+             A string of HTML
+             </returns>
+        </member>
+        <member name="M:CsQuery.CQ.Render(CsQuery.Output.IOutputFormatter)">
              <summary>
              Render the entire document, parsed through a formatter passed using the parameter.
              </summary>
@@ -763,35 +814,31 @@
              A string of HTML.
              </returns>
         </member>
-        <member name="M:CsQuery.CQ.Render(CsQuery.DomRenderingOptions)">
+        <member name="M:CsQuery.CQ.Render(CsQuery.Output.IOutputFormatter,System.IO.TextWriter)">
              <summary>
-             Render the complete DOM with specific options.
-             </summary>
-            
-             <param name="renderingOptions">
-             The options flags in effect.
-             </param>
-            
-             <returns>
-             A string of HTML
-             </returns>
-        </member>
-        <member name="M:CsQuery.CQ.Render(CsQuery.IOutputFormatter,CsQuery.DomRenderingOptions)">
-             <summary>
-             Render the entire document, parsed through a formatter passed using the parameter, with the
-             specified options.
+             Render the entire document, parsed through a formatter passed using the parameter, to the
+             specified writer.
              </summary>
             
              <param name="formatter">
              The formatter.
              </param>
-             <param name="renderingOptions">
-             The options flags in effect.
+             <param name="writer">
+             The writer.
              </param>
+        </member>
+        <member name="M:CsQuery.CQ.Render(System.Text.StringBuilder,CsQuery.DomRenderingOptions)">
+             <summary>
+             Render the entire document, parsed through a formatter passed using the parameter, with the
+             specified options.
+             </summary>
             
-             <returns>
-             A string of HTML.
-             </returns>
+             <param name="sb">
+             The sb.
+             </param>
+             <param name="options">
+             (optional) options for controlling the operation.
+             </param>
         </member>
         <member name="M:CsQuery.CQ.Append(System.String[])">
              <summary>
@@ -4256,7 +4303,7 @@
             Creates a new, empty CQ object.
             </summary>
         </member>
-        <member name="M:CsQuery.CQ.#ctor(System.String,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
+        <member name="M:CsQuery.CQ.#ctor(System.String,CsQuery.HtmlParsingMode,CsQuery.HtmlParsingOptions,CsQuery.DocType)">
              <summary>
              Create a new CQ object from an HTML string.
              </summary>
@@ -4271,10 +4318,10 @@
              (optional) type of the document.
              </param>
         </member>
-        <member name="M:CsQuery.CQ.#ctor(System.IO.Stream,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
+        <member name="M:CsQuery.CQ.#ctor(System.IO.Stream,CsQuery.HtmlParsingMode,CsQuery.HtmlParsingOptions,CsQuery.DocType)">
              <summary>
              Create a new CQ object from an HTML stream.
-             <see cref="!:CQ.Create(char[])"/>
+             <see cref="M:CsQuery.CQ.Create(System.Char[])"/>
              </summary>
             
              <param name="html">
@@ -4282,22 +4329,6 @@
              </param>
              <param name="mode">
              (optional) the mode.
-             </param>
-             <param name="docType">
-             (optional) type of the document.
-             </param>
-        </member>
-        <member name="M:CsQuery.CQ.#ctor(System.Char[],CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
-             <summary>
-             Create a new CQ object from an HTML character array. Synonymous with
-             <see cref="!:CQ.Create(char[])"/>
-             </summary>
-            
-             <param name="html">
-             The html of the new document.
-             </param>
-             <param name="parsingMode">
-             The HTML parsing mode.
              </param>
              <param name="docType">
              (optional) type of the document.
@@ -4432,7 +4463,7 @@
              The elements to provide the source for this object's DOM.
              </param>
         </member>
-        <member name="M:CsQuery.CQ.CreateNew(CsQuery.CQ,System.String,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
+        <member name="M:CsQuery.CQ.CreateNew(CsQuery.CQ,System.String,CsQuery.HtmlParsingMode,CsQuery.HtmlParsingOptions,CsQuery.DocType)">
              <summary>
              Bind this instance to a new DomFragment created from HTML using the specified parsing mode.
              </summary>
@@ -4450,7 +4481,7 @@
              (optional) type of the document.
              </param>
         </member>
-        <member name="M:CsQuery.CQ.CreateNew(CsQuery.CQ,System.IO.Stream,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
+        <member name="M:CsQuery.CQ.CreateNew(CsQuery.CQ,System.IO.Stream,CsQuery.HtmlParsingMode,CsQuery.HtmlParsingOptions,CsQuery.DocType)">
              <summary>
              Bind this instance to a new DomFragment created from HTML in a specific HTML tag context.
              </summary>
@@ -5091,11 +5122,6 @@
             A STYLE element
             </summary>
         </member>
-        <member name="T:CsQuery.Implementation.HTMLRawInnerTextElementBase">
-            <summary>
-            An HTML text area element.
-            </summary>
-        </member>
         <member name="T:CsQuery.Implementation.DomElement">
             <summary>
             HTML elements.
@@ -5138,12 +5164,39 @@
              </summary>
             
              <returns>
+             a string of HTML.
+             </returns>
+        </member>
+        <member name="M:CsQuery.IDomNode.Render(CsQuery.DomRenderingOptions)">
+             <summary>
+             Renders the complete HTML for this element, including its children.
+             </summary>
+            
+             <returns>
+             a string of HTML
+             </returns>
+        </member>
+        <member name="M:CsQuery.IDomNode.Render(CsQuery.Output.IOutputFormatter)">
+             <summary>
+             Renders the complete HTML for this element, including its children, using the OutputFormatter.
+             </summary>
+            
+             <returns>
+             a string of HTML
+             </returns>
+        </member>
+        <member name="M:CsQuery.IDomNode.Render(CsQuery.Output.IOutputFormatter,System.IO.TextWriter)">
+             <summary>
+             Renders the complete HTML for this element, including its children, using the OutputFormatter.
+             </summary>
+            
+             <returns>
              a string of HTML
              </returns>
         </member>
         <member name="M:CsQuery.IDomNode.Render(System.Text.StringBuilder)">
              <summary>
-             Renders the complete HTML for this element to a StringBuilder
+             Renders the complete HTML for this element to a StringBuilder. Note: This is obsolete; use Render(IOutputFormatter)
              </summary>
             
              <param name="sb">
@@ -5152,14 +5205,14 @@
         </member>
         <member name="M:CsQuery.IDomNode.Render(System.Text.StringBuilder,CsQuery.DomRenderingOptions)">
              <summary>
-             Renders the complete HTML for this element to a StringBuilder using specified options.
+             Renders the complete HTML for this element, including its children, using the OutputFormatter.
              </summary>
             
              <param name="sb">
              An existing StringBuilder instance to append this element's HTML.
              </param>
              <param name="options">
-             Options for controlling the operation.
+             (optional) options for controlling the operation.
              </param>
         </member>
         <member name="M:CsQuery.IDomNode.Remove">
@@ -5936,28 +5989,69 @@
              </summary>
             
              <returns>
+             a string of HTML.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.Render(CsQuery.Output.IOutputFormatter,System.IO.TextWriter)">
+             <summary>
+             Renders the complete HTML for this element, including its children, using the specified
+             OutputFormatter.
+             </summary>
+            
+             <param name="formatter">
+             The formatter.
+             </param>
+            
+             <returns>
+             a string of HTML.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.Render(CsQuery.Output.IOutputFormatter)">
+             <summary>
+             Renders the complete HTML for this element, including its children, using the specified
+             OutputFormatter.
+             </summary>
+            
+             <param name="formatter">
+             The formatter.
+             </param>
+            
+             <returns>
+             a string of HTML.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.Render(CsQuery.DomRenderingOptions)">
+             <summary>
+             Renders the complete HTML for this element, including its children.
+             </summary>
+            
+             <returns>
              a string of HTML
              </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomObject.Render(System.Text.StringBuilder)">
              <summary>
-             Renders the complete HTML for this element to a StringBuilder.
-             </summary>
-            
-             <param name="sb">
-             An existing StringBuilder instance to append this element's HTML.
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomObject.Render(System.Text.StringBuilder,CsQuery.DomRenderingOptions)">
-             <summary>
-             Renders the complete HTML for this element to a StringBuilder using specified options.
+             Renders the complete HTML for this element, including its children, using the OutputFormatter.
              </summary>
             
              <param name="sb">
              An existing StringBuilder instance to append this element's HTML.
              </param>
              <param name="options">
-             Options for controlling the operation.
+             (optional) options for controlling the operation.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.Render(System.Text.StringBuilder,CsQuery.DomRenderingOptions)">
+             <summary>
+             Renders the complete HTML for this element to a StringBuilder. Note: This obsolete and will
+             be removed; please use Render(IOutputFormatter).
+             </summary>
+            
+             <param name="sb">
+             An existing StringBuilder instance to append this element's HTML.
+             </param>
+             <param name="options">
+             (optional) options for controlling the operation.
              </param>
         </member>
         <member name="M:CsQuery.Implementation.DomObject.Cq">
@@ -6354,6 +6448,15 @@
              A string of HTML
              </returns>
         </member>
+        <member name="M:CsQuery.Implementation.DomObject.MergeOptions(CsQuery.DomRenderingOptions@)">
+             <summary>
+             Merge options with defaults when needed
+             </summary>
+            
+             <param name="options">
+             (optional) options for controlling the operation.
+             </param>
+        </member>
         <member name="M:CsQuery.Implementation.DomObject.UpdateDocumentFlags">
             <summary>
             Updates the cached Document and property flags.
@@ -6385,12 +6488,6 @@
              <returns>
              A copy of this object.
              </returns>
-        </member>
-        <member name="P:CsQuery.Implementation.DomObject.DomRenderingOptions">
-            <summary>
-            Gets options for controlling the DOM rendering from the bound document, or the default
-            options if there is no document.
-            </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomObject.NodeType">
             <summary>
@@ -6766,16 +6863,7 @@
              The item.
              </param>
         </member>
-        <member name="M:CsQuery.Implementation.DomContainer`1.RenderTextNodes(System.Text.StringBuilder)">
-             <summary>
-             Renders the contents of the text nodes to the passed StringBuilder.
-             </summary>
-            
-             <param name="sb">
-             The stringbuilder
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomContainer`1.RenderChildTextNode(CsQuery.IDomObject,System.Text.StringBuilder)">
+        <member name="M:CsQuery.Implementation.DomContainer`1.DescendantCount">
              <summary>
              Renders the child text node. This can be overridden for non-default text handling by some
              element types (e.g. textarea)
@@ -6927,18 +7015,6 @@
              <returns>
              A new element that inherits DomElement
              </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.Render(System.Text.StringBuilder,CsQuery.DomRenderingOptions)">
-             <summary>
-             Renders this object.
-             </summary>
-            
-             <param name="sb">
-             The sb.
-             </param>
-             <param name="options">
-             Options for controlling the operation.
-             </param>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.ElementHtml">
              <summary>
@@ -7466,39 +7542,6 @@
              A string representing the key for this item in the index
              </returns>
         </member>
-        <member name="M:CsQuery.Implementation.DomElement.GetHtml(CsQuery.DomRenderingOptions,System.Text.StringBuilder,System.Boolean)">
-             <summary>
-             Gets the HTML representation of this element and its children
-             </summary>
-            
-             <param name="options">
-             Options for how to render the HTML.
-             </param>
-             <param name="sb">
-             A StringBuilder object to which append the output.
-             </param>
-             <param name="includeChildren">
-             true to include, false to exclude the children.
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.RenderAttribute(System.Text.StringBuilder,System.String,System.String,System.Boolean)">
-             <summary>
-             Render an attribute
-             </summary>
-            
-             <param name="sb">
-             A StringBuilder to append the attributes to
-             </param>
-             <param name="name">
-             The name of the attribute
-             </param>
-             <param name="value">
-             The attribute value
-             </param>
-             <param name="quoteAll">
-             true to require quotes around the attribute value, false to use quotes only if needed.
-             </param>
-        </member>
         <member name="M:CsQuery.Implementation.DomElement.DescendantElements">
              <summary>
              Enumerates all descendant elements in this collection.
@@ -7848,16 +7891,6 @@
              <returntype>
              int
              </returntype>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLRawInnerTextElementBase.Value">
-            <summary>
-            The value of the TEXTAREA's contents
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLRawInnerTextElementBase.InnerText">
-            <summary>
-            For TEXTAREA elements, InnerText doesn't actually do anything, whereas Value is the InnerText.
-            </summary>
         </member>
         <member name="M:CsQuery.Implementation.HTMLStyleElement.#ctor">
             <summary>
@@ -8582,6 +8615,16 @@
         <member name="T:CsQuery.Implementation.HTMLTextAreaElement">
             <summary>
             An HTML text area element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLTextAreaElement.Value">
+            <summary>
+            The value of the HTMLRawInnerTextElementBase's contents
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLTextAreaElement.InnerText">
+            <summary>
+            For HTMLRawInnerTextElementBase elements, InnerText doesn't actually do anything, whereas Value is the InnerText.
             </summary>
         </member>
         <member name="T:CsQuery.Implementation.HTMLOptionElement">
@@ -10911,6 +10954,12 @@
             </summary>
             <returns><c>true</c> if CDATA sections are allowed</returns>
         </member>
+        <member name="P:HtmlParserSharp.Common.ITokenHandler.AllowSelfClosingTags">
+            <summary>
+            Gets a value indicating whether self-closing tags should be allowed. When true, any tag may
+            close itself. When false, a self-closing tag is treated like an opening-tag only.
+            </summary>
+        </member>
         <member name="T:HtmlParserSharp.Common.XmlViolationPolicy">
             <summary>
             Policy for XML 1.0 violations.
@@ -11370,7 +11419,7 @@
             </summary>
             <returns>A snapshot</returns>
         </member>
-        <member name="P:HtmlParserSharp.Core.TreeBuilder`1.HtmlParserSharp#Common#ITokenHandler#WantsComments">
+        <member name="P:HtmlParserSharp.Core.TreeBuilder`1.WantsComments">
             <summary>
             If this handler implementation cares about comments, return <code>true</code>.
             If not, return <code>false</code>
@@ -11967,6 +12016,26 @@
             </summary>
             <returns>The document</returns>
         </member>
+        <member name="T:CsQuery.HtmlParsingOptions">
+            <summary>
+            The options used when parsing strings of HTML
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParsingOptions.None">
+            <summary>
+            No options applied.
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParsingOptions.AllowselfClosingTags">
+            <summary>
+            Tags may be self-closing.
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParsingOptions.IgnoreComments">
+            <summary>
+            Comments are ignored entirely.
+            </summary>
+        </member>
         <member name="T:CsQuery.HtmlParser.CsQueryTreeBuilder">
             <summary>
             The tree builder glue for building a tree through the public DOM APIs.
@@ -11998,7 +12067,7 @@
             Static constructor.
             </summary>
         </member>
-        <member name="M:CsQuery.HtmlParser.ElementFactory.Create(System.String,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
+        <member name="M:CsQuery.HtmlParser.ElementFactory.Create(System.String,CsQuery.HtmlParsingMode,CsQuery.HtmlParsingOptions,CsQuery.DocType)">
              <summary>
              Creates a new document from a string of HTML using the options passed
              </summary>
@@ -12017,7 +12086,7 @@
              A new document
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.ElementFactory.Create(System.IO.Stream,CsQuery.HtmlParser.HtmlParsingMode,CsQuery.DocType)">
+        <member name="M:CsQuery.HtmlParser.ElementFactory.Create(System.IO.Stream,CsQuery.HtmlParsingMode,CsQuery.HtmlParsingOptions,CsQuery.DocType)">
              <summary>
              Creates a new document from a Stream of HTML using the options passed.
              </summary>
@@ -12090,6 +12159,11 @@
             Gets or sets the HTML parsing mode.
             </summary>
         </member>
+        <member name="P:CsQuery.HtmlParser.ElementFactory.HtmlParsingOptions">
+            <summary>
+            Gets or sets the HTML parsing mode.
+            </summary>
+        </member>
         <member name="P:CsQuery.HtmlParser.ElementFactory.DocType">
             <summary>
             Gets or sets the type of the document.
@@ -12105,49 +12179,29 @@
             Functions for preprocessing HTML.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.HtmlEncodingMethod.HtmlEncodingFull">
-            <summary>
-            Complete encoding for all non-ascii characters
-            </summary>
-        </member>
-        <member name="F:CsQuery.HtmlParser.HtmlEncodingMethod.HtmlEncodingMinimum">
-            <summary>
-            Only carets and ampersand as required to create valid HTML.
-            </summary>
-        </member>
-        <member name="F:CsQuery.HtmlParser.HtmlEncodingMethod.HtmlEncodingNone">
-            <summary>
-            No encoding.
-            </summary>
-        </member>
-        <member name="T:CsQuery.HtmlParser.HtmlParsingMode">
+        <member name="T:CsQuery.HtmlParsingMode">
             <summary>
             The methodology applied when parsing strings of HTML
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.HtmlParsingMode.Auto">
+        <member name="F:CsQuery.HtmlParsingMode.Auto">
             <summary>
             Automatically detect the document type. When no DocType node is provided, will default to FragmentWithSelfClosingTags.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.HtmlParsingMode.Fragment">
+        <member name="F:CsQuery.HtmlParsingMode.Fragment">
             <summary>
             A fragment whose context is determined by the first tag.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.HtmlParsingMode.Content">
+        <member name="F:CsQuery.HtmlParsingMode.Content">
             <summary>
             A content block, assumed to be in BODY context.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.HtmlParsingMode.Document">
+        <member name="F:CsQuery.HtmlParsingMode.Document">
             <summary>
             A complete document; the HTML and BODY tag constructs will be addded if missing..
-            </summary>
-        </member>
-        <member name="F:CsQuery.HtmlParser.HtmlParsingMode.FragmentWithSelfClosingTags">
-            <summary>
-            A fragment, but will be preprocessed to permit self-closing tags of any kind
             </summary>
         </member>
         <member name="T:CsQuery.HtmlParser.Deprecated.TokenizerState">
@@ -12437,6 +12491,365 @@
              <returns>
              true if it succeeds, false if it fails.
              </returns>
+        </member>
+        <member name="T:CsQuery.Output.HtmlEncoderNone">
+            <summary>
+            Minimum HTML encoder. This only parses the absolute minimum required for correct
+            interpretation (less-than, greater-than, ampersand). Everthing else is passed through.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Output.IHtmlEncoder">
+            <summary>
+            Interface for HTML encoder/decoder
+            </summary>
+        </member>
+        <member name="M:CsQuery.Output.IHtmlEncoder.Encode(System.String,System.IO.TextWriter)">
+             <summary>
+             Encodes text as HTML, writing the processed output to the TextWriter.
+             </summary>
+            
+             <param name="text">
+             The text to be encoded.
+             </param>
+             <param name="output">
+             The target for the ouput
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.HtmlEncoderNone.Encode(System.String,System.IO.TextWriter)">
+             <summary>
+             Encodes text as HTML, writing the processed output to the TextWriter.
+             </summary>
+            
+             <param name="text">
+             The text to be encoded.
+             </param>
+             <param name="output">
+             The target for the ouput.
+             </param>
+        </member>
+        <member name="T:CsQuery.Output.OutputFormatterBase">
+            <summary>
+            Output formatter base class. 
+            </summary>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterBase.#ctor(CsQuery.DomRenderingOptions,CsQuery.Output.IHtmlEncoder)">
+             <summary>
+             Abstract base class constructor.
+             </summary>
+            
+             <param name="options">
+             Options for controlling the operation.
+             </param>
+             <param name="encoder">
+             The encoder.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterBase.Render(CsQuery.IDomObject,System.IO.TextWriter)">
+             <summary>
+             Renders the object to the textwriter.
+             </summary>
+            
+             <exception cref="T:System.NotImplementedException">
+             Thrown when the requested operation is unimplemented.
+             </exception>
+            
+             <param name="node">
+             The node.
+             </param>
+             <param name="writer">
+             The writer to which output is written.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterBase.Render(CsQuery.IDomObject)">
+             <summary>
+             Renders the object to a string.
+             </summary>
+            
+             <param name="node">
+             The node.
+             </param>
+            
+             <returns>
+             A string.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterBase.RenderElements(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},System.IO.TextWriter)">
+             <summary>
+             Renders the sequence of elements.
+             </summary>
+            
+             <param name="elements">
+             The elements.
+             </param>
+             <param name="writer">
+             The writer to which output is written.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterBase.RenderElement(CsQuery.IDomObject,System.IO.TextWriter,System.Boolean)">
+             <summary>
+             Gets the HTML representation of this element and its children
+             </summary>
+            
+             <param name="options">
+             Options for how to render the HTML.
+             </param>
+             <param name="sb">
+             A StringBuilder object to which append the output.
+             </param>
+             <param name="includeChildren">
+             true to include, false to exclude the children.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterBase.RenderChildren(CsQuery.IDomObject,System.IO.TextWriter)">
+             <summary>
+             Renders all the children of the passed node.
+             </summary>
+            
+             <param name="element">
+             The element.
+             </param>
+             <param name="writer">
+             The writer to which output is written.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterBase.RenderTextNode(CsQuery.IDomObject,System.IO.TextWriter,System.Boolean)">
+             <summary>
+             Renders the text node.
+             </summary>
+            
+             <param name="textNode">
+             The text node.
+             </param>
+             <param name="writer">
+             The writer to which output is written.
+             </param>
+             <param name="raw">
+             true to raw.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterBase.RenderCdataNode(CsQuery.IDomObject,System.IO.TextWriter)">
+             <summary>
+             Renders a CDATA node.
+             </summary>
+            
+             <param name="parameter1">
+             The first parameter.
+             </param>
+             <param name="parameter2">
+             The second parameter.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterBase.RenderCommentNode(CsQuery.IDomObject,System.IO.TextWriter)">
+             <summary>
+             Renders the comment node.
+             </summary>
+            
+             <param name="element">
+             The element.
+             </param>
+             <param name="writer">
+             The writer to which output is written.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterBase.RenderAttribute(System.IO.TextWriter,System.String,System.String,System.Boolean)">
+             <summary>
+             Render an attribute
+             </summary>
+            
+             <param name="sb">
+             A StringBuilder to append the attributes to
+             </param>
+             <param name="name">
+             The name of the attribute
+             </param>
+             <param name="value">
+             The attribute value
+             </param>
+             <param name="quoteAll">
+             true to require quotes around the attribute value, false to use quotes only if needed.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterBase.MergeDefaultOptions">
+             <summary>
+             Merge options with defaults when needed
+             </summary>
+            
+             <param name="options">
+             (optional) options for controlling the operation.
+             </param>
+        </member>
+        <member name="T:CsQuery.Output.OutputFormatterDefault">
+            <summary>
+            Removes all extraneous whitespace
+            </summary>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterDefault.#ctor">
+            <summary>
+            Create an output formatter using the default HTML encoder and default options.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterDefault.#ctor(CsQuery.DomRenderingOptions,CsQuery.Output.IHtmlEncoder)">
+             <summary>
+             Create a new formatter using the specified HtmlEncoder.
+             </summary>
+            
+             <param name="encoder">
+             The encoder.
+             </param>
+        </member>
+        <member name="T:CsQuery.Output.HtmlEncoderMinimum">
+            <summary>
+            Minimum HTML encoder. This only parses the absolute minimum required for correct
+            interpretation (less-than, greater-than, ampersand). Everthing else is passed through.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Output.HtmlEncoderBase">
+            <summary>
+            Abstract base class for custom HTML encoder implementations
+            </summary>
+        </member>
+        <member name="M:CsQuery.Output.HtmlEncoderBase.TryEncode(System.Char,System.String@)">
+             <summary>
+             Determines of a character must be encoded; if so, encodes it as the output parameter and
+             returns true; if not, returns false.
+             </summary>
+            
+             <param name="c">
+             The text string to encode.
+             </param>
+             <param name="encoded">
+             [out] The encoded string.
+             </param>
+            
+             <returns>
+             True if the character was encoded.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Output.HtmlEncoderBase.TryEncodeAstralPlane(System.Int32,System.String@)">
+             <summary>
+             Determines of a character must be encoded (for unicode chars using astral planes); if so,
+             encodes it as the output parameter and returns true; if not, returns false.
+             </summary>
+            
+             <param name="c">
+             The text string to encode.
+             </param>
+             <param name="encoded">
+             [out] The encoded string.
+             </param>
+            
+             <returns>
+             True if the character was encoded.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Output.HtmlEncoderBase.Encode(System.String,System.IO.TextWriter)">
+             <summary>
+             Encodes text as HTML, writing the processed output to the TextWriter.
+             </summary>
+            
+             <param name="html">
+             The text to be encoded.
+             </param>
+             <param name="output">
+             The target for the ouput.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.HtmlEncoderMinimum.TryEncode(System.Char,System.String@)">
+             <summary>
+             Determines of a character must be encoded; if so, encodes it as the output parameter and
+             returns true; if not, returns false.
+             </summary>
+            
+             <param name="c">
+             The text string to encode.
+             </param>
+             <param name="encoded">
+             [out] The encoded string.
+             </param>
+            
+             <returns>
+             True if the character was encoded.
+             </returns>
+        </member>
+        <member name="T:CsQuery.Output.HtmlEncoderDefault">
+            <summary>
+            Default HTML encoder. This parses less-than, greater-than, ampersand, double-qoute, and non-
+            breaking space, plus all characters above ascii 160 into ther HTML coded equivalent.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Output.HtmlEncoderDefault.TryEncode(System.Char,System.String@)">
+             <summary>
+             Determines of a character must be encoded; if so, encodes it as the output parameter and
+             returns true; if not, returns false.
+             </summary>
+            
+             <param name="c">
+             The text string to encode.
+             </param>
+             <param name="encoded">
+             [out] The encoded string.
+             </param>
+            
+             <returns>
+             True if the character was encoded.
+             </returns>
+        </member>
+        <member name="M:CsQuery.OutputFormatters.Create(CsQuery.DomRenderingOptions,CsQuery.Output.IHtmlEncoder)">
+             <summary>
+             Creates an instance of the default OutputFormatter using the options passed.
+             </summary>
+            
+             <param name="options">
+             (optional) options for controlling the operation.
+             </param>
+             <param name="encoder">
+             (optional) the encoder.
+             </param>
+            
+             <returns>
+             An OutputFormatter.
+             </returns>
+        </member>
+        <member name="M:CsQuery.OutputFormatters.Create(CsQuery.DomRenderingOptions)">
+             <summary>
+             Creates an instance of the default OutputFormatter using the options passed and the default encoder.
+             </summary>
+            
+             <param name="options">
+             (optional) options for controlling the operation.
+             </param>
+            
+             <returns>
+             An OutputFormatter.
+             </returns>
+        </member>
+        <member name="M:CsQuery.OutputFormatters.Create(CsQuery.Output.IHtmlEncoder)">
+             <summary>
+             Creates an instance of the default OutputFormatter using the default options and the encoder
+             passed. 
+             </summary>
+            
+             <param name="options">
+             (optional) options for controlling the operation.
+             </param>
+            
+             <returns>
+             An OutputFormatter.
+             </returns>
+        </member>
+        <member name="M:CsQuery.OutputFormatters.MergeOptions(CsQuery.DomRenderingOptions@)">
+             <summary>
+             Merge options with defaults when needed
+             </summary>
+            
+             <param name="options">
+             (optional) options for controlling the operation.
+             </param>
+        </member>
+        <member name="P:CsQuery.OutputFormatters.Default">
+            <summary>
+            Gets an instance of the default OuputFormatter
+            </summary>
         </member>
         <member name="T:CsQuery.StringScanner.CharacterData">
             <summary>
@@ -14896,7 +15309,7 @@
              A context which can be used to complete the Render after any manipulation with CsQuery.
              </returns>
         </member>
-        <member name="T:CsQuery.OutputFormatters.FormatPlainText">
+        <member name="T:CsQuery.Output.FormatPlainText">
             <summary>
             Removes all extraneous whitespace
             </summary>
@@ -15599,47 +16012,47 @@
             automatically generated filters.
             </summary>
         </member>
-        <member name="T:CsQuery.CssStyleType">
+        <member name="T:CsQuery.CSSStyleType">
             <summary>
             Values that represent data types of CSS Styles.
             </summary>
         </member>
-        <member name="F:CsQuery.CssStyleType.Unit">
+        <member name="F:CsQuery.CSSStyleType.Unit">
             <summary>
             A unit 
             </summary>
         </member>
-        <member name="F:CsQuery.CssStyleType.Option">
+        <member name="F:CsQuery.CSSStyleType.Option">
             <summary>
             An option
             </summary>
         </member>
-        <member name="F:CsQuery.CssStyleType.UnitOption">
+        <member name="F:CsQuery.CSSStyleType.UnitOption">
             <summary>
             A unit and an option.
             </summary>
         </member>
-        <member name="F:CsQuery.CssStyleType.Composite">
+        <member name="F:CsQuery.CSSStyleType.Composite">
             <summary>
             A complex style definition.
             </summary>
         </member>
-        <member name="F:CsQuery.CssStyleType.Color">
+        <member name="F:CsQuery.CSSStyleType.Color">
             <summary>
             A named color
             </summary>
         </member>
-        <member name="F:CsQuery.CssStyleType.Font">
+        <member name="F:CsQuery.CSSStyleType.Font">
             <summary>
             A font name.
             </summary>
         </member>
-        <member name="F:CsQuery.CssStyleType.Url">
+        <member name="F:CsQuery.CSSStyleType.Url">
             <summary>
             A url.
             </summary>
         </member>
-        <member name="F:CsQuery.CssStyleType.String">
+        <member name="F:CsQuery.CSSStyleType.String">
             <summary>
             A string of text.
             </summary>
@@ -15679,6 +16092,16 @@
             Flags specifying how the document should be rendered
             </summary>
         </member>
+        <member name="F:CsQuery.DomRenderingOptions.None">
+            <summary>
+            No option flags. This is not the same as "default", but rather explicitly uses "false" values for all flags.
+            </summary>
+        </member>
+        <member name="F:CsQuery.DomRenderingOptions.Default">
+            <summary>
+            Render with default options as determined by CsQuery.Config.DomRenderingOptions
+            </summary>
+        </member>
         <member name="F:CsQuery.DomRenderingOptions.RemoveMismatchedCloseTags">
             <summary>
             This option only appies to the old HTML parser. It is obsolete, has no effect, and will be
@@ -15694,17 +16117,6 @@
             <summary>
             Add quotes around each attribute value, whether or not they are needed. The alternative is to only 
             use quotes when they are necesssary to delimit the value (e.g. because it includes spaces or other quote characters)
-            </summary>
-        </member>
-        <member name="F:CsQuery.DomRenderingOptions.HtmlEncodingMinimum">
-            <summary>
-            When true, text will be minimally HTML encoded (e.g. carets and ampersands). 
-            </summary>
-        </member>
-        <member name="F:CsQuery.DomRenderingOptions.HtmlEncodingNone">
-            <summary>
-            When true, no HTML encoding of text nodes will be performed. This will supercede HtmlEncodingMinimum,
-            of both are present, and may create invalid HTML since carets will not be encoded.
             </summary>
         </member>
         <member name="T:CsQuery.NodeType">
@@ -15747,32 +16159,32 @@
             A document fragment node.
             </summary>
         </member>
-        <member name="T:CsQuery.ICssStyle">
+        <member name="T:CsQuery.ICSSStyle">
             <summary>
             A single CSS style definition.
             </summary>
         </member>
-        <member name="P:CsQuery.ICssStyle.Name">
+        <member name="P:CsQuery.ICSSStyle.Name">
             <summary>
             The name of the style
             </summary>
         </member>
-        <member name="P:CsQuery.ICssStyle.Type">
+        <member name="P:CsQuery.ICSSStyle.Type">
             <summary>
             The type of data contained by this style.
             </summary>
         </member>
-        <member name="P:CsQuery.ICssStyle.Format">
+        <member name="P:CsQuery.ICSSStyle.Format">
             <summary>
             Gets or sets a format required by this style
             </summary>
         </member>
-        <member name="P:CsQuery.ICssStyle.Options">
+        <member name="P:CsQuery.ICSSStyle.Options">
             <summary>
             The acceptable options for Option-type styles
             </summary>
         </member>
-        <member name="P:CsQuery.ICssStyle.Description">
+        <member name="P:CsQuery.ICSSStyle.Description">
             <summary>
             A description of this style.
             </summary>
@@ -16118,8 +16530,8 @@
         </member>
         <member name="P:CsQuery.IDomDocument.DomRenderingOptions">
             <summary>
-            Gets or sets options for controlling how the output is rendered. All options are flags so
-            multiple values can be set with "option1 | option2 ...".
+            Deprecated: rendering options should be specified using an OutputFormatter, e.g.
+            "Render(OutputFormatters.Create(DomRenderingOptions.RemoveComments))".
             </summary>
         </member>
         <member name="P:CsQuery.IDomDocument.Body">
@@ -16156,24 +16568,6 @@
             <summary>
             Used for literal text (not part of a tag)
             </summary>
-        </member>
-        <member name="M:CsQuery.Implementation.DomText.Render">
-             <summary>
-             Renders this text node using document default rendering options
-             </summary>
-            
-             <returns>
-             A string of HTML-encoded text
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomText.Render(System.Text.StringBuilder)">
-             <summary>
-             Renders this text node using document default rendering options to the provided StringBuilder
-             </summary>
-            
-             <param name="sb">
-             A StringBuilder object
-             </param>
         </member>
         <member name="T:CsQuery.Implementation.DomFragment">
             <summary>
@@ -16483,7 +16877,7 @@
         </member>
         <member name="P:CsQuery.Implementation.DomDocument.DomRenderingOptions">
             <summary>
-            Gets or sets options for controlling the DOM rendering from the bound document.
+            Deprecated; pass options on Render() command
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomDocument.Document">
@@ -16559,24 +16953,6 @@
              <param name="text">
              The text.
              </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomComment.Render">
-             <summary>
-             Renders this object.
-             </summary>
-            
-             <returns>
-             A string of HTML
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomComment.ToString">
-             <summary>
-             Convert this object into a string representation.
-             </summary>
-            
-             <returns>
-             This object as a string.
-             </returns>
         </member>
         <member name="P:CsQuery.Implementation.DomComment.NodeType">
              <summary>
@@ -17515,39 +17891,6 @@
              A baseXX encoded string 
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.HtmlData.HtmlEncode(System.String,CsQuery.HtmlParser.HtmlEncodingMethod)">
-             <summary>
-             HtmlEncode the string (pass-thru to system; abstracted in case we want to change)
-             </summary>
-            
-             <param name="html">
-             The HTML to encode
-             </param>
-            
-             <returns>
-             The encoded string
-             </returns>
-        </member>
-        <member name="M:CsQuery.HtmlParser.HtmlData.HtmlDecode(System.String)">
-             <summary>
-             HTML decode the string (pass-thru to system; abstracted in case we want to change)
-             </summary>
-            
-             <param name="html">
-             The HTML to decode
-             </param>
-            
-             <returns>
-             The decoded string
-             </returns>
-        </member>
-        <member name="M:CsQuery.HtmlParser.HtmlData.AttributeEncode(System.String)">
-            <summary>
-            Encode text as part of an attribute
-            </summary>
-            <param name="text"></param>
-            <returns></returns>
-        </member>
         <member name="M:CsQuery.HtmlParser.HtmlData.AttributeEncode(System.String,System.Boolean,System.String@)">
              <summary>
              HtmlEncode a string, except for double-quotes, so it can be enclosed in single-quotes.
@@ -17565,6 +17908,19 @@
             
              <returns>
              The encoded string
+             </returns>
+        </member>
+        <member name="M:CsQuery.HtmlParser.HtmlData.HtmlDecode(System.String)">
+             <summary>
+             Decode HTML-encoded text.
+             </summary>
+            
+             <param name="html">
+             The HTML.
+             </param>
+            
+             <returns>
+             Decoded html.
              </returns>
         </member>
         <member name="M:CsQuery.HtmlParser.HtmlData.SpecialTagAction(System.String,System.String,System.Boolean)">
@@ -17635,7 +17991,6 @@
              tag is opened.
              </returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:CsQuery.HtmlParser.HtmlData.HtmlEncodeMinimal(System.String)" -->
         <member name="M:CsQuery.HtmlParser.HtmlData.setBit(System.Collections.Generic.IEnumerable{System.String},CsQuery.HtmlParser.TokenProperties)">
              <summary>
              For each value in "tokens" (ignoring case) sets the specified bit in the reference table.
@@ -19949,7 +20304,7 @@
              A list of IDomObject elements; the topmost sequence of the document.
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.Deprecated.HtmlElementFactory.Parse(CsQuery.HtmlParser.HtmlParsingMode)">
+        <member name="M:CsQuery.HtmlParser.Deprecated.HtmlElementFactory.Parse(CsQuery.HtmlParsingMode)">
              <summary>
              Parse the HTML, and return it, based on options set.
              </summary>
