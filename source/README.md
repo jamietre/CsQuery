@@ -9,7 +9,7 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 ####Version 1.3 Beta 2
 
 - Build out `IOutputFormatter` interface/methods and move element rendering implementations to OutputFormatters.. Some `Render` methods have been marked as obsolete now.
-- Add astral plane UTF handling for HTML decoder
+- Add unicode astral plane handling for HTML decoder
 
 ####Version 1.3 Beta 1
 

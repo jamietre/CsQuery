@@ -86,12 +86,10 @@ namespace CsQuery.Output
                     {
                         output.Write(c);
                         output.Write(c2);
-
                     }
                 }
                 else
                 {
-
                     if (TryEncode(c, out encoded))
                     {
                         output.Write(encoded);
@@ -103,6 +101,5 @@ namespace CsQuery.Output
                 }
             }
         }
-
     }
 }
