@@ -141,13 +141,8 @@ namespace CsQuery.Output
             
             if (el.HasAttributes)
             {
-                bool first=true;
                 foreach (var kvp in el.Attributes)
                 {
-                    //if (first) {
-                    //    first = false;
-                    //    writer.Write(" ");
-                    //}
                     writer.Write(" ");
                     RenderAttribute(writer,kvp.Key, kvp.Value, quoteAll);
                 }

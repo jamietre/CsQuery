@@ -890,6 +890,24 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
+        /// Renders the complete HTML for this element, including its children, using the OutputFormatter.
+        /// </summary>
+        ///
+        /// <param name="sb">
+        /// An existing StringBuilder instance to append this element's HTML.
+        /// </param>
+        /// <param name="options">
+        /// (optional) options for controlling the operation.
+        /// </param>
+
+        [Obsolete]
+        public virtual void Render(StringBuilder sb)
+        {
+            Render(sb, DomRenderingOptions.Default);
+        }
+
+
+        /// <summary>
         /// Renders the complete HTML for this element to a StringBuilder. Note: This obsolete and will
         /// be removed; please use Render(IOutputFormatter).
         /// </summary>
@@ -902,29 +920,12 @@ namespace CsQuery.Implementation
         /// </param>
 
         [Obsolete]
-        public virtual void Render(StringBuilder sb, DomRenderingOptions options = DomRenderingOptions.Default)
+        public virtual void Render(StringBuilder sb, DomRenderingOptions options)
         {
             sb.Append(Render(options));
         }
 
-        /// <summary>
-        /// Renders the complete HTML for this element to a TextWriter. Note: This obsolete and will
-        /// be removed; please use Render(IOutputFormatter).
-        /// </summary>
-        ///
-        /// <param name="writer">
-        /// An existing StringBuilder instance to append this element's HTML.
-        /// </param>
-        /// <param name="options">
-        /// (optional) options for controlling the operation.
-        /// </param>
-
-        [Obsolete]
-        public virtual void Render(TextWriter writer, DomRenderingOptions options = DomRenderingOptions.Default)
-        {
-            writer.Write(Render(options));
-        }
-
+        
         /// <summary>
         /// Wrap this element in a CQ object. This is the CsQuery equivalent of the common jQuery
         /// construct $(el). Since there is no default method in C# that we can use to create a similar

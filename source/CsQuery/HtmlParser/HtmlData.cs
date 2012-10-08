@@ -1037,21 +1037,6 @@ namespace CsQuery.HtmlParser
             return sc_result.PadLeft(pathIdLength, '0');
         }
 
-        
-        /// <summary>
-        /// Encode text as part of an attribute
-        /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        public static string AttributeEncode(string text)
-        {
-            string quoteChar;
-            string attribute = AttributeEncode(text,
-                CQ.DefaultDomRenderingOptions.HasFlag(DomRenderingOptions.QuoteAllAttributes),
-                out quoteChar);
-            return quoteChar + attribute + quoteChar;
-        }
-
         /// <summary>
         /// HtmlEncode a string, except for double-quotes, so it can be enclosed in single-quotes.
         /// </summary>

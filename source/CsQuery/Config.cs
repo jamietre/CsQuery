@@ -32,12 +32,13 @@ namespace CsQuery
 
         internal static DomRenderingOptions _DomRenderingOptions;
         private static Type _DynamicObjectType;
-        private static Type _OutputFormatterType;
+        
         private static IOutputFormatter GetOutputFormatter()
         {
 
-            return new OutputFormatterDefault(DomRenderingOptions, new HtmlEncoderDefault());
+            return OutputFormatters.Default;
         }
+
         #endregion
 
         /// <summary>

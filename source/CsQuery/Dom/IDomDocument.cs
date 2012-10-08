@@ -37,7 +37,8 @@ namespace CsQuery
         IList<ICSSStyleSheet> StyleSheets { get; }
 
         /// <summary>
-        /// Deprecated: options will be specificed as a Render parameter
+        /// Deprecated: rendering options should be specified using an OutputFormatter, e.g.
+        /// "Render(OutputFormatters.Create(DomRenderingOptions.RemoveComments))".
         /// </summary>
 
         [Obsolete]

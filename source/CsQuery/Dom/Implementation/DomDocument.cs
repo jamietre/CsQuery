@@ -93,6 +93,7 @@ namespace CsQuery.Implementation
         /// Initializes an instance to the default state
         /// </summary>
 
+        [Obsolete]
         protected void InitializeDomDocument()
         {
             Document.DomRenderingOptions = CsQuery.Config._DomRenderingOptions;           
@@ -824,6 +825,7 @@ namespace CsQuery.Implementation
             return newDoc;
         }
 
+        [Obsolete]
         private void FinishConfiguringNew(IDomDocument newDoc)
         {
             newDoc.DomRenderingOptions = DomRenderingOptions;

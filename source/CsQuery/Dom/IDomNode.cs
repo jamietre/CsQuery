@@ -101,28 +101,29 @@ namespace CsQuery
         void Render(IOutputFormatter formatter, TextWriter writer);
 
         /// <summary>
-        /// Renders the complete HTML for this element to a TextWriter
-        /// </summary>
-        ///
-        /// <param name="sb">
-        /// An existing StringBuilder instance to append this element's HTML.
-        /// </param>
-
-        [Obsolete]
-        void Render(TextWriter writer, DomRenderingOptions options = DomRenderingOptions.Default);
-
-
-        /// <summary>
         /// Renders the complete HTML for this element to a StringBuilder. Note: This is obsolete; use Render(IOutputFormatter)
         /// </summary>
         ///
         /// <param name="sb">
         /// An existing StringBuilder instance to append this element's HTML.
         /// </param>
-        
-        [Obsolete]
-        void Render(StringBuilder sb,DomRenderingOptions options=DomRenderingOptions.Default);
 
+        [Obsolete]
+        void Render(StringBuilder sb);
+
+        /// <summary>
+        /// Renders the complete HTML for this element, including its children, using the OutputFormatter.
+        /// </summary>
+        ///
+        /// <param name="sb">
+        /// An existing StringBuilder instance to append this element's HTML.
+        /// </param>
+        /// <param name="options">
+        /// (optional) options for controlling the operation.
+        /// </param>
+
+        [Obsolete]
+        void Render(StringBuilder sb, DomRenderingOptions options=DomRenderingOptions.Default);
 
         /// <summary>
         /// Removes this object from it's parent, and consequently the Document, if any, to which it belongs.

@@ -54,7 +54,7 @@ namespace CsQuery
 
         public string Render()
         {
-            return Document.Render(Document.DomRenderingOptions);
+            return Document.Render();
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace CsQuery
         /// A string of HTML
         /// </returns>
 
-        public string Render(DomRenderingOptions options = DomRenderingOptions.Default)
+        public string Render(DomRenderingOptions options)
         {
             return Document.Render(options);
         }
@@ -101,35 +101,29 @@ namespace CsQuery
         {
             StringBuilder sb= new StringBuilder();
             StringWriter writer = new StringWriter(sb);
-            foreach (var element in Document.ChildNodes)
-            {
-                format.Render(element, writer);
-            }
+            Render(format, writer);
             return sb.ToString();
         }
 
-
         /// <summary>
-        /// Render the entire document, parsed through a formatter passed using the parameter, with the
-        /// specified options.
+        /// Render the entire document, parsed through a formatter passed using the parameter, to the
+        /// specified writer.
         /// </summary>
         ///
         /// <param name="formatter">
         /// The formatter.
         /// </param>
-        /// <param name="renderingOptions">
-        /// The options flags in effect.
+        /// <param name="writer">
+        /// The writer.
         /// </param>
-        ///
-        /// <returns>
-        /// A string of HTML.
-        /// </returns>
 
-        public string Render(IOutputFormatter formatter, DomRenderingOptions options)
+        public void Render(IOutputFormatter formatter, TextWriter writer)
         {
-            return Render(formatter,options);
+            foreach (var element in Document.ChildNodes)
+            {
+                formatter.Render(element, writer);
+            }
         }
-
         /// <summary>
         /// Render the entire document, parsed through a formatter passed using the parameter, with the
         /// specified options.
@@ -141,16 +135,11 @@ namespace CsQuery
         /// <param name="options">
         /// (optional) options for controlling the operation.
         /// </param>
-
+        
+        [Obsolete]
         public void Render(StringBuilder sb, DomRenderingOptions options = DomRenderingOptions.Default)
         {
             Document.Render(sb, options);
-        }
-
-
-        public void Render(TextWriter writer, DomRenderingOptions options = DomRenderingOptions.Default)
-        {
-            Document.Render(writer, options);
         }
     }
 }
