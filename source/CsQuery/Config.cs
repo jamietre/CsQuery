@@ -20,6 +20,7 @@ namespace CsQuery
         {
             DynamicObjectType = typeof(JsObject);
             _DomRenderingOptions =   DomRenderingOptions.QuoteAllAttributes;
+            HtmlEncoder = HtmlEncoders.Basic;
         }
 
         #endregion
@@ -41,21 +42,32 @@ namespace CsQuery
 
         #endregion
 
+        #region public properties
+
         /// <summary>
-        /// The default rendering options. This is obsolete: though these values are currently used in
-        /// the constuction of the default OutputFormatter, you should control default output handling
-        /// using the OutputFormatter property instead. This property will only work now if the default
-        /// value of OutputFormatter has not been changed.
+        /// The default rendering options. These will be used when configuring a default OutputFormatter.
+        /// Note that if the default OutputFormatter has been changed, this setting is not guaranteed to
+        /// have any effect on output.
         /// </summary>
 
-        [Obsolete]
-        public static DomRenderingOptions DomRenderingOptions  {
+        public static DomRenderingOptions DomRenderingOptions  
+        {
             get {
                 return _DomRenderingOptions;
             }
             set {
                 _DomRenderingOptions = value;
             }
+        }
+
+        /// <summary>
+        /// The default HTML encoder.
+        /// </summary>
+
+        public static IHtmlEncoder HtmlEncoder
+        {
+            get;
+            set;
         }
 
         /// <summary>
@@ -121,6 +133,7 @@ namespace CsQuery
                 return PseudoSelectors.Items;
             }
         }
-        
+        #endregion
+
     }
 }

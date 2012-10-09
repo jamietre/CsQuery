@@ -73,20 +73,7 @@ namespace CsQuery.Tests.Csharp.HtmlParser
 
         }
 
-        [TestMethod, Test]
-        public void Utf8Handling()
-        {
-            string spanish = "Romney dice que Chávez expande la tiranía";
-            var dom = CQ.CreateFragment("<div>" + spanish + "</div>");
-        
-            // the "render" method should turn UTF8 characters to HTML. Accessing the node value directly should not.
-
-            Assert.AreEqual(spanish,dom["div"][0].ChildNodes[0].NodeValue);
-            Assert.AreEqual(spanish, dom.Text());
-            Assert.AreEqual("<div>Romney dice que Ch&#225;vez expande la tiran&#237;a</div>", dom.Render());
-
-        }
-
+    
         /// <summary>
         /// Allow self closing tags - added feature to ITokenHandler implemenation in HtmlParserSharp to
         /// permit self-closing tags, if desired.

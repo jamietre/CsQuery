@@ -48,6 +48,21 @@ namespace CsQuery.Output
             }
         }
 
+        /// <summary>
+        /// Overrides default astral plane encoding, causing unicode characters to never be HTML encoded.
+        /// </summary>
+        ///
+        /// <param name="c">
+        /// The text string to encode.
+        /// </param>
+        /// <param name="encoded">
+        /// [out] Null always (never encodes)
+        /// </param>
+        ///
+        /// <returns>
+        /// False always (never encodes)
+        /// </returns>
+
         protected override bool TryEncodeAstralPlane(int c, out string encoded)
         {
             encoded = null;

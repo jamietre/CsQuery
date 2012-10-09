@@ -89,7 +89,7 @@ namespace CsQuery
         /// output would be useful and will be included in some future release.
         /// </remarks>
         ///
-        /// <param name="format">
+        /// <param name="formatter">
         /// An object that parses a CQ object and returns a string of HTML.
         /// </param>
         ///
@@ -97,11 +97,11 @@ namespace CsQuery
         /// A string of HTML.
         /// </returns>
 
-        public string Render(IOutputFormatter format)
+        public string Render(IOutputFormatter formatter)
         {
             StringBuilder sb= new StringBuilder();
             StringWriter writer = new StringWriter(sb);
-            Render(format, writer);
+            Render(formatter, writer);
             return sb.ToString();
         }
 

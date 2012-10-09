@@ -6,6 +6,10 @@ using CsQuery.Output;
 
 namespace CsQuery
 {
+    /// <summary>
+    /// Factory for OuputFormatters included with CsQuery.
+    /// </summary>
+
     public static class OutputFormatters
     {
         /// <summary>
@@ -63,7 +67,7 @@ namespace CsQuery
             return new OutputFormatterDefault(DomRenderingOptions.Default,encoder);
         }
         /// <summary>
-        /// Gets an instance of the default OuputFormatter
+        /// Gets an instance of the default OuputFormatter configured with the default HTML encoder and options
         /// </summary>
 
         public static IOutputFormatter Default 
@@ -72,8 +76,63 @@ namespace CsQuery
                 return new OutputFormatterDefault();
             }
         }
+        /// <summary>
+        /// Gets an instance of the default OuputFormatter configured with no HTML encoding
+        /// </summary>
 
-        
+        public static IOutputFormatter HtmlEncodingNone
+        {
+            get
+            {
+                return Create(HtmlEncoders.None);
+            }
+        }
+
+        /// <summary>
+        /// Gets an instance of the default OuputFormatter configured with basic encoding
+        /// </summary>
+
+        public static IOutputFormatter HtmlEncodingBasic
+        {
+            get
+            {
+                return Create(HtmlEncoders.Basic);
+            }
+        }
+
+        /// <summary>
+        /// Gets an instance of the default OuputFormatter configured for full HTML encoding
+        /// </summary>
+
+        public static IOutputFormatter HtmlEncodingFull
+        {
+            get
+            {
+                return Create(HtmlEncoders.Full);
+            }
+        }
+        /// <summary>
+        /// Gets an instance of the default OutputFormatter, using the minimum HTML encoding scheme.
+        /// </summary>
+
+        public static IOutputFormatter HtmlEncodingMinimum
+        {
+            get
+            {
+                return Create(HtmlEncoders.Minimum);
+            }
+        }
+        /// <summary>
+        /// Gets an instance of the default OutputFormatter, using the minimum HTML + NBSP encoding scheme.
+        /// </summary>
+
+        public static IOutputFormatter HtmlEncodingMinimumNbsp
+        {
+            get
+            {
+                return Create(HtmlEncoders.MinimumNbsp);
+            }
+        }
         /// <summary>
         /// Merge options with defaults when needed
         /// </summary>

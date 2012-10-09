@@ -12,7 +12,7 @@ namespace CsQuery.Output
     /// <summary>
     /// Removes all extraneous whitespace
     /// </summary>
-    public class FormatPlainText: OutputFormatterBase
+    public class FormatPlainText: OutputFormatterDefault
     {
        public FormatPlainText(DomRenderingOptions options, IHtmlEncoder encoder): 
             base(options,encoder)

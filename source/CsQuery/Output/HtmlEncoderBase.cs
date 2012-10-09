@@ -33,7 +33,9 @@ namespace CsQuery.Output
 
         /// <summary>
         /// Determines of a character must be encoded (for unicode chars using astral planes); if so,
-        /// encodes it as the output parameter and returns true; if not, returns false.
+        /// encodes it as the output parameter and returns true; if not, returns false. This method will
+        /// be passed the integral representation of the mult-byte unicode character. If the method
+        /// returns false, then the character will be output as the orginal two-byte sequence.
         /// </summary>
         ///
         /// <param name="c">
@@ -47,7 +49,7 @@ namespace CsQuery.Output
         /// True if the character was encoded.
         /// </returns>
 
-        protected abstract  bool TryEncodeAstralPlane(int c, out string encoded);
+        protected abstract bool TryEncodeAstralPlane(int c, out string encoded);
 
         /// <summary>
         /// Encodes text as HTML, writing the processed output to the TextWriter.

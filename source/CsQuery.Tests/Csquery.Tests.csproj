@@ -99,6 +99,7 @@
     <Compile Include="Csharp\Dom\DomElement.cs" />
     <Compile Include="Csharp\Dom\SpecialElements.cs" />
     <Compile Include="Csharp\ExtensionMethods\Xml.cs" />
+    <Compile Include="Csharp\HtmlParser\HtmlEncoding.cs" />
     <Compile Include="Csharp\HtmlParser\PreProcessing.cs" />
     <Compile Include="Csharp\HtmlParser\FragmentContext.cs" />
     <Compile Include="Csharp\HtmlParser\EdgeCases.cs" />

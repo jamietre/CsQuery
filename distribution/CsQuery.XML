@@ -33,10 +33,14 @@
         </member>
         <member name="P:CsQuery.Config.DomRenderingOptions">
             <summary>
-            The default rendering options. This is obsolete: though these values are currently used in
-            the constuction of the default OutputFormatter, you should control default output handling
-            using the OutputFormatter property instead. This property will only work now if the default
-            value of OutputFormatter has not been changed.
+            The default rendering options. These will be used when configuring a default OutputFormatter.
+            Note that if the default OutputFormatter has been changed, this setting is not guaranteed to
+            have any effect on output.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Config.HtmlEncoder">
+            <summary>
+            The default HTML encoder.
             </summary>
         </member>
         <member name="P:CsQuery.Config.DynamicObjectType">
@@ -806,7 +810,7 @@
              output would be useful and will be included in some future release.
              </remarks>
             
-             <param name="format">
+             <param name="formatter">
              An object that parses a CQ object and returns a string of HTML.
              </param>
             
@@ -12492,10 +12496,22 @@
              true if it succeeds, false if it fails.
              </returns>
         </member>
-        <member name="T:CsQuery.Output.HtmlEncoderNone">
+        <member name="T:CsQuery.Output.HtmlEncoderFull">
             <summary>
-            Minimum HTML encoder. This only parses the absolute minimum required for correct
-            interpretation (less-than, greater-than, ampersand). Everthing else is passed through.
+            Full HTML encoder. All entities with known HTML codes are parsed; everything above 160
+            becomes an HTML numeric-coded entity.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Output.HtmlEncoderBasic">
+            <summary>
+            Standard HTML encoder. This parses less-than, greater-than, ampersand, double-qoute, and non-
+            breaking space into HTML entities, plus all characters above ascii 160 into ther HTML numeric-
+            coded equivalent.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Output.HtmlEncoderBase">
+            <summary>
+            Abstract base class for custom HTML encoder implementations
             </summary>
         </member>
         <member name="T:CsQuery.Output.IHtmlEncoder">
@@ -12514,199 +12530,6 @@
              <param name="output">
              The target for the ouput
              </param>
-        </member>
-        <member name="M:CsQuery.Output.HtmlEncoderNone.Encode(System.String,System.IO.TextWriter)">
-             <summary>
-             Encodes text as HTML, writing the processed output to the TextWriter.
-             </summary>
-            
-             <param name="text">
-             The text to be encoded.
-             </param>
-             <param name="output">
-             The target for the ouput.
-             </param>
-        </member>
-        <member name="T:CsQuery.Output.OutputFormatterBase">
-            <summary>
-            Output formatter base class. 
-            </summary>
-        </member>
-        <member name="M:CsQuery.Output.OutputFormatterBase.#ctor(CsQuery.DomRenderingOptions,CsQuery.Output.IHtmlEncoder)">
-             <summary>
-             Abstract base class constructor.
-             </summary>
-            
-             <param name="options">
-             Options for controlling the operation.
-             </param>
-             <param name="encoder">
-             The encoder.
-             </param>
-        </member>
-        <member name="M:CsQuery.Output.OutputFormatterBase.Render(CsQuery.IDomObject,System.IO.TextWriter)">
-             <summary>
-             Renders the object to the textwriter.
-             </summary>
-            
-             <exception cref="T:System.NotImplementedException">
-             Thrown when the requested operation is unimplemented.
-             </exception>
-            
-             <param name="node">
-             The node.
-             </param>
-             <param name="writer">
-             The writer to which output is written.
-             </param>
-        </member>
-        <member name="M:CsQuery.Output.OutputFormatterBase.Render(CsQuery.IDomObject)">
-             <summary>
-             Renders the object to a string.
-             </summary>
-            
-             <param name="node">
-             The node.
-             </param>
-            
-             <returns>
-             A string.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Output.OutputFormatterBase.RenderElements(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},System.IO.TextWriter)">
-             <summary>
-             Renders the sequence of elements.
-             </summary>
-            
-             <param name="elements">
-             The elements.
-             </param>
-             <param name="writer">
-             The writer to which output is written.
-             </param>
-        </member>
-        <member name="M:CsQuery.Output.OutputFormatterBase.RenderElement(CsQuery.IDomObject,System.IO.TextWriter,System.Boolean)">
-             <summary>
-             Gets the HTML representation of this element and its children
-             </summary>
-            
-             <param name="options">
-             Options for how to render the HTML.
-             </param>
-             <param name="sb">
-             A StringBuilder object to which append the output.
-             </param>
-             <param name="includeChildren">
-             true to include, false to exclude the children.
-             </param>
-        </member>
-        <member name="M:CsQuery.Output.OutputFormatterBase.RenderChildren(CsQuery.IDomObject,System.IO.TextWriter)">
-             <summary>
-             Renders all the children of the passed node.
-             </summary>
-            
-             <param name="element">
-             The element.
-             </param>
-             <param name="writer">
-             The writer to which output is written.
-             </param>
-        </member>
-        <member name="M:CsQuery.Output.OutputFormatterBase.RenderTextNode(CsQuery.IDomObject,System.IO.TextWriter,System.Boolean)">
-             <summary>
-             Renders the text node.
-             </summary>
-            
-             <param name="textNode">
-             The text node.
-             </param>
-             <param name="writer">
-             The writer to which output is written.
-             </param>
-             <param name="raw">
-             true to raw.
-             </param>
-        </member>
-        <member name="M:CsQuery.Output.OutputFormatterBase.RenderCdataNode(CsQuery.IDomObject,System.IO.TextWriter)">
-             <summary>
-             Renders a CDATA node.
-             </summary>
-            
-             <param name="parameter1">
-             The first parameter.
-             </param>
-             <param name="parameter2">
-             The second parameter.
-             </param>
-        </member>
-        <member name="M:CsQuery.Output.OutputFormatterBase.RenderCommentNode(CsQuery.IDomObject,System.IO.TextWriter)">
-             <summary>
-             Renders the comment node.
-             </summary>
-            
-             <param name="element">
-             The element.
-             </param>
-             <param name="writer">
-             The writer to which output is written.
-             </param>
-        </member>
-        <member name="M:CsQuery.Output.OutputFormatterBase.RenderAttribute(System.IO.TextWriter,System.String,System.String,System.Boolean)">
-             <summary>
-             Render an attribute
-             </summary>
-            
-             <param name="sb">
-             A StringBuilder to append the attributes to
-             </param>
-             <param name="name">
-             The name of the attribute
-             </param>
-             <param name="value">
-             The attribute value
-             </param>
-             <param name="quoteAll">
-             true to require quotes around the attribute value, false to use quotes only if needed.
-             </param>
-        </member>
-        <member name="M:CsQuery.Output.OutputFormatterBase.MergeDefaultOptions">
-             <summary>
-             Merge options with defaults when needed
-             </summary>
-            
-             <param name="options">
-             (optional) options for controlling the operation.
-             </param>
-        </member>
-        <member name="T:CsQuery.Output.OutputFormatterDefault">
-            <summary>
-            Removes all extraneous whitespace
-            </summary>
-        </member>
-        <member name="M:CsQuery.Output.OutputFormatterDefault.#ctor">
-            <summary>
-            Create an output formatter using the default HTML encoder and default options.
-            </summary>
-        </member>
-        <member name="M:CsQuery.Output.OutputFormatterDefault.#ctor(CsQuery.DomRenderingOptions,CsQuery.Output.IHtmlEncoder)">
-             <summary>
-             Create a new formatter using the specified HtmlEncoder.
-             </summary>
-            
-             <param name="encoder">
-             The encoder.
-             </param>
-        </member>
-        <member name="T:CsQuery.Output.HtmlEncoderMinimum">
-            <summary>
-            Minimum HTML encoder. This only parses the absolute minimum required for correct
-            interpretation (less-than, greater-than, ampersand). Everthing else is passed through.
-            </summary>
-        </member>
-        <member name="T:CsQuery.Output.HtmlEncoderBase">
-            <summary>
-            Abstract base class for custom HTML encoder implementations
-            </summary>
         </member>
         <member name="M:CsQuery.Output.HtmlEncoderBase.TryEncode(System.Char,System.String@)">
              <summary>
@@ -12728,7 +12551,9 @@
         <member name="M:CsQuery.Output.HtmlEncoderBase.TryEncodeAstralPlane(System.Int32,System.String@)">
              <summary>
              Determines of a character must be encoded (for unicode chars using astral planes); if so,
-             encodes it as the output parameter and returns true; if not, returns false.
+             encodes it as the output parameter and returns true; if not, returns false. This method will
+             be passed the integral representation of the mult-byte unicode character. If the method
+             returns false, then the character will be output as the orginal two-byte sequence.
              </summary>
             
              <param name="c">
@@ -12754,6 +12579,78 @@
              The target for the ouput.
              </param>
         </member>
+        <member name="M:CsQuery.Output.HtmlEncoderBasic.TryEncode(System.Char,System.String@)">
+             <summary>
+             Determines of a character must be encoded; if so, encodes it as the output parameter and
+             returns true; if not, returns false.
+             </summary>
+            
+             <param name="c">
+             The text string to encode.
+             </param>
+             <param name="encoded">
+             [out] The encoded string.
+             </param>
+            
+             <returns>
+             True if the character was encoded.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Output.HtmlEncoderBasic.TryEncodeAstralPlane(System.Int32,System.String@)">
+             <summary>
+             Determines of a character must be encoded (for unicode chars using astral planes); if so,
+             encodes it as the output parameter and returns true; if not, returns false. This method will
+             be passed the integral representation of the mult-byte unicode character. If the method
+             returns false, then the character will be output as the orginal two-byte sequence.
+             </summary>
+            
+             <param name="c">
+             The text string to encode.
+             </param>
+             <param name="encoded">
+             [out] The encoded string.
+             </param>
+            
+             <returns>
+             True if the character was encoded.
+             </returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:CsQuery.Output.HtmlEncoderBasic.EncodeNumeric(System.Int32)" -->
+        <member name="M:CsQuery.Output.HtmlEncoderFull.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Output.HtmlEncoderFull.TryEncode(System.Char,System.String@)">
+             <summary>
+             Determines of a character must be encoded; if so, encodes it as the output parameter and
+             returns true; if not, returns false.
+             </summary>
+            
+             <param name="c">
+             The text string to encode.
+             </param>
+             <param name="encoded">
+             [out] The encoded string.
+             </param>
+            
+             <returns>
+             True if the character was encoded.
+             </returns>
+        </member>
+        <member name="T:CsQuery.Output.HtmlEncoderMinimumNbsp">
+            <summary>
+            Minimum HTML encoder (including nonbreaking space). This only parses the absolute minimum
+            required for correct interpretation (less-than, greater-than, ampersand), plus non-breaking
+            space. Everthing else is passed through.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Output.HtmlEncoderMinimum">
+            <summary>
+            Minimum HTML encoder. This only parses the absolute minimum required for correct
+            interpretation (less-than, greater-than, ampersand). Everthing else is passed through.
+            </summary>
+        </member>
         <member name="M:CsQuery.Output.HtmlEncoderMinimum.TryEncode(System.Char,System.String@)">
              <summary>
              Determines of a character must be encoded; if so, encodes it as the output parameter and
@@ -12771,13 +12668,23 @@
              True if the character was encoded.
              </returns>
         </member>
-        <member name="T:CsQuery.Output.HtmlEncoderDefault">
-            <summary>
-            Default HTML encoder. This parses less-than, greater-than, ampersand, double-qoute, and non-
-            breaking space, plus all characters above ascii 160 into ther HTML coded equivalent.
-            </summary>
+        <member name="M:CsQuery.Output.HtmlEncoderMinimum.TryEncodeAstralPlane(System.Int32,System.String@)">
+             <summary>
+             Overrides default astral plane encoding, causing unicode characters to never be HTML encoded.
+             </summary>
+            
+             <param name="c">
+             The text string to encode.
+             </param>
+             <param name="encoded">
+             [out] Null always (never encodes)
+             </param>
+            
+             <returns>
+             False always (never encodes)
+             </returns>
         </member>
-        <member name="M:CsQuery.Output.HtmlEncoderDefault.TryEncode(System.Char,System.String@)">
+        <member name="M:CsQuery.Output.HtmlEncoderMinimumNbsp.TryEncode(System.Char,System.String@)">
              <summary>
              Determines of a character must be encoded; if so, encodes it as the output parameter and
              returns true; if not, returns false.
@@ -12793,6 +12700,248 @@
              <returns>
              True if the character was encoded.
              </returns>
+        </member>
+        <member name="T:CsQuery.HtmlEncoders">
+            <summary>
+            Factory for HTML encoders included with CsQuery
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlEncoders.Basic">
+            <summary>
+            The standard HTML encoder; encodes most entities, and any characters that are above ascii 160.
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlEncoders.Minimum">
+            <summary>
+            The minimum HTML encoder; only encodes left-caret, right-caret, and ampersand. All other
+            characters are passed through.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:CsQuery.HtmlEncoders.MinimumNbsp" -->
+        <member name="F:CsQuery.HtmlEncoders.None">
+            <summary>
+            No HTML encoding -- all characters are passed through. Will likely produce invalid HTML.
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlEncoders.Full">
+            <summary>
+            Full HTML encoding -- all entities mapped to their named (not numeric) entities when
+            available.
+            </summary>
+        </member>
+        <member name="P:CsQuery.HtmlEncoders.Default">
+            <summary>
+            The default HTML encoder
+            </summary>
+        </member>
+        <member name="T:CsQuery.Output.HtmlEncoderNone">
+            <summary>
+            Minimum HTML encoder. This only parses the absolute minimum required for correct
+            interpretation (less-than, greater-than, ampersand). Everthing else is passed through.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Output.HtmlEncoderNone.Encode(System.String,System.IO.TextWriter)">
+             <summary>
+             Encodes text as HTML, writing the processed output to the TextWriter.
+             </summary>
+            
+             <param name="text">
+             The text to be encoded.
+             </param>
+             <param name="output">
+             The target for the ouput.
+             </param>
+        </member>
+        <member name="T:CsQuery.Output.OutputFormatterDefault">
+            <summary>
+            Default output formatter.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Output.IOutputFormatter">
+            <summary>
+            Interface for an OutputFormatter. This is an object that renders a CsQuery tree to a TextWriter
+            </summary>
+        </member>
+        <member name="M:CsQuery.Output.IOutputFormatter.Render(CsQuery.IDomObject,System.IO.TextWriter)">
+             <summary>
+             Renders this object to the passed TextWriter
+             </summary>
+            
+             <param name="node">
+             The node.
+             </param>
+             <param name="writer">
+             The writer.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.IOutputFormatter.Render(CsQuery.IDomObject)">
+             <summary>
+             Renders this object and returns the output as a string
+             </summary>
+            
+             <param name="node">
+             The node.
+             </param>
+            
+             <returns>
+             A string of HTML
+             </returns>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterDefault.#ctor(CsQuery.DomRenderingOptions,CsQuery.Output.IHtmlEncoder)">
+             <summary>
+             Abstract base class constructor.
+             </summary>
+            
+             <param name="options">
+             Options for controlling the operation.
+             </param>
+             <param name="encoder">
+             The encoder.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterDefault.#ctor">
+            <summary>
+            Creates the default OutputFormatter using default DomRenderingOption values and default HtmlEncoder
+            </summary>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterDefault.Render(CsQuery.IDomObject,System.IO.TextWriter)">
+             <summary>
+             Renders the object to the textwriter.
+             </summary>
+            
+             <exception cref="T:System.NotImplementedException">
+             Thrown when the requested operation is unimplemented.
+             </exception>
+            
+             <param name="node">
+             The node.
+             </param>
+             <param name="writer">
+             The writer to which output is written.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterDefault.Render(CsQuery.IDomObject)">
+             <summary>
+             Renders the object to a string.
+             </summary>
+            
+             <param name="node">
+             The node.
+             </param>
+            
+             <returns>
+             A string.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterDefault.RenderElements(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},System.IO.TextWriter)">
+             <summary>
+             Renders the sequence of elements.
+             </summary>
+            
+             <param name="elements">
+             The elements.
+             </param>
+             <param name="writer">
+             The writer to which output is written.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterDefault.RenderElement(CsQuery.IDomObject,System.IO.TextWriter,System.Boolean)">
+             <summary>
+             Gets the HTML representation of this element and its children
+             </summary>
+            
+             <param name="options">
+             Options for how to render the HTML.
+             </param>
+             <param name="sb">
+             A StringBuilder object to which append the output.
+             </param>
+             <param name="includeChildren">
+             true to include, false to exclude the children.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterDefault.RenderChildren(CsQuery.IDomObject,System.IO.TextWriter)">
+             <summary>
+             Renders all the children of the passed node.
+             </summary>
+            
+             <param name="element">
+             The element.
+             </param>
+             <param name="writer">
+             The writer to which output is written.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterDefault.RenderTextNode(CsQuery.IDomObject,System.IO.TextWriter,System.Boolean)">
+             <summary>
+             Renders the text node.
+             </summary>
+            
+             <param name="textNode">
+             The text node.
+             </param>
+             <param name="writer">
+             The writer to which output is written.
+             </param>
+             <param name="raw">
+             true to raw.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterDefault.RenderCdataNode(CsQuery.IDomObject,System.IO.TextWriter)">
+             <summary>
+             Renders a CDATA node.
+             </summary>
+            
+             <param name="parameter1">
+             The first parameter.
+             </param>
+             <param name="parameter2">
+             The second parameter.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterDefault.RenderCommentNode(CsQuery.IDomObject,System.IO.TextWriter)">
+             <summary>
+             Renders the comment node.
+             </summary>
+            
+             <param name="element">
+             The element.
+             </param>
+             <param name="writer">
+             The writer to which output is written.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterDefault.RenderAttribute(System.IO.TextWriter,System.String,System.String,System.Boolean)">
+             <summary>
+             Render an attribute
+             </summary>
+            
+             <param name="sb">
+             A StringBuilder to append the attributes to
+             </param>
+             <param name="name">
+             The name of the attribute
+             </param>
+             <param name="value">
+             The attribute value
+             </param>
+             <param name="quoteAll">
+             true to require quotes around the attribute value, false to use quotes only if needed.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.OutputFormatterDefault.MergeDefaultOptions">
+             <summary>
+             Merge options with defaults when needed
+             </summary>
+            
+             <param name="options">
+             (optional) options for controlling the operation.
+             </param>
+        </member>
+        <member name="T:CsQuery.OutputFormatters">
+            <summary>
+            Factory for OuputFormatters included with CsQuery.
+            </summary>
         </member>
         <member name="M:CsQuery.OutputFormatters.Create(CsQuery.DomRenderingOptions,CsQuery.Output.IHtmlEncoder)">
              <summary>
@@ -12848,7 +12997,32 @@
         </member>
         <member name="P:CsQuery.OutputFormatters.Default">
             <summary>
-            Gets an instance of the default OuputFormatter
+            Gets an instance of the default OuputFormatter configured with the default HTML encoder and options
+            </summary>
+        </member>
+        <member name="P:CsQuery.OutputFormatters.HtmlEncodingNone">
+            <summary>
+            Gets an instance of the default OuputFormatter configured with no HTML encoding
+            </summary>
+        </member>
+        <member name="P:CsQuery.OutputFormatters.HtmlEncodingBasic">
+            <summary>
+            Gets an instance of the default OuputFormatter configured with basic encoding
+            </summary>
+        </member>
+        <member name="P:CsQuery.OutputFormatters.HtmlEncodingFull">
+            <summary>
+            Gets an instance of the default OuputFormatter configured for full HTML encoding
+            </summary>
+        </member>
+        <member name="P:CsQuery.OutputFormatters.HtmlEncodingMinimum">
+            <summary>
+            Gets an instance of the default OutputFormatter, using the minimum HTML encoding scheme.
+            </summary>
+        </member>
+        <member name="P:CsQuery.OutputFormatters.HtmlEncodingMinimumNbsp">
+            <summary>
+            Gets an instance of the default OutputFormatter, using the minimum HTML + NBSP encoding scheme.
             </summary>
         </member>
         <member name="T:CsQuery.StringScanner.CharacterData">

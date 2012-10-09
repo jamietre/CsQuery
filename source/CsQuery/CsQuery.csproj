@@ -312,13 +312,14 @@
     <Compile Include="HtmlParser\HtmlStyles.cs" />
     <Compile Include="HtmlParser\enumTokenProperties.cs" />
     <Compile Include="Implementation\TextReaderCombiner.cs" />
+    <Compile Include="Output\HtmlEncoderFull.cs" />
+    <Compile Include="Output\HtmlEncoderMinimumNbsp.cs" />
     <Compile Include="Output\HtmlEncoders.cs" />
     <Compile Include="Output\HtmlEncoderNone.cs" />
-    <Compile Include="Output\OutputFormatterBase.cs" />
     <Compile Include="Output\OutputFormatterDefault.cs" />
     <Compile Include="Output\HtmlEncoderMinimum.cs" />
     <Compile Include="Output\HtmlEncoderBase.cs" />
-    <Compile Include="Output\HtmlEncoderDefault.cs" />
+    <Compile Include="Output\HtmlEncoderBasic.cs" />
     <Compile Include="Output\IHtmlEncoder.cs" />
     <Compile Include="Output\Indented.cs" />
     <Compile Include="Output\OutputFormatters.cs" />
@@ -486,7 +487,7 @@ xcopy $(TargetDir)CsQuery.xml $(SolutionDir)..\Distribution /Y
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,6 +1,6 @@
-###Output from CsQuery
+### Output from CsQuery
 
-There are a number of ways to produce output from CsQuery, and a set of associated object models for controlling how output is formatted.
+There are a number of ways to produce output from CsQuery, and a set of associated object models for controlling how output is formatted. This document details the objects and methods used for rendering output.
 
 #### Render and RenderSelection
 
@@ -15,12 +15,58 @@ The `Render` option will always render the *entire DOM* associated with a `CQ` o
     IDomObject el = dom["div:first"][0];
     string html = el.Render();
 
-Sometimes, you might want to render just the results of a selection (though this "sometimes" is probably for debugging or testing - a selection could be arbitrarily connected elements; it may not even result in valid HTML when put together):
+Sometimes, you might want to render just the results of a selection. This "sometimes" is probably for debugging or testing, though, since the HTML produced from a sequence of arbitrarily selected elements is not likely to be especially meaningful.
  
     var spans = dom["span"];
     string spansHtml = spans.RenderSelection();
 
+
 #### Options
+
+There are several ways you can change the output. You can specify rendering options, which are flags to enable or disable specific features. You can specify an HTML encoder, which changes the way text is processed before being output. You can also create a completely custom implemenation of an OutputFormatter, and change anything and everything. 
+
+#### Examples
+
+Before delving into the details, here are some examples of creating output in different ways:
+
+*Don't encode non-ASCII characters, pass them through as unicode.*
+
+    var html = dom.Render(OutputFormatters.HtmlEncodingMinimum);
+    var html = dom.Render(OutputFormatters.Create(HtmlEncoders.Minimum));
+    var html = dom.Render(OutputFormatters.Create(new HtmlEncoderMinimum()));
+    var html = dom.Render(new OutputFormatterDefault(DomRenderingOptions.Default, new HtmlEncoderMinimum());
+
+*Discard comments*
+
+    var html = dom.Render(DomRenderingOptions.RemoveComments);
+    var html = dom.Render(OutputFormatters.Create(DomRenderingOptions.RemoveComments));
+    
+*Don't quote attributes, and use no HTML encoding*
+
+    var html = dom.Render(OutputFormatters.Create(DomRenderingOptions.None,HtmlEncoders.None)
+
+As you can see there are different ways to accomplish the same goal. Each of these examples (except for the first "discard comments" example) uses the same overload:
+
+    public string Render(IOutputFormatter formatter)
+
+The first "discard comments" example uses this overload:
+
+   public string Render(DomRenderingOptions options)
+
+This method is provided primarily for backwards compatibility and convenience; it simply creates an instance of the `OutputFormatterDefault` object using the provided options. Generally, the different examples show various ways to create an instance of an `IOutputFormatter` that does what you want. You could even create your own `OutputFormatter` entirely if you like. The DOM model has no knowledge of how to render itself; this is all contained withing the `OutputFormatterDefault` class. To create a custom output formatter, you should probably start by inheriting that class.
+
+You can also render directly to a `TextWriter`: 
+
+    public string Render(IOutputFormatter formatter, TextWriter writer)
+
+*Why aren't there lots of overloads for RenderSelection?*
+
+The `RenderSelection` method is provided for convenience, but it's not guaranteed to create any kind of valid HTML. The way some things are rendered depends on context such as its parent node; many HTML constructs are not valid outside of a particular context. So while it can be useful to look at the HTML output of a selection set, it's not useful enough that I felt it was worth cluttering the API with a lot of overloads. If you wanted to be able to use the full range of options against a selection set, it would be easy enough to just loop through the results and render each element in turn.
+
+You can also create a new DOM from a selection, and then render that, if needed.
+
+    var newDom = CQ.Create(dom);
+    var html = newDom.Render(...);
 
 **`DomRenderingOptions`**
 
@@ -51,8 +97,8 @@ You can control the way output is created using an object that implements `IOutp
 
 The API described below provides simple access to predefined `OutputFormatters`; you can also create your own implementation. These are static properties and methods that return an instance of an `IOutputFormatter` that can be used directly as a parameter value when a method requires an `IOutputFormatter`. 
 
- * `OutputFormatters.Default` uses the global `DomRenderingOptions` and default `HtmlEncoder`
- * `OutputFormatters.Create(DomRenderingOptions options)` creates an instance of the default formatter using the specifed options.
+* `OutputFormatters.Default` uses the global `DomRenderingOptions` and default `HtmlEncoder`
+* `OutputFormatters.Create(DomRenderingOptions options)` creates an instance of the default formatter using the specifed options.
 * `OutputFormatters.Create(IHtmlEncoder encoder)` creates an instance of the default formatter using the specifed encoder.
 * `OutputFormatters.Create(DomRenderingOptions options, IHtmlEncoder encoder)` creates an instance of the default formatter using the specifed options and encoder.
 
