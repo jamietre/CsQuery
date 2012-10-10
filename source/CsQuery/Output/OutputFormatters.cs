@@ -145,7 +145,7 @@ namespace CsQuery
         {
             if (options.HasFlag(DomRenderingOptions.Default))
             {
-                options = CsQuery.Config._DomRenderingOptions | options & ~(DomRenderingOptions.Default);
+                options = CsQuery.Config.DomRenderingOptions | options & ~(DomRenderingOptions.Default);
             }
         }
     }

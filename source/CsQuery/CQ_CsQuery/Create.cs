@@ -48,7 +48,7 @@ namespace CsQuery
 
         public static CQ Create(string html)
         {
-            return new CQ(html,HtmlParsingMode.Auto,HtmlParsingOptions.None,DocType.HTML5);
+            return new CQ(html,HtmlParsingMode.Auto,HtmlParsingOptions.Default,DocType.HTML5);
         }
         /// <summary>
         /// Create a new CQ object from an HTML character array.
@@ -72,7 +72,7 @@ namespace CsQuery
         public static CQ Create(char[] html)
         {
             var cq = new CQ();
-            cq.CreateNew(cq, html.AsString(), HtmlParsingMode.Auto, HtmlParsingOptions.None,DocType.HTML5); ;
+            cq.CreateNew(cq, html.AsString(), HtmlParsingMode.Auto, HtmlParsingOptions.Default,DocType.HTML5); ;
             return cq;
         }
 
@@ -120,8 +120,8 @@ namespace CsQuery
         /// </returns>
 
         public static CQ Create(string html, 
-            HtmlParsingMode parsingMode=HtmlParsingMode.Auto, 
-            HtmlParsingOptions parsingOptions= HtmlParsingOptions.None,
+            HtmlParsingMode parsingMode =HtmlParsingMode.Auto, 
+            HtmlParsingOptions parsingOptions = HtmlParsingOptions.Default,
             DocType docType=DocType.HTML5)
         {
             return new CQ(html, parsingMode, parsingOptions, docType);
@@ -169,7 +169,7 @@ namespace CsQuery
 
         public static CQ Create(Stream html)
         {
-            return Create(html, HtmlParsingMode.Auto, HtmlParsingOptions.None, DocType.HTML5);
+            return Create(html, HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.HTML5);
         }
 
         /// <summary>
@@ -193,7 +193,7 @@ namespace CsQuery
 
         public static CQ Create(Stream html, 
             HtmlParsingMode parsingMode=HtmlParsingMode.Auto, 
-            HtmlParsingOptions parsingOptions = HtmlParsingOptions.None,
+            HtmlParsingOptions parsingOptions = HtmlParsingOptions.Default,
             DocType docType=DocType.HTML5)
         {
             return new CQ(html, parsingMode,parsingOptions, docType);

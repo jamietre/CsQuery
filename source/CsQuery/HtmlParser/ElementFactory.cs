@@ -54,7 +54,7 @@ namespace CsQuery.HtmlParser
 
         public static IDomDocument Create(string html, 
             HtmlParsingMode parsingMode=HtmlParsingMode.Auto, 
-            HtmlParsingOptions options= HtmlParsingOptions.None,
+            HtmlParsingOptions options= HtmlParsingOptions.Default,
             DocType docType=DocType.HTML5) {
 
             using (var reader = new StringReader(html ?? "")) {
@@ -82,7 +82,7 @@ namespace CsQuery.HtmlParser
 
         public static IDomDocument Create(Stream html, 
             HtmlParsingMode parsingMode = HtmlParsingMode.Auto,
-            HtmlParsingOptions parsingOptions = HtmlParsingOptions.None,
+            HtmlParsingOptions parsingOptions = HtmlParsingOptions.Default,
             DocType docType = DocType.HTML5)
         {
             
@@ -101,7 +101,7 @@ namespace CsQuery.HtmlParser
             var parser = new ElementFactory();
             parser.HtmlParsingMode = parsingMode;
             parser.DocType = docType;
-            parser.HtmlParsingOptions = parsingOptions;
+            parser.HtmlParsingOptions = MergeOptions(parsingOptions);
             return parser;
        }
 
@@ -229,6 +229,17 @@ namespace CsQuery.HtmlParser
 
         #region private methods
 
+        private static HtmlParsingOptions MergeOptions(HtmlParsingOptions options)
+        {
+            if (options.HasFlag(HtmlParsingOptions.Default))
+            {
+                return CsQuery.Config.HtmlParsingOptions | options & ~(HtmlParsingOptions.Default);
+            }
+            else
+            {
+                return options;
+            }
+        }
         private void ConfigureTreeBuilderForParsingMode()
         {
             

@@ -339,7 +339,7 @@ namespace CsQuery.Output
         {
             if (DomRenderingOptions.HasFlag(DomRenderingOptions.Default))
             {
-                DomRenderingOptions = CsQuery.Config._DomRenderingOptions | DomRenderingOptions & ~(DomRenderingOptions.Default);
+                DomRenderingOptions = CsQuery.Config.DomRenderingOptions | DomRenderingOptions & ~(DomRenderingOptions.Default);
             }
         }
 

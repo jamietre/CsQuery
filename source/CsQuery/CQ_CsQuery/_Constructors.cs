@@ -41,7 +41,7 @@ namespace CsQuery
 
         public CQ(string html, 
             HtmlParsingMode parsingMode = HtmlParsingMode.Auto,
-            HtmlParsingOptions parsingOptions=HtmlParsingOptions.None, 
+            HtmlParsingOptions parsingOptions=HtmlParsingOptions.Default, 
             DocType docType = DocType.HTML5)
         {
             CreateNew(this, html, parsingMode,parsingOptions, docType);
@@ -62,7 +62,10 @@ namespace CsQuery
         /// (optional) type of the document.
         /// </param>
 
-        public CQ(Stream html, HtmlParsingMode parsingMode = HtmlParsingMode.Auto, HtmlParsingOptions parsingOptions =HtmlParsingOptions.None,DocType docType = DocType.HTML5)
+        public CQ(Stream html, 
+            HtmlParsingMode parsingMode = HtmlParsingMode.Auto, 
+            HtmlParsingOptions parsingOptions =HtmlParsingOptions.Default,
+            DocType docType = DocType.HTML5)
         {
             CreateNew(this, html, parsingMode,parsingOptions, docType);
         }
@@ -383,7 +386,7 @@ namespace CsQuery
         private CQ NewInstance(string html)
         {
             var cq = NewCqUnbound();
-            CreateNew(cq, html,HtmlParsingMode.Auto, HtmlParsingOptions.None, DocType.HTML5);
+            CreateNew(cq, html,HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.HTML5);
             return cq;
         }
 

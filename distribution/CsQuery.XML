@@ -9,7 +9,7 @@
             Global configuration and defaults
             </summary>
         </member>
-        <member name="F:CsQuery.Config._DomRenderingOptions">
+        <member name="F:CsQuery.Config._DynamicObjectType">
             <summary>
             Internal to avoid Obsolete warning from DomRenderingOptions until we remove it
             </summary>
@@ -25,12 +25,6 @@
             The default startup options. These are flags. 
             </summary>
         </member>
-        <member name="F:CsQuery.Config.DocType">
-            <summary>
-            Default document type. This is the parsing mode that will be used when creating documents
-            that have no DocType and no mode is explicitly defined.
-            </summary>
-        </member>
         <member name="P:CsQuery.Config.DomRenderingOptions">
             <summary>
             The default rendering options. These will be used when configuring a default OutputFormatter.
@@ -38,9 +32,20 @@
             have any effect on output.
             </summary>
         </member>
+        <member name="P:CsQuery.Config.HtmlParsingOptions">
+            <summary>
+            The default HTML parsing options. These will be used when parsing HTML without specifying any options. 
+            </summary>
+        </member>
         <member name="P:CsQuery.Config.HtmlEncoder">
             <summary>
             The default HTML encoder.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Config.DocType">
+            <summary>
+            Default document type. This is the parsing mode that will be used when creating documents
+            that have no DocType and no mode is explicitly defined.
             </summary>
         </member>
         <member name="P:CsQuery.Config.DynamicObjectType">
@@ -6452,15 +6457,6 @@
              A string of HTML
              </returns>
         </member>
-        <member name="M:CsQuery.Implementation.DomObject.MergeOptions(CsQuery.DomRenderingOptions@)">
-             <summary>
-             Merge options with defaults when needed
-             </summary>
-            
-             <param name="options">
-             (optional) options for controlling the operation.
-             </param>
-        </member>
         <member name="M:CsQuery.Implementation.DomObject.UpdateDocumentFlags">
             <summary>
             Updates the cached Document and property flags.
@@ -12028,6 +12024,11 @@
         <member name="F:CsQuery.HtmlParsingOptions.None">
             <summary>
             No options applied.
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParsingOptions.Default">
+            <summary>
+            Default options (from Config.HtmlParsingOptions) are applied.
             </summary>
         </member>
         <member name="F:CsQuery.HtmlParsingOptions.AllowselfClosingTags">

@@ -30,10 +30,10 @@ namespace CsQuery
         public static DomRenderingOptions DefaultDomRenderingOptions 
         {
             get {
-                return Config._DomRenderingOptions;
+                return Config.DomRenderingOptions;
             }
             set {
-                Config._DomRenderingOptions = value;
+                Config.DomRenderingOptions = value;
             }
         }
 

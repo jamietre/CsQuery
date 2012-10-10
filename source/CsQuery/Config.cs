@@ -19,8 +19,10 @@ namespace CsQuery
         static Config()
         {
             DynamicObjectType = typeof(JsObject);
-            _DomRenderingOptions =   DomRenderingOptions.QuoteAllAttributes;
+            DomRenderingOptions =   DomRenderingOptions.QuoteAllAttributes;
+            HtmlParsingOptions = HtmlParsingOptions.None;
             HtmlEncoder = HtmlEncoders.Basic;
+            DocType = DocType.HTML5;
         }
 
         #endregion
@@ -31,7 +33,6 @@ namespace CsQuery
         /// Internal to avoid Obsolete warning from DomRenderingOptions until we remove it
         /// </summary>
 
-        internal static DomRenderingOptions _DomRenderingOptions;
         private static Type _DynamicObjectType;
         
         private static IOutputFormatter GetOutputFormatter()
@@ -50,15 +51,13 @@ namespace CsQuery
         /// have any effect on output.
         /// </summary>
 
-        public static DomRenderingOptions DomRenderingOptions  
-        {
-            get {
-                return _DomRenderingOptions;
-            }
-            set {
-                _DomRenderingOptions = value;
-            }
-        }
+        public static DomRenderingOptions DomRenderingOptions  {get;set;}
+
+        /// <summary>
+        /// The default HTML parsing options. These will be used when parsing HTML without specifying any options. 
+        /// </summary>
+
+        public static HtmlParsingOptions HtmlParsingOptions { get; set; }
 
         /// <summary>
         /// The default HTML encoder.
@@ -88,9 +87,9 @@ namespace CsQuery
         /// Default document type. This is the parsing mode that will be used when creating documents
         /// that have no DocType and no mode is explicitly defined.
         /// </summary>
-        
-        public static DocType DocType = DocType.HTML5;
 
+        public static DocType DocType { get; set; }
+        
         /// <summary>
         /// Gets or sets the default dynamic object type. This is the type of object used by default when
         /// parsing JSON into an unspecified type.

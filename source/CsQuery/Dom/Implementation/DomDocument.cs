@@ -45,7 +45,7 @@ namespace CsQuery.Implementation
 
         public static IDomDocument Create(string html, 
             HtmlParsingMode parsingMode = HtmlParsingMode.Auto,
-            HtmlParsingOptions parsingOptions = HtmlParsingOptions.None,
+            HtmlParsingOptions parsingOptions = HtmlParsingOptions.Default,
             DocType docType = DocType.HTML5)
         {
             return ElementFactory.Create(html, parsingMode, parsingOptions, docType);
@@ -53,7 +53,7 @@ namespace CsQuery.Implementation
 
         public static IDomDocument Create(Stream html, 
             HtmlParsingMode parsingMode= HtmlParsingMode.Content,
-            HtmlParsingOptions parsingOptions= HtmlParsingOptions.None,
+            HtmlParsingOptions parsingOptions= HtmlParsingOptions.Default,
             DocType docType = DocType.HTML5)
         {
             return ElementFactory.Create(html, parsingMode,parsingOptions, docType);
@@ -98,7 +98,7 @@ namespace CsQuery.Implementation
         [Obsolete]
         protected void InitializeDomDocument()
         {
-            Document.DomRenderingOptions = CsQuery.Config._DomRenderingOptions;           
+            Document.DomRenderingOptions = CsQuery.Config.DomRenderingOptions;           
         }
 
         /// <summary>

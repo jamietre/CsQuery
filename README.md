@@ -6,34 +6,40 @@
 
 CsQuery is a jQuery port for .NET 4. It implements all CSS2 & CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) has been ported to C#. 
 
-As of Version 1.3 (unreleased as of Septmber 25, 2012) CsQuery uses a C# port of the [validator.nu HTML parser](http://about.validator.nu/htmlparser/). This is the same code used in the Gecko browser engine. This should result in CsQuery creating a highly HTML5 standards-compliant DOM from markup, and an identical DOM to any Gecko-based browser.
+As of Version 1.3 (now in 2nd beta), CsQuery uses a C# port of the [validator.nu HTML parser](http://about.validator.nu/htmlparser/). This is the same code used in the Gecko browser engine. This should result in CsQuery creating a highly HTML5 standards-compliant DOM from markup, and an identical DOM to any Gecko-based browser.
 
 The CSS selector engine fully indexes each document on tag name, id, class, and attribute. The index is subselect-capable, meaning that complex selectors will still be able to take advantage of the index (for any part of the selector that's indexed). [Performance](#performance) of selectors compared to other existing C# HTML parsing libraries is orders of magnitude faster.
 
 ### Installation
 
-**Latest release: Version 1.2.1 (August 21, 2012)**
+**Latest release:** Version 1.2.1 (August 21, 2012)
+
+**Latest prerelase:** Version 1.3.0-beta2 (October 9, 2012)
 
 To install the latest release from NuGet package manager:
 
     PM> Install-Package CsQuery
 
-To install manually, add a reference to `CsQuery.DLL`. 
+To install the latest prerelease from NuGet:
 
-### Source Code Notes
+    PM> Install-Package CsQuery -Pre
 
-This repository contains a submodule for [HtmlParserSharp](https://github.com/jamietre/HtmlParserSharp). This configuration has been chosen to allow the HTML parser project to be completely independent of CsQuery, while still allowing CsQuery to include it directly and compile to a single DLL. In the future, I may change this architecture to include the parser as a binary dependency instead.
+To install manually, add a reference to `CsQuery.DLL`. There are no external dependencies.
 
-To clone the repostory you will need a couple extra steps. First create a clone as usual:
+### Compiling from Source
+
+This repository contains a submodule for [HtmlParserSharp](https://github.com/jamietre/HtmlParserSharp). This configuration has been chosen to allow the HTML parser project to be completely independent of CsQuery, while still allowing CsQuery to include it directly and compile to a single DLL.
+
+To clone the repostory with the submodule, you need to take an extra step. First create a clone as usual:
     
     git clone https://github.com/jamietre/CsQuery.git csquery
 
-Next initialize and clone the submodule:
+Next change to the repo folder, and initialize and clone the submodule.
 
-	git submodule init
-    git submodule update -f
+	cd csquery
+    git submodule update --init -f
 
-You should be able to compile everything now. 
+You should be able to compile everything now.  If you have any trouble initializing the submodule, just delete the submodule folder `../source/CsQuery/HtmlParserSharp` and run the submodule init command again.
 
 ### Release Notes
 
@@ -54,7 +60,11 @@ For more information on the status of CsQuery's compliance with HTML5 spec, see 
 
 ### Documentation
 
-I'm (slowly) working on a web site for the project, but in the meantime, this document covers most aspects of common usage. Also be sure to look at the example applications in the source repository. Additionally, I post about [CsQuery on my blog](http://blog.outsharked.com/search/label/csquery) from time to time. Here are a few tutorials from there:
+This document explains how to use CsQuery to parse and manipulate HTML. It's not comprehensive, but covers most common uses for reading HTML documents from files and URLS, and using it like jQuery.
+
+I've just started organizing various tutorials and details to a [documentation](documentation/readme.md) folder in the repository. So far this includes a writeup on the options for creating output from CsQuery. 
+
+I also post about [CsQuery on my blog](http://blog.outsharked.com/search/label/csquery) from time to time. Here are a few tutorials from there:
 
 * [Using the CsQuery MVC framework](http://blog.outsharked.com/2012/08/csquery-12-released.html) from the 1.2 release notes
 * [Implementing a custom filter selector](http://blog.outsharked.com/2012/07/csquery-113-released.html) from the 1.1.3 release notes
@@ -62,6 +72,8 @@ I'm (slowly) working on a web site for the project, but in the meantime, this do
 * [Loading content from the web](http://blog.outsharked.com/2012/06/async-web-gets-and-promises-in-csquery.html) asynchronously using promises
 
 If you can't seem to figure out how to use a particular method, in almost all cases the API mimics the jQuery API, so you should start with the jQuery documentation. You could also look through the unit tests, which cover pretty much everything at some level, for straightforward examples of use.
+
+Also be sure to look at the example applications in the source repository. 
 
 ### Contents
 
@@ -157,9 +169,15 @@ jQuery extensions:
 
 ### Usage
 
-##### Creating a new DOM
+#### Creating a new DOM
 
+There are several ways to interpret HTML: 
 
+* as a complete document, e.g. a web page; 
+* as content that should stand on its own but is not a complete doucment, e.g. copy for a content block, or something in a CMS; 
+* as a fragment, or a snippet or a template building-block which may be incomplete or out-of-context, such as a table cell like `<td></td>`
+
+It's important for CsQuery to understand the context so it can determine how to handle HTML that appears to be invalid correctly. HTML5 parsing rules specify a particular way of handling missing or incorrect markup. But if the context isn't a complete document, then it might not actually be invalid in that context. Usually, you can just let CsQuery figure it out, but sometimes you may want to specify a certain context.
 
 #####Basic Method
 
@@ -169,9 +187,19 @@ Creates content, automatically determining context. That is, HTML content can be
 
 There are overloads for accepting `string` and  `Stream` inputs. You can also specify the handling using optional parameters:
 
-    Create(string html, HtmlParsingMode mode=HtmlParsingMode.Auto, DocType docType=DocType.HTML5)
+    Create(string html, 
+        HtmlParsingMode mode = HtmlParsingMode.Auto, 
+        HtmlParsingOptions options = HtmlParsingOptions.Default,
+        DocType docType = DocType.HTML5);
 
-The `HtmlParsingMode` parameter instructs CsQuery to treat your input as a complete document (meaning `html`, `head`, `title` and `body` tags will be added, if missing); a content block (meaning, it's treated as if it were inserted below a `body`); or a fragment, whose context will be determined by the first tag int he markup. The `DocType` parameter allows you to instruct the parser to use HTML4 parsing rules, if desired. Generally, though, it's sufficient to let CsQuery figure out your intent from the markup that is passed.
+`HtmlParsingMode` determines the way CsQuery interprets your HTML.
+
+* `HtmlParsingMode.Auto` means let CsQuery figure it out. Anything starting an `html` or `body` is treated as a complete document; anything starting with a block element is content; anything else is considered a fragment and will be assumed to be in a valid context.
+* `HtmlParsingMode.Document` means the content will be treated as a complete document. Missing `html`, `body`, `head` and `title` tags will be generated to produce a complete DOM.
+* `HtmlParsingMode.Content` means its not a full document, but is expected to be valid in a `body` context. For example, content starting with `<tr> ... </tr>` would be invalid and handled according to HTML5 rules (typically, discarded).
+* `HtmlParsingMode.Fragment` means its an arbitrary fragment and will be treated as if its in a valid context.
+
+The `DocType` parameter allows you to instruct the parser to use HTML4 parsing rules, if desired. Generally, though, it's sufficient to let CsQuery figure out your intent from the markup that is passed.
 
 There are also other methods for specific handling. Generally speaking, these just call `Create` with specific options.
 

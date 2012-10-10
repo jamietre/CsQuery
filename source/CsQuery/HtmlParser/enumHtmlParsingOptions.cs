@@ -15,18 +15,26 @@ namespace CsQuery
         /// <summary>
         /// No options applied.
         /// </summary>
+        
         None=0,
+
+        /// <summary>
+        /// Default options (from Config.HtmlParsingOptions) are applied.
+        /// </summary>
+        
+        Default=1,
+
        /// <summary>
        /// Tags may be self-closing.
        /// </summary>
 
-        AllowselfClosingTags=1,
+        AllowselfClosingTags=2,
 
 
         /// <summary>
         /// Comments are ignored entirely.
         /// </summary>
         
-        IgnoreComments=2
+        IgnoreComments=4
     }
 }

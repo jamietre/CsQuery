@@ -1556,22 +1556,6 @@ namespace CsQuery.Implementation
         #region private methods
 
         /// <summary>
-        /// Merge options with defaults when needed
-        /// </summary>
-        ///
-        /// <param name="options">
-        /// (optional) options for controlling the operation.
-        /// </param>
-
-        protected void MergeOptions(ref DomRenderingOptions options)
-        {
-            if (options.HasFlag(DomRenderingOptions.Default))
-            {
-                options = CsQuery.Config._DomRenderingOptions | options & ~(DomRenderingOptions.Default);
-            }
-        }
-
-        /// <summary>
         /// Updates the cached Document and property flags.
         /// </summary>
 
