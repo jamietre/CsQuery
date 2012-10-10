@@ -12031,7 +12031,7 @@
             Default options (from Config.HtmlParsingOptions) are applied.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParsingOptions.AllowselfClosingTags">
+        <member name="F:CsQuery.HtmlParsingOptions.AllowSelfClosingTags">
             <summary>
             Tags may be self-closing.
             </summary>
@@ -16235,6 +16235,11 @@
         <member name="T:CsQuery.DocType">
             <summary>
             Values that represent the HTML document type.
+            </summary>
+        </member>
+        <member name="F:CsQuery.DocType.Default">
+            <summary>
+            Use the default doc type (from CsQuery.Config.DocType).
             </summary>
         </member>
         <member name="F:CsQuery.DocType.HTML5">

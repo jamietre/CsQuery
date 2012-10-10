@@ -41,8 +41,8 @@ namespace CsQuery
 
         public CQ(string html, 
             HtmlParsingMode parsingMode = HtmlParsingMode.Auto,
-            HtmlParsingOptions parsingOptions=HtmlParsingOptions.Default, 
-            DocType docType = DocType.HTML5)
+            HtmlParsingOptions parsingOptions=HtmlParsingOptions.Default,
+            DocType docType = DocType.Default)
         {
             CreateNew(this, html, parsingMode,parsingOptions, docType);
         }
@@ -65,7 +65,7 @@ namespace CsQuery
         public CQ(Stream html, 
             HtmlParsingMode parsingMode = HtmlParsingMode.Auto, 
             HtmlParsingOptions parsingOptions =HtmlParsingOptions.Default,
-            DocType docType = DocType.HTML5)
+            DocType docType = DocType.Default)
         {
             CreateNew(this, html, parsingMode,parsingOptions, docType);
         }
@@ -386,7 +386,7 @@ namespace CsQuery
         private CQ NewInstance(string html)
         {
             var cq = NewCqUnbound();
-            CreateNew(cq, html,HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.HTML5);
+            CreateNew(cq, html, HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.Default);
             return cq;
         }
 

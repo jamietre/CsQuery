@@ -28,7 +28,7 @@ namespace CsQuery
        /// Tags may be self-closing.
        /// </summary>
 
-        AllowselfClosingTags=2,
+        AllowSelfClosingTags=2,
 
 
         /// <summary>

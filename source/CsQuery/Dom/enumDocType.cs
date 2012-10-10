@@ -12,6 +12,10 @@ namespace CsQuery
     public enum DocType: byte
     {
         /// <summary>
+        /// Use the default doc type (from CsQuery.Config.DocType).
+        /// </summary>
+        Default = 0,
+        /// <summary>
         /// HTML5
         /// </summary>
         HTML5 = 1,

@@ -33,12 +33,12 @@ namespace CsQuery.Implementation
 
         public static IDomDocument Create(string html,
            string context=null,
-           DocType docType = DocType.HTML5)
+           DocType docType = DocType.Default)
         {
             var factory = new ElementFactory();
             factory.FragmentContext = context;
             factory.HtmlParsingMode = HtmlParsingMode.Fragment;
-            factory.HtmlParsingOptions = HtmlParsingOptions.AllowselfClosingTags;
+            factory.HtmlParsingOptions = HtmlParsingOptions.AllowSelfClosingTags;
             factory.DocType = docType;
             
             using (var reader = new StringReader(html))

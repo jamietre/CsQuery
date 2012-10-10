@@ -199,9 +199,15 @@ There are overloads for accepting `string` and  `Stream` inputs. You can also sp
 * `HtmlParsingMode.Content` means its not a full document, but is expected to be valid in a `body` context. For example, content starting with `<tr> ... </tr>` would be invalid and handled according to HTML5 rules (typically, discarded).
 * `HtmlParsingMode.Fragment` means its an arbitrary fragment and will be treated as if its in a valid context.
 
-The `DocType` parameter allows you to instruct the parser to use HTML4 parsing rules, if desired. Generally, though, it's sufficient to let CsQuery figure out your intent from the markup that is passed.
+`HtmlParsingOptions` are flags that enable specific behavior during parsing regardless of the mode:
 
-There are also other methods for specific handling. Generally speaking, these just call `Create` with specific options.
+* `HtmlParsingOptions.Default` means use the global default options as defined on  `CsQuery.Config.HtmlParsingOptions`. No options are enabled when CsQuery is started, you can assign specific options to the global default config if desired to affect all future operations.
+* `HtmlParsingOptions.AllowSelfClosingTags` means that HTML tags which use the self-closing HTML syntax, e.g. `<div />` are permitted. Under HTML5 rules, tags like this are not valid and the closing construct is ignored. That is, this would be treated exactly like an opening tag only `<div>`. So HTML like `<div /><span />` would be rendered as `<div><span></span></div>`. Note that the span is nested in the div. HTML5's rules for missing close tags are coming into play here, too. This option lets you change this behavior so the self-closing construct is honored. (Note that for fragments, this is honored by default, in line with jQuery's HTML parsing rules).
+* `HtmlParsingOptions.IgnoreComments` causes the parser to discard any HTML comments entirely; they won't appear in your DOM. You can also choose to omit contents when rendering even if you've allowed them to be parsed using `DomRenderingOptions.IgnoreComments`.
+
+The final `DocType` parameter allows you to instruct the parser on the expected document type, if no `DOCTYPE` node is present. Generally, though, it's sufficient to let CsQuery figure out your intent from the markup that is passed.
+
+There are also other methods described below to create content using one of the methods described here. Generally speaking, these just call `Create` with specific options, and are for convenience:
 
 #####Create a document
 
@@ -238,7 +244,7 @@ There are methods to create a document or just content from a file directly:
 
 #####Create asynchronously (non-blocking) from a URL
 
-CsQuery (as of 1.0 Beta 2) implements a basic Promise API for asynchronous callbacks. This can be used to create convenient constructs for managing asynchronous requests; see the "Promises" section below for more details.
+CsQuery implements a basic Promise API for asynchronous callbacks. This can be used to create convenient constructs for managing asynchronous requests; see the "Promises" section below for more details.
    
     private static CQ Dom;
     ..
@@ -361,9 +367,7 @@ See below "C# objects vs. jQuery objects" for an explanation of CssSet vs. Css.
 
 ### CsQuery vs. jQuery
 
-The primary goal of this project was to make it as familiar and portable as possible. I even thought about using lowercased methods so it might be almost practical to copy and paste code between JS and C# but... I just couldn't. 
-
-There are necessarily some differences in usage because of the language itself and strong typing. This section covers what you need to know to get going with CsQuery. Everything else should work more or less the same as jQuery.
+The primary goal of this project was to make it as familiar and portable as possible. There are some differences in usage that were necessary because of differences in strong typing and overloading in C#. This section covers what you need to know to get going with CsQuery. Everything else should work more or less the same as jQuery.
 
 ##### Creating a new DOM
 

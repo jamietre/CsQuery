@@ -84,7 +84,7 @@ namespace CsQuery.Tests.Csharp.HtmlParser
         {
 
             string html = @"<input /><span /><g />";
-            var dom = CQ.Create(html, HtmlParsingMode.Fragment, HtmlParsingOptions.AllowselfClosingTags);
+            var dom = CQ.Create(html, HtmlParsingMode.Fragment, HtmlParsingOptions.AllowSelfClosingTags);
             var output = dom.Render();
 
             Assert.AreEqual(@"<input><span></span><g></g>", output);

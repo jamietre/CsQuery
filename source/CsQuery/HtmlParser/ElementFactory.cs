@@ -55,7 +55,8 @@ namespace CsQuery.HtmlParser
         public static IDomDocument Create(string html, 
             HtmlParsingMode parsingMode=HtmlParsingMode.Auto, 
             HtmlParsingOptions options= HtmlParsingOptions.Default,
-            DocType docType=DocType.HTML5) {
+            DocType docType = DocType.Default)
+        {
 
             using (var reader = new StringReader(html ?? "")) {
                 return GetNewParser(parsingMode,options,docType).Parse(reader);
@@ -83,7 +84,7 @@ namespace CsQuery.HtmlParser
         public static IDomDocument Create(Stream html, 
             HtmlParsingMode parsingMode = HtmlParsingMode.Auto,
             HtmlParsingOptions parsingOptions = HtmlParsingOptions.Default,
-            DocType docType = DocType.HTML5)
+            DocType docType = DocType.Default)
         {
             
             using (var reader = new StreamReader(html))
@@ -100,7 +101,7 @@ namespace CsQuery.HtmlParser
         {
             var parser = new ElementFactory();
             parser.HtmlParsingMode = parsingMode;
-            parser.DocType = docType;
+            parser.DocType = GetDocType(docType);
             parser.HtmlParsingOptions = MergeOptions(parsingOptions);
             return parser;
        }
@@ -201,7 +202,7 @@ namespace CsQuery.HtmlParser
                             break;
                         default:
                             HtmlParsingMode = HtmlParsingMode.Fragment;
-                            HtmlParsingOptions = HtmlParsingOptions.AllowselfClosingTags;
+                            HtmlParsingOptions = HtmlParsingOptions.AllowSelfClosingTags;
                             break;
                     }
                 }
@@ -239,6 +240,10 @@ namespace CsQuery.HtmlParser
             {
                 return options;
             }
+        }
+        private static DocType GetDocType(DocType docType)
+        {
+            return docType == DocType.Default ? Config.DocType : docType;
         }
         private void ConfigureTreeBuilderForParsingMode()
         {
@@ -356,7 +361,7 @@ namespace CsQuery.HtmlParser
 
             treeBuilder.NamePolicy = XmlViolationPolicy.Allow;
             treeBuilder.WantsComments = !HtmlParsingOptions.HasFlag(HtmlParsingOptions.IgnoreComments);
-            treeBuilder.AllowSelfClosingTags = HtmlParsingOptions.HasFlag(HtmlParsingOptions.AllowselfClosingTags);
+            treeBuilder.AllowSelfClosingTags = HtmlParsingOptions.HasFlag(HtmlParsingOptions.AllowSelfClosingTags);
             
             // DocTypeExpectation should be set later depending on fragment/content/document selection
 

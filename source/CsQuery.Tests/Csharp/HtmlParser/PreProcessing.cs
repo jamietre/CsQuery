@@ -28,7 +28,7 @@ namespace CsQuery.Tests.Csharp.HtmlParser.HTML5
             var dom = CQ.Create(testHtml,HtmlParsingMode.Fragment);
             Assert.AreEqual("<div><span><bad></bad></span></div>", dom.Render());
 
-            dom = CQ.Create(testHtml, HtmlParsingMode.Fragment,HtmlParsingOptions.AllowselfClosingTags);
+            dom = CQ.Create(testHtml, HtmlParsingMode.Fragment,HtmlParsingOptions.AllowSelfClosingTags);
             Assert.AreEqual("<div></div><span></span><bad></bad>", dom.Render());
         }
 

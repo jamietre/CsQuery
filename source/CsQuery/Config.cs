@@ -29,6 +29,9 @@ namespace CsQuery
 
         #region private properties
 
+        private static DocType _DocType;
+        private static DomRenderingOptions _DomRenderingOptions;
+        private static HtmlParsingOptions _HtmlParsingOptions;
         /// <summary>
         /// Internal to avoid Obsolete warning from DomRenderingOptions until we remove it
         /// </summary>
@@ -51,13 +54,38 @@ namespace CsQuery
         /// have any effect on output.
         /// </summary>
 
-        public static DomRenderingOptions DomRenderingOptions  {get;set;}
+        public static DomRenderingOptions DomRenderingOptions  {
+            get {
+                return _DomRenderingOptions;   
+            }
+            set {
+                if (value.HasFlag(DomRenderingOptions.Default))
+                {
+                    throw new InvalidOperationException("The default DomRenderingOptions cannot contain DomRenderingOptions.Default");
+                }
+                _DomRenderingOptions = value;
+            }
+        }
 
         /// <summary>
         /// The default HTML parsing options. These will be used when parsing HTML without specifying any options. 
         /// </summary>
 
-        public static HtmlParsingOptions HtmlParsingOptions { get; set; }
+        public static HtmlParsingOptions HtmlParsingOptions
+        {
+            get
+            {
+                return _HtmlParsingOptions;
+            }
+            set
+            {
+                if (value.HasFlag(HtmlParsingOptions.Default))
+                {
+                    throw new InvalidOperationException("The default HtmlParsingOptions cannot contain HtmlParsingOptions.Default");
+                }
+                _HtmlParsingOptions = value;
+            }
+        }
 
         /// <summary>
         /// The default HTML encoder.
@@ -88,7 +116,21 @@ namespace CsQuery
         /// that have no DocType and no mode is explicitly defined.
         /// </summary>
 
-        public static DocType DocType { get; set; }
+        public static DocType DocType
+        {
+            get
+            {
+                return _DocType;
+            }
+            set
+            {
+                if (value == DocType.Default)
+                {
+                    throw new InvalidOperationException("The default DocType cannot be DocType.Default");
+                }
+                _DocType = value;
+            }
+        }
         
         /// <summary>
         /// Gets or sets the default dynamic object type. This is the type of object used by default when

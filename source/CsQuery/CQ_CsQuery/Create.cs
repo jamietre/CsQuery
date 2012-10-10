@@ -48,7 +48,7 @@ namespace CsQuery
 
         public static CQ Create(string html)
         {
-            return new CQ(html,HtmlParsingMode.Auto,HtmlParsingOptions.Default,DocType.HTML5);
+            return new CQ(html,HtmlParsingMode.Auto,HtmlParsingOptions.Default,DocType.Default);
         }
         /// <summary>
         /// Create a new CQ object from an HTML character array.
@@ -72,7 +72,7 @@ namespace CsQuery
         public static CQ Create(char[] html)
         {
             var cq = new CQ();
-            cq.CreateNew(cq, html.AsString(), HtmlParsingMode.Auto, HtmlParsingOptions.Default,DocType.HTML5); ;
+            cq.CreateNew(cq, html.AsString(), HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.Default); ;
             return cq;
         }
 
@@ -122,7 +122,7 @@ namespace CsQuery
         public static CQ Create(string html, 
             HtmlParsingMode parsingMode =HtmlParsingMode.Auto, 
             HtmlParsingOptions parsingOptions = HtmlParsingOptions.Default,
-            DocType docType=DocType.HTML5)
+            DocType docType = DocType.Default)
         {
             return new CQ(html, parsingMode, parsingOptions, docType);
         }
@@ -169,7 +169,7 @@ namespace CsQuery
 
         public static CQ Create(Stream html)
         {
-            return Create(html, HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.HTML5);
+            return Create(html, HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.Default);
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace CsQuery
         public static CQ Create(Stream html, 
             HtmlParsingMode parsingMode=HtmlParsingMode.Auto, 
             HtmlParsingOptions parsingOptions = HtmlParsingOptions.Default,
-            DocType docType=DocType.HTML5)
+            DocType docType = DocType.Default)
         {
             return new CQ(html, parsingMode,parsingOptions, docType);
         }
@@ -215,7 +215,7 @@ namespace CsQuery
         public static CQ CreateFragment(string html)
         {
             CQ cq = new CQ();
-            cq.CreateNew(cq, html, HtmlParsingMode.Fragment,HtmlParsingOptions.AllowselfClosingTags, DocType.HTML5);
+            cq.CreateNew(cq, html, HtmlParsingMode.Fragment, HtmlParsingOptions.AllowSelfClosingTags, DocType.Default);
             return cq;
         }
 
@@ -237,7 +237,7 @@ namespace CsQuery
         public static CQ CreateFragment(string html, string context)
         {
             CQ cq = new CQ();
-            cq.CreateNewFragment(cq, html, context, DocType.HTML5);
+            cq.CreateNewFragment(cq, html, context, DocType.Default);
             return cq;
         }
 
@@ -274,7 +274,7 @@ namespace CsQuery
         public static CQ CreateFragment(Stream html)
         {
             CQ cq = new CQ();
-            cq.CreateNew(cq, html,HtmlParsingMode.Fragment,HtmlParsingOptions.AllowselfClosingTags, DocType.HTML5);
+            cq.CreateNew(cq, html,HtmlParsingMode.Fragment,HtmlParsingOptions.AllowSelfClosingTags, DocType.Default);
             return cq;
         }
 

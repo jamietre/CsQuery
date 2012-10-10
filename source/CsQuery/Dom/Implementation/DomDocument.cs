@@ -26,7 +26,7 @@ namespace CsQuery.Implementation
 
         public static IDomDocument Create(IEnumerable<IDomObject> elements, 
             HtmlParsingMode parsingMode = HtmlParsingMode.Content,
-            DocType docType = DocType.HTML5)
+            DocType docType = DocType.Default)
         {
             DomDocument doc = parsingMode == HtmlParsingMode.Document ?
                 new DomDocument() :
@@ -46,7 +46,7 @@ namespace CsQuery.Implementation
         public static IDomDocument Create(string html, 
             HtmlParsingMode parsingMode = HtmlParsingMode.Auto,
             HtmlParsingOptions parsingOptions = HtmlParsingOptions.Default,
-            DocType docType = DocType.HTML5)
+            DocType docType = DocType.Default)
         {
             return ElementFactory.Create(html, parsingMode, parsingOptions, docType);
         }
@@ -54,7 +54,7 @@ namespace CsQuery.Implementation
         public static IDomDocument Create(Stream html, 
             HtmlParsingMode parsingMode= HtmlParsingMode.Content,
             HtmlParsingOptions parsingOptions= HtmlParsingOptions.Default,
-            DocType docType = DocType.HTML5)
+            DocType docType = DocType.Default)
         {
             return ElementFactory.Create(html, parsingMode,parsingOptions, docType);
         }
