@@ -14,16 +14,39 @@ namespace CsQuery.Implementation
     /// </summary>
     public class DomText : DomObject<DomText>, IDomText
     {
+        /// <summary>
+        /// Create a new empty Text node
+        /// </summary>
+
         public DomText()
         {
-
+            NodeValue = "";
         }
+
+        /// <summary>
+        /// Create a new Text node containing the text passed
+        /// </summary>
+        ///
+        /// <param name="nodeValue">
+        /// The text value of this Text node.
+        /// </param>
 
         public DomText(string nodeValue)
             : base()
         {
             NodeValue = nodeValue;
         }
+
+        /// <summary>
+        /// The inner node value; the text.
+        /// </summary>
+
+        protected string nodeValue;
+
+
+        /// <summary>
+        /// The node (tag) name, in upper case. For Text nodes, this is always "#text".
+        /// </summary>
 
         public override string NodeName
         {
@@ -33,13 +56,21 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Gets the type of the node. For Text nodes, this is always NodeType.TEXT_NODE
+        /// </summary>
+
         public override NodeType NodeType
         {
             get { return NodeType.TEXT_NODE; }
         }
 
-        protected string nodeValue;
-        
+
+
+        /// <summary>
+        /// Gets or sets the text value of this Text node
+        /// </summary>
+
         public override string NodeValue
         {
             get
@@ -52,20 +83,46 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Makes a clone of this TextNode
+        /// </summary>
+        ///
+        /// <returns>
+        /// A copy of this object.
+        /// </returns>
 
         public override DomText Clone()
         {
             return new DomText(nodeValue);
         }
 
+        /// <summary>
+        /// Gets a value indicating whether HTML is allowed as a child of this element. For Text nodes,
+        /// this is always false.
+        /// </summary>
+
         public override bool InnerHtmlAllowed
         {
             get { return false; }
         }
+
+        /// <summary>
+        /// For Text nodes, this is always false
+        /// </summary>
+
         public override bool HasChildren
         {
             get { return false; }
         }
+
+        /// <summary>
+        /// Return the value of this text node
+        /// </summary>
+        ///
+        /// <returns>
+        /// This object as a string.
+        /// </returns>
+
         public override string ToString()
         {
             return NodeValue;

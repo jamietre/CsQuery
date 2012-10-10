@@ -23,12 +23,12 @@ namespace CsQuery.Tests.Csharp.Utility
     {
      
 
-        [Test,TestMethod]
-        public void SmallDictionary()
-        {
-            IDictionary<string, int> dict = new SmallDictionary<string, int>();
-            DoTests(dict);
-        }
+        //[Test,TestMethod]
+        //public void SmallDictionary()
+        //{
+        //    IDictionary<string, int> dict = new SmallDictionary<string, int>();
+        //    DoTests(dict);
+        //}
 
         [Test,TestMethod]
         public void OrderedDictionary()

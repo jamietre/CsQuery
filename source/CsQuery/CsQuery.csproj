@@ -243,6 +243,7 @@
     <Compile Include="EquationParser\ILiteral.cs" />
     <Compile Include="EquationParser\Implementation\Equation.cs" />
     <Compile Include="EquationParser\Implementation\EquationParserEngine.cs" />
+    <Compile Include="EquationParser\Implementation\EquationT.cs" />
     <Compile Include="EquationParser\Implementation\Function.cs" />
     <Compile Include="EquationParser\Implementation\Functions\Abs.cs" />
     <Compile Include="EquationParser\Implementation\Functions\Power.cs" />
@@ -251,6 +252,7 @@
     <Compile Include="EquationParser\Implementation\Functions\Product.cs" />
     <Compile Include="EquationParser\Implementation\Functions\Quotient.cs" />
     <Compile Include="EquationParser\Implementation\Functions\Sum.cs" />
+    <Compile Include="EquationParser\IEquationT.cs" />
     <Compile Include="EquationParser\Implementation\IntegerValue.cs" />
     <Compile Include="EquationParser\Implementation\Literal.cs" />
     <Compile Include="EquationParser\Implementation\Operand.cs" />
@@ -306,8 +308,6 @@
     <Compile Include="HtmlParser\ElementFactory.cs" />
     <Compile Include="HtmlParser\HtmlPreprocessor.cs" />
     <Compile Include="HtmlParser\enumHtmlParsingMode.cs" />
-    <Compile Include="HtmlParser\Deprecated\enumInsertionMode.cs" />
-    <Compile Include="HtmlParser\Deprecated\enumTokenizerState.cs" />
     <Compile Include="HtmlParser\ExtensionMethods.cs" />
     <Compile Include="HtmlParser\HtmlStyles.cs" />
     <Compile Include="HtmlParser\enumTokenProperties.cs" />
@@ -323,16 +323,20 @@
     <Compile Include="Output\IHtmlEncoder.cs" />
     <Compile Include="Output\Indented.cs" />
     <Compile Include="Output\OutputFormatters.cs" />
+    <Compile Include="Promises\IPromiseT.cs" />
     <Compile Include="StringScanner\CharacterData.cs" />
     <Compile Include="StringScanner\enumCharacterType.cs" />
     <Compile Include="StringScanner\ExtensionMethods.cs" />
+    <Compile Include="StringScanner\ICharacterInfo.cs" />
     <Compile Include="StringScanner\IExpectPattern.cs" />
     <Compile Include="StringScanner\Implementation\CharacterInfo.cs" />
     <Compile Include="StringScanner\Implementation\ExpectPattern.cs" />
     <Compile Include="StringScanner\Implementation\StringInfo.cs" />
     <Compile Include="StringScanner\Implementation\StringScannerEngine.cs" />
+    <Compile Include="StringScanner\IStringInfo.cs" />
     <Compile Include="StringScanner\IStringScanner.cs" />
     <Compile Include="StringScanner\IValueInfo.cs" />
+    <Compile Include="StringScanner\IValueInfoT.cs" />
     <Compile Include="StringScanner\MatchFunctions.cs" />
     <Compile Include="StringScanner\Patterns\Bounded.cs" />
     <Compile Include="StringScanner\Patterns\HTMLTagSelectorName.cs" />
@@ -393,7 +397,6 @@
     <Compile Include="Dom\IDomText.cs" />
     <Compile Include="Dom\Implementation\CssStyle.cs" />
     <Compile Include="Dom\Implementation\DomAttribute.cs" />
-    <Compile Include="Dom\Implementation\DomInnerText.cs" />
     <Compile Include="Dom\Implementation\DomFragment.cs" />
     <Compile Include="Dom\Implementation\DomCData.cs" />
     <Compile Include="Dom\Implementation\DomComment.cs" />
@@ -413,7 +416,6 @@
     <Compile Include="Engine\PseudoClassSelectors\Css\NthChildMatcher.cs" />
     <Compile Include="Engine\SelectorEngine.cs" />
     <Compile Include="ExtensionMethods\Internal\ExtensionMethods.cs" />
-    <Compile Include="HtmlParser\Deprecated\IterationData.cs" />
     <Compile Include="Implementation\SmallDictionary.cs" />
     <Compile Include="Web\AsyncPostbackData.cs" />
     <Compile Include="Web\IAsyncRequestQueue.cs" />
@@ -431,7 +433,6 @@
     <Compile Include="Web\CsQueryHttpContext.cs" />
     <Compile Include="Engine\Selector.cs" />
     <Compile Include="Dom\Implementation\DomElement.cs" />
-    <Compile Include="HtmlParser\Deprecated\HtmlElementFactory.cs" />
     <Compile Include="ExtensionMethods\ExtensionMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\Support.cs" />

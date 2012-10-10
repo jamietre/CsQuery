@@ -22,6 +22,10 @@ namespace CsQuery.Implementation
         {
         }
 
+        /// <summary>
+        /// The Value property of this LI element, or zero if it is not set.
+        /// </summary>
+
         public new int Value
         {
             get

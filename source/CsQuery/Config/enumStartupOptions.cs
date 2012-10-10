@@ -5,6 +5,10 @@ using System.Text;
 
 namespace CsQuery
 {
+    /// <summary>
+    /// Flags for specifying initial configuration behavior of CsQuery.
+    /// </summary>
+
     [Flags]
     public enum StartupOptions
     {

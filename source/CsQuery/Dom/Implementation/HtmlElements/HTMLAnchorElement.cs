@@ -58,6 +58,11 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// The rel attribute on a and area elements controls what kinds of links the elements create.
+        /// The attribue's value must be a set of space-separated tokens.
+        /// </summary>
+
         public RelAnchor Rel
         {
             get
@@ -70,6 +75,11 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// A list of tokens that specify the relationship between the document containing the hyperlink
+        /// and the destination indicated by the hyperlink.
+        /// </summary>
+
         public string Hreflang
         {
             get
@@ -81,6 +91,10 @@ namespace CsQuery.Implementation
                 SetAttribute("hreflang", value);
             }
         }
+
+        /// <summary>
+        /// The media for which the destination of the hyperlink was designed.
+        /// </summary>
 
         public string Media
         {

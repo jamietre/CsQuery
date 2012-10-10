@@ -6,9 +6,16 @@ using CsQuery.StringScanner.Implementation;
 
 namespace CsQuery.StringScanner.Patterns
 {
-    
+    /// <summary>
+    /// A pattern that matches a valid HTML attribute name.
+    /// </summary>
+
     public class HTMLAttributeName: EscapedString
     {
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+
         public HTMLAttributeName() : 
             base(IsValidAttributeName)
         {

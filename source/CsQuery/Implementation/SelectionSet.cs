@@ -114,6 +114,10 @@ namespace CsQuery.Implementation
         private HashSet<T> _MutableList;
         private List<T> _MutableListOrdered;
 
+        /// <summary>
+        /// The list, if it has been changed from the value with which it was created
+        /// </summary>
+
         protected HashSet<T> MutableList
         {
             get
@@ -208,9 +212,14 @@ namespace CsQuery.Implementation
         #region public properties
 
         /// <summary>
-        /// The order in which elements in the set are returned
+        /// The order in which elements in the set are returned.
         /// </summary>
+
         public SelectionSetOrder OutputOrder {get;set;}
+
+        /// <summary>
+        /// Gets the number of items in the SelectionSet
+        /// </summary>
 
         public int Count
         {
@@ -224,6 +233,10 @@ namespace CsQuery.Implementation
                 }
             }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is read only. For SelectionSet objects, this is always false.
+        /// </summary>
 
         public bool IsReadOnly
         {

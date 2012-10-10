@@ -9,7 +9,11 @@ using CsQuery.StringScanner;
 
 namespace CsQuery.EquationParser.Implementation
 {
-    public class Equation : Operand,IEquation
+    /// <summary>
+    /// An equation.
+    /// </summary>
+
+    public class Equation : Operand, IEquation
     {
         #region constructors
 
@@ -32,7 +36,7 @@ namespace CsQuery.EquationParser.Implementation
         private IOperand _Operand;
         private OrderedDictionary<string, IConvertible> _VariableValues;
         //xref of names in the order they appear
-        
+
         /// <summary>
         /// The names of the variables in the order added. For functions (where the parameters are passed only by order)
         /// this is important. Probably could move this to the Function implementation
@@ -40,7 +44,7 @@ namespace CsQuery.EquationParser.Implementation
         /// </summary>
 
         #endregion
-        
+
         #region public properties
 
         public IOrderedDictionary<string, IConvertible> VariableValues
@@ -50,9 +54,12 @@ namespace CsQuery.EquationParser.Implementation
                 return _VariableValues;
             }
         }
+
         /// <summary>
-        /// The root operand for the equation. The equation must not be changed once set, or variables will not be bound.
+        /// The root operand for the equation. The equation must not be changed once set, or variables
+        /// will not be bound.
         /// </summary>
+
         public IOperand Operand
         {
             get
@@ -72,6 +79,11 @@ namespace CsQuery.EquationParser.Implementation
                 }
             }
         }
+
+        /// <summary>
+        /// The values set (on order that each variable appears first in the equation) for each varaiable
+        /// </summary>
+        
         public IEnumerable<IVariable> Variables
         {
             get
@@ -86,18 +98,28 @@ namespace CsQuery.EquationParser.Implementation
                 }
             }
         }
-        /// <summary>
-        /// The values set (on order that each variable appears first in the equation) for each varaiable
-        /// </summary>
-        
+
+
         #endregion
 
         #region public methods
+
+        /// <summary>
+        /// Makes a deep copy of this object.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A copy of this object.
+        /// </returns>
 
         public new IEquation Clone()
         {
             return (IEquation)CopyTo(GetNewInstance());
         }
+
+        /// <summary>
+        /// Compiles the equation.
+        /// </summary>
 
         public void Compile()
         {
@@ -107,6 +129,17 @@ namespace CsQuery.EquationParser.Implementation
             }
         }
 
+        /// <summary>
+        /// Execute the equation using existing variable data; if any errors occur, return false.
+        /// </summary>
+        ///
+        /// <param name="result">
+        /// [out] The result.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
 
         public bool TryGetValue(out IConvertible result)
         {
@@ -121,6 +154,21 @@ namespace CsQuery.EquationParser.Implementation
                 return false;
             }
         }
+
+        /// <summary>
+        /// Execute the equation using the values passed; if any errors occur, return false.
+        /// </summary>
+        ///
+        /// <param name="result">
+        /// [out] The result.
+        /// </param>
+        /// <param name="values">
+        /// A variable-length parameters list containing values.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
 
         public virtual bool TryGetValue(out IConvertible result, params IConvertible[] values)
         {
@@ -139,11 +187,18 @@ namespace CsQuery.EquationParser.Implementation
                 return false;
             }
         }
+
         /// <summary>
-        /// Sets the value used for a variable when the function is next run
+        /// Sets the value used for a variable when the function is next run.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
+        ///
+        /// <param name="name">
+        /// The variable name
+        /// </param>
+        /// <param name="value">
+        /// The value
+        /// </param>
+
         public virtual void SetVariable(string name, IConvertible value)
         {
             // Setting a variable doesn't do anything directly, instead, it stores the value for use when it's accessed by the equation.
@@ -157,6 +212,18 @@ namespace CsQuery.EquationParser.Implementation
 
             VariableValues[name] = value;
         }
+
+        /// <summary>
+        /// Sets the value used for a variable when the function is next run.
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// Zero-based index of the.
+        /// </param>
+        /// <param name="value">
+        /// .
+        /// </param>
+
         public virtual void SetVariable(int index, IConvertible value)
         {
             if (VariableValues.Count == index)
@@ -169,10 +236,33 @@ namespace CsQuery.EquationParser.Implementation
             }
 
         }
+
+        /// <summary>
+        /// Sets the value of a strongly-typed named variable.
+        /// </summary>
+        ///
+        /// <typeparam name="U">
+        /// The type of the variable.
+        /// </typeparam>
+        /// <param name="name">
+        /// The name.
+        /// </param>
+        /// <param name="value">
+        /// The value.
+        /// </param>
+
         public virtual void SetVariable<U>(string name, U value) where U : IConvertible
         {
             SetVariable(name, (IConvertible)value);
         }
+
+        /// <summary>
+        /// Get the value of this operand.
+        /// </summary>
+        ///
+        /// <returns>
+        /// The value.
+        /// </returns>
 
         protected override IConvertible GetValue()
         {
@@ -184,6 +274,7 @@ namespace CsQuery.EquationParser.Implementation
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
+        
         public IConvertible GetValue(params IConvertible[] values)
         {
             for (int i = 0; i < values.Length; i++)
@@ -215,14 +306,18 @@ namespace CsQuery.EquationParser.Implementation
         protected void Variable_OnGetValue(object sender, VariableReadEventArgs e)
         {
             IConvertible value;
-            if (VariableValues.TryGetValue(e.Name, out value)) {
+            if (VariableValues.TryGetValue(e.Name, out value))
+            {
                 e.Value = VariableValues[e.Name];
-            } else {
+            }
+            else
+            {
                 throw new InvalidOperationException("The value for variable '" + e.Name + "' was not set.");
             }
 
         }
-        protected void AddVariable(IVariable variable) {
+        protected void AddVariable(IVariable variable)
+        {
             if (!VariableValues.ContainsKey(variable.Name))
             {
                 _VariableValues[variable.Name] = null;
@@ -242,144 +337,5 @@ namespace CsQuery.EquationParser.Implementation
         }
         #endregion
     }
-
-    public class Equation<T> : Equation, IEquation<T> where T : IConvertible
-    {
-        public Equation()
-        {
-
-        }
-        public Equation(IConvertible operand)
-        {
-            Operand = Utils.EnsureOperand(operand);
-        }
-        #region public methods
-
-        public new IEquation<T> Clone()
-        {
-            return (IEquation<T>)CopyTo(GetNewInstance());
-        }
-        public IEquation<U> CloneAs<U>() where U : IConvertible
-        {
-            return (IEquation<U>)CloneAsImpl<U>();
-        }
-
-
-        public new T GetValue(params IConvertible[] values)
-        {
-            for (int i = 0; i < values.Length; i++)
-            {
-                SetVariable(i, values[i]);
-            }
-            return Value;
-        }
-        public bool TryGetValue(out T result)
-        {
-
-            IConvertible untypedResult;
-            if (base.TryGetValue(out untypedResult))
-            {
-                result = (T)Convert.ChangeType(untypedResult, typeof(T));
-                return true;
-            }
-            else
-            {
-                result = default(T);
-                return false;
-            }
-
-        }
-
-        public virtual bool TryGetValue(out T result, params IConvertible[] values)
-        {
-            try
-            {
-                for (int i = 0; i < values.Length; i++)
-                {
-                    SetVariable(i, values[i]);
-                }
-                result = (T)Convert.ChangeType(Value, typeof(T));
-                return true;
-            }
-            catch
-            {
-                result = default(T);
-                return false;
-            }
-        }
-
-
-        public new T Value
-        {
-            get
-            {
-                return (T)Convert.ChangeType(Operand.Value, typeof(T));
-            }
-        }
-
-        public override string ToString()
-        {
-            return Operand==null?"":Operand.ToString();
-        }
-        #endregion
-        #region private methods
-        protected IOperand<U> CloneAsImpl<U>() where U : IConvertible
-        {
-            Equation<U> clone = new Equation<U>();
-            CopyTo(clone);
-            return clone;
-        }
-
-        protected override IOperand GetNewInstance()
-        {
-            return new Equation<T>();
-        }
-        protected override IOperand CopyTo(IOperand operand)
-        {
-            CopyTo((IEquation)operand);
-            return operand;
-        }
-        #endregion
-
-        #region Interface members
-        IConvertible IEquation.GetValue(params IConvertible[] values)
-        {
-            return GetValue(values);
-        }
-        bool IEquation.TryGetValue(out IConvertible value)
-        {
-            T typedValue;
-            if (TryGetValue(out typedValue)) {
-                value = typedValue;
-                return true;
-            } else {
-                value = default(T);
-                return false;
-            }
-        }
-        bool IEquation.TryGetValue(out IConvertible value, params IConvertible[] variableValues)
-        {
-            T typedValue ;
-            if (TryGetValue(out typedValue, variableValues))
-            {
-                value = typedValue;
-                return true;
-            }
-            else
-            {
-                value = default(T);
-                return false;
-            }
-        }
-
-        IOperand<T> IOperand<T>.Clone()
-        {
-            return Clone();
-        }
-        IEquation IEquation.Clone()
-        {
-            return Clone();
-        }
-        #endregion
-    }
+   
 }

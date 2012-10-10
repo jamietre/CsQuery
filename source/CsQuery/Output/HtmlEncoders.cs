@@ -40,7 +40,7 @@ namespace CsQuery
 
         /// <summary>
         /// The same as the minimum HTML encoder, but also encodes nonbreaking space (ascii 160 becomes
-        /// &nbsp;).
+        /// &amp;nbsp;).
         /// </summary>
 
         public static IHtmlEncoder MinimumNbsp = new HtmlEncoderMinimumNbsp();

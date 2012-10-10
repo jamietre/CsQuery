@@ -168,6 +168,11 @@ namespace CsQuery.StringScanner.Implementation
                 return CharacterData.IsType(Target,CharacterType.Whitespace);
             }
         }
+
+        /// <summary>
+        /// The value is alphanumeric.
+        /// </summary>
+
         public bool Alphanumeric
         {
             get
@@ -175,7 +180,11 @@ namespace CsQuery.StringScanner.Implementation
                 return CharacterData.IsType(Target, CharacterType.Alpha | CharacterType.Number);
             }
         }
-        
+
+        /// <summary>
+        /// The value is a math operator.
+        /// </summary>
+
         public bool Operator
         {
             get
@@ -232,7 +241,7 @@ namespace CsQuery.StringScanner.Implementation
         }
 
         /// <summary>
-        /// Tests
+        /// Gets a value indicating whether the character is a separator (a space, or pipe)
         /// </summary>
 
         public bool Separator
@@ -242,6 +251,12 @@ namespace CsQuery.StringScanner.Implementation
                 return CharacterData.IsType(Target, CharacterType.Separator);
             }
         }
+
+        /// <summary>
+        /// Indicates that a character is alphabetic-like character defined as a-z, A-Z, hyphen,
+        /// underscore, and ISO 10646 code U+00A1 and higher. (per characters allowed in CSS identifiers)
+        /// </summary>
+
         public bool AlphaISO10646
         {
             get
@@ -249,6 +264,14 @@ namespace CsQuery.StringScanner.Implementation
                 return CharacterData.IsType(Target,CharacterType.AlphaISO10646);
             }
         }
+
+        /// <summary>
+        /// Returns a string that is the current target
+        /// </summary>
+        ///
+        /// <returns>
+        /// The current target as a string
+        /// </returns>
 
         public override string ToString()
         {

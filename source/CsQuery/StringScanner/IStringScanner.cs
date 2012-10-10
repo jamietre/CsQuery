@@ -8,8 +8,10 @@ using System.Diagnostics;
 
 namespace CsQuery.StringScanner
 {
-    
-    // Not implemented - intended to update the scanning code in Selector engine and maybe the HTML parser
+    /// <summary>
+    /// Interface defining a StringScanner - a lexical scanner
+    /// </summary>
+
     public interface IStringScanner
     {
         /// <summary>
@@ -380,11 +382,39 @@ namespace CsQuery.StringScanner
         /// </param>
         ///
         /// <returns>
-        /// .
+        /// The current string scanner.
         /// </returns>
 
         IStringScanner ExpectNumber(bool requireWhitespaceTerminator = false);
+
+        /// <summary>
+        /// Assert that the current pattern is alphabetic until the next whitespace.
+        /// </summary>
+        ///
+        /// <returns>
+        /// The current string scanner.
+        /// </returns>
+
         IStringScanner ExpectAlpha();
+
+        /// <summary>
+        /// Asser that the current pattern is bounded by the start and end characters passed
+        /// </summary>
+        ///
+        /// <param name="start">
+        /// The start bound character
+        /// </param>
+        /// <param name="end">
+        /// The end bound character
+        /// </param>
+        /// <param name="allowQuoting">
+        /// (optional) True if the contents of the bounds can be quoted
+        /// </param>
+        ///
+        /// <returns>
+        /// The current string scanner
+        /// </returns>
+
         IStringScanner ExpectBoundedBy(string start, string end, bool allowQuoting=false);
         IStringScanner ExpectBoundedBy(char bound, bool allowQuoting = false);
 

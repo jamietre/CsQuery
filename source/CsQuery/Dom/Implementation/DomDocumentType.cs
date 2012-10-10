@@ -208,17 +208,6 @@ namespace CsQuery.Implementation
 
         #region interface Members
 
-        public string Text
-        {
-            get
-            {
-                return NonAttributeData;
-            }
-            set
-            {
-                NonAttributeData = value;
-            }
-        }
 
         public override DomDocumentType Clone()
         {

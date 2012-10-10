@@ -21,6 +21,11 @@ namespace CsQuery.Engine
         TraversalType NextTraversalType = TraversalType.All;
         CombinatorType NextCombinatorType = CombinatorType.Root;
 
+        /// <summary>
+        /// The currently active selector clause in the selector construction process. If none is active,
+        /// a new one is started.
+        /// </summary>
+
         protected SelectorClause Current
         {
             get

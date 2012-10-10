@@ -11,6 +11,18 @@ namespace CsQuery.Implementation
     /// </summary>
     public class SelectionSetComparer : IComparer<IDomObject>
     {
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        ///
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the requested operation is invalid.
+        /// </exception>
+        ///
+        /// <param name="order">
+        /// The order used to compare two items. This must be Ascending or Descending
+        /// </param>
+
         public SelectionSetComparer(SelectionSetOrder order)
         {
             if (order != SelectionSetOrder.Ascending && order != SelectionSetOrder.Descending)
@@ -19,7 +31,24 @@ namespace CsQuery.Implementation
             }
             Order = order;
         }
-        protected SelectionSetOrder Order;
+
+        private SelectionSetOrder Order;
+
+        /// <summary>
+        /// Compares two IDomObject objects to determine their relative ordering.
+        /// </summary>
+        ///
+        /// <param name="x">
+        /// I dom object to be compared.
+        /// </param>
+        /// <param name="y">
+        /// I dom object to be compared.
+        /// </param>
+        ///
+        /// <returns>
+        /// Negative if 'x' is less than 'y', 0 if they are equal, or positive if it is greater.
+        /// </returns>
+
         public int Compare(IDomObject x, IDomObject y)
         {
             return Order == SelectionSetOrder.Ascending ?

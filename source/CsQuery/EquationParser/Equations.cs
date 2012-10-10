@@ -6,6 +6,10 @@ using CsQuery.EquationParser.Implementation;
 
 namespace CsQuery.EquationParser
 {
+    /// <summary>
+    /// Factory class for creating equation objects.
+    /// </summary>
+
     public static class Equations
     {
         //public static Operator CreateOperator(string oper) {

@@ -58,9 +58,21 @@ namespace CsQuery.Implementation
         [Flags]
         protected enum DocumentInfo : byte
         {
+            /// <summary>
+            /// The parent document is indexed.
+            /// </summary>
             IsIndexed = 1,
+            /// <summary>
+            /// The parent document is a document (not a fragment).
+            /// </summary>
             IsDocument = 2,
+            /// <summary>
+            /// The parent document is valid.
+            /// </summary>
             IsConnected = 4,
+            /// <summary>
+            /// The parent document has already been tested..
+            /// </summary>
             IsParentTested = 8
         }
 
@@ -72,22 +84,6 @@ namespace CsQuery.Implementation
         /// </summary>
 
         protected DocumentInfo DocInfo;
-
-        /// <summary>
-        /// Gets options for controlling the DOM rendering from the bound document, or the default
-        /// options if there is no document.
-        /// </summary>
-        
-        //protected DomRenderingOptions DomRenderingOptions
-        //{
-        //    get
-        //    {
-        //        return Document == null ? 
-        //            Config.DomRenderingOptions :
-        //            Document.DomRenderingOptions;
-
-        //    }
-        //}
 
         #endregion
         
@@ -273,6 +269,10 @@ namespace CsQuery.Implementation
                 return (DocInfo & DocumentInfo.IsDocument) == 0;
             }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this object belongs to a Document or not.
+        /// </summary>
 
         public virtual bool IsDisconnected
         {
@@ -844,12 +844,11 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <param name="formatter">
-        /// The formatter.
+        /// The formatter that controls how the ouput is rendered.
         /// </param>
-        ///
-        /// <returns>
-        /// a string of HTML.
-        /// </returns>
+        /// <param name="writer">
+        /// The writer to which output should be written.
+        /// </param>
 
         public virtual void Render(IOutputFormatter formatter, TextWriter writer)
         {
@@ -896,9 +895,7 @@ namespace CsQuery.Implementation
         /// <param name="sb">
         /// An existing StringBuilder instance to append this element's HTML.
         /// </param>
-        /// <param name="options">
-        /// (optional) options for controlling the operation.
-        /// </param>
+
 
         [Obsolete]
         public virtual void Render(StringBuilder sb)
@@ -1446,6 +1443,10 @@ namespace CsQuery.Implementation
             throw new InvalidOperationException("This is not an Element object.");
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this object is a block element
+        /// </summary>
+
         public virtual bool IsBlock
         {
             get
@@ -1453,10 +1454,27 @@ namespace CsQuery.Implementation
                 throw new InvalidOperationException("This is not an Element object.");
             }
         }
+
+        /// <summary>
+        /// Enumerates index keys for this element.
+        /// </summary>
+        ///
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the requested operation is not valid for this element type
+        /// </exception>
+        ///
+        /// <returns>
+        /// A sequence of keys
+        /// </returns>
+
         public virtual IEnumerable<string> IndexKeys()
         {
             throw new InvalidOperationException("This is not an indexed object.");
         }
+
+        /// <summary>
+        /// Gets the object to which this index entry refers.
+        /// </summary>
 
         public virtual IDomObject IndexReference
         {
@@ -1468,42 +1486,7 @@ namespace CsQuery.Implementation
 
         #endregion
 
-        #region select element properties
-
-
-        #endregion 
-
         #region option element properties
-
-        private HTMLOptionsCollection OwnerSelectOptions()
-        {
-
-            var node = OptionOwner();
-            if (node == null)
-            {
-                throw new InvalidOperationException("The selected property only applies to valid OPTION nodes within a SELECT node");
-            }
-            return OwnerSelectOptions(node);
-
-        }
-        private HTMLOptionsCollection OwnerSelectOptions(IDomElement owner)
-        {
-            return new HTMLOptionsCollection((IDomElement)owner);
-        }
-
-        private IDomElement OptionOwner()
-        {
-            var node =   this.ParentNode == null ?
-                null :
-                this.ParentNode.NodeNameID == HtmlData.tagSELECT ?
-                    this.ParentNode :
-                        this.ParentNode.ParentNode == null ?
-                            null :
-                            this.ParentNode.ParentNode.NodeNameID == HtmlData.tagSELECT ?
-                                this.ParentNode.ParentNode :
-                                null;
-            return (IDomElement)node;
-        }
 
         /// <summary>
         /// Indicates whether the element is selected or not. This value is read-only. To change the
@@ -1518,35 +1501,11 @@ namespace CsQuery.Implementation
         {
             get
             {
-                var owner = OptionOwner();
-                if (owner != null)
-                {
-                    return ((DomElement)this).HasAttribute(HtmlData.SelectedAttrId) ||
-                        OwnerSelectOptions(owner).SelectedItem == this;
-                }
-                else
-                {
-                    return ((DomElement)this).HasAttribute(HtmlData.SelectedAttrId);
-                }
+                throw new Exception("The Selected property cannot does not apply to this element type.");
             }
             set
             {
-                var owner = OptionOwner();
-                if (owner != null)
-                {
-                    if (value)
-                    {
-                        OwnerSelectOptions(owner).SelectedItem = (DomElement)this;
-                    }
-                    else
-                    {
-                        ((DomElement)this).RemoveAttribute(HtmlData.SelectedAttrId);
-                    }
-                }
-                else
-                {
-                    ((DomElement)this).SetAttribute(HtmlData.SelectedAttrId);
-                }
+                throw new Exception("The Selected property cannot be set for this element type.");
             }
         }
 

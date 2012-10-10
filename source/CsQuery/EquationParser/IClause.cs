@@ -5,6 +5,10 @@ using System.Text;
 
 namespace CsQuery.EquationParser
 {
+    /// <summary>
+    /// Interface for an equation clause.
+    /// </summary>
+
     public interface IClause : IFunction, IVariableContainer
     {
 
@@ -20,6 +24,7 @@ namespace CsQuery.EquationParser
         //IClause Chain(IOperand operandB, IOperator op);
         //IClause Chain(IOperand operandB, string op);
         //IClause Chain(IConvertible operandB, string op);
+        
         new IClause Clone();
     }
     //public interface IClause<T> : IFunction<T>, IClause where T : IConvertible, IEquatable<T>

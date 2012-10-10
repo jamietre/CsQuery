@@ -14,17 +14,39 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
     public class Visible: PseudoSelectorFilter
     {
+        /// <summary>
+        /// Test whether an element is visible
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it matches, false if not.
+        /// </returns>
 
         public override bool Matches(IDomObject element)
         {
             return IsVisible(element);
         }
 
-        
+        /// <summary>
+        /// Test whether the passed element is visible, based on CSS styles and height/width properties.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if visible, false if not.
+        /// </returns>
+
         public static bool IsVisible(IDomObject element)
         {
             //ensure if a text node is passed, we start with its container.
-            // 
+            
             IDomObject el = element is IDomElement ? 
                 element : 
                 element.ParentNode;

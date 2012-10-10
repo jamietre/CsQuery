@@ -128,11 +128,6 @@ namespace CsQuery.Promises
         IPromise Then(PromiseFunction<object> success, PromiseFunction<object> failure = null);
     }
 
-    public interface IPromise<T> : IPromise
-    {
-
-        IPromise Then(PromiseAction<T> success, PromiseAction<T> failure = null);
-        IPromise Then(PromiseFunction<T> success, PromiseFunction<T> failure = null);
-    }
+   
 
 }

@@ -12,19 +12,31 @@ namespace CsQuery.StringScanner.Patterns
     /// </summary>
     public class HtmlID: EscapedString
     {
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+
         public HtmlID(): 
             base(IsValidID)
         {
 
         }
 
-
         /// <summary>
-        /// Match a pattern for a valid HTML ID 
+        /// Match a pattern for a valid HTML ID.
         /// </summary>
-        /// <param name="index"></param>
-        /// <param name="character"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="index">
+        /// .
+        /// </param>
+        /// <param name="character">
+        /// .
+        /// </param>
+        ///
+        /// <returns>
+        /// true if valid identifier, false if not.
+        /// </returns>
+
         protected static bool IsValidID(int index, char character)
         {
 

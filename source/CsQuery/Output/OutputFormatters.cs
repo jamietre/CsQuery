@@ -51,16 +51,17 @@ namespace CsQuery
 
         /// <summary>
         /// Creates an instance of the default OutputFormatter using the default options and the encoder
-        /// passed. 
+        /// passed.
         /// </summary>
         ///
-        /// <param name="options">
-        /// (optional) options for controlling the operation.
+        /// <param name="encoder">
+        /// (optional) the encoder.
         /// </param>
         ///
         /// <returns>
         /// An OutputFormatter.
         /// </returns>
+
 
         public static IOutputFormatter Create(IHtmlEncoder encoder)
         {

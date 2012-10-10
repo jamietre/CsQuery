@@ -29,7 +29,8 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return GetAttribute(HtmlData.ValueAttrId, "");
+                var attrValue = GetAttribute(HtmlData.ValueAttrId, null);
+                return attrValue ?? InnerText;
             }
             set
             {
@@ -37,6 +38,9 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this object is disabled.
+        /// </summary>
 
         public bool Disabled
         {
@@ -70,10 +74,18 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// The form with which the element is associated.
+        /// </summary>
+
         public IDomElement Form
         {
             get { return Closest(HtmlData.tagFORM); }
         }
+
+        /// <summary>
+        /// Gets or sets the label for this Option element
+        /// </summary>
 
         public string Label
         {
@@ -86,6 +98,79 @@ namespace CsQuery.Implementation
                 SetAttribute(HtmlData.tagLABEL,value);
             }
         }
+        /// <summary>
+        /// Indicates whether the element is selected or not. This value is read-only. To change the
+        /// selection, set either the selectedIndex or selectedItem property of the containing element.
+        /// </summary>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/XUL/Attribute/selected
+        /// </url>
 
+        public override bool Selected
+        {
+            get
+            {
+                var owner = OptionOwner();
+                if (owner != null)
+                {
+                    return ((DomElement)this).HasAttribute(HtmlData.SelectedAttrId) ||
+                        OwnerSelectOptions(owner).SelectedItem == this;
+                }
+                else
+                {
+                    return ((DomElement)this).HasAttribute(HtmlData.SelectedAttrId);
+                }
+            }
+            set
+            {
+                var owner = OptionOwner();
+                if (owner != null)
+                {
+                    if (value)
+                    {
+                        OwnerSelectOptions(owner).SelectedItem = (DomElement)this;
+                    }
+                    else
+                    {
+                        ((DomElement)this).RemoveAttribute(HtmlData.SelectedAttrId);
+                    }
+                }
+                else
+                {
+                    ((DomElement)this).SetAttribute(HtmlData.SelectedAttrId);
+                }
+            }
+        }
+
+        private IDomElement OptionOwner()
+        {
+            var node = this.ParentNode == null ?
+                null :
+                this.ParentNode.NodeNameID == HtmlData.tagSELECT ?
+                    this.ParentNode :
+                        this.ParentNode.ParentNode == null ?
+                            null :
+                            this.ParentNode.ParentNode.NodeNameID == HtmlData.tagSELECT ?
+                                this.ParentNode.ParentNode :
+                                null;
+            return (IDomElement)node;
+        }
+
+        private HTMLOptionsCollection OwnerSelectOptions()
+        {
+
+            var node = OptionOwner();
+            if (node == null)
+            {
+                throw new InvalidOperationException("The selected property only applies to valid OPTION nodes within a SELECT node");
+            }
+            return OwnerSelectOptions(node);
+
+        }
+        private HTMLOptionsCollection OwnerSelectOptions(IDomElement owner)
+        {
+            return new HTMLOptionsCollection((IDomElement)owner);
+        }
     }
 }

@@ -12,6 +12,10 @@ using CsQuery.Utility;
 
 namespace CsQuery.Engine
 {
+    /// <summary>
+    /// Factory class for PseudoSelectors: provides an API for managing selectors.
+    /// </summary>
+
     public class PseudoSelectors
     {
 

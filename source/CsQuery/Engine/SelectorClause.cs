@@ -14,11 +14,20 @@ namespace CsQuery.Engine
     {
 
         #region constructors
-       
+
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+
         public SelectorClause()
         {
             Initialize();
         }
+
+        /// <summary>
+        /// Initializes this object to its default state
+        /// </summary>
+
         protected void Initialize()
         {
             SelectorType = 0;
@@ -52,10 +61,28 @@ namespace CsQuery.Engine
 
         #region public properties
 
+        /// <summary>
+        /// The type of the selector clause.
+        /// </summary>
+
         public SelectorType SelectorType {get;set;}
+
+        /// <summary>
+        /// The CombinatorType for this selector clause; this determines what set of elements it is applied to.
+        /// </summary>
+
         public CombinatorType CombinatorType { get; set; }
+
+        /// <summary>
+        /// The TraversalType for this clause; this determines the depth of children to test for certain selector types.
+        /// </summary>
+
         public TraversalType TraversalType { get; set; }
-        
+
+        /// <summary>
+        /// The AttributeSelectorType determines how values are matched for attribute selectors.
+        /// </summary>
+
         public AttributeSelectorType AttributeSelectorType { get; set; }
 
         /// <summary>
@@ -71,6 +98,7 @@ namespace CsQuery.Engine
         /// <summary>
         /// Selection tag name
         /// </summary>
+        
         public string Tag
         {
             get

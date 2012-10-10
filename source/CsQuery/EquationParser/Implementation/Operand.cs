@@ -57,7 +57,16 @@ namespace CsQuery.EquationParser.Implementation
             }
         }
 
+        /// <summary>
+        /// Get the value of this operand
+        /// </summary>
+        ///
+        /// <returns>
+        /// The value.
+        /// </returns>
+
         protected abstract IConvertible GetValue();
+
         /// <summary>
         /// Indicates that this operand is either an integral type or contains an integral value. 
         /// That is, non-integral types containing integral values will still report true

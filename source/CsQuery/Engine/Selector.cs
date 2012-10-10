@@ -17,34 +17,64 @@ namespace CsQuery.Engine
     public class Selector : IEnumerable<SelectorClause>
     {
         #region constructors
-        
+
+        /// <summary>
+        /// Creates an empty selector
+        /// </summary>
+
         public Selector()
         {
 
         }
 
-        public Selector(SelectorClause selector)
+        /// <summary>
+        /// Create a new selector from a single selector clause
+        /// </summary>
+        ///
+        /// <param name="clause">
+        /// The clause
+        /// </param>
+
+        public Selector(SelectorClause clause)
         {
-            Clauses.Add(selector);
+            Clauses.Add(clause);
         }
 
-        public Selector(IEnumerable<SelectorClause> selectors)
-        {
-            Clauses.AddRange(selectors);
-        }
         /// <summary>
-        /// Create a new selector from any string
+        /// Create a new selector from a sequence of selector clauses.
         /// </summary>
-        /// <param name="selector"></param>
+        ///
+        /// <param name="clauses">
+        /// A sequence of clauses to build this selector
+        /// </param>
+
+        public Selector(IEnumerable<SelectorClause> clauses)
+        {
+            Clauses.AddRange(clauses);
+        }
+
+        /// <summary>
+        /// Create a new selector from any string.
+        /// </summary>
+        ///
+        /// <param name="selector">
+        /// The CSS selector string, or a string of HTML.
+        /// </param>
+
         public Selector(string selector)   
         {
             var parser = new SelectorParser();
             Clauses.AddRange(parser.Parse(selector));
         }
+
         /// <summary>
-        /// Create a new selector from DOM elements
+        /// Create a new selector from DOM elements.
         /// </summary>
-        /// <param name="elements"></param>
+        ///
+        /// <param name="elements">
+        /// A sequence of elements.
+        /// </param>
+
         public Selector(IEnumerable<IDomObject> elements ) {
 
             SelectorClause sel = new SelectorClause();
@@ -52,6 +82,15 @@ namespace CsQuery.Engine
             sel.SelectElements = elements;
             Clauses.Add(sel);
         }
+
+        /// <summary>
+        /// Create a new selector from a single element.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to test.
+        /// </param>
+
         public Selector(IDomObject element)
         {
 
@@ -98,6 +137,11 @@ namespace CsQuery.Engine
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this object is an HTML selector (e.g. it's not really a
+        /// selector, but should return a new HTML fragment).
+        /// </summary>
+
         public bool IsHmtl
         {
             get
@@ -108,6 +152,14 @@ namespace CsQuery.Engine
         #endregion
 
         #region public methods
+
+        /// <summary>
+        /// Adds a clause to this selector.
+        /// </summary>
+        ///
+        /// <param name="clause">
+        /// The clause to insert.
+        /// </param>
 
         public void Add(SelectorClause clause)
         {
@@ -186,6 +238,10 @@ namespace CsQuery.Engine
             }
         } 
 
+        /// <summary>
+        /// Gets a clone of the list of member clauses in this selector
+        /// </summary>
+
         protected IEnumerable<SelectorClause> ClausesClone
         {
             get
@@ -243,31 +299,78 @@ namespace CsQuery.Engine
 
         }
 
-        public IEnumerable<IDomObject> Is(IDomDocument root, IDomObject element)
-        {
-            List<IDomObject> list = new List<IDomObject>();
-            list.Add(element);
-            return Select(root, list);
-        }
+        /// <summary>
+        /// Return the elements of document that match this selector
+        /// </summary>
+        ///
+        /// <param name="document">
+        /// The document against which to select
+        /// </param>
+        ///
+        /// <returns>
+        /// The sequence of matching elements
+        /// </returns>
+
         public IEnumerable<IDomObject> Select(IDomDocument document)
         {
             return Select(document, (IEnumerable<IDomObject>)null);
         }
+
+        /// <summary>
+        /// Return the elements of document that match this selector within a context. 
+        /// </summary>
+        ///
+        /// <param name="document">
+        /// The document against which to select.
+        /// </param>
+        /// <param name="context">
+        /// The context to select against. Context should be contained within document.
+        /// </param>
+        ///
+        /// <returns>
+        /// The sequence of matching elements.
+        /// </returns>
+
         public IEnumerable<IDomObject> Select(IDomDocument document, IDomObject context)
         {
             return Select(document, Objects.Enumerate(context));
         }
+
+        /// <summary>
+        /// Return the elements of document that match this selector within a context.
+        /// </summary>
+        ///
+        /// <param name="document">
+        /// The document against which to select.
+        /// </param>
+        /// <param name="context">
+        /// The context to select against. Context should be contained within document.
+        /// </param>
+        ///
+        /// <returns>
+        /// The sequence of matching elements.
+        /// </returns>
+
         public IEnumerable<IDomObject> Select(IDomDocument document, IEnumerable<IDomObject> context)
         {
             return GetEngine(document).Select(context);
         }
 
         /// <summary>
-        /// Return only elements matching this selector
+        /// Return only elements of sequence that match this selector.
         /// </summary>
-        /// <param name="document"></param>
-        /// <param name="sequence"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="document">
+        /// The DOM to which the members of the sequence belong.
+        /// </param>
+        /// <param name="sequence">
+        /// The sequence to filter. 
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence of matching elements, which is a subset of the original sequence.
+        /// </returns>
+
         public IEnumerable<IDomObject> Filter(IDomDocument document, IEnumerable<IDomObject> sequence)
         {
             // This needs to be two steps - returning the selection set directly will cause the sequence
@@ -276,7 +379,7 @@ namespace CsQuery.Engine
             HashSet<IDomObject> matches = new HashSet<IDomObject>(GetFilterSelector().Select(document, sequence));
             
             foreach (var item in sequence) {
-                 if (matches.Contains(item))
+                if (matches.Contains(item))
                 {
                     yield return item;
                 }

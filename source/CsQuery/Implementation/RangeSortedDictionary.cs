@@ -18,6 +18,10 @@ namespace CsQuery.Implementation
     {
         #region constructor
 
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+
         public RangeSortedDictionary()
         {
             Keys = new SortedSet<string>(StringComparer.Ordinal);
@@ -27,12 +31,34 @@ namespace CsQuery.Implementation
 
         #region private properties
 
+        /// <summary>
+        /// An ordered set of all the keys in this dictionary.
+        /// </summary>
+
         protected SortedSet<string> Keys;
+
+        /// <summary>
+        /// The inner index.
+        /// </summary>
+
         protected Dictionary<string,TValue> Index = new Dictionary<string,TValue>();
 
         #endregion
 
         #region public properties
+
+        /// <summary>
+        /// Retrieve all the keys that match the subkey provided; that is, all keys that start with the
+        /// value of 'subkey'.
+        /// </summary>
+        ///
+        /// <param name="subkey">
+        /// The subkey to match
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence of keys found in the dictionary.
+        /// </returns>
 
         public IEnumerable<string> GetRangeKeys(string subkey)
         {
@@ -107,6 +133,18 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Return a sequence of values for each key that starts with the value of 'subkey'.
+        /// </summary>
+        ///
+        /// <param name="subKey">
+        /// The subkey to match.
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence of values from the dictionary.
+        /// </returns>
+
         public IEnumerable<TValue> GetRange(string subKey)
         {
             foreach (var key in GetRangeKeys(subKey))
@@ -119,6 +157,17 @@ namespace CsQuery.Implementation
 
         #region IDictionary<string,TValue> Members
 
+        /// <summary>
+        /// Adds a key/value pair to the dictionary
+        /// </summary>
+        ///
+        /// <param name="key">
+        /// The key.
+        /// </param>
+        /// <param name="value">
+        /// [out] The value.
+        /// </param>
+
         public void Add(string key, TValue value)
         {
             if (Keys.Add(key))
@@ -126,6 +175,18 @@ namespace CsQuery.Implementation
                 Index.Add(key, value);
             }
         }
+
+        /// <summary>
+        /// Test whether the dictionary contains a value for 'key'
+        /// </summary>
+        ///
+        /// <param name="key">
+        /// The key.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
 
         public bool ContainsKey(string key)
         {
@@ -136,6 +197,18 @@ namespace CsQuery.Implementation
         {
             get { return Keys; }
         }
+
+        /// <summary>
+        /// Removes the given key
+        /// </summary>
+        ///
+        /// <param name="key">
+        /// The key.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
 
         public bool Remove(string key)
         {
@@ -150,10 +223,29 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Try to get a value by name
+        /// </summary>
+        ///
+        /// <param name="key">
+        /// The key.
+        /// </param>
+        /// <param name="value">
+        /// [out] The value.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
         public bool TryGetValue(string key, out TValue value)
         {
             return Index.TryGetValue(key, out value);
         }
+
+        /// <summary>
+        /// Gets the values.
+        /// </summary>
 
         public ICollection<TValue> Values
         {
@@ -161,6 +253,18 @@ namespace CsQuery.Implementation
                 return Values;
             }
         }
+
+        /// <summary>
+        /// Return the value for 'key'
+        /// </summary>
+        ///
+        /// <param name="key">
+        /// The key.
+        /// </param>
+        ///
+        /// <returns>
+        /// The indexed item.
+        /// </returns>
 
         public TValue this[string key]
         {
@@ -178,20 +282,56 @@ namespace CsQuery.Implementation
 
         #region ICollection<KeyValuePair<string,TValue>> Members
 
+        /// <summary>
+        /// Adds a key/value pair to the dictionary.
+        /// </summary>
+        ///
+        /// <param name="item">
+        /// The item to test for.
+        /// </param>
+
         public void Add(KeyValuePair<string, TValue> item)
         {
             Add(item.Key, item.Value);
         }
+
+        /// <summary>
+        /// Clears this object to its blank/initial state.
+        /// </summary>
+
         public void Clear()
         {
             Keys.Clear();
             Index.Clear();
         }
 
+        /// <summary>
+        /// Test whether the KeyValuePair object exists in this dictionary.
+        /// </summary>
+        ///
+        /// <param name="item">
+        /// The item to test for.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the object is in this collection, false if not.
+        /// </returns>
+
         public bool Contains(KeyValuePair<string, TValue> item)
         {
             return Index.Contains(item);
         }
+
+        /// <summary>
+        /// Copies the contents of the dictionary to an array of KeyValuePair objects.
+        /// </summary>
+        ///
+        /// <param name="array">
+        /// The array.
+        /// </param>
+        /// <param name="arrayIndex">
+        /// Zero-based index of the array at which to start copying.
+        /// </param>
 
         public void CopyTo(KeyValuePair<string, TValue>[] array, int arrayIndex)
         {
@@ -201,15 +341,35 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Gets the number of items in this dictionary.
+        /// </summary>
+
         public int Count
         {
             get { return Index.Count; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this object is read only. This is always false.
+        /// </summary>
+
         public bool IsReadOnly
         {
             get { return false; }
         }
+
+        /// <summary>
+        /// Removes the given KeyValuePair from the dictionary if it exists
+        /// </summary>
+        ///
+        /// <param name="item">
+        /// The item to remove.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
 
         public bool Remove(KeyValuePair<string, TValue> item)
         {
@@ -219,6 +379,14 @@ namespace CsQuery.Implementation
         #endregion
 
         #region IEnumerable<KeyValuePair<string,TValue>> Members
+
+        /// <summary>
+        /// Gets the enumerator.
+        /// </summary>
+        ///
+        /// <returns>
+        /// The enumerator.
+        /// </returns>
 
         public IEnumerator<KeyValuePair<string, TValue>> GetEnumerator()
         {

@@ -30,12 +30,13 @@ namespace CsQuery
 
         public string RenderSelection()
         {
-            StringBuilder sb = new StringBuilder();
+            StringWriter sw = new StringWriter();
             foreach (IDomObject elm in this)
             {
-                sb.Append(elm.Render());
+                elm.Render(OutputFormatters.Default, sw);
             }
-            return sb.ToString();
+
+            return sw.ToString();
         }
 
         /// <summary>
@@ -61,12 +62,12 @@ namespace CsQuery
         /// Render the complete DOM with specific options.
         /// </summary>
         ///
-        /// <param name="renderingOptions">
-        /// The options flags in effect.
+        /// <param name="options">
+        /// (optional) option flags that control how the output is rendered.
         /// </param>
         ///
         /// <returns>
-        /// A string of HTML
+        /// A string of HTML.
         /// </returns>
 
         public string Render(DomRenderingOptions options)

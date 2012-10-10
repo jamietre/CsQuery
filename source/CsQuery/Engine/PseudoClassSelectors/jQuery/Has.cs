@@ -68,16 +68,16 @@ namespace CsQuery.Engine.PseudoClassSelectors
             }
         }
 
-        /// <summary>
-        /// Adds a matched element to the cache. I'm not quite sure if this makes sense. The idea is that
-        /// you will often be checking children of something you just checked; probably we would have to
-        /// iterate through the results of the first subselector and add all the node trees to the root
-        /// for each result to the cache. Might not be worth it.
-        /// </summary>
-        ///
-        /// <value>
-        /// The number of maximum parameters.
-        /// </value>
+        ///// <summary>
+        ///// Adds a matched element to the cache. I'm not quite sure if this makes sense. The idea is that
+        ///// you will often be checking children of something you just checked; probably we would have to
+        ///// iterate through the results of the first subselector and add all the node trees to the root
+        ///// for each result to the cache. Might not be worth it.
+        ///// </summary>
+        /////
+        ///// <value>
+        ///// The number of maximum parameters.
+        ///// </value>
 
         //protected void AddToCache(IDomObject item)
         //{

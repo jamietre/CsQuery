@@ -125,45 +125,45 @@ namespace CsQuery.Output
         }
 
         /// <summary>
-        /// Gets the HTML representation of this element and its children
+        /// Gets the HTML representation of this element and its children.
         /// </summary>
         ///
-        /// <param name="options">
+        /// <param name="element">
         /// Options for how to render the HTML.
         /// </param>
-        /// <param name="sb">
-        /// A StringBuilder object to which append the output.
+        /// <param name="writer">
+        /// The writer to which output is written.
         /// </param>
         /// <param name="includeChildren">
         /// true to include, false to exclude the children.
         /// </param>
 
-        public virtual void RenderElement(IDomObject el, TextWriter writer,bool includeChildren)
+        public virtual void RenderElement(IDomObject element, TextWriter writer, bool includeChildren)
         {
             bool quoteAll = DomRenderingOptions.HasFlag(DomRenderingOptions.QuoteAllAttributes);
 
             writer.Write("<");
-            string nodeName = el.NodeName.ToLower();
+            string nodeName = element.NodeName.ToLower();
             writer.Write(nodeName);
             
-            if (el.HasAttributes)
+            if (element.HasAttributes)
             {
-                foreach (var kvp in el.Attributes)
+                foreach (var kvp in element.Attributes)
                 {
                     writer.Write(" ");
                     RenderAttribute(writer,kvp.Key, kvp.Value, quoteAll);
                 }
             }
-            if (el.InnerHtmlAllowed || el.InnerTextAllowed)
+            if (element.InnerHtmlAllowed || element.InnerTextAllowed)
             {
                 writer.Write(">");
                 if (includeChildren)
                 {
-                    RenderChildren(el, writer);
+                    RenderChildren(element, writer);
                 }
                 else
                 {
-                    writer.Write(el.HasChildren ?
+                    writer.Write(element.HasChildren ?
                             "..." :
                             String.Empty);
                 }
@@ -174,7 +174,7 @@ namespace CsQuery.Output
             else
             {
 
-                if ((el.Document == null ? CQ.DefaultDocType : el.Document.DocType) == DocType.XHTML)
+                if ((element.Document == null ? CQ.DefaultDocType : element.Document.DocType) == DocType.XHTML)
                 {
                     writer.Write(" />");
                 }
@@ -246,11 +246,11 @@ namespace CsQuery.Output
         /// Renders a CDATA node.
         /// </summary>
         ///
-        /// <param name="parameter1">
-        /// The first parameter.
+        /// <param name="element">
+        /// The element to render
         /// </param>
-        /// <param name="parameter2">
-        /// The second parameter.
+        /// <param name="writer">
+        /// The writer to which output is written.
         /// </param>
 
         protected void RenderCdataNode(IDomObject element, TextWriter writer)
@@ -263,7 +263,7 @@ namespace CsQuery.Output
         /// </summary>
         ///
         /// <param name="element">
-        /// The element.
+        /// The element to render
         /// </param>
         /// <param name="writer">
         /// The writer to which output is written.
@@ -281,6 +281,17 @@ namespace CsQuery.Output
             }
         }
 
+        /// <summary>
+        /// Renders the document type node.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to render
+        /// </param>
+        /// <param name="writer">
+        /// The writer to which output is written.
+        /// </param>
+
         protected void RenderDocTypeNode(IDomObject element, TextWriter writer)
         {
 
@@ -288,17 +299,17 @@ namespace CsQuery.Output
         }
 
         /// <summary>
-        /// Render an attribute
+        /// Render an attribute.
         /// </summary>
         ///
-        /// <param name="sb">
-        /// A StringBuilder to append the attributes to
+        /// <param name="writer">
+        /// The writer to which output is written.
         /// </param>
         /// <param name="name">
-        /// The name of the attribute
+        /// The name of the attribute.
         /// </param>
         /// <param name="value">
-        /// The attribute value
+        /// The attribute value.
         /// </param>
         /// <param name="quoteAll">
         /// true to require quotes around the attribute value, false to use quotes only if needed.
@@ -327,13 +338,9 @@ namespace CsQuery.Output
             }
         }
 
-                /// <summary>
-        /// Merge options with defaults when needed
+        /// <summary>
+        /// Merge options with defaults when needed.
         /// </summary>
-        ///
-        /// <param name="options">
-        /// (optional) options for controlling the operation.
-        /// </param>
 
         protected void MergeDefaultOptions()
         {

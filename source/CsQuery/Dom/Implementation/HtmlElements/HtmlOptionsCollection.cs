@@ -21,6 +21,18 @@ namespace CsQuery.Implementation
     {
         #region constructor
 
+        /// <summary>
+        /// Creates an HTMLOptionsCollection from the children of a Select element.
+        /// </summary>
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown when one or more arguments have unsupported or illegal values.
+        /// </exception>
+        ///
+        /// <param name="parent">
+        /// The parent element for this collection.
+        /// </param>
+
         public HTMLOptionsCollection(IDomElement parent)
         {
             if (parent.NodeNameID != HtmlData.tagSELECT)
@@ -170,7 +182,8 @@ namespace CsQuery.Implementation
 
         private int GetSelectedItem(out OptionElement el)
         {
-            var index = Children(Parent).IndexOf(item =>
+            // HTML5 says the last selected one is it
+            var index = Children(Parent).LastIndexOf(item =>
                    item.Element.HasAttribute("selected"), out el);
 
             if (Parent.Multiple || index >= 0)

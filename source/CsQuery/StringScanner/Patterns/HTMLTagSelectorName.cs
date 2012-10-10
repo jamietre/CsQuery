@@ -6,9 +6,16 @@ using CsQuery.StringScanner.Implementation;
 
 namespace CsQuery.StringScanner.Patterns
 {
-    
+    /// <summary>
+    /// A pattern that matches a valid HTML tag selector.
+    /// </summary>
+
     public class HTMLTagSelectorName: EscapedString
     {
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+
         public HTMLTagSelectorName() : 
             base(IsValidTagName)
         {

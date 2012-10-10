@@ -12,6 +12,10 @@ namespace CsQuery.Implementation
 
     public class HTMLSelectElement : DomElement, IHTMLSelectElement
     {
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+
         public HTMLSelectElement()
             : base(HtmlData.tagSELECT)
         {
@@ -66,7 +70,7 @@ namespace CsQuery.Implementation
         {
             if (this.NodeNameID != HtmlData.tagSELECT)
             {
-                throw new InvalidOperationException("This property is only applicable to OPTION elements.");
+                throw new InvalidOperationException("This property is only applicable to SELECT elements.");
             }
             return new HTMLOptionsCollection((DomElement)this);
         }
@@ -138,15 +142,29 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Get or set the value of the selected item for this Select list. When setting, if the value
+        /// cannot be matched to an option, no index will be selected.
+        /// </summary>
+
         public override string Value
         {
             get
             {
-                return GetAttribute(HtmlData.ValueAttrId, "");
+                var item = SelectedItem;
+                return item == null ? "" : item.Value;
             }
             set
             {
-                base.Value = value;
+                foreach (var item in Options)
+                {
+                    if (item.Value == value)
+                    {
+                        SelectedIndex = item.Index;
+                        return;
+                    }
+                }
+                SelectedIndex = -1;
             }
         }
     }

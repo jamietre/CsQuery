@@ -5,6 +5,10 @@ using System.Text;
 
 namespace CsQuery.HtmlParser
 {
+    /// <summary>
+    /// Bitfield of flags for specifying properties that may be tested on HTML tokens using a bitmap.
+    /// </summary>
+
     [Flags]
     public enum TokenProperties: ushort
     {

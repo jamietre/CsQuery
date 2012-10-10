@@ -13,7 +13,10 @@ namespace CsQuery.Implementation
 
     public class HTMLTextAreaElement : DomElement
     {
-       
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+
         public HTMLTextAreaElement(): base(HtmlData.tagTEXTAREA)
         {
 

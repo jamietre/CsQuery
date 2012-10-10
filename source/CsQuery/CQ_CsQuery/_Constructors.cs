@@ -29,15 +29,17 @@ namespace CsQuery
         /// </summary>
         ///
         /// <param name="html">
-        /// The HTML source
+        /// The HTML source.
         /// </param>
-        /// <param name="mode">
-        /// (optional) the mode.
+        /// <param name="parsingMode">
+        /// The HTML parsing mode.
+        /// </param>
+        /// <param name="parsingOptions">
+        /// (optional) options for controlling the parsing.
         /// </param>
         /// <param name="docType">
         /// (optional) type of the document.
         /// </param>
-
 
         public CQ(string html, 
             HtmlParsingMode parsingMode = HtmlParsingMode.Auto,
@@ -53,10 +55,13 @@ namespace CsQuery
         /// </summary>
         ///
         /// <param name="html">
-        /// The html of the new document.
+        /// The html source of the new document.
         /// </param>
-        /// <param name="mode">
-        /// (optional) the mode.
+        /// <param name="parsingMode">
+        /// The HTML parsing mode.
+        /// </param>
+        /// <param name="parsingOptions">
+        /// (optional) options for controlling the parsing.
         /// </param>
         /// <param name="docType">
         /// (optional) type of the document.
@@ -288,7 +293,6 @@ namespace CsQuery
             AddSelection(Document.ChildNodes);
         }
 
-
         /// <summary>
         /// Bind this instance to a new DomFragment created from HTML using the specified parsing mode.
         /// </summary>
@@ -301,6 +305,9 @@ namespace CsQuery
         /// </param>
         /// <param name="parsingMode">
         /// The HTML parsing mode.
+        /// </param>
+        /// <param name="parsingOptions">
+        /// (optional) options for controlling the parsing.
         /// </param>
         /// <param name="docType">
         /// (optional) type of the document.
@@ -334,10 +341,12 @@ namespace CsQuery
         /// <param name="parsingMode">
         /// The HTML parsing mode.
         /// </param>
+        /// <param name="parsingOptions">
+        /// (optional) options for controlling the parsing.
+        /// </param>
         /// <param name="docType">
         /// (optional) type of the document.
         /// </param>
-
 
         protected void CreateNew(CQ target,
           Stream html,
@@ -397,12 +406,13 @@ namespace CsQuery
             return cq;
         }
 
-
-
         /// <summary>
         /// Configures a new instance for a sequence of elements and an existing context.
         /// </summary>
         ///
+        /// <param name="dom">
+        /// The dom.
+        /// </param>
         /// <param name="elements">
         /// A sequence of elements.
         /// </param>

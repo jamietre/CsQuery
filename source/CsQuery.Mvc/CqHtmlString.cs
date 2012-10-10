@@ -60,12 +60,7 @@ namespace CsQuery.Mvc
 
         public string ToHtmlString()
         {
-            StringBuilder sb = new StringBuilder();
-            foreach (IDomObject elm in this)
-            {
-                elm.Render(sb);
-            }
-            return sb.ToString();
+            return RenderSelection();
         }
     }
 }

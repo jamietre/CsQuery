@@ -204,7 +204,9 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Deprecated; pass options on Render() command
+        /// Deprecated: DomRenderingOptions are no longer bound to a particular Document instance. Pass
+        /// options to the Render() method, or create an IOutputFormatter instance using options, instead.
+        /// This method will be removed in a future release.
         /// </summary>
 
         [Obsolete]

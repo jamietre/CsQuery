@@ -22,6 +22,10 @@ namespace CsQuery.Implementation
         {
         }
 
+        /// <summary>
+        /// For Progress elements, returns the value of the "value" attribute, or zero.
+        /// </summary>
+
         public new int Value
         {
             get
@@ -33,6 +37,10 @@ namespace CsQuery.Implementation
                 SetAttribute(HtmlData.ValueAttrId, value.ToString());
             }
         }
+
+        /// <summary>
+        /// The maximum value allowed for this Progress bar.
+        /// </summary>
 
         public double Max
         {

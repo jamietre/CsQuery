@@ -17,7 +17,7 @@ namespace CsQuery.Implementation
         /// Creates a new fragment in a given context.
         /// </summary>
         ///
-        /// <param name="elements">
+        /// <param name="html">
         /// The elements.
         /// </param>
         /// <param name="context">
@@ -28,7 +28,7 @@ namespace CsQuery.Implementation
         /// </param>
         ///
         /// <returns>
-        /// A new fragment
+        /// A new fragment.
         /// </returns>
 
         public static IDomDocument Create(string html,
@@ -47,20 +47,20 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+
         public DomFragment()
             : base()
         {
         }
-        //public DomFragment(IEnumerable<IDomObject> elements): base(elements)
-        //{
-        
-        //}
-        //public DomFragment(char[] html, HtmlParsingMode htmlParsingMode)
-        //    : base(html, htmlParsingMode)
-        //{
-            
-        //}
-        
+
+
+        /// <summary>
+        /// Gets the type of the node. For DomFragment objects, this is always NodeType.DOCUMENT_FRAGMENT_NODE.
+        /// </summary>
+
         public override NodeType NodeType
         {
             get { return  NodeType.DOCUMENT_FRAGMENT_NODE; }
@@ -77,6 +77,12 @@ namespace CsQuery.Implementation
                 return true;
             }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is fragment. For DomFragment objects, this is
+        /// true.
+        /// </summary>
+
         public override bool IsFragment
         {
             get
@@ -84,6 +90,14 @@ namespace CsQuery.Implementation
                 return true;
             }
         }
+
+        /// <summary>
+        /// Creates a new instance of a DomFragment.
+        /// </summary>
+        ///
+        /// <returns>
+        /// The new new.
+        /// </returns>
 
         public override IDomDocument CreateNew()
         {

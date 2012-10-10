@@ -35,7 +35,7 @@ namespace CsQuery.HtmlParser
         #region static methods
 
         /// <summary>
-        /// Creates a new document from a string of HTML using the options passed
+        /// Creates a new document from a string of HTML using the options passed.
         /// </summary>
         ///
         /// <param name="html">
@@ -44,12 +44,15 @@ namespace CsQuery.HtmlParser
         /// <param name="parsingMode">
         /// (optional) the parsing mode.
         /// </param>
+        /// <param name="options">
+        /// (optional) options for controlling the operation.
+        /// </param>
         /// <param name="docType">
         /// (optional) type of the document.
         /// </param>
         ///
         /// <returns>
-        /// A new document
+        /// A new document.
         /// </returns>
 
         public static IDomDocument Create(string html, 
@@ -72,6 +75,9 @@ namespace CsQuery.HtmlParser
         /// </param>
         /// <param name="parsingMode">
         /// (optional) the parsing mode.
+        /// </param>
+        /// <param name="parsingOptions">
+        /// (optional) options for controlling the parsing.
         /// </param>
         /// <param name="docType">
         /// (optional) type of the document.

@@ -39,45 +39,71 @@ namespace CsQuery.Utility
         #region public methods
 
         /// <summary>
-        /// Convert an object to JSON using the default handling of the serializer
+        /// Convert an object to JSON using the default handling of the serializer.
         /// </summary>
-        /// <param name="objectToSerialize"></param>
-        /// <returns></returns>
-        public static string ToJSON(object objectToSerialize)
+        ///
+        /// <param name="obj">
+        /// The object.
+        /// </param>
+        ///
+        /// <returns>
+        /// JSON representation of the object.
+        /// </returns>
+
+        public static string ToJSON(object obj)
         {
             JsonSerializer serializer = new JsonSerializer();
-            return serializer.Serialize(objectToSerialize);
+            return serializer.Serialize(obj);
 
         }
+
         /// <summary>
-        /// Parse JSON into a typed object
+        /// Parse JSON into a typed object.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="objectToDeserialize"></param>
-        /// <returns></returns>
-        public static T ParseJSON<T>(string objectToDeserialize)
+        ///
+        /// <typeparam name="T">
+        /// The type of object to reutrn.
+        /// </typeparam>
+        /// <param name="json">
+        /// The JSON string.
+        /// </param>
+        ///
+        /// <returns>
+        /// An object of type T populated with the data from the json source
+        /// </returns>
+
+        public static T ParseJSON<T>(string json)
         {
-            return (T)ParseJSON(objectToDeserialize, typeof(T));
+            return (T)ParseJSON(json, typeof(T));
         }
 
         /// <summary>
-        /// Parse JSON into a typed object
+        /// Parse JSON into a typed object.
         /// </summary>
-        /// <param name="objectToDeserialize"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public static object ParseJSON(string objectToDeserialize, Type type)
+        ///
+        /// <param name="json">
+        /// The JSON string
+        /// </param>
+        /// <param name="type">
+        /// The type of object to return
+        /// </param>
+        ///
+        /// <returns>
+        /// An object of the specified type
+        /// </returns>
+
+        public static object ParseJSON(string json, Type type)
         {
             if (typeof(IDynamicMetaObjectProvider).IsAssignableFrom(type))
             {
-                return ParseJSONObject(objectToDeserialize);
+                return ParseJSONObject(json);
             }
             else if (Objects.IsNativeType(type))
             {
-                return ParseJSONValue(objectToDeserialize, type);
+                return ParseJSONValue(json, type);
             } else {
                 IJsonSerializer serializer = new JsonSerializer();
-                object output = serializer.Deserialize(objectToDeserialize, type);
+                object output = serializer.Deserialize(json, type);
                 return output;
             }
         }
@@ -91,7 +117,7 @@ namespace CsQuery.Utility
         /// </param>
         ///
         /// <returns>
-        /// .
+        /// An object
         /// </returns>
 
         public static object ParseJSON(string json)

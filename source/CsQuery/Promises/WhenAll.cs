@@ -205,6 +205,18 @@ namespace CsQuery.Promises
             }
 
         }
+
+        /// <summary>
+        /// Event handler. Called by Timer for elapsed events.
+        /// </summary>
+        ///
+        /// <param name="sender">
+        /// Source of the event.
+        /// </param>
+        /// <param name="e">
+        /// Elapsed event information.
+        /// </param>
+
         protected void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             Timer.Stop();

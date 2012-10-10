@@ -50,18 +50,16 @@ namespace CsQuery
         {
             return new CQ(html,HtmlParsingMode.Auto,HtmlParsingOptions.Default,DocType.Default);
         }
+
         /// <summary>
-        /// Create a new CQ object from an HTML character array.
+        /// Create a new CQ object from an HTML character array. Node: this method is obsolete; it may be
+        /// removed in a future release. Character arrays were supported in prior versions because this
+        /// was how all data was converted internally; this is not the case any more, and it's an
+        /// unlikely format for typical input. Use string or stream methods instead.
         /// </summary>
         ///
         /// <param name="html">
         /// The HTML source for the document.
-        /// </param>
-        /// <param name="mode">
-        /// (optional) the HTML parsing mode.
-        /// </param>
-        /// <param name="docType">
-        /// (optional) type of the document.
         /// </param>
         ///
         /// <returns>
@@ -108,8 +106,11 @@ namespace CsQuery
         /// <param name="html">
         /// A string containing HTML.
         /// </param>
-        /// <param name="mode">
-        /// (optional) the HTML parsing mode.
+        /// <param name="parsingMode">
+        /// (optional) the mode.
+        /// </param>
+        /// <param name="parsingOptions">
+        /// (optional) options for controlling the parsing.
         /// </param>
         /// <param name="docType">
         /// (optional) type of the document.
@@ -167,6 +168,18 @@ namespace CsQuery
             return csq;
         }
 
+        /// <summary>
+        /// Create a new CQ object from a stream of HTML text.
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// An open Stream.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+
         public static CQ Create(Stream html)
         {
             return Create(html, HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.Default);
@@ -179,8 +192,11 @@ namespace CsQuery
         /// <param name="html">
         /// An open Stream.
         /// </param>
-        /// <param name="mode">
+        /// <param name="parsingMode">
         /// (optional) the mode.
+        /// </param>
+        /// <param name="parsingOptions">
+        /// (optional) options for controlling the parsing.
         /// </param>
         /// <param name="docType">
         /// (optional) type of the document.
@@ -189,7 +205,6 @@ namespace CsQuery
         /// <returns>
         /// A new CQ object.
         /// </returns>
-
 
         public static CQ Create(Stream html, 
             HtmlParsingMode parsingMode=HtmlParsingMode.Auto, 

@@ -202,11 +202,39 @@ namespace CsQuery.Utility
             Stream fileStream = assembly.GetManifestResourceStream(resourceName);
             return (fileStream);
         }
+
+        /// <summary>
+        /// Gets an embedded resource from an assembly by name
+        /// </summary>
+        ///
+        /// <param name="resourceName">
+        /// The resource name
+        /// </param>
+        /// <param name="assembly">
+        /// The assembly name
+        /// </param>
+        ///
+        /// <returns>
+        /// The resource stream.
+        /// </returns>
+
         public static Stream GetResourceStream(string resourceName, string assembly)
         {
             Assembly loadedAssembly = Assembly.Load(assembly);
             return GetResourceStream(resourceName, loadedAssembly);
         }
+
+        /// <summary>
+        /// Convert a string to a stream using ASCII encoding.
+        /// </summary>
+        ///
+        /// <param name="stream">
+        /// The stream.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string.
+        /// </returns>
 
         public static string StreamToString(Stream stream)
         {

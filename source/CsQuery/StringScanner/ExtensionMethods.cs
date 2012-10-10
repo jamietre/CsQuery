@@ -34,6 +34,24 @@ namespace CsQuery.StringScanner.ExtensionMethods
             return (text.Substring(startIndex, endIndex - startIndex));
         }
 
+        /// <summary>
+        /// Returns the text between startIndex and endIndex (exclusive of endIndex)
+        /// </summary>
+        ///
+        /// <param name="text">
+        /// The source text
+        /// </param>
+        /// <param name="startIndex">
+        /// The start index
+        /// </param>
+        /// <param name="endIndex">
+        /// The end index
+        /// </param>
+        ///
+        /// <returns>
+        /// The substring, or an empty string if the range was not within the string.
+        /// </returns>
+
         public static string SubstringBetween(this char[] text, int startIndex, int endIndex)
         {
             int len = endIndex - startIndex + 1;

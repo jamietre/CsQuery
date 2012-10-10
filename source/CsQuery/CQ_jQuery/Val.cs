@@ -113,49 +113,22 @@ namespace CsQuery
                         return val;
                     case HtmlData.tagSELECT:
                         string result = String.Empty;
-                        // TODO optgroup handling (just like the setter code)
-                        //var options = Find("option");
-                        //if (options.Length == 0)
-                        //{
-                        //    return null;
-                        //}
-
-                        //foreach (IDomElement child in options)
-                        //{
-                        //    bool disabled = child.HasAttribute("disabled")
-                        //        || (child.ParentNode.NodeNameID == HtmlData.tagOPTGROUP 
-                        //            && child.ParentNode.HasAttribute("disabled"));
-
-                        //    if (child.HasAttribute("selected") && !disabled)
-                        //    {
-                        //        var optVal = child.GetAttribute("value");
-                        //        if (optVal == null)
-                        //        {
-                        //            optVal = child.Cq().Text();
-                        //        }
-                        //        result = result.ListAdd(optVal, ",");
-                        //        if (!e.HasAttribute("multiple"))
-                        //        {
-                        //            break;
-                        //        }
-                        //    }
-                        //}
-                        
+                      
                         var sel = (HTMLSelectElement)e;
-                        if (!sel.Multiple) {
-                            var opt = sel.SelectedItem;
-                            result = opt != null ?
-                                opt.GetAttribute("value") ?? 
-                                    opt.InnerText : 
-                                    "";
-                        } else {
+
+                        if (!sel.Multiple)
+                        {
+                            return sel.Value;
+                        }
+                        else
+                        {
                             var selList = sel.ChildElementsOfTag<IHTMLOptionElement>(HtmlData.tagOPTION);
-                            result = String.Join(",",selList
-                                .Where(item=>item.HasAttribute("selected") && !item.Disabled)
-                                .Select(item=>item.Value ?? item.InnerText));
+                            result = String.Join(",", selList
+                                .Where(item => item.HasAttribute("selected") && !item.Disabled)
+                                .Select(item => item.Value ?? item.InnerText));
+                            return result;
                         }
                         
-                        return result;
                     case HtmlData.tagOPTION:
                         val = e.GetAttribute("value");
                         return val ?? e.InnerText;

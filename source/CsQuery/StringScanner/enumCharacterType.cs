@@ -5,6 +5,10 @@ using System.Text;
 
 namespace CsQuery.StringScanner
 {
+    /// <summary>
+    /// Bitfield of flags for specifying characteristics of a single character
+    /// </summary>
+
     [Flags]
     public enum CharacterType
     {
@@ -69,9 +73,11 @@ namespace CsQuery.StringScanner
         /// </summary>
         HtmlTagSelectorExceptStart=0x2000,
         
-        // A character that marks the end of an HTML tag opener (e.g. the end of the entire tag, or
-        // the beginning of the attribute section)
-
+        /// <summary>
+        /// A character that marks the end of an HTML tag opener (e.g. the end of the entire tag, or
+        /// the beginning of the attribute section)
+        /// </summary>
+        /// 
         HtmlTagOpenerEnd=0x4000,
        
         /// <summary>

@@ -89,7 +89,7 @@ namespace CsQuery.Output
         }
 
         /// <summary>
-        /// Encodes an integer as an HTML numeric coded entity e.g. &#nnn;
+        /// Encodes an integer as an HTML numeric coded entity e.g. &amp;#nnn;
         /// </summary>
         ///
         /// <param name="value">
@@ -97,7 +97,7 @@ namespace CsQuery.Output
         /// </param>
         ///
         /// <returns>
-        /// An HTML string
+        /// An HTML string.
         /// </returns>
 
         protected string EncodeNumeric(int value)

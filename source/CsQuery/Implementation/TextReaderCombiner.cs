@@ -257,10 +257,41 @@ namespace CsQuery.Implementation
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Creates object reference. (Overridden because it's implemented by the base class and we want
+        /// to be sure that anything trying to use this will fail).
+        /// </summary>
+        ///
+        /// <exception cref="NotImplementedException">
+        /// Thrown when the requested operation is unimplemented.
+        /// </exception>
+        ///
+        /// <param name="requestedType">
+        /// Type of the requested.
+        /// </param>
+        ///
+        /// <returns>
+        /// Always fails.
+        /// </returns>
+
         public override System.Runtime.Remoting.ObjRef CreateObjRef(Type requestedType)
         {
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// Initializes the lifetime service. (Overridden because it's implemented by the base class and we want
+        /// to be sure that anything trying to use this will fail).
+        /// </summary>
+        ///
+        /// <exception cref="NotImplementedException">
+        /// Thrown when the requested operation is unimplemented.
+        /// </exception>
+        ///
+        /// <returns>
+        /// Always fails
+        /// </returns>
+
         public override object InitializeLifetimeService()
         {
             throw new NotImplementedException();
@@ -286,6 +317,11 @@ namespace CsQuery.Implementation
                 return false;
             }
         }
+
+        /// <summary>
+        /// Gets the current stream
+        /// </summary>
+
         private TextReader Current
         {
             get
@@ -293,6 +329,15 @@ namespace CsQuery.Implementation
                 return Readers[CurrentIndex];
             }
         }
+
+        /// <summary>
+        /// Returns a hash code for this object.
+        /// </summary>
+        ///
+        /// <returns>
+        /// The hash code for this object.
+        /// </returns>
+
         public override int GetHashCode()
         {
             int hash = 0; ;
@@ -302,6 +347,19 @@ namespace CsQuery.Implementation
             }
             return hash;
         }
+
+        /// <summary>
+        /// Tests if this object is considered equal to another.
+        /// </summary>
+        ///
+        /// <param name="obj">
+        /// The object to compare to this object.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the objects are considered equal, false if they are not.
+        /// </returns>
+
         public override bool Equals(object obj)
         {
             var other = obj as TextReaderCombiner;

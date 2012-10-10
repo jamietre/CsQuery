@@ -12,17 +12,34 @@ namespace CsQuery.Implementation
     /// 
     public abstract class DomObject<T> : DomObject, IDomObject<T> where T : IDomObject, new()
     {
+        /// <summary>
+        /// Default constructor for the abstract class.
+        /// </summary>
+
         public DomObject()
         {
             
         }
 
-        public abstract new T Clone();
         /// <summary>
-        /// This is called by the base class DomObject, and ensures that the typed Clone implementations get called when
-        /// the object is accessed through the IDomObject interface.
+        /// Makes a deep copy of this object.
         /// </summary>
-        /// <returns></returns>
+        ///
+        /// <returns>
+        /// A copy of this object.
+        /// </returns>
+
+        public abstract new T Clone();
+
+        /// <summary>
+        /// This is called by the base class DomObject, and ensures that the typed Clone implementations
+        /// get called when the object is accessed through the IDomObject interface.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A new IDomObject
+        /// </returns>
+
         protected override IDomObject CloneImplementation()
         {
             return Clone();

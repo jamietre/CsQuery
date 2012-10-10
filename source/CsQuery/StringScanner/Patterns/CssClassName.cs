@@ -6,9 +6,16 @@ using CsQuery.StringScanner.Implementation;
 
 namespace CsQuery.StringScanner.Patterns
 {
-    
+    /// <summary>
+    /// A pattern that matches a valid CSS class name
+    /// </summary>
+
     public class CssClassName: EscapedString
     {
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+
         public CssClassName() : 
             base(IsValidClassName)
         {

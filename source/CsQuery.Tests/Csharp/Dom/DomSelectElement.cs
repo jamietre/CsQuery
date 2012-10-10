@@ -29,7 +29,11 @@ namespace CsQuery.Tests.Csharp.Dom
 
             res.RemoveAttr("multiple");
 
-            Assert.AreEqual(1,el.SelectedIndex);
+            // In HTML5 browser this would be 1. However, there would be no way to represent that state
+            // (e.g the effect of removing the multiple attribute) -- if the DOM were rendered this way
+            // initially, the LAST selected item would be the one chosen. 
+            
+            Assert.AreEqual(3,el.SelectedIndex);
             
             res.Find("#option4b").RemoveAttr("selected");
             res.Find("#option4c").RemoveAttr("selected");

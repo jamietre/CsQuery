@@ -193,57 +193,13 @@ namespace CsQuery.Implementation
             }
         }
 
-
         /// <summary>
-        /// Renders the children.
+        /// Gets the number of descendants of this element.
         /// </summary>
         ///
-        /// <param name="writer">
-        /// The writer.
-        /// </param>
-        /// <param name="options">
-        /// Options for controlling the operation.
-        /// </param>
-
-        //protected virtual void RenderChildren(TextWriter writer, DomRenderingOptions options)
-        //{
-        //    if (HasChildren)
-        //    {
-        //        foreach (IDomObject e in ChildNodes)
-        //        {
-        //            if (e.NodeType == NodeType.TEXT_NODE)
-        //            {
-        //                RenderChildTextNode(e, writer, options);
-        //            }
-        //            else
-        //            {
-        //                e.Render(writer, options);
-        //            }
-        //        }
-        //    } 
-
-        //}
-
-        /// <summary>
-        /// Renders the child text node. This can be overridden for non-default text handling by some
-        /// element types (e.g. textarea)
-        /// </summary>
-        ///
-        /// <param name="textNode">
-        /// The text node.
-        /// </param>
-        /// <param name="sb">
-        /// The stringbuilder.
-        /// </param>
-
-        //protected virtual void RenderChildTextNode(IDomObject textNode, TextWriter writer, DomRenderingOptions options)
-        //{
-        //    textNode.Render(writer, options);
-        //}
-
-        // Just didn't use the / and the +. A three character ID will permit over 250,000 possible children at each level
-        // so that should be plenty
-        
+        /// <returns>
+        /// An integer.
+        /// </returns>
 
         public override int DescendantCount()
         {
@@ -257,8 +213,6 @@ namespace CsQuery.Implementation
             }
             return count;
         }
-
-       
 
         #region interface members
         IDomObject IDomObject.Clone()

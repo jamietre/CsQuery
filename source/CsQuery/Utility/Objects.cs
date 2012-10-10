@@ -655,6 +655,29 @@ namespace CsQuery
             // nullable type), pass the call on to Convert.ChangeType
             return System.Convert.ChangeType(value, conversionType);
         }
+
+        /// <summary>
+        /// Try to parse a string into a valid number
+        /// </summary>
+        ///
+        /// <exception cref="InvalidCastException">
+        /// Thrown when parsing fails
+        /// </exception>
+        ///
+        /// <param name="value">
+        /// The value to parse
+        /// </param>
+        /// <param name="number">
+        /// [out] The parsed value type
+        /// </param>
+        /// <param name="T">
+        /// The Type to process.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
         public static bool TryParseNumber(string value, out object number, Type T)
         {
             double val;
