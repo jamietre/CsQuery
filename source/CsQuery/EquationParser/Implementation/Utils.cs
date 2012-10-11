@@ -6,16 +6,58 @@ using System.Text;
 
 namespace CsQuery.EquationParser.Implementation
 {
+    /// <summary>
+    /// Utility methods used by the Equation Parser
+    /// </summary>
+
     public static class Utils
     {
+        /// <summary>
+        /// Test if this object is a primitive integral type.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        ///
+        /// <returns>
+        /// true if integral type, false if not
+        /// </returns>
+
         public static bool IsIntegralType<T>()
         {
             return IsIntegralType(typeof(T));
         }
+
+        /// <summary>
+        /// Test if this object is a primitive integral type.
+        /// </summary>
+        ///
+        /// <param name="value">
+        /// The value to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if integral type, false if not.
+        /// </returns>
+
         public static bool IsIntegralType(IConvertible value)
         {
             return IsIntegralType(value.GetType());
         }
+
+        /// <summary>
+        /// Test if this object is a primitive integral type.
+        /// </summary>
+        ///
+        /// <param name="type">
+        /// The type to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if integral type, false if not.
+        /// </returns>
+
         public static bool IsIntegralType(Type type)
         {
             return type == typeof(Int16) ||
@@ -28,6 +70,19 @@ namespace CsQuery.EquationParser.Implementation
                 type == typeof(byte) ||
                 type == typeof(bool);
         }
+
+        /// <summary>
+        /// Test if 'value' is an integral value.
+        /// </summary>
+        ///
+        /// <param name="value">
+        /// The value to test.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if an integer, false if not.
+        /// </returns>
+
         public static bool IsIntegralValue(IConvertible value)
         {
             bool result = false;
@@ -49,10 +104,36 @@ namespace CsQuery.EquationParser.Implementation
             return result;
 
         }
+
+        /// <summary>
+        /// Test if the type is a numeric primitive type, e.g. all except string, char &amp; bool.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// The type to test
+        /// </typeparam>
+        ///
+        /// <returns>
+        /// true if numeric type, false if not
+        /// </returns>
+
         public static bool IsNumericType<T>()
         {
             return IsNumericType(typeof(T));
         }
+
+        /// <summary>
+        /// Test if the type is a numeric primitive type, e.g. all except string, char &amp; bool.
+        /// </summary>
+        ///
+        /// <param name="obj">
+        /// The object.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if numeric type, false if not.
+        /// </returns>
+
         public static bool IsNumericType(object obj)
         {
             Type t = GetUnderlyingType(obj.GetType());
@@ -196,10 +277,5 @@ namespace CsQuery.EquationParser.Implementation
                 (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
         }
 
-
-        public static IEnumerable<T> EmptyEnumerable<T>()
-        {
-            yield break;
-        }
     }
 }

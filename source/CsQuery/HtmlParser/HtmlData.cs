@@ -22,11 +22,16 @@ namespace CsQuery.HtmlParser
         // when false, will use binary data for the character set
 
 #if DEBUG_PATH
-        public static bool Debug = true;
+        public const bool Debug = true;
         public const int pathIdLength = 3;
         public const char indexSeparator = '>';
 #else
-        public static bool Debug = false;
+
+        /// <summary>
+        /// Indicates that the assembly was NOT compiled in debug mode.
+        /// </summary>
+
+        public const bool Debug = false;
         
         /// <summary>
         /// Length of each node's path ID (in characters), sets a limit on the number of child nodes before a reindex
@@ -621,10 +626,6 @@ namespace CsQuery.HtmlParser
             return set;
         }
 
-        public static void Touch()
-        {
-            var x =  nextID;
-        }
 
         #endregion
 

@@ -52,12 +52,44 @@ namespace CsQuery.Tests.Csharp.HtmlParser
         [TestMethod, Test]
         public void RoundTrip()
         {
-            var dom = CQ.CreateFragment("<div>&#8482;&#160;&#219;&#8225;&#8664;&#8665;</div>");
+            var dom = CQ.CreateFragment("<div>&#8482;&#160;&#219;&#8225;&#8664;&#8665;&#123445;</div>");
 
             var output = dom.Render(OutputFormatters.HtmlEncodingFull);
-            Assert.AreEqual("<div>&trade;&nbsp;&Ucirc;&Dagger;&#8664;&#8665;</div>", output);
+            Assert.AreEqual("<div>&TRADE;&nbsp;&Ucirc;&Dagger;&seArr;&swArr;&#123445;</div>", output);
         }
 
+        /// <summary>
+        /// This test ensures the full encoder (that maps entities to names) works, and that the parser
+        /// correctly interprets all the encodednames. It renders everything first using the names; then
+        /// parses that and re-renders so entites over ascii 160 are just numbers, then finally full-
+        /// encodes again and compares the two full-encoded versions. Since the HTML spec document uses
+        /// all these codes, and this sources the encoder data, we expect them to be rendered correctly --
+        /// so this really tests the HTML5 parser's ability to decode them.
+        /// </summary>
 
+        [TestMethod, Test]
+        public void EncoderBigDomRoundTrip()
+        {
+
+            string html = Support.GetFile(TestDomPath("HTML Standard"));
+            
+            var dom = CQ.Create(html);
+            // render it using the full markup
+            string outputFullFirst = dom.Render(OutputFormatters.HtmlEncodingFull);
+
+            // pull it back in
+            dom = CQ.Create(outputFullFirst);
+
+            // output it wihtout using the full scheme
+            string outputFullSecond = dom.Render(OutputFormatters.HtmlEncodingBasic);
+
+            // recycle again...
+            dom = CQ.Create(outputFullSecond);
+            outputFullSecond = dom.Render(OutputFormatters.HtmlEncodingFull);
+
+            // and make sure they still match!
+            Assert.AreEqual(outputFullFirst, outputFullSecond, "There's no entropy in reparsing a rendered domain.");
+
+        }       
     }
 }

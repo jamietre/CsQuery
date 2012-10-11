@@ -72,12 +72,20 @@ namespace CsQuery.Implementation
         private string SystemIdentifier { get; set; }
 
         #endregion
-        
+
+        /// <summary>
+        /// Gets the type of the node.
+        /// </summary>
+
         public override NodeType NodeType
         {
             get { return NodeType.DOCUMENT_TYPE_NODE; }
         }
-        
+
+        /// <summary>
+        /// The node (tag) name, in upper case. For DomDocumentType objects, this is always "DOCTYPE"
+        /// </summary>
+
         public override string NodeName
         {
             get
@@ -85,6 +93,10 @@ namespace CsQuery.Implementation
                 return "DOCTYPE";
             }
         }
+
+        /// <summary>
+        /// Gets or sets the type of the document.
+        /// </summary>
 
         public DocType DocType
         {
@@ -103,8 +115,11 @@ namespace CsQuery.Implementation
             }
         }
 
-        protected DocType _DocType = 0;
+        private DocType _DocType = 0;
 
+        /// <summary>
+        /// This property contains the actual data of the DocType node, e.g. the attributes as a string.
+        /// </summary>
 
         public string NonAttributeData
         {
@@ -194,13 +209,24 @@ namespace CsQuery.Implementation
                     throw new NotImplementedException("Unimplemented doctype");
             }
         }
-        protected string _NonAttributeData = String.Empty;
-        
+
+        private string _NonAttributeData = String.Empty;
+
+        /// <summary>
+        /// Gets a value indicating whether HTML is allowed as a child of this element. It is possible
+        /// for this value to be false but InnerTextAllowed to be true for elements which can have inner
+        /// content, but no child HTML markup, such as &lt;textarea&gt; and &lt;script&gt;
+        /// </summary>
 
         public override bool InnerHtmlAllowed
         {
             get { return false; }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this object has children.
+        /// </summary>
+
         public override bool HasChildren
         {
             get { return false; }
@@ -208,6 +234,13 @@ namespace CsQuery.Implementation
 
         #region interface Members
 
+        /// <summary>
+        /// Makes a deep copy of this object.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A copy of this object.
+        /// </returns>
 
         public override DomDocumentType Clone()
         {

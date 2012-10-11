@@ -24,7 +24,17 @@ namespace CsQuery.EquationParser
         //IClause Chain(IOperand operandB, IOperator op);
         //IClause Chain(IOperand operandB, string op);
         //IClause Chain(IConvertible operandB, string op);
-        
+
+
+
+        /// <summary>
+        /// Makes a deep copy of this object.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A copy of this object.
+        /// </returns>
+
         new IClause Clone();
     }
     //public interface IClause<T> : IFunction<T>, IClause where T : IConvertible, IEquatable<T>

@@ -5203,6 +5203,12 @@
             need to cast frequently, for example, when accessing the results of a jQuery object by index.
             </summary>
         </member>
+        <member name="T:CsQuery.IDomNode">
+            <summary>
+            Interface for a node in the DOM. This is the most generic interface used in the CsQuery DOM
+            model.
+            </summary>
+        </member>
         <member name="M:CsQuery.IDomNode.Render">
              <summary>
              Renders the complete HTML for this element, including its children.
@@ -5273,6 +5279,11 @@
              <returns>
              A copy of this object.
              </returns>
+        </member>
+        <member name="P:CsQuery.IDomNode.NodeType">
+            <summary>
+            Gets the type of the node.
+            </summary>
         </member>
         <member name="P:CsQuery.IDomNode.NodeName">
              <summary>
@@ -6892,6 +6903,16 @@
             The parent document has already been tested..
             </summary>
         </member>
+        <member name="T:CsQuery.IDomObject`1">
+             <summary>
+             Interface for a strongly-typed object; this is used to provide a typed Clone method to each
+             element type implementation.
+             </summary>
+            
+             <typeparam name="T">
+             Type of the derived object.
+             </typeparam>
+        </member>
         <member name="M:CsQuery.IDomObject`1.Clone">
              <summary>
              Clone this element.
@@ -8340,6 +8361,11 @@
             The form with which the element is associated
             </summary>
         </member>
+        <member name="P:CsQuery.IHTMLOptionElement.Label">
+            <summary>
+            Gets or sets the label attribute.
+            </summary>
+        </member>
         <member name="T:CsQuery.IHTMLInputElement">
              <summary>
              An HTML INPUT element.
@@ -9496,6 +9522,170 @@
             Any user data to be persisted with this DOM.
             </summary>
         </member>
+        <member name="T:CsQuery.Implementation.AttributeCollection">
+            <summary>
+            A collection of attributes.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.AttributeCollection.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.AttributeCollection.Clear">
+            <summary>
+            Removes all attributes from this collection.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.AttributeCollection.Clone">
+             <summary>
+             Makes a deep copy of the attribute collection.
+             </summary>
+            
+             <returns>
+             A copy of this object.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.AttributeCollection.Add(System.String,System.String)">
+             <summary>
+             Adds a new name/value pair to the collection
+             </summary>
+            
+             <param name="name">
+             The name of the attribute.
+             </param>
+             <param name="value">
+             The value.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.AttributeCollection.Remove(System.String)">
+             <summary>
+             Removes the named attribute from the collection.
+             </summary>
+            
+             <param name="name">
+             The name to remove.
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.AttributeCollection.Remove(System.UInt16)">
+             <summary>
+             Removes an attribute identified by its token ID from the collection
+             </summary>
+            
+             <param name="tokenId">
+             The unique token ID for the attribute name.
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.AttributeCollection.ContainsKey(System.String)">
+             <summary>
+             Test whether the named attribute exists in the collection.
+             </summary>
+            
+             <param name="key">
+             The attribute name.
+             </param>
+            
+             <returns>
+             true if it exists, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.AttributeCollection.ContainsKey(System.UInt16)">
+             <summary>
+             Test whether the attribute identified by its unique token ID exists in the collection.
+             </summary>
+            
+             <param name="tokenId">
+             The unique token ID for the attribute name.
+             </param>
+            
+             <returns>
+             true if it exists, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.AttributeCollection.TryGetValue(System.String,System.String@)">
+             <summary>
+             Try to get a value for the specified attribute name.
+             </summary>
+            
+             <param name="name">
+             The key.
+             </param>
+             <param name="value">
+             [out] The value.
+             </param>
+            
+             <returns>
+             true if the key was present, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.AttributeCollection.TryGetValue(System.UInt16,System.String@)">
+             <summary>
+             Try to get a value for the specified attribute identified by its unique token ID.
+             </summary>
+            
+             <param name="tokenId">
+             The attribute's token ID.
+             </param>
+             <param name="value">
+             [out] The value.
+             </param>
+            
+             <returns>
+             true if the key was present, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.AttributeCollection.SetBoolean(System.String)">
+             <summary>
+             Sets a boolean only attribute having no value.
+             </summary>
+            
+             <param name="name">
+             The attribute to set
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.AttributeCollection.SetBoolean(System.UInt16)">
+             <summary>
+             Sets a boolean only attribute having no value.
+             </summary>
+            
+             <param name="tokenId">
+             The attribute's unique token ID
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.AttributeCollection.Unset(System.String)">
+             <summary>
+             Remove an attribute.
+             </summary>
+            
+             <param name="name">
+             The attribute name
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.AttributeCollection.Unset(System.UInt16)">
+             <summary>
+             Remove an attribute.
+             </summary>
+            
+             <param name="tokenId">
+             The unique token ID for the attribute name.
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
         <member name="M:CsQuery.Implementation.AttributeCollection.Set(System.String,System.String)">
             <summary>
             Adding an attribute implementation
@@ -9518,18 +9708,56 @@
             <param name="tokenId"></param>
             <param name="value"></param>
         </member>
-        <member name="M:CsQuery.Implementation.AttributeCollection.SetBoolean(System.String)">
-            <summary>
-            Sets a boolean only attribute having no value
-            </summary>
-            <param name="name"></param>
+        <member name="M:CsQuery.Implementation.AttributeCollection.GetAttributes">
+             <summary>
+             Enumerates the attributes
+             </summary>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process get attributes in this collection.
+             </returns>
         </member>
-        <member name="M:CsQuery.Implementation.AttributeCollection.Unset(System.String)">
+        <member name="M:CsQuery.Implementation.AttributeCollection.GetEnumerator">
+             <summary>
+             Enumerates the attributes as a KeyValuePair
+             </summary>
+            
+             <returns>
+             The enumerator.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Implementation.AttributeCollection.HasAttributes">
             <summary>
-            Removing an attribute implementation
+            Test whether there are any attributes in this collection.
             </summary>
-            <param name="name"></param>
-            <returns></returns>
+        </member>
+        <member name="P:CsQuery.Implementation.AttributeCollection.Count">
+            <summary>
+            The number of attributes in this collection
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.AttributeCollection.Item(System.String)">
+             <summary>
+             Get or set an attribute value by name
+             </summary>
+            
+             <param name="name">
+             The name of the attribute.
+             </param>
+            
+             <returns>
+             The value.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Implementation.AttributeCollection.Keys">
+            <summary>
+            Get a sequence of all attribute names in this collection.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.AttributeCollection.Values">
+            <summary>
+            A collection of all the values in this attribute collection
+            </summary>
         </member>
         <member name="T:CsQuery.Engine.CharacterEqualityComparer">
             <summary>
@@ -10931,6 +11159,15 @@
             The name of this variable
             </summary>
         </member>
+        <member name="M:CsQuery.EquationParser.IClause.Clone">
+             <summary>
+             Makes a deep copy of this object.
+             </summary>
+            
+             <returns>
+             A copy of this object.
+             </returns>
+        </member>
         <member name="T:CsQuery.EquationParser.IEquation">
             <summary>
             Interface for an equation.
@@ -11360,6 +11597,89 @@
              The zero-based index of the key in the ordered dictionary
              </returns>
         </member>
+        <member name="T:CsQuery.EquationParser.Implementation.Utils">
+            <summary>
+            Utility methods used by the Equation Parser
+            </summary>
+        </member>
+        <member name="M:CsQuery.EquationParser.Implementation.Utils.IsIntegralType``1">
+             <summary>
+             Test if this object is a primitive integral type.
+             </summary>
+            
+             <typeparam name="T">
+             Generic type parameter.
+             </typeparam>
+            
+             <returns>
+             true if integral type, false if not
+             </returns>
+        </member>
+        <member name="M:CsQuery.EquationParser.Implementation.Utils.IsIntegralType(System.IConvertible)">
+             <summary>
+             Test if this object is a primitive integral type.
+             </summary>
+            
+             <param name="value">
+             The value to test.
+             </param>
+            
+             <returns>
+             true if integral type, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.EquationParser.Implementation.Utils.IsIntegralType(System.Type)">
+             <summary>
+             Test if this object is a primitive integral type.
+             </summary>
+            
+             <param name="type">
+             The type to test.
+             </param>
+            
+             <returns>
+             true if integral type, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.EquationParser.Implementation.Utils.IsIntegralValue(System.IConvertible)">
+             <summary>
+             Test if 'value' is an integral value.
+             </summary>
+            
+             <param name="value">
+             The value to test.
+             </param>
+            
+             <returns>
+             true if an integer, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.EquationParser.Implementation.Utils.IsNumericType``1">
+             <summary>
+             Test if the type is a numeric primitive type, e.g. all except string, char &amp; bool.
+             </summary>
+            
+             <typeparam name="T">
+             The type to test
+             </typeparam>
+            
+             <returns>
+             true if numeric type, false if not
+             </returns>
+        </member>
+        <member name="M:CsQuery.EquationParser.Implementation.Utils.IsNumericType(System.Object)">
+             <summary>
+             Test if the type is a numeric primitive type, e.g. all except string, char &amp; bool.
+             </summary>
+            
+             <param name="obj">
+             The object.
+             </param>
+            
+             <returns>
+             true if numeric type, false if not.
+             </returns>
+        </member>
         <member name="M:CsQuery.EquationParser.Implementation.Utils.IsNumericType(System.Type)">
              <summary>
              Test if the type is a numeric primitive type, e.g. all except string, char &amp; bool.
@@ -11473,6 +11793,51 @@
         <member name="T:CsQuery.ExtensionMethods.Xml.ExtensionMethods">
             <summary>
             Extension methods for converting to XML
+            </summary>
+        </member>
+        <member name="T:CsQuery.ExtensionMethods.Xml.CqXmlNodeList">
+            <summary>
+            An adapter to map an INodeList to an XmlNodeList. NOT IMPLEMENTED.
+            </summary>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.Xml.CqXmlNodeList.#ctor(System.Xml.XmlDocument,CsQuery.INodeList)">
+             <summary>
+             Constructor.
+             </summary>
+            
+             <param name="xmlDocument">
+             The XML document.
+             </param>
+             <param name="nodeList">
+             List of nodes.
+             </param>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.Xml.CqXmlNodeList.GetEnumerator">
+             <summary>
+             An enumerator for the node list.
+             </summary>
+            
+             <returns>
+             An <see cref="T:System.Collections.IEnumerator" />.
+             </returns>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.Xml.CqXmlNodeList.Item(System.Int32)">
+             <summary>
+             Retrieves a node at the given index.
+             </summary>
+            
+             <param name="index">
+             Zero-based index into the list of nodes.
+             </param>
+            
+             <returns>
+             The <see cref="T:System.Xml.XmlNode" /> in the collection. If <paramref name="index" /> is
+             greater than or equal to the number of nodes in the list, this returns null.
+             </returns>
+        </member>
+        <member name="P:CsQuery.ExtensionMethods.Xml.CqXmlNodeList.Count">
+            <summary>
+            The number of nodes in this list
             </summary>
         </member>
         <member name="T:HtmlParserSharp.Common.DoctypeExpectation">
@@ -11821,13 +12186,15 @@
             <returns>An <code>AttributeName</code></returns>
         </member>
         <member name="M:HtmlParserSharp.Core.AttributeName.CloneAttributeName">
-            <summary>
-            TODO: remove this (?)
-            Clones the attribute using an interner. Returns 
-            <code>this</code> in Java and for non-dynamic instances in C++.
-            </summary>
-            <param name="interner">An interner</param>
-            <returns>A clone</returns>
+             <summary>
+             TODO: remove this (?)
+             Clones the attribute using an interner. Returns
+             <code>this</code> in Java and for non-dynamic instances in C++.
+             </summary>
+            
+             <returns>
+             A clone.
+             </returns>
         </member>
         <member name="M:HtmlParserSharp.Core.AttributeName.Create(System.String)">
             <summary>
@@ -12725,11 +13092,247 @@
             This is a fragment
             </summary>
         </member>
+        <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.AddAttributesToElement(CsQuery.Implementation.DomObject,HtmlParserSharp.Core.HtmlAttributes)">
+             <summary>
+             Adds the attributes passed by parameter to the element.
+             </summary>
+            
+             <param name="element">
+             The element.
+             </param>
+             <param name="attributes">
+             The attributes.
+             </param>
+        </member>
+        <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.AppendCharacters(CsQuery.Implementation.DomObject,System.String)">
+             <summary>
+             Appends text a node.
+             </summary>
+            
+             <param name="parent">
+             The parent.
+             </param>
+             <param name="text">
+             The text.
+             </param>
+        </member>
+        <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.AppendChildrenToNewParent(CsQuery.Implementation.DomObject,CsQuery.Implementation.DomObject)">
+             <summary>
+             Move elements from one parent to another
+             </summary>
+            
+             <param name="oldParent">
+             The old parent.
+             </param>
+             <param name="newParent">
+             The new parent.
+             </param>
+        </member>
+        <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.AppendDoctypeToDocument(System.String,System.String,System.String)">
+             <summary>
+             Appends a doctype node to the document.
+             </summary>
+            
+             <param name="name">
+             The name.
+             </param>
+             <param name="publicIdentifier">
+             DocType public identifier
+             </param>
+             <param name="systemIdentifier">
+             DocType system identifier.
+             </param>
+        </member>
+        <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.AppendComment(CsQuery.Implementation.DomObject,System.String)">
+             <summary>
+             Appends a comment node
+             </summary>
+            
+             <param name="parent">
+             The parent.
+             </param>
+             <param name="comment">
+             The comment.
+             </param>
+        </member>
+        <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.AppendCommentToDocument(System.String)">
+             <summary>
+             Appends a comment to document root.
+             </summary>
+            
+             <param name="comment">
+             The comment.
+             </param>
+        </member>
+        <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.CreateElement(System.String,System.String,HtmlParserSharp.Core.HtmlAttributes)">
+             <summary>
+             Create a new element.
+             </summary>
+            
+             <param name="ns">
+             The namespace.
+             </param>
+             <param name="name">
+             The node name.
+             </param>
+             <param name="attributes">
+             The attributes.
+             </param>
+            
+             <returns>
+             The new element.
+             </returns>
+        </member>
+        <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.CreateHtmlElementSetAsRoot(HtmlParserSharp.Core.HtmlAttributes)">
+             <summary>
+             Creates the root HTML element.
+             </summary>
+            
+             <param name="attributes">
+             The attributes.
+             </param>
+            
+             <returns>
+             The new HTML element.
+             </returns>
+        </member>
+        <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.AppendElement(CsQuery.Implementation.DomObject,CsQuery.Implementation.DomObject)">
+             <summary>
+             Appends an element as a child of another element.
+             </summary>
+            
+             <param name="child">
+             The child.
+             </param>
+             <param name="newParent">
+             The parent.
+             </param>
+        </member>
+        <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.HasChildren(CsQuery.Implementation.DomObject)">
+             <summary>
+             Test whether the element has any children.
+             </summary>
+            
+             <param name="element">
+             The element.
+             </param>
+            
+             <returns>
+             true if it has children, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.CreateElement(System.String,System.String,HtmlParserSharp.Core.HtmlAttributes,CsQuery.Implementation.DomObject)">
+             <summary>
+             Create a new element.
+             </summary>
+            
+             <param name="ns">
+             The namespace.
+             </param>
+             <param name="name">
+             The node name.
+             </param>
+             <param name="attributes">
+             The attributes.
+             </param>
+             <param name="form">
+             The form.
+             </param>
+            
+             <returns>
+             The new element.
+             </returns>
+        </member>
+        <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.Start(System.Boolean)">
+             <summary>
+             Run when the parsing process begins. Any config properties should be set here
+             </summary>
+            
+             <param name="fragment">
+             This is a fragment.
+             </param>
+        </member>
+        <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.ReceiveDocumentMode(HtmlParserSharp.Common.DocumentMode,System.String,System.String,System.Boolean)">
+             <summary>
+             Run when the document mode is set.
+             </summary>
+            
+             <param name="mode">
+             The mode.
+             </param>
+             <param name="publicIdentifier">
+             DocType public identifier.
+             </param>
+             <param name="systemIdentifier">
+             DocType system identifier.
+             </param>
+             <param name="html4SpecificAddcionalErrorChecks">
+             true to HTML 4 specific addcional error checks.
+             </param>
+        </member>
+        <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.InsertFosterParentedCharacters(System.String,CsQuery.Implementation.DomObject,CsQuery.Implementation.DomObject)">
+             <summary>
+             Inserts foster parented characters.
+             </summary>
+            
+             <param name="text">
+             The text.
+             </param>
+             <param name="table">
+             The table.
+             </param>
+             <param name="stackParent">
+             The stack parent.
+             </param>
+        </member>
+        <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.InsertFosterParentedChild(CsQuery.Implementation.DomObject,CsQuery.Implementation.DomObject,CsQuery.Implementation.DomObject)">
+             <summary>
+             Inserts a foster parented child.
+             </summary>
+            
+             <param name="child">
+             The child.
+             </param>
+             <param name="table">
+             The table.
+             </param>
+             <param name="stackParent">
+             The stack parent.
+             </param>
+        </member>
+        <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.DetachFromParent(CsQuery.Implementation.DomObject)">
+             <summary>
+             Detach an element from its parent.
+             </summary>
+            
+             <param name="element">
+             The element.
+             </param>
+        </member>
+        <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.AttributeName(System.String,System.String)">
+             <summary>
+             Combine a local name &amp; uri into a single attribute name/.
+             </summary>
+            
+             <param name="localName">
+             Name of the local.
+             </param>
+             <param name="uri">
+             URI of the document.
+             </param>
+            
+             <returns>
+             The attribute name.
+             </returns>
+        </member>
         <member name="P:CsQuery.HtmlParser.CsQueryTreeBuilder.Document">
-            <summary>
-            Returns the document.
-            </summary>
-            <returns>The document</returns>
+             <summary>
+             Returns the document.
+             </summary>
+            
+             <value>
+             The document.
+             </value>
         </member>
         <member name="T:CsQuery.HtmlParser.ElementFactory">
             <summary>
@@ -12852,11 +13455,6 @@
         <member name="P:CsQuery.HtmlParser.ElementFactory.FragmentContext">
             <summary>
             Gets or sets a context for the fragment, e.g. a tag name
-            </summary>
-        </member>
-        <member name="T:CsQuery.HtmlParser.HtmlPreprocessor">
-            <summary>
-            Functions for preprocessing HTML.
             </summary>
         </member>
         <member name="T:CsQuery.HtmlParsingMode">
@@ -15598,6 +16196,21 @@
             Matches anything that is bounded by accepted bounding characters
             </summary>
         </member>
+        <member name="P:CsQuery.StringScanner.Patterns.Bounded.HonorInnerQuotes">
+            <summary>
+            When true, inner quotes found in the string will be honored and quoting escaped.
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.Patterns.Bounded.BoundStart">
+            <summary>
+            Gets or sets the bound start string
+            </summary>
+        </member>
+        <member name="P:CsQuery.StringScanner.Patterns.Bounded.BoundEnd">
+            <summary>
+            Gets or sets the bound end string
+            </summary>
+        </member>
         <member name="T:CsQuery.StringScanner.Patterns.HTMLTagSelectorName">
             <summary>
             A pattern that matches a valid HTML tag selector.
@@ -17989,6 +18602,17 @@
             A marker interface for CDATA elements.
             </summary>
         </member>
+        <member name="T:CsQuery.IDomSpecialElement">
+            <summary>
+            Interface for a special element type (CDATA, Comment, DocType). These are elements that have
+            data in the tag itself that does not conform to the standard attribute/value construct.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IDomSpecialElement.NonAttributeData">
+            <summary>
+            The non-attribute data.
+            </summary>
+        </member>
         <member name="T:CsQuery.IDomComment">
             <summary>
             An interface for HTML Comment elements.
@@ -18220,7 +18844,18 @@
         </member>
         <member name="T:CsQuery.IDomDocumentType">
             <summary>
-            DOCTYPE node
+            A DOCTYPE node
+            </summary>
+        </member>
+        <member name="P:CsQuery.IDomDocumentType.DocType">
+            <summary>
+            Gets the type of the document.
+            </summary>
+        </member>
+        <member name="T:CsQuery.IDomFragment">
+            <summary>
+            Interface for a fragment. A fragment is similar to a Document node, except that there is no
+            expectation that it represents a complete DOM.
             </summary>
         </member>
         <member name="T:CsQuery.IDomInnerText">
@@ -18238,6 +18873,36 @@
             An element that will be rendered as text because it was determined to be a mismatched tag
             </summary>
         </member>
+        <member name="T:CsQuery.Implementation.CssStyle">
+            <summary>
+            A single CSS style definition.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.CssStyle.Name">
+            <summary>
+            The name of the style.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.CssStyle.Type">
+            <summary>
+            The type of data contained by this style.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.CssStyle.Format">
+            <summary>
+            Gets or sets a format required by this style.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.CssStyle.Description">
+            <summary>
+            A description of this style.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.CssStyle.Options">
+            <summary>
+            The acceptable options for Option-type styles.
+            </summary>
+        </member>
         <member name="T:CsQuery.Implementation.DomFragment">
             <summary>
             An incomplete document fragment
@@ -18247,6 +18912,80 @@
             <summary>
             Special node type to represent the DOM.
             </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.Create">
+             <summary>
+             Creates a new, empty DomDocument.
+             </summary>
+            
+             <returns>
+             A new DomDocument object.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.Create(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},CsQuery.HtmlParsingMode,CsQuery.DocType)">
+             <summary>
+             Creates a new, empty DomDocument using the options specified.
+             </summary>
+            
+             <param name="elements">
+             The elements that are the source for the new document.
+             </param>
+             <param name="parsingMode">
+             (optional) the parsing mode; this only determines whether a Document or Fragment node is created.
+             </param>
+             <param name="docType">
+             The DocType for this document.
+             </param>
+            
+             <returns>
+             A new DomDocument object.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.Create(System.String,CsQuery.HtmlParsingMode,CsQuery.HtmlParsingOptions,CsQuery.DocType)">
+             <summary>
+             Creates a new, empty DomDocument from a string of HTML using the options specified.
+             </summary>
+            
+             <param name="html">
+             The HTML.
+             </param>
+             <param name="parsingMode">
+             (optional) the parsing mode 
+             created.
+             </param>
+             <param name="parsingOptions">
+             (optional) options for controlling the parsing.
+             </param>
+             <param name="docType">
+             The DocType for this document.
+             </param>
+            
+             <returns>
+             A new DomDocument object.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.Create(System.IO.Stream,CsQuery.HtmlParsingMode,CsQuery.HtmlParsingOptions,CsQuery.DocType)">
+             <summary>
+             Creates a new, empty DomDocument from a stream of HTML using the options specified.
+             </summary>
+            
+             <param name="html">
+             The HTML.
+             </param>
+             <param name="parsingMode">
+             (optional) the parsing mode
+             created.
+             </param>
+             <param name="parsingOptions">
+             (optional) options for controlling the parsing.
+             </param>
+             <param name="docType">
+             The DocType for this document.
+             </param>
+            
+             <returns>
+             A new DomDocument object.
+             </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomDocument.#ctor">
             <summary>
@@ -18269,45 +19008,77 @@
             </summary>
         </member>
         <member name="M:CsQuery.Implementation.DomDocument.AddToIndex(CsQuery.IDomIndexedNode)">
-            <summary>
-            Add an element to the index using the default keys for this element
-            </summary>
-            <param name="element"></param>
+             <summary>
+             Add an element to the index using the default keys for this element.
+             </summary>
+            
+             <param name="element">
+             The element to index
+             </param>
         </member>
         <member name="M:CsQuery.Implementation.DomDocument.AddToIndex(System.String,CsQuery.IDomIndexedNode)">
-            <summary>
-            Add an element to the index using a specified index key
-            </summary>
-            <param name="key"></param>
-            <param name="element"></param>
+             <summary>
+             Add an element to the index using a specified index key.
+             </summary>
+            
+             <param name="key">
+             The index key
+             </param>
+             <param name="element">
+             The element to index on this key
+             </param>
         </member>
         <member name="M:CsQuery.Implementation.DomDocument.RemoveFromIndex(CsQuery.IDomIndexedNode)">
-            <summary>
-            Remove an element from the index
-            </summary>
-            <param name="element"></param>
+             <summary>
+             Remove an element from the index.
+             </summary>
+            
+             <param name="element">
+             The element to remove
+             </param>
         </member>
         <member name="M:CsQuery.Implementation.DomDocument.RemoveFromIndex(System.String)">
-            <summary>
-            Remove an element from the index using its key
-            </summary>
-            <param name="key"></param>
+             <summary>
+             Remove an element from the index using its key.
+             </summary>
+            
+             <param name="key">
+             The key to remove
+             </param>
         </member>
         <member name="M:CsQuery.Implementation.DomDocument.QueryIndex(System.String,System.Int32,System.Boolean)">
-            <summary>
-            Query the document's index for a subkey up to a specific depth, optionally including descendants that match the selector
-            </summary>
-            <param name="subKey"></param>
-            <param name="depth">The zero-based depth to which searches should be limited</param>
-            <param name="includeDescendants"></param>
-            <returns></returns>
+             <summary>
+             Query the document's index for a subkey up to a specific depth, optionally including
+             descendants that match the selector.
+             </summary>
+            
+             <param name="subKey">
+             The partial key to match: matches must start with the value.
+             </param>
+             <param name="depth">
+             The zero-based depth to which searches should be limited.
+             </param>
+             <param name="includeDescendants">
+             When true, elements that are descendants of the depth matching the subkey are also returned.
+             If false, only those at the same depth are matched.
+             </param>
+            
+             <returns>
+             A sequence of matching elements
+             </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomDocument.QueryIndex(System.String)">
-            <summary>
-            Query the document's index for a subkey
-            </summary>
-            <param name="subKey"></param>
-            <returns></returns>
+             <summary>
+             Query the document's index for a subkey.
+             </summary>
+            
+             <param name="subKey">
+             The partial key to match: matches must start with this value.
+             </param>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process query index in this collection.
+             </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomDocument.GetElementById(System.String)">
              <summary>
@@ -18497,6 +19268,54 @@
              A sequence of cloned elements
              </returns>
         </member>
+        <member name="M:CsQuery.Implementation.DomDocument.ToString">
+             <summary>
+             Shows summary data for the document.
+             </summary>
+            
+             <returns>
+             This object as a string.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.OnlyElements(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+             <summary>
+             Enumerates only elements a this collection.
+             </summary>
+            
+             <param name="objectList">
+             List of objects.
+             </param>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process only elements in this collection.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.CreateNew``1">
+             <summary>
+             Creates an IDomDocument that is derived from this one. The new type can also be a derived
+             type, such as IDomFragment. The new object will inherit DomRenderingOptions from this one.
+             </summary>
+            
+             <typeparam name="T">
+             The type of object to create that is IDomDocument.
+             </typeparam>
+            
+             <returns>
+             A new, empty concrete class that is represented by the interface T, configured with the same
+             options as the current object.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.CreateNew">
+             <summary>
+             Creates an IDomDocument that is derived from this one. The new type can also be a derived
+             type, such as IDomFragment. The new object will inherit DomRenderingOptions from this one.
+             </summary>
+            
+             <returns>
+             A new, empty concrete class that is represented by the interface T, configured with the same
+             options as the current object.
+             </returns>
+        </member>
         <member name="M:CsQuery.Implementation.DomDocument.CreateNew``1(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
              <summary>
              Creates an IDomDocument that is derived from this one. The new type can also be a derived
@@ -18519,6 +19338,11 @@
              options as the current object.
              </returns>
         </member>
+        <member name="P:CsQuery.Implementation.DomDocument.StyleSheets">
+            <summary>
+            Gets the style sheets for this document. (This feature is not implemented completely).
+            </summary>
+        </member>
         <member name="P:CsQuery.Implementation.DomDocument.DocumentIndex">
             <summary>
             Exposes the Document as an IDomIndex object
@@ -18526,7 +19350,13 @@
         </member>
         <member name="P:CsQuery.Implementation.DomDocument.SelectorXref">
             <summary>
-            The index
+            The actual index used by the selector engine. This created and maintained when nodes are
+            added, removed or altered.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomDocument.ParentNode">
+            <summary>
+            The direct parent of this node. For DomDocument nodes, this is always null.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomDocument.Path">
@@ -18537,13 +19367,6 @@
         <member name="P:CsQuery.Implementation.DomDocument.Depth">
             <summary>
             The depth in the node tree at which this node occurs. This is always 0 for the DomDocument.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomDocument.DomRenderingOptions">
-            <summary>
-            Deprecated: DomRenderingOptions are no longer bound to a particular Document instance. Pass
-            options to the Render() method, or create an IOutputFormatter instance using options, instead.
-            This method will be removed in a future release.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomDocument.Document">
@@ -18575,6 +19398,26 @@
         <member name="P:CsQuery.Implementation.DomDocument.Data">
             <summary>
             Any user data to be persisted with this DOM.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomDocument.Body">
+            <summary>
+            Return the body element for this Document.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomDocument.IsIndexed">
+            <summary>
+            Gets a value indicating whether this object type should be indexed. For DomDocuments, this is always true.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomDocument.IsFragment">
+            <summary>
+            The element is not associated with an IDomDocument.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomDocument.IsDisconnected">
+            <summary>
+            Gets a value indicating whether this object belongs to a Document or not.
             </summary>
         </member>
         <member name="M:CsQuery.Implementation.DomFragment.Create(System.String,System.String,CsQuery.DocType)">
@@ -18624,6 +19467,66 @@
             <summary>
             Gets a value indicating whether this object is fragment. For DomFragment objects, this is
             true.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.DomCData">
+            <summary>
+            A CDATA node.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomCData.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomCData.#ctor(System.String)">
+             <summary>
+             Constructor, creates a new CDATA node with the specified value
+             </summary>
+            
+             <param name="value">
+             The value.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomCData.Clone">
+             <summary>
+             Makes a deep copy of this object.
+             </summary>
+            
+             <returns>
+             A copy of this object.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Implementation.DomCData.NodeValue">
+            <summary>
+            Gets or sets the node value.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomCData.NodeType">
+            <summary>
+            Gets the type of the node. For CDATA nodes, this is always NodeType.CDATA_SECTION_NODE
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomCData.NonAttributeData">
+            <summary>
+            Gets or sets the information describing the non attribute.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomCData.InnerHtmlAllowed">
+            <summary>
+            Gets a value indicating whether HTML is allowed as a child of this element. It is possible
+            for this value to be false but InnerTextAllowed to be true for elements which can have inner
+            content, but no child HTML markup, such as &lt;textarea&gt; and &lt;script&gt;
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomCData.HasChildren">
+            <summary>
+            Gets a value indicating whether this object has children.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomCData.Text">
+            <summary>
+            Gets or sets the text of the CData node
             </summary>
         </member>
         <member name="T:CsQuery.Implementation.DomComment">
@@ -18733,6 +19636,47 @@
             Sets document type data values from a doc type
             </summary>
         </member>
+        <member name="M:CsQuery.Implementation.DomDocumentType.Clone">
+             <summary>
+             Makes a deep copy of this object.
+             </summary>
+            
+             <returns>
+             A copy of this object.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Implementation.DomDocumentType.NodeType">
+            <summary>
+            Gets the type of the node.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomDocumentType.NodeName">
+            <summary>
+            The node (tag) name, in upper case. For DomDocumentType objects, this is always "DOCTYPE"
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomDocumentType.DocType">
+            <summary>
+            Gets or sets the type of the document.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomDocumentType.NonAttributeData">
+            <summary>
+            This property contains the actual data of the DocType node, e.g. the attributes as a string.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomDocumentType.InnerHtmlAllowed">
+            <summary>
+            Gets a value indicating whether HTML is allowed as a child of this element. It is possible
+            for this value to be false but InnerTextAllowed to be true for elements which can have inner
+            content, but no child HTML markup, such as &lt;textarea&gt; and &lt;script&gt;
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomDocumentType.HasChildren">
+            <summary>
+            Gets a value indicating whether this object has children.
+            </summary>
+        </member>
         <member name="T:CsQuery.Implementation.CSSStyleDeclaration">
             <summary>
             CSS style declaration.
@@ -18829,11 +19773,30 @@
              </param>
         </member>
         <member name="M:CsQuery.Implementation.CSSStyleDeclaration.Remove(System.String)">
-            <summary>
-            Remove a single named style
-            </summary>
-            <param name="name"></param>
-            <returns></returns>
+             <summary>
+             Remove a single named style.
+             </summary>
+            
+             <param name="name">
+             The style to remove.
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.CSSStyleDeclaration.RemoveStyle(System.String)">
+             <summary>
+             Removes the style from the style descriptor for this element.
+             </summary>
+            
+             <param name="name">
+             The name.
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails. this can only fail if the style was not present.
+             </returns>
         </member>
         <member name="M:CsQuery.Implementation.CSSStyleDeclaration.Add(System.String,System.String)">
             <summary>
@@ -18976,6 +19939,15 @@
              A parsed string of the value
              </returns>
         </member>
+        <member name="M:CsQuery.Implementation.CSSStyleDeclaration.stylesEnumerable">
+             <summary>
+             Enumerates the styles as a sequence of key/value pairs
+             </summary>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process styles enumerable in this collection.
+             </returns>
+        </member>
         <member name="P:CsQuery.Implementation.CSSStyleDeclaration.QuickSetValue">
             <summary>
             For fast DOM creation - since styles are not indexed or validated.
@@ -19010,6 +19982,27 @@
             True if there is at least one style.
             </summary>
         </member>
+        <member name="P:CsQuery.Implementation.CSSStyleDeclaration.Count">
+            <summary>
+            Gets the number of styles in this collection
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.CSSStyleDeclaration.IsReadOnly">
+            <summary>
+            Gets a value indicating whether this object is read only; for CSSStyleDeclaration objects
+            this is always false.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.CSSStyleDeclaration.Keys">
+            <summary>
+            Gets the keys of all styles as a string collection
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.CSSStyleDeclaration.Values">
+            <summary>
+            Gets the values of all styles as a string collection
+            </summary>
+        </member>
         <member name="P:CsQuery.Implementation.CSSStyleDeclaration.Item(System.String)">
             <summary>
             Get or set the named style
@@ -19033,11 +20026,26 @@
              The indexed item.
              </returns>
         </member>
+        <member name="P:CsQuery.Implementation.CSSStyleDeclaration.Height">
+            <summary>
+            Gets or sets the CSS height style
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.CSSStyleDeclaration.Width">
+            <summary>
+            Gets or sets the CSS width style
+            </summary>
+        </member>
         <member name="T:CsQuery.HtmlParser.HtmlData">
             <summary>
             Reference data about HTML tags and attributes;
             methods to test tokens for certain properties;
             and the tokenizer.
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParser.HtmlData.Debug">
+            <summary>
+            Indicates that the assembly was NOT compiled in debug mode.
             </summary>
         </member>
         <member name="F:CsQuery.HtmlParser.HtmlData.pathIdLength">
@@ -20359,6 +21367,25 @@
              </param>
              <param name="values">
              The values to test for
+             </param>
+            
+             <returns>
+             true if one of, false if not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.IsOneOf(System.String,System.Boolean,System.String[])">
+             <summary>
+             Returns true if the enum is any of the parameters in question.
+             </summary>
+            
+             <param name="match">
+             The match to act on.
+             </param>
+             <param name="matchCase">
+             (optional) the match case.
+             </param>
+             <param name="values">
+             The values to test for.
              </param>
             
              <returns>
@@ -21746,6 +22773,19 @@
             A list of nodes representing the children of a DOM element.
             </summary>
         </member>
+        <member name="M:CsQuery.Implementation.ChildNodeList.IndexOf(CsQuery.IDomObject)">
+             <summary>
+             The zero-based index of the item in this list
+             </summary>
+            
+             <param name="item">
+             The element to add.
+             </param>
+            
+             <returns>
+             The zero-based index of the item, or -1 if it was not found.
+             </returns>
+        </member>
         <member name="M:CsQuery.Implementation.ChildNodeList.Add(CsQuery.IDomObject)">
              <summary>
              Add a child to this element.
@@ -22382,13 +23422,82 @@
             Some extension methods that come in handy when working with CsQuery
             </summary>
         </member>
+        <member name="M:CsQuery.ExtensionMethods.ExtensionMethods.RegexReplace(System.String,System.String,System.String)">
+             <summary>
+             Perform a substring replace using a regular expression.
+             </summary>
+            
+             <param name="input">
+             The target of the replacement.
+             </param>
+             <param name="pattern">
+             The pattern to match.
+             </param>
+             <param name="replacement">
+             The replacement string.
+             </param>
+            
+             <returns>
+             A new string.
+             </returns>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.ExtensionMethods.RegexReplace(System.String,System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String})">
+             <summary>
+             Perform a substring replace using a regular expression and one or more patterns
+             </summary>
+            
+             <exception cref="T:System.ArgumentException">
+             Thrown when the list of replacements is not the same length as the list of patterns.
+             </exception>
+            
+             <param name="input">
+             The target of the replacement.
+             </param>
+             <param name="patterns">
+             The patterns.
+             </param>
+             <param name="replacements">
+             The replacements.
+             </param>
+            
+             <returns>
+             A new string.
+             </returns>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.ExtensionMethods.RegexReplace(System.String,System.String,System.Text.RegularExpressions.MatchEvaluator)">
+             <summary>
+             Perform a substring replace using a regular expression.
+             </summary>
+            
+             <param name="input">
+             The target of the replacement.
+             </param>
+             <param name="pattern">
+             The pattern to match.
+             </param>
+             <param name="evaluator">
+             The evaluator.
+             </param>
+            
+             <returns>
+             A new string.
+             </returns>
+        </member>
         <member name="M:CsQuery.ExtensionMethods.ExtensionMethods.RegexTest(System.String,System.String)">
-            <summary>
-            Test whether the regular expression pattern matches the string
-            </summary>
-            <param name="input"></param>
-            <param name="pattern"></param>
-            <returns></returns>
+             <summary>
+             Test whether the regular expression pattern matches the string.
+             </summary>
+            
+             <param name="input">
+             The string to test
+             </param>
+             <param name="pattern">
+             The pattern
+             </param>
+            
+             <returns>
+             true if the pattern matches, false if not.
+             </returns>
         </member>
         <member name="M:CsQuery.ExtensionMethods.ExtensionMethods.Concat``1(System.Collections.Generic.IEnumerable{``0},``0)">
              <summary>
@@ -23343,12 +24452,20 @@
              </returns>
         </member>
         <member name="M:CsQuery.Objects.Enumerate``1(``0)">
-            <summary>
-            Returns an enumerable of one element from an object
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="obj"></param>
-            <returns></returns>
+             <summary>
+             Returns a sequence containing a single element, the object passed by parameter.
+             </summary>
+            
+             <typeparam name="T">
+             The type of object.
+             </typeparam>
+             <param name="obj">
+             The object to add to the sequence.
+             </param>
+            
+             <returns>
+             A sequence with one element.
+             </returns>
         </member>
         <member name="M:CsQuery.Objects.Enumerate``1(``0[])">
              <summary>

@@ -83,7 +83,7 @@ namespace CsQuery.EquationParser.Implementation
         /// <summary>
         /// The values set (on order that each variable appears first in the equation) for each varaiable
         /// </summary>
-        
+
         public IEnumerable<IVariable> Variables
         {
             get
@@ -94,7 +94,7 @@ namespace CsQuery.EquationParser.Implementation
                 }
                 else
                 {
-                    return Utils.EmptyEnumerable<IVariable>();
+                    return Enumerable.Empty<IVariable>();
                 }
             }
         }
@@ -274,7 +274,7 @@ namespace CsQuery.EquationParser.Implementation
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
-        
+
         public IConvertible GetValue(params IConvertible[] values)
         {
             for (int i = 0; i < values.Length; i++)
@@ -337,5 +337,5 @@ namespace CsQuery.EquationParser.Implementation
         }
         #endregion
     }
-   
+
 }

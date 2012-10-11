@@ -88,9 +88,9 @@ namespace CsQuery.Implementation
         /// </summary>
         
         private IDictionary<ushort, string> _Styles;
-        protected string _QuickSetValue;
+        private string _QuickSetValue;
 
-        protected IDictionary<ushort, string> Styles
+        private IDictionary<ushort, string> Styles
         {
             get
             {
@@ -182,14 +182,30 @@ namespace CsQuery.Implementation
                 return QuickSetValue != null || (_Styles != null && Styles.Count > 0);
             }
         }
+
+        /// <summary>
+        /// Gets the number of styles in this collection
+        /// </summary>
+
         public int Count
         {
             get { return !HasStyles ? 0 : Styles.Count; }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is read only; for CSSStyleDeclaration objects
+        /// this is always false.
+        /// </summary>
+
         public bool IsReadOnly
         {
             get { return false; }
         }
+
+        /// <summary>
+        /// Gets the keys of all styles as a string collection
+        /// </summary>
+
         public ICollection<string> Keys
         {
             get
@@ -202,6 +218,10 @@ namespace CsQuery.Implementation
                 return keys;
             }
         }      
+
+        /// <summary>
+        /// Gets the values of all styles as a string collection
+        /// </summary>
 
         public ICollection<string> Values
         {
@@ -247,6 +267,10 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Gets or sets the CSS height style
+        /// </summary>
+
         public string Height
         {
             get
@@ -258,6 +282,11 @@ namespace CsQuery.Implementation
                 SetStyle("height", value,true);
             }
         }
+
+        /// <summary>
+        /// Gets or sets the CSS width style
+        /// </summary>
+
         public string Width
         {
             get
@@ -374,15 +403,36 @@ namespace CsQuery.Implementation
                 }
             }
         }
+
         /// <summary>
-        /// Remove a single named style
+        /// Remove a single named style.
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="name">
+        /// The style to remove.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
         public bool Remove(string name)
         {
             return Styles.Remove(HtmlData.Tokenize(name));
         }
+
+        /// <summary>
+        /// Removes the style from the style descriptor for this element.
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The name.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails. this can only fail if the style was not present.
+        /// </returns>
+
         public bool RemoveStyle(string name)
         {
             return Remove(name);
@@ -655,8 +705,7 @@ namespace CsQuery.Implementation
         #region private methods
 
 
-      
-        protected string OptionList(CssStyle style)
+        private string OptionList(CssStyle style)
         {
 
             string list = "";
@@ -687,7 +736,7 @@ namespace CsQuery.Implementation
         /// A parsed string of the value
         /// </returns>
 
-        protected string ValidateUnitString(string name,string value)
+        private string ValidateUnitString(string name, string value)
         {
             int pos = 0;
             value = value.Trim();
@@ -735,7 +784,15 @@ namespace CsQuery.Implementation
             return outVal.ToString();
         }
 
-        protected IEnumerable<KeyValuePair<string, string>> stylesEnumerable()
+        /// <summary>
+        /// Enumerates the styles as a sequence of key/value pairs
+        /// </summary>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process styles enumerable in this collection.
+        /// </returns>
+
+        private IEnumerable<KeyValuePair<string, string>> stylesEnumerable()
         {
             foreach (var kvp in Styles)
             {
