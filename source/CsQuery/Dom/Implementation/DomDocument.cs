@@ -38,7 +38,6 @@ namespace CsQuery.Implementation
             {
                 doc.DocType = docType;
             }
-            doc.InitializeDomDocument();
             doc.Populate(elements);
             return doc;
         }
@@ -71,7 +70,7 @@ namespace CsQuery.Implementation
         public DomDocument()
             : base()
         {
-            InitializeDomDocument();
+  
         }
 
         /// <summary>
@@ -91,15 +90,6 @@ namespace CsQuery.Implementation
 
         }
 
-        /// <summary>
-        /// Initializes an instance to the default state
-        /// </summary>
-
-        [Obsolete]
-        protected void InitializeDomDocument()
-        {
-            Document.DomRenderingOptions = CsQuery.Config.DomRenderingOptions;           
-        }
 
         /// <summary>
         /// Clears this object to its blank/initial state.
@@ -699,10 +689,6 @@ namespace CsQuery.Implementation
         public override DomDocument Clone()
         {
             DomDocument clone = new DomDocument();
-            //clone.SourceHtml = SourceHtml;
-            //clone.OriginalStrings = OriginalStrings;
-            FinishConfiguringNew(clone);
-
             return clone;
         }
 
@@ -773,7 +759,6 @@ namespace CsQuery.Implementation
                     t.ToString()));
             }
 
-            FinishConfiguringNew(newDoc);
             return newDoc;
         }
 
@@ -825,15 +810,9 @@ namespace CsQuery.Implementation
                     typeof(T).ToString()));
             }
 
-            FinishConfiguringNew(newDoc);
             return newDoc;
         }
 
-        [Obsolete]
-        private void FinishConfiguringNew(IDomDocument newDoc)
-        {
-            newDoc.DomRenderingOptions = DomRenderingOptions;
-        }
     }
     
 }

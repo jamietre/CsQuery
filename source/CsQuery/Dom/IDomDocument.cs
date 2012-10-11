@@ -34,15 +34,12 @@ namespace CsQuery
 
         DocType DocType { get; }
 
-        IList<ICSSStyleSheet> StyleSheets { get; }
-
         /// <summary>
-        /// Deprecated: rendering options should be specified using an OutputFormatter, e.g.
-        /// "Render(OutputFormatters.Create(DomRenderingOptions.RemoveComments))".
+        /// Gets the style sheets for this document. (This feature is not implemented completely).
         /// </summary>
 
-        [Obsolete]
-        DomRenderingOptions DomRenderingOptions { get; set; }
+        IList<ICSSStyleSheet> StyleSheets { get; }
+
 
         /// <summary>
         /// Returns a reference to the element by its ID.

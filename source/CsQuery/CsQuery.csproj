@@ -403,7 +403,6 @@
     <Compile Include="Dom\Implementation\DomContainer.cs" />
     <Compile Include="Dom\Implementation\DomDocumentType.cs" />
     <Compile Include="Dom\Implementation\CSSStyleDeclaration.cs" />
-    <Compile Include="Dom\Implementation\DomInvalidElement.cs" />
     <Compile Include="Dom\Implementation\DomObject.cs" />
     <Compile Include="Dom\Implementation\DomObjectT.cs" />
     <Compile Include="Dom\Implementation\DomDocument.cs" />
@@ -488,7 +487,7 @@ xcopy $(TargetDir)CsQuery.xml $(SolutionDir)..\Distribution /Y
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

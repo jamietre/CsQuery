@@ -11821,15 +11821,13 @@
             <returns>An <code>AttributeName</code></returns>
         </member>
         <member name="M:HtmlParserSharp.Core.AttributeName.CloneAttributeName">
-             <summary>
-             TODO: remove this (?)
-             Clones the attribute using an interner. Returns
-             <code>this</code> in Java and for non-dynamic instances in C++.
-             </summary>
-            
-             <returns>
-             A clone.
-             </returns>
+            <summary>
+            TODO: remove this (?)
+            Clones the attribute using an interner. Returns 
+            <code>this</code> in Java and for non-dynamic instances in C++.
+            </summary>
+            <param name="interner">An interner</param>
+            <returns>A clone</returns>
         </member>
         <member name="M:HtmlParserSharp.Core.AttributeName.Create(System.String)">
             <summary>
@@ -18210,10 +18208,9 @@
             document type defined through the CsQuery.Options variable.
             </summary>
         </member>
-        <member name="P:CsQuery.IDomDocument.DomRenderingOptions">
+        <member name="P:CsQuery.IDomDocument.StyleSheets">
             <summary>
-            Deprecated: rendering options should be specified using an OutputFormatter, e.g.
-            "Render(OutputFormatters.Create(DomRenderingOptions.RemoveComments))".
+            Gets the style sheets for this document. (This feature is not implemented completely).
             </summary>
         </member>
         <member name="P:CsQuery.IDomDocument.Body">
@@ -18265,11 +18262,6 @@
              <param name="elements">
              The elements that are the source for the new document.
              </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomDocument.InitializeDomDocument">
-            <summary>
-            Initializes an instance to the default state
-            </summary>
         </member>
         <member name="M:CsQuery.Implementation.DomDocument.Clear">
             <summary>
@@ -19041,74 +19033,6 @@
              The indexed item.
              </returns>
         </member>
-        <member name="T:CsQuery.Implementation.DomText">
-            <summary>
-            Used for literal text (not part of a tag)
-            </summary>
-        </member>
-        <member name="M:CsQuery.Implementation.DomText.#ctor">
-            <summary>
-            Create a new empty Text node
-            </summary>
-        </member>
-        <member name="M:CsQuery.Implementation.DomText.#ctor(System.String)">
-             <summary>
-             Create a new Text node containing the text passed
-             </summary>
-            
-             <param name="nodeValue">
-             The text value of this Text node.
-             </param>
-        </member>
-        <member name="F:CsQuery.Implementation.DomText.nodeValue">
-            <summary>
-            The inner node value; the text.
-            </summary>
-        </member>
-        <member name="M:CsQuery.Implementation.DomText.Clone">
-             <summary>
-             Makes a clone of this TextNode
-             </summary>
-            
-             <returns>
-             A copy of this object.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomText.ToString">
-             <summary>
-             Return the value of this text node
-             </summary>
-            
-             <returns>
-             This object as a string.
-             </returns>
-        </member>
-        <member name="P:CsQuery.Implementation.DomText.NodeName">
-            <summary>
-            The node (tag) name, in upper case. For Text nodes, this is always "#text".
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomText.NodeType">
-            <summary>
-            Gets the type of the node. For Text nodes, this is always NodeType.TEXT_NODE
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomText.NodeValue">
-            <summary>
-            Gets or sets the text value of this Text node
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomText.InnerHtmlAllowed">
-            <summary>
-            Gets a value indicating whether HTML is allowed as a child of this element. For Text nodes,
-            this is always false.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomText.HasChildren">
-            <summary>
-            For Text nodes, this is always false
-            </summary>
-        </member>
         <member name="T:CsQuery.HtmlParser.HtmlData">
             <summary>
             Reference data about HTML tags and attributes;
@@ -19797,6 +19721,74 @@
         <member name="P:CsQuery.HtmlParser.HtmlData.Keys">
             <summary>
             A list of all keys (tokens) created.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.DomText">
+            <summary>
+            Used for literal text (not part of a tag)
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomText.#ctor">
+            <summary>
+            Create a new empty Text node
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomText.#ctor(System.String)">
+             <summary>
+             Create a new Text node containing the text passed
+             </summary>
+            
+             <param name="nodeValue">
+             The text value of this Text node.
+             </param>
+        </member>
+        <member name="F:CsQuery.Implementation.DomText.nodeValue">
+            <summary>
+            The inner node value; the text.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomText.Clone">
+             <summary>
+             Makes a clone of this TextNode
+             </summary>
+            
+             <returns>
+             A copy of this object.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomText.ToString">
+             <summary>
+             Return the value of this text node
+             </summary>
+            
+             <returns>
+             This object as a string.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Implementation.DomText.NodeName">
+            <summary>
+            The node (tag) name, in upper case. For Text nodes, this is always "#text".
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomText.NodeType">
+            <summary>
+            Gets the type of the node. For Text nodes, this is always NodeType.TEXT_NODE
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomText.NodeValue">
+            <summary>
+            Gets or sets the text value of this Text node
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomText.InnerHtmlAllowed">
+            <summary>
+            Gets a value indicating whether HTML is allowed as a child of this element. For Text nodes,
+            this is always false.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomText.HasChildren">
+            <summary>
+            For Text nodes, this is always false
             </summary>
         </member>
         <member name="T:CsQuery.INodeList">
