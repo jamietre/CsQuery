@@ -27,6 +27,16 @@ namespace CsQuery.HtmlParser
 
         private bool isFragment;
 
+        /// <summary>
+        /// Adds the attributes passed by parameter to the element.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element.
+        /// </param>
+        /// <param name="attributes">
+        /// The attributes.
+        /// </param>
 
         override protected void AddAttributesToElement(DomObject element, HtmlAttributes attributes)
         {
@@ -40,6 +50,16 @@ namespace CsQuery.HtmlParser
             }
         }
 
+        /// <summary>
+        /// Appends text a node.
+        /// </summary>
+        ///
+        /// <param name="parent">
+        /// The parent.
+        /// </param>
+        /// <param name="text">
+        /// The text.
+        /// </param>
 
         override protected void AppendCharacters(DomObject parent, string text)
         {
@@ -54,14 +74,40 @@ namespace CsQuery.HtmlParser
             }
         }
 
+        /// <summary>
+        /// Move elements from one parent to another
+        /// </summary>
+        ///
+        /// <param name="oldParent">
+        /// The old parent.
+        /// </param>
+        /// <param name="newParent">
+        /// The new parent.
+        /// </param>
+
         override protected void AppendChildrenToNewParent(DomObject oldParent, DomObject newParent)
         {
             while (oldParent.HasChildren)
             {
-                // cannot use unsafe method here - this method specifically moves children
+                // cannot use unsafe method here - this method specifically moves children from another element
+                
                 newParent.AppendChild(oldParent.FirstChild);
             }
         }
+
+        /// <summary>
+        /// Appends a doctype node to the document.
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The name.
+        /// </param>
+        /// <param name="publicIdentifier">
+        /// DocType public identifier
+        /// </param>
+        /// <param name="systemIdentifier">
+        /// DocType system identifier.
+        /// </param>
 
         protected override void AppendDoctypeToDocument(string name, string publicIdentifier, string systemIdentifier)
         {
@@ -70,15 +116,52 @@ namespace CsQuery.HtmlParser
             document.AppendChildUnsafe(doctype);
         }
 
+        /// <summary>
+        /// Appends a comment node
+        /// </summary>
+        ///
+        /// <param name="parent">
+        /// The parent.
+        /// </param>
+        /// <param name="comment">
+        /// The comment.
+        /// </param>
+
         override protected void AppendComment(DomObject parent, String comment)
         {
             parent.AppendChildUnsafe(new DomComment(comment));
         }
 
+        /// <summary>
+        /// Appends a comment to document root.
+        /// </summary>
+        ///
+        /// <param name="comment">
+        /// The comment.
+        /// </param>
+
         override protected void AppendCommentToDocument(String comment)
         {
             document.AppendChildUnsafe(document.CreateComment(comment));
         }
+
+        /// <summary>
+        /// Create a new element.
+        /// </summary>
+        ///
+        /// <param name="ns">
+        /// The namespace.
+        /// </param>
+        /// <param name="name">
+        /// The node name.
+        /// </param>
+        /// <param name="attributes">
+        /// The attributes.
+        /// </param>
+        ///
+        /// <returns>
+        /// The new element.
+        /// </returns>
 
         override protected DomObject CreateElement(string ns, string name, HtmlAttributes attributes)
         {
@@ -96,6 +179,18 @@ namespace CsQuery.HtmlParser
             }
             return rv;
         }
+
+        /// <summary>
+        /// Creates the root HTML element.
+        /// </summary>
+        ///
+        /// <param name="attributes">
+        /// The attributes.
+        /// </param>
+        ///
+        /// <returns>
+        /// The new HTML element.
+        /// </returns>
 
         override protected DomObject CreateHtmlElementSetAsRoot(HtmlAttributes attributes)
         {
@@ -116,15 +211,59 @@ namespace CsQuery.HtmlParser
             }
         }
 
+        /// <summary>
+        /// Appends an element as a child of another element.
+        /// </summary>
+        ///
+        /// <param name="child">
+        /// The child.
+        /// </param>
+        /// <param name="newParent">
+        /// The parent.
+        /// </param>
+
         override protected void AppendElement(DomObject child, DomObject newParent)
         {
            newParent.AppendChildUnsafe(child);
         }
 
+        /// <summary>
+        /// Test whether the element has any children.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it has children, false if not.
+        /// </returns>
+
         override protected bool HasChildren(DomObject element)
         {
             return element.HasChildren;
         }
+
+        /// <summary>
+        /// Create a new element.
+        /// </summary>
+        ///
+        /// <param name="ns">
+        /// The namespace.
+        /// </param>
+        /// <param name="name">
+        /// The node name.
+        /// </param>
+        /// <param name="attributes">
+        /// The attributes.
+        /// </param>
+        /// <param name="form">
+        /// The form.
+        /// </param>
+        ///
+        /// <returns>
+        /// The new element.
+        /// </returns>
 
         override protected DomObject CreateElement(string ns, string name, HtmlAttributes attributes, DomObject form)
         {
@@ -133,6 +272,14 @@ namespace CsQuery.HtmlParser
             return rv;
         }
 
+        /// <summary>
+        /// Run when the parsing process begins. Any config properties should be set here
+        /// </summary>
+        ///
+        /// <param name="fragment">
+        /// This is a fragment.
+        /// </param>
+
         override protected void Start(bool fragment)
         {
             isFragment = fragment;
@@ -140,6 +287,23 @@ namespace CsQuery.HtmlParser
                 new DomFragment() :
                 new DomDocument();
         }
+
+        /// <summary>
+        /// Run when the document mode is set.
+        /// </summary>
+        ///
+        /// <param name="mode">
+        /// The mode.
+        /// </param>
+        /// <param name="publicIdentifier">
+        /// DocType public identifier.
+        /// </param>
+        /// <param name="systemIdentifier">
+        /// DocType system identifier.
+        /// </param>
+        /// <param name="html4SpecificAddcionalErrorChecks">
+        /// true to HTML 4 specific addcional error checks.
+        /// </param>
 
         protected override void ReceiveDocumentMode(DocumentMode mode, String publicIdentifier,
                 String systemIdentifier, bool html4SpecificAddcionalErrorChecks)
@@ -150,7 +314,11 @@ namespace CsQuery.HtmlParser
         /// <summary>
         /// Returns the document.
         /// </summary>
-        /// <returns>The document</returns>
+        ///
+        /// <value>
+        /// The document.
+        /// </value>
+
         internal IDomDocument Document
         {
             get
@@ -158,6 +326,20 @@ namespace CsQuery.HtmlParser
                 return document;
             }
         }
+
+        /// <summary>
+        /// Inserts foster parented characters.
+        /// </summary>
+        ///
+        /// <param name="text">
+        /// The text.
+        /// </param>
+        /// <param name="table">
+        /// The table.
+        /// </param>
+        /// <param name="stackParent">
+        /// The stack parent.
+        /// </param>
 
         override protected void InsertFosterParentedCharacters(string text, DomObject table, DomObject stackParent)
         {
@@ -190,6 +372,20 @@ namespace CsQuery.HtmlParser
             }
         }
 
+        /// <summary>
+        /// Inserts a foster parented child.
+        /// </summary>
+        ///
+        /// <param name="child">
+        /// The child.
+        /// </param>
+        /// <param name="table">
+        /// The table.
+        /// </param>
+        /// <param name="stackParent">
+        /// The stack parent.
+        /// </param>
+
         override protected void InsertFosterParentedChild(DomObject child, DomObject table, DomObject stackParent)
         {
             IDomObject parent = table.ParentNode;
@@ -204,6 +400,14 @@ namespace CsQuery.HtmlParser
             }
         }
 
+        /// <summary>
+        /// Detach an element from its parent.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element.
+        /// </param>
+
         override protected void DetachFromParent(DomObject element)
         {
             IDomObject parent = element.ParentNode;
@@ -212,6 +416,21 @@ namespace CsQuery.HtmlParser
                 parent.RemoveChild(element);
             }
         }
+
+        /// <summary>
+        /// Combine a local name & uri into a single attribute name/
+        /// </summary>
+        ///
+        /// <param name="localName">
+        /// Name of the local.
+        /// </param>
+        /// <param name="uri">
+        /// URI of the document.
+        /// </param>
+        ///
+        /// <returns>
+        /// The attribute name
+        /// </returns>
 
         private string AttributeName(string localName, string uri)
         {

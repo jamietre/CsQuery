@@ -22,17 +22,17 @@ namespace CsQuery.ExtensionMethods.Xml
     /// </summary>
     public static class ExtensionMethods
     {
-        public static XmlDocument ToXml(this IDomDocument document) {
-            throw new NotImplementedException();
-            //return new CqXmlDocument(document);
-        }
+        //public static XmlDocument ToXml(this IDomDocument document) {
+        //    throw new NotImplementedException();
+        //    //return new CqXmlDocument(document);
+        //}
 
 
-        public static XmlNodeList ToXml(this INodeList nodeList)
-        {
-            throw new NotImplementedException();
-            //return new CqXmlNodeList(nodeList.Owner.Document.ToXml(), nodeList);
-        }
+        //public static XmlNodeList ToXml(this INodeList nodeList)
+        //{
+        //    throw new NotImplementedException();
+        //    //return new CqXmlNodeList(nodeList.Owner.Document.ToXml(), nodeList);
+        //}
 
         public static XmlNode ToXml(this IDomObject element)
         {

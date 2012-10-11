@@ -41,36 +41,38 @@ namespace CsQuery.ExtensionMethods.Internal
         {
             return values.Any(item => item.Equals(theEnum));
 
-            //int i = values.Length;
-            //while (--i>=0)
-            //{
-            //    if (theEnum.Equals(values[i]))
-            //    {
-            //        return true;
-            //    }
-            //}
-            //return false;
+          
         }
         public static bool IsOneOf(this string match, params string[] values)
         {
             return IsOneOf(match,true, values);
         }
+
+        /// <summary>
+        /// Returns true if the enum is any of the parameters in question.
+        /// </summary>
+        ///
+        /// <param name="match">
+        /// The match to act on.
+        /// </param>
+        /// <param name="matchCase">
+        /// (optional) the match case.
+        /// </param>
+        /// <param name="values">
+        /// The values to test for.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if one of, false if not.
+        /// </returns>
+
         public static bool IsOneOf(this string match, bool matchCase=true, params string[] values )
         {
             return values.Any(item => match.Equals(item,
                 matchCase ? StringComparison.CurrentCulture :
                 StringComparison.CurrentCultureIgnoreCase));
 
-            //int i = values.Length;
-            //StringComparison comp = matchCase ? StringComparison.CurrentCulture: StringComparison.CurrentCultureIgnoreCase;
-            //while (--i>=0)
-            //{
-            //    if (match.Equals(values[i],comp))
-            //    {
-            //        return true;
-            //    }
-            //}
-            //return false;
+          
         }
 
 

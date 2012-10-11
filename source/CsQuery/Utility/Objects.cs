@@ -825,21 +825,28 @@ namespace CsQuery
         {
             return Utility.FastActivator.CreateInstance<T>();
         }
+
         /// <summary>
-        /// Returns an enumerable of one element from an object
+        /// Returns a sequence containing a single element, the object passed by parameter.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        ///
+        /// <typeparam name="T">
+        /// The type of object.
+        /// </typeparam>
+        /// <param name="obj">
+        /// The object to add to the sequence.
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence with one element.
+        /// </returns>
+
         public static IEnumerable<T> Enumerate<T>(T obj)
         {
-            //List<T> list = new List<T>();
             if (obj != null)
             {
                 yield return obj;
-                //list.Add(obj);
             }
-            //return list;
         }
 
         /// <summary>

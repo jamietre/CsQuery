@@ -56,6 +56,17 @@ namespace CsQuery.Implementation
 
         #region IList<T> Members
 
+        /// <summary>
+        /// The zero-based index of the item in this list
+        /// </summary>
+        ///
+        /// <param name="item">
+        /// The element to add.
+        /// </param>
+        ///
+        /// <returns>
+        /// The zero-based index of the item, or -1 if it was not found.
+        /// </returns>
 
         public int IndexOf(IDomObject item)
         {
@@ -199,7 +210,7 @@ namespace CsQuery.Implementation
         #region private methods
 
 
-        protected void RemoveParent(IDomObject element)
+        private void RemoveParent(IDomObject element)
         {
             if (element.ParentNode != null)
             {
@@ -213,8 +224,8 @@ namespace CsQuery.Implementation
 
 
         }
-        
-        protected void AddParent(IDomObject element, int index)
+
+        private void AddParent(IDomObject element, int index)
         {
             DomObject item = element as DomObject;
 
@@ -227,7 +238,7 @@ namespace CsQuery.Implementation
         }
 
         //Reindex all documents > index (used after inserting, when relative index among siblings changes)
-        protected void Reindex(int index)
+        private void Reindex(int index)
         {
             if (index < InnerList.Count)
             {

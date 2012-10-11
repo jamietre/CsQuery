@@ -22,11 +22,51 @@ namespace CsQuery.ExtensionMethods
     {
 
         #region string extension methods
-        
-        public static String RegexReplace(this String input, string pattern, string replacements)
+
+        /// <summary>
+        /// Perform a substring replace using a regular expression.
+        /// </summary>
+        ///
+        /// <param name="input">
+        /// The target of the replacement
+        /// </param>
+        /// <param name="pattern">
+        /// The pattern to match
+        /// </param>
+        /// <param name="replacements">
+        /// The replacement string.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new string.
+        /// </returns>
+
+        public static String RegexReplace(this String input, string pattern, string replacement)
         {
-            return input.RegexReplace(Objects.Enumerate(pattern), Objects.Enumerate(replacements));
+            return input.RegexReplace(Objects.Enumerate(pattern), Objects.Enumerate(replacement));
         }
+
+        /// <summary>
+        /// Perform a substring replace using a regular expression and one or more patterns
+        /// </summary>
+        ///
+        /// <exception cref="ArgumentException">
+        /// Thrown when the list of replacements is not the same length as the list of patterns.
+        /// </exception>
+        ///
+        /// <param name="input">
+        /// The target of the replacement.
+        /// </param>
+        /// <param name="patterns">
+        /// The patterns.
+        /// </param>
+        /// <param name="replacements">
+        /// The replacements.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new string.
+        /// </returns>
 
         public static String RegexReplace(this String input, IEnumerable<string> patterns, IEnumerable<string> replacements)
         {
@@ -45,17 +85,45 @@ namespace CsQuery.ExtensionMethods
             return input;
         }
 
+        /// <summary>
+        /// Perform a substring replace using a regular expression.
+        /// </summary>
+        ///
+        /// <param name="input">
+        /// The target of the replacement.
+        /// </param>
+        /// <param name="pattern">
+        /// The pattern to match.
+        /// </param>
+        /// <param name="evaluator">
+        /// The evaluator.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new string.
+        /// </returns>
+
         public static string RegexReplace(this String input, string pattern, MatchEvaluator evaluator)
         {
 
             return Regex.Replace(input, pattern, evaluator);
         }
+
         /// <summary>
-        /// Test whether the regular expression pattern matches the string
+        /// Test whether the regular expression pattern matches the string.
         /// </summary>
-        /// <param name="input"></param>
-        /// <param name="pattern"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="input">
+        /// The string to test
+        /// </param>
+        /// <param name="pattern">
+        /// The pattern
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the pattern matches, false if not.
+        /// </returns>
+
         public static bool RegexTest(this String input, string pattern)
         {
             return Regex.IsMatch(input, pattern);
@@ -63,8 +131,6 @@ namespace CsQuery.ExtensionMethods
 
 
         #endregion
-
-
 
         #region IEnumerable<T> extension methods
 

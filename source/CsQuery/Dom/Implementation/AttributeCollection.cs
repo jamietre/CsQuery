@@ -11,9 +11,17 @@ using CsQuery.Utility;
 
 namespace CsQuery.Implementation
 {
+    /// <summary>
+    /// A collection of attributes.
+    /// </summary>
+
     public class AttributeCollection : IDictionary<string, string>, IEnumerable<KeyValuePair<string, string>>
     {
         #region constructors
+
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
 
         public AttributeCollection()
         {
@@ -40,6 +48,11 @@ namespace CsQuery.Implementation
         #endregion
 
         #region public properties
+
+        /// <summary>
+        /// Test whether there are any attributes in this collection.
+        /// </summary>
+
         public bool HasAttributes
         {
             get
@@ -48,6 +61,10 @@ namespace CsQuery.Implementation
                     Attributes.Count > 0;
             }
         }
+
+        /// <summary>
+        /// The number of attributes in this collection
+        /// </summary>
 
         public int Count
         {
@@ -58,10 +75,22 @@ namespace CsQuery.Implementation
 
         #region public methods
 
+        /// <summary>
+        /// Removes all attributes from this collection.
+        /// </summary>
+
         public void Clear()
         {
             Attributes.Clear();
         }
+
+        /// <summary>
+        /// Makes a deep copy of the attribute collection.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A copy of this object.
+        /// </returns>
 
         public AttributeCollection Clone()
         {
@@ -77,19 +106,68 @@ namespace CsQuery.Implementation
             return clone;
         }
 
+        /// <summary>
+        /// Adds a new name/value pair to the collection
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The name of the attribute.
+        /// </param>
+        /// <param name="value">
+        /// The value.
+        /// </param>
+
         public void Add(string name, string value)
         {
             Set(name, value);
         }
 
+        /// <summary>
+        /// Removes the named attribute from the collection.
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The name to remove.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
         public bool Remove(string name)
         {
             return Unset(name);
         }
+
+        /// <summary>
+        /// Removes an attribute identified by its token ID from the collection
+        /// </summary>
+        ///
+        /// <param name="tokenId">
+        /// The unique token ID for the attribute name.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
         public bool Remove(ushort tokenId)
         {
             return Unset(tokenId);
         }
+
+        /// <summary>
+        /// Get or set an attribute value by name
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The name of the attribute.
+        /// </param>
+        ///
+        /// <returns>
+        /// The value.
+        /// </returns>
+
         public string this[string name]
         {
             get
@@ -101,14 +179,45 @@ namespace CsQuery.Implementation
                 Set(name, value);
             }
         }
+
+        /// <summary>
+        /// Test whether the named attribute exists in the collection.
+        /// </summary>
+        ///
+        /// <param name="key">
+        /// The attribute name.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it exists, false if not.
+        /// </returns>
+
         public bool ContainsKey(string key)
         {
             return Attributes.ContainsKey(HtmlData.Tokenize(key));
         }
+
+        /// <summary>
+        /// Test whether the attribute identified by its unique token ID exists in the collection.
+        /// </summary>
+        ///
+        /// <param name="tokenId">
+        /// The unique token ID for the attribute name.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it exists, false if not.
+        /// </returns>
+
         public bool ContainsKey(ushort tokenId)
         {
             return Attributes.ContainsKey(tokenId);
         }
+
+        /// <summary>
+        /// Get a sequence of all attribute names in this collection.
+        /// </summary>
+
         public ICollection<string> Keys
         {
             get
@@ -121,31 +230,130 @@ namespace CsQuery.Implementation
                 return keys;
             }
         }
+
+        /// <summary>
+        /// A collection of all the values in this attribute collection
+        /// </summary>
+
         public ICollection<string> Values
         {
             get { return Attributes.Values; }
         }
-        public bool TryGetValue(string key, out string value)
+
+        /// <summary>
+        /// Try to get a value for the specified attribute name.
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The key.
+        /// </param>
+        /// <param name="value">
+        /// [out] The value.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the key was present, false if it fails.
+        /// </returns>
+
+        public bool TryGetValue(string name, out string value)
         {
             // do not use trygetvalue from dictionary. We need default handling in Get
-            value = Get(key);
+            value = Get(name);
             return value != null ||
-                Attributes.ContainsKey(HtmlData.Tokenize(key));
+                Attributes.ContainsKey(HtmlData.Tokenize(name));
         }
-        public bool TryGetValue(ushort key, out string value)
+
+        /// <summary>
+        /// Try to get a value for the specified attribute identified by its unique token ID.
+        /// </summary>
+        ///
+        /// <param name="tokenId">
+        /// The attribute's token ID.
+        /// </param>
+        /// <param name="value">
+        /// [out] The value.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the key was present, false if not.
+        /// </returns>
+
+        public bool TryGetValue(ushort tokenId, out string value)
         {
             // do not use trygetvalue from dictionary. We need default handling in Get
-            value = Get(key);
+            value = Get(tokenId);
             return value != null ||
-                Attributes.ContainsKey(key);
+                Attributes.ContainsKey(tokenId);
+        }
+
+        /// <summary>
+        /// Sets a boolean only attribute having no value.
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The attribute to set
+        /// </param>
+
+        public void SetBoolean(string name)
+        {
+            ushort tokenId = HtmlData.Tokenize(name);
+
+            SetBoolean(tokenId);
+        }
+
+        /// <summary>
+        /// Sets a boolean only attribute having no value.
+        /// </summary>
+        ///
+        /// <param name="tokenId">
+        /// The attribute's unique token ID
+        /// </param>
+
+        public void SetBoolean(ushort tokenId)
+        {
+            Attributes[tokenId] = null;
+        }
+
+        /// <summary>
+        /// Remove an attribute.
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The attribute name
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
+        public bool Unset(string name)
+        {
+            return Unset(HtmlData.Tokenize(name));
+        }
+
+        /// <summary>
+        /// Remove an attribute.
+        /// </summary>
+        ///
+        /// <param name="tokenId">
+        /// The unique token ID for the attribute name.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
+        public bool Unset(ushort tokenId)
+        {
+            bool result = Attributes.Remove(tokenId);
+            return result;
         }
 
         #endregion
 
         #region private methods
 
-
-        protected string Get(string name)
+        private string Get(string name)
         {
             name = name.CleanUp();
             if (string.IsNullOrEmpty(name))
@@ -154,7 +362,8 @@ namespace CsQuery.Implementation
             }
             return Get(HtmlData.Tokenize(name));
         }
-        protected string Get(ushort tokenId)
+
+        private string Get(ushort tokenId)
         {
             string value;
 
@@ -168,12 +377,13 @@ namespace CsQuery.Implementation
             }
 
         }
+
         /// <summary>
         /// Adding an attribute implementation
         /// </summary>
         /// <param name="name"></param>
         /// <param name="value"></param>
-        protected void Set(string name, string value)
+        private void Set(string name, string value)
         {
             if (String.IsNullOrEmpty(name))
             {
@@ -188,7 +398,7 @@ namespace CsQuery.Implementation
         /// </summary>
         /// <param name="tokenId"></param>
         /// <param name="value"></param>
-        protected void Set(ushort tokenId, string value)
+        private void Set(ushort tokenId, string value)
         {
             SetRaw(tokenId, value);
         }
@@ -208,38 +418,7 @@ namespace CsQuery.Implementation
                 Attributes[tokenId] = value;
             }
         }
-        /// <summary>
-        /// Sets a boolean only attribute having no value
-        /// </summary>
-        /// <param name="name"></param>
-        public void SetBoolean(string name)
-        {
-            ushort tokenId = HtmlData.Tokenize(name);
-
-            SetBoolean(tokenId);
-        }
-        public void SetBoolean(ushort tokenId)
-        {
-            Attributes[tokenId] = null;
-        }
-        /// <summary>
-        /// Removing an attribute implementation
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public bool Unset(string name)
-        {
-            return Unset(HtmlData.Tokenize(name));
-        }
-        public bool Unset(ushort tokenId)
-        {
-            bool result = Attributes.Remove(tokenId);
-            //if (result)
-            //{
-            //    RemoveFromIndex(tokenId);
-            //}
-            return result;
-        }
+        
 
 
         protected IEnumerable<KeyValuePair<string, string>> GetAttributes()
