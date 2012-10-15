@@ -115,9 +115,13 @@ namespace CsQuery.Engine
         Chained = 2,  
 
         /// <summary>
-        /// The selector clause is applied to the root context of this selector.
+        /// The selector clause is applied to the root of this selector.
         /// </summary>
-        Root = 3      
+        Root = 3,
+        /// <summary>
+        /// The selector clause is applied to context.
+        /// </summary>
+        Context = 4
     }
 
     /// <summary>
@@ -129,7 +133,7 @@ namespace CsQuery.Engine
     {
 
         /// <summary>
-        /// Return all elements
+        /// Traverse the context itself and its descendants
         /// </summary>
         All = 1,
         /// <summary>
@@ -152,7 +156,6 @@ namespace CsQuery.Engine
         /// The operand matches all siblings of the prior selection.
         /// </summary>
         Sibling = 6
-        // ,Inherited = 7. 
     }
 
     /// <summary>

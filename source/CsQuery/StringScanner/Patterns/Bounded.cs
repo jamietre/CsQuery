@@ -20,23 +20,15 @@ namespace CsQuery.StringScanner.Patterns
         private char _BoundEndChar = (char)0;
 
         private bool hasStartBound;
-        private bool boundAny = true;
+        protected bool boundAny = true;
         private bool quoting;
         private char quoteChar;
         private bool matched;
         // This is a one-character type with different open/close - must track nested entites
         private int nestedCount;
 
-        /// <summary>
-        /// When true, inner quotes found in the string will be honored and quoting escaped.
-        /// </summary>
-
+        
         public bool HonorInnerQuotes { get; set; }
-
-        /// <summary>
-        /// Gets or sets the bound start string
-        /// </summary>
-
         public string BoundStart
         {
             get
@@ -57,11 +49,6 @@ namespace CsQuery.StringScanner.Patterns
                 _BoundStart = value;
             }
         }
-
-        /// <summary>
-        /// Gets or sets the bound end string
-        /// </summary>
-
         public string BoundEnd
         {
             get

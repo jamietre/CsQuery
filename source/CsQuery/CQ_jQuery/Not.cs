@@ -15,7 +15,7 @@ namespace CsQuery
     {
 
         /// <summary>
-        /// Selects all elements that do not match the given selector.
+        /// Remove elements from the set of matched elements.
         /// </summary>
         ///
         /// <param name="selector">
@@ -32,8 +32,10 @@ namespace CsQuery
 
         public CQ Not(string selector)
         {
-            var notSelector = new Selector(selector);
-            return NewInstance(notSelector.Except(Document, SelectionSet));
+            var subSelector = new Selector(selector);
+            var notList = subSelector.ToFilterSelector().Select(Document,Selection);
+
+            return Not(notList);
         }
 
         /// <summary>

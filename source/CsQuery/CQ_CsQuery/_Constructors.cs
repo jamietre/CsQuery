@@ -99,6 +99,9 @@ namespace CsQuery
             AddSelection(element);
         }
 
+
+       
+
         /// <summary>
         /// Create a new CQ object wrapping a single DOM element, in the context of another CQ object.
         /// </summary>
@@ -476,7 +479,7 @@ namespace CsQuery
             {
                 Selector = new Selector(selector);
 
-                SetSelection(Selector.Select(Document, context),
+                SetSelection(Selector.ToContextSelector().Select(Document, context),
                     Selector.IsHmtl ?
                         SelectionSetOrder.OrderAdded :
                         SelectionSetOrder.Ascending);

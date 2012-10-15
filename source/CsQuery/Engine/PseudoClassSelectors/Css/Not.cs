@@ -31,26 +31,22 @@ namespace CsQuery.Engine.PseudoClassSelectors
         public IEnumerable<IDomObject> Filter(IEnumerable<IDomObject> selection)
         {
          
-            var selector = SubSelector();
-
             var first = selection.FirstOrDefault();
             if (first != null)
             {
-                foreach (var item in selector.Except(first.Document, selection))
-                {
-                    if (item.NodeType == NodeType.ELEMENT_NODE)
-                    {
-                        yield return (IDomElement)item;
-                    }
-                }
+                var subSel = SubSelector().Select(first.Document, selection);
+                return selection.Except(subSel);
             }
-
+            else
+            {
+                return Enumerable.Empty<IDomObject>();
+            }
         }
 
         private Selector SubSelector()
         {
-           return new Selector(String.Join(",", Parameters))
-                .SetTraversalType(TraversalType.Filter);
+            return new Selector(String.Join(",", Parameters))
+               .ToFilterSelector();
             
         }
 

@@ -48,8 +48,8 @@ namespace CsQuery.Engine
         #region public methods
 
         /// <summary>
-        /// Select from the bound Document using index. First non-class/tag/id selector will result in
-        /// this being passed off to GetMatches.
+        /// Select implementation. The public method automatically remaps a selector with the knowledge
+        /// that the context is external (and not part of a chain)
         /// </summary>
         ///
         /// <exception cref="ArgumentNullException">
@@ -62,10 +62,12 @@ namespace CsQuery.Engine
         /// </param>
         ///
         /// <returns>
-        /// A list of elements matching the selector.
+        /// A list of elements. This method returns a list (rather than a sequence) because the sequence
+        /// must be enumerated to ensure that end-users don't cause the selector to be rerun repeatedly,
+        /// and that the values are not mutable (e.g. if the underlying source changes).
         /// </returns>
 
-        public List<IDomObject> Select(IEnumerable<IDomObject> context)
+        public IList<IDomObject> Select(IEnumerable<IDomObject> context)
         {
             // this holds the final output
 
@@ -88,15 +90,10 @@ namespace CsQuery.Engine
             var firstSelector = ActiveSelectors[0];
             if (firstSelector.SelectorType == SelectorType.HTML)
             {
-
-                //HtmlParser.HtmlElementFactory factory = 
-                //    new HtmlParser.HtmlElementFactory(firstSelector.Html);
-
-                // Return the factory ouptut as a list because otherwise the enumerator could end up
-                // as the actual source of the selection, meaning it would get re-parsed each time
-                
-                //return factory.ParseAsFragment();
-                return CsQuery.Implementation.DomDocument.Create(firstSelector.Html, HtmlParsingMode.Fragment).ChildNodes.ToList();
+                return CsQuery.Implementation.
+                    DomDocument.Create(firstSelector.Html, HtmlParsingMode.Fragment)
+                        .ChildNodes
+                        .ToList();
             } 
 
             // this holds any results that carried over from the previous loop for chaining
@@ -109,10 +106,11 @@ namespace CsQuery.Engine
             IEnumerable<IDomObject> selectionSource=null;
 
             // Disable the index if there is no context (e.g. disconnected elements)
-            // or if the first element is not indexed.
+            // or if the first element is not indexed, or the context is not from the same
+            // document as this selector is bound.
 
             bool useIndex = context.IsNullOrEmpty() || 
-                (!context.First().IsDisconnected && context.First().IsIndexed);
+                (!context.First().IsDisconnected && context.First().IsIndexed && context.First().Document==Document);
 
 
             for (activeSelectorId = 0; activeSelectorId < ActiveSelectors.Count; activeSelectorId++)
@@ -120,17 +118,15 @@ namespace CsQuery.Engine
 
                 var selector = ActiveSelectors[activeSelectorId].Clone();
 
-                if (lastResult != null)
+                if (lastResult != null && 
+                    (selector.CombinatorType == CombinatorType.Root || selector.CombinatorType == CombinatorType.Context))
                 {
                     // we will alter the selector during each iteration to remove the parts that have already been
                     // parsed, so use a copy. This is a selector that was chained with the selector grouping
                     // combinator "," -- we always output the results so far when beginning a new group. 
-
-                    if (selector.CombinatorType == CombinatorType.Root && lastResult != null)
-                    {
-                        output.AddRange(lastResult);
-                        lastResult = null;
-                    }
+                    
+                    output.AddRange(lastResult);
+                    lastResult = null;
                 }
 
                 // For "and" combinator types, we want to leave everything as it was -- the results of this
@@ -142,6 +138,7 @@ namespace CsQuery.Engine
 
                 if (selector.CombinatorType != CombinatorType.Grouped)
                 {
+
                     selectionSource = GetSelectionSource(selector, context, lastResult);
                     lastResult = null;
                 }
@@ -249,8 +246,9 @@ namespace CsQuery.Engine
                             depth = 1;
                             descendants = true;
                             break;
-                    }                    
-
+                        // default: fall through with default values set above.
+                    }
+       
                     if (selectionSource == null)
                     {
                         result = Document.DocumentIndex.QueryIndex(key + HtmlData.indexSeparator, depth, descendants);
@@ -265,8 +263,8 @@ namespace CsQuery.Engine
                             elementMatches.AddRange(Document.DocumentIndex.QueryIndex(key + HtmlData.indexSeparator + obj.Path,
                                     depth, descendants));
                         }
-
                     }
+
                     selector.SelectorType &= ~removeSelectorType;
 
                     // Special case for attribute selectors: when Attribute Value attribute selector is present, we
@@ -326,99 +324,86 @@ namespace CsQuery.Engine
 
         }
 
-        protected IEnumerable<IDomObject> Join(params IEnumerable<IDomObject>[] lists)
-        {
-            foreach (var list in lists)
-            {
-                if (list != null)
-                {
-                    foreach (var item in list)
-                    {
-                        yield return item;
-                    }
-                }
-            }
-        }
-
-       
         #endregion
 
         #region selection matching main code
 
-
         /// <summary>
-        /// Get the sequence that is the source for the current clause, based on the selector, prior results, and context.
+        /// Get the sequence that is the source for the current clause, based on the selector, prior
+        /// results, and context.
         /// </summary>
-        /// <param name="selector"></param>
-        /// <param name="lastResult"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        protected IEnumerable<IDomObject> GetSelectionSource(SelectorClause selector,
+        ///
+        /// <remarks>
+        /// Notes from refactoring this on 10/14/2012: At issue is selectors like ":not(.sel1 .sel2,
+        /// :first) where the subselector has filters that apply to just the context, versus selectors
+        /// like ":has(.sel1 .sel2, :first) where the subselector needs to apply to the results of a
+        /// selection against the DOM
+        /// 
+        /// case1: $('.sel','.context-sel') means that ".sel" is actually applied against .context-sel.
+        /// it's like .find.
+        /// 
+        /// totally different from a subselector -- but the subselector still needs a context to apply
+        /// filters, even though the selectors theselves are run against the whole doc.
+        /// 
+        /// so we need to set up selectors before running against the context so each subselector is IDd
+        /// as either "context" or "root" in addition to its traversal type to eliminate ambiguity of
+        /// intent. a subselector for :not should have "root+descendant" for the first part and
+        /// "context+filter" for the 2nd. For regular context type filters, it should be
+        /// "context+descendant" (same as find). FOr complex context/find filters chained with a comma,
+        /// the stuff after the comma should also be in context though jquery seems inconsistent with
+        /// this.
+        /// 
+        /// This code here should then use the new info to select the correct sleection source. Think we
+        /// should be rid of traversaltype.subselect. Think traversaltype.all should really mean "include
+        /// the context items" instead of "Descendant" as it does now.
+        /// </remarks>
+        ///
+        /// <param name="clause">
+        /// The current selector clause.
+        /// </param>
+        /// <param name="context">
+        /// The context passed initially to this Select operation.
+        /// </param>
+        /// <param name="lastResult">
+        /// The result of the prior clause. Can be null.
+        /// </param>
+        ///
+        /// <returns>
+        /// The sequence that should source the current clause's context.
+        /// </returns>
+
+        protected IEnumerable<IDomObject> GetSelectionSource(SelectorClause clause,
             IEnumerable<IDomObject> context, IEnumerable<IDomObject> lastResult)
         {
+         
             IEnumerable<IDomObject> selectionSource=null;
-            switch (selector.CombinatorType)
+            IEnumerable<IDomObject> interimSelectionSource = null;
+
+            if (clause.CombinatorType != CombinatorType.Chained)
             {
-                case CombinatorType.Root:
-                case CombinatorType.Chained:
-                    selectionSource = null;
-                    IEnumerable<IDomObject> interimSelectionSource = null;
-                    if (selector.CombinatorType == CombinatorType.Root)
-                    {
-                        // if it's a root combinator type, then we need set the selection source to the context depending on the
-                        // traversal type being applied.
-
-                        if (context != null)
-                        {
-                            switch (selector.TraversalType)
-                            {
-                                case TraversalType.Adjacent:
-                                case TraversalType.Sibling:
-                                    //interimSelectionSource = GetChildElements(context);
-                                    interimSelectionSource = context;
-                                    break;
-                                case TraversalType.Filter:
-                                case TraversalType.Descendent:
-                                    interimSelectionSource = context;
-                                    break;
-                                case TraversalType.All:
-                                    selector.TraversalType = TraversalType.Descendent;
-                                    interimSelectionSource = context;
-                                    break;
-                                case TraversalType.Child:
-                                    interimSelectionSource = context;
-                                    break;
-                                default:
-                                    throw new InvalidOperationException("The selector passed to FindImpl has an invalid traversal type for Find.");
-                            }
-                        } else {
-                            interimSelectionSource = null;
-                        }
-                    }
-                    else
-                    {
-                        // Must copy this because we will continue to add to lastResult in successive iterations
-
-                        interimSelectionSource = lastResult.ToList();
-                    }
-
-
-                    // If the selector used the adjacent combinator, grab the next element for each
-                    if (interimSelectionSource != null)
-                    {
-                        if (selector.TraversalType == TraversalType.Adjacent || selector.TraversalType == TraversalType.Sibling)
-                        {
-                            selectionSource = GetAdjacentOrSiblings(selector.TraversalType, interimSelectionSource);
-                            selector.TraversalType = TraversalType.Filter;
-                        }
-                        else
-                        {
-                            selectionSource = interimSelectionSource;
-                        }
-                    }
-
-                    break;
+                interimSelectionSource = clause.CombinatorType == CombinatorType.Context ?
+                    context : null;
             }
+            else
+            {
+                interimSelectionSource = lastResult;
+            }
+
+            // If the selector used the adjacent combinator, grab the next element for each
+            
+            if (interimSelectionSource != null)
+            {
+                if (clause.TraversalType == TraversalType.Adjacent || clause.TraversalType == TraversalType.Sibling)
+                {
+                    selectionSource = GetAdjacentOrSiblings(clause.TraversalType, interimSelectionSource);
+                    clause.TraversalType = TraversalType.Filter;
+                }
+                else
+                {
+                    selectionSource = interimSelectionSource;
+                }
+            }
+
             return selectionSource;
         }
 

@@ -418,7 +418,7 @@ namespace CsQuery.HtmlParser
         }
 
         /// <summary>
-        /// Combine a local name &amp; uri into a single attribute name/.
+        /// Combine a local name & uri into a single attribute name/
         /// </summary>
         ///
         /// <param name="localName">
@@ -429,7 +429,7 @@ namespace CsQuery.HtmlParser
         /// </param>
         ///
         /// <returns>
-        /// The attribute name.
+        /// The attribute name
         /// </returns>
 
         private string AttributeName(string localName, string uri)

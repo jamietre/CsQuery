@@ -31,7 +31,7 @@ namespace CsQuery.Engine.PseudoClassSelectors
                 base.Arguments = value;
 
                 // Parameter count is guaranteed to be 1
-                ChildSelector = new Selector(Parameters[0]);
+                ChildSelector = new Selector(Parameters[0]).ToContextSelector();
             }
         }
 
@@ -55,17 +55,42 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
         public IEnumerable<IDomObject> Filter(IEnumerable<IDomObject> selection)
         {
-            ChildSelector.SetTraversalType(TraversalType.Descendent);
-
             var first = selection.FirstOrDefault();
+
             if (first!=null) {
+                var subSel = new HashSet<IDomObject>(ChildSelector.Select(first.Document, selection));
+                
                 foreach (var item in selection) {
-                    if (ChildSelector.Select(first.Document, item).Any())
+
+                    foreach (var descendant in Descendants(item))
                     {
-                        yield return item;
+                        if (subSel.Contains(descendant))
+                        {
+
+                            yield return item;
+                            goto BreakDescendants;
+                        }
                     }
+                BreakDescendants:
+                    continue;
                 }
             }
+        }
+
+        protected IEnumerable<IDomObject> Descendants(IDomObject parent) {
+            if (parent.HasChildren)
+            {
+                foreach (var child in parent.ChildNodes)
+                {
+                    foreach (var descendant in Descendants(child))
+                    {
+                        yield return descendant;
+                    }
+                    yield return child;
+                }
+
+            }
+
         }
 
         ///// <summary>

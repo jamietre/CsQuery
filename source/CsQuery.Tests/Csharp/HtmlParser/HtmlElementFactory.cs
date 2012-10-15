@@ -95,8 +95,8 @@ namespace CsQuery.Tests.Csharp.HtmlParser
             string output2 = dom2.Render();
             Assert.AreEqual(output, output2, "There's no entropy in reparsing a rendered domain.");
             Debug.Write("HTML5 spec parsing: original was " + html.Length + " bytes. CSQ output was " + output.Length);
-        }
 
+        }
         protected CQ CreateFromHtml(string html)
         {
             return CQ.CreateFragment(html);

@@ -92,7 +92,6 @@ namespace CsQuery.EquationParser.Implementation
             return Operand == null ? "" : Operand.ToString();
         }
         #endregion
-
         #region private methods
         protected IOperand<U> CloneAsImpl<U>() where U : IConvertible
         {

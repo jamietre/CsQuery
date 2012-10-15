@@ -133,7 +133,7 @@ namespace CsQuery.Tests
                 document = _Dom.Document;
             }
         }
-        public CQ _Dom = null;
+        public CQ _Dom;
         public IEnumerable<IDomObject> q(params string[] ids)
         {
 

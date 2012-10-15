@@ -6,14 +6,10 @@ using System.Text;
 namespace CsQuery
 {
     /// <summary>
-    /// A DOCTYPE node
+    /// DOCTYPE node
     /// </summary>
     public interface IDomDocumentType : IDomSpecialElement
     {
-        /// <summary>
-        /// Gets the type of the document.
-        /// </summary>
-
         DocType DocType { get; }
     }
 }

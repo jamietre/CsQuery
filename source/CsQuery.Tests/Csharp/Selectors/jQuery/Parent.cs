@@ -22,7 +22,7 @@ namespace CsQuery.Tests.Csharp.Selectors
         {
             var dom = CQ.Create("<html><div></div></html>");
             var res2 = dom[":parent"];
-            Assert.AreEqual(res2[0].NodeName, "HTML");
+            Assert.AreEqual("HTML",res2[0].NodeName);
 
             /// when testing this with jsfiddle, you will get 26: it includes title, style, script from the wrapper
             /// 

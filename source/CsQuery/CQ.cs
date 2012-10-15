@@ -704,7 +704,7 @@ namespace CsQuery
             }
             else
             {
-                Selector selectors = new Selector(selector);
+                Selector selectors = new Selector(selector).ToFilterSelector();
                 return selectors.Filter(Document, elements);
             }
         }

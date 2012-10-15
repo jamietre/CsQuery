@@ -28,12 +28,12 @@ namespace CsQuery.ExtensionMethods
         /// </summary>
         ///
         /// <param name="input">
-        /// The target of the replacement.
+        /// The target of the replacement
         /// </param>
         /// <param name="pattern">
-        /// The pattern to match.
+        /// The pattern to match
         /// </param>
-        /// <param name="replacement">
+        /// <param name="replacements">
         /// The replacement string.
         /// </param>
         ///

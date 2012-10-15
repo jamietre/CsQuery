@@ -117,6 +117,7 @@
     <Compile Include="Csharp\Methods\Each.cs" />
     <Compile Include="Csharp\Methods\Text.cs" />
     <Compile Include="Csharp\Methods\Slice.cs" />
+    <Content Include="Resources\ABS - Auto Brake Service.htm" />
     <Content Include="Resources\jsdom\Level2\anchor.html" />
     <Content Include="Resources\jsdom\Level2\anchor2.html" />
     <Content Include="Resources\jsdom\Level2\anchor3.html" />
@@ -191,6 +192,7 @@
     <Content Include="Resources\jsdom\Level2\ulist.html" />
     <Content Include="Resources\jsdom\Level2\w3c_main.png" />
     <Content Include="Resources\PupilLogin.htm" />
+    <Content Include="Resources\samsung-ebay.htm" />
     <Content Include="Resources\TextAreaTest.htm" />
     <Compile Include="Csharp\Selectors\CSS3\LastChild.cs" />
     <Compile Include="Csharp\Selectors\CSS3\NthChild.cs" />

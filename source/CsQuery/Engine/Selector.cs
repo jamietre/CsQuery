@@ -177,26 +177,66 @@ namespace CsQuery.Engine
         }
 
         /// <summary>
-        /// Sets the traversal type for all CombinatorType.Root child selectors. This is useful for
-        /// subselectors; you may not want them to default to a filter.
+        /// Convert this selector to a context filter, meaning any open :filter type selectors will be
+        /// applied against the context instead of the root. This differs from a Context selector in that
+        /// non-filter selectors are still run against the document root, whereas in a Context selector,
+        /// they are run against the context itself. This type is used for filters and "Is" and "Not",
+        /// the Context type is used for "Find" and objects created with context.
         /// </summary>
         ///
-        /// <param name="type">
-        /// The type.
-        /// </param>
+        /// <returns>
+        /// The context.
+        /// </returns>
 
-        public Selector SetTraversalType(TraversalType type)
+        public Selector ToFilterSelector()
         {
-            foreach (var sel in Clauses)
+            var filter = Clone();
+            // convert :filters to map to the context
+            foreach (var sel in filter.Clauses)
             {
-                if (sel.CombinatorType == CombinatorType.Root)
+
+                if (sel.CombinatorType == CombinatorType.Root &&
+                    sel.SelectorType == SelectorType.PseudoClass)
                 {
-                    sel.TraversalType = type;
+                    sel.TraversalType = TraversalType.Filter;
+                    sel.CombinatorType = CombinatorType.Context;
                 }
             }
-            return this;
+
+            return filter;
         }
 
+        /// <summary>
+        /// Convert this selector to apply the context only: changes Root selectors to be applied to
+        /// Context+Descendant traversal type. This is used to create selectors for use with "Find"
+        /// </summary>
+        ///
+        /// <returns>
+        /// A new selector.
+        /// </returns>
+
+        public Selector ToContextSelector()
+        {
+            var filter = Clone();
+            
+            foreach (var sel in filter.Clauses)
+            {
+
+                if (sel.CombinatorType == CombinatorType.Root)
+                {
+                    sel.CombinatorType = CombinatorType.Context;
+                    if (sel.TraversalType == TraversalType.All)
+                    {
+                        sel.TraversalType = TraversalType.Descendent;
+                    }
+
+                }
+            }
+
+            return filter;
+        }
+
+     
         #endregion
 
         #region private properties
@@ -353,6 +393,7 @@ namespace CsQuery.Engine
 
         public IEnumerable<IDomObject> Select(IDomDocument document, IEnumerable<IDomObject> context)
         {
+            
             return GetEngine(document).Select(context);
         }
 
@@ -376,7 +417,7 @@ namespace CsQuery.Engine
             // This needs to be two steps - returning the selection set directly will cause the sequence
             // to be ordered in DOM order, and not its original order.
 
-            HashSet<IDomObject> matches = new HashSet<IDomObject>(GetFilterSelector().Select(document, sequence));
+            HashSet<IDomObject> matches = new HashSet<IDomObject>(ToFilterSelector().Select(document, sequence));
             
             foreach (var item in sequence) {
                 if (matches.Contains(item))
@@ -403,7 +444,7 @@ namespace CsQuery.Engine
 
         public bool Matches(IDomDocument document, IDomObject element)
         {
-            return GetFilterSelector().Select(document, element).Any();
+            return ToFilterSelector().Select(document, element).Any();
         }
 
         /// <summary>
@@ -423,14 +464,16 @@ namespace CsQuery.Engine
         
         public IEnumerable<IDomObject> Except(IDomDocument document, IEnumerable<IDomObject> sequence)
         {
-            HashSet<IDomObject> matches = new HashSet<IDomObject>(GetFilterSelector().Select(document, sequence));
-            foreach (var item in sequence)
-            {
-                if (!matches.Contains(item))
-                {
-                    yield return item;
-                }
-            }
+            return sequence.Except(Select(document));
+            //HashSet<IDomObject> matches = new HashSet<IDomObject>(GetFilterSelector().Select(document, sequence));
+
+            //foreach (var item in sequence)
+            //{
+            //    if (!matches.Contains(item))
+            //    {
+            //        yield return item;
+            //    }
+            //}
         }
 
         /// <summary>
@@ -442,15 +485,15 @@ namespace CsQuery.Engine
         /// The filter selector.
         /// </returns>
 
-        protected Selector GetFilterSelector() {
-             var clone = Clone();
+        //protected Selector GetFilterSelector() {
+        //     var clone = Clone();
 
-             clone.Where(item => item.CombinatorType == CombinatorType.Root)
-                    .ForEach(item => item.TraversalType = TraversalType.Filter);
+        //     clone.Where(item => item.CombinatorType == CombinatorType.Root)
+        //            .ForEach(item => item.TraversalType = TraversalType.Filter);
              
-            return clone;
+        //    return clone;
 
-        }
+        //}
 
         /// <summary>
         /// Return a clone of this selector.

@@ -73,7 +73,6 @@ namespace CsQuery
             if (sel.IsHmtl)
             {
                 csq = CQ.Create(selector);
-
                 csq.CsQueryParent = this;
             }
             else
@@ -241,7 +240,7 @@ namespace CsQuery
         public CQ Select(string selector, IDomObject context)
         {
             var selectors = new Selector(selector);
-            var selection = selectors.Select(Document, context);
+            var selection = selectors.ToContextSelector().Select(Document, context);
 
             CQ csq = NewInstance(selection, this);
             csq.Selector = selectors;
@@ -299,7 +298,7 @@ namespace CsQuery
 
         public CQ Select(string selector, IEnumerable<IDomObject> context)
         {
-            var selectors = new Selector(selector);
+            var selectors = new Selector(selector).ToContextSelector();
 
             IEnumerable<IDomObject> selection = selectors.Select(Document, context);
 

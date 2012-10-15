@@ -21,10 +21,10 @@ namespace CsQuery.Tests
     /// Ensures that all methods are marked properly for both Visual Studio and NUnit. If anything is marked for one but not the other,
     /// the test will fail.
     /// </summary>
-    [TestClass,TestFixture,NDescription("Ensure that all tests are configured properly for both NUnit and VS frameworks")]
+    [TestClass,TestFixture]
     public class TestTests
     {
-        [Test, TestMethod]
+        [Test,TestMethod]
         public void AnalyzeAndVerify()
         {
             var assem = Assembly.GetExecutingAssembly();
