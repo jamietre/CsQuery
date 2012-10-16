@@ -53,7 +53,7 @@ Documentation is being moved from here to the `documentation` folder in the repo
 - [Create](https://github.com/jamietre/CsQuery/blob/master/documentation/create.md): Creating a new DOM from HTML in memory, a file, a stream, or a URL
 - [Render](https://github.com/jamietre/CsQuery/blob/master/documentation/render.md): Rendering your DOM back to HTML
 
-Everything else will be found here in the readme. It covers most common uses for reading HTML documents from files and URLS, and using it like jQuery. The jQuery documentation should be referred to for details on any method ported from jQuery; these methods should work exactly the same as the original.
+Everything else will be found here in the readme. It covers most common uses for reading HTML documents from files and URLS, and using it like jQuery. 
 
 I also post about [CsQuery on my blog](http://blog.outsharked.com/search/label/csquery) from time to time. Here are a few tutorials from there:
 
@@ -62,14 +62,13 @@ I also post about [CsQuery on my blog](http://blog.outsharked.com/search/label/c
 * [Creating documents](http://blog.outsharked.com/2012/06/csquery-112-released.html) from the 1.1.2 release notes
 * [Loading content from the web](http://blog.outsharked.com/2012/06/async-web-gets-and-promises-in-csquery.html) asynchronously using promises
 
-If you can't seem to figure out how to use a particular method, in almost all cases the API mimics the jQuery API, so you should start with the jQuery documentation. You could also look through the unit tests, which cover pretty much everything at some level, for straightforward examples of use.
+For methods ported from the jQuery API, in almost all cases it will function exactly as it does in jQuery. There are exceptions related to differences in the languages, but this should generally be obvious. You can also look through the unit tests, which cover pretty much everything at some level, for straightforward examples of use.
 
-Also be sure to look at the example applications in the source repository. 
+Also be sure to look at the example applications under CsQuery.Examples. 
 
 ### Contents
 
 * [Roadmap](https://github.com/jamietre/CsQuery#roadmap)
-* [Features](https://github.com/jamietre/CsQuery#features)
 * [Usage](https://github.com/jamietre/CsQuery#usage)
 	* [Creating a new DOM](https://github.com/jamietre/CsQuery#creating-a-new-dom)
 	* [Manipulate the DOM with jQuery methods](https://github.com/jamietre/CsQuery#manipulate-the-dom-with-jquery-methods)
@@ -91,8 +90,8 @@ Also be sure to look at the example applications in the source repository.
     * [Overview](https://github.com/jamietre/CsQuery#overview-1)
     * [Referencing the "document" equivalent or DOM](https://github.com/jamietre/CsQuery#referencing-the-document-equivalent-or-dom)
 * [Performance](https://github.com/jamietre/CsQuery#performance)
-* [Shortcomings](https://github.com/jamietre/CsQuery#shortcomings)
-    * [General](https://github.com/jamietre/CsQuery#general)
+* [Features](https://github.com/jamietre/CsQuery#features)
+    * [Shortcomings](https://github.com/jamietre/CsQuery#shortcomings)
     * [Missing CSS Selectors](https://github.com/jamietre/CsQuery#missing-css-selectors)
 
 
@@ -109,53 +108,7 @@ The priorities for the future are, in this order:
 
 If you are interested in this project and want to contribute anything, let me know or just make a pull request! 
 
-### Features
 
-CsQuery is a .NET library that provides an implementation of the jQuery API and a document object model that simulates the browser DOM. 
-
-All jQuery DOM manipulation methods have been implemented, and some utility methods like `Extend` and `ToJSON` have been implemented as well. It also includes other methods that are specific to CsQuery's server-based implementation for loading content from remote URLs and parsing HTTP POST data.
-
-All CSS2 & CSS3 selectors have been implemented:
-
-    *       			Universal selector
-    TAG      			element type selector
-    .class   			class name selector
-    #id      			id selector
-	[attr]				Attribute selector, with all matchers:
-						CSS2: = | |= | ~=
-                    	CSS3: ^= | $= ^ *=
-                    	jQuery: !=
-
-	E, F#id				Selector grouping
-	E F           		Descendant selector
-	E>F					Child selector
-	E+F					Adjacent sibling selector
-	E~F					General sibling selector
-
-All pseudoclasses that do not depend on browser state except "lang" are implemented:
-
-	:first-child				:last-child					
-	:first-of-type				:last-of-type				
-	:only-child					:only-of-type					
-	:nth-child(N)				:nth-of-type(N)
-	:nth-last-child(N)			:nth-last-of-type(N)
-	:enabled					:disabled
-	:empty						:checked
-	:root						:not(S)
-
-jQuery extensions:
-
-	:first						:last
-	:odd						:even
-	:eq(N)						:gt(N)
-	:lt(N)						:parent
-	:visible					:hidden
-	:radio						:button
-	:file						:text
-	:image						:reset
-	:submit						:password
-	:selected					:contains(T)
-	:has(S)						:input
 
 
 ### Usage
@@ -706,9 +659,55 @@ A comprehensive performance evaluation would require a lot of analysis, since th
 
 Internally, tags, class, and attribute names are indexed using a subselect-capable index, meaning that unlike jQuery, complex selectors still benefit from the index. (With jQuery, any selector that cannot be run directly against the browser DOM using `document.querySelectorAll`, because it's a subquery, is performed manually using sizzler). I don't know anything about how the Fizzler index works, so this may or may not be an advantage compared to HAP + Fizzler.
 
-### Shortcomings
+### Features
 
-##### General
+CsQuery is a .NET 4 library that provides an implementation of the jQuery API and a document object model that simulates the browser DOM. It includes a complete HTML5 parser.
+
+All jQuery DOM manipulation methods have been implemented, and some utility methods like `Extend` and `ToJSON` have been implemented as well. It also includes other methods that are specific to CsQuery's server-based implementation for loading content from remote URLs and parsing HTTP POST data.
+
+All CSS2 & CSS3 selectors have been implemented:
+
+    *       			Universal selector
+    TAG      			element type selector
+    .class   			class name selector
+    #id      			id selector
+	[attr]				Attribute selector, with all matchers:
+						CSS2: = | |= | ~=
+                    	CSS3: ^= | $= ^ *=
+                    	jQuery: !=
+
+	E, F#id				Selector grouping
+	E F           		Descendant selector
+	E>F					Child selector
+	E+F					Adjacent sibling selector
+	E~F					General sibling selector
+
+All pseudoclasses that do not depend on browser state except "lang" are implemented:
+
+	:first-child				:last-child					
+	:first-of-type				:last-of-type				
+	:only-child					:only-of-type					
+	:nth-child(N)				:nth-of-type(N)
+	:nth-last-child(N)			:nth-last-of-type(N)
+	:enabled					:disabled
+	:empty						:checked
+	:root						:not(S)
+
+jQuery extensions:
+
+	:first						:last
+	:odd						:even
+	:eq(N)						:gt(N)
+	:lt(N)						:parent
+	:visible					:hidden
+	:radio						:button
+	:file						:text
+	:image						:reset
+	:submit						:password
+	:selected					:contains(T)
+	:has(S)						:input
+
+##### Shortcomings
 
 The DOM model is not perfect. Mimicing the browser DOM would sacrifice the benefits of strong typing; I opted for a compromise that exposes some nonapplicable members on all node types. This probably could use some refactoring at this point, but it's perfectly workable.
 
