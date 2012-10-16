@@ -21,6 +21,10 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>4.0</OldToolsVersion>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -153,7 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\source\CsQuery.Mvc\CsQuery.Mvc.csproj">
-      <Project>{1697FBB9-9116-4FDF-8F92-25C2DE8DC39B}</Project>
+      <Project>{1697fbb9-9116-4fdf-8f92-25c2de8dc39b}</Project>
       <Name>CsQuery.Mvc</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\source\CsQuery\CsQuery.csproj">

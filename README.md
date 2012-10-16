@@ -43,28 +43,17 @@ You should be able to compile everything now.  If you have any trouble initializ
 
 The latest release is 1.3. This is a major new release incorporating a new HTML5-compliant parser.
 
-Please see the [complete release notes.](http://blog.outsharked.com/2012/10/csquery-13-released.html)
-
-There are detailed nodes for major releases:
-
-* [Release notes for 1.3](http://blog.outsharked.com/2012/10/csquery-13-released.html)
-* [Release notes for 1.2](http://blog.outsharked.com/2012/08/csquery-12-released.html) 
-* [All CsQuery release notes](http://blog.outsharked.com/search/label/csquery-release)
-
-You can also review the change log to see more detail about specific changes, or notes on unreleased changes:
-
-* [Complete change log](https://github.com/jamietre/CsQuery/blob/master/source/README.md#source-code)
-
-For more information on the status of CsQuery's compliance with HTML5 spec, see the [HTML5 compliance notes](https://github.com/jamietre/CsQuery/blob/master/source/HTML5.md#html5-compliance)
+* **[Release notes for 1.3](http://blog.outsharked.com/2012/10/csquery-13-released.html):** Read details on the new features and other changes. You can also see [all CsQuery release notes](http://blog.outsharked.com/search/label/csquery-release) at once.
+* **[Detailed change log](https://github.com/jamietre/CsQuery/blob/master/source/README.md#source-code):** see more more detail about specific changes, or notes on changes made to the source since the last release.
 
 ### Documentation
 
-Documentation is being moved from here to the `documentation` folder. So far these methods can be found there:
+Documentation is being moved from here to the `documentation` folder in the repository. There is detailed documentation for these methods:
 
 - [Create](https://github.com/jamietre/CsQuery/blob/master/documentation/create.md): Creating a new DOM from HTML in memory, a file, a stream, or a URL
 - [Render](https://github.com/jamietre/CsQuery/blob/master/documentation/render.md): Rendering your DOM back to HTML
 
-Everything else will be found here in the reame. It covers most common uses for reading HTML documents from files and URLS, and using it like jQuery.
+Everything else will be found here in the readme. It covers most common uses for reading HTML documents from files and URLS, and using it like jQuery. The jQuery documentation should be referred to for details on any method ported from jQuery; these methods should work exactly the same as the original.
 
 I also post about [CsQuery on my blog](http://blog.outsharked.com/search/label/csquery) from time to time. Here are a few tutorials from there:
 

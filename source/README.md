@@ -6,7 +6,10 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ### Change Log
 
-####Version 1.3
+####Version 1.3. 
+
+Read [detailed release notes](http://blog.outsharked.com/2012/10/csquery-13-released.html) for 1.3.
+
 
 - Add `AllowSelfClosingTags` option to `ITokenHandler` - provides for cleaner handling of flexible input -- no more need to use a regex to preprocess, avoiding erroneous handling of complex html.
 - [Issue #51](https://github.com/jamietre/CsQuery/issues/51): Fix issue with compound subselectors whose target included CSS matches above the level of the context.

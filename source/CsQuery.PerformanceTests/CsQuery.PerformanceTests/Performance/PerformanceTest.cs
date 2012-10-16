@@ -38,7 +38,7 @@ namespace CsQuery.PerformanceTests
         static PerformanceTest()
         {
 
-            CsQuery.HtmlParser.HtmlData.Touch();
+            //CsQuery.HtmlParser.HtmlData.Touch();
 
             OutputFolder = Program.OutputDirectory;
             if (!Directory.Exists(OutputFolder))
