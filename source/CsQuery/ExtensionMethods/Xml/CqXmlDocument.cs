@@ -5,8 +5,18 @@ using System.Text;
 using System.Xml;
 using CsQuery.Implementation;
 
+// TODO this should be fully commented; however it's not part of the main public API
+
+#pragma warning disable 1591
+#pragma warning disable 1570
+
+
 namespace CsQuery.ExtensionMethods.Xml
 {
+    /// <summary>
+    /// CqXmlDocument. This is not fully implemented and should not be used.
+    /// </summary>
+
     public class CqXmlDocument: XmlDocument
     {
         public CqXmlDocument(IDomDocument document)

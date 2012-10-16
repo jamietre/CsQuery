@@ -4,6 +4,12 @@ using System.Linq;
 using System.Text;
 using CsQuery.EquationParser.Implementation;
 
+// TODO this should be fully commented; however it's not part of the main public API
+
+#pragma warning disable 1591
+#pragma warning disable 1570
+
+
 namespace CsQuery.EquationParser
 {
     //TODO - unimplemented

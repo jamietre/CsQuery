@@ -43,6 +43,22 @@ namespace CsQuery.ExtensionMethods.Internal
 
           
         }
+
+        /// <summary>
+        /// Returns true if the string "match" is any of the parameters in question.
+        /// </summary>
+        ///
+        /// <param name="match">
+        /// The match to act on.
+        /// </param>
+        /// <param name="values">
+        /// The values to test for.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if one of, false if not.
+        /// </returns>
+
         public static bool IsOneOf(this string match, params string[] values)
         {
             return IsOneOf(match,true, values);
@@ -75,36 +91,18 @@ namespace CsQuery.ExtensionMethods.Internal
           
         }
 
-
-        public static bool TryParse<T>(this Enum theEnum, string strType, out T result)
-        {
-            string strTypeFixed = strType.Replace(' ', '_');
-            if (Enum.IsDefined(typeof(T), strTypeFixed))
-            {
-                result = (T)Enum.Parse(typeof(T), strTypeFixed, true);
-                return true;
-            }
-            else
-            {
-                foreach (string value in Enum.GetNames(typeof(T)))
-                {
-                    if (value.Equals(strTypeFixed,
-                                    StringComparison.OrdinalIgnoreCase))
-                    {
-                        result = (T)Enum.Parse(typeof(T), value);
-                        return true;
-                    }
-                }
-                result = default(T);
-                return false;
-            }
-        }
-
         /// <summary>
-        /// Return the integer value for an enum
+        /// Return the integer value for an enum.
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="value">
+        /// The enum value
+        /// </param>
+        ///
+        /// <returns>
+        /// An integer.
+        /// </returns>
+
         public static int GetValue(this Enum value)
         {
             return Convert.ToInt32(value);
@@ -222,6 +220,39 @@ namespace CsQuery.ExtensionMethods.Internal
         #endregion
 
         #region string methods
+
+         ///<summary>
+        /// Converts a character array to a string.
+        /// </summary>
+        ///
+        /// <param name="text">
+        /// The character array
+        /// </param>
+        ///
+        /// <returns>
+        /// A string of the sequence of characters
+        /// </returns>
+
+        public static string AsString(this char[] text)
+        {
+            return new string(text);
+
+        }
+
+        /// <summary>
+        /// Return the number of occurrences of "find" in "text"
+        /// </summary>
+        ///
+        /// <param name="text">
+        /// The text to search
+        /// </param>
+        /// <param name="find">
+        /// The text to find.
+        /// </param>
+        ///
+        /// <returns>
+        /// An integer
+        /// </returns>
 
         public static int OccurrencesOf(this string text, char find) {
             int pos=0;

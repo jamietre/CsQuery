@@ -5,8 +5,15 @@ using System.Text;
 using System.Xml;
 using CsQuery.Implementation;
 
+#pragma warning disable 1591
+#pragma warning disable 1570
+
 namespace CsQuery.ExtensionMethods.Xml
 {
+    /// <summary>
+    /// Cq XML node. This is not implemented completely. Not suggested that you use it.
+    /// </summary>
+
     public class CqXmlNode: XmlElement 
     {
         public CqXmlNode(XmlDocument xmlDocument, IDomObject element): base("",GetNodeName(element),"",xmlDocument)

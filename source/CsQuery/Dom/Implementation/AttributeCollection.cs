@@ -418,8 +418,14 @@ namespace CsQuery.Implementation
                 Attributes[tokenId] = value;
             }
         }
-        
 
+        /// <summary>
+        /// Enumerates the attributes in this collection as a sequence of KeyValuePairs.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A sequence of KeyValuePair&lt;string,string&gt; objects.
+        /// </returns>
 
         protected IEnumerable<KeyValuePair<string, string>> GetAttributes()
         {
@@ -477,6 +483,14 @@ namespace CsQuery.Implementation
                 return false;
             }
         }
+
+        /// <summary>
+        /// Gets the enumerator for this AttributeCollection
+        /// </summary>
+        ///
+        /// <returns>
+        /// The enumerator.
+        /// </returns>
 
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
         {

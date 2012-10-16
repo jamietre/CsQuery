@@ -5,7 +5,14 @@ using System.Text;
 
 namespace CsQuery
 {
- 
+    /// <summary>
+    /// Strongly-typed interface for building typed subclasses of IDomObject.
+    /// </summary>
+    ///
+    /// <typeparam name="T">
+    /// Type of the out.
+    /// </typeparam>
+
     public interface IDomObject<out T> : IDomObject
     {
         /// <summary>

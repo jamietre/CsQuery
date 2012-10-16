@@ -77,6 +77,18 @@ namespace CsQuery.Engine.PseudoClassSelectors
             }
         }
 
+        /// <summary>
+        /// Enumerates descendants in this collection.
+        /// </summary>
+        ///
+        /// <param name="parent">
+        /// The parent.
+        /// </param>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process descendants in this collection.
+        /// </returns>
+
         protected IEnumerable<IDomObject> Descendants(IDomObject parent) {
             if (parent.HasChildren)
             {

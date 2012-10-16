@@ -5,6 +5,11 @@ using System.Text;
 using System.Globalization;
 using CsQuery.StringScanner.Implementation;
 
+// TODO this should be fully commented; however it's not part of the main public API
+
+#pragma warning disable 1591
+#pragma warning disable 1570
+
 namespace CsQuery.StringScanner.Patterns
 {
     /// <summary>

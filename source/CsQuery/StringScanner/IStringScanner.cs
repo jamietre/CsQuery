@@ -6,6 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 
+// TODO: This code should be fully commented at some point. It's not part of the main public API though.
+
+#pragma warning disable 1591
+#pragma warning disable 1570
+
 namespace CsQuery.StringScanner
 {
     /// <summary>

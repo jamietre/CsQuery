@@ -46,9 +46,13 @@ namespace CsQuery.Web
         }
 
         /// <summary>
-        /// Output this data block, recalulating the lengtht parameter based on the new output
+        /// Output this data block, recalulating the lengtht parameter based on the new output.
         /// </summary>
-        /// <returns>HTML string</returns>
+        ///
+        /// <returns>
+        /// HTML string.
+        /// </returns>
+
         public string Render()
         {
             string content = _Dom != null ? Dom.Render() : Content;
@@ -60,7 +64,17 @@ namespace CsQuery.Web
             return content.Length.ToString() + "|" + DataType + "|" + ID + "|" + content + "|";
 
         }
+
+        /// <summary>
+        /// The content of the data packet (HTML). Probably, you'd rather be looking at the Dom property.
+        /// </summary>
+
         public string Content;
+
+        /// <summary>
+        /// Gets the DOM created from the HTML of this UpdatePanel data packet
+        /// </summary>
+
         public CQ Dom
         {
             get
@@ -72,7 +86,12 @@ namespace CsQuery.Web
                 return _Dom;
             }
         }
-        protected CQ _Dom = null;
+        private CQ _Dom = null;
+
+        /// <summary>
+        /// Gets or sets the UpdatePanel identifier.
+        /// </summary>
+
         public string ID
         {
             get
@@ -84,8 +103,19 @@ namespace CsQuery.Web
                 _ID = value;
             }
         }
-        protected string _ID;
+
+        private  string _ID;
+
+        /// <summary>
+        /// The length, in bytes, of the data component of this UpdatePanel data packet
+        /// </summary>
+
         protected int Length;
+
+        /// <summary>
+        /// Gets or sets the type of the data. This is a Microsoft entity.
+        /// </summary>
+
         public string DataType
         {
             get
@@ -97,7 +127,7 @@ namespace CsQuery.Web
                 _DataType = value;
             }
         }
-        protected string _DataType;
+        private string _DataType;
 
     }
 }

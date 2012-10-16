@@ -24,6 +24,10 @@ namespace CsQuery
 
         IDomElement Form {get;}
 
+        /// <summary>
+        /// Gets or sets the label attribute.
+        /// </summary>
+
         string Label {get;set;}
 
         //bool DefaultSelected {get;set;}

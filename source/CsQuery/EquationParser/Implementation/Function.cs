@@ -7,6 +7,12 @@ using CsQuery;
 using CsQuery.EquationParser;
 using CsQuery.StringScanner;
 
+// TODO this should be fully commented; however it's not part of the main public API
+
+#pragma warning disable 1591
+#pragma warning disable 1570
+
+
 namespace CsQuery.EquationParser.Implementation
 {
     public abstract class Function : Operand, IFunction

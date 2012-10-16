@@ -39,7 +39,7 @@ namespace CsQuery.HtmlParser
         /// </summary>
         ///
         /// <param name="html">
-        /// The HTML.
+        /// The HTML input.
         /// </param>
         /// <param name="parsingMode">
         /// (optional) the parsing mode.
@@ -55,12 +55,12 @@ namespace CsQuery.HtmlParser
         /// A new document.
         /// </returns>
 
-        public static IDomDocument Create(TextReader reader, 
+        public static IDomDocument Create(TextReader html, 
             HtmlParsingMode parsingMode = HtmlParsingMode.Auto,
             HtmlParsingOptions parsingOptions = HtmlParsingOptions.Default,
             DocType docType = DocType.Default)
         {
-            return GetNewParser(parsingMode, parsingOptions, docType).Parse(reader);
+            return GetNewParser(parsingMode, parsingOptions, docType).Parse(html);
         }
 
         private static ElementFactory GetNewParser()

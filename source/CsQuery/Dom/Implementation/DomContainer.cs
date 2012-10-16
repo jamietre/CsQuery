@@ -14,10 +14,23 @@ namespace CsQuery.Implementation
     /// </summary>
     public abstract class DomContainer<T> : DomObject<T>, IDomContainer where T : IDomObject, IDomContainer, new()
     {
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+
         public DomContainer()
         {
             
         }
+
+        /// <summary>
+        /// Constructor that populates the container with the passed elements.
+        /// </summary>
+        ///
+        /// <param name="elements">
+        /// The elements.
+        /// </param>
+
         public DomContainer(IEnumerable<IDomObject> elements): base()
         {
             ChildNodesInternal.AddRange(elements);
@@ -53,7 +66,10 @@ namespace CsQuery.Implementation
 
         private ChildNodeList _ChildNodes;
 
-        // Avoids creating children object when testing
+        /// <summary>
+        /// Gets a value indicating whether this object has children.
+        /// </summary>
+
         public override bool HasChildren
         {
             get
@@ -61,7 +77,16 @@ namespace CsQuery.Implementation
                 return ChildNodesInternal != null && ChildNodes.Count > 0;
             }
         }
-        
+
+        /// <summary>
+        /// Returns the node's first child in the tree, or null if the node is childless. If the node is
+        /// a Document, it returns the first node in the list of its direct children.
+        /// </summary>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/DOM/element.firstChild
+        /// </url>
+
         public override IDomObject FirstChild
         {
             get
@@ -76,6 +101,15 @@ namespace CsQuery.Implementation
                 }
             }
         }
+
+        /// <summary>
+        /// Returns the element's first child element or null if there are no child elements.
+        /// </summary>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/DOM/Element.firstElementChild
+        /// </url>
+
         public override IDomElement FirstElementChild
         {
             get
@@ -95,6 +129,15 @@ namespace CsQuery.Implementation
                 return null;
             }
         }
+
+        /// <summary>
+        /// Returns the last child of a node.
+        /// </summary>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/DOM/Node.lastChild
+        /// </url>
+
         public override IDomObject LastChild
         {
             get
@@ -104,6 +147,15 @@ namespace CsQuery.Implementation
                     null;
             }
         }
+
+        /// <summary>
+        /// Returns the element's last child element or null if there are no child elements.
+        /// </summary>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/DOM/Element.lastElementChild
+        /// </url>
+
         public override IDomElement LastElementChild
         {
             get
@@ -149,10 +201,35 @@ namespace CsQuery.Implementation
         {
             ChildNodesInternal.AddAlways(item);
         }
+
+        /// <summary>
+        /// Removes the child.
+        /// </summary>
+        ///
+        /// <param name="item">
+        /// The item.
+        /// </param>
+
         public override void RemoveChild(IDomObject item)
         {
             ChildNodes.Remove(item);
         }
+
+        /// <summary>
+        /// Inserts the new node before a reference node.
+        /// </summary>
+        ///
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the reference node isn't a child of this node.
+        /// </exception>
+        ///
+        /// <param name="newNode">
+        /// The new node.
+        /// </param>
+        /// <param name="referenceNode">
+        /// The reference node.
+        /// </param>
+
         public override void InsertBefore(IDomObject newNode, IDomObject referenceNode)
         {
             if (referenceNode.ParentNode != this)
@@ -161,6 +238,22 @@ namespace CsQuery.Implementation
             }
             ChildNodes.Insert(referenceNode.Index, newNode);
         }
+
+        /// <summary>
+        /// Inserts a new node after a reference node.
+        /// </summary>
+        ///
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the reference node isn't a child of this node.
+        /// </exception>
+        ///
+        /// <param name="newNode">
+        /// The new node.
+        /// </param>
+        /// <param name="referenceNode">
+        /// The reference node.
+        /// </param>
+
         public override void InsertAfter(IDomObject newNode, IDomObject referenceNode)
         {
             if (referenceNode.ParentNode != this)

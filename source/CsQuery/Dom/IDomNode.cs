@@ -7,8 +7,16 @@ using CsQuery.Output;
 
 namespace CsQuery
 {
+    /// <summary>
+    /// Interface for a node. This is the most generic construct in the CsQuery DOM.
+    /// </summary>
+
     public interface IDomNode : ICloneable 
     {
+        /// <summary>
+        /// Gets the type of the node.
+        /// </summary>
+
         NodeType NodeType { get; }
 
         /// <summary>

@@ -26,6 +26,12 @@ namespace CsQuery.HtmlParser
         public const int pathIdLength = 3;
         public const char indexSeparator = '>';
 #else
+
+        /// <summary>
+        /// Indicates whether this has been compiled in debug mode. When true, DOM index paths will be
+        /// stored internally in extended human-readable format.
+        /// </summary>
+
         public static bool Debug = false;
         
         /// <summary>
@@ -621,7 +627,7 @@ namespace CsQuery.HtmlParser
             return set;
         }
 
-        public static void Touch()
+        private static void Touch()
         {
             var x =  nextID;
         }

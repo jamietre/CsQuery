@@ -130,11 +130,20 @@ namespace CsQuery.Implementation
 
         #region IDomSpecialElement Members
 
+        /// <summary>
+        /// Gets or sets the non-attribute data in the tag. For comments, this is the same as the text of
+        /// the comment.
+        /// </summary>
+
         public string NonAttributeData
         {
             get;
             set;
         }
+
+        /// <summary>
+        /// Gets or sets the text of the comment.
+        /// </summary>
 
         public string Text
         {
@@ -147,6 +156,15 @@ namespace CsQuery.Implementation
                 NonAttributeData = value;
             }
         }
+
+        /// <summary>
+        /// Makes a deep copy of this object.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A copy of this object.
+        /// </returns>
+
         public override DomComment Clone()
         {
             DomComment clone = new DomComment();

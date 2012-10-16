@@ -15,6 +15,12 @@ using System.Xml;
 using CsQuery.ExtensionMethods.Internal;
 using CsQuery.Utility;
 
+// TODO this should be fully commented; however it's not part of the main public API
+
+#pragma warning disable 1591
+#pragma warning disable 1570
+
+
 namespace CsQuery.ExtensionMethods.Xml
 {
     /// <summary>

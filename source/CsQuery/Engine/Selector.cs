@@ -476,25 +476,7 @@ namespace CsQuery.Engine
             //}
         }
 
-        /// <summary>
-        /// Returns a clone of this selector with all "root" combinators mapped to "filter", e.g. so it
-        /// can be applied to a sequence.
-        /// </summary>
-        ///
-        /// <returns>
-        /// The filter selector.
-        /// </returns>
-
-        //protected Selector GetFilterSelector() {
-        //     var clone = Clone();
-
-        //     clone.Where(item => item.CombinatorType == CombinatorType.Root)
-        //            .ForEach(item => item.TraversalType = TraversalType.Filter);
-             
-        //    return clone;
-
-        //}
-
+       
         /// <summary>
         /// Return a clone of this selector.
         /// </summary>

@@ -88,7 +88,11 @@ namespace CsQuery.Implementation
         /// </summary>
         
         private IDictionary<ushort, string> _Styles;
-        protected string _QuickSetValue;
+        private string _QuickSetValue;
+
+        /// <summary>
+        /// Inner dictionary of the styles.
+        /// </summary>
 
         protected IDictionary<ushort, string> Styles
         {
@@ -182,14 +186,30 @@ namespace CsQuery.Implementation
                 return QuickSetValue != null || (_Styles != null && Styles.Count > 0);
             }
         }
+
+        /// <summary>
+        /// Gets the number of styles in this collection.
+        /// </summary>
+
         public int Count
         {
             get { return !HasStyles ? 0 : Styles.Count; }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is read only. For CSSStyleDeclarations, this is
+        /// always false.
+        /// </summary>
+
         public bool IsReadOnly
         {
             get { return false; }
         }
+
+        /// <summary>
+        /// Gets the style name (keys) for all the styles in this collection
+        /// </summary>
+
         public ICollection<string> Keys
         {
             get
@@ -202,6 +222,10 @@ namespace CsQuery.Implementation
                 return keys;
             }
         }      
+
+        /// <summary>
+        ///Gets the style name values for all the styles in this collection
+        /// </summary>
 
         public ICollection<string> Values
         {
@@ -247,6 +271,10 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Gets or sets the CSS height.
+        /// </summary>
+
         public string Height
         {
             get
@@ -258,6 +286,11 @@ namespace CsQuery.Implementation
                 SetStyle("height", value,true);
             }
         }
+
+        /// <summary>
+        /// Gets or sets the CSS width.
+        /// </summary>
+
         public string Width
         {
             get
@@ -383,6 +416,19 @@ namespace CsQuery.Implementation
         {
             return Styles.Remove(HtmlData.Tokenize(name));
         }
+
+        /// <summary>
+        /// Removes the style from the style descriptor for this element.
+        /// </summary>
+        ///
+        /// <param name="name">
+        /// The name.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails. this can only fail if the style was not present.
+        /// </returns>
+
         public bool RemoveStyle(string name)
         {
             return Remove(name);
@@ -654,8 +700,18 @@ namespace CsQuery.Implementation
 
         #region private methods
 
+        /// <summary>
+        /// Returns the options for this style as a comma-separated list
+        /// </summary>
+        ///
+        /// <param name="style">
+        /// The style.
+        /// </param>
+        ///
+        /// <returns>
+        /// A comma-separated string
+        /// </returns>
 
-      
         protected string OptionList(CssStyle style)
         {
 
@@ -735,7 +791,7 @@ namespace CsQuery.Implementation
             return outVal.ToString();
         }
 
-        protected IEnumerable<KeyValuePair<string, string>> stylesEnumerable()
+        private IEnumerable<KeyValuePair<string, string>> stylesEnumerable()
         {
             foreach (var kvp in Styles)
             {

@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+// TODO this should be fully commented; however it's not part of the main public API
+
+#pragma warning disable 1591
+#pragma warning disable 1570
+
+
 namespace CsQuery.StringScanner
 {
     /// <summary>
@@ -71,15 +77,51 @@ namespace CsQuery.StringScanner
 
             return new Patterns.HtmlID();
         }
+
+        /// <summary>
+        /// Gets an expect pattern for a string that's an HTML attribuye name
+        /// </summary>
+        ///
+        /// <returns>
+        /// An expect pattern
+        /// </returns>
+
         public static IExpectPattern HTMLAttribute()
         {
             return new Patterns.HTMLAttributeName();
           
         }
+
+        /// <summary>
+        /// Gets an expect pattern for a string that's a valid  HTML tag selector.
+        /// </summary>
+        ///
+        /// <returns>
+        /// An expect pattern
+        /// </returns>
+
         public static IExpectPattern HTMLTagSelectorName()
         {
             return new Patterns.HTMLTagSelectorName();
         }
+
+        /// <summary>
+        /// Gets an expect pattern for a string that's bounded by the provided values.
+        /// </summary>
+        ///
+        /// <param name="boundStart">
+        /// (optional) the bound start.
+        /// </param>
+        /// <param name="boundEnd">
+        /// (optional) the bound end.
+        /// </param>
+        /// <param name="honorInnerQuotes">
+        /// (optional) the honor inner quotes.
+        /// </param>
+        ///
+        /// <returns>
+        /// An expect pattern
+        /// </returns>
 
         public static IExpectPattern BoundedBy(string boundStart=null, string boundEnd=null, bool honorInnerQuotes=false)
         {
@@ -106,6 +148,12 @@ namespace CsQuery.StringScanner
                 return pattern;
             }
         }
+
+        /// <summary>
+        /// Gets an expect pattern for a string that's bounded by known bounding characters, and has
+        /// quoted content.
+        /// </summary>
+
         public static IExpectPattern BoundedWithQuotedContent
         {
             get
@@ -115,19 +163,74 @@ namespace CsQuery.StringScanner
                 return pattern;
             }
         }
+
+        /// <summary>
+        /// Test whether the character is whitespace.
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// Zero-based index of the current position in the string. Not used for this test.
+        /// </param>
+        /// <param name="character">
+        /// The character at the current position.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it is whitespace, false if it fails.
+        /// </returns>
+
         public static bool NonWhitespace(int index, char character)
         {
             return !CharacterData.IsType(character, CharacterType.Whitespace); 
         }
+
+        /// <summary>
+        /// Test whether the character is a quote character.
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// Zero-based index of the current position in the string.
+        /// </param>
+        /// <param name="character">
+        /// The character at the current position.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
         public static bool QuoteChar(int index, char character)
         {
             return CharacterData.IsType(character, CharacterType.Quote); 
         }
 
+        /// <summary>
+        /// Test whether the character is a bound character.
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// Zero-based index of the current position in the string.
+        /// </param>
+        /// <param name="character">
+        /// The character at the current position.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
         public static bool BoundChar(int index, char character)
         {
             return CharacterData.IsType(character, CharacterType.Enclosing | CharacterType.Quote); 
         }
+
+        /// <summary>
+        /// Gets an expect patter for a quoted string.
+        /// </summary>
+        ///
+        /// <returns>
+        /// An expect pattern
+        /// </returns>
 
         public static IExpectPattern Quoted()
         {
@@ -170,10 +273,40 @@ namespace CsQuery.StringScanner
                 return new Patterns.CssClassName();
             }
         }
+
+        /// <summary>
+        /// Returns a pattern matching a string that is optionally quoted. If terminators are passed, any
+        /// character in that string will terminate seeking.
+        /// </summary>
+        ///
+        /// <param name="terminators">
+        /// (optional) the terminators.
+        /// </param>
+        ///
+        /// <returns>
+        /// An expect pattern
+        /// </returns>
+
         public static IExpectPattern OptionallyQuoted(string terminators=null)
         {
             return new Patterns.OptionallyQuoted(terminators);
         }
+
+        /// <summary>
+        /// Test whether the character is an operator.
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// Zero-based index of this character's position. Not used for this test.
+        /// </param>
+        /// <param name="character">
+        /// The character.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it is an operator, false if it fails.
+        /// </returns>
+
         public static bool Operator(int index, char character)
         {
             return CharacterData.IsType(character, CharacterType.Operator);

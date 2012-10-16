@@ -5,6 +5,10 @@ using System.Text;
 
 namespace CsQuery.Web
 {
+    /// <summary>
+    /// Interface representing a WebRequest
+    /// </summary>
+
     public interface IWebRequestInfo
     {
     }

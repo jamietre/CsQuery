@@ -15,6 +15,14 @@ namespace CsQuery.Implementation
 
         #region constructor
 
+        /// <summary>
+        /// Constructor binding this list to its owner
+        /// </summary>
+        ///
+        /// <param name="owner">
+        /// The object that owns this list (the parent)
+        /// </param>
+
         public ChildNodeList(IDomContainer owner)
         {
             Owner = owner;
@@ -23,6 +31,10 @@ namespace CsQuery.Implementation
         #endregion
 
         #region private properties
+
+        /// <summary>
+        /// The inner list of objects.
+        /// </summary>
 
         protected List<IDomObject> InnerList
         {
@@ -35,13 +47,30 @@ namespace CsQuery.Implementation
                 return _InnerList;
             }
         }
-        protected List<IDomObject> _InnerList = null;
+
+        private List<IDomObject> _InnerList = null;
 
         #endregion
 
         #region public properties
 
+        /// <summary>
+        /// Gets or sets the object that owns this list (the parent)
+        /// </summary>
+
         public IDomContainer Owner { get; set; }
+
+        /// <summary>
+        /// Get the item at the specified index.
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// Zero-based index of the item.
+        /// </param>
+        ///
+        /// <returns>
+        /// An item.
+        /// </returns>
 
         public IDomObject Item(int index)
         {
@@ -182,6 +211,18 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Indexer to get or set items within this collection using array index syntax.
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// Zero-based index of the entry to access.
+        /// </param>
+        ///
+        /// <returns>
+        /// The indexed item.
+        /// </returns>
+
         [IndexerName("Indexer")]
         public IDomObject this[int index]
         {
@@ -269,6 +310,14 @@ namespace CsQuery.Implementation
 
         #region ICollection<IDomObject> Members
 
+        /// <summary>
+        /// Adds a range of elements as children of this list.
+        /// </summary>
+        ///
+        /// <param name="elements">
+        /// An IEnumerable&lt;IDomObject&gt; of items to append to this.
+        /// </param>
+
         public void AddRange(IEnumerable<IDomObject> elements)
         {
             // because elements will be removed from their parent while adding, we need to copy the
@@ -293,25 +342,62 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Query if this object contains the given item.
+        /// </summary>
+        ///
+        /// <param name="item">
+        /// The item to look for.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the object is in this collection, false if not.
+        /// </returns>
+
         public bool Contains(IDomObject item)
         {
             return _InnerList==null ? false : InnerList.Contains(item);
         }
+
+        /// <summary>
+        /// Copies this list to an array.
+        /// </summary>
+        ///
+        /// <param name="array">
+        /// The array.
+        /// </param>
+        /// <param name="arrayIndex">
+        /// Zero-based index of the starting point in the array to copy to.
+        /// </param>
 
         public void CopyTo(IDomObject[] array, int arrayIndex)
         {
             InnerList.CopyTo(array,arrayIndex);
         }
 
+        /// <summary>
+        /// Gets the number of items in this list.
+        /// </summary>
+
         public int Count
         {
             get { return _InnerList==null ? 0 : InnerList.Count; }
         }
 
+        /// <summary>
+        /// The number of nodes in this INodeList.
+        /// </summary>
+
         public int Length
         {
             get { return Count; }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is read only. For ChildNodeList collections, this
+        /// is always false.
+        /// </summary>
+
         public bool IsReadOnly
         {
             get
@@ -338,6 +424,14 @@ namespace CsQuery.Implementation
         {
             return GetEnumerator();
         }
+
+        /// <summary>
+        /// Gets the enumerator.
+        /// </summary>
+        ///
+        /// <returns>
+        /// The enumerator.
+        /// </returns>
 
         public IEnumerator<IDomObject> GetEnumerator()
         {

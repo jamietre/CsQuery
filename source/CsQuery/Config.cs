@@ -43,7 +43,7 @@ namespace CsQuery
         private static Type _DynamicObjectType;
 
         /// <summary>
-        /// Creates an OutputFormatter using the default options & encoder.
+        /// Creates an OutputFormatter using the default options &amp; encoder.
         /// </summary>
         ///
         /// <returns>
@@ -108,6 +108,11 @@ namespace CsQuery
             set;
         }
 
+        /// <summary>
+        /// The default OutputFormatter. The GetOutputFormatter property can also be used to provide a
+        /// new instance whenever a default OutputFormatter is requested; setting that property will
+        /// supersede any existing value of this property.
+        /// </summary>
 
         public static IOutputFormatter OutputFormatter {
             get
@@ -130,7 +135,9 @@ namespace CsQuery
 
         /// <summary>
         /// A delegate that returns a new instance of the default output formatter to use for rendering.
-        /// If this value is present, it will supercede any static value in Config.OutputFormatter.
+        /// The OutputFormatter property can also be used to return a single instance of a reusable
+        /// IOutputFormatter object; setting that property will supersede any existing value of this
+        /// property.
         /// </summary>
 
         public static Func<IOutputFormatter> GetOutputFormatter

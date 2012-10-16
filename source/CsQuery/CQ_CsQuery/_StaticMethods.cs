@@ -41,6 +41,7 @@ namespace CsQuery
         /// DEPRECATED. Please use CsQuery.Config.DocType
         /// </summary>
         
+        [Obsolete]
         public static DocType DefaultDocType {
             get
             {

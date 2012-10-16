@@ -174,7 +174,7 @@ namespace CsQuery.Output
             else
             {
 
-                if ((element.Document == null ? CQ.DefaultDocType : element.Document.DocType) == DocType.XHTML)
+                if ((element.Document == null ? CsQuery.Config.DocType : element.Document.DocType) == DocType.XHTML)
                 {
                     writer.Write(" />");
                 }

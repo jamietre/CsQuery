@@ -19,10 +19,36 @@ namespace CsQuery.Implementation
     {
         #region static methods 
 
+        /// <summary>
+        /// Creates a new, empty DomDocument
+        /// </summary>
+        ///
+        /// <returns>
+        /// A new DomDocument
+        /// </returns>
+
         public static IDomDocument Create()
         {
             return new DomDocument();
         }
+
+        /// <summary>
+        /// Creates a new DomDocument (or derived object) using the options specified.
+        /// </summary>
+        ///
+        /// <param name="elements">
+        /// The elements that are the source for the new document.
+        /// </param>
+        /// <param name="parsingMode">
+        /// (optional) the parsing mode.
+        /// </param>
+        /// <param name="docType">
+        /// The DocType for this document.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new IDomDocument object
+        /// </returns>
 
         public static IDomDocument Create(IEnumerable<IDomObject> elements, 
             HtmlParsingMode parsingMode = HtmlParsingMode.Content,
@@ -42,6 +68,27 @@ namespace CsQuery.Implementation
             return doc;
         }
 
+        /// <summary>
+        /// Creates a new DomDocument (or derived) object
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// The HTML source for the document
+        /// </param>
+        /// <param name="parsingMode">
+        /// (optional) the parsing mode.
+        /// </param>
+        /// <param name="parsingOptions">
+        /// (optional) options for controlling the parsing.
+        /// </param>
+        /// <param name="docType">
+        /// The DocType for this document.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new IDomDocument object
+        /// </returns>
+
         public static IDomDocument Create(string html, 
             HtmlParsingMode parsingMode = HtmlParsingMode.Auto,
             HtmlParsingOptions parsingOptions = HtmlParsingOptions.Default,
@@ -52,6 +99,27 @@ namespace CsQuery.Implementation
                 return ElementFactory.Create(reader, parsingMode, parsingOptions, docType);
             }
         }
+
+        /// <summary>
+        /// Creates a new DomDocument (or derived) object
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// The HTML source for the document
+        /// </param>
+        /// <param name="parsingMode">
+        /// (optional) the parsing mode.
+        /// </param>
+        /// <param name="parsingOptions">
+        /// (optional) options for controlling the parsing.
+        /// </param>
+        /// <param name="docType">
+        /// The DocType for this document.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new IDomDocument object
+        /// </returns>
 
         public static IDomDocument Create(TextReader html, 
             HtmlParsingMode parsingMode= HtmlParsingMode.Content,
@@ -112,15 +180,15 @@ namespace CsQuery.Implementation
         //private bool _settingDocType;
         private IList<ICSSStyleSheet> _StyleSheets;
         private IDictionary<string, object> _Data;
-        
-
-        protected CQ _Owner;
-        protected DocType _DocType;
-        protected RangeSortedDictionary<IDomObject> _SelectorXref;
+        private RangeSortedDictionary<IDomObject> _SelectorXref;
 
         #endregion
 
         #region public properties
+
+        /// <summary>
+        /// Gets the style sheets for this document. (This feature is not implemented completely).
+        /// </summary>
 
         public IList<ICSSStyleSheet> StyleSheets
         {
@@ -160,6 +228,10 @@ namespace CsQuery.Implementation
                 return _SelectorXref;
             }
         }
+
+        /// <summary>
+        /// The direct parent of this node.
+        /// </summary>
 
         public override IDomContainer ParentNode
         {
@@ -274,39 +346,23 @@ namespace CsQuery.Implementation
                 // If explicitly set, return that value, otherwise get from DomDocument node
 
                 IDomDocumentType docNode = DocTypeNode;
-                if (_DocType != 0 && docNode == null)
+                if (docNode == null)
                 {
-                    return _DocType;
-                }
-                if (docNode != null)
-                {
-                    return docNode.DocType;
+                    return Config.DocType;
                 }
                 else
                 {
-                    return CQ.DefaultDocType;
+                    return docNode.DocType;
                 }
             }
             protected set
             {
-                _DocType = value;
-            //{
-            //    // Keep synchronized with DocTypeNode
-            //    if (_settingDocType) return;
-
-            //    _settingDocType = true;
-            //    _DocType = value;
-            //    IDomDocumentType docType = DocTypeNode;
-
-            //    if (docType != null)
-            //    {
-            //        DocTypeNode.DocType = value;
-            //    }
-            //    else
-            //    {
-            //        _DocType = value;
-            //    }
-            //    _settingDocType = false;
+                IDomDocumentType docNode = DocTypeNode;
+                if (docNode != null)
+                {
+                    docNode.Remove();
+                }
+                AppendChild(CreateDocumentType(value));
             }
         }
 
@@ -340,6 +396,10 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Return the body element for this Document.
+        /// </summary>
+
         public IDomElement Body
         {
             get
@@ -347,6 +407,10 @@ namespace CsQuery.Implementation
                 return this.QuerySelectorAll("body").FirstOrDefault();
             }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this object type should be indexed.
+        /// </summary>
 
         public override bool IsIndexed
         {
@@ -356,6 +420,10 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// The element is not associated with an IDomDocument.
+        /// </summary>
+
         public override bool IsFragment
         {
             get
@@ -363,6 +431,11 @@ namespace CsQuery.Implementation
                 return false;
             }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this object belongs to a Document or not.
+        /// </summary>
+
         public override bool IsDisconnected
         {
             get
@@ -683,6 +756,24 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
+        /// Creates the document type node.
+        /// </summary>
+        ///
+        /// <param name="docType">
+        /// The DocType for this document.
+        /// </param>
+        ///
+        /// <returns>
+        /// The new document type.
+        /// </returns>
+
+        public IDomDocumentType CreateDocumentType(DocType docType)
+        {
+            return new DomDocumentType(docType);
+        }
+
+
+        /// <summary>
         /// Makes a deep copy of this object.
         /// </summary>
         ///
@@ -716,6 +807,15 @@ namespace CsQuery.Implementation
             yield break;
         }
 
+        /// <summary>
+        /// Convert this object into a string representation; provides summary information about the
+        /// document.
+        /// </summary>
+        ///
+        /// <returns>
+        /// This object as a string.
+        /// </returns>
+
         public override string ToString()
         {
             return "DOM Root (" + DocType.ToString() + ", " + DescendantCount().ToString() + " elements)";
@@ -723,6 +823,18 @@ namespace CsQuery.Implementation
         #endregion
 
         #region private methods
+
+        /// <summary>
+        /// Return a sequence of elements that excludes non-Element (e.g. Text) nodes
+        /// </summary>
+        ///
+        /// <param name="objectList">
+        /// The input sequence
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence of elements
+        /// </returns>
 
         protected IEnumerable<IDomElement> OnlyElements(IEnumerable<IDomObject> objectList)
         {
@@ -738,6 +850,19 @@ namespace CsQuery.Implementation
 
         #endregion
 
+        /// <summary>
+        /// Creates an IDomDocument that is derived from this one. The new type can also be a derived
+        /// type, such as IDomFragment. The new object will inherit DomRenderingOptions from this one.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// The type of object to create that is IDomDocument.
+        /// </typeparam>
+        ///
+        /// <returns>
+        /// A new, empty concrete class that is represented by the interface T, configured with the same
+        /// options as the current object.
+        /// </returns>
 
         public IDomDocument CreateNew<T>() where T : IDomDocument
         {
@@ -765,6 +890,16 @@ namespace CsQuery.Implementation
 
             return newDoc;
         }
+
+        /// <summary>
+        /// Creates an IDomDocument that is derived from this one. The new type can also be a derived
+        /// type, such as IDomFragment. The new object will inherit DomRenderingOptions from this one.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A new, empty concrete class that is represented by the interface T, configured with the same
+        /// options as the current object.
+        /// </returns>
 
         public virtual IDomDocument CreateNew()
         {

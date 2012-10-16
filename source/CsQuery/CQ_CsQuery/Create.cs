@@ -13,7 +13,6 @@ using CsQuery.Utility;
 using CsQuery.Engine;
 using CsQuery.Web;
 using CsQuery.Promises;
-using CsQuery.HtmlParser;
 using CsQuery.Implementation;
 
 namespace CsQuery

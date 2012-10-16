@@ -5,19 +5,40 @@ using System.Text;
 
 namespace CsQuery.Implementation
 {
+    /// <summary>
+    /// A CDATA node
+    /// </summary>
 
     public class DomCData : DomObject<DomCData>, IDomCData
     {
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+
         public DomCData()
             : base()
         {
 
         }
+
+        /// <summary>
+        /// Constructor that populates the node with the passed value.
+        /// </summary>
+        ///
+        /// <param name="value">
+        /// The contents of the CDATA node
+        /// </param>
+
         public DomCData(string value)
             : base()
         {
             NodeValue = value;
         }
+
+        /// <summary>
+        /// Gets or sets the node value. For CDATA nodes, this is the content.
+        /// </summary>
+
         public override string NodeValue
         {
             get
@@ -29,6 +50,11 @@ namespace CsQuery.Implementation
                 NonAttributeData = value;
             }
         }
+
+        /// <summary>
+        /// Gets the type of the node. For CDATA nodes, this is NodeType.CDATA_SECTION_NODE.
+        /// </summary>
+
         public override NodeType NodeType
         {
             get { return NodeType.CDATA_SECTION_NODE; }
@@ -37,19 +63,40 @@ namespace CsQuery.Implementation
 
         #region IDomSpecialElement Members
 
+        /// <summary>
+        /// Gets or sets the non-attribute data in the tag. For CDATA nodes, this is the same as the
+        /// content of the node..
+        /// </summary>
+
         public string NonAttributeData
         {
             get;
             set;
         }
+
+        /// <summary>
+        /// Gets a value indicating whether HTML is allowed as a child of this element. For CDATA nodes,
+        /// this is always false.
+        /// </summary>
+
         public override bool InnerHtmlAllowed
         {
             get { return false; }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this object has children. For CDATA nodes, this is always
+        /// false.
+        /// </summary>
+
         public override bool HasChildren
         {
             get { return false; }
         }
+
+        /// <summary>
+        /// Gets or sets the text of the CDATA element.
+        /// </summary>
 
         public string Text
         {
@@ -62,6 +109,15 @@ namespace CsQuery.Implementation
                 NonAttributeData = value;
             }
         }
+
+        /// <summary>
+        /// Makes a deep copy of this object.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A copy of this object.
+        /// </returns>
+
         public override DomCData Clone()
         {
             DomCData clone = new DomCData();

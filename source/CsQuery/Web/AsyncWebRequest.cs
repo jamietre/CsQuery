@@ -9,11 +9,21 @@ using System.Threading;
 namespace CsQuery.Web
 {
     /// <summary>
-    /// A class encapsulating the functionality needed to make requests of remote web servers, and return the HTML as a CQ object.
+    /// A class encapsulating the functionality needed to make requests of remote web servers, and
+    /// return the HTML as a CQ object.
     /// </summary>
+
     public class AsyncWebRequest : ICsqWebResponse
     {
         #region constructor
+
+        /// <summary>
+        /// Creates an AsyncWebRequest for a WebRequest
+        /// </summary>
+        ///
+        /// <param name="request">
+        /// The WebRequest object.
+        /// </param>
 
         public AsyncWebRequest(WebRequest request)
         {
@@ -25,8 +35,23 @@ namespace CsQuery.Web
         #region private properties
 
         const int BUFFER_SIZE = 1024;
+
+        /// <summary>
+        /// A ManualResetEvent returned by the async request.
+        /// </summary>
+
         protected ManualResetEvent allDone = new ManualResetEvent(false);
+
+        /// <summary>
+        /// Accumulator for the HTML response
+        /// </summary>
+
         protected StringBuilder HtmlStringbuilder { get; set; }
+
+        /// <summary>
+        /// Stream of the HTM Lresponse
+        /// </summary>
+
         protected Stream ResponseStream { get; set; }
         private WebException _WebException;
 
@@ -138,11 +163,19 @@ namespace CsQuery.Web
             }
         }
 
+        /// <summary>
+        /// The WebRequest object
+        /// </summary>
+
         public WebRequest Request
         {
             get;
             set;
         }
+
+        /// <summary>
+        /// Text of any error that occurred.
+        /// </summary>
 
         public string Error
         {
@@ -158,6 +191,10 @@ namespace CsQuery.Web
                 }
             }
         }
+
+        /// <summary>
+        /// The HTTP status code for the response.
+        /// </summary>
 
         public int HttpStatus
         {
@@ -175,6 +212,10 @@ namespace CsQuery.Web
             }
         }
 
+        /// <summary>
+        /// The HTTP status description for the response.
+        /// </summary>
+
         public string HttpStatusDescription
         {
             get
@@ -189,6 +230,10 @@ namespace CsQuery.Web
                 }
             }
         }
+
+        /// <summary>
+        /// The async HttpWebResponse
+        /// </summary>
 
         public HttpWebResponse Response
         {
