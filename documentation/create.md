@@ -64,9 +64,19 @@ This method forces the content to be treated as a fragment.
 
 This method interprets the content as a true fragment that you may use for any purpose. No attempt will be made to identify and create missing opening tags such as `tbody` -- the actual markup will be interpreted exactly as presented. Missing close tag rules still apply, though, since it's impossible to create a CQ document that has incomplete nodes. 
 
-When creating HTML from a selector using jQuery syntax, this is the method that will be used, e.g.
+When creating HTML from a selector using jQuery syntax, this is the method that will be used.
 
     var fragment = someCsQueryDocument.Select["<div /">];
+
+There's an important overload for `CreateFragment` that offers functionality you can't get anywhere else:
+
+    CQ CreateFragment(string html, string context)
+
+This allows you to explicitly specify the *tag* context for the HTML. Normally, creating a document as a fragment will automatically detect the context based on the first tag it finds. For example, passing in `"<tr><td>a table row</td></tr>"` to `CreateFragment` -- or to `Create` when using `HtmlParsingMode.Fragment` -- would result in the fragment automatically being parsed in a `table` context since that is the only place it is allowed.
+
+Trying to parse this same HTML snippet using any other parsing mode would result in the table tags being omitted since they can't be legally added to a DOM outside of a `table` context.
+
+This method lets you specify the context explicitly for a fragment. While most of the time this isn't necessary, there could be situations where the context is important and CsQuery isn't able to determine it automatically.
 
 #####Create from a file
 
