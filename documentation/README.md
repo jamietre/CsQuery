@@ -6,4 +6,5 @@ For now I am going to try to document important features here; these files will 
 
 *Note: these links will not work if you are reading this from the GitHub landing page. Click "readme.md" above first. There's no way to make them work from the readme preview and the readme file itself.*
 
-- [Output Options](output.md)
+- [Create](create.md)
+- [Render](render.md)

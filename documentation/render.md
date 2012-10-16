@@ -97,7 +97,14 @@ You can control the way output is created using an object that implements `IOutp
 
 The API described below provides simple access to predefined `OutputFormatters`; you can also create your own implementation. These are static properties and methods that return an instance of an `IOutputFormatter` that can be used directly as a parameter value when a method requires an `IOutputFormatter`. 
 
-* `OutputFormatters.Default` uses the global `DomRenderingOptions` and default `HtmlEncoder`
+* `OutputFormatters.Default` creates an an OutputFormatter configured from the global `DomRenderingOptions` and default `HtmlEncoder`
+* `OutputFormatters.HtmlEncodingBasic` returns an OutputFormatter configured with basic HTML encoding. This does not use named entities except for ASCII characters less than or equal to 160 (&amp;nbsp); and encodes all other non-ASCII characters using numeric entities, e.g. &amp;#2323;
+* `OutputFormatters.HtmlEncodingMinimum` returns an OutputFormatter that only encodes the minimum required for valid HTML.
+* `OutputFormatters.HtmlEncodingMinimumNbsp` returns an OutputFormatter that only encodes the minimum required for valid HTML, plus ASCII 160.
+* `OutputFormatters.HtmlEncodingFull` returns an OutputFormatter that encodes all known character entities using their text aliases.
+
+There are also methods to create OutputFormatters with specific configurations:
+
 * `OutputFormatters.Create(DomRenderingOptions options)` creates an instance of the default formatter using the specifed options.
 * `OutputFormatters.Create(IHtmlEncoder encoder)` creates an instance of the default formatter using the specifed encoder.
 * `OutputFormatters.Create(DomRenderingOptions options, IHtmlEncoder encoder)` creates an instance of the default formatter using the specifed options and encoder.

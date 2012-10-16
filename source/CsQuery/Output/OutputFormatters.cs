@@ -71,10 +71,10 @@ namespace CsQuery
         /// Gets an instance of the default OuputFormatter configured with the default HTML encoder and options
         /// </summary>
 
-        public static IOutputFormatter Default 
+        public static IOutputFormatter Default
         {
             get {
-                return new OutputFormatterDefault();
+                return Config.OutputFormatter;
             }
         }
         /// <summary>

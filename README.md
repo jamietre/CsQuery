@@ -60,9 +60,12 @@ For more information on the status of CsQuery's compliance with HTML5 spec, see 
 
 ### Documentation
 
-This document explains how to use CsQuery to parse and manipulate HTML. It's not comprehensive, but covers most common uses for reading HTML documents from files and URLS, and using it like jQuery.
+Documentation is being moved from here to the `documentation` folder. So far these methods can be found there:
 
-I've just started organizing various tutorials and details to a [documentation](documentation/readme.md) folder in the repository. So far this includes a writeup on the options for creating output from CsQuery. 
+- [Create](https://github.com/jamietre/CsQuery/blob/master/documentation/create.md): Creating a new DOM from HTML in memory, a file, a stream, or a URL
+- [Render](https://github.com/jamietre/CsQuery/blob/master/documentation/render.md): Rendering your DOM back to HTML
+
+Everything else will be found here in the reame. It covers most common uses for reading HTML documents from files and URLS, and using it like jQuery.
 
 I also post about [CsQuery on my blog](http://blog.outsharked.com/search/label/csquery) from time to time. Here are a few tutorials from there:
 
@@ -169,106 +172,37 @@ jQuery extensions:
 
 ### Usage
 
-#### Creating a new DOM
+##### Creating a new DOM
 
-There are several ways to interpret HTML: 
 
-* as a complete document, e.g. a web page; 
-* as content that should stand on its own but is not a complete doucment, e.g. copy for a content block, or something in a CMS; 
-* as a fragment, or a snippet or a template building-block which may be incomplete or out-of-context, such as a table cell like `<td></td>`
-
-It's important for CsQuery to understand the context so it can determine how to handle HTML that appears to be invalid correctly. HTML5 parsing rules specify a particular way of handling missing or incorrect markup. But if the context isn't a complete document, then it might not actually be invalid in that context. Usually, you can just let CsQuery figure it out, but sometimes you may want to specify a certain context.
-
-#####Basic Method
-
-    var dom = CQ.Create(..);   // Create content
-
-Creates content, automatically determining context. That is, HTML content can be: a complete document, general content that can be inserted in the `body` of a document, or context-specific content that can only exist in a certain tag context (e.g. `tr` can only be within a `tbody` or `thead` context).
-
-There are overloads for accepting `string` and  `Stream` inputs. You can also specify the handling using optional parameters:
-
-    Create(string html, 
-        HtmlParsingMode mode = HtmlParsingMode.Auto, 
-        HtmlParsingOptions options = HtmlParsingOptions.Default,
-        DocType docType = DocType.HTML5);
-
-`HtmlParsingMode` determines the way CsQuery interprets your HTML.
-
-* `HtmlParsingMode.Auto` means let CsQuery figure it out. Anything starting an `html` or `body` is treated as a complete document; anything starting with a block element is content; anything else is considered a fragment and will be assumed to be in a valid context.
-* `HtmlParsingMode.Document` means the content will be treated as a complete document. Missing `html`, `body`, `head` and `title` tags will be generated to produce a complete DOM.
-* `HtmlParsingMode.Content` means its not a full document, but is expected to be valid in a `body` context. For example, content starting with `<tr> ... </tr>` would be invalid and handled according to HTML5 rules (typically, discarded).
-* `HtmlParsingMode.Fragment` means its an arbitrary fragment and will be treated as if its in a valid context.
-
-`HtmlParsingOptions` are flags that enable specific behavior during parsing regardless of the mode:
-
-* `HtmlParsingOptions.Default` means use the global default options as defined on  `CsQuery.Config.HtmlParsingOptions`. No options are enabled when CsQuery is started, you can assign specific options to the global default config if desired to affect all future operations.
-* `HtmlParsingOptions.AllowSelfClosingTags` means that HTML tags which use the self-closing HTML syntax, e.g. `<div />` are permitted. Under HTML5 rules, tags like this are not valid and the closing construct is ignored. That is, this would be treated exactly like an opening tag only `<div>`. So HTML like `<div /><span />` would be rendered as `<div><span></span></div>`. Note that the span is nested in the div. HTML5's rules for missing close tags are coming into play here, too. This option lets you change this behavior so the self-closing construct is honored. (Note that for fragments, this is honored by default, in line with jQuery's HTML parsing rules).
-* `HtmlParsingOptions.IgnoreComments` causes the parser to discard any HTML comments entirely; they won't appear in your DOM. You can also choose to omit contents when rendering even if you've allowed them to be parsed using `DomRenderingOptions.IgnoreComments`.
-
-The final `DocType` parameter allows you to instruct the parser on the expected document type, if no `DOCTYPE` node is present. Generally, though, it's sufficient to let CsQuery figure out your intent from the markup that is passed.
-
-There are also other methods described below to create content using one of the methods described here. Generally speaking, these just call `Create` with specific options, and are for convenience:
-
-#####Create a document
-
-This method forces the content to be treated as a complete document.
-
-    CQ.CreateDocument(..)   // Create a document. 
-
-This method assumes that the content is a complete HTML document and not a fragment. In addition to the handling of optional tags provided by the `Create` method, this method will ensure that any content is a complete HTML document. If the `html`, `body` or `head` tags are missing, they will be created. Stranded text nodes (e.g. outside of `body`) will be moved inside the body. 
-
-#####Create a fragment
+*Create from a string of HTML, a TextReader, a Stream, or an existing CQ object or DOM elements*
     
-This method forces the content to be treated as a fragment.
+    var dom = CQ.Create(html);   
 
-    CQ.CreateFragment(..)   // Create a fragment. 
-
-This method interprets the content as a true fragment that you may use for any purpose. No attempt will be made to identify and create missing opening tags such as `tbody` -- the actual markup will be interpreted exactly as presented. Missing close tag rules still apply, though, since it's impossible to create a CQ document that has incomplete nodes. 
-
-When creating HTML from a selector using jQuery syntax, this is the method that will be used, e.g.
-
-    var fragment = someCsQueryDocument.Select["<div /">];
-
-#####Create from a file
-
-There are methods to create a document or just content from a file directly:
-
-    CQ.CreateFromFile(..)
-    CQ.CreateDocumentFromFile(..) 
-    
-
-#####Create synchronously from a URL
+*Create from a URL (synchronously)*
 
     var dom = CQ.CreateFromUrl("http://www.jquery.com");
-    
-
-#####Create asynchronously (non-blocking) from a URL
-
-CsQuery implements a basic Promise API for asynchronous callbacks. This can be used to create convenient constructs for managing asynchronous requests; see the "Promises" section below for more details.
    
-    private static CQ Dom;
-    ..
- 
-    // code execution continues immediately; the delegates in "Then" get executed when the
-    // request finishes
+There are many other methods and options for creating a DOM from local sources, and from the web asynchronously. This documentation is now found in the `documentation` folder: [Create method](https://github.com/jamietre/CsQuery/blob/master/documentation/create.md)
 
-    var promise = CQ.CreateFromUrlAsync("http://www.jquery.com");
-    
-    promise.Then(responseSuccess => {
-            Dom = responseSuccess.Dom;        
-        }, responseFail => { 
-            ..  
-        });
+##### Output as HTML
 
-Of course you could just chain "Then" directly to the request without assigning it to a variable, too, but I wanted to demonstrate that this signature actually returns something you can use. You can also use a regular "callback" type construct by calling CreateFromUrlAsync with this signature:
+Details of using the various output methods can be found in the documentation folder: [Render method](https://github.com/jamietre/CsQuery/blob/master/documentation/render.md)
 
-    CQ.CreateFromUrlAsync("http://www.jquery.com", responseSuccess => {
-            Dom = response.Dom;        
-        }, responseFail => {
-            ..
-        });
+*Render the entire DOM*
 
-Returning a promise gives you a lot of flexibility, since you can than attach other events to the resolution or rejection of the request, or create a new promise that resolves when a set of promises have all resolved. For more details and examples right now, please see the "_WebIO" tests.
+    string html = dom.Render();
+
+
+*You can render any DOM element individually*
+
+    string elementHtml = dom[2].Render();
+
+
+*You can render just the elements that are part of the selection*
+
+    string selectionHtml = dom[".just-this-class"].RenderSelection();
+
 
 
 ##### Manipulate the DOM with jQuery methods
@@ -283,7 +217,7 @@ Returning a promise gives you a lot of flexibility, since you can than attach ot
     var rowsWithClass = dom[".targetClass"].Closest("td");
 
 
-*Use Find (like in jQuery) to access only child elements of a selection:
+*Use Find (like in jQuery) to access only child elements of a selection:*
 
     // get all elements that are first children within 'body' (e.g. excluding 'head')
     
@@ -345,24 +279,6 @@ See below "C# objects vs. jQuery objects" for an explanation of CssSet vs. Css.
             e.Parent().RemoveChild(e);
         }
     });
-
-
-
-##### Output as HTML
-
-*Render the entire DOM*
-
-    string html = dom.Render();
-
-
-*You can render any DOM element individually*
-
-    string elementHtml = dom[2].Render();
-
-
-*You can render just the elements that are part of the selection*
-
-    string selectionHtml = dom[".just-this-class"].RenderSelection();
 
 
 ### CsQuery vs. jQuery

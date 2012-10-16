@@ -23,6 +23,7 @@ namespace CsQuery
             HtmlParsingOptions = HtmlParsingOptions.None;
             HtmlEncoder = HtmlEncoders.Basic;
             DocType = DocType.HTML5;
+            GetOutputFormatter = GetDefaultOutputFormatter;
         }
 
         #endregion
@@ -32,16 +33,26 @@ namespace CsQuery
         private static DocType _DocType;
         private static DomRenderingOptions _DomRenderingOptions;
         private static HtmlParsingOptions _HtmlParsingOptions;
+        private static IOutputFormatter _OutputFormatter;
+        private static Func<IOutputFormatter>  _GetOutputFormatter;
+
         /// <summary>
         /// Internal to avoid Obsolete warning from DomRenderingOptions until we remove it
         /// </summary>
 
         private static Type _DynamicObjectType;
-        
-        private static IOutputFormatter GetOutputFormatter()
-        {
 
-            return OutputFormatters.Default;
+        /// <summary>
+        /// Creates an OutputFormatter using the default options & encoder.
+        /// </summary>
+        ///
+        /// <returns>
+        /// The default output formatter.
+        /// </returns>
+
+        private static IOutputFormatter GetDefaultOutputFormatter()
+        {
+            return OutputFormatters.Create(DomRenderingOptions, HtmlEncoder);
         }
 
         #endregion
@@ -97,13 +108,43 @@ namespace CsQuery
             set;
         }
 
+
+        public static IOutputFormatter OutputFormatter {
+            get
+            {
+                if (GetOutputFormatter != null)
+                {
+                    return GetOutputFormatter();
+                }
+                else
+                {
+                    return _OutputFormatter;
+                }
+            }
+            set
+            {
+                _OutputFormatter = value;
+                _GetOutputFormatter = null;
+            }
+        }
+
         /// <summary>
-        /// A delegate that returns a new instance of the default output formatter to use for rendering
-        /// when none is otherwise specified.
+        /// A delegate that returns a new instance of the default output formatter to use for rendering.
+        /// If this value is present, it will supercede any static value in Config.OutputFormatter.
         /// </summary>
 
-        public static Func<IOutputFormatter> OutputFormatter;
-
+        public static Func<IOutputFormatter> GetOutputFormatter
+        {
+            get
+            {
+                return _GetOutputFormatter;
+            }
+            set
+            {
+                _GetOutputFormatter = value;
+                _OutputFormatter = null;
+            }
+        }
 
         /// <summary>
         /// The default startup options. These are flags. 
