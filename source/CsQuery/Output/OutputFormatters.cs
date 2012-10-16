@@ -29,7 +29,7 @@ namespace CsQuery
 
         public static IOutputFormatter Create(DomRenderingOptions options, IHtmlEncoder encoder)
         {
-            return new OutputFormatterDefault(options, encoder ?? HtmlEncoders.Default);
+            return new FormatDefault(options, encoder ?? HtmlEncoders.Default);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace CsQuery
 
         public static IOutputFormatter Create(DomRenderingOptions options)
         {
-            return new OutputFormatterDefault(options, HtmlEncoders.Default);
+            return new FormatDefault(options, HtmlEncoders.Default);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace CsQuery
 
         public static IOutputFormatter Create(IHtmlEncoder encoder)
         {
-            return new OutputFormatterDefault(DomRenderingOptions.Default,encoder);
+            return new FormatDefault(DomRenderingOptions.Default,encoder);
         }
         /// <summary>
         /// Gets an instance of the default OuputFormatter configured with the default HTML encoder and options
@@ -134,6 +134,21 @@ namespace CsQuery
                 return Create(HtmlEncoders.MinimumNbsp);
             }
         }
+
+        /// <summary>
+        /// An OutputFormatter that returns a basic ASCII version of the HTML document.
+        /// </summary>
+
+        public static IOutputFormatter PlainText
+        {
+            get
+            {
+                return new FormatPlainText();
+            }
+        }
+
+
+
         /// <summary>
         /// Merge options with defaults when needed
         /// </summary>

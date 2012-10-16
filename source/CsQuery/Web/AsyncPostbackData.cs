@@ -55,16 +55,33 @@ namespace CsQuery.Web
 
         public string Render()
         {
-            string content = _Dom != null ? Dom.Render() : Content;
+            return Render(DomRenderingOptions.Default);
+
+        }
+
+        /// <summary>
+        /// Output this data block, recalulating the lengtht parameter based on the new output, using the passed options.
+        /// </summary>
+        ///
+        /// <param name="options">
+        /// Options for controlling the operation.
+        /// </param>
+        ///
+        /// <returns>
+        /// HTML string.
+        /// </returns>
+
+        public string Render(DomRenderingOptions options)
+        {
+
+            string content = _Dom != null ? Dom.Render(options) : Content;
             if (_UserOutput != null)
             {
                 content += "<script type=\"text/javascript\">" + System.Environment.NewLine + UserOutput.ToString() + "</script>";
             }
 
             return content.Length.ToString() + "|" + DataType + "|" + ID + "|" + content + "|";
-
         }
-
         /// <summary>
         /// The content of the data packet (HTML). Probably, you'd rather be looking at the Dom property.
         /// </summary>

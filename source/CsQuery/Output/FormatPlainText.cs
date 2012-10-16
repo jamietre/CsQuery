@@ -7,161 +7,241 @@ using CsQuery;
 using CsQuery.StringScanner;
 using CsQuery.ExtensionMethods.Internal;
 
-//namespace CsQuery.Output
-//{
-//    /// <summary>
-//    /// Removes all extraneous whitespace
-//    /// </summary>
-//    public class FormatPlainText: OutputFormatterDefault
-//    {
-//       /// <summary>
-//       /// Default constructor.
-//       /// </summary>
-//       ///
-//       /// <param name="options">
-//       /// Options for controlling the rendering.
-//       /// </param>
-//       /// <param name="encoder">
-//       /// The encoder.
-//       /// </param>
+namespace CsQuery.Output
+{
+    /// <summary>
+    /// A formatter that converts a DOM to a basic plain-text version.
+    /// </summary>
+    
+    public class FormatPlainText : IOutputFormatter
+    {
+        private IStringInfo stringInfo;
 
-//       public FormatPlainText(DomRenderingOptions options, IHtmlEncoder encoder): 
-//            base(options,encoder)
-//       {
+        /// <summary>
+        /// Renders this object to the passed TextWriter.
+        /// </summary>
+        ///
+        /// <param name="node">
+        /// The node.
+        /// </param>
+        /// <param name="writer">
+        /// The writer.
+        /// </param>
 
-//       }
-//       protected IStringInfo stringInfo;
-//       protected bool endingBlock = false;
-//       protected bool skipWhitespace = false;
+        public void Render(IDomObject node, TextWriter writer)
+        {
+            stringInfo = CharacterData.CreateStringInfo();
 
-//       public void Format(CQ selection, TextWriter writer)
-//       {
-//           stringInfo = CharacterData.CreateStringInfo();
+            StringBuilder sb = new StringBuilder();
+            AddContents(sb, node,true);
+            writer.Write(sb.ToString());
+        }
 
-//           foreach (IDomObject obj in selection)
-//           {
-//               AddContents(writer, obj);
-//           }
-//       }
+        /// <summary>
+        /// Renders this object and returns the output as a string.
+        /// </summary>
+        ///
+        /// <param name="node">
+        /// The node.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string of HTML.
+        /// </returns>
 
-//       protected void AddContents(TextWriter writer, IDomObject startEl)
-//       {
+        public string Render(IDomObject node)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                Render(node, writer);
+                return writer.ToString();
+            }
+        }
 
-//           if (startEl.HasChildren)
-//           {
-//               foreach (IDomObject el in startEl.ChildNodes)
-//               {
-//                   if (el.NodeType == NodeType.TEXT_NODE)
-//                   {
-//                       IDomText txtNode = (IDomText)el;
-//                       stringInfo.Target = el.NodeValue;
-//                       if (!stringInfo.Whitespace)
-//                       {
-//                           string val = txtNode.NodeValue;
-//                           if (skipWhitespace)
-//                           {
-//                               val = CleanFragment(val);
-//                           }
-//                           // always add if there's actually content
-//                           endingBlock = false;
-//                           skipWhitespace = false;
-//                           writer.Write(val);
-//                       }
-//                       else
-//                       {
-//                           // just whitespace
-//                           if (!skipWhitespace)
-//                           {
-//                               // if not an ending block convert all whitespace to a single space, and
-//                               // act like it was an ending block (preventing further whitespace from being added)
-//                               writer.Write(" ");
-//                               skipWhitespace = true;
-//                           }
-//                       }
-//                   }
-//                   else if (el.NodeType == NodeType.ELEMENT_NODE)
-//                   {
-//                       IDomElement elNode = (IDomElement)el;
-//                       // first add any inner contents
-//                       if (el.NodeName != "HEAD" && el.NodeName != "STYLE" && el.NodeName != "SCRIPT")
-//                       {
-//                           AddContents(writer, el);
+        /// <summary>
+        /// Adds the contents to 'node' to the StringBuilder.
+        /// </summary>
+        ///
+        /// <param name="sb">
+        /// The StringBuilder.
+        /// </param>
+        /// <param name="node">
+        /// The node.
+        /// </param>
+        /// <param name="skipWhitespace">
+        /// true to skip any leading whitespace for this node.
+        /// </param>
 
-//                           switch (elNode.NodeName)
-//                           {
-//                               case "BR":
-//                                   writer.Write(System.Environment.NewLine);
-//                                   skipWhitespace = true;
-//                                   break;
-//                               case "PRE":
-//                                   writer.Write(el.Render());
-//                                   break;
-//                               case "A":
-//                                   writer.Write(el.Cq().Children().RenderSelection() + " (" + el["href"] + ")");
-//                                   break;
-//                               default:
-//                                   //if (elNode.IsBlock)
-//                                   //{
-//                                   //    if (!endingBlock)
-//                                   //    {
-//                                   //        // erase ending whitespace -- scan backwards until non-whitespace
-//                                   //        int i = sb.Length - 1;
-//                                   //        int count = 0;
-//                                   //        while (i >= 0 && CharacterData.IsType(sb[i], CharacterType.Whitespace))
-//                                   //        {
-//                                   //            i--;
-//                                   //            count++;
-//                                   //        }
-//                                   //        if (i < sb.Length - 1)
-//                                   //        {
-//                                   //            sb.Remove(i + 1, count);
-//                                   //        }
+        protected void AddContents(StringBuilder sb, IDomObject node, bool skipWhitespace)
+        {
+            // always skip the opening whitespace of a new child block
+            
+            if (node.HasChildren)
+            {
+                foreach (IDomObject el in node.ChildNodes)
+                {
+                    if (el.NodeType == NodeType.TEXT_NODE)
+                    {
+                        IDomText txtNode = (IDomText)el;
+                        stringInfo.Target = el.NodeValue;
 
-//                                   //        endingBlock = true;
-//                                   //        skipWhitespace = true;
-//                                   //        sb.Append(System.Environment.NewLine + System.Environment.NewLine);
-//                                   //    }
+                        if (stringInfo.Whitespace)
+                        {
+                            if (!skipWhitespace)
+                            {
+                                sb.Append(" ");
+                                skipWhitespace = true;
+                            }
+                        }
+                        else
+                        {
+                            string val = CleanFragment(el.Render());
+                            if (skipWhitespace)
+                            {
+                                val = val.TrimStart();
+                                skipWhitespace = false;
+                            }
 
-//                                   //}
-//                                   break;
-//                           }
-//                       }
-//                   }
-//               }
-//           }
-//       }
+                            sb.Append(val);
+                        }
+                        
+                        
+                    }
+                    else if (el.NodeType == NodeType.ELEMENT_NODE)
+                    {
+                        IDomElement elNode = (IDomElement)el;
+                        // first add any inner contents
 
-//       private string CleanFragment(string text)
-//       {
-//           var charInfo = CharacterData.CreateCharacterInfo();
+                        if (el.NodeName != "HEAD" && el.NodeName != "STYLE" && el.NodeName != "SCRIPT")
+                        {
+                            switch (elNode.NodeName)
+                            {
+                                case "BR":
+                                    sb.Append(System.Environment.NewLine);
+                                    break;
+                                case "PRE":
+                                    RemoveTrailingWhitespace(sb);
+                                    sb.Append(System.Environment.NewLine);
+                                    sb.Append(ToStandardLineEndings(el.InnerText));
+                                    RemoveTrailingWhitespace(sb);
+                                    sb.Append(System.Environment.NewLine);
+                                    skipWhitespace = true;
+                                    break;
+                                case "A":
+                                    sb.Append(el.InnerText + " (" + el["href"] + ")");
+                                    break;
+                                default:
+                                    
+                                    if (elNode.IsBlock && sb.Length>0)
+                                    {
+                                        RemoveTrailingWhitespace(sb);
+                                        sb.Append(System.Environment.NewLine);
+                                    }
 
-//           StringBuilder sb = new StringBuilder();
-//           int index = 0;
-//           bool trimmed = false;
-//           while (index < text.Length)
-//           {
-//               charInfo.Target = text[index];
-//               if (!trimmed && !charInfo.Whitespace)
-//               {
-//                   trimmed = true;
-//               }
-//               if (trimmed)
-//               {
-//                   if (charInfo.Whitespace)
-//                   {
-//                       // convert all whitespace blocks into a single space
-//                       sb.Append(" ");
-//                       trimmed = false;
-//                   }
-//                   else
-//                   {
-//                       sb.Append(text[index]);
-//                   }
-//               }
-//               index++;
-//           }
+                                    AddContents(sb, el,elNode.IsBlock);
+                                    RemoveTrailingWhitespace(sb);
+                                    
+                                    if (elNode.IsBlock)
+                                    {
+                                        sb.Append(System.Environment.NewLine);
+                                        skipWhitespace = true;
+                                    }
+                                   
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-//           return sb.ToString();
-//       }
-//    }
-//}
+        /// <summary>
+        /// Converts the newline characters in a string to standard system line endings
+        /// </summary>
+        ///
+        /// <param name="text">
+        /// The text.
+        /// </param>
+        ///
+        /// <returns>
+        /// The converted string
+        /// </returns>
+
+        protected string ToStandardLineEndings(string text)
+        {
+            return text.Replace("\r\n", "\n").Replace("\n", "\r\n");
+        }
+
+        /// <summary>
+        /// Removes trailing whitespace in this StringBuilder
+        /// </summary>
+        ///
+        /// <param name="sb">
+        /// The StringBuilder.
+        /// </param>
+
+        protected void RemoveTrailingWhitespace(StringBuilder sb)
+        {
+            // erase ending whitespace -- scan backwards until non-whitespace
+                
+            int i = sb.Length - 1;
+            int count = 0;
+            while (i >= 0 && CharacterData.IsType(sb[i], CharacterType.Whitespace))
+            {
+                i--;
+                count++;
+            }
+            if (i < sb.Length - 1)
+            {
+                sb.Remove(i + 1, count);
+            }
+                
+        }
+
+        /// <summary>
+        /// Clean a string fragment for output as text
+        /// </summary>
+        ///
+        /// <param name="text">
+        /// The text.
+        /// </param>
+        ///
+        /// <returns>
+        /// The clean text
+        /// </returns>
+
+        protected string CleanFragment(string text)
+        {
+            var charInfo = CharacterData.CreateCharacterInfo();
+
+            StringBuilder sb = new StringBuilder();
+            int index = 0;
+            bool trimmed = true;
+            while (index < text.Length)
+            {
+                charInfo.Target = text[index];
+                if (!trimmed && !charInfo.Whitespace)
+                {
+                    trimmed = true;
+                }
+                if (trimmed)
+                {
+                    if (charInfo.Whitespace)
+                    {
+                        // convert all whitespace blocks into a single space
+                        sb.Append(" ");
+                        trimmed = false;
+                    }
+                    else
+                    {
+                        sb.Append(text[index]);
+                    }
+                }
+                index++;
+            }
+
+            return sb.ToString();
+        }
+
+    }
+}

@@ -11,7 +11,7 @@ namespace CsQuery.Output
     /// Default output formatter.
     /// </summary>
 
-    public class OutputFormatterDefault: IOutputFormatter
+    public class FormatDefault: IOutputFormatter
     {
         /// <summary>
         /// Abstract base class constructor.
@@ -24,7 +24,7 @@ namespace CsQuery.Output
         /// The encoder.
         /// </param>
 
-        public OutputFormatterDefault(DomRenderingOptions options, IHtmlEncoder encoder)
+        public FormatDefault(DomRenderingOptions options, IHtmlEncoder encoder)
         {
             DomRenderingOptions = options;
             MergeDefaultOptions();
@@ -35,7 +35,7 @@ namespace CsQuery.Output
         /// Creates the default OutputFormatter using default DomRenderingOption values and default HtmlEncoder
         /// </summary>
 
-        public OutputFormatterDefault()
+        public FormatDefault()
             : this(DomRenderingOptions.Default, HtmlEncoders.Default)
         { }
 

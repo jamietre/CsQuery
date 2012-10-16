@@ -181,20 +181,34 @@ namespace CsQuery.Web
 
         public void Render()
         {
+            Render(DomRenderingOptions.Default);  
+        }
+
+        /// <summary>
+        /// Renders the DOM to the bound TextWriter with the passed options
+        /// </summary>
+        ///
+        /// <param name="options">
+        /// Options for controlling the operation.
+        /// </param>
+
+        public void Render(DomRenderingOptions options)
+        {
+
             if (_AsyncPostbackData != null)
             {
                 foreach (var data in _AsyncPostbackData)
                 {
-                    RealWriter.Write(data.Render());
+
+                    RealWriter.Write(data.Render(options));
                 }
             }
             else
             {
-                string content = Dom.Render();
+                string content = Dom.Render(options);
                 RealWriter.Write(content);
             }
         }
-
         #endregion
 
         #region private methods

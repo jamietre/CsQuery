@@ -89,11 +89,35 @@ The encoding strategy used to map unicode characters to HTML is defined by a spe
  * `HtmlEncoders.Minimum`: Only encodes ampersant, left-caret and right-caret, the minimum needed to produce valid HTML.
  * `HtmlEncoders.None`: Does not encode anything; will most likely produce invalid HTML since carets and ampersands can be misinterpreted by the parser.
 
+
 The rendering methods do not accept an `IHtmlEncoder` directly; rather, you create an `IOutputFormatter` (see below) that uses a particular encoder.
+
+#### Global Defaults
+
+There are several global configuration properties associated with this output model:
+
+    IOutputFormatter CsQuery.Config.OuputFormatter {get;set;}
+
+    IHtmlEncoder CsQuery.Config.HtmlEncoder {get;set;}
+    [Flags] DomRenderingOptions CsQuery.Config.DomRenderingOptions {get;set;}
+
+When you use a `Render` method that does not accept an output formatter, it uses a formatter obtained from the `CsQuery.Config.OutputFormatter` property. By default, this creates a new formatter object using the default `HtmlEncoder` and `DomRenderingOptions` values. You can assign a specific instance to be used as a a default instead by setting the `CsQuery.Config.OutputFormatter` property.
+
+Another property allows you to set a delegate that returns a new object instance when a default formatter is requested instead. (This is what happens by default).
+
+    Func<IOutputFormatter> CsQuery.Config.GetOuputFormatter {get;set;}
+
+By assigning a delegate to this property, you can cause a new instance to be created whenever a method accesses the default output formatter.
+
+The `OutputFormatter` property always returns either an instance, or invokes the delegate, to return the default formatter -- depending on which was assigned last. Assigning to either property supersedes any prior values of both and becomes the current implementation.
+
+The default values for `HtmlEncoder` and `DomRenderingOptions` are only relevant when the deault `OutputFormatter` has not been changed. That is, if you override that with an instance, or a new delegate, it may not matter any more what the values of those options are, since they are used specifically by the default OutputFormatter delegate.
 
 #### Using an IOutputFormatter
 
-You can control the way output is created using an object that implements `IOutputFormatter`. This interface is defined in the `CsQuery.Output` namespace. In fact all output is processed through predefined `OutputFormatters`; the rendering methods that don't accept one just create an instance.
+
+
+You can control the way output is created using an object that implements `IOutputFormatter`. This interface is defined in the `CsQuery.Output` namespace. In fact all output is processed through predefined `OutputFormatters`; the rendering methods that don't accept one just create an instance of the default formatter.
 
 The API described below provides simple access to predefined `OutputFormatters`; you can also create your own implementation. These are static properties and methods that return an instance of an `IOutputFormatter` that can be used directly as a parameter value when a method requires an `IOutputFormatter`. 
 
@@ -102,6 +126,7 @@ The API described below provides simple access to predefined `OutputFormatters`;
 * `OutputFormatters.HtmlEncodingMinimum` returns an OutputFormatter that only encodes the minimum required for valid HTML.
 * `OutputFormatters.HtmlEncodingMinimumNbsp` returns an OutputFormatter that only encodes the minimum required for valid HTML, plus ASCII 160.
 * `OutputFormatters.HtmlEncodingFull` returns an OutputFormatter that encodes all known character entities using their text aliases.
+* `OutputFormatters.PlainText` is a simple formatter that strips out the HTML, leaving behind the text. The formatter tries to coalesce whitespace blocks and insert new lines at sensible places based on the markup. It's not sophisticated, but should be fine for most functional purposes.
 
 There are also methods to create OutputFormatters with specific configurations:
 

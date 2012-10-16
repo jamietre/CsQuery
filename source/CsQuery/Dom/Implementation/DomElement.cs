@@ -634,7 +634,7 @@ namespace CsQuery.Implementation
                 }
                 else
                 {
-                    var formatter = new OutputFormatterDefault();
+                    var formatter = new FormatDefault();
                     StringBuilder sb = new StringBuilder();
                     StringWriter writer = new StringWriter(sb);
                     formatter.RenderChildren(this, writer);
@@ -774,7 +774,7 @@ namespace CsQuery.Implementation
         public override string ElementHtml()
         {
 
-            var formatter = new OutputFormatterDefault();
+            var formatter = new FormatDefault();
             StringWriter writer = new StringWriter();
             formatter.RenderElement(this,writer, false);
             return writer.ToString();

@@ -14063,7 +14063,7 @@
              The target for the ouput.
              </param>
         </member>
-        <member name="T:CsQuery.Output.OutputFormatterDefault">
+        <member name="T:CsQuery.Output.FormatDefault">
             <summary>
             Default output formatter.
             </summary>
@@ -14098,7 +14098,7 @@
              A string of HTML
              </returns>
         </member>
-        <member name="M:CsQuery.Output.OutputFormatterDefault.#ctor(CsQuery.DomRenderingOptions,CsQuery.Output.IHtmlEncoder)">
+        <member name="M:CsQuery.Output.FormatDefault.#ctor(CsQuery.DomRenderingOptions,CsQuery.Output.IHtmlEncoder)">
              <summary>
              Abstract base class constructor.
              </summary>
@@ -14110,12 +14110,12 @@
              The encoder.
              </param>
         </member>
-        <member name="M:CsQuery.Output.OutputFormatterDefault.#ctor">
+        <member name="M:CsQuery.Output.FormatDefault.#ctor">
             <summary>
             Creates the default OutputFormatter using default DomRenderingOption values and default HtmlEncoder
             </summary>
         </member>
-        <member name="M:CsQuery.Output.OutputFormatterDefault.Render(CsQuery.IDomObject,System.IO.TextWriter)">
+        <member name="M:CsQuery.Output.FormatDefault.Render(CsQuery.IDomObject,System.IO.TextWriter)">
              <summary>
              Renders the object to the textwriter.
              </summary>
@@ -14131,7 +14131,7 @@
              The writer to which output is written.
              </param>
         </member>
-        <member name="M:CsQuery.Output.OutputFormatterDefault.Render(CsQuery.IDomObject)">
+        <member name="M:CsQuery.Output.FormatDefault.Render(CsQuery.IDomObject)">
              <summary>
              Renders the object to a string.
              </summary>
@@ -14144,7 +14144,7 @@
              A string.
              </returns>
         </member>
-        <member name="M:CsQuery.Output.OutputFormatterDefault.RenderElements(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},System.IO.TextWriter)">
+        <member name="M:CsQuery.Output.FormatDefault.RenderElements(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},System.IO.TextWriter)">
              <summary>
              Renders the sequence of elements.
              </summary>
@@ -14156,7 +14156,7 @@
              The writer to which output is written.
              </param>
         </member>
-        <member name="M:CsQuery.Output.OutputFormatterDefault.RenderElement(CsQuery.IDomObject,System.IO.TextWriter,System.Boolean)">
+        <member name="M:CsQuery.Output.FormatDefault.RenderElement(CsQuery.IDomObject,System.IO.TextWriter,System.Boolean)">
              <summary>
              Gets the HTML representation of this element and its children.
              </summary>
@@ -14171,7 +14171,7 @@
              true to include, false to exclude the children.
              </param>
         </member>
-        <member name="M:CsQuery.Output.OutputFormatterDefault.RenderChildren(CsQuery.IDomObject,System.IO.TextWriter)">
+        <member name="M:CsQuery.Output.FormatDefault.RenderChildren(CsQuery.IDomObject,System.IO.TextWriter)">
              <summary>
              Renders all the children of the passed node.
              </summary>
@@ -14183,7 +14183,7 @@
              The writer to which output is written.
              </param>
         </member>
-        <member name="M:CsQuery.Output.OutputFormatterDefault.RenderTextNode(CsQuery.IDomObject,System.IO.TextWriter,System.Boolean)">
+        <member name="M:CsQuery.Output.FormatDefault.RenderTextNode(CsQuery.IDomObject,System.IO.TextWriter,System.Boolean)">
              <summary>
              Renders the text node.
              </summary>
@@ -14198,7 +14198,7 @@
              true to raw.
              </param>
         </member>
-        <member name="M:CsQuery.Output.OutputFormatterDefault.RenderCdataNode(CsQuery.IDomObject,System.IO.TextWriter)">
+        <member name="M:CsQuery.Output.FormatDefault.RenderCdataNode(CsQuery.IDomObject,System.IO.TextWriter)">
              <summary>
              Renders a CDATA node.
              </summary>
@@ -14210,7 +14210,7 @@
              The writer to which output is written.
              </param>
         </member>
-        <member name="M:CsQuery.Output.OutputFormatterDefault.RenderCommentNode(CsQuery.IDomObject,System.IO.TextWriter)">
+        <member name="M:CsQuery.Output.FormatDefault.RenderCommentNode(CsQuery.IDomObject,System.IO.TextWriter)">
              <summary>
              Renders the comment node.
              </summary>
@@ -14222,7 +14222,7 @@
              The writer to which output is written.
              </param>
         </member>
-        <member name="M:CsQuery.Output.OutputFormatterDefault.RenderDocTypeNode(CsQuery.IDomObject,System.IO.TextWriter)">
+        <member name="M:CsQuery.Output.FormatDefault.RenderDocTypeNode(CsQuery.IDomObject,System.IO.TextWriter)">
              <summary>
              Renders the document type node.
              </summary>
@@ -14234,7 +14234,7 @@
              The writer to which output is written.
              </param>
         </member>
-        <member name="M:CsQuery.Output.OutputFormatterDefault.RenderAttribute(System.IO.TextWriter,System.String,System.String,System.Boolean)">
+        <member name="M:CsQuery.Output.FormatDefault.RenderAttribute(System.IO.TextWriter,System.String,System.String,System.Boolean)">
              <summary>
              Render an attribute.
              </summary>
@@ -14252,7 +14252,7 @@
              true to require quotes around the attribute value, false to use quotes only if needed.
              </param>
         </member>
-        <member name="M:CsQuery.Output.OutputFormatterDefault.MergeDefaultOptions">
+        <member name="M:CsQuery.Output.FormatDefault.MergeDefaultOptions">
             <summary>
             Merge options with defaults when needed.
             </summary>
@@ -14342,6 +14342,11 @@
         <member name="P:CsQuery.OutputFormatters.HtmlEncodingMinimumNbsp">
             <summary>
             Gets an instance of the default OutputFormatter, using the minimum HTML + NBSP encoding scheme.
+            </summary>
+        </member>
+        <member name="P:CsQuery.OutputFormatters.PlainText">
+            <summary>
+            An OutputFormatter that returns a basic ASCII version of the HTML document.
             </summary>
         </member>
         <member name="T:CsQuery.Promises.IPromise`1">
@@ -17465,6 +17470,86 @@
             
              <returns>
              A context which can be used to complete the Render after any manipulation with CsQuery.
+             </returns>
+        </member>
+        <member name="T:CsQuery.Output.FormatPlainText">
+            <summary>
+            A formatter that converts a DOM to a basic plain-text version.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Output.FormatPlainText.Render(CsQuery.IDomObject,System.IO.TextWriter)">
+             <summary>
+             Renders this object to the passed TextWriter.
+             </summary>
+            
+             <param name="node">
+             The node.
+             </param>
+             <param name="writer">
+             The writer.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.FormatPlainText.Render(CsQuery.IDomObject)">
+             <summary>
+             Renders this object and returns the output as a string.
+             </summary>
+            
+             <param name="node">
+             The node.
+             </param>
+            
+             <returns>
+             A string of HTML.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Output.FormatPlainText.AddContents(System.Text.StringBuilder,CsQuery.IDomObject,System.Boolean)">
+             <summary>
+             Adds the contents to 'node' to the StringBuilder.
+             </summary>
+            
+             <param name="sb">
+             The StringBuilder.
+             </param>
+             <param name="node">
+             The node.
+             </param>
+             <param name="skipWhitespace">
+             true to skip any leading whitespace for this node.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.FormatPlainText.ToStandardLineEndings(System.String)">
+             <summary>
+             Converts the newline characters in a string to standard system line endings
+             </summary>
+            
+             <param name="text">
+             The text.
+             </param>
+            
+             <returns>
+             The converted string
+             </returns>
+        </member>
+        <member name="M:CsQuery.Output.FormatPlainText.RemoveTrailingWhitespace(System.Text.StringBuilder)">
+             <summary>
+             Removes trailing whitespace in this StringBuilder
+             </summary>
+            
+             <param name="sb">
+             The StringBuilder.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.FormatPlainText.CleanFragment(System.String)">
+             <summary>
+             Clean a string fragment for output as text
+             </summary>
+            
+             <param name="text">
+             The text.
+             </param>
+            
+             <returns>
+             The clean text
              </returns>
         </member>
         <member name="T:CsQuery.Promises.WhenAll">
@@ -21971,6 +22056,19 @@
              HTML string.
              </returns>
         </member>
+        <member name="M:CsQuery.Web.AsyncPostbackData.Render(CsQuery.DomRenderingOptions)">
+             <summary>
+             Output this data block, recalulating the lengtht parameter based on the new output, using the passed options.
+             </summary>
+            
+             <param name="options">
+             Options for controlling the operation.
+             </param>
+            
+             <returns>
+             HTML string.
+             </returns>
+        </member>
         <member name="F:CsQuery.Web.AsyncPostbackData.Content">
             <summary>
             The content of the data packet (HTML). Probably, you'd rather be looking at the Dom property.
@@ -23507,6 +23605,15 @@
             <summary>
             Renders the DOM to the bound TextWriter.
             </summary>
+        </member>
+        <member name="M:CsQuery.Web.CsQueryHttpContext.Render(CsQuery.DomRenderingOptions)">
+             <summary>
+             Renders the DOM to the bound TextWriter with the passed options
+             </summary>
+            
+             <param name="options">
+             Options for controlling the operation.
+             </param>
         </member>
         <member name="M:CsQuery.Web.CsQueryHttpContext.Create">
             <summary>

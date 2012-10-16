@@ -195,6 +195,7 @@
     <Content Include="Resources\PupilLogin.htm" />
     <Content Include="Resources\samsung-ebay.htm" />
     <Content Include="Resources\TextAreaTest.htm" />
+    <Compile Include="Csharp\Output\FormatPlainText.cs" />
     <Compile Include="Csharp\Selectors\CSS3\LastChild.cs" />
     <Compile Include="Csharp\Selectors\CSS3\NthChild.cs" />
     <Compile Include="Csharp\Selectors\CSS3\NthLastChild.cs" />

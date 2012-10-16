@@ -883,7 +883,7 @@ namespace CsQuery.Implementation
 
         public virtual string Render(DomRenderingOptions options)
         {
-            var formatter = new OutputFormatterDefault(options, HtmlEncoders.Default);
+            var formatter = new FormatDefault(options, HtmlEncoders.Default);
             return formatter.Render(this);
 
         }

@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>CsQuery</id>
-    <version>1.3.0-beta3</version>
+    <version>1.3.0</version>
     <title>CsQuery</title>
     <authors>James Treworgy</authors>
     <owners>James Treworgy</owners>
@@ -13,7 +13,7 @@
     <summary>A complete CSS selector engine and jQuery port for .NET 4 and C#.</summary>
     <description>CsQuery is an HTML parser, CSS selector engine and jQuery port for .NET 4 and C#. It implements all CSS2 and CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. </description>
 <releaseNotes>
-Version 1.3 replaces the original HTML parser with a new C# port of the validator.nu HTML5 parser.
+Version 1.3 is a major release. It implements a new C# port of the validator.nu HTML5 parser, a fully HTML5 compliant HTML parser. This version includes a number of new options for parsing and rendering HTML.
 
 Complete change log:
 https://github.com/jamietre/CsQuery/blob/master/source/README.md    

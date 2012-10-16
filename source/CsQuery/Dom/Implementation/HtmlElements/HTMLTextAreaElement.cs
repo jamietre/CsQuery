@@ -30,7 +30,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                var formatter = new Output.OutputFormatterDefault();
+                var formatter = new Output.FormatDefault();
                 StringWriter sw = new StringWriter();
 
                 formatter.RenderChildren(this, sw);
