@@ -12,9 +12,7 @@ The CSS selector engine fully indexes each document on tag name, id, class, and 
 
 ### Installation
 
-**Latest release:** Version 1.2.1 (August 21, 2012)
-
-**Latest prerelase:** Version 1.3.0-beta2 (October 9, 2012)
+**Latest release:** Version 1.3 (October 16, 2012)
 
 To install the latest release from NuGet package manager:
 
@@ -43,12 +41,13 @@ You should be able to compile everything now.  If you have any trouble initializ
 
 ### Release Notes
 
-The latest release is 1.2.1 This is a bugfix release.
+The latest release is 1.3. This is a major new release incorporating a new HTML5-compliant parser.
 
-If you are updating from version 1.1.x, please note that versions 1.2.x includes a change to the public API which will break code which *directly* instantiates `DomElement` objects. (This has never been recommended and will not affect any code which uses `CQ.Create` or `Document.CreateElement` methods; it only affects creation using `new` to create `DomElement` objects)
+Please see the [complete release notes.](http://blog.outsharked.com/2012/10/csquery-13-released.html)
 
 There are detailed nodes for major releases:
 
+* [Release notes for 1.3](http://blog.outsharked.com/2012/10/csquery-13-released.html)
 * [Release notes for 1.2](http://blog.outsharked.com/2012/08/csquery-12-released.html) 
 * [All CsQuery release notes](http://blog.outsharked.com/search/label/csquery-release)
 
