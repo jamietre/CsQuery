@@ -477,6 +477,8 @@
   <PropertyGroup>
     <PostBuildEvent>if not $(ConfigurationName) ==Release GOTO finished
 ;
+if not $(SolutionName) == CsQuery GOTO finished;
+
 xcopy $(TargetDir)CsQuery.dll $(SolutionDir)..\Distribution /Y
 ;
 xcopy $(TargetDir)CsQuery.pdb $(SolutionDir)..\Distribution /Y

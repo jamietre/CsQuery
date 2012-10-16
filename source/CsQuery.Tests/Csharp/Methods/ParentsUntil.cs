@@ -20,7 +20,7 @@ namespace CsQuery.Tests.Csharp
     {
         Array expected;
 
-        public override void  FixtureSetUp()
+        public override void FixtureSetUp()
         {
  	        base.FixtureSetUp();
 

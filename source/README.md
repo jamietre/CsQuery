@@ -12,6 +12,7 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 - [Issue #51](https://github.com/jamietre/CsQuery/issues/51): Fix issue with compound subselectors whose target included CSS matches above the level of the context.
 - Add `HtmlEncoderFull` that will render text codes for all supported HTML5 entities with text aliases.
 
+
 ####Version 1.3 Beta 2
 
 - Build out `IOutputFormatter` interface/methods and move element rendering implementations to OutputFormatters.. Some `Render` methods have been marked as obsolete now.

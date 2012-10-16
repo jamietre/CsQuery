@@ -35,38 +35,6 @@ namespace CsQuery.HtmlParser
         #region static methods
 
         /// <summary>
-        /// Creates a new document from a string of HTML using the options passed.
-        /// </summary>
-        ///
-        /// <param name="html">
-        /// The HTML.
-        /// </param>
-        /// <param name="parsingMode">
-        /// (optional) the parsing mode.
-        /// </param>
-        /// <param name="options">
-        /// (optional) options for controlling the operation.
-        /// </param>
-        /// <param name="docType">
-        /// (optional) type of the document.
-        /// </param>
-        ///
-        /// <returns>
-        /// A new document.
-        /// </returns>
-
-        public static IDomDocument Create(string html, 
-            HtmlParsingMode parsingMode=HtmlParsingMode.Auto, 
-            HtmlParsingOptions options= HtmlParsingOptions.Default,
-            DocType docType = DocType.Default)
-        {
-
-            using (var reader = new StringReader(html ?? "")) {
-                return GetNewParser(parsingMode,options,docType).Parse(reader);
-            }
-        }
-
-        /// <summary>
         /// Creates a new document from a Stream of HTML using the options passed.
         /// </summary>
         ///
@@ -87,16 +55,12 @@ namespace CsQuery.HtmlParser
         /// A new document.
         /// </returns>
 
-        public static IDomDocument Create(Stream html, 
+        public static IDomDocument Create(TextReader reader, 
             HtmlParsingMode parsingMode = HtmlParsingMode.Auto,
             HtmlParsingOptions parsingOptions = HtmlParsingOptions.Default,
             DocType docType = DocType.Default)
         {
-            
-            using (var reader = new StreamReader(html))
-            {
-                return GetNewParser(parsingMode, parsingOptions, docType).Parse(reader);
-            }
+            return GetNewParser(parsingMode, parsingOptions, docType).Parse(reader);
         }
 
         private static ElementFactory GetNewParser()

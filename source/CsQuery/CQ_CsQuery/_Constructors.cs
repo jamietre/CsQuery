@@ -46,7 +46,12 @@ namespace CsQuery
             HtmlParsingOptions parsingOptions=HtmlParsingOptions.Default,
             DocType docType = DocType.Default)
         {
-            CreateNew(this, html, parsingMode,parsingOptions, docType);
+            //CreateNew(this, html, parsingMode,parsingOptions, docType);
+
+            using (var reader = new StringReader(html ?? ""))
+            {
+                CreateNew(this,reader, parsingMode, parsingOptions, docType);
+            }
         }
 
         /// <summary>
@@ -72,11 +77,36 @@ namespace CsQuery
             HtmlParsingOptions parsingOptions =HtmlParsingOptions.Default,
             DocType docType = DocType.Default)
         {
-            CreateNew(this, html, parsingMode,parsingOptions, docType);
+            using (var reader = new StreamReader(html))
+            {
+                CreateNew(this, reader, parsingMode, parsingOptions, docType);
+            }
         }
 
+        /// <summary>
+        /// Create a new CQ object from an HTML string.
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// The html source of the new document.
+        /// </param>
+        /// <param name="parsingMode">
+        /// The HTML parsing mode.
+        /// </param>
+        /// <param name="parsingOptions">
+        /// (optional) options for controlling the parsing.
+        /// </param>
+        /// <param name="docType">
+        /// (optional) type of the document.
+        /// </param>
 
-
+        public CQ(TextReader html,
+            HtmlParsingMode parsingMode = HtmlParsingMode.Auto,
+            HtmlParsingOptions parsingOptions = HtmlParsingOptions.Default,
+            DocType docType = DocType.Default)
+        {
+            CreateNew(this, html, parsingMode, parsingOptions, docType);
+        }
 
         /// <summary>
         /// Create a new CQ object wrapping a single element.
@@ -99,8 +129,18 @@ namespace CsQuery
             AddSelection(element);
         }
 
+        /// <summary>
+        /// Create a new CsQuery object wrapping an existing sequence of elements.
+        /// </summary>
+        ///
+        /// <param name="elements">
+        /// A sequence of elements to populate the object
+        /// </param>
 
-       
+        public CQ(IEnumerable<IDomObject> elements)
+        {
+            ConfigureNewInstance(this, elements);
+        }
 
         /// <summary>
         /// Create a new CQ object wrapping a single DOM element, in the context of another CQ object.
@@ -125,9 +165,6 @@ namespace CsQuery
             ConfigureNewInstance(this, element, context);
         }
 
-      
-
-
         /// <summary>
         /// Create a new CsQuery object using an existing instance and a selector. if the selector is
         /// null or missing, then it will contain no selection results.
@@ -144,8 +181,6 @@ namespace CsQuery
         {
             ConfigureNewInstance(selector,context);
         }
-
-       
 
         /// <summary>
         /// Create a new CsQuery object from a selector HTML, and assign CSS from a JSON string, within a context.
@@ -187,20 +222,7 @@ namespace CsQuery
             AttrSet(css);
         }
 
-        /// <summary>
-        /// Create a new CsQuery object from an existing CsQuery object (or any set of DOM elements). If
-        /// the source is a unassociated list of DOM elements, the context of the first element will
-        /// become the context of the new CsQuery object.
-        /// </summary>
-        ///
-        /// <param name="elements">
-        /// A sequence of elements to populate the object
-        /// </param>
-
-        public CQ(IEnumerable<IDomObject> elements)
-        {
-            ConfigureNewInstance(this,elements);
-        }
+        
 
        
         /// <summary>
@@ -291,44 +313,8 @@ namespace CsQuery
 
         protected void CreateNewFragment(IEnumerable<IDomObject> elements)
         {
-
             Document = DomDocument.Create(elements.Clone(), HtmlParsingMode.Fragment);
             AddSelection(Document.ChildNodes);
-        }
-
-        /// <summary>
-        /// Bind this instance to a new DomFragment created from HTML using the specified parsing mode.
-        /// </summary>
-        ///
-        /// <param name="target">
-        /// The target.
-        /// </param>
-        /// <param name="html">
-        /// The HTML.
-        /// </param>
-        /// <param name="parsingMode">
-        /// The HTML parsing mode.
-        /// </param>
-        /// <param name="parsingOptions">
-        /// (optional) options for controlling the parsing.
-        /// </param>
-        /// <param name="docType">
-        /// (optional) type of the document.
-        /// </param>
-
-        protected void CreateNew(CQ target,
-            string html, 
-            HtmlParsingMode parsingMode,
-            HtmlParsingOptions parsingOptions, 
-            DocType docType)
-        {
-            target.Document = DomDocument.Create(html,parsingMode,parsingOptions,docType);
-
-             
-            //  enumerate ChildNodes when creating a new fragment to be sure the selection set only
-            //  reflects the original document. 
-            
-            target.SetSelection(Document.ChildNodes.ToList(),SelectionSetOrder.Ascending);
         }
 
         /// <summary>
@@ -352,7 +338,7 @@ namespace CsQuery
         /// </param>
 
         protected void CreateNew(CQ target,
-          Stream html,
+          TextReader html,
           HtmlParsingMode parsingMode,
           HtmlParsingOptions parsingOptions,
           DocType docType)
@@ -398,7 +384,7 @@ namespace CsQuery
         private CQ NewInstance(string html)
         {
             var cq = NewCqUnbound();
-            CreateNew(cq, html, HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.Default);
+            CreateNew(cq, new StringReader(html), HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.Default);
             return cq;
         }
 

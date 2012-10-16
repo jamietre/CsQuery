@@ -69,9 +69,7 @@ namespace CsQuery
         [Obsolete]
         public static CQ Create(char[] html)
         {
-            var cq = new CQ();
-            cq.CreateNew(cq, html.AsString(), HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.Default); ;
-            return cq;
+            return new CQ(html.AsString(), HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.Default);
         }
 
         /// <summary>
@@ -150,7 +148,9 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Creeate a new CQ object from a squence of elements, or another CQ object.
+        /// Creeate a new CQ object from a squence of elements, or another CQ object. The new object will
+        /// contain clones of the original objects; they are no longer bound to their owning context. If
+        /// you want to wrap these elements and retain their context, use "new CQ(...)" instead.
         /// </summary>
         ///
         /// <param name="elements">
@@ -158,7 +158,7 @@ namespace CsQuery
         /// </param>
         ///
         /// <returns>
-        /// A new CQ object
+        /// A new CQ object.
         /// </returns>
 
         public static CQ Create(IEnumerable<IDomObject> elements)
@@ -182,7 +182,24 @@ namespace CsQuery
 
         public static CQ Create(Stream html)
         {
-            return Create(html, HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.Default);
+            return new CQ(html, HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.Default);
+        }
+
+        /// <summary>
+        /// Create a new CQ object from a TextReader containing HTML.
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// A TextReader containing HTML.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+
+        public static CQ Create(TextReader html)
+        {
+            return new CQ(html, HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.Default);
         }
 
         /// <summary>
@@ -215,7 +232,36 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Creeate a new fragment from HTML text.
+        /// Create a new CQ object from a TextReader containg HTML
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// A string of HTML.
+        /// </param>
+        /// <param name="parsingMode">
+        /// (optional) the mode.
+        /// </param>
+        /// <param name="parsingOptions">
+        /// (optional) options for controlling the parsing.
+        /// </param>
+        /// <param name="docType">
+        /// (optional) type of the document.
+        /// </param>
+        ///
+        /// <returns>
+        /// The new fragment.
+        /// </returns>
+
+        public static CQ Create(TextReader html,
+           HtmlParsingMode parsingMode = HtmlParsingMode.Auto,
+           HtmlParsingOptions parsingOptions = HtmlParsingOptions.Default,
+           DocType docType = DocType.Default)
+        {
+            return new CQ(html, parsingMode, parsingOptions, docType);
+        }
+
+        /// <summary>
+        /// Create a new fragment from a TextReader containing HTML text.
         /// </summary>
         ///
         /// <param name="html">
@@ -226,12 +272,9 @@ namespace CsQuery
         /// The new fragment.
         /// </returns>
 
-
         public static CQ CreateFragment(string html)
         {
-            CQ cq = new CQ();
-            cq.CreateNew(cq, html, HtmlParsingMode.Fragment, HtmlParsingOptions.AllowSelfClosingTags, DocType.Default);
-            return cq;
+            return new CQ(html,HtmlParsingMode.Fragment,HtmlParsingOptions.AllowSelfClosingTags, DocType.Default);
         }
 
         /// <summary>
@@ -256,45 +299,8 @@ namespace CsQuery
             return cq;
         }
 
-
         /// <summary>
-        /// Create a new fragment from HTML text.
-        /// </summary>
-        ///
-        /// <param name="html">
-        /// A character array containing HTML
-        /// </param>
-        ///
-        /// <returns>
-        /// The new fragment.
-        /// </returns>
-
-        public static CQ CreateFragment(char[] html)
-        {
-            return CreateFragment(html.AsString());
-        }
-
-        /// <summary>
-        /// Create a new fragment from a stream of HTML text.
-        /// </summary>
-        ///
-        /// <param name="html">
-        /// An open Stream 
-        /// </param>
-        ///
-        /// <returns>
-        /// The new fragment.
-        /// </returns>
-
-        public static CQ CreateFragment(Stream html)
-        {
-            CQ cq = new CQ();
-            cq.CreateNew(cq, html,HtmlParsingMode.Fragment,HtmlParsingOptions.AllowSelfClosingTags, DocType.Default);
-            return cq;
-        }
-
-        /// <summary>
-        /// Creeate a new CQ object from a squence of elements, or another CQ object.
+        /// Create a new CQ object from a sequence of elements, or another CQ object.
         /// </summary>
         ///
         /// <param name="elements">
@@ -327,28 +333,7 @@ namespace CsQuery
 
         public static CQ CreateDocument(string html)
         {
-            CQ csq = new CQ();
-            csq.Document = DomDocument.Create(html, HtmlParsingMode.Document);
-            csq.AddSelection(csq.Document.ChildNodes);
-            return csq;
-            
-        }
-
-        /// <summary>
-        /// Creeate a new DOM from HTML text using full HTML5 tag generation.
-        /// </summary>
-        ///
-        /// <param name="html">
-        /// A character array containing HTML
-        /// </param>
-        ///
-        /// <returns>
-        /// The new document.
-        /// </returns>
-
-        public static CQ CreateDocument(char[] html)
-        {
-            return CreateDocument(html.AsString());
+            return new CQ(html, HtmlParsingMode.Document, HtmlParsingOptions.Default, DocType.Default);
         }
 
         /// <summary>
@@ -365,10 +350,24 @@ namespace CsQuery
 
         public static CQ CreateDocument(Stream html)
         {
-            CQ csq = new CQ();
-            csq.Document = DomDocument.Create(html, HtmlParsingMode.Document);
-            csq.AddSelection(csq.Document.ChildNodes);
-            return csq;
+            return new CQ(html, HtmlParsingMode.Document, HtmlParsingOptions.Default, DocType.Default);
+        }
+
+        /// <summary>
+        /// Creates a new DOM from a stream containing HTML
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// A n open Stream
+        /// </param>
+        ///
+        /// <returns>
+        /// The new document.
+        /// </returns>
+
+        public static CQ CreateDocument(TextReader html)
+        {
+            return new CQ(html, HtmlParsingMode.Document, HtmlParsingOptions.Default, DocType.Default);
         }
 
         /// <summary>

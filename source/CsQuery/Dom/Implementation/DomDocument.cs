@@ -47,14 +47,18 @@ namespace CsQuery.Implementation
             HtmlParsingOptions parsingOptions = HtmlParsingOptions.Default,
             DocType docType = DocType.Default)
         {
-            return ElementFactory.Create(html, parsingMode, parsingOptions, docType);
+            using (var reader = new StringReader(html))
+            {
+                return ElementFactory.Create(reader, parsingMode, parsingOptions, docType);
+            }
         }
 
-        public static IDomDocument Create(Stream html, 
+        public static IDomDocument Create(TextReader html, 
             HtmlParsingMode parsingMode= HtmlParsingMode.Content,
             HtmlParsingOptions parsingOptions= HtmlParsingOptions.Default,
             DocType docType = DocType.Default)
         {
+            
             return ElementFactory.Create(html, parsingMode,parsingOptions, docType);
         }
 
