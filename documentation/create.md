@@ -13,28 +13,34 @@ will create a new DOM from that source (a `string`, `Stream`, or `TextReader`). 
 There are several ways to interpret HTML: 
 
 * as a complete document, e.g. a web page; 
-* as content that should stand on its own but is not a complete doucment, e.g. copy for a content block, or something in a CMS; 
+* as content that should stand on its own but is not a complete document, e.g. copy for a content block, or something in a CMS; 
 * as a fragment, or a snippet or a template building-block which may be incomplete or out-of-context, such as a table cell like `<td></td>`
 
-It's important for CsQuery to understand the context so it can determine how to handle HTML that appears to be invalid correctly. HTML5 parsing rules specify a particular way of handling missing or incorrect markup. But if the context isn't a complete document, then it might not actually be invalid in that context. Usually, you can just let CsQuery figure it out, but sometimes you may want to specify a certain context.
+It's important for CsQuery to understand the context of a chunk of HTML. The HTML5 spec specifies particular way of handling missing or incorrect markup. But whether or not something's correct depends on where it appears. For example, a `<div>` can't be the child of an `<a>`. 
+
+So, we need to know how something anything should be handled. If it's supposed to represent a complete document, then one set of rules applies. If it's just an arbitrary piece of HTML that will be added to a document later, then a different set of rules applies. Usually, you can just let CsQuery figure it out, but sometimes you may want to specify a certain context.
 
 #####Basic Method
 
-    var dom = CQ.Create(..);   // Create content
+Create content, letting CsQuery automatically determine the context:
 
-Creates content, automatically determining context. That is, HTML content can be: a complete document, general content that can be inserted in the `body` of a document, or context-specific content that can only exist in a certain tag context (e.g. `tr` can only be within a `tbody` or `thead` context).
+    var dom = CQ.Create(..); 
 
-There are overloads for accepting `string` and  `Stream` inputs. You can also specify the handling using optional parameters:
+The HTML content can be: a complete document, general content that can be inserted in the `body` of a document, or context-specific content that can only exist in a certain tag context (e.g. `tr` can only be within a `tbody` or `thead` context). 
+
+When called with no parameters other than the HTML, CsQuery will assess the context by looking at the first tag. There input can be a `string`, a `Stream`, or a `TextReader`. 
+
+You can also specify the handling, as well as other options, using optional parameters:
 
     Create(string html, 
         HtmlParsingMode mode = HtmlParsingMode.Auto, 
         HtmlParsingOptions options = HtmlParsingOptions.Default,
         DocType docType = DocType.HTML5);
 
-`HtmlParsingMode` determines the way CsQuery interprets your HTML.
+`HtmlParsingMode` determines context.
 
 * `HtmlParsingMode.Auto` means let CsQuery figure it out. Anything starting an `html` or `body` is treated as a complete document; anything starting with a block element is content; anything else is considered a fragment and will be assumed to be in a valid context.
-* `HtmlParsingMode.Document` means the content will be treated as a complete document. Missing `html`, `body`, `head` and `title` tags will be generated to produce a complete DOM.
+* `HtmlParsingMode.Document` means the content will be treated as a complete document. Missing `html`, `body`, and `head` tags will be generated to produce a complete DOM.
 * `HtmlParsingMode.Content` means its not a full document, but is expected to be valid in a `body` context. For example, content starting with `<tr> ... </tr>` would be invalid and handled according to HTML5 rules (typically, discarded).
 * `HtmlParsingMode.Fragment` means its an arbitrary fragment and will be treated as if its in a valid context.
 
@@ -54,7 +60,7 @@ This method forces the content to be treated as a complete document.
 
     CQ.CreateDocument(..)   // Create a document. 
 
-This method assumes that the content is a complete HTML document and not a fragment. In addition to the handling of optional tags provided by the `Create` method, this method will ensure that any content is a complete HTML document. If the `html`, `body` or `head` tags are missing, they will be created. Stranded text nodes (e.g. outside of `body`) will be moved inside the body. 
+In addition to the handling of optional tags provided by the `Create` method, this method will ensure that any content is a complete HTML document. If the `html`, `body` or `head` tags are missing, they will be created. Optional tags such as `table > tbody` are always generated. Stranded text nodes (e.g. outside of `body`) will be moved inside the body. This is the same handling a browser would use when rendering any HTML source.
 
 #####Create a fragment
     
@@ -62,13 +68,18 @@ This method forces the content to be treated as a fragment.
 
     CQ.CreateFragment(..)   // Create a fragment. 
 
-This method interprets the content as a true fragment that you may use for any purpose. No attempt will be made to identify and create missing opening tags such as `tbody` -- the actual markup will be interpreted exactly as presented. Missing close tag rules still apply, though, since it's impossible to create a CQ document that has incomplete nodes. 
+This method interprets the content as a fragment that you may use for any purpose. The context will be assumed to be legal for the first tag found; howver, any invalid child constructs will be parsed according to HTML5 rules. 
 
-When creating HTML from a selector using jQuery syntax, this is the method that will be used.
+When creating HTML from a selector using jQuery syntax, this is the method that is used:
 
     var fragment = someCsQueryDocument.Select["<div /">];
 
-There's an important overload for `CreateFragment` that offers functionality you can't get anywhere else:
+Note that when using `CreateFragment`, self-closing syntax is allowed for tags. HTML5 rules specify that this construct should be ignored, so normally, a self-closing tag would be handled the same as an opening tag. This method explicitly permits this syntax for convenience. You can also control this using the `DomRenderingOptions.AllowSelfClosingTags` flag.
+
+
+<i>Create A Fragment In Tag Context</i>
+
+There's an important overload for `CreateFragment` that offers functionality not available through the `Create` method:
 
     CQ CreateFragment(string html, string context)
 
