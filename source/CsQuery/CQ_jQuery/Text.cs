@@ -86,11 +86,13 @@ namespace CsQuery
         {
 
             int count = 0;
+            StringBuilder sb = new StringBuilder();
             foreach (IDomElement obj in Elements)
             {
-                string oldText = Text(obj);
-                string newText = func(count, oldText).ToString();
-                if (oldText != newText)
+                sb.Clear();
+                Text(sb, obj);
+                string newText = func(count, sb.ToString()).ToString();
+                if (sb.ToString() != newText)
                 {
                     SetChildText(obj, newText);
                 }
@@ -119,15 +121,19 @@ namespace CsQuery
             IDomObject lastElement = null;
             foreach (IDomObject obj in elements)
             {
-                string text = Text(obj);
-
+                //string text = Text(obj);
+                
+                int len = sb.Length;
+                
+                Text(sb, obj);
+                
                 if (lastElement != null && obj.Index > 0
                    && obj.PreviousSibling != lastElement
-                    && text.Trim() != "")
+                    && sb.Length > len)
                 {
                     sb.Append(" ");
                 }
-                sb.Append(Text(obj));
+
                 lastElement = obj;
 
             }
@@ -145,25 +151,23 @@ namespace CsQuery
         /// A string containing the text contents of the selection.
         /// </returns>
 
-        private string Text(IDomObject obj)
+        private void Text(StringBuilder sb, IDomObject obj)
         {
             switch (obj.NodeType)
             {
                 case NodeType.TEXT_NODE:
                 case NodeType.CDATA_SECTION_NODE:
                 case NodeType.COMMENT_NODE:
-                    return obj.NodeValue;
-
+                    sb.Append(obj.NodeValue);
+                    break;
                 case NodeType.ELEMENT_NODE:
                 case NodeType.DOCUMENT_FRAGMENT_NODE:
                 case NodeType.DOCUMENT_NODE:
-                    StringBuilder sb = new StringBuilder();
                     Text(sb, obj.ChildNodes);
-                    return sb.ToString();
+                    break;
                 case NodeType.DOCUMENT_TYPE_NODE:
-                    return "";
                 default:
-                    return "";
+                    break;
             }
         }
 

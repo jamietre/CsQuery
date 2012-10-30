@@ -193,6 +193,7 @@
     <Content Include="Resources\jsdom\Level2\ulist.html" />
     <Content Include="Resources\jsdom\Level2\w3c_main.png" />
     <Content Include="Resources\PupilLogin.htm" />
+    <Content Include="Resources\samsung-ebay-2.htm" />
     <Content Include="Resources\samsung-ebay.htm" />
     <Content Include="Resources\TextAreaTest.htm" />
     <Compile Include="Csharp\Output\FormatPlainText.cs" />
@@ -221,6 +222,7 @@
     <Compile Include="Csharp\Selectors\Extensions.cs" />
     <Compile Include="Csharp\Utility\Support.cs" />
     <Compile Include="Csharp\Utility\FastActivator.cs" />
+    <Compile Include="Examples\Whitelist.cs" />
     <Compile Include="Examples\Tables.cs" />
     <Compile Include="Implementation\StringCombiner.cs" />
     <Compile Include="jsdom\Attributes.cs" />

@@ -3951,7 +3951,7 @@
              .
              </param>
         </member>
-        <member name="M:CsQuery.CQ.Text(CsQuery.IDomObject)">
+        <member name="M:CsQuery.CQ.Text(System.Text.StringBuilder,CsQuery.IDomObject)">
              <summary>
              Get the combined text contents of this and all child elements.
              </summary>

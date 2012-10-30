@@ -173,23 +173,20 @@ namespace CsQuery.Tests.Csharp.Miscellaneous
         }
 
         /// <summary>
-        /// Issue 51. A bug concerning subselectors  that arises when the selector matches the element,
-        /// but only when run from the root context. That is a compound selector like ".class1 .class2"
-        /// which would result in an element ".class2" being returned, but the ".class1" element was
-        /// above the context in the dom.
-        /// 
-        /// The test DOM involves a target class that appears both inside and outside a parent container.
-        /// The intial selector gets all of them, then a subselector exlcudes some based on the parent
-        /// container.
+        /// Issue 53: bug in Text method
         /// </summary>
         
         [Test, TestMethod]
-        public void Issue51()
+        public void Issue53()
         {
-            CQ dom = TestDom("ABS - Auto Brake Service.htm");
-            CQ items = dom.Select(".items:not(.relatedListingsContainer .items)");
+            CQ dom = TestDom("samsung-ebay-2");
+            var cur = DateTime.Now;
+            for (int i = 0; i < 100; i++)
+            {
+                var text = dom[".prodDetailSec table"].Text();
+            }
 
-            Assert.AreEqual(1, items.Length);
+            Assert.IsTrue(DateTime.Now < cur.AddSeconds(2));
         }
 
         #region setup
