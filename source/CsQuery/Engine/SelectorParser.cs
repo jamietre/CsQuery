@@ -187,7 +187,12 @@ namespace CsQuery.Engine
                             } 
                             else 
                             {
-                                Current.AttributeValue=innerScanner.Get(expectsOptionallyQuotedValue());
+                                var rawValue = innerScanner.Expect(expectsOptionallyQuotedValue()).ToNewScanner();
+
+                                Current.AttributeValue = rawValue.Finished ? 
+                                    "" : 
+                                    rawValue.Get(new EscapedString());
+
                                 switch (matchType)
                                 {
 

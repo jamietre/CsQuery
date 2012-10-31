@@ -137,8 +137,8 @@ namespace CsQuery.StringScanner.Patterns
             }
             else
             {
-                if (Terminators.Contains(current)) {
-                    //index+=1;
+                bool isEscaped = index>0 && Source[index - 1] == '\\';
+                if (!isEscaped && Terminators.Contains(current)) {
                     return false;
                 }
                 index++;

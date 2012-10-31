@@ -189,6 +189,62 @@ namespace CsQuery.Tests.Csharp.Miscellaneous
             Assert.IsTrue(DateTime.Now < cur.AddSeconds(2));
         }
 
+        [Test, TestMethod]
+        public void Issue55()
+        {
+            var testDom = @"<div id=""test"">
+            <script>scriptText</script>  
+            realText
+            </div>";
+
+            var dom = CQ.Create(testDom);
+
+            Assert.AreEqual("\n            scriptText  \n            realText\n            ", dom["#test"].Text());
+        }
+
+        [Test, TestMethod]
+        public void Issue57()
+        {
+            var document = CQ.Create(@"<div xmlns=""http://www.w3.org/1999/xhtml"" id=""content"" class=""results""><table><thead><tr><th><a href=""/uksi/2007-*?sort=title"" class=""sortAsc"" title=""Sort ascending by Title""><span class=""accessibleText"">Sort ascending by </span>Title</a></th><th><span>Years and Numbers</span></th><th><span>Legislation type</span></th></tr></thead><tbody><tr class=""oddRow""><td><a href=""/uksi/2012/2652/contents/made"">The Motor Vehicles (Tests) (Amendment) (No. 2) Regulations 2012</a></td><td><a href=""/uksi/2012/2652/contents/made"">2012 No. 2652</a></td><td>UK Statutory Instruments</td></tr><tr><td><a href=""/uksi/2012/2651/contents/made"">The A259 Trunk Road (Various Roads, Rye) (Temporary Restriction and Prohibition of Traffic) Order 2012</a></td><td><a href=""/uksi/2012/2651/contents/made"">2012 No. 2651</a></td><td>UK Statutory Instruments</td></tr><tr class=""oddRow""><td><a href=""/uksi/2012/2650/contents/made"">The A21 Trunk Road (Northbridge Street Roundabout) (Temporary Prohibition of Traffic) Order 2012</a></td><td><a href=""/uksi/2012/2650/contents/made"">2012 No. 2650</a></td><td>UK Statutory Instruments</td></tr><tr><td><a href=""/uksi/2012/2649/contents/made"">The M4 Motorway (Junction 10, Link Roads) (Temporary Prohibition of Traffic) (No.3) Order 2012</a></td><td><a href=""/uksi/2012/2649/contents/made"">2012 No. 2649</a></td><td>UK Statutory Instruments</td></tr><tr class=""oddRow""><td><a href=""/uksi/2012/2648/contents/made"">The M4 Motorway (Junction 4, Eastbound Exit Slip Road) (Temporary Prohibition of Traffic) Order 2012</a></td><td><a href=""/uksi/2012/2648/contents/made"">2012 No. 2648</a></td><td>UK Statutory Instruments</td></tr><tr><td><a href=""/uksi/2012/2647/contents/made"">The Health Act 2009 (Commencement No. 6) Order 2012</a></td><td><a href=""/uksi/2012/2647/contents/made"">2012 No. 2647 (C. 105)</a></td><td>UK Statutory Instruments</td></tr><tr class=""oddRow""><td><a href=""/uksi/2012/2646/contents/made"">The A26 Trunk Road (Beddingham Roundabout - South of The Lay) (Temporary 40 Miles Per Hour Speed Restriction) Order 2012</a></td><td><a href=""/uksi/2012/2646/contents/made"">2012 No. 2646</a></td><td>UK Statutory Instruments</td></tr><tr><td><a href=""/uksi/2012/2645/contents/made"">The M6 Motorway (Junction 20-22 Southbound Carriageway and Slip Road) (Temporary Prohibition and Restriction of Traffic) Order 2012</a></td><td><a href=""/uksi/2012/2645/contents/made"">2012 No. 2645</a></td><td>UK Statutory Instruments</td></tr><tr class=""oddRow""><td><a href=""/uksi/2012/2644/contents/made"">The M62 Motorway (Junction 32 to Junction 33) (Temporary Prohibition of Traffic) Order 2012</a></td><td><a href=""/uksi/2012/2644/contents/made"">2012 No. 2644</a></td><td>UK Statutory Instruments</td></tr><tr><td><a href=""/uksi/2012/2643/contents/made"">The M18 Motorway (Junction 2, Wadworth) (Temporary Restriction and Prohibition of Traffic) Order 2012</a></td><td><a href=""/uksi/2012/2643/contents/made"">2012 No. 2643</a></td><td>UK Statutory Instruments</td></tr><tr class=""oddRow""><td><a href=""/uksi/2012/2642/contents/made"">The M1 Motorway and the M18 Motorway (Thurcroft Interchange to Bramley Interchange) (Temporary Restriction and Prohibition of Traffic) Order 2012</a></td><td><a href=""/uksi/2012/2642/contents/made"">2012 No. 2642</a></td><td>UK Statutory Instruments</td></tr><tr><td><a href=""/uksi/2012/2641/contents/made"">The M1 Motorway (Junction 32 to Junction 33) and the M18 Motorway (Thurcroft Interchange to Junction 1) (Temporary Restriction and Prohibition of Traffic) Order 2012</a></td><td><a href=""/uksi/2012/2641/contents/made"">2012 No. 2641</a></td><td>UK Statutory Instruments</td></tr><tr class=""oddRow""><td><a href=""/uksi/2012/2640/contents/made"">The A1 Trunk Road (Darrington Interchange) (Temporary Prohibition of Traffic) (No.2) Order 2012</a></td><td><a href=""/uksi/2012/2640/contents/made"">2012 No. 2640</a></td><td>UK Statutory Instruments</td></tr><tr><td><a href=""/uksi/2012/2639/contents/made"">The A1 Trunk Road (Catterick South Interchange) (Temporary Restriction and Prohibition of Traffic) Order 2012</a></td><td><a href=""/uksi/2012/2639/contents/made"">2012 No. 2639</a></td><td>UK Statutory Instruments</td></tr><tr class=""oddRow""><td><a href=""/uksi/2012/2638/contents/made"">The A1 Trunk Road (Gateshead Quays Interchange) (Temporary Prohibition of Traffic) Order 2012</a></td><td><a href=""/uksi/2012/2638/contents/made"">2012 No. 2638</a></td><td>UK Statutory Instruments</td></tr><tr><td><a href=""/uksi/2012/2637/contents/made"">The A1 Trunk Road (West Mains to Haggerston) (Temporary Restriction and Prohibition of Traffic) Order 2012</a></td><td><a href=""/uksi/2012/2637/contents/made"">2012 No. 2637</a></td><td>UK Statutory Instruments</td></tr><tr class=""oddRow""><td><a href=""/uksi/2012/2636/contents/made"">The Merchant Shipping (Passenger Ships on Domestic Voyages)(Amendment) Regulations 2012</a></td><td><a href=""/uksi/2012/2636/contents/made"">2012 No. 2636</a></td><td>UK Statutory Instruments</td></tr><tr><td><a href=""/uksi/2012/2635/contents/made"">The Network Rail (North Doncaster Chord) Order 2012</a></td><td><a href=""/uksi/2012/2635/contents/made"">2012 No. 2635</a></td><td>UK Statutory Instruments</td></tr><tr class=""oddRow""><td class=""bilingual en""><a href=""/wsi/2012/2634/contents/made"">The A470 Trunk Road (Llyswen, Powys) (Temporary Prohibition of Vehicles) Order 2012</a></td><td rowspan=""2""><a href=""/wsi/2012/2634/contents/made"">2012 No. 2634</a></td><td rowspan=""2"">Wales Statutory Instruments</td></tr><tr class=""oddRow""><td class=""bilingual cy""><a href=""/wsi/2012/2634/contents/made/welsh"" lang=""cy"" xml:lang=""cy"" xmlns:xml=""http://www.w3.org/XML/1998/namespace"">Gorchymyn Cefnffordd yr A470 (Llys-wen, Powys) (Gwahardd Cerbydau Dros Dro) 2012</a></td></tr><tr><td class=""bilingual en""><a href=""/wsi/2012/2633/contents/made"">The A40 Trunk Road (Glangwili Roundabout to Broad Oak, Carmarthenshire) (Temporary Traffic Restrictions and Prohibitions) Order 2012</a></td><td rowspan=""2""><a href=""/wsi/2012/2633/contents/made"">2012 No. 2633</a></td><td rowspan=""2"">Wales Statutory Instruments</td></tr><tr><td class=""bilingual cy""><a href=""/wsi/2012/2633/contents/made/welsh"" lang=""cy"" xml:lang=""cy"" xmlns:xml=""http://www.w3.org/XML/1998/namespace"">Gorchymyn Cefnffordd yr A40 (Cylchfan Glangwili i Dderwen-fawr, Sir Gaerfyrddin) (Cyfyngiadau a Gwaharddiadau Traffig Dros Dro) 2012</a></td></tr></tbody></table></div>");
+
+            var elem = document["#content.results > table > tbody > tr > td:nth-child(1) > a:nth-child(1)"].Eq(19).Parent().Next("td").Children("a").First();
+            // Do something with elem
+            var link = elem.Parent().Next("td").Children("a").First();
+            // NullReferenceException thrown.
+
+        }
+
+
+        [Test, TestMethod]
+        public void Issue56_withDataAttr()
+        {
+            var dom = CQ.CreateFragment(@"<div data-test=""display:block;
+width:10px;"">");
+
+            var div = dom["div[data-test='display:block;\\a width:10px;']"];
+            Assert.AreEqual(1,div.Length);
+        }
+
+        /// <summary>
+        /// Style attribute has special handling - however it should still reflect the input formatting unless altered by a CsQuery method
+        /// </summary>
+
+        [Test, TestMethod]
+        public void Issue56_withStyle()
+        {
+            var dom = CQ.CreateFragment(@"<div style=""display:block;
+width:10px;"">");
+
+            var div = dom["div[style='display:block;\\a width:10px;']"];
+            Assert.AreEqual(1, div.Length);
+
+            div.Css("width", "20px");
+
+            div = dom["div[style='display: block; width: 20px;']"];
+            Assert.AreEqual(1, div.Length);
+
+        }
+
         #region setup
         public override void FixtureSetUp()
         {

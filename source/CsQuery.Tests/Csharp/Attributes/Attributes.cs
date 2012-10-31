@@ -56,7 +56,7 @@ namespace CsQuery.Tests.Csharp.Attributes
                 style="display: none;"
             });
             Assert.AreEqual("10px", div[0]["width"]);
-            Assert.AreEqual("display: none", div[0].Style.ToString());
+            Assert.AreEqual("display: none;", div[0].Style.ToString());
         }
 
         [Test, TestMethod]
@@ -105,7 +105,7 @@ namespace CsQuery.Tests.Csharp.Attributes
 
             div.AttrSet(dict);
             Assert.AreEqual("10px", div[0]["width"]);
-            Assert.AreEqual("display: none", div[0].Style.ToString());
+            Assert.AreEqual("display: none;", div[0].Style.ToString());
         }
 
         [Test, TestMethod]
@@ -150,7 +150,7 @@ namespace CsQuery.Tests.Csharp.Attributes
 
             IList<KeyValuePair<string, string>> attributes = new List<KeyValuePair<string, string>>(el.Attributes);
             Assert.AreEqual(new KeyValuePair<string, string>("class", "profile-link"), attributes[0]);
-            Assert.AreEqual(new KeyValuePair<string, string>("style", "color: #ff0000"), attributes[1]);
+            Assert.AreEqual(new KeyValuePair<string, string>("style", "color: #ff0000;"), attributes[1]);
             Assert.AreEqual(new KeyValuePair<string, string>("href", "/users/480527/jamietre"), attributes[2]);
 
             el = Dom["span.badgecount"].FirstOrDefault();
@@ -208,7 +208,7 @@ namespace CsQuery.Tests.Csharp.Attributes
             Assert.IsTrue(el.HasAttribute("class"));
             Assert.IsTrue(el.HasAttribute("style"));
             Assert.AreEqual("profile-link",el["class"]);
-            Assert.AreEqual("color: #ff0000",el["style"]);
+            Assert.AreEqual("color: #ff0000;",el["style"]);
 
             Assert.IsTrue(dom["[class]"].Length > 0);
             Assert.IsTrue(dom["[style]"].Length > 0);
@@ -226,7 +226,7 @@ namespace CsQuery.Tests.Csharp.Attributes
             Assert.AreEqual("badge2",badge2.Classes.First());
 
             var styleOnly = dom["#hidden-div > :first-child"][0];
-            var style= "width: 100; height: 200;";
+            var style= "width:100;height:200";
 
             Assert.IsTrue(styleOnly.HasAttributes);
             Assert.IsFalse(styleOnly.HasClasses);
@@ -235,6 +235,9 @@ namespace CsQuery.Tests.Csharp.Attributes
             Assert.AreEqual(style, styleOnly["style"]);
             Assert.AreEqual(style, styleOnly.GetAttribute("style"));
             Assert.AreEqual(2, styleOnly.Style.Count);
+
+            // accessing Count causes the styles to be enumerated, and thus formatted
+            style = "width: 100; height: 200;" ;
             Assert.AreEqual(style, styleOnly.Style.ToString());
         }
 

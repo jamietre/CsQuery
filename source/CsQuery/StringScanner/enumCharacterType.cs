@@ -124,6 +124,11 @@ namespace CsQuery.StringScanner
         /// <summary>
         /// A character that will terminate an unquoted HTML attribute value.
         /// </summary>
-        HtmlAttributeValueTerminator = 0x400000
+        HtmlAttributeValueTerminator = 0x400000,
+
+        /// <summary>
+        /// Part of a hex string
+        /// </summary>
+        Hexadecimal = 0x800000
     }
 }

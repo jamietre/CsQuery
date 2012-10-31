@@ -660,21 +660,28 @@ namespace CsQuery.Implementation
             string style = String.Empty;
             if (HasStyles)
             {
-                string delim = Styles.Count > 1 ? ";":"";
-                bool first = true;
-                foreach (var kvp in Styles)
+                if (QuickSetValue != null)
                 {
-                    if (!first)
+                    return QuickSetValue;
+                }
+                else
+                {
+                    string delim = Styles.Count > 1 ? ";" : "";
+                    bool first = true;
+                    foreach (var kvp in Styles)
                     {
-                        style += " ";
-                    }
-                    else
-                    {
-                        first = false;
-                    }
+                        if (!first)
+                        {
+                            style += " ";
+                        }
+                        else
+                        {
+                            first = false;
+                        }
 
-                    style += HtmlData.TokenName(kvp.Key) + ": " + kvp.Value + delim;
-                        
+                        style += HtmlData.TokenName(kvp.Key) + ": " + kvp.Value + delim;
+
+                    }
                 }
             }
 

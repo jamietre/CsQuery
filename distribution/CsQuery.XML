@@ -14769,6 +14769,11 @@
             A character that will terminate an unquoted HTML attribute value.
             </summary>
         </member>
+        <member name="F:CsQuery.StringScanner.CharacterType.Hexadecimal">
+            <summary>
+            Part of a hex string
+            </summary>
+        </member>
         <member name="T:CsQuery.StringScanner.ExtensionMethods.ExtensionMethods">
             <summary>
             Extension methods used by CsQuery but not specialized enough to be considered useful for clients; therefore
@@ -16316,6 +16321,11 @@
             <summary>
             Match a string pattern against a particular character validation function, but allow the backslash to escape 
             any character.
+            </summary>
+        </member>
+        <member name="M:CsQuery.StringScanner.Patterns.EscapedString.#ctor">
+            <summary>
+            Default constructor -- simply parses escapes until the end of the string
             </summary>
         </member>
         <member name="M:CsQuery.StringScanner.Patterns.HTMLTagSelectorName.#ctor">

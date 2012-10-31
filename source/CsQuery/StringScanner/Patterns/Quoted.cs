@@ -13,6 +13,7 @@ namespace CsQuery.StringScanner.Patterns
 
     public class Quoted: ExpectPattern
     {
+
         /// <summary>
         /// The quote character that was used to open the string.
         /// </summary>

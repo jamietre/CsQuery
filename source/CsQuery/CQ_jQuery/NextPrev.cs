@@ -162,10 +162,10 @@ namespace CsQuery
             IEnumerable<IDomElement> siblings;
             SelectionSetOrder order;
             if (next) {
-                siblings = Elements.Select(item=>item.NextElementSibling);
+                siblings = Elements.Select(item=>item.NextElementSibling).Where(item=>item != null);
                 order = SelectionSetOrder.Ascending;
             } else {
-                siblings= Elements.Select(item=>item.PreviousElementSibling);
+                siblings = Elements.Select(item => item.PreviousElementSibling).Where(item => item != null);
                 order = SelectionSetOrder.Descending ;
             }
 

@@ -91,7 +91,7 @@ namespace CsQuery.Tests.Csharp.Utility
 
             text = scanner.Get(MatchFunctions.Quoted());
 
-            Assert.AreEqual("this is ' a quoted value", text, "Got first word");
+            Assert.AreEqual("this is \\' a quoted value", text, "Got first word");
             Assert.AreEqual(scanner.Current, ']', "At right postiion");
 
 
@@ -113,7 +113,7 @@ namespace CsQuery.Tests.Csharp.Utility
             Assert.AreEqual("attr-bute", text, "Got the attribute name");
             innerScanner.Expect("=");
             text = innerScanner.Get(MatchFunctions.Quoted());
-            Assert.AreEqual(@"this ""is ' a quoted value", text, "Quotes were dequoted");
+            Assert.AreEqual(@"this ""is \' a quoted value", text, "Quotes were dequoted");
             Assert.IsTrue(innerScanner.Finished, "It's finished after we got the last text");
 
             scanner = @"<comment>How's complex bounding working?</comment> the end";
@@ -142,7 +142,7 @@ namespace CsQuery.Tests.Csharp.Utility
             optQuote.Terminators="]";
 
             string text = inner.Get(optQuote);
-            Assert.AreEqual("this \"is ' a quoted value",text,"Got the right text");
+            Assert.AreEqual(@"this ""is \' a quoted value",text,"Got the right text");
 
             inner.Text = @"this ""is \' a quoted value";
             text = inner.Get(optQuote);
@@ -150,7 +150,7 @@ namespace CsQuery.Tests.Csharp.Utility
 
             inner.Text = @"""this is \"" a quoted value""";
             text = inner.Get(optQuote);
-            Assert.AreEqual("this is \" a quoted value", text, "Got the right text with quotes");
+            Assert.AreEqual("this is \\\" a quoted value", text, "Got the right text with quotes");
 
 
         }

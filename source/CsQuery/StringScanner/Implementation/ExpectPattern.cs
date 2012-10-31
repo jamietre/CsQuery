@@ -224,19 +224,22 @@ namespace CsQuery.StringScanner.Implementation
                         {
                             quoted = false;
                         }
-                        if (current == '\\')
-                        {
-                            char newChar;
-                            index++;
-                            if (TryParseEscapeChar(Source[index], out newChar))
-                            {
-                                current = newChar;
-                            }
-                            else
-                            {
-                                throw new InvalidOperationException("Invalid escape character found in quoted string: '" + current + "'");
-                            }
-                        }
+
+                        // Do not handle escaping here ever - leave this to the user to handle as needed.
+                        
+                        //if (current == '\\')
+                        //{
+                        //    char newChar;
+                        //    index++;
+                        //    if (TryParseEscapeChar(Source[index], out newChar))
+                        //    {
+                        //        current = newChar;
+                        //    }
+                        //    else
+                        //    {
+                        //        throw new InvalidOperationException("Invalid escape character found in quoted string: '" + Source[index] + "'");
+                        //    }
+                        //}
                     }
                 }
                 sb.Append(current);

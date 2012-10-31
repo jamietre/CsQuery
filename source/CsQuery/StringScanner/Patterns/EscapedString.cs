@@ -18,9 +18,21 @@ namespace CsQuery.StringScanner.Patterns
     /// </summary>
     public class EscapedString: ExpectPattern
     {
+        /// <summary>
+        /// Default constructor -- simply parses escapes until the end of the string
+        /// </summary>
+
+        public EscapedString(): this(AlwaysValid)
+        {
+            
+        }
         public EscapedString(Func<int,char, bool> validCharacter)
         {
             ValidCharacter = validCharacter;
+        }
+        private static bool AlwaysValid(int index, char character)
+        {
+            return true;
         }
         protected Func<int, char, bool> ValidCharacter;
         protected bool Escaped;
@@ -46,26 +58,46 @@ namespace CsQuery.StringScanner.Patterns
 						// process unicode char code point, if presented
 						int tempIndex = index;
 						StringBuilder sb = new StringBuilder();
-						while (Source[tempIndex] != ' ')
+
+                        while (tempIndex < Source.Length // end of string?
+                            && tempIndex - index < 6     // only 6 hexadecimal digits are allowed
+                            && CharacterData.IsType(Source[tempIndex],CharacterType.Hexadecimal))
 						{
 							sb.Append(Source[tempIndex]);
-
-							if (tempIndex == Source.Length - 1 ||	// end of string?
-								tempIndex - index == 5)				// only 6 hexadecimal digits are allowed
-								break;
 
 							tempIndex++;
 						}
 
-						if (sb.Length == 2 || sb.Length == 6)
-						{
-							int value = 0;
-							if (Int32.TryParse(sb.ToString(), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out value))
-							{
-								character = (char)value;
-								index = tempIndex;
-							}
-						}
+                        if (sb.Length >= 1)
+                        {
+                            int value = 0;
+                            if (Int32.TryParse(sb.ToString(), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out value))
+                            {
+                                character = (char)value;
+                                index = tempIndex;
+                            }
+
+                            // If the escape sequence is <6 characters and was terminated by whitespace, then skip the whitespace.
+
+                            if (sb.Length < 6
+                                && index < Source.Length
+                                && CharacterData.IsType(Source[index], CharacterType.Whitespace))
+                            {
+                                index++;
+                                relativeIndex++;
+                            }
+
+                            // decrement because it will be incremented again outside this part of the loop
+                            index--;
+                            relativeIndex--;
+                        }
+                        else
+                        {
+
+                            // means the escaped character wasn't hex, so just pass it through
+                            sb.Append(Source[tempIndex]);
+
+                        }
 												
                         Escaped = false;
                     }

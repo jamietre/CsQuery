@@ -44,6 +44,7 @@ namespace CsQuery.StringScanner
             setBit(charsEscape, (uint)CharacterType.Escape);
             setBit(charsSeparators, (uint)CharacterType.Separator);
             setBit(charsHtmlSpace, (uint)CharacterType.HtmlSpace);
+            setBit(charsHex, (uint)CharacterType.Hexadecimal);
 
             // html tag start
 
@@ -86,6 +87,7 @@ namespace CsQuery.StringScanner
         const string charsWhitespace = charsHtmlSpace + "\x00A0\x00C0";
 
         const string charsNumeric = "0123456789";
+        const string charsHex = charsNumeric + "abcdefABCDEF";
         const string charsNumericExtended = "0123456789.-+";
         const string charsLower = "abcdefghijklmnopqrstuvwxyz";
         const  string charsUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
