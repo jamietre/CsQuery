@@ -1,0 +1,18 @@
+﻿@{   
+
+    ViewBag.Title = "Test Index 4";
+    Layout = "";
+}
+<html>
+    <head>
+        <title></title>
+        <script src="~/scripts/fake1.js"></script>
+        <script src="~/scripts/fake2.js"></script>
+
+    </head>
+    <body>
+        <script src="~/scripts/fake3.js" class="inbody"></script>
+        @Html.Script("~/scripts/libs2/dep5.js",new { @class="inhead" }, ScriptLocations.Head);
+        @Html.Script("~/scripts/libs2/dep5.js",new { @class="inbody" }, ScriptLocations.Inline);
+    </body>
+</html>

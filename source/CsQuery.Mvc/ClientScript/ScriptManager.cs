@@ -166,6 +166,7 @@ namespace CsQuery.Mvc.ClientScript
                     if (item.ParentNode != head)
                     {
                         head.Append(item);
+                        item.RemoveAttribute("data-location");
                     }
                 }
             }

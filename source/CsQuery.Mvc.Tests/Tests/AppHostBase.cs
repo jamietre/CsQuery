@@ -34,7 +34,7 @@ namespace CsQuery.Mvc.Tests
 
         protected CQ RenderView<T>(string action, bool destroyContext = false) where T : Controller, new()
         {
-            return CQ.CreateFragment(Host.RenderView<T>(action,destroyContext));   
+            return CQ.Create(Host.RenderView<T>(action,destroyContext));   
         }
 
         protected MvcAppHost Host;

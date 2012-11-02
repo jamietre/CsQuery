@@ -113,7 +113,6 @@ namespace CsQuery.Mvc.ClientScript
                 }
             }
 
-            scripts.RemoveClass("csquery-script");
             return first;
         }
 
