@@ -15,7 +15,7 @@
 <releaseNotes>
 Version 1.3 is a major release. It implements a new C# port of the validator.nu HTML5 parser, a fully HTML5 compliant HTML parser. This version includes a number of new options for parsing and rendering HTML.
 
-Version 1.3.1 is a bugfix release, see changes: https://github.com/jamietre/CsQuery/blob/master/source/README.md
+Version 1.3.1 is a bugfix release.
 
 Complete change log:
 https://github.com/jamietre/CsQuery/blob/master/source/README.md    
