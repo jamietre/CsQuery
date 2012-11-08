@@ -6,6 +6,12 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ### Change Log
 
+####Version 1.3.1
+
+- [Issue #57](https://github.com/jamietre/CsQuery/issues/57) Unhandled NullReferenceException using Next()
+- [Issue #56](https://github.com/jamietre/CsQuery/issues/56) Incorrect handling of escaped characters in attribute-equals type selectors
+- [Issue #53](https://github.com/jamietre/CsQuery/issues/) Slow Text() in some situations
+
 ####Version 1.3. 
 
 Read [detailed release notes](http://blog.outsharked.com/2012/10/csquery-13-released.html) for 1.3.
