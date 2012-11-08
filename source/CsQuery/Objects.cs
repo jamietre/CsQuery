@@ -1729,5 +1729,88 @@ namespace CsQuery
 
 
         #endregion
+
+        #region Factory methods
+
+        /// <summary>
+        /// Creates a new text node.
+        /// </summary>
+        ///
+        /// <param name="text">
+        /// The text.
+        /// </param>
+        ///
+        /// <returns>
+        /// The new text node.
+        /// </returns>
+
+        public static IDomText CreateTextNode(string text)
+        {
+            return new Implementation.DomText(text);
+        }
+
+        /// <summary>
+        /// Creates a comment node.
+        /// </summary>
+        ///
+        /// <param name="comment">
+        /// The comment.
+        /// </param>
+        ///
+        /// <returns>
+        /// The new comment.
+        /// </returns>
+
+        public static IDomComment CreateComment(string comment)
+        {
+            return new Implementation.DomComment(comment);
+        }
+
+        /// <summary>
+        /// Creates a new empty document.
+        /// </summary>
+        ///
+        /// <returns>
+        /// The new document.
+        /// </returns>
+
+        public static IDomDocument CreateDocument()
+        {
+            return new Implementation.DomDocument();
+        }
+
+        /// <summary>
+        /// Creates CDATA node
+        /// </summary>
+        ///
+        /// <param name="data">
+        /// The data.
+        /// </param>
+        ///
+        /// <returns>
+        /// The new CDATA node
+        /// </returns>
+
+        public static IDomCData CreateCData(string data)
+        {
+            return new Implementation.DomCData();
+        }
+
+        /// <summary>
+        /// Creates a new, empty fragment node.
+        /// </summary>
+        ///
+        /// <returns>
+        /// The new fragment.
+        /// </returns>
+
+        public static IDomFragment CreateFragment()
+        {
+            return new Implementation.DomFragment();
+        }
+
+
+
+        #endregion
     }
 }

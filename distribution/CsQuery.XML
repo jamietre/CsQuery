@@ -19831,7 +19831,7 @@
         <member name="P:CsQuery.Implementation.DomComment.NonAttributeData">
             <summary>
             Gets or sets the non-attribute data in the tag. For comments, this is the same as the text of
-            the comment.
+            the comment. Null values will be converted to an empty string.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomComment.Text">
@@ -20997,7 +20997,7 @@
              The text value of this Text node.
              </param>
         </member>
-        <member name="F:CsQuery.Implementation.DomText.nodeValue">
+        <member name="F:CsQuery.Implementation.DomText._NodeValue">
             <summary>
             The inner node value; the text.
             </summary>
@@ -21032,7 +21032,7 @@
         </member>
         <member name="P:CsQuery.Implementation.DomText.NodeValue">
             <summary>
-            Gets or sets the text value of this Text node
+            Gets or sets the text value of this Text node. Null values will be converted to an empty string.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomText.InnerHtmlAllowed">
@@ -25334,6 +25334,63 @@
             <param name="value"></param>
             <param name="result"></param>
             <returns></returns>
+        </member>
+        <member name="M:CsQuery.Objects.CreateTextNode(System.String)">
+             <summary>
+             Creates a new text node.
+             </summary>
+            
+             <param name="text">
+             The text.
+             </param>
+            
+             <returns>
+             The new text node.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Objects.CreateComment(System.String)">
+             <summary>
+             Creates a comment node.
+             </summary>
+            
+             <param name="comment">
+             The comment.
+             </param>
+            
+             <returns>
+             The new comment.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Objects.CreateDocument">
+             <summary>
+             Creates a new empty document.
+             </summary>
+            
+             <returns>
+             The new document.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Objects.CreateCData(System.String)">
+             <summary>
+             Creates CDATA node
+             </summary>
+            
+             <param name="data">
+             The data.
+             </param>
+            
+             <returns>
+             The new CDATA node
+             </returns>
+        </member>
+        <member name="M:CsQuery.Objects.CreateFragment">
+             <summary>
+             Creates a new, empty fragment node.
+             </summary>
+            
+             <returns>
+             The new fragment.
+             </returns>
         </member>
         <member name="T:CsQuery.Utility.JSON">
             <summary>

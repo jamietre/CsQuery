@@ -11,6 +11,7 @@ namespace CsQuery.Implementation
 
     public class DomCData : DomObject<DomCData>, IDomCData
     {
+
         /// <summary>
         /// Default constructor.
         /// </summary>
@@ -18,7 +19,7 @@ namespace CsQuery.Implementation
         public DomCData()
             : base()
         {
-
+            _NonAttributeData = "";
         }
 
         /// <summary>
@@ -34,6 +35,8 @@ namespace CsQuery.Implementation
         {
             NodeValue = value;
         }
+
+        private string _NonAttributeData;
 
         /// <summary>
         /// Gets or sets the node value. For CDATA nodes, this is the content.
@@ -70,8 +73,14 @@ namespace CsQuery.Implementation
 
         public string NonAttributeData
         {
-            get;
-            set;
+            get
+            {
+                return _NonAttributeData;
+            }
+            set
+            {
+                _NonAttributeData = value ?? "";
+            }
         }
 
         /// <summary>

@@ -130,7 +130,6 @@ namespace CsQuery.Implementation
             return ElementFactory.Create(html, parsingMode,parsingOptions, docType);
         }
 
-
         #endregion
 
         #region constructors

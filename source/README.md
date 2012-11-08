@@ -10,7 +10,7 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 Read [detailed release notes](http://blog.outsharked.com/2012/10/csquery-13-released.html) for 1.3.
 
-
+- Map null values to empty string when assigning NodeValue to a Text, Comment node. (Text node may contain 
 - Add `AllowSelfClosingTags` option to `ITokenHandler` - provides for cleaner handling of flexible input -- no more need to use a regex to preprocess, avoiding erroneous handling of complex html.
 - [Issue #51](https://github.com/jamietre/CsQuery/issues/51): Fix issue with compound subselectors whose target included CSS matches above the level of the context.
 - Add `HtmlEncoderFull` that will render text codes for all supported HTML5 entities with text aliases.

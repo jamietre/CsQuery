@@ -93,6 +93,7 @@
     <Compile Include="Arrays.cs" />
     <Compile Include="AssertEx.cs" />
     <Compile Include="Csharp\Documents\MultipleDocs.cs" />
+    <Compile Include="Csharp\Dom\DomText.cs" />
     <Compile Include="Csharp\Dom\HTMLSelectElement.cs" />
     <Compile Include="Csharp\Dom\DomSelectElement.cs" />
     <Compile Include="Csharp\Dom\DomDocument.cs" />

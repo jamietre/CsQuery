@@ -20,6 +20,7 @@ namespace CsQuery.Implementation
         public DomComment()
             : base()
         {
+            _NonAttributeData = "";
         }
 
         /// <summary>
@@ -40,17 +41,7 @@ namespace CsQuery.Implementation
 
         #region private properties
 
-        // there must be some reason for this... something to do with the parser
-        // ahh, old code. TODO: figure this out, probably refactor/remove
-
-        //private string TagOpener
-        //{
-        //    get { return IsQuoted ? "<!--" : "<!"; }
-        //}
-        //private string TagCloser
-        //{
-        //    get { return IsQuoted ? "-->" : ">"; }
-        //}
+        private string _NonAttributeData;
 
         #endregion
 
@@ -132,13 +123,19 @@ namespace CsQuery.Implementation
 
         /// <summary>
         /// Gets or sets the non-attribute data in the tag. For comments, this is the same as the text of
-        /// the comment.
+        /// the comment. Null values will be converted to an empty string.
         /// </summary>
 
         public string NonAttributeData
         {
-            get;
-            set;
+            get
+            {
+                return _NonAttributeData;
+            }
+            set
+            {
+                _NonAttributeData = value ?? "";
+            }
         }
 
         /// <summary>

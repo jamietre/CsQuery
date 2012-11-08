@@ -41,7 +41,7 @@ namespace CsQuery.Implementation
         /// The inner node value; the text.
         /// </summary>
 
-        protected string nodeValue;
+        protected string _NodeValue;
 
 
         /// <summary>
@@ -68,18 +68,18 @@ namespace CsQuery.Implementation
 
 
         /// <summary>
-        /// Gets or sets the text value of this Text node
+        /// Gets or sets the text value of this Text node. Null values will be converted to an empty string.
         /// </summary>
 
         public override string NodeValue
         {
             get
             {
-                return nodeValue;
+                return _NodeValue;
             }
             set
             {
-                nodeValue = value;
+                _NodeValue = value ?? "";
             }
         }
 
@@ -93,7 +93,7 @@ namespace CsQuery.Implementation
 
         public override DomText Clone()
         {
-            return new DomText(nodeValue);
+            return new DomText(_NodeValue);
         }
 
         /// <summary>
