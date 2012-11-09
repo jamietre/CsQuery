@@ -111,11 +111,12 @@ namespace CsQuery
             // be insterted. 
 
             List<IDomObject> list = elements.ToList();
-            int index = 0;
             
             foreach (var child in Elements)
             {
-               // Make sure they didn't really mean to add to a tbody or something
+                int index = 0;
+
+                // Make sure they didn't really mean to add to a tbody or something
                 IDomElement target = GetTrueTarget(child );
 
                 foreach (var e in list)
