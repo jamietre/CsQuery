@@ -19834,9 +19834,9 @@
             the comment. Null values will be converted to an empty string.
             </summary>
         </member>
-        <member name="P:CsQuery.Implementation.DomComment.Text">
+        <member name="P:CsQuery.Implementation.DomComment.NodeValue">
             <summary>
-            Gets or sets the text of the comment.
+            Gets or sets the node value. For CDATA nodes, this is the content.
             </summary>
         </member>
         <member name="T:CsQuery.Implementation.DomDocumentType">

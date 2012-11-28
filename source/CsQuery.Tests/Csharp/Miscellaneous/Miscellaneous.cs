@@ -245,6 +245,18 @@ width:10px;"">");
 
         }
 
+
+        [Test, TestMethod]
+        public void Issue59_Comments()
+        {
+            var intext = "<!-- Head Comment --><!-- Body Comment -->";
+            var doc = CsQuery.CQ.Create(intext, HtmlParsingMode.Fragment, HtmlParsingOptions.None);
+            var outtext = doc.Render(DomRenderingOptions.None);
+            Assert.AreEqual(intext, outtext);
+
+        }
+
+
         #region setup
         public override void FixtureSetUp()
         {

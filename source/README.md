@@ -6,6 +6,10 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ### Change Log
 
+####Version 1.3.2 (in progress) 
+
+- [Issue #59](https://github.com/jamietre/CsQuery/issues/59) Comments being omitted on rendering.
+
 ####Version 1.3.1
 
 - [Issue #57](https://github.com/jamietre/CsQuery/issues/57) Unhandled NullReferenceException using Next()

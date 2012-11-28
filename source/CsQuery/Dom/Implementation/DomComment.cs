@@ -33,9 +33,9 @@ namespace CsQuery.Implementation
 
         public DomComment(string text): base()
         {
-            //ParentNode = document;
-            Text = text;
+            NodeValue = text;
         }
+
 
         #endregion
 
@@ -138,11 +138,12 @@ namespace CsQuery.Implementation
             }
         }
 
+
         /// <summary>
-        /// Gets or sets the text of the comment.
+        /// Gets or sets the node value. For CDATA nodes, this is the content.
         /// </summary>
 
-        public string Text
+        public override string NodeValue
         {
             get
             {
