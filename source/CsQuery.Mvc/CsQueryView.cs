@@ -263,7 +263,7 @@ namespace CsQuery.Mvc
                     }
 
 
-                    if (Options.HasFlag(ViewEngineOptions.EnableScriptManager))
+                    if (!IsPartial && Options.HasFlag(ViewEngineOptions.EnableScriptManager))
                     {
                         ManageScripts(cqDoc, (System.Web.Mvc.WebViewPage)instance);
                     }
@@ -376,7 +376,7 @@ namespace CsQuery.Mvc
                         hasMethods = true;
                         if (CqMethods == null)
                         {
-                            CqMethods = new Dictionary<string, MethodInfo>();
+                            CqMethods = new Dictionary<string, MethodInfo>(StringComparer.CurrentCultureIgnoreCase);
                         }
                     }
                     CqMethods.Add(controllerName+"_"+name, mi);

@@ -28,7 +28,7 @@ namespace CsQuery.Mvc.ClientScript
 
         public ScriptManager()
         {
-            Initialize(null, null);
+            Initialize(null, null,null);
         }
         static ScriptManager()
         {
@@ -41,14 +41,21 @@ namespace CsQuery.Mvc.ClientScript
         /// function.
         /// </summary>
         ///
+        /// <exception cref="ArgumentException">
+        /// Thrown when one or more arguments have unsupported or illegal values.
+        /// </exception>
+        ///
         /// <param name="libraryPath">
         /// The paths in the library search path.
         /// </param>
         /// <param name="mapPathFunc">
         /// The map path function.
         /// </param>
+        /// <param name="resolveUrlFunc">
+        /// A function to resolve relative URLs
+        /// </param>
 
-        public ScriptManager(PathList libraryPath, Func<string,string> mapPathFunc)
+        public ScriptManager(PathList libraryPath, Func<string,string> mapPathFunc, Func<string,string> resolveUrlFunc)
         {
             if (mapPathFunc == null)
             {
@@ -58,11 +65,11 @@ namespace CsQuery.Mvc.ClientScript
             {
                 throw new ArgumentException("The LibraryPath cannot be null.");
             }
-            Initialize(libraryPath, mapPathFunc);   
+            Initialize(libraryPath, mapPathFunc, resolveUrlFunc);   
         }
 
         /// <summary>
-        /// Creates this ScriptManager with an empty LibraryPath
+        /// Creates this ScriptManager with an empty LibraryPath.
         /// </summary>
         ///
         /// <exception cref="ArgumentException">
@@ -72,22 +79,36 @@ namespace CsQuery.Mvc.ClientScript
         /// <param name="mapPathFunc">
         /// The map path function.
         /// </param>
+        /// <param name="resolveUrlFunc">
+        /// A function to resolve relative URLs.
+        /// </param>
 
-        public ScriptManager(Func<string, string> mapPathFunc)
+        public ScriptManager(Func<string, string> mapPathFunc, Func<string, string> resolveUrlFunc)
         {
             if (mapPathFunc == null)
             {
-                throw new ArgumentException("The MapPath function cannot be null.");
+                throw new ArgumentException("The mapPath function cannot be null.");
             }
-            Initialize(null, mapPathFunc);
+            if (resolveUrlFunc == null)
+            {
+                throw new ArgumentException("The resolveUrlFunc function cannot be null.");
+            }
+            Initialize(null, mapPathFunc, resolveUrlFunc);
         }
 
-        private void Initialize(PathList libraryPath, Func<string, string> mapPathFunc)
+        private void Initialize(PathList libraryPath, Func<string, string> mapPathFunc, Func<string, string> resolveUrlFunc)
         {
             MapPath = mapPathFunc ?? HttpContext.Current.Server.MapPath;
+            ResolveUrl = resolveUrlFunc ?? DefaultResolveUrlFunc;
+
+
             LibraryPath = libraryPath ?? new PathList();
         }
 
+        private string DefaultResolveUrlFunc(string url)
+        {
+            return UrlHelper.GenerateContentUrl(url, new HttpContextWrapper(HttpContext.Current));
+        }
         /// <summary>
         /// Identifier used to generate unique IDs for the generated script bundles
         /// </summary>
@@ -106,6 +127,7 @@ namespace CsQuery.Mvc.ClientScript
         #region private properties
 
         private Func<string, string> MapPath;
+        private Func<string, string> ResolveUrl;
 
         #endregion
 
@@ -193,77 +215,87 @@ namespace CsQuery.Mvc.ClientScript
 
             // Now add scripts directly for dependencies marked as NoCombine.
 
-            foreach (var item in dependencies.Where(item => item.NoCombine))
+
+            
+            var inlineScripts = Options.HasFlag(ViewEngineOptions.NoBundle) ?
+                dependencies :
+                dependencies.Where(item => item.NoCombine);
+
+
+            foreach (var item in inlineScripts)
             {
                 firstScript.Before(GetScriptHtml(item.Path, item.ScriptHash));
             }
 
             // Before creating the bundle, remove any duplicates of the same script on the page
-            
-            
 
 
-            bool hasBundle = Bundles.TryGetValue(coll, out bundleUrl);
-
-            if (hasBundle) {
-                // when nocache is set, we will regenerate the bundle, but not change the script ID. The v=
-                // flag will be changed by BundleTable. 
-                if (Options.HasFlag(ViewEngineOptions.NoCache))
-                {
-                    string removeUrl = "~" + bundleUrl.Before("?");
-                    BundleTable.Bundles.Remove(BundleTable.Bundles.GetBundleFor(removeUrl));
-                    hasBundle = false;
-                    ScriptID++;
-                    // 
-                    //var bundleList = BundleTable.Bundles.ToList();
-                    //BundleTable.Bundles.Clear();
-                    //BundleTable.Bundles.ResetAll();
-                    //BundleTable.EnableOptimizations = false;
-
-                    //foreach (var oldBundle in bundleList)
-                    //{
-                    //    BundleTable.Bundles.Add(oldBundle);
-                    //}
-
-                }
-            }
-            else
+            if (!Options.HasFlag(ViewEngineOptions.NoBundle))
             {
-                ScriptID++;
-            }
 
-            if (!hasBundle) {
+                bool hasBundle = Bundles.TryGetValue(coll, out bundleUrl);
 
-                string bundleAlias = "~/cqbundle" + ScriptID;
-                var bundle = GetScriptBundle(bundleAlias);
-
-                var activeDependencies = dependencies.Where(item => !item.NoCombine);
-                foreach (var item in activeDependencies)
+                if (hasBundle)
                 {
-                    bundle.Include(item.Path);
-                }
+                    // when nocache is set, we will regenerate the bundle, but not change the script ID. The v=
+                    // flag will be changed by BundleTable. 
+                    if (Options.HasFlag(ViewEngineOptions.NoCache))
+                    {
+                        string removeUrl = "~" + bundleUrl.Before("?");
+                        BundleTable.Bundles.Remove(BundleTable.Bundles.GetBundleFor(removeUrl));
+                        hasBundle = false;
+                        ScriptID++;
+                        // 
+                        //var bundleList = BundleTable.Bundles.ToList();
+                        //BundleTable.Bundles.Clear();
+                        //BundleTable.Bundles.ResetAll();
+                        //BundleTable.EnableOptimizations = false;
 
-               
-                BundleTable.Bundles.Add(bundle);
-                if (HttpContext.Current != null)
-                {
-                    bundleUrl = BundleTable.Bundles.ResolveBundleUrl(bundleAlias, true);
+                        //foreach (var oldBundle in bundleList)
+                        //{
+                        //    BundleTable.Bundles.Add(oldBundle);
+                        //}
+
+                    }
                 }
                 else
                 {
-                    bundleUrl = bundleAlias + "_no_http_context";
+                    ScriptID++;
                 }
-                Bundles[coll] = bundleUrl;
+
+                if (!hasBundle)
+                {
+
+                    string bundleAlias = "~/cqbundle" + ScriptID;
+                    var bundle = GetScriptBundle(bundleAlias);
+
+                    var activeDependencies = dependencies.Where(item => !item.NoCombine);
+                    foreach (var item in activeDependencies)
+                    {
+                        bundle.Include(item.Path);
+                    }
+
+
+                    BundleTable.Bundles.Add(bundle);
+                    if (HttpContext.Current != null)
+                    {
+                        bundleUrl = BundleTable.Bundles.ResolveBundleUrl(bundleAlias, true);
+                    }
+                    else
+                    {
+                        bundleUrl = bundleAlias + "_no_http_context";
+                    }
+                    Bundles[coll] = bundleUrl;
+                }
+
+                var scriptPlaceholder = scripts.First();
+
+
+
+                // add bundle after all noncombined scripts
+
+                firstScript.Before(GetScriptHtml(bundleUrl));
             }
-
-            var scriptPlaceholder = scripts.First();
-
-          
-
-            // add bundle after all noncombined scripts
-
-            firstScript.Before(GetScriptHtml(bundleUrl));
-
                
             
         }
@@ -271,6 +303,7 @@ namespace CsQuery.Mvc.ClientScript
         private CQ GetScriptHtml(string url, string hash=null)
         {
             string template;
+            
             if (url.EndsWith(".css"))
             {
                 template = "<link rel=\"stylesheet\" type=\"text/css\" class=\"csquery-generated\" href=\"{0}\" />";
@@ -285,7 +318,8 @@ namespace CsQuery.Mvc.ClientScript
                 url = url + "?v=" + hash;
             }
 
-            return CQ.CreateFragment(String.Format(template, url));
+            
+            return CQ.CreateFragment(String.Format(template, ResolveUrl(url)));
         }
         private ScriptBundle GetScriptBundle(string bundleAlias)
         {

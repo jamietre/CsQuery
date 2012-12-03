@@ -22,6 +22,10 @@ namespace CsQuery.Mvc.Tests
         {
             return path;
         }
+        private string ResolveUrl(string path)
+        {
+            return path;
+        }
 
         [TestMethod]
         public void MoveScriptLocation()
@@ -36,7 +40,7 @@ namespace CsQuery.Mvc.Tests
         <script type='text/javascript' src='~/script' class='inbody' data-location='head'></script>
     </body>
 ");
-            var mgr = new ScriptManager(MapPath);
+            var mgr = new ScriptManager(MapPath, ResolveUrl);
             mgr.Options = ViewEngineOptions.ProcessAllScripts | ViewEngineOptions.IgnoreMissingScripts;
 
             Assert.AreEqual(1,doc["head"].Children().Length);
@@ -45,7 +49,7 @@ namespace CsQuery.Mvc.Tests
 
 
             Assert.AreEqual(3, doc["head"].Children().Length);
-            Assert.AreEqual(doc["[data-location='head']"][0].ParentNode,doc["head"][0]);
+            Assert.AreEqual(doc[".inbody"][0].ParentNode, doc["head"][0]);
 
             var libScript =doc["head > .csquery-generated"];
             Assert.AreEqual(1, libScript.Length, "The library include was added.");

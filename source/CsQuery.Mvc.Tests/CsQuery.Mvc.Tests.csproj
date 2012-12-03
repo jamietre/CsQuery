@@ -98,6 +98,7 @@
     <Compile Include="Tests\ScriptManager\BundleContents_NoMinimize.cs" />
     <Compile Include="Tests\AppHostBase.cs" />
     <Compile Include="Tests\ScriptManager\BundleContents_Minimize.cs" />
+    <Compile Include="Tests\ScriptManager\BundleContents_NoBundle.cs" />
     <Compile Include="Tests\ScriptManager\ScriptLocations.cs" />
     <Compile Include="Tests\ScriptManager\UsingOptions.cs" />
     <Compile Include="Tests\ScriptManager\Patterns.cs" />

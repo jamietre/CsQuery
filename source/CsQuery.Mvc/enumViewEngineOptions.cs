@@ -23,7 +23,7 @@ namespace CsQuery.Mvc
         ProcessAllScripts=2,
 
         /// <summary>
-        /// When true, scripts and dependencies that cannot be loaded will not cause an exception
+        /// When set, scripts and dependencies that cannot be loaded will not cause an exception
         /// </summary>
         IgnoreMissingScripts=4,
 
@@ -33,10 +33,16 @@ namespace CsQuery.Mvc
         NoMinifyScripts=8,
 
         /// <summary>
-        /// When false, caching is disabled. This results in the bundles being recreated on each page load, and scripts 
+        /// When set, caching is disabled. This results in the bundles being recreated on each page load, and scripts 
         /// being re-analyzed for dependencies. (This is useful for debugging; otherwise, changes to javascript files
         /// would not be refelected until the application is restarted)
         /// </summary>
-        NoCache=16
+        NoCache=16,
+
+
+        /// <summary>
+        /// When set, scripts are resolved, but not bundled.
+        /// </summary>
+        NoBundle = 32
     }
 }

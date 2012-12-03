@@ -9,6 +9,7 @@ using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
+using CollectionAssert = NUnit.Framework.CollectionAssert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
@@ -254,6 +255,25 @@ width:10px;"">");
             var outtext = doc.Render(DomRenderingOptions.None);
             Assert.AreEqual(intext, outtext);
 
+        }
+
+        /// <summary>
+        /// I am trying to apply the Closest selector method to a set of matched elements and expecting
+        /// to get one closest ancestor per matched element (in cases where such an ancestor exists), but
+        /// only the first one is getting matched.
+        /// </summary>
+
+        [Test, TestMethod]
+        public void Issue61_Closest()
+        {
+            var html = "<div id=outer><div id=div1><span></span></div><div id=div2><span></span></div></div>";
+            var doc = CQ.CreateFragment(html);
+            var spans = doc["span"];
+            Assert.AreEqual(2,spans.Length);
+            
+            var closestDivs = spans.Closest("div");
+            Assert.AreEqual(2, closestDivs.Length);
+            CollectionAssert.AreEqual(Arrays.String("div1", "div2"), closestDivs.Select(item => item.Id));
         }
 
 

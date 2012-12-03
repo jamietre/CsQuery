@@ -8,6 +8,7 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ####Version 1.3.2 (in progress) 
 
+- [Issue #61](https://github.com/jamietre/CsQuery/issues/59) Closest method only returning results for first element in selection
 - [Issue #59](https://github.com/jamietre/CsQuery/issues/59) Comments being omitted on rendering.
 
 ####Version 1.3.1

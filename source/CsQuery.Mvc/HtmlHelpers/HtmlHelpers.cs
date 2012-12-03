@@ -107,27 +107,98 @@ namespace CsQuery.Mvc
             string path = PathList.NormalizePath(PathList.NormalizeName(script));
 
             var el = CQ.CreateFragment("<script />");
-            el.Attr("type", "text/javascript");
-            el.Attr("src", script);
+
+            if (attributes != null)
+            {
+                el.AttrSet(attributes);
+            }
+            if (!el.HasAttr("type"))
+            {
+                el.Attr("type", "text/javascript");
+            }
+            el.Attr("src", script + 
+                (script.EndsWith(".js",StringComparison.CurrentCultureIgnoreCase) ? "" : ".js")
+            );
             
             if (location == ScriptLocations.Head)
             {
                 el.Attr("data-location","head");
             }
-            if (attributes != null)
-            {
-                el.AttrSet(attributes);
-            }
+
             return new HtmlString(el.Render());
         }
+
+        /// <summary>
+        /// Includes a Javascript file inline.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="helper">
+        /// The current helper context.
+        /// </param>
+        /// <param name="script">
+        /// Full pathname of the server file.
+        /// </param>
+        /// <param name="attributes">
+        /// (optional) the attributes.
+        /// </param>
+        ///
+        /// <returns>
+        /// An HtmlString.
+        /// </returns>
+
         public static IHtmlString Script<T>(this HtmlHelper<T> helper, string script, object attributes)
         {
             return Script(helper, script, attributes, ScriptLocations.Inline);
         }
+
+        /// <summary>
+        /// Includes a Javascript file inline.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="helper">
+        /// The current helper context.
+        /// </param>
+        /// <param name="script">
+        /// Full pathname of the server file.
+        /// </param>
+        /// <param name="location">
+        /// (optional) The location of the script. This parameter can be used to move the script into the
+        /// &lt;head&gt; tag of the document.
+        /// </param>
+        ///
+        /// <returns>
+        /// An HtmlString.
+        /// </returns>
+
         public static IHtmlString Script<T>(this HtmlHelper<T> helper, string script, ScriptLocations location)
         {
             return Script(helper, script, null, location);
         }
+
+        /// <summary>
+        /// Includes a Javascript file inline.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter.
+        /// </typeparam>
+        /// <param name="helper">
+        /// The current helper context.
+        /// </param>
+        /// <param name="script">
+        /// Full pathname of the server file.
+        /// </param>
+        ///
+        /// <returns>
+        /// An HtmlString.
+        /// </returns>
+
         public static IHtmlString Script<T>(this HtmlHelper<T> helper, string script)
         {
             return Script(helper, script, null, ScriptLocations.Inline);

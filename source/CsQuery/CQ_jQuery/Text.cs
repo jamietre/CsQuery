@@ -143,14 +143,13 @@ namespace CsQuery
         /// Get the combined text contents of this and all child elements.
         /// </summary>
         ///
+        /// <param name="sb">
+        /// The StribgBuilder object to write to
+        /// </param>
         /// <param name="obj">
         /// The object.
         /// </param>
-        ///
-        /// <returns>
-        /// A string containing the text contents of the selection.
-        /// </returns>
-
+        
         private void Text(StringBuilder sb, IDomObject obj)
         {
             switch (obj.NodeType)
