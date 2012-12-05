@@ -26,11 +26,30 @@ namespace CsQuery.Mvc.ClientScript
         private static Regex RegexOneLineComment = new Regex(@"^\s*/\*(?<comment>.*)\*/$");
 
         // match "using arg1 arg2;" ignoring whitespace around ;
-        private static Regex RegexDependency = new Regex(@"^\s*using\s+(?<dep>[%/\-A-Za-z0-9\.]+?)(\s+(?<opt>[A-Za-z0-9\./]+?))*\s*;*\s*$");
+        private static Regex RegexDependency = new Regex(@"^\s*using\s+(?<dep>[%/\-A-Za-z0-9\{\}\.]+?)(\s+(?<opt>[A-Za-z0-9\./]+?))*\s*;*\s*$");
         
         // match "using-options aaaa bbbb xxxx;"
         private static Regex RegexOptions = new Regex(@"^\s*using-options\s+([A-Za-z]+\s*)+\s*;*\s*$");
 
+        /// <summary>
+        /// Regex to match file names with version info of the form x.y.z-beta (the - part optional)
+        /// </summary>
+
+        private static Regex RegexNonLiteralFilenames = new Regex(@"^.*{version}.*$");
+
+        /// <summary>
+        /// The file version regular expression. This is exposed just as a string - it's embedded in other regexes
+        /// </summary>
+
+        public const string FileVersionRegex = @"([0-9]+\.*)*(-[a-zA-Z][a-zA-Z0-9]*)?";
+
+        public static Regex NonLiteralFilenames
+        {
+            get
+            {
+                return RegexNonLiteralFilenames;
+            }
+        }
         /// <summary>
         /// Gets a regex matching a line that signfies a dependency, e.g. "using something"
         /// </summary>
@@ -145,6 +164,8 @@ namespace CsQuery.Mvc.ClientScript
                 return RegexOneLineComment;
             }
         }
+
+
     }
 
 }

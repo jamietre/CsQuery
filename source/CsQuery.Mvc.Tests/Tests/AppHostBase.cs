@@ -40,8 +40,8 @@ namespace CsQuery.Mvc.Tests
         protected MvcAppHost Host;
 
         ~AppHostBase() {
-            Host.ClearContext();
-            Host.Dispose();
+            //Host.ClearContext();
+            //Host.Dispose();
         }
          
     }

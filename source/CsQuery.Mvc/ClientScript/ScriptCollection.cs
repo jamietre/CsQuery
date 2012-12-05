@@ -43,11 +43,11 @@ namespace CsQuery.Mvc.ClientScript
 
         #region private properties
         
-        private static ConcurrentDictionary<string, ScriptRef> ResolvedDependencies
+        internal static ConcurrentDictionary<string, ScriptRef> ResolvedDependencies
             = new ConcurrentDictionary<string, ScriptRef>(); 
     
 
-        private  PathList LibraryPath;
+        private PathList LibraryPath;
         private Func<string, string> MapPath;
 
         /// <summary>
@@ -61,7 +61,11 @@ namespace CsQuery.Mvc.ClientScript
         /// </summary>
 
         private List<string> DependenciesOrdered;
-        
+
+
+
+
+
         #endregion
 
         /// <summary>
@@ -430,24 +434,82 @@ namespace CsQuery.Mvc.ClientScript
 
         private string FindInLibaryPath(string fileName)
         {
-            
+            string pattern = null;
+            if (Patterns.NonLiteralFilenames.IsMatch(fileName))
+            {
+                pattern = Regex.Escape(fileName).Replace("\\{version}", Patterns.FileVersionRegex);
+            }
+
             foreach (var libPath in LibraryPath.ToList())
             {
-
+                string matchingFile = null;
                 string dir = MapPath(libPath);
                 if (!Directory.Exists(dir))
                 {
                     LibraryPath.Remove(libPath);
+                    continue;
                 }
 
-                string path = Path.Combine(dir,fileName);
-
-                if (File.Exists(path))
+                // check if this is a special pattern
+                if (pattern!=null)
                 {
-                    return (libPath+fileName).Replace("//","/");
+                    matchingFile = GetBestMatchingFile(dir, pattern);
+                }
+                else
+                {
+                    string path = Path.Combine(dir, fileName);
+
+                    if (File.Exists(path))
+                    {
+                        matchingFile = fileName;
+                    }
+                }
+
+                if (matchingFile != null)
+                {
+                    return (libPath + matchingFile).Replace("//", "/");
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// Gets best matching file given a path and a regex. 
+        /// </summary>
+        ///
+        /// <param name="path">
+        /// Full pathname to search
+        /// </param>
+        /// <param name="regexFilePattern">
+        /// A pattern specifying the regular expression pattern to match against files.
+        /// </param>
+        ///
+        /// <returns>
+        /// The best matching file, or null if none matches.
+        /// </returns>
+
+        private string GetBestMatchingFile(string path, string regexFilePattern)
+        {
+            var files = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly);
+            Regex pattern = new Regex(regexFilePattern);
+            List<string> matches = new List<string>();
+
+            foreach (var fullFilePath in files)
+            {
+                var file = fullFilePath.AfterLast("\\");
+                if (pattern.IsMatch(file))
+                {
+                    matches.Add(file);
+                }
+            }
+            if (matches.Count > 0)
+            {
+                return matches.OrderByDescending(item => item, StringComparer.CurrentCultureIgnoreCase).First();
+            }
+            else
+            {
+                return null;
+            }
         }
 
         #endregion

@@ -99,6 +99,7 @@
     <Compile Include="Tests\AppHostBase.cs" />
     <Compile Include="Tests\ScriptManager\BundleContents_Minimize.cs" />
     <Compile Include="Tests\ScriptManager\BundleContents_NoBundle.cs" />
+    <Compile Include="Tests\ScriptManager\ScriptDependenciesVersion.cs" />
     <Compile Include="Tests\ScriptManager\ScriptLocations.cs" />
     <Compile Include="Tests\ScriptManager\UsingOptions.cs" />
     <Compile Include="Tests\ScriptManager\Patterns.cs" />
@@ -122,6 +123,7 @@
     <None Include="Views\Index.cshtml" />
     <None Include="Views\Shared\_Layout.cshtml" />
     <None Include="Views\Test\Action1.cshtml" />
+    <None Include="Views\Test\Index5.cshtml" />
     <None Include="Views\Test\Index4.cshtml" />
     <None Include="Views\Test\Index3.cshtml" />
     <None Include="Views\Test\Index2.cshtml" />
@@ -172,6 +174,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="scripts\libs2\dep6-1.2.3.js" />
+    <Content Include="scripts\libs2\dep7-1.4-beta.js" />
+    <Content Include="scripts\libs2\dep6-1.2.2.js" />
+    <Content Include="scripts\test-script-4.js" />
     <Content Include="scripts\test-script-3.js" />
     <Content Include="scripts\libs2\dep5.js" />
     <Content Include="scripts\libs2\dep4.js" />

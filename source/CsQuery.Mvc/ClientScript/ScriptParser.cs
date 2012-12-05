@@ -23,6 +23,7 @@ namespace CsQuery.Mvc.ClientScript
 
         #region private properties
 
+
         private TextReader StreamReader;
         private string _FileName;
 
@@ -70,6 +71,7 @@ namespace CsQuery.Mvc.ClientScript
                 string fileName = qPos < 0 ?
                     value :
                     value.Substring(0, qPos);
+
 
                 if (!File.Exists(fileName))
                 {

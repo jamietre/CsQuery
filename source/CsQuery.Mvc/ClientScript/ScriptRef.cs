@@ -56,7 +56,7 @@ namespace CsQuery.Mvc.ClientScript
         /// A has that uniquely identifies the contents to prevent browser caching when they have changed
         /// </summary>
 
-        public string ScriptHash { get; set; } 
+        public string ScriptHash { get; set; }
 
         /// <summary>
         /// When true, the script should not be combined but always loaded individually.

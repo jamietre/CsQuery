@@ -26,6 +26,12 @@ namespace CsQuery.Mvc.Tests.Controllers
             return View();
         }
 
+
+        public ActionResult Index5()
+        {
+            return View();
+        }
+
         public ActionResult Action1()
         {
             
