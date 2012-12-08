@@ -55,6 +55,7 @@ namespace CsQuery.Tests.Mocks
         IHttpWebResponse IHttpWebRequest.GetResponse()
         {
             var response = new MockHttpWebResponse();
+            response.CharacterSet = CharacterSet;
             response.ResponseHtml = ResponseHtml;
             if (!String.IsNullOrEmpty(CharacterSet))
             {
@@ -185,14 +186,8 @@ namespace CsQuery.Tests.Mocks
 
         public DecompressionMethods AutomaticDecompression
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get;
+            set;
         }
 
         public int MaximumResponseHeadersLength

@@ -42,6 +42,9 @@ namespace CsQuery.Tests.Mocks
             var writer = new StreamWriter(output,encoding);
 
             writer.Write(ResponseHtml);
+            writer.Flush();
+
+            output.Position = 0;
             return output;
         }
 

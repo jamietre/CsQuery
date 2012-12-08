@@ -25,7 +25,7 @@ namespace CsQuery.Tests.Csharp.HtmlParser
     public class CharacterSetEncoding : CsQueryTest
     {
         string htmlStart = @"<html><head>";
-        string htmlStart2 = @"<META HTTP-EQUIV='Content-Type' content='text/html;charset=windows-1255'>";
+        string htmlStartMeta = @"<META HTTP-EQUIV='Content-Type' content='text/html;charset=windows-1255'>";
         string htmlStart3 = @"</head><body><div id=test>";
         string htmlEnd = "</div></body></html>";
         char hebrewChar = (char)164;
@@ -38,7 +38,7 @@ namespace CsQuery.Tests.Csharp.HtmlParser
             var encoder = Encoding.GetEncoding("windows-1255");
             
 
-            var html = htmlStart + htmlStart2 + htmlStart3 +hebrewChar + htmlEnd;
+            var html = htmlStart + htmlStartMeta + htmlStart3 +hebrewChar + htmlEnd;
             var htmlNoRecode = htmlStart + htmlStart3 + hebrewChar + htmlEnd;
 
 
@@ -96,19 +96,38 @@ namespace CsQuery.Tests.Csharp.HtmlParser
 
         }
 
-        [TestMethod]
+        [TestMethod,Test]
         public void ContentTypeHeader()
         {
             var creator = new Mocks.MockWebRequestCreator();
             creator.CharacterSet = "windows-1255";
-            creator.ResponseHTML = htmlStart + htmlStart2 + htmlStart3 + hebrewChar + htmlEnd;
+            creator.ResponseHTML = htmlStart + htmlStart3 + hebrewChar + htmlEnd;
             
             CsqWebRequest request = new CsqWebRequest("http://test.com", creator);
-
             
-            request.Get();
+            var dom1 = CQ.Create(request.Get());
 
-             CQ.CreateDocument(request.Html);
+            creator.CharacterSet = "";
+            request = new CsqWebRequest("http://test.com", creator);
+            var dom2 = CQ.Create(request.Get());
+
+            var output = dom1.Render(OutputFormatters.HtmlEncodingMinimum);
+
+            // The characters should be encoded differently.
+
+            var outputHebrewChar = dom1["#test"].Text();
+            var outputUTF8Char = dom2["#test"].Text();
+            Assert.AreNotEqual(outputHebrewChar, outputUTF8Char);
+
+            // try it again, using the meta tag
+            creator.CharacterSet = "windows-1255";
+            creator.ResponseHTML = htmlStart + htmlStartMeta + htmlStart3 + hebrewChar + htmlEnd;
+
+            request = new CsqWebRequest("http://test.com", creator);
+            var dom3 = CQ.Create(request.Get());
+            var outputHebrewChar2 = dom3["#test"].Text();
+
+            Assert.AreEqual(outputHebrewChar, outputHebrewChar2);
 
         }
 

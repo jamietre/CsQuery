@@ -36,7 +36,7 @@ namespace CsQuery.Web
         public CsqWebRequest(string url, IHttpWebRequestFactory webRequestFactory)
         {
             Url = url;
-            WebRequestFactory = new HttpWebAdapters.HttpWebRequestFactory();
+            WebRequestFactory = webRequestFactory;
         }
         #endregion
 
@@ -309,7 +309,7 @@ namespace CsQuery.Web
                 Encoding.UTF8 :
                 Encoding.GetEncoding(response.CharacterSet);
 
-            reader = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding(response.CharacterSet));
+            reader = new StreamReader(response.GetResponseStream(), encoding);
             return reader;
         }
 
