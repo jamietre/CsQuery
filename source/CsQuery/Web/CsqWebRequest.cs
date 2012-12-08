@@ -8,6 +8,7 @@ using System.IO;
 using System.Threading;
 using CsQuery;
 using CsQuery.ExtensionMethods;
+using HttpWebAdapters;
 
 namespace CsQuery.Web
 {
@@ -30,12 +31,18 @@ namespace CsQuery.Web
         public CsqWebRequest(string url)
         {
             Url = url;
+            WebRequestFactory = Config.WebRequestFactory;
         }
-
+        public CsqWebRequest(string url, IHttpWebRequestFactory webRequestFactory)
+        {
+            Url = url;
+            WebRequestFactory = new HttpWebAdapters.HttpWebRequestFactory();
+        }
         #endregion
 
         #region private properties
 
+        IHttpWebRequestFactory WebRequestFactory;
         Lazy<List<KeyValuePair<string, string>>> _PostData = new Lazy<List<KeyValuePair<string, string>>>();
 
         #endregion
@@ -160,7 +167,7 @@ namespace CsQuery.Web
 
         public ManualResetEvent GetAsync(Action<ICsqWebResponse> success, Action<ICsqWebResponse> fail)
         {
-            HttpWebRequest request = GetWebRequest();
+            IHttpWebRequest request = GetWebRequest();
             var requestInfo = new AsyncWebRequest(request);
             requestInfo.Timeout = Timeout;
             requestInfo.UserAgent = UserAgent;
@@ -181,7 +188,7 @@ namespace CsQuery.Web
 
         public string Get()
         {
-            HttpWebRequest request = GetWebRequest();
+            IHttpWebRequest request = GetWebRequest();
 
             Html=null;
 
@@ -201,9 +208,9 @@ namespace CsQuery.Web
         /// An HttpWebRequest.
         /// </returns>
 
-        protected HttpWebRequest GetWebRequest()
+        protected IHttpWebRequest GetWebRequest()
         {
-            HttpWebRequest request = CsQuery.Config.WebRequestCreator(Url);
+            IHttpWebRequest request = WebRequestFactory.Create(new Uri(Url));
             
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             return request;
@@ -257,10 +264,10 @@ namespace CsQuery.Web
             var encoding = new ASCIIEncoding();
             byte[] data = encoding.GetBytes(PostDataString);
 
-            HttpWebRequest request = Config.WebRequestCreator(Url);
+            IHttpWebRequest request = WebRequestFactory.Create(new Uri(Url));
 
             request.UserAgent = UserAgent ?? "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)";
-            request.Method = "POST";
+            request.Method = HttpWebRequestMethod.POST;
             request.ContentType = "application/x-www-form-urlencoded";
             request.ContentLength = data.Length;
 
@@ -291,8 +298,8 @@ namespace CsQuery.Web
         /// The response stream.
         /// </returns>
 
-        protected StreamReader GetResponseStreamReader(HttpWebRequest request) {
-            var response = (HttpWebResponse)request.GetResponse();
+        protected StreamReader GetResponseStreamReader(IHttpWebRequest request) {
+            var response = request.GetResponse();
             
             //var response = request.GetResponse();
             //var encoding = response.Headers["

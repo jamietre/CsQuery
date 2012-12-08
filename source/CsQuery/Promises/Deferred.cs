@@ -339,7 +339,7 @@ namespace CsQuery.Promises
                 {
                     Success(Parameter);
                 }
-                catch
+                catch(Exception e)
                 {
                     RejectImpl();
                     return;

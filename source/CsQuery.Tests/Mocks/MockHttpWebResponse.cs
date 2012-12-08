@@ -5,16 +5,13 @@ using System.Text;
 using System.Net;
 using System.IO;
 using System.Runtime.Serialization;
+using HttpWebAdapters;
+
 namespace CsQuery.Tests.Mocks
 {
-    public class MockHttpWebResponse: HttpWebResponse
+    public class MockHttpWebResponse: IHttpWebResponse
     {
-        [Obsolete]
-        public MockHttpWebResponse(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-
-        }
+       
         /// <summary>
         /// Gets or sets the HTML that will be sent as a response.
         /// </summary>
@@ -31,10 +28,10 @@ namespace CsQuery.Tests.Mocks
 
         public void AddHeader(HttpResponseHeader header, string value)
         {
-            _Headers.Add(header,value);
+            Headers.Add(header,value);
         }
 
-        public override Stream GetResponseStream()
+        public Stream GetResponseStream()
         {
             var output = new MemoryStream();
             
@@ -48,14 +45,123 @@ namespace CsQuery.Tests.Mocks
             return output;
         }
 
-        protected WebHeaderCollection _Headers = new WebHeaderCollection();
+        protected WebHeaderCollection _Headers;
 
-        public override WebHeaderCollection Headers { 
+        public WebHeaderCollection Headers { 
             get
             {
+                if (_Headers==null) {
+                     _Headers= new WebHeaderCollection();
+                }
                 return _Headers;
             }
         }
-        
+
+
+        public string GetResponseHeader(string headerName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public CookieCollection Cookies
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string ContentEncoding
+        {
+            get;set; 
+        }
+
+        public string CharacterSet
+        {
+            get;set;
+        }
+
+        public string Server
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public DateTime LastModified
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public HttpStatusCode StatusCode
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public string StatusDescription
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public Version ProtocolVersion
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public string Method
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public void Close()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsFromCache
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public bool IsMutuallyAuthenticated
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public long ContentLength
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string ContentType
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public Uri ResponseUri
+        {
+            get; set; 
+        }
+
+        public void Dispose()
+        {
+           
+        }
     }
 }

@@ -87,9 +87,17 @@ namespace CsQuery.HtmlParser
         #region private properties
 
         /// <summary>
-        /// Size of the blocks to read from the input stream (in bytes)
+        /// Size of the blocks to read from the input stream (char[] = 2x bytes)
         /// </summary>
-        private const int blockSize = 4096;
+        private const int tokenizerBlockSize = 2048;
+
+        /// <summary>
+        /// Size of the preprocessor block; the maximum number of bytes in which the character set
+        /// encoding can be changed. This must be at least as large (IN BYTES!) as the tokenizer block or the
+        /// tokenizer won't quit before moving outside the preprocessor block.
+        /// </summary>
+
+        private const int preprocessorBlockSize = 4096;
 
         private static IDictionary<string, string> DefaultContext;
         private Tokenizer tokenizer;
@@ -171,8 +179,8 @@ namespace CsQuery.HtmlParser
             
            // split into two streams
 
-            byte[] part1bytes = new byte[blockSize];
-            html.Read(part1bytes, 0, blockSize);
+            byte[] part1bytes = new byte[preprocessorBlockSize];
+            int part1size = html.Read(part1bytes, 0, preprocessorBlockSize);
 
             MemoryStream part1stream = new MemoryStream(part1bytes);
                  
@@ -239,12 +247,17 @@ namespace CsQuery.HtmlParser
 
             if (reEncode)
             {
-                // when this happens, the 2nd stream should still be at position zero (it should not have advanced beyond the 1k mark)
-                // since the charset encoding must occur within the first 1k.
+                // when this happens, the 2nd stream should still be at position zero (it should not have
+                // advanced beyond the 1k mark)
+                // since the charset encoding must occur within the first 1k. 
                 
-                if (html.CanRead && html.Position >= blockSize)
+                if (part1size == preprocessorBlockSize 
+                    && html.CanRead
+                    && html.Position > preprocessorBlockSize)
                 {
-                    throw new InvalidDataException("The document contained a meta http-equiv Content-Type header after the first 1k. It cannot be parsed.");
+                    throw new InvalidDataException(
+                        String.Format("The document contained a meta http-equiv Content-Type header after the first {0} bytes. It cannot be parsed.",preprocessorBlockSize)
+                        );
                 }
 
                 part1stream = new MemoryStream(part1bytes);
@@ -503,7 +516,7 @@ namespace CsQuery.HtmlParser
 
             try
             {
-                char[] buffer = new char[blockSize/2];
+                char[] buffer = new char[tokenizerBlockSize];
                 UTF16Buffer bufr = new UTF16Buffer(buffer, 0, 0);
                 bool lastWasCR = false;
                 int len = -1;
@@ -526,27 +539,27 @@ namespace CsQuery.HtmlParser
                         tokenizer.SetTransitionBaseOffset(streamOffset);
                         bufr.Start = offset;
                         bufr.End = offset + length;
-                        while (bufr.HasMore)
+                        while (bufr.HasMore && !tokenizer.IsSuspended)
                         {
                             bufr.Adjust(lastWasCR);
                             lastWasCR = false;
-                            if (bufr.HasMore)
+                            if (bufr.HasMore && !tokenizer.IsSuspended)
                             {
                                 lastWasCR = tokenizer.TokenizeBuffer(bufr);
                             }
                         }
                     }
                     streamOffset = length;
-                    while ((len = reader.Read(buffer, 0, buffer.Length)) != 0)
+                    while (!tokenizer.IsSuspended && (len = reader.Read(buffer, 0, buffer.Length)) != 0)
                     {
                         tokenizer.SetTransitionBaseOffset(streamOffset);
                         bufr.Start = 0;
                         bufr.End = len;
-                        while (bufr.HasMore)
+                        while (bufr.HasMore && !tokenizer.IsSuspended)
                         {
                             bufr.Adjust(lastWasCR);
                             lastWasCR = false;
-                            if (bufr.HasMore)
+                            if (bufr.HasMore && !tokenizer.IsSuspended)
                             {
                                 lastWasCR = tokenizer.TokenizeBuffer(bufr);
                             }
@@ -554,7 +567,10 @@ namespace CsQuery.HtmlParser
                         streamOffset += len;
                     }
                 }
-                tokenizer.Eof();
+                if (!tokenizer.IsSuspended)
+                {
+                    tokenizer.Eof();
+                }
             }
             finally
             {

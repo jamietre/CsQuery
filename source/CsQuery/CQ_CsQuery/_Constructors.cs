@@ -48,7 +48,7 @@ namespace CsQuery
         {
             //CreateNew(this, html, parsingMode,parsingOptions, docType);
 
-            Encoding encoding = Encoding.Unicode;
+            Encoding encoding = Encoding.UTF8;
 
             using (var stream = Support.GetEncodedStream(html ?? "", encoding))
             {
@@ -107,7 +107,7 @@ namespace CsQuery
             HtmlParsingOptions parsingOptions = HtmlParsingOptions.Default,
             DocType docType = DocType.Default)
         {
-            Encoding encoding = Encoding.Unicode;
+            Encoding encoding = Encoding.UTF8;
 
             var stream = new MemoryStream(encoding.GetBytes(html.ReadToEnd()));
             CreateNew(this, stream, encoding,parsingMode, parsingOptions, docType);
@@ -390,7 +390,7 @@ namespace CsQuery
         private CQ NewInstance(string html)
         {
             var cq = NewCqUnbound();
-            Encoding encoding = Encoding.Unicode;
+            Encoding encoding = Encoding.UTF8;
             var stream = new MemoryStream(encoding.GetBytes(html));
             CreateNew(cq, stream, encoding,HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.Default);
             return cq;

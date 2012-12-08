@@ -94,7 +94,7 @@ namespace CsQuery.Implementation
             HtmlParsingOptions parsingOptions = HtmlParsingOptions.Default,
             DocType docType = DocType.Default)
         {
-            var encoding = Encoding.Unicode;
+            var encoding = Encoding.UTF8;
 
             using (var stream = new MemoryStream(encoding.GetBytes(html)))
             {

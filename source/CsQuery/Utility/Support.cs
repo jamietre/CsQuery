@@ -243,7 +243,7 @@ namespace CsQuery.Utility
             byte[] data = new byte[stream.Length];
             stream.Position = 0;
             stream.Read(data, 0, (int)stream.Length);
-            return (Encoding.Unicode.GetString(data));
+            return (Encoding.UTF8.GetString(data));
         }
 
         /// <summary>

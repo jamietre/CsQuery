@@ -85,9 +85,10 @@ namespace CsQuery.Tests._WebIO
             bool complete = false;
             CQ.WhenAll(promise1,promise2).Then(new Action<ICsqWebResponse>((response) =>
             {
+                complete = true;
                 Assert.IsTrue(p1resolved, "Promise 1 is resolved");
                 Assert.IsTrue(p2resolved, "Promise 1 is resolved");
-                complete = true;
+                
             }), new Action(() =>
             {
                 Assert.Fail("The web requests were rejected.");

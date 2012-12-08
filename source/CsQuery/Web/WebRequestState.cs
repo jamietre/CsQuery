@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.IO;
+using HttpWebAdapters;
 
 namespace CsQuery.Web
 {
@@ -31,7 +32,7 @@ namespace CsQuery.Web
         /// The WebRequest
         /// </summary>
 
-        public WebRequest Request;
+        public IHttpWebRequest Request;
 
         /// <summary>
         /// The response stream.

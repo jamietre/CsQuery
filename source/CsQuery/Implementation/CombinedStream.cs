@@ -11,6 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+ * Changes made by J. Treworgy from source forked on 12/7/2012
+ */
 #endregion
 using System;
 using System.Collections.Generic;
@@ -24,17 +27,41 @@ namespace CsQuery.Implementation
         bool _valid;
         readonly IEnumerator<Stream> _streams;
 
-        /// <summary> Creates a single 'pseudo' stream out of multiple input streams </summary>
-        public CombinedStream(params Stream[] streams) : this((IEnumerable<Stream>)streams) { }
-        /// <summary> Creates a single 'pseudo' stream out of multiple input streams </summary>
+        /// <summary>
+        /// Creates a single 'pseudo' stream out of multiple input streams.
+        /// </summary>
+        ///
+        /// <param name="streams">
+        /// The streams.
+        /// </param>
+
+        public CombinedStream(params Stream[] streams) : 
+            this((IEnumerable<Stream>)streams) 
+        { }
+
+        /// <summary>
+        /// Creates a single 'pseudo' stream out of multiple input streams.
+        /// </summary>
+        ///
+        /// <param name="streams">
+        /// The streams.
+        /// </param>
+
         public CombinedStream(IEnumerable<Stream> streams)
         {
             _streams = streams.GetEnumerator();
             _valid = _streams.MoveNext();
         }
 
-        /// <summary>  </summary>
-        public override bool CanRead { get { return true; } }
+        /// <summary>
+        /// Gets a value indicating whether we can read.
+        /// </summary>
+
+        public override bool CanRead { 
+            get {
+                return _valid && _streams.Current.CanRead; 
+            } 
+        }
         /// <summary> Reads from the next stream available </summary>
         public override int Read(byte[] buffer, int offset, int count)
         {

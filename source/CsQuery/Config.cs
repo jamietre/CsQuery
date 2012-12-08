@@ -6,6 +6,7 @@ using System.Dynamic;
 using CsQuery.Engine;
 using CsQuery.Output;
 using System.Net;
+using HttpWebAdapters;
 
 namespace CsQuery
 {
@@ -161,12 +162,19 @@ namespace CsQuery
         /// implementation for testing.
         /// </summary>
 
-        public static Func<string, HttpWebRequest> WebRequestCreator = DefaultWebRequestCreator;
-
-        private static HttpWebRequest DefaultWebRequestCreator(string uri)
+        public static IHttpWebRequestFactory WebRequestFactory
         {
-            return (HttpWebRequest)WebRequest.Create(uri);
+            get
+            {
+                if (_WebRequestFactory == null)
+                {
+                    _WebRequestFactory = new HttpWebRequestFactory();
+                }
+                return _WebRequestFactory;
+            }
         }
+        private static IHttpWebRequestFactory _WebRequestFactory;
+
         /// <summary>
         /// The default startup options. These are flags. 
         /// </summary>

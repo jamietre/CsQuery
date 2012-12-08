@@ -234,6 +234,7 @@
     <Compile Include="Examples\YahooParse.cs" />
     <Compile Include="Mocks\MockHttpWebResponse.cs" />
     <Compile Include="Mocks\MockHttpWebRequest.cs" />
+    <Compile Include="Mocks\MockWebRequestCreator.cs" />
     <Compile Include="WebIO\StressTests.cs" />
     <Compile Include="TestTests.cs" />
     <Compile Include="Csharp\HtmlParser\Classes.cs" />

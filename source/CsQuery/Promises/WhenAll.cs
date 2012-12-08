@@ -50,6 +50,9 @@ namespace CsQuery.Promises
         private  Deferred Deferred;
         private int TotalCount = 0;
         private int _ResolvedCount = 0;
+
+        private object _locker = new Object();
+
         private int ResolvedCount
         {
             get
@@ -86,14 +89,27 @@ namespace CsQuery.Promises
 
         private void PromiseResolve()
         {
-            ResolvedCount++;
+            IncrementResolved();
         }
         private void PromiseReject()
         {
             Success = false;
-            ResolvedCount++;
+            IncrementResolved();
         }
 
+        /// <summary>
+        /// Increment the resolved counter. This must be threadsafe or the promise set could fail to
+        /// resolve.
+        /// </summary>
+
+        private void IncrementResolved()
+        {
+            lock (_locker)
+            {
+                ResolvedCount++;
+            }
+
+        }
         /// <summary>
         /// Chains delegates that will be executed on success or failure of a promise.
         /// </summary>

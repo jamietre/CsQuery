@@ -12,6 +12,7 @@ using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
 using CsQuery.Utility;
+using CsQuery.Implementation;
 
 namespace CsQuery.Tests.Csharp
 {
@@ -45,8 +46,8 @@ namespace CsQuery.Tests.Csharp
         {
             byte[] byteArray = Encoding.Unicode.GetBytes(divDom);
             Stream stream = new MemoryStream(byteArray);
-
-            var div = CQ.Create(stream);
+          
+            var div = CQ.Create(stream,Encoding.Unicode);
 
             Assert.AreEqual(divDom, div.Render());
         }

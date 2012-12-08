@@ -5,6 +5,7 @@ using System.Text;
 using System.Net;
 using System.IO;
 using System.Threading;
+using HttpWebAdapters;
 
 namespace CsQuery.Web
 {
@@ -25,7 +26,7 @@ namespace CsQuery.Web
         /// The WebRequest object.
         /// </param>
 
-        public AsyncWebRequest(WebRequest request)
+        public AsyncWebRequest(IHttpWebRequest request)
         {
             Request = request;
         }
@@ -159,7 +160,7 @@ namespace CsQuery.Web
             protected set
             {
                 _WebException = value;
-                Response = (HttpWebResponse)value.Response;
+                Response = (IHttpWebResponse)value.Response;
             }
         }
 
@@ -167,7 +168,7 @@ namespace CsQuery.Web
         /// The WebRequest object
         /// </summary>
 
-        public WebRequest Request
+        public IHttpWebRequest Request
         {
             get;
             set;
@@ -235,7 +236,7 @@ namespace CsQuery.Web
         /// The async HttpWebResponse
         /// </summary>
 
-        public HttpWebResponse Response
+        public IHttpWebResponse Response
         {
             get;
             protected set;
@@ -282,7 +283,7 @@ namespace CsQuery.Web
         }
 
         /// <summary>
-        /// Being the async request
+        /// Begin the async request
         /// </summary>
         /// <returns></returns>
         public ManualResetEvent GetAsync()
@@ -314,7 +315,7 @@ namespace CsQuery.Web
             WebRequestState rs = (WebRequestState)ar.AsyncState;
 
             // Get the WebRequest from RequestState.
-            WebRequest req = rs.Request;
+            IHttpWebRequest req = rs.Request;
             req.Timeout = Timeout;
             req.Headers["UserAgent"] = UserAgent;
 
@@ -325,7 +326,7 @@ namespace CsQuery.Web
 
                 // Call EndGetResponse, which produces the WebResponse object
                 //  that came from the request issued above.
-                Response = (HttpWebResponse)req.EndGetResponse(ar);
+                Response = (IHttpWebResponse)req.EndGetResponse(ar);
 
             }
             catch (WebException e)

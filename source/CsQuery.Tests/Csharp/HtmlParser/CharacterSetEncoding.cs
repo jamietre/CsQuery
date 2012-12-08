@@ -6,6 +6,7 @@ using System.Text;
 using System.IO;
 using System.Reflection;
 using System.Diagnostics;
+using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
@@ -15,6 +16,7 @@ using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
 using CsQuery.HtmlParser;
 using CsQuery.Utility;
+using CsQuery.Web;
 
 namespace CsQuery.Tests.Csharp.HtmlParser
 {
@@ -22,18 +24,19 @@ namespace CsQuery.Tests.Csharp.HtmlParser
     [TestFixture, TestClass]
     public class CharacterSetEncoding : CsQueryTest
     {
-
+        string htmlStart = @"<html><head>";
+        string htmlStart2 = @"<META HTTP-EQUIV='Content-Type' content='text/html;charset=windows-1255'>";
+        string htmlStart3 = @"</head><body><div id=test>";
+        string htmlEnd = "</div></body></html>";
+        char hebrewChar = (char)164;
 
         [TestMethod, Test]
         public void MetaTag()
         {
-            string htmlStart = @"<html><head>";
-            string htmlStart2 = @"<META HTTP-EQUIV='Content-Type' content='text/html;charset=windows-1255'>";
-            string htmlStart3 = @"</head><body><div id=test>";
-            string htmlEnd = "</div></body></html>";
+            
 
             var encoder = Encoding.GetEncoding("windows-1255");
-            var hebrewChar = (char)164;
+            
 
             var html = htmlStart + htmlStart2 + htmlStart3 +hebrewChar + htmlEnd;
             var htmlNoRecode = htmlStart + htmlStart3 + hebrewChar + htmlEnd;
@@ -93,7 +96,21 @@ namespace CsQuery.Tests.Csharp.HtmlParser
 
         }
 
+        [TestMethod]
+        public void ContentTypeHeader()
+        {
+            var creator = new Mocks.MockWebRequestCreator();
+            creator.CharacterSet = "windows-1255";
+            creator.ResponseHTML = htmlStart + htmlStart2 + htmlStart3 + hebrewChar + htmlEnd;
+            
+            CsqWebRequest request = new CsqWebRequest("http://test.com", creator);
 
+            
+            request.Get();
+
+             CQ.CreateDocument(request.Html);
+
+        }
 
     }
 }

@@ -41,7 +41,7 @@ namespace CsQuery.Implementation
             factory.HtmlParsingOptions = HtmlParsingOptions.AllowSelfClosingTags;
             factory.DocType = docType;
 
-            Encoding encoding = Encoding.Unicode;
+            Encoding encoding = Encoding.UTF8;
             using (var stream = new MemoryStream(encoding.GetBytes(html)))
             {
                 return factory.Parse(stream, encoding);
