@@ -48,9 +48,11 @@ namespace CsQuery
         {
             //CreateNew(this, html, parsingMode,parsingOptions, docType);
 
-            using (var reader = new StringReader(html ?? ""))
+            Encoding encoding = Encoding.Unicode;
+
+            using (var stream = Support.GetEncodedStream(html ?? "", encoding))
             {
-                CreateNew(this,reader, parsingMode, parsingOptions, docType);
+                CreateNew(this, stream, encoding,parsingMode, parsingOptions, docType);
             }
         }
 
@@ -73,14 +75,14 @@ namespace CsQuery
         /// </param>
 
         public CQ(Stream html, 
+            Encoding encoding,
             HtmlParsingMode parsingMode = HtmlParsingMode.Auto, 
             HtmlParsingOptions parsingOptions =HtmlParsingOptions.Default,
             DocType docType = DocType.Default)
         {
-            using (var reader = new StreamReader(html))
-            {
-                CreateNew(this, reader, parsingMode, parsingOptions, docType);
-            }
+
+            CreateNew(this, html, encoding, parsingMode, parsingOptions, docType);
+            
         }
 
         /// <summary>
@@ -105,7 +107,10 @@ namespace CsQuery
             HtmlParsingOptions parsingOptions = HtmlParsingOptions.Default,
             DocType docType = DocType.Default)
         {
-            CreateNew(this, html, parsingMode, parsingOptions, docType);
+            Encoding encoding = Encoding.Unicode;
+
+            var stream = new MemoryStream(encoding.GetBytes(html.ReadToEnd()));
+            CreateNew(this, stream, encoding,parsingMode, parsingOptions, docType);
         }
 
         /// <summary>
@@ -338,12 +343,13 @@ namespace CsQuery
         /// </param>
 
         protected void CreateNew(CQ target,
-          TextReader html,
+          Stream html,
+          Encoding encoding,
           HtmlParsingMode parsingMode,
           HtmlParsingOptions parsingOptions,
           DocType docType)
         {
-            target.Document = DomDocument.Create(html, parsingMode,parsingOptions, docType);
+            target.Document = DomDocument.Create(html, encoding, parsingMode,parsingOptions, docType);
 
             //  enumerate ChildNodes when creating a new fragment to be sure the selection set only
             //  reflects the original document. 
@@ -384,7 +390,9 @@ namespace CsQuery
         private CQ NewInstance(string html)
         {
             var cq = NewCqUnbound();
-            CreateNew(cq, new StringReader(html), HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.Default);
+            Encoding encoding = Encoding.Unicode;
+            var stream = new MemoryStream(encoding.GetBytes(html));
+            CreateNew(cq, stream, encoding,HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.Default);
             return cq;
         }
 

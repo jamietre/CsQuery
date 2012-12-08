@@ -94,9 +94,11 @@ namespace CsQuery.Implementation
             HtmlParsingOptions parsingOptions = HtmlParsingOptions.Default,
             DocType docType = DocType.Default)
         {
-            using (var reader = new StringReader(html))
+            var encoding = Encoding.Unicode;
+
+            using (var stream = new MemoryStream(encoding.GetBytes(html)))
             {
-                return ElementFactory.Create(reader, parsingMode, parsingOptions, docType);
+                return ElementFactory.Create(stream, encoding, parsingMode, parsingOptions, docType);
             }
         }
 
@@ -121,13 +123,14 @@ namespace CsQuery.Implementation
         /// A new IDomDocument object
         /// </returns>
 
-        public static IDomDocument Create(TextReader html, 
+        public static IDomDocument Create(Stream html, 
+            Encoding encoding=null,
             HtmlParsingMode parsingMode= HtmlParsingMode.Content,
             HtmlParsingOptions parsingOptions= HtmlParsingOptions.Default,
             DocType docType = DocType.Default)
         {
             
-            return ElementFactory.Create(html, parsingMode,parsingOptions, docType);
+            return ElementFactory.Create(html, encoding,parsingMode,parsingOptions, docType);
         }
 
         #endregion

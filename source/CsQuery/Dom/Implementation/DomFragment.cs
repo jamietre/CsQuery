@@ -40,10 +40,11 @@ namespace CsQuery.Implementation
             factory.HtmlParsingMode = HtmlParsingMode.Fragment;
             factory.HtmlParsingOptions = HtmlParsingOptions.AllowSelfClosingTags;
             factory.DocType = docType;
-            
-            using (var reader = new StringReader(html))
+
+            Encoding encoding = Encoding.Unicode;
+            using (var stream = new MemoryStream(encoding.GetBytes(html)))
             {
-                return factory.Parse(new StringReader(html));
+                return factory.Parse(stream, encoding);
             }
         }
 

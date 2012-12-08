@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Collections.Generic;
 using HtmlParserSharp.Core;
 using HtmlParserSharp.Common;
@@ -55,12 +56,16 @@ namespace CsQuery.HtmlParser
         /// A new document.
         /// </returns>
 
-        public static IDomDocument Create(TextReader html, 
+        public static IDomDocument Create(Stream html, 
+            Encoding streamEncoding,
             HtmlParsingMode parsingMode = HtmlParsingMode.Auto,
             HtmlParsingOptions parsingOptions = HtmlParsingOptions.Default,
             DocType docType = DocType.Default)
         {
-            return GetNewParser(parsingMode, parsingOptions, docType).Parse(html);
+            
+            return GetNewParser(parsingMode, parsingOptions, docType)
+                .Parse(html, streamEncoding);
+            
         }
 
         private static ElementFactory GetNewParser()
@@ -81,9 +86,27 @@ namespace CsQuery.HtmlParser
 
         #region private properties
 
+        /// <summary>
+        /// Size of the blocks to read from the input stream (in bytes)
+        /// </summary>
+        private const int blockSize = 4096;
+
         private static IDictionary<string, string> DefaultContext;
         private Tokenizer tokenizer;
         private CsQueryTreeBuilder treeBuilder;
+
+        /// <summary>
+        /// The character set encoding that's currently active.
+        /// </summary>
+
+        private Encoding charSetEncoding;
+
+       /// <summary>
+       /// This flag can be set during parsing if the character set encoding found in a meta tag is
+       /// different than the stream's current encoding.
+       /// </summary>
+
+        private bool reEncode;
 
         #endregion
 
@@ -142,14 +165,39 @@ namespace CsQuery.HtmlParser
         /// A populated IDomDocument.
         /// </returns>
 
-        public IDomDocument Parse(TextReader reader)
+        public IDomDocument Parse(Stream html, Encoding encoding)
         {
-            if (reader.Peek() < 0)
+    
+            
+           // split into two streams
+
+            byte[] part1bytes = new byte[blockSize];
+            html.Read(part1bytes, 0, blockSize);
+
+            MemoryStream part1stream = new MemoryStream(part1bytes);
+                 
+            if (part1stream.Length==0)
             {
                 return new DomFragment();
             }
 
-            TextReader source = reader;
+            // recreate a combined stream from the pre-fetched part, and the remainder.
+            
+            Stream stream = new CombinedStream(part1stream,html);
+
+            TextReader source;
+            if (encoding == null)
+            {
+                source = new StreamReader(stream, true);
+            }
+            else
+            {
+                source = new StreamReader(stream, encoding);
+            }
+
+            
+            charSetEncoding = ((StreamReader)source).CurrentEncoding;
+            var originalCharSetEncoding = charSetEncoding;
 
             if (HtmlParsingMode == HtmlParsingMode.Auto || 
                 ((HtmlParsingMode == HtmlParsingMode.Fragment )
@@ -157,7 +205,7 @@ namespace CsQuery.HtmlParser
             {
 
                 string ctx;
-                source= GetContextFromStream(source, out ctx);
+                source = GetContextFromStream(source, out ctx);
 
                 if (HtmlParsingMode == HtmlParsingMode.Auto)
                 {
@@ -182,16 +230,61 @@ namespace CsQuery.HtmlParser
                     FragmentContext = ctx;
                 }
             }
-            
 
+          
 
-            //if (HtmlParsingMode == HtmlParser.HtmlParsingMode.Fragment)
-            //{
-            //    source = new StringReader(HtmlPreprocessor.ExpandSelfClosingTags(source.ReadToEnd()));
-            //}
 
             Reset();
             Tokenize(source);
+
+            if (reEncode)
+            {
+                // when this happens, the 2nd stream should still be at position zero (it should not have advanced beyond the 1k mark)
+                // since the charset encoding must occur within the first 1k.
+                
+                if (html.CanRead && html.Position >= blockSize)
+                {
+                    throw new InvalidDataException("The document contained a meta http-equiv Content-Type header after the first 1k. It cannot be parsed.");
+                }
+
+                part1stream = new MemoryStream(part1bytes);
+
+                // if the 2nd stream has already been closed, then the whole thing is less than the block size.
+
+                if (html.CanRead)
+                {
+                    stream = new CombinedStream(part1stream, html);
+                }
+                else
+                {
+                    stream = part1stream;
+                }
+
+
+                // re-encode the entire stream
+
+                TextReader tempReader = new StreamReader(stream, originalCharSetEncoding);
+
+                MemoryStream encoded = new MemoryStream();
+                var writer = new StreamWriter(encoded, charSetEncoding);
+                writer.Write(tempReader.ReadToEnd());
+                writer.Flush();
+                
+                encoded.Position = 0;
+
+                // assign the re-mapped stream to the source and start again
+                source = new StreamReader(encoded, charSetEncoding);
+
+                Reset();
+                Tokenize(source);
+
+            }
+
+            if (reEncode)
+            {
+                throw new InvalidOperationException("The character set encoding changed twice, something seems to be wrong.");
+            }
+
 
             return treeBuilder.Document;
         }
@@ -215,6 +308,7 @@ namespace CsQuery.HtmlParser
         {
             return docType == DocType.Default ? Config.DocType : docType;
         }
+
         private void ConfigureTreeBuilderForParsingMode()
         {
             
@@ -332,7 +426,7 @@ namespace CsQuery.HtmlParser
             treeBuilder.NamePolicy = XmlViolationPolicy.Allow;
             treeBuilder.WantsComments = !HtmlParsingOptions.HasFlag(HtmlParsingOptions.IgnoreComments);
             treeBuilder.AllowSelfClosingTags = HtmlParsingOptions.HasFlag(HtmlParsingOptions.AllowSelfClosingTags);
-            
+
             // DocTypeExpectation should be set later depending on fragment/content/document selection
 
 
@@ -342,6 +436,9 @@ namespace CsQuery.HtmlParser
             InitializeTreeBuilder();
 
             tokenizer = new Tokenizer(treeBuilder, false);
+            tokenizer.EncodingDeclared += tokenizer_EncodingDeclared;
+
+            reEncode = false;
 
             // optionally: report errors and more
 
@@ -355,6 +452,42 @@ namespace CsQuery.HtmlParser
             //tokenizer.EncodingDeclared += (sender, a) => Console.WriteLine("Encoding: " + a.Encoding + " (currently ignored)");
         }
 
+
+        /// <summary>
+        /// Event is called by the tokenizer when a content-encoding meta tag is found. We should just always return true.
+        /// </summary>
+        ///
+        /// <param name="sender">
+        /// The tokenizer
+        /// </param>
+        /// <param name="e">
+        /// Encoding detected event information.
+        /// </param>
+
+        private void tokenizer_EncodingDeclared(object sender, EncodingDetectedEventArgs e)
+        {
+            Encoding encoding;
+            bool accept = false;
+            try
+            {
+                encoding = Encoding.GetEncoding(e.Encoding);
+            }
+            catch
+            {
+                // when an invalid encoding is detected just ignore.
+                encoding = null;
+            }
+            
+            if (encoding!=null && !encoding.Equals(charSetEncoding))
+            {
+                accept = true;
+                charSetEncoding = encoding;
+                reEncode = true;
+                
+            }
+            e.AcceptEncoding = accept;
+        }
+        
         private void Tokenize(TextReader reader)
         {
             if (reader == null)
@@ -370,7 +503,7 @@ namespace CsQuery.HtmlParser
 
             try
             {
-                char[] buffer = new char[2048];
+                char[] buffer = new char[blockSize/2];
                 UTF16Buffer bufr = new UTF16Buffer(buffer, 0, 0);
                 bool lastWasCR = false;
                 int len = -1;

@@ -43,7 +43,7 @@ namespace CsQuery.Tests.Csharp
         [Test, TestMethod]
         public void Create_Stream()
         {
-            byte[] byteArray = Encoding.ASCII.GetBytes(divDom);
+            byte[] byteArray = Encoding.Unicode.GetBytes(divDom);
             Stream stream = new MemoryStream(byteArray);
 
             var div = CQ.Create(stream);

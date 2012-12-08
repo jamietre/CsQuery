@@ -184,11 +184,14 @@ namespace CsQuery.Web
             HttpWebRequest request = GetWebRequest();
 
             Html=null;
-            using (StreamReader responseReader = new StreamReader(request.GetResponse().GetResponseStream())) {
+
+            using (StreamReader responseReader = GetResponseStreamReader(request)) {
                 Html = responseReader.ReadToEnd();
             }
             return Html;
         }
+
+
 
         /// <summary>
         /// Gets a general-purpose web request object.
@@ -200,7 +203,8 @@ namespace CsQuery.Web
 
         protected HttpWebRequest GetWebRequest()
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url);
+            HttpWebRequest request = CsQuery.Config.WebRequestCreator(Url);
+            
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             return request;
         }
@@ -253,7 +257,7 @@ namespace CsQuery.Web
             var encoding = new ASCIIEncoding();
             byte[] data = encoding.GetBytes(PostDataString);
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url);
+            HttpWebRequest request = Config.WebRequestCreator(Url);
 
             request.UserAgent = UserAgent ?? "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)";
             request.Method = "POST";
@@ -264,13 +268,44 @@ namespace CsQuery.Web
             newStream.Write(data, 0, data.Length);
             newStream.Close();
 
-            using (var response = new StreamReader(request.GetResponse().GetResponseStream()))
+            using (var response = GetResponseStreamReader(request))
             {
                 Html = response.ReadToEnd();
             }
             return Html;
         }
         
+        #endregion
+
+        #region private methods
+
+        /// <summary>
+        /// Gets response stream from a webrequest using the correct encoding.
+        /// </summary>
+        ///
+        /// <param name="request">
+        /// The request.
+        /// </param>
+        ///
+        /// <returns>
+        /// The response stream.
+        /// </returns>
+
+        protected StreamReader GetResponseStreamReader(HttpWebRequest request) {
+            var response = (HttpWebResponse)request.GetResponse();
+            
+            //var response = request.GetResponse();
+            //var encoding = response.Headers["
+        
+            StreamReader reader;
+            var encoding = String.IsNullOrEmpty(response.CharacterSet) ?
+                Encoding.UTF8 :
+                Encoding.GetEncoding(response.CharacterSet);
+
+            reader = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding(response.CharacterSet));
+            return reader;
+        }
+
         #endregion
 
     }

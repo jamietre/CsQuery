@@ -547,19 +547,21 @@ The CQ object, in addition to the familiar jQuery methods, uses the default prop
 
     dom["div"]  <===>  $('div')
 
-*Indexed access:* jQuery objects are also array-like. There's no way to "inherit" an array as a base class, nor did I want to implement a `IList` since the destructive methods don't really fit with the "selection set" mindset. (I may revisit this). Instead, though, you can use the same indexer as if it were an array. Any integral values will be treated as an index.
+*Indexed access:* jQuery objects are also array-like. So we expose the property indexer on CQ objects to provide indexed access to the results of a selection:
 
-    dom["div"][0]  <===>  dom.Select("div")[0]  <===>  $('div')
-    
+    dom["div"][0]  <===>  dom.Select("div")[0]  <===>  $('div')[0]
+
+Remember, though, that the only interface that `CQ` implements is `IEnumerable<IDomObject>`. The indexed access is just a property on the object; it doesn't use a standard interface such as `IList`. The .NET 4 framework doesn't include a `IReadOnlyList<T>` interface, and I didn't want to use the regular `IList` because it permits destructive actions.
+   
 *DOM Creation*: Same as jQuery. If you pass what appears to be HTML to the indexer (or the Select method), it will return a new CQ object built from that HTML string:
 
     dom["<div></div>"]  <===> $('<div></div>')
     
 *Selection set creation*: Same as jQuery, you can build a selection set directly from another CsQuery object, or DOM elements.
 
-    var copyOfDom2 = dom[dom2];
+    var copyOfDom2 = dom[dom2] <===> var copyOfDom2 = $(dom2);
 
-    var firstElementOfDom2 = dom[dom2[0]];
+    var firstElementOfDom2 = dom[dom2[0]] <===> var firstElementOfDom2 = $(dom2[0]);
 
 
 ##### Creating a CQ object from HTML

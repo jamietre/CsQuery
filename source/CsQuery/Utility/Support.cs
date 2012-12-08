@@ -8,6 +8,8 @@ using System.Diagnostics;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
 using CsQuery.StringScanner;
+using CsQuery.Implementation;
+
 
 namespace CsQuery.Utility
 {
@@ -241,7 +243,7 @@ namespace CsQuery.Utility
             byte[] data = new byte[stream.Length];
             stream.Position = 0;
             stream.Read(data, 0, (int)stream.Length);
-            return (Encoding.ASCII.GetString(data));
+            return (Encoding.Unicode.GetString(data));
         }
 
         /// <summary>
@@ -705,6 +707,26 @@ namespace CsQuery.Utility
         public static string EnumToAttribute(Enum value)
         {
             return value.ToString().ToLower();
+        }
+
+        /// <summary>
+        /// Return a stream, including BOM preamble, from a string
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// The HTML.
+        /// </param>
+        /// <param name="encoding">
+        /// The encoding.
+        /// </param>
+        ///
+        /// <returns>
+        /// The encoded stream.
+        /// </returns>
+
+        public static Stream GetEncodedStream(string html, Encoding encoding) {
+            //return new CombinedStream(new MemoryStream(encoding.GetPreamble()), new MemoryStream(encoding.GetBytes(html)));
+            return new MemoryStream(encoding.GetBytes(html));
         }
     }
 

@@ -181,8 +181,29 @@ namespace CsQuery
 
         public static CQ Create(Stream html)
         {
-            return new CQ(html, HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.Default);
+            return new CQ(html, null,HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.Default);
         }
+
+        /// <summary>
+        /// Create a new CQ from an HTML fragment, and use quickSet to create attributes (and/or css)
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// An open Stream.
+        /// </param>
+        /// <param name="encoding">
+        /// The character set encoding.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+
+        public static CQ Create(Stream html, Encoding encoding)
+        {
+            return new CQ(html, encoding, HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.Default);
+        }
+
 
         /// <summary>
         /// Create a new CQ object from a TextReader containing HTML.
@@ -223,11 +244,12 @@ namespace CsQuery
         /// </returns>
 
         public static CQ Create(Stream html, 
+            Encoding encoding = null,
             HtmlParsingMode parsingMode=HtmlParsingMode.Auto, 
             HtmlParsingOptions parsingOptions = HtmlParsingOptions.Default,
             DocType docType = DocType.Default)
         {
-            return new CQ(html, parsingMode,parsingOptions, docType);
+            return new CQ(html, encoding,parsingMode,parsingOptions, docType);
         }
 
         /// <summary>
@@ -340,7 +362,7 @@ namespace CsQuery
         /// </summary>
         ///
         /// <param name="html">
-        /// A n open Stream
+        /// An open Stream
         /// </param>
         ///
         /// <returns>
@@ -349,9 +371,28 @@ namespace CsQuery
 
         public static CQ CreateDocument(Stream html)
         {
-            return new CQ(html, HtmlParsingMode.Document, HtmlParsingOptions.Default, DocType.Default);
+            return new CQ(html, null,HtmlParsingMode.Document, HtmlParsingOptions.Default, DocType.Default);
         }
 
+        /// <summary>
+        /// Creeate a new DOM from HTML text using full HTML5 tag generation.
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// An open Stream.
+        /// </param>
+        /// <param name="encoding">
+        /// The character set encoding.
+        /// </param>
+        ///
+        /// <returns>
+        /// The new document.
+        /// </returns>
+
+        public static CQ CreateDocument(Stream html, Encoding encoding)
+        {
+            return new CQ(html, encoding, HtmlParsingMode.Document, HtmlParsingOptions.Default, DocType.Default);
+        }
         /// <summary>
         /// Creates a new DOM from a stream containing HTML
         /// </summary>

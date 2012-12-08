@@ -5,6 +5,7 @@ using System.Text;
 using System.Dynamic;
 using CsQuery.Engine;
 using CsQuery.Output;
+using System.Net;
 
 namespace CsQuery
 {
@@ -108,6 +109,8 @@ namespace CsQuery
             set;
         }
 
+        
+
         /// <summary>
         /// The default OutputFormatter. The GetOutputFormatter property can also be used to provide a
         /// new instance whenever a default OutputFormatter is requested; setting that property will
@@ -153,6 +156,17 @@ namespace CsQuery
             }
         }
 
+        /// <summary>
+        /// A method that returns a new HttpWebRequest. This is mostly useful for providing an alternate
+        /// implementation for testing.
+        /// </summary>
+
+        public static Func<string, HttpWebRequest> WebRequestCreator = DefaultWebRequestCreator;
+
+        private static HttpWebRequest DefaultWebRequestCreator(string uri)
+        {
+            return (HttpWebRequest)WebRequest.Create(uri);
+        }
         /// <summary>
         /// The default startup options. These are flags. 
         /// </summary>

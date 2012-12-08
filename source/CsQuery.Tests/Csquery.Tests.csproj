@@ -101,6 +101,7 @@
     <Compile Include="Csharp\Dom\DomElement.cs" />
     <Compile Include="Csharp\Dom\SpecialElements.cs" />
     <Compile Include="Csharp\ExtensionMethods\Xml.cs" />
+    <Compile Include="Csharp\HtmlParser\CharacterSetEncoding.cs" />
     <Compile Include="Csharp\HtmlParser\HtmlEncoding.cs" />
     <Compile Include="Csharp\HtmlParser\PreProcessing.cs" />
     <Compile Include="Csharp\HtmlParser\FragmentContext.cs" />
@@ -231,6 +232,8 @@
     <Compile Include="jsdom\JsdomTest.cs" />
     <Compile Include="jsdom\Level2\Level2.cs" />
     <Compile Include="Examples\YahooParse.cs" />
+    <Compile Include="Mocks\MockHttpWebResponse.cs" />
+    <Compile Include="Mocks\MockHttpWebRequest.cs" />
     <Compile Include="WebIO\StressTests.cs" />
     <Compile Include="TestTests.cs" />
     <Compile Include="Csharp\HtmlParser\Classes.cs" />

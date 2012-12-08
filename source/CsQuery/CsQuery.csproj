@@ -320,10 +320,10 @@
     <Compile Include="HtmlParser\enumHtmlParsingOptions.cs" />
     <Compile Include="HtmlParser\CsQueryTreeBuilder.cs" />
     <Compile Include="HtmlParser\ElementFactory.cs" />
-    <Compile Include="HtmlParser\HtmlPreprocessor.cs" />
     <Compile Include="HtmlParser\enumHtmlParsingMode.cs" />
     <Compile Include="HtmlParser\HtmlStyles.cs" />
     <Compile Include="HtmlParser\enumTokenProperties.cs" />
+    <Compile Include="Implementation\CombinedStream.cs" />
     <Compile Include="Implementation\TextReaderCombiner.cs" />
     <Compile Include="Output\HtmlEncoderFull.cs" />
     <Compile Include="Output\HtmlEncoderMinimumNbsp.cs" />
@@ -503,7 +503,7 @@ xcopy $(TargetDir)CsQuery.xml $(SolutionDir)..\Distribution /Y
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UseGlobalSettings="True" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
