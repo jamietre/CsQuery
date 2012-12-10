@@ -13,6 +13,17 @@ namespace CsQuery.Promises
 
     public class Deferred: IPromise
     {
+        /// <summary>
+        /// Default constuctor for a Deferred object.
+        /// </summary>
+
+        public Deferred()
+        {
+            if (When.Debug)
+            {
+                FailOnResolutionExceptions = true;
+            }
+        }
         #region private properties
 
         private Func<object, IPromise> _Success;

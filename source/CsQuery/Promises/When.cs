@@ -13,6 +13,17 @@ namespace CsQuery
     public static class When
     {
         /// <summary>
+        /// Gets or sets a value indicating whether objects in the Promises library should be created in
+        /// debug mode. This affects Deferred.FailOnResolutionExceptions.
+        /// </summary>
+
+        public static bool Debug
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Returns a new Deferred object, an object containing a promise and resolver methods.
         /// </summary>
         ///

@@ -19634,6 +19634,12 @@
              A new IPromise object.
              </returns>
         </member>
+        <member name="P:CsQuery.When.Debug">
+            <summary>
+            Gets or sets a value indicating whether objects in the Promises library should be created in
+            debug mode. This affects Deferred.FailOnResolutionExceptions.
+            </summary>
+        </member>
         <member name="T:CsQuery.Promises.Deferred`1">
              <summary>
              A strongly-typed deferred object
@@ -19647,6 +19653,11 @@
             <summary>
             A Deferred object. Deferred objects implement the IPromise interface, and have methods for
             resolving or rejecting the promise.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Promises.Deferred.#ctor">
+            <summary>
+            Default constuctor for a Deferred object.
             </summary>
         </member>
         <member name="F:CsQuery.Promises.Deferred.NextDeferred">

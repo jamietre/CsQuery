@@ -31,6 +31,9 @@ namespace CsQuery.Implementation
 
         #region private properties
 
+
+        private object _locker = new object();
+
         /// <summary>
         /// An ordered set of all the keys in this dictionary.
         /// </summary>
@@ -170,9 +173,12 @@ namespace CsQuery.Implementation
 
         public void Add(string key, TValue value)
         {
-            if (Keys.Add(key))
+            lock (_locker)
             {
-                Index.Add(key, value);
+                if (Keys.Add(key))
+                {
+                    Index.Add(key, value);
+                }
             }
         }
 
@@ -212,14 +218,17 @@ namespace CsQuery.Implementation
 
         public bool Remove(string key)
         {
-            if (Keys.Remove(key))
+            lock (_locker)
             {
-                Index.Remove(key);
-                return true;
-            }
-            else
-            {
-                return false;
+                if (Keys.Remove(key))
+                {
+                    Index.Remove(key);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
 
@@ -301,8 +310,11 @@ namespace CsQuery.Implementation
 
         public void Clear()
         {
-            Keys.Clear();
-            Index.Clear();
+            lock (_locker)
+            {
+                Keys.Clear();
+                Index.Clear();
+            }
         }
 
         /// <summary>
