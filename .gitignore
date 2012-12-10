@@ -3,7 +3,6 @@
 #################
 
 Build/
-WebSite/
 source/TestResults/
 source/CsQuery.Tests/Performance/Output/
 *.nupkg
@@ -44,7 +43,7 @@ obj
 *.dotCover
 
 ## TODO: If you have NuGet Package Restore enabled, uncomment this
-#packages/
+packages/
 
 # Visual C++ cache files
 ipch/
