@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using CsQuery.ExtensionMethods;
@@ -31,8 +32,12 @@ namespace CsQuery.Implementation
 
         #region private properties
 
-
+        // the "threadsafe" flag causes certain objects to be compiled with thread safety. This causes
+        // a performance hit so this is done mostly for debugging
+        
+#if threadsafe
         private object _locker = new object();
+#endif
 
         /// <summary>
         /// An ordered set of all the keys in this dictionary.
@@ -44,7 +49,7 @@ namespace CsQuery.Implementation
         /// The inner index.
         /// </summary>
 
-        protected Dictionary<string,TValue> Index = new Dictionary<string,TValue>();
+        protected IDictionary<string,TValue> Index = new Dictionary<string,TValue>();
 
         #endregion
 
@@ -173,13 +178,17 @@ namespace CsQuery.Implementation
 
         public void Add(string key, TValue value)
         {
+#if threadsafe
             lock (_locker)
             {
+#endif
                 if (Keys.Add(key))
                 {
                     Index.Add(key, value);
                 }
+#if threadsafe
             }
+#endif
         }
 
         /// <summary>
@@ -218,8 +227,10 @@ namespace CsQuery.Implementation
 
         public bool Remove(string key)
         {
+#if threadsafe
             lock (_locker)
             {
+#endif
                 if (Keys.Remove(key))
                 {
                     Index.Remove(key);
@@ -229,7 +240,9 @@ namespace CsQuery.Implementation
                 {
                     return false;
                 }
+#if threadsafe
             }
+#endif
         }
 
         /// <summary>
@@ -283,7 +296,21 @@ namespace CsQuery.Implementation
             }
             set
             {
-                Index[key] = value;
+#if threadsafe
+                lock (_locker)
+                {
+#endif
+                if (ContainsKey(key))
+                {
+                    Index[key] = value;
+                }
+                else
+                {
+                    Add(key, value);
+                }
+#if threadsafe
+                }
+#endif
             }
         }
 
@@ -310,11 +337,15 @@ namespace CsQuery.Implementation
 
         public void Clear()
         {
+#if threadsafe
             lock (_locker)
             {
+#endif
                 Keys.Clear();
                 Index.Clear();
+#if threadsafe
             }
+#endif
         }
 
         /// <summary>
