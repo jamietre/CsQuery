@@ -6,7 +6,7 @@ using CsQuery;
 
 namespace CsQuery.Tests
 {
-    public static class ExtensionMethods
+    public static class TestExtensionMethods
     {
         public static bool IsNullOrEmpty<T>(this IEnumerable<T> baseList)
         {

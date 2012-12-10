@@ -64,6 +64,9 @@ namespace CsQuery
         /// <param name="html">
         /// The html source of the new document.
         /// </param>
+        /// <param name="encoding">
+        /// The character set encoding.
+        /// </param>
         /// <param name="parsingMode">
         /// The HTML parsing mode.
         /// </param>
@@ -331,6 +334,9 @@ namespace CsQuery
         /// </param>
         /// <param name="html">
         /// The HTML.
+        /// </param>
+        /// <param name="encoding">
+        /// The character set encoding.
         /// </param>
         /// <param name="parsingMode">
         /// The HTML parsing mode.

@@ -19,8 +19,21 @@ using System.IO;
 using System.Net;
 
 namespace HttpWebAdapters.Adapters {
+
+    /// <summary>
+    /// HTTP web response adapter
+    /// </summary>
+
 	public class HttpWebResponseAdapter : IHttpWebResponse {
 		private WebResponse response;
+
+        /// <summary>
+        /// Create a new HttpWebResponseAdapter from a .NET WebResponse
+        /// </summary>
+        ///
+        /// <param name="response">
+        /// The HttpWebResponseAdapter.
+        /// </param>
 
 		public HttpWebResponseAdapter(WebResponse response) {
 			this.response = response; // TODO use DuckTyping!

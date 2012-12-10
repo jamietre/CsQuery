@@ -19,6 +19,11 @@ using System.IO;
 using System.Net;
 
 namespace HttpWebAdapters {
+
+    /// <summary>
+    /// Interface for an HTTP web response.
+    /// </summary>
+
 	public interface IHttpWebResponse : IDisposable {
 		/// <summary>
 		///Gets the contents of a header that was returned with the response.

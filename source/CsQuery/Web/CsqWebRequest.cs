@@ -21,7 +21,7 @@ namespace CsQuery.Web
         #region constructor
 
         /// <summary>
-        /// Constructor.
+        /// Creates a new CsqWebRequest for a given URL using the default IHttpWebRequestFactory.
         /// </summary>
         ///
         /// <param name="url">
@@ -33,11 +33,26 @@ namespace CsQuery.Web
             Url = url;
             WebRequestFactory = Config.WebRequestFactory;
         }
+
+        /// <summary>
+        /// Creates a new CsqWebRequest for a URL using the provided IHttpWebRequestFactory. (Usually,
+        /// you should use the default constructor, unless replacing the .NET framework HttpWebRequest
+        /// object for testing or some other purpose)
+        /// </summary>
+        ///
+        /// <param name="url">
+        /// URL of the document.
+        /// </param>
+        /// <param name="webRequestFactory">
+        /// The web request factory.
+        /// </param>
+
         public CsqWebRequest(string url, IHttpWebRequestFactory webRequestFactory)
         {
             Url = url;
             WebRequestFactory = webRequestFactory;
         }
+
         #endregion
 
         #region private properties

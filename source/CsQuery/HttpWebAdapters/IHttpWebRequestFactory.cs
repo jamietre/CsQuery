@@ -17,7 +17,25 @@
 using System;
 
 namespace HttpWebAdapters {
+
+    /// <summary>
+    /// Interface for an object that creates HttpWebRequest objects.
+    /// </summary>
+
 	public interface IHttpWebRequestFactory {
+
+        /// <summary>
+        /// Creates a concrete HttpWebRequest
+        /// </summary>
+        ///
+        /// <param name="url">
+        /// URL of the document.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new HttpWebRequest
+        /// </returns>
+
 		IHttpWebRequest Create(Uri url);
 	}
 }

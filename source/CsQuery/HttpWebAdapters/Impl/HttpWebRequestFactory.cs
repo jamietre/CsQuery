@@ -19,10 +19,40 @@ using System.Net;
 using HttpWebAdapters.Adapters;
 
 namespace HttpWebAdapters {
+
+    /// <summary>
+    /// Defaut HTTP web request factory; creates instances of .NET framework classes.
+    /// </summary>
+
 	public class HttpWebRequestFactory : IHttpWebRequestFactory {
+
+        /// <summary>
+        /// Creates an HttpWebRequestAdapter wrapping a .NET framework HttpWebRequest object.
+        /// </summary>
+        ///
+        /// <param name="url">
+        /// URL of the document.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new HttpWebRequestAdapter
+        /// </returns>
+
 		public IHttpWebRequest Create(string url) {
 			return new HttpWebRequestAdapter((HttpWebRequest) WebRequest.Create(url));
 		}
+
+        /// <summary>
+        /// Creates an HttpWebRequestAdapter wrapping a .NET framework HttpWebRequest object.
+        /// </summary>
+        ///
+        /// <param name="url">
+        /// URL of the document.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new HttpWebRequestAdapter
+        /// </returns>
 
 		public IHttpWebRequest Create(Uri url) {
 			return new HttpWebRequestAdapter((HttpWebRequest) WebRequest.Create(url));

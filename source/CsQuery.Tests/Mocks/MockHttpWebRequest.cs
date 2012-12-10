@@ -14,7 +14,19 @@ namespace CsQuery.Tests.Mocks
 
     public class MockHttpWebRequest: IHttpWebRequest
     {
-        public new static MockHttpWebRequest Create(Uri uri)
+        /// <summary>
+        /// Creates a new mock MockHttpWebRequest.
+        /// </summary>
+        ///
+        /// <param name="uri">
+        /// URI of the document.
+        /// </param>
+        ///
+        /// <returns>
+        /// The new MockHttpWebRequest.
+        /// </returns>
+
+        public static MockHttpWebRequest Create(Uri uri)
         {
             MockHttpWebRequest request = new MockHttpWebRequest();
             request._RequestUri = uri;

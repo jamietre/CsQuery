@@ -13,7 +13,6 @@ namespace CsQuery.Promises
 
     public class Deferred: IPromise
     {
-
         #region private properties
 
         private Func<object, IPromise> _Success;
@@ -88,6 +87,20 @@ namespace CsQuery.Promises
 
         protected object Parameter;
 
+        #endregion
+
+        #region public properties
+
+        /// <summary>
+        /// When false (default), errors thrown during promise resoluton will be turned into a rejected
+        /// promise. If this is true, no error handling will occur, meaning that errors could bubble, or
+        /// in the event that a promise was resolved by an asynchronous event, be unhandled. Typically,
+        /// you would only want this to be false when debugging, as it could result in unhandled
+        /// exceptions.
+        /// </summary>
+
+        public bool FailOnResolutionExceptions { get; set; }
+ 
         #endregion
 
         #region public methods
@@ -305,11 +318,11 @@ namespace CsQuery.Promises
         }
 
         /// <summary>
-        /// Gets the param,eter
+        /// Gets the parameters that should be invoked on the success/fail delegate.
         /// </summary>
         ///
         /// <param name="useParms">
-        /// true to use parameters.
+        /// When true, the target delegate has parameters and this should return a non-null result.
         /// </param>
         ///
         /// <returns>
@@ -335,16 +348,24 @@ namespace CsQuery.Promises
         {
             if (Success != null)
             {
-                try
+                if (!FailOnResolutionExceptions)
+                {
+                    try
+                    {
+                        Success(Parameter);
+                    }
+                    catch
+                    {
+                        RejectImpl();
+                        return;
+                    }
+                }
+                else
                 {
                     Success(Parameter);
                 }
-                catch(Exception e)
-                {
-                    RejectImpl();
-                    return;
-                }
             }
+
             if (NextDeferred != null)
             {
                 NextDeferred.Resolve(Parameter);
@@ -359,13 +380,18 @@ namespace CsQuery.Promises
         {
             if (Failure != null)
             {
-
-                try
+                if (!FailOnResolutionExceptions)
+                {
+                    try
+                    {
+                        Failure(Parameter);
+                    }
+                    catch { }
+                }
+                else
                 {
                     Failure(Parameter);
                 }
-                catch { }
-                
             }
             if (NextDeferred != null)
             {

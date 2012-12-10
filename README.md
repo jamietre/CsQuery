@@ -95,7 +95,7 @@ Also be sure to look at the example applications under CsQuery.Examples.
 * [Features](https://github.com/jamietre/CsQuery#features)
     * [Shortcomings](https://github.com/jamietre/CsQuery#shortcomings)
     * [Missing CSS Selectors](https://github.com/jamietre/CsQuery#missing-css-selectors)
-
+* [Acknowledgements](https://github.com/jamietre/CsQuery#acknowledgements)
 
 ### Roadmap
 
@@ -473,7 +473,6 @@ Another interesting thing about promises is that they can be resolved *before* t
     deferred.Resolve();
     deferred.Then(successDelegate, failDelegate);   // successDelegate runs immediately
 
-By the way - the basic API and operation for "when" was 100% inspired by Brian Cavalier's excellent [when.js](https://github.com/cujojs/when) project which I use extensively in Javascript. As time permits I will probably expand the C# implementation to include many of the other promise-related utility functions from his project.
 
 ### Options
 
@@ -749,4 +748,20 @@ Everything else (both browser & jQuery extensions) has been implemented.
 
 CSS4 will be added at some point.
 
+
+### Acknowledgements
+
+CsQuery is mostly original code, but I have either been influenced by, or included directly, code written by others.
+
+First and foremost, of course, is John Resig's jQuery, which changed the web forever.
+
+Patrick Reisert's [HtmlParserSharp](https://github.com/Boddlnagg/HtmlParserSharp), a C# port of the [validator.nu](http://validator.nu) HTML5 parser
+
+Miron Abramson's [fast version of Activator.CreateInstance](http://mironabramson.com/blog/post/2008/08/Fast-version-of-the-ActivatorCreateInstance-method-using-IL.aspx) for speeding up dynamic object instantiation
+
+Mauricio Scheffer's [HttpWebRequestAdapters](https://github.com/mausch/SolrNet/tree/master/HttpWebAdapters) to make mocking HttpWebRequest objects possible.
+
+Roger Knapps' `CombinedStream` from his [csharptest.net](http://csharptest.net/) code library 
+
+The API and operation for the `when` object was  inspired by Brian Cavalier's excellent [when.js](https://github.com/cujojs/when) project.
 

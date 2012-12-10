@@ -103,14 +103,17 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Creates a new DomDocument (or derived) object
+        /// Creates a new DomDocument (or derived) object.
         /// </summary>
         ///
         /// <param name="html">
-        /// The HTML source for the document
+        /// The HTML source for the document.
+        /// </param>
+        /// <param name="encoding">
+        /// (optional) the character set encoding.
         /// </param>
         /// <param name="parsingMode">
-        /// (optional) the parsing mode.
+        /// (optional) the HTML parsing mode.
         /// </param>
         /// <param name="parsingOptions">
         /// (optional) options for controlling the parsing.
@@ -120,7 +123,7 @@ namespace CsQuery.Implementation
         /// </param>
         ///
         /// <returns>
-        /// A new IDomDocument object
+        /// A new IDomDocument object.
         /// </returns>
 
         public static IDomDocument Create(Stream html, 

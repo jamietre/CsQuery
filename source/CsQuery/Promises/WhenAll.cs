@@ -13,6 +13,8 @@ namespace CsQuery.Promises
 
     public class WhenAll: IPromise
     {
+        #region constructors
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -45,7 +47,11 @@ namespace CsQuery.Promises
             Timer.Elapsed += new ElapsedEventHandler(Timer_Elapsed);
             Timer.Start();
         }
-        
+
+        #endregion
+
+        #region private properties
+
         private Timer Timer;
         private  Deferred Deferred;
         private int TotalCount = 0;
@@ -85,31 +91,12 @@ namespace CsQuery.Promises
         /// When false, means one or more of the promises was rejected, and the All will be rejected.
         /// </summary>
 
-        private  bool Success;
+        private bool Success;
 
-        private void PromiseResolve()
-        {
-            IncrementResolved();
-        }
-        private void PromiseReject()
-        {
-            Success = false;
-            IncrementResolved();
-        }
+        #endregion
 
-        /// <summary>
-        /// Increment the resolved counter. This must be threadsafe or the promise set could fail to
-        /// resolve.
-        /// </summary>
+        #region public properties
 
-        private void IncrementResolved()
-        {
-            lock (_locker)
-            {
-                ResolvedCount++;
-            }
-
-        }
         /// <summary>
         /// Chains delegates that will be executed on success or failure of a promise.
         /// </summary>
@@ -210,6 +197,10 @@ namespace CsQuery.Promises
             return Deferred.Then(success, failure);
         }
 
+        #endregion
+
+        #region private properties
+
         private void Configure(IPromise[] promises)
         {
             Success = true;
@@ -238,5 +229,41 @@ namespace CsQuery.Promises
             Timer.Stop();
             Deferred.Reject();
         }
+
+        /// <summary>
+        /// Called when a client promise is resolved.
+        /// </summary>
+
+        private void PromiseResolve()
+        {
+            IncrementResolved();
+        }
+
+        /// <summary>
+        /// Called when a client promise is rejected.
+        /// </summary>
+
+        private void PromiseReject()
+        {
+            Success = false;
+            IncrementResolved();
+        }
+
+        /// <summary>
+        /// Increment the resolved counter. This must be threadsafe or the promise set could fail to
+        /// resolve.
+        /// </summary>
+
+        private void IncrementResolved()
+        {
+            lock (_locker)
+            {
+                ResolvedCount++;
+            }
+
+        }
+
+        #endregion
+
     }
 }

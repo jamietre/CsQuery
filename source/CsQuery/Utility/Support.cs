@@ -10,7 +10,6 @@ using CsQuery.ExtensionMethods.Internal;
 using CsQuery.StringScanner;
 using CsQuery.Implementation;
 
-
 namespace CsQuery.Utility
 {
     /// <summary>

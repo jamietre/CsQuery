@@ -18,6 +18,11 @@ using System;
 using System.Net;
 
 namespace HttpWebAdapters {
+
+    /// <summary>
+    /// A basic implementation for a WebResponse
+    /// </summary>
+
 	public class WebResponseStub : WebResponse, IHttpWebResponse {
 		private CookieCollection cookies;
 		private string contentEncoding;

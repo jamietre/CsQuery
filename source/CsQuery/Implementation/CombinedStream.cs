@@ -21,14 +21,17 @@ using System.IO;
 
 namespace CsQuery.Implementation
 {
-    /// <summary> Creates a single 'pseudo' stream out of multiple input streams </summary>
+    /// <summary>
+    /// Creates a single virtual stream out of multiple input streams.
+    /// </summary>
+
     public class CombinedStream : BaseStream
     {
         bool _valid;
         readonly IEnumerator<Stream> _streams;
 
         /// <summary>
-        /// Creates a single 'pseudo' stream out of multiple input streams.
+        /// Creates a single virtual stream out of multiple input streams.
         /// </summary>
         ///
         /// <param name="streams">
@@ -40,7 +43,7 @@ namespace CsQuery.Implementation
         { }
 
         /// <summary>
-        /// Creates a single 'pseudo' stream out of multiple input streams.
+        /// Creates a single virtual stream out of multiple input streams.
         /// </summary>
         ///
         /// <param name="streams">
@@ -90,6 +93,10 @@ namespace CsQuery.Implementation
             base.Dispose(disposing);
         }
     }
+
+    /// <summary>
+    /// Base stream implementation
+    /// </summary>
 
     public abstract class BaseStream : Stream
     {

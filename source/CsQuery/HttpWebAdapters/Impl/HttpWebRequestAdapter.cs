@@ -20,33 +20,112 @@ using System.Net;
 using System.Security.Cryptography.X509Certificates;
 
 namespace HttpWebAdapters.Adapters {
+
+    /// <summary>
+    /// HTTP web request adapter.
+    /// </summary>
+
 	public class HttpWebRequestAdapter : IHttpWebRequest {
 		private HttpWebRequest request;
+
+        /// <summary>
+        /// Creates an HttpWebRequestAdapter from a .NET HttpWebRequest
+        /// </summary>
+        ///
+        /// <param name="request">
+        /// The HttpWebRequestAdapter.
+        /// </param>
 
 		public HttpWebRequestAdapter(HttpWebRequest request) {
 			this.request = request;
 		}
+
+        /// <summary>
+        /// Gets or sets the HTTP method.
+        /// </summary>
 
 		public HttpWebRequestMethod Method {
 			get { return HttpWebRequestMethod.Parse(request.Method); }
 			set { request.Method = value.ToString(); }
 		}
 
+        /// <summary>
+        /// Gets the response for the HttpWebRequest.
+        /// </summary>
+        ///
+        /// <returns>
+        /// The response.
+        /// </returns>
+
 		public IHttpWebResponse GetResponse() {
 			return new HttpWebResponseAdapter(request.GetResponse());
 		}
+
+        /// <summary>
+        /// Begins an asynchronous request for an Internet resource.
+        /// </summary>
+        ///
+        /// <param name="callback">
+        /// The callback.
+        /// </param>
+        /// <param name="state">
+        /// The state.
+        /// </param>
+        ///
+        /// <returns>
+        /// An System.IAsyncResult that references the asynchronous request.
+        /// </returns>
 
         public IAsyncResult BeginGetResponse(AsyncCallback callback, object state) {
             return request.BeginGetResponse(callback, state);
         }
 
+        /// <summary>
+        /// Ends an asynchronous request for an Internet resource.
+        /// </summary>
+        ///
+        /// <param name="result">
+        /// The result.
+        /// </param>
+        ///
+        /// <returns>
+        /// Returns a System.Net.WebResponse.
+        /// </returns>
+
         public IHttpWebResponse EndGetResponse(IAsyncResult result) {
             return new HttpWebResponseAdapter(request.EndGetResponse(result));
         }
 
+        /// <summary>
+        /// Provides an asynchronous version of the System.Net.WebRequest.GetRequestStream() method.
+        /// </summary>
+        ///
+        /// <param name="callback">
+        /// The callback.
+        /// </param>
+        /// <param name="state">
+        /// The state.
+        /// </param>
+        ///
+        /// <returns>
+        /// An System.IAsyncResult that references the asynchronous request.
+        /// </returns>
+
         public IAsyncResult BeginGetRequestStream(AsyncCallback callback, object state) {
             return request.BeginGetRequestStream(callback, state);
         }
+
+        /// <summary>
+        /// returns a System.IO.Stream for writing data to the Internet resource.
+        /// </summary>
+        ///
+        /// <param name="result">
+        /// The result.
+        /// </param>
+        ///
+        /// <returns>
+        /// A System.IO.Stream to write data to.
+        /// </returns>
 
         public Stream EndGetRequestStream(IAsyncResult result) {
             return request.EndGetRequestStream(result);

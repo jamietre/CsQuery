@@ -229,6 +229,9 @@ namespace CsQuery
         /// <param name="html">
         /// An open Stream.
         /// </param>
+        /// <param name="encoding">
+        /// The character set encoding.
+        /// </param>
         /// <param name="parsingMode">
         /// (optional) the mode.
         /// </param>

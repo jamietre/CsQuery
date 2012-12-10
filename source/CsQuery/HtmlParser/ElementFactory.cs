@@ -42,6 +42,10 @@ namespace CsQuery.HtmlParser
         /// <param name="html">
         /// The HTML input.
         /// </param>
+        /// <param name="streamEncoding">
+        /// The character set encoding used by the stream. If null, the BOM will be inspected, and it
+        /// will default to UTF8 if no encoding can be identified.
+        /// </param>
         /// <param name="parsingMode">
         /// (optional) the parsing mode.
         /// </param>
@@ -165,8 +169,18 @@ namespace CsQuery.HtmlParser
         /// Given a TextReader, create a new IDomDocument from the input.
         /// </summary>
         ///
-        /// <param name="reader">
+        /// <exception cref="InvalidDataException">
+        /// Thrown when an invalid data error condition occurs.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the requested operation is invalid.
+        /// </exception>
+        ///
+        /// <param name="html">
         /// The HTML input.
+        /// </param>
+        /// <param name="encoding">
+        /// The encoding.
         /// </param>
         ///
         /// <returns>
@@ -177,7 +191,8 @@ namespace CsQuery.HtmlParser
         {
     
             
-           // split into two streams
+           // split into two streams so we can restart if needed
+           // without having to re-parse the entire stream.
 
             byte[] part1bytes = new byte[preprocessorBlockSize];
             int part1size = html.Read(part1bytes, 0, preprocessorBlockSize);
@@ -189,7 +204,8 @@ namespace CsQuery.HtmlParser
                 return new DomFragment();
             }
 
-            // recreate a combined stream from the pre-fetched part, and the remainder.
+            // create a combined stream from the pre-fetched part, and the remainder (whose position
+            // will be wherever it was left after reading the part 1 block).
             
             Stream stream = new CombinedStream(part1stream,html);
 
@@ -203,7 +219,6 @@ namespace CsQuery.HtmlParser
                 source = new StreamReader(stream, encoding);
             }
 
-            
             charSetEncoding = ((StreamReader)source).CurrentEncoding;
             var originalCharSetEncoding = charSetEncoding;
 
@@ -429,7 +444,7 @@ namespace CsQuery.HtmlParser
                 pos++;
             }
             context = GetContext(tag);
-            return new TextReaderCombiner(new StringReader(readSoFar), reader);
+            return new CombinedTextReader(new StringReader(readSoFar), reader);
         }
 
         private void InitializeTreeBuilder()
