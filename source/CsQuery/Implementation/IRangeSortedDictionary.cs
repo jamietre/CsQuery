@@ -23,5 +23,7 @@ namespace CsQuery.Implementation
         /// <param name="subKey"></param>
         /// <returns></returns>
         IEnumerable<TValue> GetRange(string subKey);
+
+
     }
 }

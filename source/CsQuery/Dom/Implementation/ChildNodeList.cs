@@ -287,18 +287,19 @@ namespace CsQuery.Implementation
 
                 for (int i = index; i < InnerList.Count; i++)
                 {
-                    if (!isDisconnected && InnerList[i].NodeType == NodeType.ELEMENT_NODE)
+                    if (!isDisconnected && InnerList[i].IsIndexed)
                     {
                         var el = (DomElement)InnerList[i];
 
                         // This would get assigned anyway but this is much faster since we already know the index
-                        el.Document.DocumentIndex.RemoveFromIndex(el);
+                        Owner.Document.DocumentIndex.RemoveFromIndex(el);
                         el.Index = i;
 
                         Owner.Document.DocumentIndex.AddToIndex(el);
                     }
                     else
                     {
+                        // this should run for disconnected nodes & for n
                         ((DomObject)InnerList[i]).Index = i;
                     }
                 }

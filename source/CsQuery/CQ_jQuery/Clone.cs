@@ -14,7 +14,8 @@ namespace CsQuery
     public partial class CQ
     {
         /// <summary>
-        /// Create a deep copy of the set of matched elements.
+        /// Create a deep copy of the set of matched elements. Clone makes copies of the actual elements
+        /// in a selection set; it doesn't simply make a copy of a selector's results.
         /// </summary>
         ///
         /// <returns>

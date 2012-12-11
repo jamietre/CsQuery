@@ -55,6 +55,12 @@ namespace CsQuery
         bool HasChildren { get; }
 
         /// <summary>
+        /// Gets zero-based index of this object relative to its siblings including all node types.
+        /// </summary>
+
+        int Index { get; }
+
+        /// <summary>
         /// Return an INodeList of the direct children of this node.
         /// </summary>
 

@@ -56,6 +56,42 @@ namespace CsQuery.Implementation
         #region public properties
 
         /// <summary>
+        /// Returns the keys in human-readable format.
+        /// </summary>
+
+        public IEnumerable<string> KeysAudit { 
+            get 
+            {
+                foreach (var item in Keys)
+                {
+                    if (HtmlData.pathIdLength == 1)
+                    {
+                        string humanReadableKey = "";
+                        int startIndex = 1;
+                        if (item[0] != HtmlData.indexSeparator)
+                        {
+                            humanReadableKey = item[0] + HtmlData.TokenName((ushort)item[1])+'/';
+                            startIndex = 3;
+                        }
+                        
+                        for (int i = startIndex;i<item.Length;i++)
+                        {
+                            char c = item[i];
+                            humanReadableKey += ((ushort)c).ToString().PadLeft(3,'0');
+                            if (i<item.Length-1) {
+                                humanReadableKey += '/';
+                            }
+                        }
+                        yield return humanReadableKey;
+                    }
+                    else
+                    {
+                        yield return item;
+                    }
+                }
+            } 
+        }
+        /// <summary>
         /// Retrieve all the keys that match the subkey provided; that is, all keys that start with the
         /// value of 'subkey'.
         /// </summary>

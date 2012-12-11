@@ -689,12 +689,6 @@ namespace CsQuery
         int Depth { get; }
 
         /// <summary>
-        /// Gets zero-based index of this object relative to its siblings including all node types.
-        /// </summary>
-
-        int Index { get; }
-
-        /// <summary>
         /// Gets a unique ID for this element among its siblings
         /// </summary>
 
