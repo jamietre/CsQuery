@@ -308,7 +308,7 @@ namespace CsQuery.Implementation
                 // Don't actually store paths with non-element nodes as they aren't indexed and don't have children.
                 // Fast read access is less important than not having to reset them when moved.
 
-                return (char)Index;
+                return (char)(Index+2);
             }
         }
 #endif
