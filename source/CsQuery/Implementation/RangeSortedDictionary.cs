@@ -25,16 +25,13 @@ namespace CsQuery.Implementation
 
         public RangeSortedDictionary()
         {
-            TrueComparer = new TrueStringComparer();
-            Keys = new SortedSet<string>(TrueComparer);
-            Index = new Dictionary<string, TValue>(TrueComparer);
+            Keys = new SortedSet<string>(TrueStringComparer.Comparer);
+            Index = new Dictionary<string, TValue>(TrueStringComparer.Comparer);
         }
-
+        
         #endregion
 
         #region private properties
-
-        protected TrueStringComparer TrueComparer;
 
         // the "threadsafe" flag causes certain objects to be compiled with thread safety. This causes
         // a performance hit so this is done mostly for debugging
@@ -68,30 +65,28 @@ namespace CsQuery.Implementation
             {
                 foreach (var item in Keys)
                 {
-                    if (HtmlData.pathIdLength == 1)
+#if DEBUG_PATH
+                    yield return item;
+#else
+                   
+                    string humanReadableKey = "";
+                    int startIndex = 1;
+                    if (item[0] != HtmlData.indexSeparator)
                     {
-                        string humanReadableKey = "";
-                        int startIndex = 1;
-                        if (item[0] != HtmlData.indexSeparator)
-                        {
-                            humanReadableKey = item[0] + HtmlData.TokenName((ushort)item[1])+'/';
-                            startIndex = 3;
-                        }
+                        humanReadableKey = item[0] + HtmlData.TokenName((ushort)item[1])+'/';
+                        startIndex = 3;
+                    }
                         
-                        for (int i = startIndex;i<item.Length;i++)
-                        {
-                            char c = item[i];
-                            humanReadableKey += ((ushort)c).ToString().PadLeft(3,'0');
-                            if (i<item.Length-1) {
-                                humanReadableKey += '/';
-                            }
-                        }
-                        yield return humanReadableKey;
-                    }
-                    else
+                    for (int i = startIndex;i<item.Length;i++)
                     {
-                        yield return item;
+                        char c = item[i];
+                        humanReadableKey += ((ushort)c).ToString().PadLeft(3,'0');
+                        if (i<item.Length-1) {
+                            humanReadableKey += '/';
+                        }
                     }
+                    yield return humanReadableKey;
+#endif
                 }
             } 
         }

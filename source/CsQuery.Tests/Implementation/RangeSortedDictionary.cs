@@ -77,8 +77,8 @@ namespace CsQuery.Tests.Core.Implementation
         [Test, TestMethod]
         public void TestKeysAll()
         {
-            Dictionary<string, int> testDict = new Dictionary<string, int>(StringComparer.Ordinal);
-            SortedSet<string> keys = new SortedSet<string>(StringComparer.Ordinal);
+            Dictionary<string, int> testDict = new Dictionary<string, int>(TrueStringComparer.Comparer);
+            SortedSet<string> keys = new SortedSet<string>(TrueStringComparer.Comparer);
 
             //var failingKeyC = new char[] { (char)33, (char)3, (char)1, (char)5, (char)3, (char)10, (char)1, (char)1, (char)0, (char)11, (char)3, (char)1, (char)15 };
             //string failingKey = new String(failingKeyC);
@@ -95,15 +95,15 @@ namespace CsQuery.Tests.Core.Implementation
 
             Assert.AreEqual(count, keys.Count);
             Assert.AreEqual(count, testDict.Count);
-            CollectionAssert.AreEqual(keys.ToList(), testDict.Keys.OrderBy(item => item, StringComparer.Ordinal).ToList());
+            CollectionAssert.AreEqual(keys.ToList(), testDict.Keys.OrderBy(item => item, TrueStringComparer.Comparer).ToList());
 
         }
 
         [Test, TestMethod]
         public void TestKeysRandom()
         {
-            Dictionary<string, int> testDict = new Dictionary<string, int>(StringComparer.Ordinal);
-            SortedSet<string> keys = new SortedSet<string>(StringComparer.Ordinal);
+            Dictionary<string, int> testDict = new Dictionary<string, int>(TrueStringComparer.Comparer);
+            SortedSet<string> keys = new SortedSet<string>(TrueStringComparer.Comparer);
 
             int count = 10000;
             for (int i = 0; i < count; i++)
@@ -115,7 +115,7 @@ namespace CsQuery.Tests.Core.Implementation
 
             Assert.AreEqual(count, keys.Count);
             Assert.AreEqual(count, testDict.Count);
-            CollectionAssert.AreEqual(keys.ToList(), testDict.Keys.OrderBy(item=>item,StringComparer.Ordinal).ToList());
+            CollectionAssert.AreEqual(keys.ToList(), testDict.Keys.OrderBy(item => item, TrueStringComparer.Comparer).ToList());
 
         }
 

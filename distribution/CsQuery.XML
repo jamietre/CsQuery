@@ -1712,7 +1712,8 @@
         </member>
         <member name="M:CsQuery.CQ.Clone">
              <summary>
-             Create a deep copy of the set of matched elements.
+             Create a deep copy of the set of matched elements. Clone makes copies of the actual elements
+             in a selection set; it doesn't simply make a copy of a selector's results.
              </summary>
             
              <returns>
@@ -5386,6 +5387,11 @@
             
              <seealso cref="P:CsQuery.IDomObject.ChildrenAllowed"/>
         </member>
+        <member name="P:CsQuery.IDomNode.Index">
+            <summary>
+            Gets zero-based index of this object relative to its siblings including all node types.
+            </summary>
+        </member>
         <member name="P:CsQuery.IDomNode.ChildNodes">
             <summary>
             Return an INodeList of the direct children of this node.
@@ -6053,11 +6059,6 @@
         <member name="P:CsQuery.IDomObject.Depth">
             <summary>
             Gets the depth of this node relative to the Document node, which has depth zero.
-            </summary>
-        </member>
-        <member name="P:CsQuery.IDomObject.Index">
-            <summary>
-            Gets zero-based index of this object relative to its siblings including all node types.
             </summary>
         </member>
         <member name="P:CsQuery.IDomObject.PathID">
@@ -15663,6 +15664,61 @@
         <member name="P:CsQuery.Implementation.CombinedTextReader.Current">
             <summary>
             Gets the current stream
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.TrueStringComparer">
+            <summary>
+            A string comparer that is not concerned with anything other than the raw value of the characters. No encoding, no culture.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.TrueStringComparer.Compare(System.String,System.String)">
+             <summary>
+             Compares two string objects to determine their relative ordering.
+             </summary>
+            
+             <param name="x">
+             String to be compared.
+             </param>
+             <param name="y">
+             String to be compared.
+             </param>
+            
+             <returns>
+             Negative if 'x' is less than 'y', 0 if they are equal, or positive if it is greater.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.TrueStringComparer.Equals(System.String,System.String)">
+             <summary>
+             Tests if two string objects are considered equal.
+             </summary>
+            
+             <param name="x">
+             String to be compared.
+             </param>
+             <param name="y">
+             String to be compared.
+             </param>
+            
+             <returns>
+             true if the objects are considered equal, false if they are not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.TrueStringComparer.GetHashCode(System.String)">
+             <summary>
+             Calculates the hash code for this object.
+             </summary>
+            
+             <param name="obj">
+             The object.
+             </param>
+            
+             <returns>
+             The hash code for this object.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Implementation.TrueStringComparer.Comparer">
+            <summary>
+            Gets an instance of TrueStringComparer
             </summary>
         </member>
         <member name="T:CsQuery.Output.HtmlEncoderFull">
@@ -25498,6 +25554,11 @@
              <returns>
              The enumerator.
              </returns>
+        </member>
+        <member name="P:CsQuery.Implementation.RangeSortedDictionary`1.KeysAudit">
+            <summary>
+            Returns the keys in human-readable format.
+            </summary>
         </member>
         <member name="P:CsQuery.Implementation.RangeSortedDictionary`1.Values">
             <summary>

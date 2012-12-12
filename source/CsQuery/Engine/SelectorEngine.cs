@@ -320,7 +320,7 @@ namespace CsQuery.Engine
 
             // Return the results as a list so that any user will not cause the selector to be run again
             
-            return output.OrderBy(item => item.Path, StringComparer.Ordinal).ToList();
+            return output.OrderBy(item => item.Path, Implementation.TrueStringComparer.Comparer).ToList();
 
         }
 
@@ -870,18 +870,5 @@ namespace CsQuery.Engine
 
         #endregion
 
-        #region private classes
-
-        //class OutputSetComparer : IComparer<IDomObject>
-        //{
-
-
-        //    public int Compare(IDomObject x, IDomObject y)
-        //    {
-        //        return String.Compare(x.Path, y.Path, StringComparison.Ordinal);
-        //    }
-        //}
-
-        #endregion
     }
 }
