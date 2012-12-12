@@ -56,6 +56,7 @@ namespace CsQuery.Tests.Core.WebIO
             return urls;
         }
 
+#if SLOW_TESTS
         [Test,TestMethod]
         public void RandomUrls()
         {
@@ -105,7 +106,7 @@ namespace CsQuery.Tests.Core.WebIO
 
            Debug.WriteLine(FormatTestOutput(successList,failList));
         }
-
+#endif
         /// <summary>
         /// Format all the test output
         /// </summary>

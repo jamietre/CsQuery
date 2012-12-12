@@ -15687,6 +15687,22 @@
              Negative if 'x' is less than 'y', 0 if they are equal, or positive if it is greater.
              </returns>
         </member>
+        <member name="M:CsQuery.Implementation.TrueStringComparer.CompareEqualLength(System.String,System.String)">
+             <summary>
+             Marginally faster when just testing equality than using Compare
+             </summary>
+            
+             <param name="x">
+             String to be compared.
+             </param>
+             <param name="y">
+             String to be compared.
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
         <member name="M:CsQuery.Implementation.TrueStringComparer.Equals(System.String,System.String)">
              <summary>
              Tests if two string objects are considered equal.

@@ -50,28 +50,41 @@ namespace CsQuery.Implementation
         {
             int pos = 0;
             int len = Math.Min(x.Length, y.Length);
-            while (pos < len && x[pos].CompareTo(y[pos]) == 0)
+            while (pos < len && x[pos] == y[pos])
                 pos++;
 
-            if (pos < len)
+            return pos<len ?
+                x[pos].CompareTo(y[pos]) :
+                x.Length.CompareTo(y.Length);
+
+        }
+
+        /// <summary>
+        /// Marginally faster when just testing equality than using Compare
+        /// </summary>
+        ///
+        /// <param name="x">
+        /// String to be compared.
+        /// </param>
+        /// <param name="y">
+        /// String to be compared.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
+        protected bool CompareEqualLength(string x, string y)
+        {
+            int len = x.Length;
+            for (int pos = 0; pos < len; pos++)
             {
-                return x[pos].CompareTo(y[pos]);
-            }
-            else
-            {
-                if (x.Length < y.Length)
+                if (x[pos] != y[pos])
                 {
-                    return -1;
-                }
-                else if (y.Length < x.Length)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return 0;
+                    return false;
                 }
             }
+            return true;
         }
 
         /// <summary>
@@ -91,7 +104,7 @@ namespace CsQuery.Implementation
 
         public bool Equals(string x, string y)
         {
-            return x.Length == y.Length && Compare(x, y) == 0;
+            return x.Length == y.Length && CompareEqualLength(x, y);
         }
 
         /// <summary>
