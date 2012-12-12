@@ -10,7 +10,7 @@ using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery.Implementation;
 
-namespace CsQuery.Tests.Core.Implementation_
+namespace CsQuery.Tests.Core.Implementation
 {
     [TestFixture, TestClass]
     public class CombinedTextReader_

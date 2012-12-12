@@ -25,12 +25,16 @@ namespace CsQuery.Implementation
 
         public RangeSortedDictionary()
         {
-            Keys = new SortedSet<string>(StringComparer.Ordinal);
+            TrueComparer = new TrueStringComparer();
+            Keys = new SortedSet<string>(TrueComparer);
+            Index = new Dictionary<string, TValue>(TrueComparer);
         }
 
         #endregion
 
         #region private properties
+
+        protected TrueStringComparer TrueComparer;
 
         // the "threadsafe" flag causes certain objects to be compiled with thread safety. This causes
         // a performance hit so this is done mostly for debugging
@@ -49,7 +53,7 @@ namespace CsQuery.Implementation
         /// The inner index.
         /// </summary>
 
-        protected IDictionary<string,TValue> Index = new Dictionary<string,TValue>();
+        protected IDictionary<string,TValue> Index;
 
         #endregion
 

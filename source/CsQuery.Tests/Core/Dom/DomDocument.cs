@@ -10,11 +10,12 @@ using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery.EquationParser;
 using CsQuery.EquationParser.Implementation;
 using CsQuery.EquationParser.Implementation.Functions;
+using CsQuery.Implementation;
 
 namespace CsQuery.Tests.Core.Dom
 {
     [TestFixture, TestClass]
-    public class DomDocument
+    public class DomDocument_
     {
 
         [Test, TestMethod]
@@ -22,7 +23,7 @@ namespace CsQuery.Tests.Core.Dom
         {
             var frag = TestDocument();
 
-            var concreteFrag = (Implementation.DomDocument)frag[0].Document;
+            DomDocument concreteFrag = (DomDocument)frag[0].Document;
             Assert.IsFalse(concreteFrag.IsDisconnected);
             Assert.IsTrue(concreteFrag.IsIndexed);
             Assert.AreNotEqual(0, concreteFrag.SelectorXref.Count);

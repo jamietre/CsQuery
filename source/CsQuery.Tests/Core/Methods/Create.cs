@@ -55,7 +55,7 @@ namespace CsQuery.Tests.Core
         [Test, TestMethod]
         public void Create_Element()
         {
-            var el = Implementation.DomElement.Create("div");
+            var el = DomElement.Create("div");
             el.ClassName = "content";
 
             var div = CQ.Create(el);
@@ -65,7 +65,7 @@ namespace CsQuery.Tests.Core
         [Test, TestMethod]
         public void Create_Elements()
         {
-            var el = Implementation.DomElement.Create("div");
+            var el = DomElement.Create("div");
             el.ClassName = "content";
 
             var div = CQ.Create(Objects.Enumerate(el));
