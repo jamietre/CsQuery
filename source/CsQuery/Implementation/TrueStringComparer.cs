@@ -43,7 +43,7 @@ namespace CsQuery.Implementation
 
         public bool Equals(string x, string y)
         {
-            return Compare(x, y) == 0;
+            return x.Length == y.Length && Compare(x, y) == 0;
         }
 
         public int GetHashCode(string obj)
