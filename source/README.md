@@ -10,19 +10,19 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 - [Issue #66](https://github.com/jamietre/CsQuery/issues/66) Exception handling valid nested CSS selectors
 - [Issue #65](https://github.com/jamietre/CsQuery/issues/65) Stack overflow parsing documents with deep nesting
-- [Issue #62](https://github.com/jamietre/CsQuery/issues/63) Exception in RangeSortedDictionary.
-- [Issue #61](https://github.com/jamietre/CsQuery/issues/59) Closest method only returning results for first element in selection
+- [Issue #63](https://github.com/jamietre/CsQuery/issues/63) Exception in RangeSortedDictionary.
+- [Issue #61](https://github.com/jamietre/CsQuery/issues/61) Closest method only returning results for first element in selection
 - [Issue #59](https://github.com/jamietre/CsQuery/issues/59) Comments being omitted on rendering.
 Notes:
 
-- Add `TrueStringComparer` class for use in index; the native string comparison methods prove to be inadequate for comparing the compact keys used by the index (related to Issue #62)
+- Add `TrueStringComparer` class for use in index; the native string comparison methods prove to be inadequate for comparing the compact keys used by the index (related to Issue #61)
 - Stack overflow caused by use of recursion to obtain full path to a node; this was changed to use a different method in `DomObject.GetPath()` 
 
 ####Version 1.3.1
 
 - [Issue #57](https://github.com/jamietre/CsQuery/issues/57) Unhandled NullReferenceException using Next()
 - [Issue #56](https://github.com/jamietre/CsQuery/issues/56) Incorrect handling of escaped characters in attribute-equals type selectors
-- [Issue #53](https://github.com/jamietre/CsQuery/issues/) Slow Text() in some situations
+- [Issue #53](https://github.com/jamietre/CsQuery/issues/53) Slow Text() in some situations
 
 ####Version 1.3. 
 
