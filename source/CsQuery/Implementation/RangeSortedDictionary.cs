@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using CsQuery.ExtensionMethods;
 using CsQuery.HtmlParser;
+using CsQuery.Implementation;
 
 namespace CsQuery.Implementation
 {
@@ -27,6 +28,8 @@ namespace CsQuery.Implementation
         {
             Keys = new SortedSet<string>(TrueStringComparer.Comparer);
             Index = new Dictionary<string, TValue>(TrueStringComparer.Comparer);
+            //Index = new MonoDictionary<string, TValue>(TrueStringComparer.Comparer);
+            //Index = new Net46.Dictionary<string, TValue>(TrueStringComparer.Comparer);
         }
         
         #endregion
@@ -109,7 +112,7 @@ namespace CsQuery.Implementation
             if (string.IsNullOrEmpty(subkey)) {
                 yield break;
             }
-            string lastKey = subkey.Substring(0,subkey.Length - 1) + Convert.ToChar(Convert.ToInt32(subkey[subkey.Length - 1]) + 1);
+            string lastKey = subkey.Substring(0,subkey.Length - 1) + (char)(((int)subkey[subkey.Length - 1]) + 1);
             
             foreach (var key in Keys.GetViewBetween(subkey, lastKey))
             {
@@ -143,6 +146,7 @@ namespace CsQuery.Implementation
         {
             if (depth == 0 && !descendants)
             {
+                //if (Index.ContainsKey(subKey))
                 if (Index.ContainsKey(subKey))
                 {
                     yield return Index[subKey];
@@ -298,6 +302,7 @@ namespace CsQuery.Implementation
         public bool TryGetValue(string key, out TValue value)
         {
             return Index.TryGetValue(key, out value);
+      
         }
 
         /// <summary>

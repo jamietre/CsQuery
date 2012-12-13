@@ -155,6 +155,7 @@ namespace CsQuery.StringScanner.Patterns
                         {
                             index += BoundStart.Length;
                             nestedCount++;
+                            return true;
                         }
                     }
                 }

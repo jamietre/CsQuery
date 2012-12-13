@@ -43,10 +43,10 @@ namespace CsQuery.HtmlParser
             for (int i = 0; i < attributes.Length; i++)
             {
                 string attributeName = AttributeName(attributes.GetLocalName(i), attributes.GetURI(i));
-                if (!element.HasAttribute(attributeName))
-                {
+                //if (!element.HasAttribute(attributeName))
+                //{
                     element.SetAttribute(attributeName, attributes.GetValue(i));
-                }
+                //}
             }
         }
 
@@ -66,7 +66,7 @@ namespace CsQuery.HtmlParser
             IDomText lastChild = parent.LastChild as IDomText;
             if (lastChild != null)
             {
-                ((IDomText)lastChild).NodeValue += text;
+                lastChild.NodeValue += text;
                 
             } else {
                 lastChild = document.CreateTextNode(text);

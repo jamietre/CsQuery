@@ -504,6 +504,55 @@ namespace CsQuery.ExtensionMethods.Internal
             yield break;
         }
 
+        /// <summary>
+        /// Reverse the contents of the StringBuilder
+        /// </summary>
+        ///
+        /// <param name="text">
+        /// The StringBuilder
+        /// </param>
+
+        public static StringBuilder Reverse(this StringBuilder text)
+        {
+            if (text.Length > 1)
+            {
+                int pivotPos = text.Length / 2;
+                for (int i = 0; i < pivotPos; i++)
+                {
+                    int iRight = text.Length - (i + 1);
+                    char rightChar = text[i];
+                    text[i] = text[iRight];
+                    text[iRight] = rightChar;
+                }
+            }
+            return text;
+        }
+
+        /// <summary>
+        /// Reverse a string
+        /// </summary>
+        ///
+        /// <param name="text">
+        /// The string
+        /// </param>
+        ///
+        /// <returns>
+        /// A new string
+        /// </returns>
+
+        public static string Reverse(this string text)
+        {
+            if (text.Length > 1)
+            {
+                StringBuilder sb = new StringBuilder(text);
+                return sb.Reverse().ToString();
+            }
+            else
+            {
+                return text;
+            }
+        }
+
         #endregion
 
         #region char and char array methods 
@@ -796,6 +845,7 @@ namespace CsQuery.ExtensionMethods.Internal
             return newList;
         }
 
+       
         #endregion
     }
 }

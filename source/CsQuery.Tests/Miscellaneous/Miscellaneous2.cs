@@ -42,7 +42,50 @@ namespace CsQuery.Tests.Miscellaneous
             Assert.AreEqual(0, test["body>div"][0].ChildNodes.Count);
         }
 
-    
+        /// <summary>
+        /// Ensure we can have really deep nesting. Things start to get really slow after about 10,000.
+        /// </summary>
+
+        [Test, TestMethod]
+        public void DeepNesting()
+        {
+            string html = "";
+            string htmlEnd = "";
+#if SLOW_TESTS
+            int depth = 15000;
+#else 
+            int depth = 2000;
+#endif
+
+            for (int i = 0; i < depth; i++)
+            {
+                html += "<div>text";
+                htmlEnd += "</div>";
+            }
+
+            var dom = CQ.Create(html+htmlEnd);
+
+            Assert.AreEqual(depth, dom["div"].Length);
+        }
+
+        [Test, TestMethod]
+        public void Issue66()
+        {
+            var dom = CQ.Create(@"
+<div>bar match</div>
+<div name='size'>
+	<div class='matched'>no match</div>
+	<div class='matched'>no match 2</div>
+	<div>foo<div>bar match</div>
+	</div>
+	<div>bar another match</div>
+</div>");
+            
+            var query = dom["div[name~=size] :not(*:contains('bar'))"];
+            Assert.AreEqual(2, query.Length);
+            CollectionAssert.AreEqual(dom[".matched"], query);
+
+        }
         #region setup
         public override void FixtureSetUp()
         {

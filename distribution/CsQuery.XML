@@ -6109,6 +6109,24 @@
             directly. This is an optimizaton as this happens often.
             </summary>
         </member>
+        <member name="M:CsQuery.Implementation.DomObject.GetPath">
+             <summary>
+             Gets the full path to this document.
+             </summary>
+            
+             <returns>
+             The path.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.GetDepth">
+             <summary>
+             Gets the depth of the current node.
+             </summary>
+            
+             <returns>
+             The depth.
+             </returns>
+        </member>
         <member name="M:CsQuery.Implementation.DomObject.Render">
              <summary>
              Renders the complete HTML for this element, including its children.
@@ -6203,7 +6221,7 @@
              </summary>
             
              <exception cref="T:System.InvalidOperationException">
-             Thrown when the requested operation is invalid.
+             Thrown when the the node has no parent.
              </exception>
         </member>
         <member name="M:CsQuery.Implementation.DomObject.DescendantCount">
@@ -6705,7 +6723,7 @@
         </member>
         <member name="P:CsQuery.Implementation.DomObject.Depth">
             <summary>
-            Gets the depth.
+            Gets the depth of the current node.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomObject.ChildElements">
@@ -23879,6 +23897,28 @@
             <param name="text"></param>
             <param name="separator"></param>
             <returns></returns>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.Reverse(System.Text.StringBuilder)">
+             <summary>
+             Reverse the contents of the StringBuilder
+             </summary>
+            
+             <param name="text">
+             The StringBuilder
+             </param>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.Reverse(System.String)">
+             <summary>
+             Reverse a string
+             </summary>
+            
+             <param name="text">
+             The string
+             </param>
+            
+             <returns>
+             A new string
+             </returns>
         </member>
         <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.Substring(System.Char[],System.Int32,System.Int32)">
              <summary>

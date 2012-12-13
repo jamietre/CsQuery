@@ -40,7 +40,7 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;DEBUG_PATH_remove_to_debug</DefineConstants>
-    <DefineConstants>TRACE;DEBUG;xDEBUG_PATH</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;xDEBUG_PATH </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -332,6 +332,7 @@
     <Compile Include="HttpWebAdapters\Impl\HttpWebResponseAdapter.cs" />
     <Compile Include="HttpWebAdapters\WebResponseStub.cs" />
     <Compile Include="Implementation\CombinedTextReader.cs" />
+    <Compile Include="Implementation\MonoDictionary.cs" />
     <Compile Include="Implementation\TrueStringComparer.cs" />
     <Compile Include="Output\HtmlEncoderFull.cs" />
     <Compile Include="Output\HtmlEncoderMinimumNbsp.cs" />
@@ -468,6 +469,7 @@
     <None Include="Documentation\Todo.md" />
     <None Include="Documentation\DifferencesFromJQuery.md" />
     <None Include="packages.config" />
+    <None Include="README-compilation.md" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Implementation\enumSelectionSetOrder.cs" />
@@ -515,7 +517,7 @@ xcopy $(TargetDir)CsQuery.xml $(SolutionDir)..\Distribution /Y
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

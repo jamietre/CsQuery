@@ -19,8 +19,9 @@ namespace CsQuery.Implementation
         /// </summary>
 
         public DomText()
+            : base()
         {
-            NodeValue = "";
+            
         }
 
         /// <summary>
@@ -37,12 +38,13 @@ namespace CsQuery.Implementation
             NodeValue = nodeValue;
         }
 
+
         /// <summary>
         /// The inner node value; the text.
         /// </summary>
 
         protected string _NodeValue;
-
+       
 
         /// <summary>
         /// The node (tag) name, in upper case. For Text nodes, this is always "#text".
@@ -75,11 +77,11 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return _NodeValue;
+                return _NodeValue ?? "";
             }
             set
             {
-                _NodeValue = value ?? "";
+                _NodeValue=value;
             }
         }
 
@@ -93,7 +95,7 @@ namespace CsQuery.Implementation
 
         public override DomText Clone()
         {
-            return new DomText(_NodeValue);
+            return new DomText(NodeValue);
         }
 
         /// <summary>

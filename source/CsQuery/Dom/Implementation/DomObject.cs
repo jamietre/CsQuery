@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using CsQuery.HtmlParser;
 using CsQuery.ExtensionMethods;
+using CsQuery.ExtensionMethods.Internal;
 using CsQuery.Output;
 
 namespace CsQuery.Implementation
@@ -33,12 +34,23 @@ namespace CsQuery.Implementation
 
         private int _Index;
 
+        
+
+#if CACHE_PATH
+        /// <summary>
+        /// Backing prop for path
+        /// </summary>
+
+        private string _Path = null;
+
+#endif
+
         /// <summary>
         /// The parent node. Do not expose this. _ParentNode should only be managed by the ParentNode
         /// property.
         /// </summary>
 
-        private IDomContainer _ParentNode;
+        private DomObject _ParentNode;
 
 
         /// <summary>
@@ -164,12 +176,61 @@ namespace CsQuery.Implementation
         {
             get
             {
+#if CACHE_PATH
+                if (_Path == null)
+                {
+                    var path = _ParentNode != null ?
+                       GetPath() :
+                        "_" + PathID;
+
+                    if (path.Length % 100 == 0)
+                    {
+                        _Path = path;
+                    }
+                    return path;
+                }
+                else
+                {
+                    return _Path;
+                }
+
+#else
                 // The underscore is just a convention to easily identify disconnected nodes when debugging. 
 
-                return ParentNode != null ?
-                   ParentNode.Path + PathID :
+                return _ParentNode != null ?
+                   GetPath() :
                     "_" + PathID;
+#endif
+
             }
+        }
+
+        /// <summary>
+        /// Gets the full path to this document.
+        /// </summary>
+        ///
+        /// <returns>
+        /// The path.
+        /// </returns>
+
+        protected virtual string GetPath()
+        {
+            DomObject curNode = this;
+            StringBuilder sb = new StringBuilder();
+
+            while (curNode != null)
+            {
+#if CACHE_PATH
+                if (curNode._Path != null)
+                {
+                    return curNode._Path + sb.Reverse().ToString();
+                }
+
+#endif
+                sb.Append(curNode.PathID);
+                curNode = curNode._ParentNode;
+            }
+            return sb.Reverse().ToString();
         }
 
 
@@ -246,11 +307,11 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return _ParentNode;
+                return (IDomContainer)_ParentNode;
             }
             internal set
             {
-                _ParentNode = value;
+                _ParentNode = (DomObject)value;
 
                 // Update the parent info cache
                 UpdateDocumentFlags();
@@ -313,16 +374,41 @@ namespace CsQuery.Implementation
         }
 #endif
 
+        
         /// <summary>
-        /// Gets the depth.
+        /// Gets the depth of the current node.
         /// </summary>
 
         public virtual int Depth
         {
             get
             {
+#if DEBUG_PATH
                 return ParentNode==null ? 0 : ParentNode.Depth + 1;
+#else
+                return GetDepth();
+#endif
             }
+
+        }
+
+        /// <summary>
+        /// Gets the depth of the current node.
+        /// </summary>
+        ///
+        /// <returns>
+        /// The depth.
+        /// </returns>
+
+        protected int GetDepth()
+        {
+            DomObject curNode = this._ParentNode;
+            int depth = 0;
+            while (curNode != null)
+            {
+                depth++;
+            }
+            return depth; 
         }
 
         /// <summary>
@@ -361,6 +447,11 @@ namespace CsQuery.Implementation
             internal set
             {
                 _Index = value;
+#if CACHE_PATH
+                // whenever the index is updated, the element has been moved; de-cache
+                
+                _Path = null;
+#endif
             }
         }
 
@@ -957,7 +1048,7 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <exception cref="InvalidOperationException">
-        /// Thrown when the requested operation is invalid.
+        /// Thrown when the the node has no parent.
         /// </exception>
 
         public virtual void Remove()

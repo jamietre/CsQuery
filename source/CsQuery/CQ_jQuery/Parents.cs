@@ -42,7 +42,6 @@ namespace CsQuery
 
             foreach (var item in source)
             {
-                int depth = item.Depth;
                 IDomElement parent = item.ParentNode as IDomElement;
                 while (parent != null && !until.Contains(parent))
                 {

@@ -46,7 +46,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;xSLOW_TESTS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -227,7 +227,7 @@
     <Compile Include="Core\Selectors\RegexExtension.cs" />
     <Compile Include="Core\Selectors\Extensions.cs" />
     <Compile Include="Implementation\RangeSortedDictionary.cs" />
-    <Compile Include="Miscellaneous\ReindexIssue.cs" />
+    <Compile Include="Miscellaneous\Miscellaneous2.cs" />
     <Compile Include="Utility\Support.cs" />
     <Compile Include="Utility\FastActivator.cs" />
     <Compile Include="Examples\Tables.cs" />
