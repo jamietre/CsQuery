@@ -12,7 +12,7 @@ The CSS selector engine fully indexes each document on tag name, id, class, and 
 
 ### Installation
 
-**Latest release:** Version 1.3.1 (November 8, 2012)
+**Latest release:** Version 1.3.2 (November 17, 2012)
 
 To install the latest release from NuGet package manager:
 
@@ -41,9 +41,9 @@ You should be able to compile everything now.  If you have any trouble initializ
 
 ### Release Notes
 
-The latest release is 1.3.1. This fixes a few bugs in 1.3.0; see the change log for details.
+The latest release is 1.3.2. The latest releast includes enhancements to properly detect character set encoding; has improvements to handle deeply-nested HTML structures properly; and includes a number of bug fixes. See the [change log](https://github.com/jamietre/CsQuery/blob/master/source/README.md) for details.
 
-1.3.0 is a major new release incorporating a new HTML5-compliant parser.
+The last major release is 1.3.0. This release implements a new HTML5-compliant parser.
 
 * **[Release notes for 1.3](http://blog.outsharked.com/2012/10/csquery-13-released.html):** Read details on the new features and other changes. You can also see [all CsQuery release notes](http://blog.outsharked.com/search/label/csquery-release) at once.
 * **[Detailed change log](https://github.com/jamietre/CsQuery/blob/master/source/README.md#source-code):** see more more detail about specific changes, or notes on changes made to the source since the last release.
