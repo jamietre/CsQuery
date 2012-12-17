@@ -194,6 +194,38 @@ namespace CsQuery.Web
         }
 
         /// <summary>
+        /// Initiates an asynchronous GET request from an IHttpWebRequest object.
+        /// </summary>
+        ///
+        /// <param name="request">
+        /// The request.
+        /// </param>
+        /// <param name="success">
+        /// A delegate that will be invoked with the response data structure upon successful resolution
+        /// of the request.
+        /// </param>
+        /// <param name="fail">
+        /// A delegate that will be invoked with the response data structure upon failure.
+        /// </param>
+        ///
+        /// <returns>
+        /// A ManualResetEvent object for this asynchronous operation.
+        /// </returns>
+
+        public ManualResetEvent GetAsync(IHttpWebRequest request, Action<ICsqWebResponse> success, Action<ICsqWebResponse> fail)
+        {
+            var requestInfo = new AsyncWebRequest(request);
+            requestInfo.Timeout = Timeout;
+            requestInfo.UserAgent = UserAgent;
+            requestInfo.Id = Id;
+            requestInfo.CallbackSuccess  = success;
+            requestInfo.CallbackFail = fail;
+
+            return requestInfo.GetAsync();
+        }
+
+
+        /// <summary>
         /// Initiate a synchronous GET request.
         /// </summary>
         ///
@@ -213,17 +245,38 @@ namespace CsQuery.Web
             return Html;
         }
 
+        /// <summary>
+        /// Initiate a synchronous GET request from an existing IHttpWebRequest object
+        /// </summary>
+        ///
+        /// <param name="request">
+        /// The request.
+        /// </param>
+        ///
+        /// <returns>
+        /// The HTML returned by a successful request.
+        /// </returns>
 
+        public string Get(IHttpWebRequest request)
+        {
+            Html = null;
+
+            using (StreamReader responseReader = GetResponseStreamReader(request))
+            {
+                Html = responseReader.ReadToEnd();
+            }
+            return Html;
+        }
 
         /// <summary>
-        /// Gets a general-purpose web request object.
+        /// Gets a new HttpWebRequest object for the URL bound to this CsqWebRequest.
         /// </summary>
         ///
         /// <returns>
         /// An HttpWebRequest.
         /// </returns>
 
-        protected IHttpWebRequest GetWebRequest()
+        public IHttpWebRequest GetWebRequest()
         {
             IHttpWebRequest request = WebRequestFactory.Create(new Uri(Url));
             

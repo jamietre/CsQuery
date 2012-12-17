@@ -77,7 +77,7 @@ namespace CsQuery.Web
         /// The CsqWebRequest object to apply the options to.
         /// </param>
 
-        public static void Apply(ServerConfig options, CsqWebRequest request)
+        public static void Apply(ServerConfig options, ICsqWebRequest request)
         {
             var opts = Merge(options);
             if (opts.Timeout != null)

@@ -8,6 +8,7 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ####Version 1.3.2 (in progress) 
 
+- [Issue #64](https://github.com/jamietre/CsQuery/issues/64) Expose the `HttpWebRequest` object in `CsqWebRequest` so client code can manipulate it
 - [Issue #66](https://github.com/jamietre/CsQuery/issues/66) Exception handling valid nested CSS selectors
 - [Issue #65](https://github.com/jamietre/CsQuery/issues/65) Stack overflow parsing documents with deep nesting
 - [Issue #63](https://github.com/jamietre/CsQuery/issues/63) Exception in RangeSortedDictionary.

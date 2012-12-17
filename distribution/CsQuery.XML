@@ -392,7 +392,8 @@
         </member>
         <member name="M:CsQuery.CQ.Create(System.IO.Stream)">
              <summary>
-             Create a new CQ object from a stream of HTML text.
+             Create a new CQ object from a stream of HTML text, attempting to automatically detect the
+             character set encoding from BOM. 
              </summary>
             
              <param name="html">
@@ -405,7 +406,7 @@
         </member>
         <member name="M:CsQuery.CQ.Create(System.IO.Stream,System.Text.Encoding)">
              <summary>
-             Create a new CQ from an HTML fragment, and use quickSet to create attributes (and/or css)
+             Create a new CQ from a stream of HTML text in the specified encoding.
              </summary>
             
              <param name="html">
@@ -20192,9 +20193,24 @@
              A unique identifier that can be used to track this request when it resolves.
              </returns>
         </member>
+        <member name="M:CsQuery.Web.AsyncWebRequestManager.StartAsyncWebRequest(CsQuery.Web.ICsqWebRequest,System.Action{CsQuery.Web.ICsqWebResponse},System.Action{CsQuery.Web.ICsqWebResponse})">
+             <summary>
+             Start an async request from an ICsqWebRequest object
+             </summary>
+            
+             <param name="request">
+             The URL of the remote server.
+             </param>
+             <param name="success">
+             A delegate to invoke upon successful completion of the request.
+             </param>
+             <param name="fail">
+             A delegate to invoke when a request fails.
+             </param>
+        </member>
         <member name="M:CsQuery.Web.AsyncWebRequestManager.StartAsyncWebRequest(System.String,System.Action{CsQuery.Web.ICsqWebResponse},System.Action{CsQuery.Web.ICsqWebResponse},System.Int32,CsQuery.Web.ServerConfig)">
              <summary>
-             Start an async request, and return a unique ID that identifies it.
+             Start an async request identified by a user-supplied ID.
              </summary>
             
              <param name="url">
@@ -20269,7 +20285,8 @@
         </member>
         <member name="P:CsQuery.Web.ICsqWebRequest.Id">
             <summary>
-            A unique ID for this request. This will be automatically generated if not assigned.
+            An ID that uniquely identifies this request; will be returned with the response for
+            asynchronous requests.
             </summary>
         </member>
         <member name="P:CsQuery.Web.ICsqWebResponse.Html">
@@ -24219,6 +24236,26 @@
              A ManualResetEvent object for this asynchronous operation.
              </returns>
         </member>
+        <member name="M:CsQuery.Web.CsqWebRequest.GetAsync(HttpWebAdapters.IHttpWebRequest,System.Action{CsQuery.Web.ICsqWebResponse},System.Action{CsQuery.Web.ICsqWebResponse})">
+             <summary>
+             Initiates an asynchronous GET request from an IHttpWebRequest object.
+             </summary>
+            
+             <param name="request">
+             The request.
+             </param>
+             <param name="success">
+             A delegate that will be invoked with the response data structure upon successful resolution
+             of the request.
+             </param>
+             <param name="fail">
+             A delegate that will be invoked with the response data structure upon failure.
+             </param>
+            
+             <returns>
+             A ManualResetEvent object for this asynchronous operation.
+             </returns>
+        </member>
         <member name="M:CsQuery.Web.CsqWebRequest.Get">
              <summary>
              Initiate a synchronous GET request.
@@ -24228,9 +24265,22 @@
              The HTML returned by a successful request
              </returns>
         </member>
+        <member name="M:CsQuery.Web.CsqWebRequest.Get(HttpWebAdapters.IHttpWebRequest)">
+             <summary>
+             Initiate a synchronous GET request from an IHttpWebRequest object
+             </summary>
+            
+             <param name="request">
+             The request.
+             </param>
+            
+             <returns>
+             The HTML returned by a successful request.
+             </returns>
+        </member>
         <member name="M:CsQuery.Web.CsqWebRequest.GetWebRequest">
              <summary>
-             Gets a general-purpose web request object.
+             Gets a new WebRequest object.
              </summary>
             
              <returns>
@@ -24498,7 +24548,7 @@
              A new ServerConfig object
              </returns>
         </member>
-        <member name="M:CsQuery.Web.ServerConfig.Apply(CsQuery.Web.ServerConfig,CsQuery.Web.CsqWebRequest)">
+        <member name="M:CsQuery.Web.ServerConfig.Apply(CsQuery.Web.ServerConfig,CsQuery.Web.ICsqWebRequest)">
              <summary>
              Apply these options to a web request.
              </summary>

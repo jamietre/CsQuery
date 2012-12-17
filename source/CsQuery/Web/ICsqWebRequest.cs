@@ -30,7 +30,8 @@ namespace CsQuery.Web
         bool Complete { get; }
 
         /// <summary>
-        /// A unique ID for this request. This will be automatically generated if not assigned.
+        /// An ID that uniquely identifies this request; will be returned with the response for
+        /// asynchronous requests.
         /// </summary>
 
         object Id { get; set; }

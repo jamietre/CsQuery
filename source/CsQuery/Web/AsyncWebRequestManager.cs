@@ -62,7 +62,30 @@ namespace CsQuery.Web
         }
 
         /// <summary>
-        /// Start an async request, and return a unique ID that identifies it.
+        /// Start an async request from an ICsqWebRequest object
+        /// </summary>
+        ///
+        /// <param name="request">
+        /// The URL of the remote server.
+        /// </param>
+        /// <param name="success">
+        /// A delegate to invoke upon successful completion of the request.
+        /// </param>
+        /// <param name="fail">
+        /// A delegate to invoke when a request fails.
+        /// </param>
+
+        public static void StartAsyncWebRequest(ICsqWebRequest request, Action<ICsqWebResponse> success, Action<ICsqWebResponse> fail)
+        {
+            var requestObj = (CsqWebRequest)request;
+            requestObj.Async = true;
+
+            var mrEvent = requestObj.GetAsync(success, fail);
+            AsyncEvents.Add(mrEvent);
+        }
+
+        /// <summary>
+        /// Start an async request identified by a user-supplied ID.
         /// </summary>
         ///
         /// <param name="url">
@@ -93,6 +116,8 @@ namespace CsQuery.Web
             var mrEvent = request.GetAsync(success, fail);
             AsyncEvents.Add(mrEvent);
         }
+
+       
 
         /// <summary>
         /// Waits until all async events have completed. Use for testing primarily as a web app should

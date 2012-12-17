@@ -168,7 +168,8 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Create a new CQ object from a stream of HTML text.
+        /// Create a new CQ object from a stream of HTML text, attempting to automatically detect the
+        /// character set encoding from BOM. 
         /// </summary>
         ///
         /// <param name="html">
@@ -185,7 +186,7 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Create a new CQ from an HTML fragment, and use quickSet to create attributes (and/or css)
+        /// Create a new CQ from a stream of HTML text in the specified encoding.
         /// </summary>
         ///
         /// <param name="html">
