@@ -16110,6 +16110,42 @@
              A string.
              </returns>
         </member>
+        <member name="M:CsQuery.Output.FormatDefault.RenderElement(CsQuery.IDomObject,System.IO.TextWriter,System.Boolean)">
+             <summary>
+             Gets the HTML representation of this element and its children.
+             </summary>
+            
+             <param name="element">
+             The element to render.
+             </param>
+             <param name="writer">
+             The writer to which output is written.
+             </param>
+             <param name="includeChildren">
+             true to include, false to exclude the children.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.FormatDefault.RenderChildren(CsQuery.IDomObject,System.IO.TextWriter)">
+             <summary>
+             Renders the children of this element.
+             </summary>
+            
+             <param name="element">
+             The element to render.
+             </param>
+             <param name="writer">
+             The writer to which output is written.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.FormatDefault.RenderStack(System.IO.TextWriter)">
+             <summary>
+             Process the output stack.
+             </summary>
+            
+             <exception cref="T:System.NotImplementedException">
+             Thrown when the requested operation is unimplemented.
+             </exception>
+        </member>
         <member name="M:CsQuery.Output.FormatDefault.RenderElements(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},System.IO.TextWriter)">
              <summary>
              Renders the sequence of elements.
@@ -16122,22 +16158,28 @@
              The writer to which output is written.
              </param>
         </member>
-        <member name="M:CsQuery.Output.FormatDefault.RenderElement(CsQuery.IDomObject,System.IO.TextWriter,System.Boolean)">
+        <member name="M:CsQuery.Output.FormatDefault.EndElement(CsQuery.IDomObject)">
              <summary>
-             Gets the HTML representation of this element and its children.
+             Adds the element close tag to the output stack
              </summary>
             
              <param name="element">
-             Options for how to render the HTML.
+             The element.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.FormatDefault.RenderElementCloseTag(CsQuery.IDomObject,System.IO.TextWriter)">
+             <summary>
+             Renders the element close tag.
+             </summary>
+            
+             <param name="element">
+             The element.
              </param>
              <param name="writer">
              The writer to which output is written.
              </param>
-             <param name="includeChildren">
-             true to include, false to exclude the children.
-             </param>
         </member>
-        <member name="M:CsQuery.Output.FormatDefault.RenderChildren(CsQuery.IDomObject,System.IO.TextWriter)">
+        <member name="M:CsQuery.Output.FormatDefault.ParseChildren(CsQuery.IDomObject)">
              <summary>
              Renders all the children of the passed node.
              </summary>
@@ -16221,6 +16263,11 @@
         <member name="M:CsQuery.Output.FormatDefault.MergeDefaultOptions">
             <summary>
             Merge options with defaults when needed.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Output.FormatDefault.OutputStack">
+            <summary>
+            Stack of the output tree
             </summary>
         </member>
         <member name="T:CsQuery.OutputFormatters">
@@ -24267,7 +24314,7 @@
         </member>
         <member name="M:CsQuery.Web.CsqWebRequest.Get(HttpWebAdapters.IHttpWebRequest)">
              <summary>
-             Initiate a synchronous GET request from an IHttpWebRequest object
+             Initiate a synchronous GET request from an existing IHttpWebRequest object
              </summary>
             
              <param name="request">
@@ -24280,7 +24327,7 @@
         </member>
         <member name="M:CsQuery.Web.CsqWebRequest.GetWebRequest">
              <summary>
-             Gets a new WebRequest object.
+             Gets a new HttpWebRequest object for the URL bound to this CsqWebRequest.
              </summary>
             
              <returns>
@@ -26452,6 +26499,27 @@
             
              <returns>
              The full rooted path the the file.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Utility.Support.TryGetFilePath(System.String,System.String,System.String@)">
+             <summary>
+             Given a partial path to a folder or file, try to find the full rooted path. The topmost part
+             of the partial path must be part of the current application path; e.g. there must be an
+             overlapping part on which to match.
+             </summary>
+            
+             <param name="partialPath">
+             The partial path to find.
+             </param>
+             <param name="basePath">
+             The rooted path to match within.
+             </param>
+             <param name="outputPath">
+             [out] Full pathname of the output file.
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
              </returns>
         </member>
         <member name="M:CsQuery.Utility.Support.GetFirstExternalAssembly">

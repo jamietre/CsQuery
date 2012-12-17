@@ -58,14 +58,26 @@ namespace CsQuery.Utility
 
         public static bool TryGetFilePath(string partialPath, out string filePath)
         {
-            try {
-                filePath = GetFilePath(partialPath);
+            if (Path.IsPathRooted(partialPath))
+            {
+                filePath = partialPath;
                 return true;
             }
-            catch(Exception) {
-                filePath = "";
-                return false;
+            else
+            {
+                string cleanFileName = partialPath.Replace("/", "\\");
+
+                if (cleanFileName.StartsWith(".\\"))
+                {
+                    cleanFileName = cleanFileName.Substring(1);
+                }
+
+                string callingAssPath = AppDomain.CurrentDomain.BaseDirectory;
+
+                return  TryGetFilePath(cleanFileName, callingAssPath, out filePath);
+
             }
+
         }
         
         /// <summary>
@@ -84,25 +96,14 @@ namespace CsQuery.Utility
 
         public static string GetFilePath(string partialPath)
         {
-            if (Path.IsPathRooted(partialPath))
+            string outputPath;
+            if (TryGetFilePath(partialPath, out outputPath))
             {
-                return partialPath;
+                return outputPath;
             }
             else
             {
-                string filePath;
-                string cleanFileName = partialPath.Replace("/", "\\");
-
-                if (cleanFileName.StartsWith(".\\"))
-                {
-                    cleanFileName = cleanFileName.Substring(1);
-                }
-
-                string callingAssPath = AppDomain.CurrentDomain.BaseDirectory;
-
-                filePath = GetFilePath(cleanFileName, callingAssPath);
-                return filePath;
-
+                return "";
             }
         }
 
@@ -128,15 +129,47 @@ namespace CsQuery.Utility
 
         public static string GetFilePath(string partialPath, string basePath)
         {
+            string outputPath;
+            if (TryGetFilePath(partialPath, basePath, out outputPath)) {
+                return outputPath;
+            } else {
+
+                 throw new ArgumentException(String.Format("Unable to find path to \"{0}\" in base path \"{1}\" no matching parts.",
+                    partialPath,
+                    basePath));
+            }
+        }
+
+        /// <summary>
+        /// Given a partial path to a folder or file, try to find the full rooted path. The topmost part
+        /// of the partial path must be part of the current application path; e.g. there must be an
+        /// overlapping part on which to match.
+        /// </summary>
+        ///
+        /// <param name="partialPath">
+        /// The partial path to find.
+        /// </param>
+        /// <param name="basePath">
+        /// The rooted path to match within.
+        /// </param>
+        /// <param name="outputPath">
+        /// [out] Full pathname of the output file.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
+        public static bool TryGetFilePath(string partialPath, string basePath, out string outputPath)
+        {
             List<string> rootedPath = new List<string>(basePath.ToLower().Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries));
             List<string> findPath = new List<string>(partialPath.ToLower().Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries));
 
             int start = rootedPath.IndexOf(findPath[0]);
             if (start < 0)
             {
-                throw new ArgumentException(String.Format("Unable to find path to \"{0}\" in base path \"{1}\" no matching parts.", 
-                    partialPath, 
-                    basePath));
+                outputPath = "";
+                return false;
             }
             else
             {
@@ -149,7 +182,8 @@ namespace CsQuery.Utility
                 string output = string.Join("\\", rootedPath.GetRange(0, start - 1)) + "\\"
                     + string.Join("\\", findPath.GetRange(i - 1, findPath.Count - i + 1));
 
-                return CleanFilePath(output);
+                outputPath= CleanFilePath(output);
+                return true;
             }
         }
 

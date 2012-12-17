@@ -54,7 +54,7 @@ namespace CsQuery.Tests.Miscellaneous
 #if SLOW_TESTS
             int depth = 15000;
 #else 
-            int depth = 2000;
+            int depth = 4000;
 #endif
 
             for (int i = 0; i < depth; i++)
@@ -62,10 +62,15 @@ namespace CsQuery.Tests.Miscellaneous
                 html += "<div>text";
                 htmlEnd += "</div>";
             }
+            html = html + htmlEnd;
 
-            var dom = CQ.Create(html+htmlEnd);
+            var dom = CQ.Create(html);
 
             Assert.AreEqual(depth, dom["div"].Length);
+
+
+            var htmlOut = dom.Render();
+            Assert.AreEqual(html, htmlOut);
         }
 
         [Test, TestMethod]

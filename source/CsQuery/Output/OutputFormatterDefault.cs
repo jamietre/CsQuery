@@ -13,6 +13,8 @@ namespace CsQuery.Output
 
     public class FormatDefault: IOutputFormatter
     {
+        #region constructors
+
         /// <summary>
         /// Abstract base class constructor.
         /// </summary>
@@ -39,8 +41,33 @@ namespace CsQuery.Output
             : this(DomRenderingOptions.Default, HtmlEncoders.Default)
         { }
 
+        #endregion
+
+        #region private properties
+
         private DomRenderingOptions DomRenderingOptions;
         private IHtmlEncoder HtmlEncoder;
+        private Stack<NodeStackElement> _OutputStack;
+
+        /// <summary>
+        /// Stack of the output tree
+        /// </summary>
+
+        protected Stack<NodeStackElement> OutputStack
+        {
+            get
+            {
+                if (_OutputStack == null)
+                {
+                    _OutputStack = new Stack<NodeStackElement>();
+                }
+                return _OutputStack;
+            }
+        }
+
+        #endregion
+
+        #region public methods
 
         /// <summary>
         /// Renders the object to the textwriter.
@@ -60,30 +87,11 @@ namespace CsQuery.Output
         public void Render(IDomObject node, TextWriter writer)
         {
 
-            switch (node.NodeType) {
-                case NodeType.ELEMENT_NODE:
-                    RenderElement(node,writer,true);
-                    break;
-                case NodeType.DOCUMENT_FRAGMENT_NODE:
-                case NodeType.DOCUMENT_NODE:
-                    RenderElements(node.ChildNodes,writer);
-                    break;
-                case NodeType.TEXT_NODE:
-                    RenderTextNode(node, writer,false);
-                    break;
-                case NodeType.CDATA_SECTION_NODE:
-                    RenderCdataNode(node, writer);
-                    break;
-                case NodeType.COMMENT_NODE:
-                    RenderCommentNode(node, writer);
-                    break;
-                case NodeType.DOCUMENT_TYPE_NODE:
-                    RenderDocTypeNode(node, writer);
-                    break;
-                default:
-                    throw new NotImplementedException("An unknown node type was found while rendering the CsQuery document.");
-            }
+            OutputStack.Push(new NodeStackElement(node,false,false));
+            RenderStack(writer);
         }
+
+
 
         /// <summary>
         /// Renders the object to a string.
@@ -101,8 +109,156 @@ namespace CsQuery.Output
         {
             StringBuilder sb = new StringBuilder();
             StringWriter sw = new StringWriter(sb);
-            Render(node, sw);
+
+            if (node is IDomDocument)
+            {
+                RenderChildren(node,sw);
+            }
+            else
+            {
+                Render(node, sw);
+            }
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Gets the HTML representation of this element and its children.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to render.
+        /// </param>
+        /// <param name="writer">
+        /// The writer to which output is written.
+        /// </param>
+        /// <param name="includeChildren">
+        /// true to include, false to exclude the children.
+        /// </param>
+
+        public virtual void RenderElement(IDomObject element, TextWriter writer, bool includeChildren)
+        {
+            bool quoteAll = DomRenderingOptions.HasFlag(DomRenderingOptions.QuoteAllAttributes);
+
+            writer.Write("<");
+            writer.Write(element.NodeName.ToLower());
+
+            if (element.HasAttributes)
+            {
+                foreach (var kvp in element.Attributes)
+                {
+                    writer.Write(" ");
+                    RenderAttribute(writer, kvp.Key, kvp.Value, quoteAll);
+                }
+            }
+            if (element.InnerHtmlAllowed || element.InnerTextAllowed)
+            {
+                writer.Write(">");
+                
+                EndElement(element);
+                
+                if (includeChildren)
+                {
+                    ParseChildren(element);
+                }
+                else
+                {
+                    writer.Write(element.HasChildren ?
+                            "..." :
+                            String.Empty);
+                }
+                
+            }
+            else
+            {
+                if ((element.Document == null ? CsQuery.Config.DocType : element.Document.DocType) == DocType.XHTML)
+                {
+                    writer.Write(" />");
+                }
+                else
+                {
+                    writer.Write(">");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Renders the children of this element.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to render.
+        /// </param>
+        /// <param name="writer">
+        /// The writer to which output is written.
+        /// </param>
+
+        public virtual void RenderChildren(IDomObject element, TextWriter writer)
+        {
+            if (element.HasChildren)
+            {
+                ParseChildren(element);
+            }
+            else
+            {
+                OutputStack.Push(new NodeStackElement(element, false, false));
+            }
+
+            RenderStack(writer);
+
+        }
+
+        #endregion
+
+        #region private methods
+
+        /// <summary>
+        /// Process the output stack.
+        /// </summary>
+        ///
+        /// <exception cref="NotImplementedException">
+        /// Thrown when the requested operation is unimplemented.
+        /// </exception>
+
+        protected void RenderStack(TextWriter writer)
+        {
+
+            while (OutputStack.Count > 0)
+            {
+                var nodeStackEl = OutputStack.Pop();
+                var el = nodeStackEl.Element;
+
+                if (nodeStackEl.IsClose)
+                {
+                    RenderElementCloseTag(el, writer);
+                }
+                else
+                {
+                    switch (el.NodeType)
+                    {
+                        case NodeType.ELEMENT_NODE:
+                            RenderElement(el, writer, true);
+                            break;
+                        case NodeType.DOCUMENT_FRAGMENT_NODE:
+                        case NodeType.DOCUMENT_NODE:
+                            RenderElements(el.ChildNodes, writer);
+                            break;
+                        case NodeType.TEXT_NODE:
+                            RenderTextNode(el, writer, nodeStackEl.IsRaw);
+                            break;
+                        case NodeType.CDATA_SECTION_NODE:
+                            RenderCdataNode(el, writer);
+                            break;
+                        case NodeType.COMMENT_NODE:
+                            RenderCommentNode(el, writer);
+                            break;
+                        case NodeType.DOCUMENT_TYPE_NODE:
+                            RenderDocTypeNode(el, writer);
+                            break;
+                        default:
+                            throw new NotImplementedException("An unknown node type was found while rendering the CsQuery document.");
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -125,65 +281,37 @@ namespace CsQuery.Output
         }
 
         /// <summary>
-        /// Gets the HTML representation of this element and its children.
+        /// Adds the element close tag to the output stack
         /// </summary>
         ///
         /// <param name="element">
-        /// Options for how to render the HTML.
+        /// The element.
+        /// </param>
+
+        protected virtual void EndElement(IDomObject element)
+        {
+            OutputStack.Push(new NodeStackElement(element,false,true));
+        }
+
+        /// <summary>
+        /// Renders the element close tag.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element.
         /// </param>
         /// <param name="writer">
         /// The writer to which output is written.
         /// </param>
-        /// <param name="includeChildren">
-        /// true to include, false to exclude the children.
-        /// </param>
 
-        public virtual void RenderElement(IDomObject element, TextWriter writer, bool includeChildren)
+        protected virtual void RenderElementCloseTag(IDomObject element, TextWriter writer)
         {
-            bool quoteAll = DomRenderingOptions.HasFlag(DomRenderingOptions.QuoteAllAttributes);
 
-            writer.Write("<");
-            string nodeName = element.NodeName.ToLower();
-            writer.Write(nodeName);
-            
-            if (element.HasAttributes)
-            {
-                foreach (var kvp in element.Attributes)
-                {
-                    writer.Write(" ");
-                    RenderAttribute(writer,kvp.Key, kvp.Value, quoteAll);
-                }
-            }
-            if (element.InnerHtmlAllowed || element.InnerTextAllowed)
-            {
-                writer.Write(">");
-                if (includeChildren)
-                {
-                    RenderChildren(element, writer);
-                }
-                else
-                {
-                    writer.Write(element.HasChildren ?
-                            "..." :
-                            String.Empty);
-                }
-                writer.Write("</");
-                writer.Write(nodeName);
-                writer.Write(">");
-            }
-            else
-            {
-
-                if ((element.Document == null ? CsQuery.Config.DocType : element.Document.DocType) == DocType.XHTML)
-                {
-                    writer.Write(" />");
-                }
-                else
-                {
-                    writer.Write(">");
-                }
-            }
+            writer.Write("</");
+            writer.Write(element.NodeName.ToLower());
+            writer.Write(">");
         }
+
 
         /// <summary>
         /// Renders all the children of the passed node.
@@ -196,22 +324,14 @@ namespace CsQuery.Output
         /// The writer to which output is written.
         /// </param>
 
-        public virtual void RenderChildren(IDomObject element, TextWriter writer)
+        protected virtual void ParseChildren(IDomObject element)
         {
             if (element.HasChildren)
             {
-                bool isRaw = HtmlData.HtmlChildrenNotAllowed(element.NodeNameID);
-
-                foreach (IDomObject e in element.ChildNodes)
+                foreach (IDomObject el in element.ChildNodes.Reverse())
                 {
-                    if (e.NodeType == NodeType.TEXT_NODE)
-                    {
-                        RenderTextNode(e, writer, isRaw);
-                    }
-                    else
-                    {
-                        Render(e, writer);
-                    }
+                    NodeStackElement nodeStackEl = new NodeStackElement(el, el.NodeType == NodeType.TEXT_NODE && HtmlData.HtmlChildrenNotAllowed(element.NodeNameID), false);
+                    OutputStack.Push(nodeStackEl);
                 }
             }
         }
@@ -350,7 +470,21 @@ namespace CsQuery.Output
             }
         }
 
+        #endregion
 
+
+        protected class NodeStackElement
+        {
+            public NodeStackElement(IDomObject element, bool isRaw, bool isClose)
+            {
+                Element = element;
+                IsRaw = isRaw;
+                IsClose = isClose;
+            }
+            public IDomObject Element;
+            public bool IsRaw;
+            public bool IsClose;
+        }
 
     }
 }
