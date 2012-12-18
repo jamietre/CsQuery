@@ -12,7 +12,7 @@ The CSS selector engine fully indexes each document on tag name, id, class, and 
 
 ### Installation
 
-**Latest release:** Version 1.3.2 (November 17, 2012)
+**Latest release:** Version 1.3.2 (December 17, 2012)
 
 To install the latest release from NuGet package manager:
 
