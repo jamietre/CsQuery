@@ -91,6 +91,7 @@ namespace CsQuery.Tests.Miscellaneous
             CollectionAssert.AreEqual(dom[".matched"], query);
 
         }
+
         #region setup
         public override void FixtureSetUp()
         {
