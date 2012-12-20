@@ -668,7 +668,7 @@ he `Document` property of a `CQ` object represents the DOM. This is an object of
 
 ### Performance
 
-Selecting "div span" from the HTML5 spec (a 6 megabyte HTML file) is about *500 hundred times faster* than HtmlAgilityPack + Fizzler. Simple selectors on medium to large documents can be hundresd or thousands of times faster -- the larger the document, the bigger the difference, since HAP must scan the entire tree for each selector.
+Selecting "div span" from the HTML5 spec (a 6 megabyte HTML file) is about *500 hundred times faster* than HtmlAgilityPack + Fizzler. Simple selectors on medium to large documents can be hundreds or thousands of times faster -- the larger the document, the bigger the difference, since HAP must scan the entire tree for each selector.
 
 CsQuery takes a bit longer to parse the HTML in the first place (which is not unexpected, since it's building an index of everything at the same time). Without fizzler, the test case against the 6 megabyte HTML spec using a multipart XML selector with just HAP is unworkably slow so I haven't included that comparison. This [blog post](http://blog.outsharked.com/2012/06/csquery-performance-vs-fizzler.html) shows the results of some performance comparsions. You can run the performance tests yourself from the [CsQuery.PerformanceTests](https://github.com/jamietre/CsQuery/tree/master/source/CsQuery.PerformanceTests) project.
 
