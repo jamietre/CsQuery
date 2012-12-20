@@ -139,9 +139,11 @@ namespace CsQuery.Mvc
         public ViewEngineOptions Options { get; set; }
 
         /// <summary>
-        /// Gets or sets the layout controller.
+        /// Gets or sets the layout controller. This is obsolete because it doesn't add anything - you
+        /// can just use a base controller class to achieve the same thing more easily.
         /// </summary>
 
+        [Obsolete]
         public ICsQueryController LayoutController
         {
             get
@@ -181,16 +183,11 @@ namespace CsQuery.Mvc
 
                 if (hasLayout || hasMethods)
                 {
-                    var sb = new StringBuilder();
-                    var sw = new StringWriter(sb);
-
-                    // render the view into out local writer
-                    base.RenderView(viewContext, sw, instance);
-                    var cqDoc = CQ.Create(sb.ToString());
+                    var deferredCq = new DeferredCq(base.RenderView, viewContext, instance);
                     
                     if (hasLayout)
                     {
-                        LayoutController.Doc = cqDoc;
+                        LayoutController.Doc = deferredCq.Dom;
                         MethodInfo mi;
                         if (CqMethods.TryGetValue("layout_Cq_Start", out mi))
                         {
@@ -218,19 +215,21 @@ namespace CsQuery.Mvc
                             if (CqMethods.TryGetValue(prefix + viewInfo.FileName, out mi) ||
                                 CqMethods.TryGetValue(prefix + viewInfo.FilePath, out mi))
                             {
-                                mi.Invoke(controller, new object[] { cqDoc });
+
+                                mi.Invoke(controller, new object[] { deferredCq.Dom });
                             }
 
                             // look for an action-specific method
                             if (CqMethods.TryGetValue(actionPrefix + viewInfo.FileName, out mi) ||
                                 CqMethods.TryGetValue(actionPrefix + viewInfo.FilePath, out mi))
                             {
-                                mi.Invoke(controller, new object[] { cqDoc });
+                                mi.Invoke(controller, new object[] { deferredCq.Dom });
                             }
                         }
                         else
                         {
-                            controller.Doc = cqDoc;
+
+                            controller.Deferred = deferredCq;
                             MethodInfo method;
 
                             if (CqMethods.TryGetValue(controllerName + "_Cq_Start", out method))
@@ -265,16 +264,22 @@ namespace CsQuery.Mvc
 
                     if (!IsPartial && Options.HasFlag(ViewEngineOptions.EnableScriptManager))
                     {
-                        ManageScripts(cqDoc, (System.Web.Mvc.WebViewPage)instance);
+
+                        ManageScripts(deferredCq.Dom, (System.Web.Mvc.WebViewPage)instance);
                     }
 
-                    writer.Write(cqDoc.Render());
-                    return;
+                    
+                    if (deferredCq.IsDomCreated)
+                    {
+                        writer.Write(deferredCq.Dom.Render());
+                        return;
+                    }
                 }
             }
             base.RenderView(viewContext, writer, instance);
         }
 
+     
         private void ManageScripts(CQ cqDoc, WebViewPage viewPage) {
             ScriptManager mgr = new ScriptManager();
             mgr.Options = Options;
@@ -399,5 +404,7 @@ namespace CsQuery.Mvc
             public string FileName;
             public string FilePath;
         }
+
+     
     }
 }

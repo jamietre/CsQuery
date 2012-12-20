@@ -21,19 +21,20 @@ namespace CsQuery.Mvc.Tests
     {
 
 
-        private bool Matches(Regex regex, string text,string value)
+        private bool Matches(Regex regex, string text,string value, string groupName="dep")
         {
             var match = regex.Match(text);
             return match.Success &&
-                value == match.Groups["dep"].Value;
+                value == match.Groups[groupName].Value;
 
         }
+
         [TestMethod]
         public void Dependency()
         {
             var pat = Patterns.Dependency;
 
-            
+
             Assert.IsTrue(Matches(pat,"using test","test"));           
             Assert.IsTrue(Matches(pat,"    using test","test"));
             Assert.IsTrue(Matches(pat,"\tusing test","test"));
@@ -66,6 +67,30 @@ namespace CsQuery.Mvc.Tests
             Assert.IsFalse(pat.IsMatch("xxx   // a comment"));
 
         }
- 
+
+        [TestMethod]
+        public void RegexOneLineComment()
+        {
+            var pat = Patterns.OneLineComment;
+
+            Assert.IsTrue(pat.IsMatch("/* a comment */"));
+            Assert.IsFalse(pat.IsMatch("/* a start comment"));
+            Assert.IsFalse(pat.IsMatch("an end comment */"));
+
+        }
+
+
+        [TestMethod]
+        public void RegexStartComment()
+        {
+            var pat = Patterns.StartComment;
+
+            Assert.IsTrue(pat.IsMatch("/* a comment */"));
+            Assert.IsTrue(Matches(pat, "/* a comment */", " a comment ","comment"));
+
+            Assert.IsTrue(pat.IsMatch("/* a start comment"));
+            Assert.IsFalse(pat.IsMatch("an end comment */"));
+
+        }
     }
 }

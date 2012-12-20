@@ -12,7 +12,7 @@ namespace CsQuery.Mvc.ClientScript
     /// </summary>
     public static class Patterns
     {
-        private static Regex RegexStartComment = new Regex(@"^\s*/\*(?<comment>.*)$");
+        private static Regex RegexStartComment = new Regex(@"^\s*/\*(?<comment>.*?)(\*/)*$");
 
         /// <summary>
         /// The regular expression end comment.
@@ -133,7 +133,7 @@ namespace CsQuery.Mvc.ClientScript
         }
 
         /// <summary>
-        /// Gets a regex for a one-line comment, e.g. // this is a comment
+        /// Gets a regex for a full-line comment, e.g. // this is a comment
         /// </summary>
         ///
         /// <value>
@@ -150,7 +150,7 @@ namespace CsQuery.Mvc.ClientScript
 
 
         /// <summary>
-        /// Gets the full line comment, e.g. /* this is a comment */
+        /// Gets the one-line comment, e.g. /* this is a comment */
         /// </summary>
         ///
         /// <value>
