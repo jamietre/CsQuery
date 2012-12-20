@@ -6,9 +6,23 @@
 
 CsQuery is a jQuery port for .NET 4. It implements all CSS2 & CSS3 selectors, all the DOM manipulation methods of jQuery, and some of the utility methods. The majority of the jQuery test suite (as of 1.6.2) has been ported to C#. 
 
-CsQuery uses a C# port of the [validator.nu HTML parser](http://about.validator.nu/htmlparser/). This is the same code used in the Gecko browser engine. This should result in CsQuery creating a highly HTML5 standards-compliant DOM from markup, and an identical DOM to any Gecko-based browser.
+### Why CsQuery?
+
+CSS selectors and jQuery make it really easy to access and manipulate HTML on the client. There's no reason it should be any more difficult to do the same thing with some arbitrary HTML on the server. It's a simple as that. Use it in web projects to do post-processing on HTML pages before they're served, for web scraping, parsing templates for emails, and more. 
+
+##### Standards Compliant HTML parsing
+
+CsQuery uses a C# port of the [validator.nu HTML parser](http://about.validator.nu/htmlparser/). This is the same code used in the Gecko browser engine. CsQuery will create an identical DOM from the same source as any Gecko-based browser. You should expect excellent results for handling both valid and invalid markup.
+
+##### CSS3 Selectors and jQuery methods
+
+CsQuery implements all CSS2 and CSS3 selectors and filters. Anthing you can do in a web browser, you can do with CsQuery. You can use all the same jQuery methods you're familiar with to traverse and manipulate the DOM.
+
+##### Speed
 
 The CSS selector engine fully indexes each document on tag name, id, class, and attribute. The index is subselect-capable, meaning that complex selectors will still be able to take advantage of the index (for any part of the selector that's indexed). [Performance](#performance) of selectors compared to other existing C# HTML parsing libraries is orders of magnitude faster.
+
+What's more, the entire test suite from Sizzle (the jQuery CSS selector engine) and jQuery (1.6.2) has been ported from Javascript to C# to cover this project.
 
 ### Installation
 
