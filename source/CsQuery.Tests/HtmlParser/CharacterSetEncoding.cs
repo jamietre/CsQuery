@@ -96,6 +96,78 @@ namespace CsQuery.Tests.HtmlParser
 
         }
 
+        [TestMethod, Test]
+        public void MetaTagOutsideBlock()
+        {
+
+
+            var encoder = Encoding.GetEncoding("windows-1255");
+
+            string filler = "<script type=\"text/javascript\" src=\"dummy\"></script>";
+            var html = htmlStart;
+            for (int i = 1; i < 5000 / filler.Length; i++)
+            {
+                html += filler;
+            }
+
+            
+            html+=htmlStartMeta + htmlStart3 + hebrewChar + htmlEnd;
+            var htmlNoRecode = htmlStart + htmlStart3 + hebrewChar + htmlEnd;
+
+
+            var dom = CQ.Create(html);
+            var output = dom.Render(OutputFormatters.HtmlEncodingMinimum);
+
+            // FINALLY  -- grab the character from CsQuery's output, and ensure that this all worked out.
+
+            var outputHebrewChar = dom["#test"].Text();
+
+            //  write the string to an encoded stream  to get the correct encoding manually
+            MemoryStream encoded = new MemoryStream();
+            var writer = new StreamWriter(encoded, encoder);
+            writer.Write(html);
+            writer.Flush();
+
+            encoded.Position = 0;
+            string htmlHebrew = new StreamReader(encoded, encoder).ReadToEnd();
+            var sourceHebrewChar = htmlHebrew.Substring(htmlHebrew.IndexOf("test>") + 5, 1);
+
+
+            // THIS IS THE DIFFERENCE BETWEEN THIS AND THE OTHER TEST
+            // the encoding should be ignored
+            Assert.AreNotEqual(sourceHebrewChar, outputHebrewChar);
+
+            // Try this again WITHOUT charset encoding.
+
+            var clone = CQ.Create(htmlNoRecode);
+            string newHtml = clone.Render(OutputFormatters.HtmlEncodingMinimum);
+            var dom2 = CQ.Create(newHtml);
+
+            outputHebrewChar = dom2["#test"].Text();
+            Assert.AreNotEqual(sourceHebrewChar, outputHebrewChar);
+
+            var reader = new StreamReader(encoded);
+            string interim = reader.ReadToEnd();
+
+            encoded = new MemoryStream();
+            writer = new StreamWriter(encoded, Encoding.UTF8);
+            writer.Write(interim);
+            writer.Flush();
+
+
+            // read it back one more time
+
+            encoded.Position = 0;
+            reader = new StreamReader(encoded);
+            string final = reader.ReadToEnd();
+
+
+            //            var encoded = encoder.GetBytes(html);
+
+
+
+        }
+
         [TestMethod,Test]
         public void ContentTypeHeader()
         {

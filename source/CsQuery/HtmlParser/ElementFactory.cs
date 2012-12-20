@@ -120,6 +120,12 @@ namespace CsQuery.HtmlParser
 
         private bool reEncode;
 
+        /// <summary>
+        /// The active stream.
+        /// </summary>
+
+        private Stream activeStream;
+
         #endregion
 
         #region public properties
@@ -161,6 +167,7 @@ namespace CsQuery.HtmlParser
             get;
             set;
         }
+
         #endregion
 
         #region public methods
@@ -189,7 +196,7 @@ namespace CsQuery.HtmlParser
 
         public IDomDocument Parse(Stream html, Encoding encoding)
         {
-    
+            activeStream = html;
             
            // split into two streams so we can restart if needed
            // without having to re-parse the entire stream.
@@ -494,8 +501,17 @@ namespace CsQuery.HtmlParser
 
         private void tokenizer_EncodingDeclared(object sender, EncodingDetectedEventArgs e)
         {
-            Encoding encoding;
+            // if we can't actually reset the document because more than the buffer has been read already, just ignore it
+
+            if (activeStream.CanRead && activeStream.Position > preprocessorBlockSize)
+            {
+                e.AcceptEncoding = false;
+                return;
+            }
+
             bool accept = false;
+            Encoding encoding;
+            
             try
             {
                 encoding = Encoding.GetEncoding(e.Encoding);

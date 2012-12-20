@@ -13520,6 +13520,11 @@
             different than the stream's current encoding.
             </summary>
         </member>
+        <member name="F:CsQuery.HtmlParser.ElementFactory.activeStream">
+            <summary>
+            The active stream.
+            </summary>
+        </member>
         <member name="M:CsQuery.HtmlParser.ElementFactory.Parse(System.IO.Stream,System.Text.Encoding)">
              <summary>
              Given a TextReader, create a new IDomDocument from the input.
