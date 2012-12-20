@@ -16,7 +16,7 @@ CsQuery uses a C# port of the [validator.nu HTML parser](http://about.validator.
 
 ##### CSS3 Selectors and jQuery methods
 
-CsQuery implements all CSS2 and CSS3 selectors and filters. Anthing you can do in a web browser, you can do with CsQuery. You can use all the same jQuery methods you're familiar with to traverse and manipulate the DOM.
+CsQuery implements all CSS2 and CSS3 selectors and filters, and a comprehensive DOM model. You can use all the same jQuery (and DOM element) methods you're familiar with to traverse and manipulate the DOM.
 
 ##### Speed
 
