@@ -345,7 +345,9 @@
     <Compile Include="Output\IHtmlEncoder.cs" />
     <Compile Include="Output\Indented.cs" />
     <Compile Include="Output\OutputFormatters.cs" />
+    <Compile Include="Promises\TimeoutT.cs" />
     <Compile Include="Promises\IPromiseT.cs" />
+    <Compile Include="Promises\Timeout.cs" />
     <Compile Include="StringScanner\CharacterData.cs" />
     <Compile Include="StringScanner\enumCharacterType.cs" />
     <Compile Include="StringScanner\ExtensionMethods.cs" />
@@ -517,7 +519,7 @@ xcopy $(TargetDir)CsQuery.xml $(SolutionDir)..\Distribution /Y
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UseGlobalSettings="True" />
+      <UserProperties BuildVersion_UseGlobalSettings="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

@@ -34,11 +34,10 @@ namespace CsQuery.Tests.HtmlParser
             string expected = @"<a href=""http://www.test.com/"" target=""_blank"">
 <img src=""http://www.test.com/image.jpg"" style=""border:0"">
 </a>
-".Replace("\r", "")
-.Replace("\n", System.Environment.NewLine);
+".NormalizeLineEndings();
 
-            var actual = ta.Val().Replace("\r", "")
-.Replace("\n", System.Environment.NewLine);
+            var actual = ta.Val().NormalizeLineEndings();
+
 
             Assert.AreEqual(expected, actual);
 

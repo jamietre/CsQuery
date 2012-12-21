@@ -43,8 +43,7 @@ Line3
 Line4
 FinalP
 LooseText
-".Replace("\r", "")
-.Replace("\n", System.Environment.NewLine);
+".NormalizeLineEndings();
 
             Assert.AreEqual(expected,output);
 
@@ -65,8 +64,7 @@ The End
 This
 Is - Preformatted
 The End
-".Replace("\r", "")
-.Replace("\n", System.Environment.NewLine);
+".NormalizeLineEndings();
 
             Assert.AreEqual(expected,output);
 
@@ -82,8 +80,7 @@ The End
             string output = dom.Render(OutputFormatters.PlainText);
 
             string expected = @"This is some text A link: SomethingSite (http://something.com) The End
-".Replace("\r", "")
-.Replace("\n", System.Environment.NewLine);
+".NormalizeLineEndings();
 
             Assert.AreEqual(expected,output);
 

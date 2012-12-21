@@ -68,6 +68,8 @@ Documentation is being moved from here to the `documentation` folder in the repo
 
 - [Create](https://github.com/jamietre/CsQuery/blob/master/documentation/create.md): Creating a new DOM from HTML in memory, a file, a stream, or a URL
 - [Render](https://github.com/jamietre/CsQuery/blob/master/documentation/render.md): Rendering your DOM back to HTML
+- [CreateFromUrl](https://github.com/jamietre/CsQuery/blob/master/documentation/createfromurl.md): Creating CsQuery objects from a remote source
+- [Promises](https://github.com/jamietre/CsQuery/blob/master/documentation/promises.md): An overview of the CsQuery Promise API, which is useful for managing asynchronous events. This is useful when loading content from remote URLs without blocking execution while you're waiting for the response.
 
 Everything else will be found here in the readme. It covers most common uses for reading HTML documents from files and URLS, and using it like jQuery. 
 
@@ -95,7 +97,6 @@ Also be sure to look at the example applications under CsQuery.Examples.
 	* [C# objects vs. Javascript objects](https://github.com/jamietre/CsQuery#c-objects-vs-javascript-objects)
     * [Important nonstandard methods](https://github.com/jamietre/CsQuery#important-nonstandard-methods)
     * [Utility methods](https://github.com/jamietre/CsQuery#utility-methods)
-* [Promises](https://github.com/jamietre/CsQuery#promises)
 * [Options](https://github.com/jamietre/CsQuery#options)
     * [Rendering Options](https://github.com/jamietre/CsQuery#rendering-options)
     * [HTTP request options](https://github.com/jamietre/CsQuery#http-request-options)
@@ -131,6 +132,7 @@ If you are interested in this project and want to contribute anything, let me kn
 
 ##### Creating a new DOM
 
+Complete documentation: [Create method](https://github.com/jamietre/CsQuery/blob/master/documentation/create.md)
 
 *Create from a string of HTML, a TextReader, a Stream, or an existing CQ object or DOM elements*
     
@@ -140,11 +142,20 @@ If you are interested in this project and want to contribute anything, let me kn
 
     var dom = CQ.CreateFromUrl("http://www.jquery.com");
    
-There are many other methods and options for creating a DOM from local sources, and from the web asynchronously. This documentation is now found in the `documentation` folder: [Create method](https://github.com/jamietre/CsQuery/blob/master/documentation/create.md)
+There are many other methods and options for creating a DOM from local sources, and from the web asynchronously. 
+
+*Create from a URL (asynchronously)*
+
+    IPromise promise = CQ.CreateFromUrl("http://www.jquery.com");
+
+    CQ.CreateFromUrl("http://www.jquery.com", successDelegate, failureDelegate);
+
+ The first method is preferred and returns an `IPromise` object, which can be used to manage resolution of deferred events without blocking the code flow. See [Promises](https://github.com/jamietre/CsQuery/blob/master/documentation/promises.md) documentation for details.
+
 
 ##### Output as HTML
 
-Details of using the various output methods can be found in the documentation folder: [Render method](https://github.com/jamietre/CsQuery/blob/master/documentation/render.md)
+Complete documentation: [Render method](https://github.com/jamietre/CsQuery/blob/master/documentation/render.md)
 
 *Render the entire DOM*
 
@@ -378,114 +389,6 @@ These methods' purposes are straightforward.
 Ideally, I will just replace the implementation with some other library that does a great job of complex type mapping. For the time being, though, it works well in most common situations and is useful for dealing with abitrary objects of the sort you get from a javascript application. 
 
 The JSON handling uses the .NET framework JavaScriptSerializer along with some postprocessing to normalize object structures when returning expando objects. It also has some special treatment for dictionaries when serializing - that is, they are converted to objects (as if they were expando objects) rather than key/value arrays. This also works well enough but, again, would ideally be addressed using a more robust JSON parser. 
-
-### Promises
-
-More recent versions jQuery introduced a "deferred" object for managing callbacks using a concept called Promises. Though this is less relevant for CsQuery because your work won't be interactive for the most part, there is one important situation where you will have to manage asynchronous events: loading data from a web server.
-
-Making a request to a web server can take a substantial amount of time, and if you are using CsQuery for a real-time application, you probably won't want to make your users wait for the request to finish.
-
-For example, I used CsQuery to provide current status information on the "What's New" section for the [ImageMapster](http://www.outsharked.com/imagemapster/) (my jQuery plugin) web site. But I certainly do not want to cause every single user to wait while the server makes a remote web request to GitHub (which could be slow or inaccessible). Rather, the code keeps track of when the last time it's updated it's information using a static variable. If it's become "stale", it initiates a new async request, and when that request is completed, it updates the cached data. 
-
-So, the http request that actually triggered the update will be shown the old information, but there will be no lag. Any requests coming in after the request to GitHub has finished will of course use the new information. The code looks pretty much like this:
-
-    private static DateTime LastUpdate;
-    
-    if (LastUpdate.AddHours(4) < DateTime.Now) {
-
-        /// stale - start the update process. The actual code makes three independent requests
-        /// to obtain commit & version info
-
-        var url = "https://github.com/jamietre/ImageMapster/commits/master";
-        CQ.CreateFromUrlAsync(url)
-           .Then(response => {
-            	LastUpdate = DateTime.Now;
-	            var gitHubDOM = response.Dom;
-	            ... 
-	            // use CsQuery to extract needed info from the response
-	        });
-    }
-
-    ...
-
-    // render the page using the current data - code flow is never blocked even if an update
-    // was requested
-
-Though C# 5 includes some language features & methods that greatly improve asynchronous handling (see `await` and the `Task` class), I'm not using C# 5 and I dind't want to "wait". Besides, the promise API used often in Javascript is actually extraordinarily elegant so I decided to make a basic C# implementation to assist in using this method. When VS 2012 comes out I may revisit this.
-
-The `CreateFromUrlAsync` method can return an `IPromise<ICsqWebResponse>` object. The basic promise interface (from CommonJS Promises/A) has only one method:
-
-    then(success,failure,progress)
-
-The basic use in JS is this:
-    
-    someAsyncAction().then(successDelegate,failureDelegate);
-
-When the action is resolved, "success" is called with an optional parameter from the caller; if it failed, "failure" is called.
-
-I decided to skip progress for now; handling the two callbacks in C# requires a bit of overloading because function delegates can have different signatures. The CsQuery implementation can accept any delegate that has zero or one parameters, and returns void or something. A promise can also be generically typed, with the generic type identifying the type of parameter that is passed to the callback functions. The interface has ended up like this:
-
-    public interface IPromise
-    {
-        IPromise Then(Delegate success, Delegate failure=null);
-        IPromise Then(Action success, Action failure = null);
-        IPromise Then(Func<IPromise> success, Func<IPromise> failure = null);
-        IPromise Then(Action<object> success, Action<object> failure = null);
-        IPromise Then(Func<object, IPromise> success, Func<object, IPromise> failure = null);
-
-    }
-
-    public interface IPromise<T> : IPromise
-    {
-        IPromise Then(Action<T> success, Action<T> failure = null);
-        IPromise Then(Func<T, IPromise> success, Func<T, IPromise> failure = null);
-    }
-
-
-So the signature for `CreateFromUrlAsync` is this:
-
-    IPromise<ICsqWebResponse> CreateFromUrlAsync(string url, ServerConfig options = null)
-
-This makes it incredibly simple to write code with success & failure handlers inline. By strongly typing the returned promise, you don't have to cast the delegates, as in the original example: the `response` parameter is implicitly typed as `ICsqWebResponse`. If I wanted to add a fail handler, I could do this:
-
-    CQ.CreateFromUrlAsync(url)
-        .Then(responseSuccess => {
-            LastUpdate = DateTime.Now;
-             ...
-        }, responseFail => {
-             // do something
-        });
-
-CsQuery provides one other useful promise-related function called `When.All`. This is roughly equivalent to `Task.WhenAll` in C# 5 and  lets you create a new promise that resolves when every one of a set of promises has resolved. This is especially useful for this situation, since it means you can intiate several independent web requests, and have a promise that resolves only when all of them are complete. It works like this:
-
-
-    var promise1 = CQ.CreateFromUrlAsync(url);
-    var promise2 = CQ.CreateFromUrlAsync(url2);
-
-    CsQuery.When.All(promise1,promise2).Then(successDelegate, failDelegate);
-
-You can also give it a timeout which will cause the promise to reject if it has not resolved by that time. This is valuable for ensuring that you get a resolution no matter what happens in the client promises:
-
-    // Automatically reject after 5 seconds
-
-    CsQuery.When.All(5000,promise1,promise2)
-        .Then(successDelegate, failDelegate);
-
-`When` is a static object that is used to create instances of promise-related objects. You can also use it to create your own deferred entities:
-
-    var deferred = CsQuery.When.Deferred();
-    
-    // a "deferred" object implements IPromise, and also has methods to resolve or reject
-
-    deferred.Then(successDelegate, failDelegate);
-    deferred.Resolve();   // causes successDelegate to run
-
-Another interesting thing about promises is that they can be resolved *before* the appropriate delegates have been bound and everything still works:
-
-    var deferred = CsQuery.When.Deferred();
-
-    deferred.Resolve();
-    deferred.Then(successDelegate, failDelegate);   // successDelegate runs immediately
 
 
 ### Options

@@ -92,5 +92,42 @@ namespace CsQuery
             return new WhenAll(timeoutMilliseconds,promises);
             
         }
+
+        /// <summary>
+        /// Return a promise that fails after the specified time. This is like Timer, but fails rather
+        /// than succeeds after the time has elapsed.
+        /// </summary>
+        ///
+        /// <param name="timeoutMilliseconds">
+        /// The timeout in milliseconds.
+        /// </param>
+        ///
+        /// <returns>
+        /// A promise.
+        /// </returns>
+
+        public static IPromise Timeout(int timeoutMilliseconds)
+        {
+            return new Timeout(timeoutMilliseconds);
+        }
+
+        /// <summary>
+        /// Return a promise that resolves successfully after the specified time. 
+        /// </summary>
+        ///
+        /// <param name="timerMilliseconds">
+        /// The timeout in milliseconds.
+        /// </param>
+        ///
+        /// <returns>
+        /// A promise.
+        /// </returns>
+
+        public static IPromise Timer(int timerMilliseconds)
+        {
+            return new Timeout(timerMilliseconds, true);
+        }
+
+        
     }
 }

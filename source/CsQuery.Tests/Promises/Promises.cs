@@ -115,6 +115,80 @@ namespace CsQuery.Tests.Promises
             
             Assert.AreEqual("rejected", message);
         }
+
+        [Test, TestMethod]
+        public void TimeoutObjectWithParameter()
+        {
+            bool done = false;
+
+            Timeout timeout = new Timeout(500,"timedout",true);
+            timeout.Then((parm) =>
+            {
+                done = true;
+                Assert.AreEqual("timedout", parm);
+            });
+
+
+            Assert.IsFalse(done);
+            System.Threading.Thread.Sleep(250);
+            Assert.IsFalse(done);
+
+            System.Threading.Thread.Sleep(350);
+            Assert.IsTrue(done);
+        }
+
+        [Test, TestMethod]
+        public void TimeoutObject()
+        {
+            bool done = false;
+
+            Timeout timeout = new Timeout(250);
+            timeout.Then(null,() =>
+            {
+                done = true;
+            });
+
+            Assert.IsFalse(done);
+
+            System.Threading.Thread.Sleep(350);
+            Assert.IsTrue(done);
+        }
+
+        [Test, TestMethod]
+        public void ManualIntervention()
+        {
+            bool? done = null;
+
+            Timeout timeout = new Timeout(10000);
+
+            
+            timeout.Then(()=> {
+                done = true;   
+            }, () =>
+            {
+                done = false;
+            });
+
+            Assert.AreEqual(null,done);
+            timeout.Stop(true);
+
+            Assert.AreEqual(true, done);
+
+            done = null;
+            
+            timeout = new Timeout(10000);
+            timeout.Then(() =>
+            {
+                done = true;
+            }, () =>
+            {
+                done = false;
+            });
+
+            timeout.Stop();
+            Assert.AreEqual(false, done);
+        }
+
         protected void Resolved(string result=null)
         {
             message = result ?? "resolved";

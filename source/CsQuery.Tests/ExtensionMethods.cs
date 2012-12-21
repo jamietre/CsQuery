@@ -30,5 +30,25 @@ namespace CsQuery.Tests
             return cq.Select(item => item.NodeName).ToList();
 
         }
+
+        /// <summary>
+        /// A string extension method that normalize line endings to the local environment
+        /// </summary>
+        ///
+        /// <param name="text">
+        /// The text to act on.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string
+        /// </returns>
+
+        public static string NormalizeLineEndings(this string text)
+        {
+            return text
+                .Replace("\r", "")
+                .Replace("\n", System.Environment.NewLine);
+
+        }
     }
 }

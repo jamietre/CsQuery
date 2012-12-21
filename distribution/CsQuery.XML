@@ -16367,6 +16367,11 @@
             An OutputFormatter that returns a basic ASCII version of the HTML document.
             </summary>
         </member>
+        <member name="T:CsQuery.Promises.Timeout`1">
+            <summary>
+            A promise that resolves or fails after a certain amount of time
+            </summary>
+        </member>
         <member name="T:CsQuery.Promises.IPromise`1">
              <summary>
              Interface for a promise that accepts a strongly-typed parameter.
@@ -16492,6 +16497,154 @@
              <returns>
              A promise.
              </returns>
+        </member>
+        <member name="M:CsQuery.Promises.Timeout`1.#ctor(System.Int32)">
+             <summary>
+             Create a new Timeout that rejects after the specified time.
+             </summary>
+            
+             <param name="timeoutMilliseconds">
+             The timeout in milliseconds.
+             </param>
+        </member>
+        <member name="M:CsQuery.Promises.Timeout`1.#ctor(System.Int32,`0)">
+             <summary>
+             Create a new Timeout that rejects with the provided parameter value after the specified time.
+             </summary>
+            
+             <param name="timeoutMilliseconds">
+             The timeout in milliseconds.
+             </param>
+             <param name="parameterValue">
+             The parameter value.
+             </param>
+        </member>
+        <member name="M:CsQuery.Promises.Timeout`1.#ctor(System.Int32,System.Boolean)">
+             <summary>
+             Create a new Timeout that resolves or rejects with the provided parameter value after the specified time.
+             </summary>
+            
+             <param name="timeoutMilliseconds">
+             The timeout in milliseconds.
+             </param>
+             <param name="resolveOnTimeout">
+             true to resolve the promise on the timeout, false to reject it.
+             </param>
+        </member>
+        <member name="M:CsQuery.Promises.Timeout`1.#ctor(System.Int32,`0,System.Boolean)">
+             <summary>
+             Create a new Timeout that resolves or rejects with the provided parameter value after the specified time.
+             </summary>
+            
+             <param name="timeoutMilliseconds">
+             The timeout in milliseconds.
+             </param>
+             <param name="parameterValue">
+             The parameter value.
+             </param>
+             <param name="resolveOnTimeout">
+             true to resolve the promise on the timeout, false to reject it.
+             </param>
+        </member>
+        <member name="M:CsQuery.Promises.Timeout`1.Stop(System.Boolean)">
+             <summary>
+             Stops the timer with the specified resolution.
+             </summary>
+            
+             <param name="resolve">
+             True to resolve the promise, false to reject it.
+             </param>
+        </member>
+        <member name="M:CsQuery.Promises.Timeout`1.Stop">
+            <summary>
+            Stops the timer with it's default resolution
+            </summary>
+        </member>
+        <member name="M:CsQuery.Promises.Timeout`1.Timer_Elapsed(System.Object,System.Timers.ElapsedEventArgs)">
+             <summary>
+             Event handler called when the specified time has elapsed.
+             </summary>
+            
+             <param name="sender">
+             The timer object.
+             </param>
+             <param name="e">
+             Elapsed event information.
+             </param>
+        </member>
+        <member name="M:CsQuery.Promises.Timeout`1.CompletePromise(System.Boolean)">
+            <summary>
+            Completes the promise promise using the specified resolution
+            </summary>
+        </member>
+        <member name="M:CsQuery.Promises.Timeout`1.Then(CsQuery.Promises.PromiseAction{`0},CsQuery.Promises.PromiseAction{`0})">
+             <summary>
+             Chains delegates that will be executed on success or failure of a promise.
+             </summary>
+            
+             <param name="success">
+             The delegate to call upon successful resolution of the promise.
+             </param>
+             <param name="failure">
+             (optional) The delegate to call upon unsuccessful resolution of the promise.
+             </param>
+            
+             <returns>
+             A new promise which will resolve when this promise has resolved.
+             </returns>
+        </member>
+        <member name="T:CsQuery.Promises.Timeout">
+            <summary>
+            A promise that resolves or fails after a certain amount of time
+            </summary>
+        </member>
+        <member name="M:CsQuery.Promises.Timeout.#ctor(System.Int32)">
+             <summary>
+             Create a new Timeout that rejects after the specified time.
+             </summary>
+            
+             <param name="timeoutMilliseconds">
+             The timeout in milliseconds.
+             </param>
+        </member>
+        <member name="M:CsQuery.Promises.Timeout.#ctor(System.Int32,System.Object)">
+             <summary>
+             Create a new Timeout that rejects with the provided parameter value after the specified time.
+             </summary>
+            
+             <param name="timeoutMilliseconds">
+             The timeout in milliseconds.
+             </param>
+             <param name="parameterValue">
+             The parameter value.
+             </param>
+        </member>
+        <member name="M:CsQuery.Promises.Timeout.#ctor(System.Int32,System.Boolean)">
+             <summary>
+             Create a new Timeout that resolves or rejects with the provided parameter value after the specified time.
+             </summary>
+            
+             <param name="timeoutMilliseconds">
+             The timeout in milliseconds.
+             </param>
+             <param name="succeedOnTimeout">
+             true to resolve the promise on the timeout, false to reject it.
+             </param>
+        </member>
+        <member name="M:CsQuery.Promises.Timeout.#ctor(System.Int32,System.Object,System.Boolean)">
+             <summary>
+             Create a new Timeout that resolves or rejects with the provided parameter value after the specified time.
+             </summary>
+            
+             <param name="timeoutMilliseconds">
+             The timeout in milliseconds.
+             </param>
+             <param name="parameterValue">
+             The parameter value.
+             </param>
+             <param name="succeedOnTimeout">
+             true to resolve the promise on the timeout, false to reject it.
+             </param>
         </member>
         <member name="T:CsQuery.StringScanner.CharacterData">
             <summary>
@@ -19692,18 +19845,6 @@
              A new promise which will resolve when this promise has resolved.
              </returns>
         </member>
-        <member name="M:CsQuery.Promises.WhenAll.Timer_Elapsed(System.Object,System.Timers.ElapsedEventArgs)">
-             <summary>
-             Event handler. Called by Timer for elapsed events.
-             </summary>
-            
-             <param name="sender">
-             Source of the event.
-             </param>
-             <param name="e">
-             Elapsed event information.
-             </param>
-        </member>
         <member name="M:CsQuery.Promises.WhenAll.PromiseResolve">
             <summary>
             Called when a client promise is resolved.
@@ -19712,12 +19853,6 @@
         <member name="M:CsQuery.Promises.WhenAll.PromiseReject">
             <summary>
             Called when a client promise is rejected.
-            </summary>
-        </member>
-        <member name="M:CsQuery.Promises.WhenAll.IncrementResolved">
-            <summary>
-            Increment the resolved counter. This must be threadsafe or the promise set could fail to
-            resolve.
             </summary>
         </member>
         <member name="T:CsQuery.When">
@@ -19775,6 +19910,33 @@
             
              <returns>
              A new IPromise object.
+             </returns>
+        </member>
+        <member name="M:CsQuery.When.Timeout(System.Int32)">
+             <summary>
+             Return a promise that fails after the specified time. This is like Timer, but fails rather
+             than succeeds after the time has elapsed.
+             </summary>
+            
+             <param name="timeoutMilliseconds">
+             The timeout in milliseconds.
+             </param>
+            
+             <returns>
+             A promise.
+             </returns>
+        </member>
+        <member name="M:CsQuery.When.Timer(System.Int32)">
+             <summary>
+             Return a promise that resolves successfully after the specified time. 
+             </summary>
+            
+             <param name="timerMilliseconds">
+             The timeout in milliseconds.
+             </param>
+            
+             <returns>
+             A promise.
              </returns>
         </member>
         <member name="P:CsQuery.When.Debug">

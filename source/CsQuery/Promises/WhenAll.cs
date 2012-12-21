@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Timers;
 using CsQuery.Promises;
 
 namespace CsQuery.Promises
@@ -43,20 +42,19 @@ namespace CsQuery.Promises
         public WhenAll(int timeoutMilliseconds, params IPromise[] promises)
         {
             Configure(promises);
-            Timer = new Timer(timeoutMilliseconds);
-            Timer.Elapsed += new ElapsedEventHandler(Timer_Elapsed);
-            Timer.Start();
+            timeout = new Timeout(timeoutMilliseconds);
+            timeout.Then((Action)null,(Action)TimedOut);
         }
 
         #endregion
 
         #region private properties
 
-        private Timer Timer;
         private  Deferred Deferred;
         private int TotalCount = 0;
         private int _ResolvedCount = 0;
-
+        private Timeout timeout;
+        private bool Complete;
         private object _locker = new Object();
 
         private int ResolvedCount
@@ -68,20 +66,12 @@ namespace CsQuery.Promises
 
             set
             {
-                _ResolvedCount = value;
-                if (_ResolvedCount == TotalCount)
+                lock (_locker)
                 {
-                    if (Timer != null)
+                    _ResolvedCount = value;
+                    if (_ResolvedCount == TotalCount)
                     {
-                        Timer.Stop();
-                    }
-                    if (Success)
-                    {
-                        Deferred.Resolve();
-                    }
-                    else
-                    {
-                        Deferred.Reject();
+                        CompletePromise();
                     }
                 }
             }
@@ -201,33 +191,19 @@ namespace CsQuery.Promises
 
         #region private properties
 
-        private void Configure(IPromise[] promises)
+        private void Configure(IEnumerable<IPromise> promises)
         {
             Success = true;
-            TotalCount = promises.Length;
             Deferred = new Deferred();
+
+            int count=0;
             foreach (var promise in promises)
             {
+                count++;
                 promise.Then((Action)PromiseResolve,(Action)PromiseReject);
             }
+            TotalCount = count;
 
-        }
-
-        /// <summary>
-        /// Event handler. Called by Timer for elapsed events.
-        /// </summary>
-        ///
-        /// <param name="sender">
-        /// Source of the event.
-        /// </param>
-        /// <param name="e">
-        /// Elapsed event information.
-        /// </param>
-
-        protected void Timer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            Timer.Stop();
-            Deferred.Reject();
         }
 
         /// <summary>
@@ -236,7 +212,7 @@ namespace CsQuery.Promises
 
         private void PromiseResolve()
         {
-            IncrementResolved();
+            ResolvedCount++;
         }
 
         /// <summary>
@@ -246,21 +222,38 @@ namespace CsQuery.Promises
         private void PromiseReject()
         {
             Success = false;
-            IncrementResolved();
+            ResolvedCount++;
         }
 
-        /// <summary>
-        /// Increment the resolved counter. This must be threadsafe or the promise set could fail to
-        /// resolve.
-        /// </summary>
+        private void TimedOut()
+        {
+            Success = false;
+            CompletePromise();
+        }
 
-        private void IncrementResolved()
+        private void CompletePromise()
         {
             lock (_locker)
             {
-                ResolvedCount++;
-            }
+                if (Complete)
+                {
+                    return;
+                }
 
+                Complete = true;
+                if (timeout != null)
+                {
+                    timeout.Stop(true);
+                }
+                if (Success)
+                {
+                    Deferred.Resolve();
+                }
+                else
+                {
+                    Deferred.Reject();
+                }
+            }
         }
 
         #endregion
