@@ -1102,7 +1102,7 @@ namespace CsQuery
 
         #region Object/Expando Manipulation
 
-        // TODO - the implementation needs to go to another class
+        // TODO: the implementation needs to go to another class
 
         /// <summary>
         /// Convert any IDictionary&lt;string,object&gt; into an expandoobject recursively.
@@ -1455,7 +1455,7 @@ namespace CsQuery
             }
             else
             {
-                // TODO - check for existence of a "clone" method
+                // TODO: check for existence of a "clone" method
                 // convert regular objects to expando objects
                 return (ToExpando(obj, true));
             }

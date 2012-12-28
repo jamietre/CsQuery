@@ -402,6 +402,13 @@ namespace CsQuery.Implementation
         /// For input elements, the "value" property of this element. Returns null for other element
         /// types.
         /// </summary>
+        /// <remarks>
+        /// TODO: Value is only mapped to an attribute on certain elements. The HasValueProperty method 
+        /// resolves this. When setting the Value property for any other element, it should still track
+        /// the value but never render it.
+        /// We do just the opposite; we don't return the value in that situation but always render it.
+        /// This should be fixed to work like the DOM so setting Value doesn't render. 
+        /// </remarks>
 
         public override string Value
         {

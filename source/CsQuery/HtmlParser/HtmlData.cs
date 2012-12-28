@@ -550,7 +550,7 @@ namespace CsQuery.HtmlParser
             // longer be needed. 
             
             string[] hasValueAttribute = new string[] {
-                "input","select","option","param","button","progress","output","meter"
+                "input","select","option","param","button","progress","output","meter","script"
             };
 
             string[] isFormControl = new string[] {

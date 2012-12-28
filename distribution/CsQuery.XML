@@ -8045,6 +8045,13 @@
             For input elements, the "value" property of this element. Returns null for other element
             types.
             </summary>
+            <remarks>
+            TODO: Value is only mapped to an attribute on certain elements. The HasValueProperty method 
+            resolves this. When setting the Value property for any other element, it should still track
+            the value but never render it.
+            We do just the opposite; we don't return the value in that situation but always render it.
+            This should be fixed to work like the DOM so setting Value doesn't render. 
+            </remarks>
         </member>
         <member name="P:CsQuery.Implementation.DomElement.NodeType">
             <summary>
@@ -22166,7 +22173,7 @@
              </summary>
             
              <remarks>
-             TODO: R&amp;R. This has to do with GetTagOpener etc.
+             TODO: Remove this. This has to do with GetTagOpener etc.
              </remarks>
             
              <value>
@@ -26887,6 +26894,22 @@
             
              <returns>
              A cleaned/resolved path
+             </returns>
+        </member>
+        <member name="M:CsQuery.Utility.Support.CombinePaths(System.String,System.String)">
+             <summary>
+             Combine two file paths, normalizing slashes and eliminating any relative path markers.
+             </summary>
+            
+             <param name="path1">
+             The first path.
+             </param>
+             <param name="path2">
+             The second path.
+             </param>
+            
+             <returns>
+             A combined path.
              </returns>
         </member>
         <member name="M:CsQuery.Utility.Support.MethodPath(System.Reflection.MemberInfo)">

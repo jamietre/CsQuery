@@ -81,7 +81,7 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <remarks>
-        /// TODO: R&amp;R. This has to do with GetTagOpener etc.
+        /// TODO: Remove this. This has to do with GetTagOpener etc.
         /// </remarks>
         ///
         /// <value>

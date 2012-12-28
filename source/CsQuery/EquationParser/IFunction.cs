@@ -12,8 +12,8 @@ using CsQuery.EquationParser.Implementation;
 
 namespace CsQuery.EquationParser
 {
-    //TODO - unimplemented
-    //Add/subtract/multiply etc should just be functions with two arguments. Operator should just
+    // TODO:  unimplemented
+    // Add/subtract/multiply etc should just be functions with two arguments. Operator should just
     // return a function.
     public interface IFunction: IOperand, IVariableContainer
     {

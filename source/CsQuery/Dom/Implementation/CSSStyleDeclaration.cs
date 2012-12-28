@@ -755,7 +755,7 @@ namespace CsQuery.Implementation
             int pos = 0;
             value = value.Trim();
             StringBuilder outVal = new StringBuilder();
-            //TODO this can't be comprehensive.
+            //TODO: this is not comprehensive.
             string type = name=="opacity" ? "" : "px";
 
             if (String.IsNullOrEmpty(value))

@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using CsQuery.EquationParser.Implementation;
 
-// TODO this should be fully commented; however it's not part of the main public API
+// TODO: this should be fully commented; however it's not part of the main public API so the XMLDOC warnings
+// have been disabled to make compiling clean
 
 #pragma warning disable 1591
 #pragma warning disable 1570
