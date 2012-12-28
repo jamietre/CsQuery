@@ -95,19 +95,20 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Tests\ScriptManager\BundleContents_NoMinimize.cs" />
+    <Compile Include="Tests\ScriptManagerTests\BundleContents_NoMinimize.cs" />
     <Compile Include="Tests\AppHostBase.cs" />
-    <Compile Include="Tests\ScriptManager\BundleContents_Minimize.cs" />
-    <Compile Include="Tests\ScriptManager\BundleContents_NoBundle.cs" />
-    <Compile Include="Tests\ScriptManager\ScriptDependenciesVersion.cs" />
-    <Compile Include="Tests\ScriptManager\ScriptLocations.cs" />
-    <Compile Include="Tests\ScriptManager\UsingOptions.cs" />
-    <Compile Include="Tests\ScriptManager\Patterns.cs" />
-    <Compile Include="Tests\ScriptManager\ScriptHelper.cs" />
-    <Compile Include="Tests\ScriptManager\LibraryPath.cs" />
-    <Compile Include="Tests\ScriptManager\ScriptDependencies2.cs" />
-    <Compile Include="Tests\ScriptManager\ScriptDependenciesInvalid.cs" />
-    <Compile Include="Tests\ScriptManager\ScriptDependencies.cs" />
+    <Compile Include="Tests\ScriptManagerTests\BundleContents_Minimize.cs" />
+    <Compile Include="Tests\ScriptManagerTests\BundleContents_NoBundle.cs" />
+    <Compile Include="Tests\ScriptManagerTests\ScriptCollection.cs" />
+    <Compile Include="Tests\ScriptManagerTests\ScriptDependenciesVersion.cs" />
+    <Compile Include="Tests\ScriptManagerTests\ScriptLocations.cs" />
+    <Compile Include="Tests\ScriptManagerTests\UsingOptions.cs" />
+    <Compile Include="Tests\ScriptManagerTests\Patterns.cs" />
+    <Compile Include="Tests\ScriptManagerTests\ScriptHelper.cs" />
+    <Compile Include="Tests\ScriptManagerTests\LibraryPath.cs" />
+    <Compile Include="Tests\ScriptManagerTests\ScriptDependencies2.cs" />
+    <Compile Include="Tests\ScriptManagerTests\ScriptDependenciesInvalid.cs" />
+    <Compile Include="Tests\ScriptManagerTests\ScriptDependencies.cs" />
     <Compile Include="Tests\HtmlHelpers.cs" />
     <Compile Include="Tests\Markup.cs" />
     <Compile Include="Controllers\Shared\LayoutController.cs" />
@@ -123,6 +124,7 @@
     <None Include="Views\Index.cshtml" />
     <None Include="Views\Shared\_Layout.cshtml" />
     <None Include="Views\Test\Action1.cshtml" />
+    <None Include="Views\Test\Index6.cshtml" />
     <None Include="Views\Test\Index5.cshtml" />
     <None Include="Views\Test\Index4.cshtml" />
     <None Include="Views\Test\Index3.cshtml" />

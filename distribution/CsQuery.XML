@@ -16142,6 +16142,15 @@
              The writer to which output is written.
              </param>
         </member>
+        <member name="M:CsQuery.Output.FormatDefault.EndElement(CsQuery.IDomObject)">
+             <summary>
+             Adds the element close tag to the output stack.
+             </summary>
+            
+             <param name="element">
+             The element.
+             </param>
+        </member>
         <member name="M:CsQuery.Output.FormatDefault.RenderStack(System.IO.TextWriter)">
              <summary>
              Process the output stack.
@@ -16153,7 +16162,7 @@
         </member>
         <member name="M:CsQuery.Output.FormatDefault.RenderElements(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},System.IO.TextWriter)">
              <summary>
-             Renders the sequence of elements.
+             Renders a sequence of elements.
              </summary>
             
              <param name="elements">
@@ -16161,15 +16170,6 @@
              </param>
              <param name="writer">
              The writer to which output is written.
-             </param>
-        </member>
-        <member name="M:CsQuery.Output.FormatDefault.EndElement(CsQuery.IDomObject)">
-             <summary>
-             Adds the element close tag to the output stack
-             </summary>
-            
-             <param name="element">
-             The element.
              </param>
         </member>
         <member name="M:CsQuery.Output.FormatDefault.RenderElementCloseTag(CsQuery.IDomObject,System.IO.TextWriter)">
@@ -16191,9 +16191,6 @@
             
              <param name="element">
              The element.
-             </param>
-             <param name="writer">
-             The writer to which output is written.
              </param>
         </member>
         <member name="M:CsQuery.Output.FormatDefault.RenderTextNode(CsQuery.IDomObject,System.IO.TextWriter,System.Boolean)">
@@ -16273,6 +16270,41 @@
         <member name="P:CsQuery.Output.FormatDefault.OutputStack">
             <summary>
             Stack of the output tree
+            </summary>
+        </member>
+        <member name="T:CsQuery.Output.FormatDefault.NodeStackElement">
+            <summary>
+            An element that captures the state of a element on the output stack.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Output.FormatDefault.NodeStackElement.#ctor(CsQuery.IDomObject,System.Boolean,System.Boolean)">
+             <summary>
+             Constructor.
+             </summary>
+            
+             <param name="element">
+             The element.
+             </param>
+             <param name="isRaw">
+             true if this object is raw.
+             </param>
+             <param name="isClose">
+             true if this object is close.
+             </param>
+        </member>
+        <member name="F:CsQuery.Output.FormatDefault.NodeStackElement.Element">
+            <summary>
+            The element.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Output.FormatDefault.NodeStackElement.IsRaw">
+            <summary>
+            The text node should be output as raw (un-encoded) text.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Output.FormatDefault.NodeStackElement.IsClose">
+            <summary>
+            The is a closing tag only.
             </summary>
         </member>
         <member name="T:CsQuery.OutputFormatters">
@@ -16578,6 +16610,102 @@
             </summary>
         </member>
         <member name="M:CsQuery.Promises.Timeout`1.Then(CsQuery.Promises.PromiseAction{`0},CsQuery.Promises.PromiseAction{`0})">
+             <summary>
+             Chains delegates that will be executed on success or failure of a promise.
+             </summary>
+            
+             <param name="success">
+             The delegate to call upon successful resolution of the promise.
+             </param>
+             <param name="failure">
+             (optional) The delegate to call upon unsuccessful resolution of the promise.
+             </param>
+            
+             <returns>
+             A new promise which will resolve when this promise has resolved.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Promises.Timeout`1.Then(CsQuery.Promises.PromiseFunction{`0},CsQuery.Promises.PromiseFunction{`0})">
+             <summary>
+             Chains delegates that will be executed on success or failure of a promise.
+             </summary>
+            
+             <param name="success">
+             The delegate to call upon successful resolution of the promise.
+             </param>
+             <param name="failure">
+             (optional) The delegate to call upon unsuccessful resolution of the promise.
+             </param>
+            
+             <returns>
+             A new promise which will resolve when this promise has resolved.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Promises.Timeout`1.Then(System.Delegate,System.Delegate)">
+             <summary>
+             Chains delegates that will be executed on success or failure of a promise.
+             </summary>
+            
+             <param name="success">
+             The delegate to call upon successful resolution of the promise.
+             </param>
+             <param name="failure">
+             (optional) The delegate to call upon unsuccessful resolution of the promise.
+             </param>
+            
+             <returns>
+             A new promise which will resolve when this promise has resolved.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Promises.Timeout`1.Then(System.Action,System.Action)">
+             <summary>
+             Chains delegates that will be executed on success or failure of a promise.
+             </summary>
+            
+             <param name="success">
+             The delegate to call upon successful resolution of the promise.
+             </param>
+             <param name="failure">
+             (optional) The delegate to call upon unsuccessful resolution of the promise.
+             </param>
+            
+             <returns>
+             A new promise which will resolve when this promise has resolved.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Promises.Timeout`1.Then(System.Func{CsQuery.Promises.IPromise},System.Func{CsQuery.Promises.IPromise})">
+             <summary>
+             Chains delegates that will be executed on success or failure of a promise.
+             </summary>
+            
+             <param name="success">
+             The delegate to call upon successful resolution of the promise.
+             </param>
+             <param name="failure">
+             (optional) The delegate to call upon unsuccessful resolution of the promise.
+             </param>
+            
+             <returns>
+             A new promise which will resolve when this promise has resolved.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Promises.Timeout`1.CsQuery#Promises#IPromise#Then(CsQuery.Promises.PromiseAction{System.Object},CsQuery.Promises.PromiseAction{System.Object})">
+             <summary>
+             Chains delegates that will be executed on success or failure of a promise.
+             </summary>
+            
+             <param name="success">
+             The delegate to call upon successful resolution of the promise.
+             </param>
+             <param name="failure">
+             (optional) The delegate to call upon unsuccessful resolution of the promise.
+             </param>
+            
+             <returns>
+             A new promise which will resolve when this promise has resolved.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Promises.Timeout`1.CsQuery#Promises#IPromise#Then(CsQuery.Promises.PromiseFunction{System.Object},CsQuery.Promises.PromiseFunction{System.Object})">
              <summary>
              Chains delegates that will be executed on success or failure of a promise.
              </summary>

@@ -16,21 +16,18 @@ namespace CsQuery.Mvc
     public static class HtmlHelpers
     {
         /// <summary>
-        /// Include an HTML file server-side
+        /// Include an HTML file server-side.
         /// </summary>
         ///
-        /// <typeparam name="T">
-        /// Generic type parameter.
-        /// </typeparam>
         /// <param name="helper">
-        /// The context
+        /// The context.
         /// </param>
         /// <param name="serverPath">
         /// Relative path of the server file.
         /// </param>
         ///
         /// <returns>
-        /// An HTML string of the included file
+        /// An HTML string of the included file.
         /// </returns>
 
         public static IHtmlString ServerSideInclude<T>(this HtmlHelper<T> helper, string serverPath)
@@ -51,9 +48,6 @@ namespace CsQuery.Mvc
         /// Creates HTML for output using CsQuery.
         /// </summary>
         ///
-        /// <typeparam name="T">
-        /// Generic type parameter.
-        /// </typeparam>
         /// <param name="helper">
         /// The helper context.
         /// </param>
@@ -81,9 +75,6 @@ namespace CsQuery.Mvc
         /// Includes a Javascript file inline.
         /// </summary>
         ///
-        /// <typeparam name="T">
-        /// Generic type parameter.
-        /// </typeparam>
         /// <param name="helper">
         /// The current helper context.
         /// </param>

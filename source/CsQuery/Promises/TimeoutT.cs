@@ -164,6 +164,7 @@ namespace CsQuery.Promises
                 }
             }
         }
+
         /// <summary>
         /// Chains delegates that will be executed on success or failure of a promise.
         /// </summary>
@@ -184,32 +185,122 @@ namespace CsQuery.Promises
             return deferred.Then(success, failure);
         }
 
+        /// <summary>
+        /// Chains delegates that will be executed on success or failure of a promise.
+        /// </summary>
+        ///
+        /// <param name="success">
+        /// The delegate to call upon successful resolution of the promise.
+        /// </param>
+        /// <param name="failure">
+        /// (optional) The delegate to call upon unsuccessful resolution of the promise.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new promise which will resolve when this promise has resolved.
+        /// </returns>
+
         public IPromise Then(PromiseFunction<T> success, PromiseFunction<T> failure = null)
         {
             return deferred.Then(success, failure);
         }
+
+        /// <summary>
+        /// Chains delegates that will be executed on success or failure of a promise.
+        /// </summary>
+        ///
+        /// <param name="success">
+        /// The delegate to call upon successful resolution of the promise.
+        /// </param>
+        /// <param name="failure">
+        /// (optional) The delegate to call upon unsuccessful resolution of the promise.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new promise which will resolve when this promise has resolved.
+        /// </returns>
 
         public IPromise Then(Delegate success, Delegate failure = null)
         {
             return deferred.Then(success, failure);
         }
 
+        /// <summary>
+        /// Chains delegates that will be executed on success or failure of a promise.
+        /// </summary>
+        ///
+        /// <param name="success">
+        /// The delegate to call upon successful resolution of the promise.
+        /// </param>
+        /// <param name="failure">
+        /// (optional) The delegate to call upon unsuccessful resolution of the promise.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new promise which will resolve when this promise has resolved.
+        /// </returns>
+
         public IPromise Then(Action success, Action failure = null)
         {
             return deferred.Then(success, failure);
         }
+
+        /// <summary>
+        /// Chains delegates that will be executed on success or failure of a promise.
+        /// </summary>
+        ///
+        /// <param name="success">
+        /// The delegate to call upon successful resolution of the promise.
+        /// </param>
+        /// <param name="failure">
+        /// (optional) The delegate to call upon unsuccessful resolution of the promise.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new promise which will resolve when this promise has resolved.
+        /// </returns>
 
         public IPromise Then(Func<IPromise> success, Func<IPromise> failure = null)
         {
             return deferred.Then(success, failure);
         }
 
-        public IPromise Then(PromiseAction<object> success, PromiseAction<object> failure = null)
+        /// <summary>
+        /// Chains delegates that will be executed on success or failure of a promise.
+        /// </summary>
+        ///
+        /// <param name="success">
+        /// The delegate to call upon successful resolution of the promise.
+        /// </param>
+        /// <param name="failure">
+        /// (optional) The delegate to call upon unsuccessful resolution of the promise.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new promise which will resolve when this promise has resolved.
+        /// </returns>
+
+        IPromise IPromise.Then(PromiseAction<object> success, PromiseAction<object> failure)
         {
             return deferred.Then(success, failure);
         }
 
-        public IPromise Then(PromiseFunction<object> success, PromiseFunction<object> failure = null)
+        /// <summary>
+        /// Chains delegates that will be executed on success or failure of a promise.
+        /// </summary>
+        ///
+        /// <param name="success">
+        /// The delegate to call upon successful resolution of the promise.
+        /// </param>
+        /// <param name="failure">
+        /// (optional) The delegate to call upon unsuccessful resolution of the promise.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new promise which will resolve when this promise has resolved.
+        /// </returns>
+
+        IPromise IPromise.Then(PromiseFunction<object> success, PromiseFunction<object> failure)
         {
             return deferred.Then(success, failure);
         }

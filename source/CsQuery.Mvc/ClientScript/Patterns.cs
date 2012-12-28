@@ -43,6 +43,10 @@ namespace CsQuery.Mvc.ClientScript
 
         public const string FileVersionRegex = @"([0-9]+\.*)*(-[a-zA-Z][a-zA-Z0-9]*)?";
 
+        /// <summary>
+        /// Regex to match file names with version info of the form "x.y.z-beta" (the - part optional)
+        /// </summary>
+
         public static Regex NonLiteralFilenames
         {
             get

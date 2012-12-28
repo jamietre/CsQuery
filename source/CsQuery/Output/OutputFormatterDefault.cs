@@ -86,12 +86,9 @@ namespace CsQuery.Output
 
         public void Render(IDomObject node, TextWriter writer)
         {
-
             OutputStack.Push(new NodeStackElement(node,false,false));
             RenderStack(writer);
         }
-
-
 
         /// <summary>
         /// Renders the object to a string.
@@ -105,7 +102,7 @@ namespace CsQuery.Output
         /// A string.
         /// </returns>
 
-        public virtual string Render(IDomObject node)
+        public string Render(IDomObject node)
         {
             StringBuilder sb = new StringBuilder();
             StringWriter sw = new StringWriter(sb);
@@ -192,7 +189,7 @@ namespace CsQuery.Output
         /// The writer to which output is written.
         /// </param>
 
-        public virtual void RenderChildren(IDomObject element, TextWriter writer)
+        public void RenderChildren(IDomObject element, TextWriter writer)
         {
             if (element.HasChildren)
             {
@@ -210,6 +207,19 @@ namespace CsQuery.Output
         #endregion
 
         #region private methods
+
+        /// <summary>
+        /// Adds the element close tag to the output stack.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element.
+        /// </param>
+
+        protected virtual void EndElement(IDomObject element)
+        {
+            OutputStack.Push(new NodeStackElement(element, false, true));
+        }
 
         /// <summary>
         /// Process the output stack.
@@ -261,8 +271,10 @@ namespace CsQuery.Output
             }
         }
 
+      
+
         /// <summary>
-        /// Renders the sequence of elements.
+        /// Renders a sequence of elements.
         /// </summary>
         ///
         /// <param name="elements">
@@ -272,7 +284,7 @@ namespace CsQuery.Output
         /// The writer to which output is written.
         /// </param>
 
-        protected virtual void RenderElements(IEnumerable<IDomObject> elements,TextWriter writer)
+        protected void RenderElements(IEnumerable<IDomObject> elements,TextWriter writer)
         {
             foreach (var item in elements)
             {
@@ -280,18 +292,6 @@ namespace CsQuery.Output
             }
         }
 
-        /// <summary>
-        /// Adds the element close tag to the output stack
-        /// </summary>
-        ///
-        /// <param name="element">
-        /// The element.
-        /// </param>
-
-        protected virtual void EndElement(IDomObject element)
-        {
-            OutputStack.Push(new NodeStackElement(element,false,true));
-        }
 
         /// <summary>
         /// Renders the element close tag.
@@ -312,16 +312,12 @@ namespace CsQuery.Output
             writer.Write(">");
         }
 
-
         /// <summary>
         /// Renders all the children of the passed node.
         /// </summary>
         ///
         /// <param name="element">
         /// The element.
-        /// </param>
-        /// <param name="writer">
-        /// The writer to which output is written.
         /// </param>
 
         protected virtual void ParseChildren(IDomObject element)
@@ -472,17 +468,49 @@ namespace CsQuery.Output
 
         #endregion
 
+        /// <summary>
+        /// An element that captures the state of a element on the output stack.
+        /// </summary>
 
         protected class NodeStackElement
         {
+            /// <summary>
+            /// Constructor.
+            /// </summary>
+            ///
+            /// <param name="element">
+            /// The element.
+            /// </param>
+            /// <param name="isRaw">
+            /// true if this object is raw.
+            /// </param>
+            /// <param name="isClose">
+            /// true if this object is close.
+            /// </param>
+
             public NodeStackElement(IDomObject element, bool isRaw, bool isClose)
             {
                 Element = element;
                 IsRaw = isRaw;
                 IsClose = isClose;
             }
+
+            /// <summary>
+            /// The element.
+            /// </summary>
+
             public IDomObject Element;
+
+            /// <summary>
+            /// The text node should be output as raw (un-encoded) text.
+            /// </summary>
+
             public bool IsRaw;
+
+            /// <summary>
+            /// The is a closing tag only.
+            /// </summary>
+
             public bool IsClose;
         }
 

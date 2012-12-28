@@ -345,6 +345,42 @@ namespace CsQuery.Utility
         }
 
         /// <summary>
+        /// Combine two file paths, normalizing slashes and eliminating any relative path markers.
+        /// </summary>
+        ///
+        /// <param name="path1">
+        /// The first path.
+        /// </param>
+        /// <param name="path2">
+        /// The second path.
+        /// </param>
+        ///
+        /// <returns>
+        /// A combined path.
+        /// </returns>
+
+        public static string CombinePaths(string path1, string path2)
+        {
+            return RemoveRelativePath(path1) + RemoveRelativePath(path2);
+        }
+
+        private static string RemoveRelativePath(string path)
+        {
+            string finalPath = path ?? "";
+            if (finalPath.StartsWith("~/"))
+            {
+                if (finalPath.Length > 0)
+                {
+                    finalPath = finalPath.Substring(2);
+                }
+                else
+                {
+                    finalPath = "";
+                }
+            }
+            return finalPath;
+        }
+        /// <summary>
         /// Get a fully qualified namespaced path to a member
         /// </summary>
         /// <param name="mi"></param>
