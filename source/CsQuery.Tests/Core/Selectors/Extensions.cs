@@ -41,6 +41,16 @@ namespace CsQuery.Tests.Core.Selectors
         }
 
         [Test, TestMethod]
+        public void AutoAddExtension()
+        {
+            var dom = TestDom("TestHtml");
+            
+            CQ res = dom.Select("span :isnotnumeric");
+
+            Assert.AreEqual(11, res.Length);
+        }
+
+        [Test, TestMethod]
         public void ParameterizedExtension()
         {
             var dom = TestDom("TestHtml");
@@ -59,6 +69,9 @@ namespace CsQuery.Tests.Core.Selectors
         {
 
             // The Regexp class should be automatically registered with the default startup options.
+            // 12-30-2012- the regex code was moved to the main codebase so this test doesn't really do anything except
+            // test the regex filter itself.
+            
             //CsQuery.Config.PseudoClassFilters.Register("regex", typeof(Regexp));
 
 

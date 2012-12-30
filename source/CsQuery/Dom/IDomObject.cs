@@ -121,6 +121,16 @@ namespace CsQuery
         string InnerHTML { get; set; }
 
         /// <summary>
+        /// Gets or sets the outer HTML.
+        /// </summary>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en-US/docs/DOM/element.outerHTML
+        /// </url>
+
+        string OuterHTML { get; set; }
+
+        /// <summary>
         /// Gets or sets the text content of a node and its descendants.
         /// </summary>
         ///

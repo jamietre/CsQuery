@@ -780,14 +780,46 @@ namespace CsQuery.Implementation
 
         public override string ElementHtml()
         {
-
             var formatter = new FormatDefault();
             StringWriter writer = new StringWriter();
-            formatter.RenderElement(this,writer, false);
+            formatter.RenderElement(this, writer, false);
             return writer.ToString();
-            
         }
 
+        /// <summary>
+        /// Gets or sets the outer HTML.
+        /// </summary>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en-US/docs/DOM/element.outerHTML
+        /// </url>
+
+        public override string OuterHTML
+        {
+            get
+            {
+                var formatter = new FormatDefault();
+                StringWriter writer = new StringWriter();
+                formatter.RenderElement(this, writer, true);
+                return writer.ToString();
+            }
+            set
+            {
+                CQ csq = CQ.CreateFragment(value, NodeName);
+                int index = this.Index;
+                var parent = ParentNode;
+
+                Remove();
+
+                // enumerate collection first - it will change when nodes are moved to a new DOM
+                var nodesToAdd = csq.Document.ChildNodes.ToList();
+                
+                foreach (var node in nodesToAdd)
+                {
+                    parent.ChildNodes.Insert(index++, node);
+                }
+            }
+        }
 
         /// <summary>
         /// Returns all the keys that should be in the index for this item (keys for class, tag,

@@ -14,6 +14,7 @@ using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
 using CsQuery.Utility;
+using HtmlAgilityPack;
 
 namespace CsQuery.Tests.Miscellaneous
 {
@@ -275,7 +276,7 @@ width:10px;"">");
             Assert.AreEqual(2, closestDivs.Length);
             CollectionAssert.AreEqual(Arrays.String("div1", "div2"), closestDivs.Select(item => item.Id));
         }
-
+     
     
         #region setup
         public override void FixtureSetUp()

@@ -25,7 +25,7 @@ namespace CsQuery
         /// <returns>
         /// A string of HTML.
         /// </returns>
-
+        
         string ElementHtml();
 
         /// <summary>

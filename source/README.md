@@ -6,6 +6,16 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ### Change Log
 
+####Version 1.3.3 (December 30, 2012)
+
+
+- [Issue #71](https://github.com/jamietre/CsQuery/issues/71) Sign assembly
+- [Issue #69](https://github.com/jamietre/CsQuery/issues/69) Parser aborts when http-equiv Content-Type header found after 4096 bytes
+- RenderElement not rendering closing tag
+- Add OuterHTML property to IDomObject
+- Add :regex selector into main codebase (was previously only present as part of a unit test)
+- Add Timeout object to Promises
+
 ####Version 1.3.2 (December 17, 2012)
 
 - [Issue #64](https://github.com/jamietre/CsQuery/issues/64) Expose the `HttpWebRequest` object in `CsqWebRequest` so client code can manipulate it

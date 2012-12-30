@@ -102,7 +102,9 @@
     <Compile Include="Core\Dom\DomDocument.cs" />
     <Compile Include="Core\Dom\DomFragment.cs" />
     <Compile Include="Core\Dom\DomElement.cs" />
+    <Compile Include="Core\Dom\OuterHtml.cs" />
     <Compile Include="Core\Dom\SpecialElements.cs" />
+    <Compile Include="Core\Selectors\ContentIsNotNumeric.cs" />
     <Compile Include="ExtensionMethods\Xml.cs" />
     <Compile Include="HtmlParser\CharacterSetEncoding.cs" />
     <Compile Include="HtmlParser\HtmlEncoding.cs" />
@@ -224,7 +226,6 @@
     <Compile Include="Core\Selectors\PseudoSelectors.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Core\Selectors\RegexExtension.cs" />
     <Compile Include="Core\Selectors\Extensions.cs" />
     <Compile Include="Implementation\RangeSortedDictionary.cs" />
     <Compile Include="Miscellaneous\Miscellaneous2.cs" />

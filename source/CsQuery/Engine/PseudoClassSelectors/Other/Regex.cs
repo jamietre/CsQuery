@@ -27,7 +27,7 @@ namespace CsQuery.Engine.PseudoClassSelectors
         //        regex = new RegExp(matchParams.join('').replace(/^\s+|\s+$/g,''), regexFlags);
         //    return regex.test(jQuery(elem)[attr.method](attr.property));
         // }
-        
+
         private enum Modes
         {
             Data = 1,

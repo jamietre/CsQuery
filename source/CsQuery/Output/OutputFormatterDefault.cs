@@ -131,53 +131,12 @@ namespace CsQuery.Output
         /// <param name="includeChildren">
         /// true to include, false to exclude the children.
         /// </param>
-
         public virtual void RenderElement(IDomObject element, TextWriter writer, bool includeChildren)
         {
-            bool quoteAll = DomRenderingOptions.HasFlag(DomRenderingOptions.QuoteAllAttributes);
-
-            writer.Write("<");
-            writer.Write(element.NodeName.ToLower());
-
-            if (element.HasAttributes)
-            {
-                foreach (var kvp in element.Attributes)
-                {
-                    writer.Write(" ");
-                    RenderAttribute(writer, kvp.Key, kvp.Value, quoteAll);
-                }
-            }
-            if (element.InnerHtmlAllowed || element.InnerTextAllowed)
-            {
-                writer.Write(">");
-                
-                EndElement(element);
-                
-                if (includeChildren)
-                {
-                    ParseChildren(element);
-                }
-                else
-                {
-                    writer.Write(element.HasChildren ?
-                            "..." :
-                            String.Empty);
-                }
-                
-            }
-            else
-            {
-                if ((element.Document == null ? CsQuery.Config.DocType : element.Document.DocType) == DocType.XHTML)
-                {
-                    writer.Write(" />");
-                }
-                else
-                {
-                    writer.Write(">");
-                }
-            }
+            RenderElementInternal(element, writer, includeChildren);
+            RenderStack(writer);
         }
-
+       
         /// <summary>
         /// Renders the children of this element.
         /// </summary>
@@ -207,6 +166,68 @@ namespace CsQuery.Output
         #endregion
 
         #region private methods
+
+        /// <summary>
+        /// Gets the HTML representation of this element and its children. (This is the implementation -
+        /// it will not flush the stack)
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to render.
+        /// </param>
+        /// <param name="writer">
+        /// The writer to which output is written.
+        /// </param>
+        /// <param name="includeChildren">
+        /// true to include, false to exclude the children.
+        /// </param>
+
+        protected virtual void RenderElementInternal(IDomObject element, TextWriter writer, bool includeChildren)
+        {
+            bool quoteAll = DomRenderingOptions.HasFlag(DomRenderingOptions.QuoteAllAttributes);
+
+            writer.Write("<");
+            writer.Write(element.NodeName.ToLower());
+
+            if (element.HasAttributes)
+            {
+                foreach (var kvp in element.Attributes)
+                {
+                    writer.Write(" ");
+                    RenderAttribute(writer, kvp.Key, kvp.Value, quoteAll);
+                }
+            }
+
+            if (element.InnerHtmlAllowed || element.InnerTextAllowed)
+            {
+                writer.Write(">");
+
+                EndElement(element);
+
+                if (includeChildren)
+                {
+                    ParseChildren(element);
+                }
+                else
+                {
+                    writer.Write(element.HasChildren ?
+                            "..." :
+                            String.Empty);
+                }
+
+            }
+            else
+            {
+                if ((element.Document == null ? CsQuery.Config.DocType : element.Document.DocType) == DocType.XHTML)
+                {
+                    writer.Write(" />");
+                }
+                else
+                {
+                    writer.Write(">");
+                }
+            }
+        }
 
         /// <summary>
         /// Adds the element close tag to the output stack.
@@ -246,7 +267,7 @@ namespace CsQuery.Output
                     switch (el.NodeType)
                     {
                         case NodeType.ELEMENT_NODE:
-                            RenderElement(el, writer, true);
+                            RenderElementInternal(el, writer, true);
                             break;
                         case NodeType.DOCUMENT_FRAGMENT_NODE:
                         case NodeType.DOCUMENT_NODE:

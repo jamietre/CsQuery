@@ -279,14 +279,33 @@ namespace CsQuery.Implementation
         {
             get
             {
-                throw new InvalidOperationException("Accessing InnerHtml is not valid for this element type.");
+                throw new InvalidOperationException("Accessing InnerHTML is not valid for this element type.");
             }
             set
             {
-                throw new InvalidOperationException("Assigning InnerHtml is not valid for this element type.");
+                throw new InvalidOperationException("Assigning InnerHTML is not valid for this element type.");
             }
         }
 
+        /// <summary>
+        /// Gets or sets the outer HTML.
+        /// </summary>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en-US/docs/DOM/element.outerHTML
+        /// </url>
+
+        public virtual string OuterHTML
+        {
+            get
+            {
+                throw new InvalidOperationException("Accessing OuterHTML is not valid for this element type.");
+            }
+            set
+            {
+                throw new InvalidOperationException("Assigning OuterHTML is not valid for this element type.");
+            }
+        }
         /// <summary>
         /// Gets the child nodes.
         /// </summary>
