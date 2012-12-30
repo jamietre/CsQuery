@@ -6,8 +6,8 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ### Change Log
 
-####Version 1.3.3 (December 30, 2012)
 
+####Version 1.3.3 (December 30, 2012)
 
 - [Issue #71](https://github.com/jamietre/CsQuery/issues/71) Sign assembly
 - [Issue #69](https://github.com/jamietre/CsQuery/issues/69) Parser aborts when http-equiv Content-Type header found after 4096 bytes
