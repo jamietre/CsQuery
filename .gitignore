@@ -3,7 +3,6 @@
 #################
 
 Build/
-WebSite/
 source/TestResults/
 source/CsQuery.Tests/Performance/Output/
 source/CsQuery.PerformanceTests/Output/
@@ -45,6 +44,12 @@ obj
 .builds
 *.dotCover
 
+<<<<<<< HEAD
+=======
+## TODO: If you have NuGet Package Restore enabled, uncomment this
+packages/
+
+>>>>>>> cddffe46afa1d075727558878c5f8ddbd4fcd964
 # Visual C++ cache files
 ipch/
 *.aps
