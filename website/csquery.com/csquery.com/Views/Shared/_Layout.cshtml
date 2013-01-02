@@ -18,7 +18,7 @@
 
   <!-- Included CSS Files -->
   <link rel="stylesheet" href="styles/foundation.css">
-
+  <link rel="stylesheet" href="styles/app.css">
   <!--[if lt IE 9]>
     <link rel="stylesheet" href="stylesheets/ie.css">
   <![endif]-->
@@ -27,17 +27,24 @@
   <script type="text/javascript" src="scripts/modernizr.foundation.js"></script>
   <script type="text/javascript" src="scripts/cufon.js"></script>
   <script type="text/javascript" src="scripts/BaarSophia_400.font.js"></script>
-  <link type="text/css" rel="stylesheet" href="scripts/syntaxhighlighter/styles/SyntaxHighlighter.css"></link>
-  <script type="text/javascript" src="scripts/syntaxhighlighter/shCore.js"></script>
-  <script type="text/javascript" src="scripts/syntaxhighlighter/shBrushCSharp.js"></script>
 
+  <!--<link type="text/css" rel="stylesheet" href="scripts/syntaxhighlighter/styles/SyntaxHighlighter.css" />-->
+  <link type="text/css" rel="stylesheet" href="scripts/syntaxhighlighter/styles/shThemeMidnight.css" />
+  <script type="text/javascript" src="scripts/syntaxhighlighter/shCore.js"></script>
+      <script type="text/javascript" src="scripts/syntaxhighlighter/shBrushCsharp.js"></script>
 
   <script type="text/javascript">
       $(document).ready(function() 
       {
-        $('[name=code]').addClass("c#");
+          $('script[type=syntaxhighlighter]').attr("class", "brush:csharp");
         //dp.SyntaxHighlighter.ClipboardSwf = '/javascripts/syntaxhighlighter/clipboard.swf';
-        dp.SyntaxHighlighter.HighlightAll('code',false,false);
+        //$("pre > code").each(function () {
+        //    var codeText = $(this).text();
+        //    $(this).parent().text(codeText).addClass("brush:js");
+        //});
+        SyntaxHighlighter.defaults['toolbar'] = false;
+        SyntaxHighlighter.defaults['gutter'] = false;
+        SyntaxHighlighter.all();
       });
       Cufon.replace('h1,h2,h3,h4,.nav-bar > li a'); // Works without a selector engine
   </script>
@@ -49,151 +56,32 @@
 
 </head>
 <body>
-  <div>
-  <ul class="nav-bar" >
-    <li class="active"><a href="#">Nav Item 1</a></li>
-    <li class="active"><a href="#">Nav Item 1</a></li>
-    <li class="has-flyout">
-      <a href="#">Nav Item 2</a>
-      <a href="#" class="flyout-toggle"><span> </span></a>
-      <ul class="flyout">
-        <li><a href="#">Sub Nav 1</a></li>
-        <li><a href="#">Sub Nav 2</a></li>
-        <li><a href="#">Sub Nav 3</a></li>
-      </ul>
-    </li>
-  </ul>
-    <div style="position: absolute; top:0; left: 0;">
-      <img style="margin-left: 8px;" src="images/csquery-logo-small-white.gif" >
-    </dib>
-  </div>
-  <div class="row">
-    <div class="twelve columns">
-      <h2>Introducing CsQuery: The Power of jQuery and CSS for .NET</h2>
-      <p><a href="http://www.nuget.org/csquery.">Get it now.</a></p>
-
-      <div class="eight columns panel" >
-          <pre name="code">
-CQ.CreateDocument(htmlString);
-
-rowsWithClass.AddClass("highlighted")
-    .CssSet(new {
-            width="100px",
-            height=20
-        });
-
-
-rowsWithClass.CssSet("{ width: 100px; height: 20px; }");
-
-rowsWithClass.Css("width",100).Css("height","20px");
-          </pre>
-      </div>
-      <div class="four columns">
-        <p>Don't code around your HTML. 
-
-        <p>Just make it do what you want.
-      </div>
-      <hr />
-      <h4>What is it?</h4>
-      <p>
-        If you use jQuery, you know how easy it is to manipulate HTML on the client. <i>Have you ever wished you could do that on the server?</i>
-      <h4>Now you can.</h4>
-      <p>
-        If you create web sites using ASP.NET, you're probably familiar with <code>WebControls</code> in web forms and HTML helpers in MVC as tools
-        to build HTML dynamically. CsQuery lets you work with HTML directly, instead of using awkward constructs and abstractions. It lets you create templates using nothing but real HTML, and work with it using the same familiar API that you do on the client.
-      </p>
+    <div>
+        <ul class="nav-bar" >
+            <li class="active"><a href="#">Nav Item 1</a></li>
+            <li class="active"><a href="#">Nav Item 1</a></li>
+            <li class="has-flyout">
+                <a href="#">Nav Item 2</a>
+                <a href="#" class="flyout-toggle"><span> </span></a>
+                <ul class="flyout">
+                    <li><a href="#">Sub Nav 1</a></li>
+                    <li><a href="#">Sub Nav 2</a></li>
+                    <li><a href="#">Sub Nav 3</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div style="position: absolute; top:0; left: 0;">
+            <img style="margin-left: 8px;" src="images/csquery-logo-white.gif" >
+        </div>
     </div>
-  </div>
+  
 
-  <div class="row">
-    <div class="eight columns">
-      <h3>The Grid</h3>
 
-      <!-- Grid Example -->
-      <div class="row">
-        <div class="twelve columns">
-          <div class="panel">
-            <p>This is a twelve column section in a row. Each of these includes a div.panel element so you can see where the columns are - it's not required at all for the grid.</p>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="six columns">
-          <div class="panel">
-            <p>Six columns</p>
-          </div>
-        </div>
-        <div class="six columns">
-          <div class="panel">
-            <p>Six columns</p>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="four columns">
-          <div class="panel">
-            <p>Four columns</p>
-          </div>
-        </div>
-        <div class="four columns">
-          <div class="panel">
-            <p>Four columns</p>
-          </div>
-        </div>
-        <div class="four columns">
-          <div class="panel">
-            <p>Four columns</p>
-          </div>
-        </div>
-      </div>
+    @RenderBody()
 
-      <h3>Tabs</h3>
-      <dl class="tabs">
-        <dd class="active"><a href="#simple1">Simple Tab 1</a></dd>
-        <dd><a href="#simple2">Simple Tab 2</a></dd>
-        <dd><a href="#simple3">Simple Tab 3</a></dd>
-      </dl>
-
-      <ul class="tabs-content">
-        <li class="active" id="simple1Tab">This is simple tab 1's content. Pretty neat, huh?</li>
-        <li id="simple2Tab">This is simple tab 2's content. Now you see it!</li>
-        <li id="simple3Tab">This is simple tab 3's content. It's, you know...okay.</li>
-      </ul>
-
-      <h3>Buttons</h3>
-
-      <div class="row">
-        <div class="six columns">
-          <p><a href="#" class="small button">Small Button</a></p>
-          <p><a href="#" class="button">Medium Button</a></p>
-          <p><a href="#" class="large button">Large Button</a></p>
-        </div>
-        <div class="six columns">
-          <p><a href="#" class="small alert button">Small Alert Button</a></p>
-          <p><a href="#" class="success button">Medium Success Button</a></p>
-          <p><a href="#" class="large secondary button">Large Secondary Button</a></p>
-        </div>
-      </div>
+    <div id="footer-scripts">
+        <script src="scripts/jquery-1.7.1.js"></script>
+        <script src="scripts/foundation.js"></script>
     </div>
-
-    <div class="four columns">
-      <h4>Getting Started</h4>
-      <p>We're stoked you want to try Foundation! To get going, this file (index.html) includes some basic styles you can modify, play around with, or totally destroy to get going.</p>
-
-      <h4>Other Resources</h4>
-      <p>Once you've exhausted the fun in this document, you should check out:</p>
-      <ul class="disc">
-        <li><a href="http://foundation.zurb.com/docs">Foundation Documentation</a><br />Everything you need to know about using the framework.</li>
-        <li><a href="http://github.com/zurb/foundation">Foundation on Github</a><br />Latest code, issue reports, feature requests and more.</li>
-      </ul>
-    </div>
-  </div>
-
-
-      @RenderBody()
-
-  <!-- Included JS Files -->
-  <script src="javascripts/jquery.min.js"></script>
-  <script src="javascripts/foundation.js"></script>
 </body>
 </html>
