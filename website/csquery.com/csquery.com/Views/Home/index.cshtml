@@ -1,0 +1,40 @@
+@{
+    ViewBag.Title = "index.cshtml";
+}
+<div class="row">
+    <div class="twelve columns">
+      <h2>Introducing CsQuery: The Power of jQuery and CSS for .NET</h2>
+      <p><a href="http://www.nuget.org/csquery.">Get it now.</a></p>
+
+      <div class="eight columns row" >
+        <script type="syntaxhighlighter"><![CDATA[
+CQ doc = CQ.CreateDocument(htmlString);
+
+var selection = doc.Select("#menu");
+       
+selection.Find("tr:first-child").AddClass("highlighted");
+
+selection.CssSet(new {
+            width="100px",
+            height=20
+        });
+
+selection.Find("tr")
+            .Not(":first-child").RemoveClass("highlighted");
+
+            ]]>
+         </script>
+      </div>
+      <div class="four columns">
+        <p>Don't code around your HTML. 
+
+        <p>Just make it do what you want.
+      </div>
+      <hr />
+      <h4>What is it?</h4>
+      <p>
+        If you use jQuery, you know how easy it is to manipulate HTML on the client. <i>Have you ever wished you could do that on the server?</i>
+      </p>
+        <h4>Now you can.</h4>
+  </div>
+    </div>

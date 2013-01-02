@@ -1,0 +1,87 @@
+@{
+    ViewBag.Title = "_Layout.cshtml";
+}
+<!DOCTYPE html>
+
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8" />
+
+  <!-- Set the viewport width to device width for mobile -->
+  <meta name="viewport" content="width=device-width" />
+
+  <title>Welcome to Foundation</title>
+
+  <!-- Included CSS Files -->
+  <link rel="stylesheet" href="styles/foundation.css">
+  <link rel="stylesheet" href="styles/app.css">
+  <!--[if lt IE 9]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+  <![endif]-->
+
+  <script type="text/javascript" src="scripts/jquery.min.js"></script>
+  <script type="text/javascript" src="scripts/modernizr.foundation.js"></script>
+  <script type="text/javascript" src="scripts/cufon.js"></script>
+  <script type="text/javascript" src="scripts/BaarSophia_400.font.js"></script>
+
+  <!--<link type="text/css" rel="stylesheet" href="scripts/syntaxhighlighter/styles/SyntaxHighlighter.css" />-->
+  <link type="text/css" rel="stylesheet" href="scripts/syntaxhighlighter/styles/shThemeMidnight.css" />
+  <script type="text/javascript" src="scripts/syntaxhighlighter/shCore.js"></script>
+      <script type="text/javascript" src="scripts/syntaxhighlighter/shBrushCsharp.js"></script>
+
+  <script type="text/javascript">
+      $(document).ready(function() 
+      {
+          $('script[type=syntaxhighlighter]').attr("class", "brush:csharp");
+        //dp.SyntaxHighlighter.ClipboardSwf = '/javascripts/syntaxhighlighter/clipboard.swf';
+        //$("pre > code").each(function () {
+        //    var codeText = $(this).text();
+        //    $(this).parent().text(codeText).addClass("brush:js");
+        //});
+        SyntaxHighlighter.defaults['toolbar'] = false;
+        SyntaxHighlighter.defaults['gutter'] = false;
+        SyntaxHighlighter.all();
+      });
+      Cufon.replace('h1,h2,h3,h4,.nav-bar > li a'); // Works without a selector engine
+  </script>
+  
+  <!-- IE Fix for HTML5 Tags -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+</head>
+<body>
+    <div>
+        <ul class="nav-bar" >
+            <li class="active"><a href="#">Nav Item 1</a></li>
+            <li class="active"><a href="#">Nav Item 1</a></li>
+            <li class="has-flyout">
+                <a href="#">Nav Item 2</a>
+                <a href="#" class="flyout-toggle"><span> </span></a>
+                <ul class="flyout">
+                    <li><a href="#">Sub Nav 1</a></li>
+                    <li><a href="#">Sub Nav 2</a></li>
+                    <li><a href="#">Sub Nav 3</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div style="position: absolute; top:0; left: 0;">
+            <img style="margin-left: 8px;" src="images/csquery-logo-white.gif" >
+        </div>
+    </div>
+  
+
+
+    @RenderBody()
+
+    <div id="footer-scripts">
+        <script src="scripts/jquery-1.7.1.js"></script>
+        <script src="scripts/foundation.js"></script>
+    </div>
+</body>
+</html>
