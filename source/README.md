@@ -2,12 +2,13 @@
 
 The CsQuery source is C# targeting .NET4. There are no dependencies. 
 
+The CsQuery.NuSpec file is generated automatically from a batch file under /build.
+
 Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/README.md) for usage information. This document is mostly a change log.
 
 ### Change Log
 
 ####Version 1.3.3 (December 30, 2012)
-
 
 - [Issue #71](https://github.com/jamietre/CsQuery/issues/71) Sign assembly
 - [Issue #69](https://github.com/jamietre/CsQuery/issues/69) Parser aborts when http-equiv Content-Type header found after 4096 bytes

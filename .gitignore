@@ -2,7 +2,7 @@
 ## Nonpublic stuff and generated junk
 #################
 
-Build/
+Build/private
 WebSite/
 source/TestResults/
 source/CsQuery.Tests/Performance/Output/
