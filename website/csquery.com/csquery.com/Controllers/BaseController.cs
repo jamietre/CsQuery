@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using CsQuery.Mvc;
+using CsQuery;
 
 namespace CsQuerySite.Controllers
 {
@@ -32,14 +33,14 @@ namespace CsQuerySite.Controllers
                 }
             }
 
-            if (PageData != null)
-            {
-                var script = CQ.Create("<script />")
-                    .AddClass("page-data")
-                    .Attr("type", "application/json");
-                script.Append(CQ.ToJSON(PageData));
-                Doc["body"].Append(script);
-            }
+            //if (PageData != null)
+            //{
+            //    var script = CQ.Create("<script />")
+            //        .AddClass("page-data")
+            //        .Attr("type", "application/json");
+            //    script.Append(CQ.ToJSON(PageData));
+            //    Doc["body"].Append(script);
+            //}
         }
     }
 }

@@ -36,15 +36,11 @@
   <script type="text/javascript">
       $(document).ready(function() 
       {
-          $('script[type=syntaxhighlighter]').attr("class", "brush:csharp");
-        //dp.SyntaxHighlighter.ClipboardSwf = '/javascripts/syntaxhighlighter/clipboard.swf';
-        //$("pre > code").each(function () {
-        //    var codeText = $(this).text();
-        //    $(this).parent().text(codeText).addClass("brush:js");
-        //});
-        SyntaxHighlighter.defaults['toolbar'] = false;
-        SyntaxHighlighter.defaults['gutter'] = false;
-        SyntaxHighlighter.all();
+            $('script[type=syntaxhighlighter]').attr("class", "brush:csharp");
+
+            SyntaxHighlighter.defaults['toolbar'] = false;
+            SyntaxHighlighter.defaults['gutter'] = false;
+            SyntaxHighlighter.all();
       });
       Cufon.replace('h1,h2,h3,h4,.nav-bar > li a'); // Works without a selector engine
   </script>
@@ -56,28 +52,13 @@
 
 </head>
 <body>
-    <div>
-        <ul class="nav-bar" >
-            <li class="active"><a href="#">Nav Item 1</a></li>
-            <li class="active"><a href="#">Nav Item 1</a></li>
-            <li class="has-flyout">
-                <a href="#">Nav Item 2</a>
-                <a href="#" class="flyout-toggle"><span> </span></a>
-                <ul class="flyout">
-                    <li><a href="#">Sub Nav 1</a></li>
-                    <li><a href="#">Sub Nav 2</a></li>
-                    <li><a href="#">Sub Nav 3</a></li>
-                </ul>
-            </li>
-        </ul>
-        <div style="position: absolute; top:0; left: 0;">
-            <img style="margin-left: 8px;" src="images/csquery-logo-white.gif" >
+    @Html.Partial("_Menu")
+
+    <div class="row">
+        <div class="twelve columns">
+            @RenderBody()
         </div>
     </div>
-  
-
-
-    @RenderBody()
 
     <div id="footer-scripts">
         <script src="scripts/jquery-1.7.1.js"></script>
