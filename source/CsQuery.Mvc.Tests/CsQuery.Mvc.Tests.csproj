@@ -144,10 +144,6 @@
       <Project>{1697fbb9-9116-4fdf-8f92-25c2de8dc39b}</Project>
       <Name>CsQuery.Mvc</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CsQuery\CsQuery.csproj">
-      <Project>{C38DFFE9-321B-4941-B031-29D718AB5C31}</Project>
-      <Name>CsQuery</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

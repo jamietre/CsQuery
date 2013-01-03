@@ -18,7 +18,7 @@ CsQuery uses a C# port of the [validator.nu HTML parser](http://about.validator.
 
 CsQuery implements all CSS2 and CSS3 selectors and filters, and a comprehensive DOM model. You can use all the same jQuery (and DOM element) methods you're familiar with to traverse and manipulate the DOM.
 
-##### Speed
+##### Fast, indexed CSS selectors
 
 The CSS selector engine fully indexes each document on tag name, id, class, and attribute. The index is subselect-capable, meaning that complex selectors will still be able to take advantage of the index (for any part of the selector that's indexed). [Performance](#performance) of selectors compared to other existing C# HTML parsing libraries is orders of magnitude faster.
 
@@ -26,7 +26,7 @@ What's more, the entire test suite from Sizzle (the jQuery CSS selector engine) 
 
 ### Installation
 
-**Latest release:** Version 1.3.2 (December 17, 2012)
+**Latest release:** Version 1.3.3 (December 30, 2012)
 
 To install the latest release from NuGet package manager:
 
@@ -55,7 +55,7 @@ You should be able to compile everything now.  If you have any trouble initializ
 
 ### Release Notes
 
-The latest release is 1.3.2. The latest releast includes enhancements to properly detect character set encoding; has improvements to handle deeply-nested HTML structures properly; and includes a number of bug fixes. See the [change log](https://github.com/jamietre/CsQuery/blob/master/source/README.md) for details.
+The current release is 1.3.3. This release adds the `IDomObject.OuterHTML` property, the `:regex(attribute,expression)` pseudoclass filter, and includes some bug fixes. See the [change log](https://github.com/jamietre/CsQuery/blob/master/source/README.md) for details.
 
 The last major release is 1.3.0. This release implements a new HTML5-compliant parser.
 

@@ -3,6 +3,7 @@
 #################
 
 Build/private
+Build/NuGetPackages
 WebSite/
 source/TestResults/
 source/CsQuery.Tests/Performance/Output/
