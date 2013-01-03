@@ -5,6 +5,6 @@ echo ARE YOU SURE???
 pause
 
 cd NuGetPackage
-NuGet Push CsQuery.%csquery_version%.nupkg
-rem NuGet Push CsQuery.Signed.%csquery_version%-signed.nupkg
+rem NuGet Push NugetPackages\CsQuery.%csquery_version%.nupkg
+NuGet Push NugetPackages\CsQuery.Signed.%csquery_version%-signed.nupkg
 

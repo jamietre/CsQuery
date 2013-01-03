@@ -32,11 +32,8 @@ To install the latest release from NuGet package manager:
 
     PM> Install-Package CsQuery
 
-To install the latest prerelease from NuGet:
-
-    PM> Install-Package CsQuery -Pre
-
 To install manually, add a reference to `CsQuery.DLL`. There are no external dependencies.
+
 
 ### Compiling from Source
 

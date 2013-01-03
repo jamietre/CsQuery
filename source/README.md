@@ -10,12 +10,18 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ####Version 1.3.3 (December 30, 2012)
 
-- [Issue #71](https://github.com/jamietre/CsQuery/issues/71) Sign assembly
+- [Issue #71](https://github.com/jamietre/CsQuery/issues/71) Sign assembly (see below).
 - [Issue #69](https://github.com/jamietre/CsQuery/issues/69) Parser aborts when http-equiv Content-Type header found after 4096 bytes
-- RenderElement not rendering closing tag
-- Add OuterHTML property to IDomObject
-- Add :regex selector into main codebase (was previously only present as part of a unit test)
+- `RenderElement` not rendering closing tag
+- Add `OuterHTML` property to IDomObject
+- Add `:regex(attribute,expression)` selector into main codebase (was previously only present as part of a unit test). This matches elements where the value of the `attribute` matches the regular expression `expression`
 - Add Timeout object to Promises
+
+Regarding Issue #71: A signed/strong named version of CsQuery will be pushed to nuget using the following convention:
+
+- The package name will be `CsQuery.Signed`
+- The version number will be of the format `1.3.3-signed` meaning that it is treated as a pre-release version by NuGet. This is to prevent it from appearing in normal searches, causing confusion for most users. 
+
 
 ####Version 1.3.2 (December 17, 2012)
 
