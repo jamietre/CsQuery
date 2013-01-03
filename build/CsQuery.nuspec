@@ -24,9 +24,9 @@ https://github.com/jamietre/CsQuery/blob/master/source/README.md
     <tags>jquery html</tags>
   </metadata>
     <files>
-        <file src="..\..\Distribution\CsQuery.dll" target="lib\net40" />
-        <file src="..\..\Distribution\CsQuery.xml" target="lib\net40" />
-        <file src="..\..\Distribution\CsQuery.pdb" target="lib\net40" />
+        <file src="bin\release\CsQuery.dll" target="lib\net40" />
+        <file src="bin\release\CsQuery.xml" target="lib\net40" />
+        <file src="bin\release\CsQuery.pdb" target="lib\net40" />
         <file src="**\*.cs" target="src" />
   </files>  
 </package>

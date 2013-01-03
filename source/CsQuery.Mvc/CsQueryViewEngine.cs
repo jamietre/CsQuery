@@ -37,8 +37,6 @@ namespace CsQuery.Mvc
 
         #region private properties
 
-        private Type _LayoutControllerType;
-
         #endregion
         
         #region public properties
@@ -56,31 +54,7 @@ namespace CsQuery.Mvc
 
         public PathList LibraryPath { get; protected set; }
 
-        /// <summary>
-        /// When non-null, is controller type that is instantiated to control actions globally.
-        /// </summary>
-        ///
-        /// <value>
-        /// A type that implements ICsQueryController.
-        /// </value>
-
-        public Type LayoutControllerType 
-        {
-            get
-            {
-                return _LayoutControllerType;
-            }
-            set
-            {
-                if (!value.GetInterfaces().Contains(typeof(ICsQueryController)))
-                {
-                    throw new InvalidOperationException("The LayoutControllerType must implement ICsQueryController");
-                }
-                _LayoutControllerType = value;
-            }
-        }
-
-
+    
         #endregion
 
         #region private methods
@@ -148,10 +122,6 @@ namespace CsQuery.Mvc
 
         private CsQueryView ConfigureView(CsQueryView view)  
         {
-            if (LayoutControllerType != null)
-            {
-                view.LayoutController = (ICsQueryController)CsQuery.Objects.CreateInstance(LayoutControllerType);
-            }
             view.Options = Options;
             view.LibraryPath = LibraryPath;
             return view;

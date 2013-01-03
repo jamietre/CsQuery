@@ -92,6 +92,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -111,7 +112,6 @@
     <Compile Include="Tests\ScriptManagerTests\ScriptDependencies.cs" />
     <Compile Include="Tests\HtmlHelpers.cs" />
     <Compile Include="Tests\Markup.cs" />
-    <Compile Include="Controllers\Shared\LayoutController.cs" />
     <Compile Include="AppHost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\TestController.cs" />
@@ -143,6 +143,10 @@
     <ProjectReference Include="..\CsQuery.Mvc\CsQuery.Mvc.csproj">
       <Project>{1697fbb9-9116-4fdf-8f92-25c2de8dc39b}</Project>
       <Name>CsQuery.Mvc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CsQuery\CsQuery.csproj">
+      <Project>{c38dffe9-321b-4941-b031-29d718ab5c31}</Project>
+      <Name>CsQuery</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

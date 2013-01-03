@@ -7,7 +7,7 @@ using CsQuery.Mvc;
 
 namespace CsQuery.Mvc.Tests.Controllers
 {
-    public class TestController : CsQueryController
+    public class TestController : BaseController
     {
 
         public ActionResult Index()
@@ -62,13 +62,15 @@ namespace CsQuery.Mvc.Tests.Controllers
         /// Shoud run for all actions in this class
         /// </summary>
 
-        public void Cq_Start()
+        public override void Cq_Start()
         {
+            base.Cq_Start();
             Doc["div"].AddClass("cq-start");
         }
-        public void Cq_End()
+        public override void Cq_End()
         {
             Doc["div"].AddClass("cq-end");
+            base.Cq_End();
         }
     }
 }

@@ -5873,6 +5873,15 @@
              https://developer.mozilla.org/en/DOM/element.innerHTML
              </url>
         </member>
+        <member name="P:CsQuery.IDomObject.OuterHTML">
+             <summary>
+             Gets or sets the outer HTML.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en-US/docs/DOM/element.outerHTML
+             </url>
+        </member>
         <member name="P:CsQuery.IDomObject.InnerText">
              <summary>
              Gets or sets the text content of a node and its descendants.
@@ -6694,6 +6703,15 @@
             <summary>
             Gets or sets or gets the HTML of an elements descendants.
             </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.OuterHTML">
+             <summary>
+             Gets or sets the outer HTML.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en-US/docs/DOM/element.outerHTML
+             </url>
         </member>
         <member name="P:CsQuery.Implementation.DomObject.ChildNodes">
             <summary>
@@ -8174,6 +8192,15 @@
             <summary>
             A sequence of all unique class names defined on this element.
             </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.OuterHTML">
+             <summary>
+             Gets or sets the outer HTML.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en-US/docs/DOM/element.outerHTML
+             </url>
         </member>
         <member name="P:CsQuery.Implementation.DomElement.CsQuery#IAttributeCollection#Item(System.String)">
              <summary>
@@ -10054,6 +10081,11 @@
             The parameter value may be quoted: if the first character is a double- or single-quote, then a matching quote terminates the parameter value..
             </summary>
         </member>
+        <member name="T:CsQuery.Engine.PseudoClassSelectors.RegexExtension">
+            <summary>
+            Port of James Padolsey's regex jQuery selector: http://james.padolsey.com/javascript/regex-selector-for-jquery/
+            </summary>
+        </member>
         <member name="T:CsQuery.Engine.PseudoSelectorFilter">
             <summary>
             A base class for filter-type selectors that implements a simple iterator function and calls
@@ -10267,6 +10299,19 @@
             
              <returns>
              A sequence of children that match.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Engine.PseudoClassSelectors.RegexExtension.ParameterQuoted(System.Int32)">
+             <summary>
+             Allow but do not require quotes around the parameters for :regex.
+             </summary>
+            
+             <param name="index">
+             Zero-based index of the parameter.
+             </param>
+            
+             <returns>
+             OptionallyQuoted.
              </returns>
         </member>
         <member name="T:CsQuery.Engine.PseudoClassSelectors.Contains">
@@ -16147,6 +16192,22 @@
              </param>
              <param name="writer">
              The writer to which output is written.
+             </param>
+        </member>
+        <member name="M:CsQuery.Output.FormatDefault.RenderElementInternal(CsQuery.IDomObject,System.IO.TextWriter,System.Boolean)">
+             <summary>
+             Gets the HTML representation of this element and its children. (This is the implementation -
+             it will not flush the stack)
+             </summary>
+            
+             <param name="element">
+             The element to render.
+             </param>
+             <param name="writer">
+             The writer to which output is written.
+             </param>
+             <param name="includeChildren">
+             true to include, false to exclude the children.
              </param>
         </member>
         <member name="M:CsQuery.Output.FormatDefault.EndElement(CsQuery.IDomObject)">

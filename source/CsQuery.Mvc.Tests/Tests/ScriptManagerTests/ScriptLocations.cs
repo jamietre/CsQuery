@@ -19,7 +19,9 @@ namespace CsQuery.Mvc.Tests
         public ScriptLocations()
             : base()
         {
+            Host.ViewEngineOptions = Host.ViewEngineOptions | ViewEngineOptions.IgnoreMissingScripts;
             Doc = RenderView<TestController>("index4", false);
+            
         }
         
         CQ Doc;
