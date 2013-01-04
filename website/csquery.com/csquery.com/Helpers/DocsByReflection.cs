@@ -9,8 +9,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Xml;
+using System.Linq;
 
-namespace Helpers
+namespace CsQuerySite.Helpers
 {
     /// <summary>
     /// Utility class to provide documentation for various types where available with the assembly
@@ -90,16 +91,20 @@ namespace Helpers
 
             XmlElement matchedElement = null;
 
-            foreach (XmlElement xmlElement in xmlDocument["doc"]["members"])
+            var nodes = xmlDocument["doc"]["members"];
+            foreach (XmlNode node in nodes)
             {
-                if (xmlElement.Attributes["name"].Value.Equals(fullName))
+                if (node is XmlElement)
                 {
-                    if (matchedElement != null)
+                    if (node.Attributes["name"].Value.Equals(fullName))
                     {
-                        throw new InvalidOperationException("Multiple matches to query");
-                    }
+                        if (matchedElement != null)
+                        {
+                            throw new InvalidOperationException("Multiple matches to query");
+                        }
 
-                    matchedElement = xmlElement;
+                        matchedElement = (XmlElement)node;
+                    }
                 }
             }
 

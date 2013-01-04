@@ -13,8 +13,9 @@ namespace CsQuerySite.Controllers
 
         public virtual void Cq_End()
         {
-            // get all scripts that aren't found in the header or footer
-            var scripts = Doc["script"].Not(Doc["#footer-scripts,head"].Find("script"));
+            // get all javascripts that aren't found in the header or footer
+            var scripts = Doc["script[type=text/javascript],script:not([type])"]
+                .Not(Doc["#footer-scripts,head"].Find("script"));
 
             var head = Doc["head"];
             var foot = Doc["#footer-scripts"];

@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Xml;
 using CsQuery;
-using Helpers;
+using CsQuerySite.Helpers;
 
 namespace CsQuerySite.Controllers
 {
@@ -21,9 +21,9 @@ namespace CsQuerySite.Controllers
 
         public override void Cq_End()
         {
-            
 
-            XmlElement documentation = DocsByReflection.XMLFromType(typeof(CQ));
+
+            XmlNode documentation = DocsByReflection.XMLFromType(typeof(CQ));
 
             Console.Write(documentation.ChildNodes.Count);
 
