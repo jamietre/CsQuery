@@ -19,11 +19,37 @@ namespace CsQuerySite.Helpers
     public class DocsByReflection
     {
         /// <summary>
+        /// Provides the documentation comments for a specific member
+        /// </summary>
+        /// <param name="memberInfo">The MemberInfo (reflection data) or the member to find documentation for</param>
+        /// <returns>The XML fragment describing the member</returns>
+        public static IEnumerable<XmlElement> XMLFromMember(MemberInfo memberInfo)
+        {
+            if (memberInfo is PropertyInfo)
+            {
+                return Enumerate<XmlElement>(XMLFromProperty((PropertyInfo)memberInfo));
+
+            }
+            else if (memberInfo is MethodInfo)
+            {
+                return XMLFromMethod((MethodInfo)memberInfo);
+            }
+            else
+            {
+                throw new ArgumentException("Only Methods and Properties are currently supported.");
+            }
+        }
+
+        private static IEnumerable<T> Enumerate<T>(T obj) {
+            yield return obj;
+        }
+
+        /// <summary>
         /// Provides the documentation comments for a specific method
         /// </summary>
         /// <param name="methodInfo">The MethodInfo (reflection data ) of the member to find documentation for</param>
         /// <returns>The XML fragment describing the method</returns>
-        public static XmlElement XMLFromMember(MethodInfo methodInfo)
+        public static IEnumerable<XmlElement>  XMLFromMethod(MethodInfo methodInfo)
         {
             // Calculate the parameter string as this is in the member name in the XML
             string parametersString = "";
@@ -49,10 +75,10 @@ namespace CsQuerySite.Helpers
         /// </summary>
         /// <param name="memberInfo">The MemberInfo (reflection data) or the member to find documentation for</param>
         /// <returns>The XML fragment describing the member</returns>
-        public static XmlElement XMLFromMember(MemberInfo memberInfo)
+        public static XmlElement XMLFromProperty(PropertyInfo memberInfo)
         {
             // First character [0] of member type is prefix character in the name in the XML
-            return XMLFromName(memberInfo.DeclaringType, memberInfo.MemberType.ToString()[0], memberInfo.Name);
+            return XMLFromName(memberInfo.DeclaringType, memberInfo.MemberType.ToString()[0], memberInfo.Name).FirstOrDefault();
         }
 
         /// <summary>
@@ -60,7 +86,7 @@ namespace CsQuerySite.Helpers
         /// </summary>
         /// <param name="type">Type to find the documentation for</param>
         /// <returns>The XML fragment that describes the type</returns>
-        public static XmlElement XMLFromType(Type type)
+        public static IEnumerable<XmlElement> XMLFromType(Type type)
         {
             // Prefix in type names is T
             return XMLFromName(type, 'T', "");
@@ -74,7 +100,7 @@ namespace CsQuerySite.Helpers
         /// <param name="prefix">The prefix as seen in the name attribute in the documentation XML</param>
         /// <param name="name">Where relevant, the full name qualifier for the element</param>
         /// <returns>The member that has a name that describes the specified reflection element</returns>
-        private static XmlElement XMLFromName(Type type, char prefix, string name)
+        private static IEnumerable<XmlElement> XMLFromName(Type type, char prefix, string name)
         {
             string fullName;
 
@@ -89,8 +115,6 @@ namespace CsQuerySite.Helpers
 
             XmlDocument xmlDocument = XMLFromAssembly(type.Assembly);
 
-            XmlElement matchedElement = null;
-
             var nodes = xmlDocument["doc"]["members"];
             foreach (XmlNode node in nodes)
             {
@@ -98,22 +122,10 @@ namespace CsQuerySite.Helpers
                 {
                     if (node.Attributes["name"].Value.Equals(fullName))
                     {
-                        if (matchedElement != null)
-                        {
-                            throw new InvalidOperationException("Multiple matches to query");
-                        }
-
-                        matchedElement = (XmlElement)node;
+                        yield return (XmlElement)node;
                     }
                 }
             }
-
-            if (matchedElement == null)
-            {
-                throw new InvalidOperationException("Could not find documentation for specified element");
-            }
-
-            return matchedElement;
         }
 
         /// <summary>

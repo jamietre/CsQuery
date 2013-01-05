@@ -22,10 +22,10 @@ namespace CsQuerySite.Controllers
         public override void Cq_End()
         {
 
+            var docs = new MemberGroupXmlDoc(typeof(CQ), "Create");
+            
 
-            XmlNode documentation = DocsByReflection.XMLFromType(typeof(CQ));
-
-            Console.Write(documentation.ChildNodes.Count);
+            Console.Write(docs.Count());
 
             base.Cq_End();
         }
