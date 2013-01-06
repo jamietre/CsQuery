@@ -2,19 +2,32 @@
 
 The CsQuery source is C# targeting .NET4. There are no dependencies. 
 
+The CsQuery.NuSpec file is generated automatically from a batch file under /build.
+
 Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/README.md) for usage information. This document is mostly a change log.
 
 ### Change Log
 
-
 ####Version 1.3.3 (December 30, 2012)
 
-- [Issue #71](https://github.com/jamietre/CsQuery/issues/71) Sign assembly
+- [Issue #71](https://github.com/jamietre/CsQuery/issues/71) Publish signed version of assembly (see below).
 - [Issue #69](https://github.com/jamietre/CsQuery/issues/69) Parser aborts when http-equiv Content-Type header found after 4096 bytes
-- RenderElement not rendering closing tag
-- Add OuterHTML property to IDomObject
-- Add :regex selector into main codebase (was previously only present as part of a unit test)
+- `RenderElement` not rendering closing tag
+- Add `OuterHTML` property to IDomObject
+- Add `:regex(attribute,expression)` selector into main codebase (was previously only present as part of a unit test). This matches elements where the value of the `attribute` matches the regular expression `expression`
 - Add Timeout object to Promises
+
+Regarding Issue #71: An alternate, signed/strong named version of CsQuery will be pushed to nuget using the following convention:
+
+- The package name will be `CsQuery.Signed`
+- The version number will be of the format `1.3.3-signed` meaning that it is treated as a pre-release version by NuGet. 
+
+The signed version is intended as a service to people who are working in environments that require strong-named DLLs. This is not a security mechanism of any kind, in fact, I am making the private key available as part of the public repository.
+
+The pre-release convention is used explicity to prevent the signed repository from appearing in NuGet searches. You should only use it if you go looking for it.
+
+Almost everyone should use the regular repository `CsQuery`. Only use `CsQuery.Signed` if you cannot compile with the unsigned version.
+
 
 ####Version 1.3.2 (December 17, 2012)
 

@@ -106,8 +106,6 @@ namespace CsQuery.Mvc
 
         #region private properties
 
-        private ICsQueryController _LayoutController;
-
         private bool IsPartial;
 
         
@@ -138,31 +136,7 @@ namespace CsQuery.Mvc
 
         public ViewEngineOptions Options { get; set; }
 
-        /// <summary>
-        /// Gets or sets the layout controller. This is obsolete because it doesn't add anything - you
-        /// can just use a base controller class to achieve the same thing more easily.
-        /// </summary>
-
-        [Obsolete]
-        public ICsQueryController LayoutController
-        {
-            get
-            {
-                return _LayoutController;
-            }
-            set
-            {
-                if (HasCqMethods(value.GetType(), "layout"))
-                {
-                    _LayoutController = value;
-                }
-                else
-                {
-                    _LayoutController = null;
-                }
-            }
-        }
-
+       
         #endregion
 
         /// <summary>
@@ -178,23 +152,13 @@ namespace CsQuery.Mvc
             {
                 CsQueryController controller = (CsQueryController)viewContext.Controller;
 
-                bool hasLayout = _LayoutController != null;
                 bool hasMethods = HasCqMethods(viewContext);
+                bool scriptManagerActive = !IsPartial && Options.HasFlag(ViewEngineOptions.EnableScriptManager);
 
-                if (hasLayout || hasMethods)
+                if (hasMethods || scriptManagerActive)
                 {
                     var deferredCq = new DeferredCq(base.RenderView, viewContext, instance);
                     
-                    if (hasLayout)
-                    {
-                        LayoutController.Doc = deferredCq.Dom;
-                        MethodInfo mi;
-                        if (CqMethods.TryGetValue("layout_Cq_Start", out mi))
-                        {
-                            mi.Invoke(LayoutController, null);
-                        }
-                    }
-
                     if (hasMethods)
                     {
 
@@ -251,18 +215,7 @@ namespace CsQuery.Mvc
 
                         }
                     }
-
-                    if (hasLayout)
-                    {
-                        MethodInfo mi;
-                        if (CqMethods.TryGetValue("layout_Cq_End", out mi))
-                        {
-                            mi.Invoke(LayoutController, null);
-                        }
-                    }
-
-
-                    if (!IsPartial && Options.HasFlag(ViewEngineOptions.EnableScriptManager))
+                    if (scriptManagerActive)
                     {
 
                         ManageScripts(deferredCq.Dom, (System.Web.Mvc.WebViewPage)instance);

@@ -156,7 +156,7 @@ namespace CsQuery.Mvc.ClientScript
         {
            
 
-            string scriptSelector = "script[src][type='text/javascript'], link[type='text/css']";
+            string scriptSelector = "script[src][type='text/javascript'], script[src]:not([type]), link[type='text/css']";
                 
             //+ (Options.HasFlag(ViewEngineOptions.ProcessAllScripts) ?
             //        "" : ".csquery-script")
