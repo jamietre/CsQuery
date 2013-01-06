@@ -11,7 +11,7 @@ using System.Reflection;
 using System.Xml;
 using System.Linq;
 
-namespace CsQuerySite.Helpers
+namespace CsQuerySite.Helpers.XmlDoc
 {
     /// <summary>
     /// Utility class to provide documentation for various types where available with the assembly

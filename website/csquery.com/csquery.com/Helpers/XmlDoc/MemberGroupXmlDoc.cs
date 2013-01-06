@@ -5,7 +5,7 @@ using System.Web;
 using System.Xml;
 using System.Reflection;
 
-namespace CsQuerySite.Helpers
+namespace CsQuerySite.Helpers.XmlDoc
 {
     /// <summary>
     /// Represents XML documentation

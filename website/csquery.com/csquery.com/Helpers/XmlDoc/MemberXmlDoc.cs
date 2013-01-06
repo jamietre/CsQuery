@@ -5,7 +5,7 @@ using System.Web;
 using System.Xml;
 using System.Reflection;
 
-namespace CsQuerySite.Helpers
+namespace CsQuerySite.Helpers.XmlDoc
 {
     /// <summary>
     /// Represents XML documentation
@@ -13,6 +13,14 @@ namespace CsQuerySite.Helpers
 
     public class MemberXmlDoc: IReadOnlyDictionary<string,string>
     {
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        ///
+        /// <param name="methodInfo">
+        /// Information describing the method.
+        /// </param>
+
         public MemberXmlDoc(MemberInfo methodInfo)
         {
             MemberInfo = methodInfo;
@@ -51,22 +59,54 @@ namespace CsQuerySite.Helpers
         }
 
         private Dictionary<string, string> xmlDocs;
-        
-        public bool IsStatic { get; set; }
+
+        /// <summary>
+        /// Test whether this member is static
+        /// </summary>
+
+        public bool IsStatic { get; protected set; }
+
+        /// <summary>
+        /// Return the memberinfo object for this member
+        /// </summary>
 
         public MemberInfo MemberInfo { get; protected set; }
 
+        /// <summary>
+        /// The return type for this property or method
+        /// </summary>
+
         public Type ReturnType { get; protected set; }
 
+        /// <summary>
+        /// Gets the type of the member.
+        /// </summary>
+
         public MemberTypes MemberType { get { return MemberInfo.MemberType; } }
+
+        /// <summary>
+        /// ParameterInfo array
+        /// </summary>
 
         public ParameterInfo[] Parameters
         {
             get;
             protected set;
         }
+
+        /// <summary>
+        /// When true, the property is gettable
+        /// </summary>
+
         public bool CanReadProperty { get; protected set; }
         public bool CanWriteProperty { get; protected set; }
+
+        /// <summary>
+        /// Gets the signature of the function
+        /// </summary>
+        ///  <remarks>
+        /// The signature is built from reflected info.
+        /// </remarks>
 
         public string Signature
         {
@@ -116,29 +156,15 @@ namespace CsQuerySite.Helpers
                 } else {
                     throw new InvalidOperationException("Unsupported member type.");
                 }
-
-                if (Parameters.Count == 0)
-                {
-
-
-                }
-
-                
+                return sig;
             }
         }
 
         private bool IsParamArray(ParameterInfo info)
         {
-            foreach (var attr in info.Attributes)
-            {
-                if (attr is ParamArrayAttribute)
-                {
-                    return true;
-                }
-            }
-            return false;
-
+            return info.GetCustomAttribute(typeof(ParamArrayAttribute), true) != null;
         }
+
         public string Name
         {
             get

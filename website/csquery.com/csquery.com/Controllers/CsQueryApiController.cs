@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Xml;
 using CsQuery;
-using CsQuerySite.Helpers;
+using CsQuerySite.Helpers.XmlDoc;
 
 namespace CsQuerySite.Controllers
 {
