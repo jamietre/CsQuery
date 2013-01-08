@@ -39,11 +39,14 @@ namespace CsQuery
         {
             
             CsqWebRequest request = new CsqWebRequest(url);
+            var httpRequest = request.GetWebRequest();
+            var response = httpRequest.GetResponse();
+            var responseStream = response.GetResponseStream();
+            var encoding = CsqWebRequest.GetEncoding(response);
+
             ServerConfig.Apply(options, request);
 
-            request.Get();
-
-            return CQ.CreateDocument(request.Html);
+            return CQ.CreateDocument(responseStream,encoding);
         }
 
         /// <summary>

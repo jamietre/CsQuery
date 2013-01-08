@@ -178,10 +178,14 @@ namespace CsQuery.Tests
         /// <returns></returns>
         protected CQ TestDom(string name)
         {
-           
 
-            string html = Support.GetFile(TestDomPath(name));
+
+            string html = TestHtml(name);
             return CQ.CreateDocument(html);
+        }
+        protected string TestHtml(string name)
+        {
+            return Support.GetFile(TestDomPath(name));
         }
         public static string TestDomPath(string name)
         {

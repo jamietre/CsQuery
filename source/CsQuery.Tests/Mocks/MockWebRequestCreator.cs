@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using HttpWebAdapters;
 
 namespace CsQuery.Tests.Mocks
@@ -13,10 +14,27 @@ namespace CsQuery.Tests.Mocks
         {
             var req= MockHttpWebRequest.Create(url);
             req.CharacterSet = CharacterSet;
-            req.ResponseHtml = ResponseHTML;
+            req.ResponseStream = ResponseStream;
             return req;
         }
         public string CharacterSet { get; set; }
-        public string ResponseHTML { get; set; }
+        private Stream _ResponseStream;
+        public Stream ResponseStream
+        {
+            get
+            {
+                var stream = new MemoryStream();
+                
+                _ResponseStream.Position = 0;
+                _ResponseStream.CopyTo(stream);
+                stream.Position = 0;
+                _ResponseStream.Position = 0;
+                return stream;
+            }
+            set
+            {
+                _ResponseStream = value;
+            }
+        }
     }
 }

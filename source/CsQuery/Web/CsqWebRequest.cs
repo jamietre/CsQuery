@@ -16,7 +16,7 @@ namespace CsQuery.Web
     /// A CsqWebRequest object manages data and state related to a WebRequest
     /// </summary>
 
-    public class CsqWebRequest: ICsqWebRequest
+    public class CsqWebRequest : ICsqWebRequest
     {
         #region constructor
 
@@ -63,7 +63,7 @@ namespace CsQuery.Web
         #endregion
 
         #region public properties
-        
+
         /// <summary>
         /// The url to load.
         /// </summary>
@@ -74,7 +74,7 @@ namespace CsQuery.Web
         /// The UserAgent string to present to the remote server.
         /// </summary>
 
-        public string UserAgent {get;set;}
+        public string UserAgent { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the asynchronous.
@@ -104,7 +104,7 @@ namespace CsQuery.Web
         /// A unique ID for this request. This will be automatically generated if not assigned.
         /// </summary>
 
-        public object Id {get;set;}
+        public object Id { get; set; }
 
         /// <summary>
         /// Gets or sets the HTML.
@@ -112,7 +112,8 @@ namespace CsQuery.Web
 
         public string Html
         {
-            get;set;
+            get;
+            set;
         }
 
         /// <summary>
@@ -124,8 +125,9 @@ namespace CsQuery.Web
             get
             {
                 StringBuilder sb = new StringBuilder();
-                foreach (var kvp in PostData) {
-                    sb.Append((sb.Length==0?"":"&") + HttpUtility.UrlEncode(kvp.Key+ "=" + kvp.Value));
+                foreach (var kvp in PostData)
+                {
+                    sb.Append((sb.Length == 0 ? "" : "&") + HttpUtility.UrlEncode(kvp.Key + "=" + kvp.Value));
                 }
                 return sb.ToString();
             }
@@ -133,18 +135,22 @@ namespace CsQuery.Web
             {
                 PostData.Clear();
                 string[] pairs = value.Split('&');
-                string key=String.Empty;
-                string val=String.Empty;
-                foreach (string item in pairs) {
+                string key = String.Empty;
+                string val = String.Empty;
+                foreach (string item in pairs)
+                {
                     int pos = item.IndexOf("=");
- 
-                    if (pos>0) {
-                        key = item.Substring(0,pos);
-                        val = item.Substring(pos+1);
-                    } else {
-                        key=item;
+
+                    if (pos > 0)
+                    {
+                        key = item.Substring(0, pos);
+                        val = item.Substring(pos + 1);
                     }
-                    PostData.Add(new KeyValuePair<string,string>(key,val));
+                    else
+                    {
+                        key = item;
+                    }
+                    PostData.Add(new KeyValuePair<string, string>(key, val));
                 }
             }
         }
@@ -153,15 +159,16 @@ namespace CsQuery.Web
         /// Gets the information describing the post data to be sent this request.
         /// </summary>
 
-        public List<KeyValuePair<string,string>> PostData 
+        public List<KeyValuePair<string, string>> PostData
         {
-            get {
+            get
+            {
                 return _PostData.Value;
             }
         }
 
         #endregion
-        
+
         #region public methods
 
         /// <summary>
@@ -187,7 +194,7 @@ namespace CsQuery.Web
             requestInfo.Timeout = Timeout;
             requestInfo.UserAgent = UserAgent;
             requestInfo.Id = Id;
-            requestInfo.CallbackSuccess  = success;
+            requestInfo.CallbackSuccess = success;
             requestInfo.CallbackFail = fail;
 
             return requestInfo.GetAsync();
@@ -218,32 +225,35 @@ namespace CsQuery.Web
             requestInfo.Timeout = Timeout;
             requestInfo.UserAgent = UserAgent;
             requestInfo.Id = Id;
-            requestInfo.CallbackSuccess  = success;
+            requestInfo.CallbackSuccess = success;
             requestInfo.CallbackFail = fail;
 
             return requestInfo.GetAsync();
         }
 
-
         /// <summary>
-        /// Initiate a synchronous GET request.
+        /// Get the HTML using a synchronous HTTP request. This will return a string using the encoding
+        /// specified by the MIME type. If the document uses an encoding specified in a content-type
+        /// header, it will NOT be reflected by the results of this method.
         /// </summary>
         ///
         /// <returns>
-        /// The HTML returned by a successful request
+        /// The HTML returned by a successful request.
         /// </returns>
 
         public string Get()
         {
             IHttpWebRequest request = GetWebRequest();
 
-            Html=null;
+            Html = null;
 
-            using (StreamReader responseReader = GetResponseStreamReader(request)) {
+            using (StreamReader responseReader = GetResponseStreamReader(request))
+            {
                 Html = responseReader.ReadToEnd();
             }
             return Html;
         }
+
 
         /// <summary>
         /// Initiate a synchronous GET request from an existing IHttpWebRequest object
@@ -279,7 +289,7 @@ namespace CsQuery.Web
         public IHttpWebRequest GetWebRequest()
         {
             IHttpWebRequest request = WebRequestFactory.Create(new Uri(Url));
-            
+
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             return request;
         }
@@ -292,8 +302,9 @@ namespace CsQuery.Web
         /// The data returned by the POST request
         /// </returns>
 
-        public string Post() {
-            return Post(Url,PostData);
+        public string Post()
+        {
+            return Post(Url, PostData);
         }
 
         /// <summary>
@@ -308,8 +319,9 @@ namespace CsQuery.Web
         /// The data returned by the POST request
         /// </returns>
 
-        public string Post(string url) {
-            return Post(url,PostData);
+        public string Post(string url)
+        {
+            return Post(url, PostData);
         }
 
         /// <summary>
@@ -349,7 +361,7 @@ namespace CsQuery.Web
             }
             return Html;
         }
-        
+
         #endregion
 
         #region private methods
@@ -366,22 +378,29 @@ namespace CsQuery.Web
         /// The response stream.
         /// </returns>
 
-        protected StreamReader GetResponseStreamReader(IHttpWebRequest request) {
+        protected StreamReader GetResponseStreamReader(IHttpWebRequest request)
+        {
             var response = request.GetResponse();
-            
+
             //var response = request.GetResponse();
             //var encoding = response.Headers["
-        
+
             StreamReader reader;
-            var encoding = String.IsNullOrEmpty(response.CharacterSet) ?
-                Encoding.UTF8 :
-                Encoding.GetEncoding(response.CharacterSet);
+            var encoding = GetEncoding(response);
 
             reader = new StreamReader(response.GetResponseStream(), encoding);
             return reader;
         }
 
         #endregion
+
+        public static Encoding GetEncoding(IHttpWebResponse response)
+        {
+            return String.IsNullOrEmpty(response.CharacterSet) ?
+               Encoding.GetEncoding("ISO-8859-1") :
+               Encoding.GetEncoding(response.CharacterSet);
+
+        }
 
     }
 }

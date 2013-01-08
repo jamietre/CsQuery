@@ -46,13 +46,10 @@ namespace CsQuery
             HtmlParsingOptions parsingOptions=HtmlParsingOptions.Default,
             DocType docType = DocType.Default)
         {
-            //CreateNew(this, html, parsingMode,parsingOptions, docType);
-
-            Encoding encoding = Encoding.UTF8;
-
+            var encoding = new UTF8Encoding(false);
             using (var stream = Support.GetEncodedStream(html ?? "", encoding))
             {
-                CreateNew(this, stream, encoding,parsingMode, parsingOptions, docType);
+                CreateNew(this, stream, encoding, parsingMode, parsingOptions, docType);
             }
         }
 

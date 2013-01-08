@@ -323,7 +323,7 @@ namespace CsQuery.Mvc
         {
             bool hasMethods = false;
 
-            foreach (var mi in controllerType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static))
+            foreach (var mi in controllerType.GetMethods(BindingFlags.Public | BindingFlags.Instance))
             {
                 if (Helpers.HasCqSignature(mi))
                 {

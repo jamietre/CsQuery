@@ -864,6 +864,35 @@
              A string of HTML.
              </returns>
         </member>
+        <member name="M:CsQuery.CQ.RenderSelection(CsQuery.Output.IOutputFormatter)">
+             <summary>
+             Renders just the selection set completely.
+             </summary>
+            
+             <param name="outputFormatter">
+             The output formatter.
+             </param>
+            
+             <returns>
+             A string of HTML.
+             </returns>
+        </member>
+        <member name="M:CsQuery.CQ.RenderSelection(CsQuery.Output.IOutputFormatter,System.IO.StringWriter)">
+             <summary>
+             Renders just the selection set completely.
+             </summary>
+            
+             <param name="outputFormatter">
+             The output formatter.
+             </param>
+             <param name="writer">
+             The writer.
+             </param>
+            
+             <returns>
+             A string of HTML.
+             </returns>
+        </member>
         <member name="M:CsQuery.CQ.Render">
              <summary>
              Renders the document to a string.

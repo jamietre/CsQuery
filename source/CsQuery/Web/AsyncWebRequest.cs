@@ -44,18 +44,19 @@ namespace CsQuery.Web
         protected ManualResetEvent allDone = new ManualResetEvent(false);
 
         /// <summary>
-        /// Accumulator for the HTML response
-        /// </summary>
-
-        protected StringBuilder HtmlStringbuilder { get; set; }
-
-        /// <summary>
-        /// Stream of the HTM Lresponse
+        /// Stream of the HTML response
         /// </summary>
 
         protected Stream ResponseStream { get; set; }
-        private WebException _WebException;
 
+        /// <summary>
+        /// Gets or sets the encoding of the response stream
+        /// </summary>
+
+        protected Encoding ResponseEncoding { get; set; }
+        
+        private WebException _WebException;
+        
         #endregion
 
 
@@ -243,25 +244,25 @@ namespace CsQuery.Web
 
 
         }
+       
         /// <summary>
-        /// Return the Html response from the request
+        /// Return a document from the HTML web request result.
         /// </summary>
-        public string Html
-        {
-            get
-            {
-                return HtmlStringbuilder.ToString();
-            }
-        }
-
-        /// <summary>
-        /// Return a document from the HTML web request result. DEPRECATED. use GetDocument() instead.
-        /// </summary>
+        
         public CQ Dom
         {
             get
             {
-                return CQ.CreateDocument(Html);
+
+                return GetDocument();
+            }
+        }
+        public string Html
+        {
+            get
+            {
+                ResponseStream.Position = 0;
+                return new StreamReader(ResponseStream, ResponseEncoding).ReadToEnd();
             }
         }
 
@@ -270,7 +271,8 @@ namespace CsQuery.Web
         /// </summary>
         public CQ GetDocument()
         {
-           return CQ.CreateDocument(Html);
+            ResponseStream.Position = 0;
+            return CQ.CreateDocument(ResponseStream, ResponseEncoding);
         }
 
         /// <summary>
@@ -279,7 +281,8 @@ namespace CsQuery.Web
         /// <returns></returns>
         public CQ GetContent() 
         {
-            return CQ.Create(Html);
+            ResponseStream.Position = 0;
+            return CQ.Create(ResponseStream, ResponseEncoding);
         }
 
         /// <summary>
@@ -318,7 +321,6 @@ namespace CsQuery.Web
             IHttpWebRequest req = rs.Request;
             req.Timeout = Timeout;
             req.Headers["UserAgent"] = UserAgent;
-
             
             try
             {
@@ -343,44 +345,41 @@ namespace CsQuery.Web
                 return;
             }
 
+            ResponseEncoding = CsqWebRequest.GetEncoding(Response);
+
             //  Start reading data from the response stream.
-            Stream ResponseStream = Response.GetResponseStream();
+            Stream responseStream = Response.GetResponseStream();
 
             // Store the response stream in RequestState to read 
             // the stream asynchronously.
-            rs.ResponseStream = ResponseStream;
+            rs.ResponseStreamAsync = responseStream;
+            ResponseStream = new MemoryStream();
 
+            
             //  Pass rs.BufferRead to BeginRead. Read data into rs.BufferRead
-            IAsyncResult iarRead = ResponseStream.BeginRead(rs.BufferRead, 0,
+            IAsyncResult iarRead = responseStream.BeginRead(rs.BufferRead, 0,
                BUFFER_SIZE, new AsyncCallback(ReadCallBack), rs);
         }
+
+
         private void ReadCallBack(IAsyncResult asyncResult)
         {
-
+            Encoding encoding = Encoding.UTF8;
+            
             // Get the RequestState object from AsyncResult.
             WebRequestState rs = (WebRequestState)asyncResult.AsyncState;
-
+            
             // Retrieve the ResponseStream that was set in RespCallback. 
-            Stream responseStream = rs.ResponseStream;
+            Stream responseStream = rs.ResponseStreamAsync;
+
 
             // Read rs.BufferRead to verify that it contains data. 
             int read = responseStream.EndRead(asyncResult);
             if (read > 0)
             {
-                // Prepare a Char array buffer for converting to Unicode.
-                Char[] charBuffer = new Char[BUFFER_SIZE];
-
                 // Convert byte stream to Char array and then to String.
                 // len contains the number of characters converted to Unicode.
-                int len =
-                   rs.StreamDecode.GetChars(rs.BufferRead, 0, read, charBuffer, 0);
-
-                String str = new String(charBuffer, 0, len);
-
-                // Append the recently read data to the RequestData stringbuilder
-                // object contained in RequestState.
-                rs.RequestData.Append(
-                 Encoding.UTF8.GetString(rs.BufferRead, 0, read));
+                ResponseStream.Write(rs.BufferRead, 0, read);
 
                 // Continue reading data until 
                 // responseStream.EndRead returns –1.
@@ -390,9 +389,9 @@ namespace CsQuery.Web
             }
             else
             {
-                if (rs.RequestData.Length > 0)
+                if (ResponseStream.Length > 0)
                 {
-                    HtmlStringbuilder = rs.RequestData;
+                    ResponseStream.Position = 0;
                     Complete = true;
                     Success = true;
 
