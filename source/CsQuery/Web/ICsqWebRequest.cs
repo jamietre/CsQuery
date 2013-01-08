@@ -35,5 +35,11 @@ namespace CsQuery.Web
         /// </summary>
 
         object Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets options for controlling the operation.
+        /// </summary>
+
+        ServerConfig Options { get; set; }
     }
 }

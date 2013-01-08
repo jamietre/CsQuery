@@ -20740,6 +20740,11 @@
             asynchronous requests.
             </summary>
         </member>
+        <member name="P:CsQuery.Web.ICsqWebRequest.Options">
+            <summary>
+            Gets or sets options for controlling the operation.
+            </summary>
+        </member>
         <member name="P:CsQuery.Web.ICsqWebResponse.Html">
             <summary>
             The HTML returned by the response
@@ -24791,6 +24796,24 @@
              The response stream.
              </returns>
         </member>
+        <member name="M:CsQuery.Web.CsqWebRequest.GetEncoding(HttpWebAdapters.IHttpWebResponse)">
+             <summary>
+             Return the character set encoding for an IHttpWebResponse
+             </summary>
+            
+             <param name="response">
+             The response.
+             </param>
+            
+             <returns>
+             The encoding.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Web.CsqWebRequest.Options">
+            <summary>
+            Gets options for controlling the operation.
+            </summary>
+        </member>
         <member name="P:CsQuery.Web.CsqWebRequest.Url">
             <summary>
             The url to load.
@@ -24908,16 +24931,6 @@
             The URL of the request
             </summary>
         </member>
-        <member name="P:CsQuery.Web.AsyncWebRequest.Timeout">
-            <summary>
-            Time, in milliseconds, after which a web request will be aborted.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Web.AsyncWebRequest.UserAgent">
-            <summary>
-            Get or set the user agent string used when the request is made
-            </summary>
-        </member>
         <member name="P:CsQuery.Web.AsyncWebRequest.Started">
             <summary>
             The time that the async request was initiated.
@@ -24971,6 +24984,21 @@
         <member name="P:CsQuery.Web.AsyncWebRequest.Dom">
             <summary>
             Return a document from the HTML web request result.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Web.AsyncWebRequest.Html">
+            <summary>
+            The HTML returned by the response.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Web.AsyncWebRequest.Timeout">
+            <summary>
+            Gets or sets the timeout, in milliseconds, for this AsyncWebRequest
+            </summary>
+        </member>
+        <member name="P:CsQuery.Web.AsyncWebRequest.UserAgent">
+            <summary>
+            Gets or sets the user agent.
             </summary>
         </member>
         <member name="T:CsQuery.Web.ServerConfig">

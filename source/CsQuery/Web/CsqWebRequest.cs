@@ -59,11 +59,28 @@ namespace CsQuery.Web
 
         IHttpWebRequestFactory WebRequestFactory;
         Lazy<List<KeyValuePair<string, string>>> _PostData = new Lazy<List<KeyValuePair<string, string>>>();
+        private ServerConfig _Options;
 
         #endregion
 
         #region public properties
 
+        /// <summary>
+        /// Gets options for controlling the operation.
+        /// </summary>
+
+        public ServerConfig Options
+        {
+            get
+            {
+                return _Options ?? ServerConfig.Default;
+            }
+            set
+            {
+                _Options = value;
+            }
+        }
+        
         /// <summary>
         /// The url to load.
         /// </summary>
@@ -74,8 +91,17 @@ namespace CsQuery.Web
         /// The UserAgent string to present to the remote server.
         /// </summary>
 
-        public string UserAgent { get; set; }
-
+        public string UserAgent
+        {
+            get
+            {
+                return Options.UserAgent;
+            }
+            set
+            {
+                Options.UserAgent = value;
+            }
+        }
         /// <summary>
         /// Gets or sets a value indicating whether the asynchronous.
         /// </summary>
@@ -98,7 +124,14 @@ namespace CsQuery.Web
         /// The time, in milliseconds, after which to abort an incomplete request.
         /// </summary>
 
-        public int Timeout { get; set; }
+        public int Timeout { 
+            get {
+                return (int)Math.Floor(Options.Timeout.TotalMilliseconds);
+            }
+            set {
+                Options.Timeout = TimeSpan.FromMilliseconds(value);
+            }
+        }
 
         /// <summary>
         /// A unique ID for this request. This will be automatically generated if not assigned.
@@ -190,14 +223,9 @@ namespace CsQuery.Web
         public ManualResetEvent GetAsync(Action<ICsqWebResponse> success, Action<ICsqWebResponse> fail)
         {
             IHttpWebRequest request = GetWebRequest();
-            var requestInfo = new AsyncWebRequest(request);
-            requestInfo.Timeout = Timeout;
-            requestInfo.UserAgent = UserAgent;
-            requestInfo.Id = Id;
-            requestInfo.CallbackSuccess = success;
-            requestInfo.CallbackFail = fail;
+            ApplyOptions(request);
 
-            return requestInfo.GetAsync();
+            return GetAsync(request, success, fail);
         }
 
         /// <summary>
@@ -222,8 +250,8 @@ namespace CsQuery.Web
         public ManualResetEvent GetAsync(IHttpWebRequest request, Action<ICsqWebResponse> success, Action<ICsqWebResponse> fail)
         {
             var requestInfo = new AsyncWebRequest(request);
-            requestInfo.Timeout = Timeout;
-            requestInfo.UserAgent = UserAgent;
+            // do not apply options when using this method.
+
             requestInfo.Id = Id;
             requestInfo.CallbackSuccess = success;
             requestInfo.CallbackFail = fail;
@@ -244,6 +272,7 @@ namespace CsQuery.Web
         public string Get()
         {
             IHttpWebRequest request = GetWebRequest();
+            ApplyOptions(request);
 
             Html = null;
 
@@ -289,6 +318,7 @@ namespace CsQuery.Web
         public IHttpWebRequest GetWebRequest()
         {
             IHttpWebRequest request = WebRequestFactory.Create(new Uri(Url));
+            ApplyOptions(request);
 
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             return request;
@@ -345,8 +375,9 @@ namespace CsQuery.Web
             byte[] data = encoding.GetBytes(PostDataString);
 
             IHttpWebRequest request = WebRequestFactory.Create(new Uri(Url));
+            ApplyOptions(request);
 
-            request.UserAgent = UserAgent ?? "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)";
+            
             request.Method = HttpWebRequestMethod.POST;
             request.ContentType = "application/x-www-form-urlencoded";
             request.ContentLength = data.Length;
@@ -366,6 +397,13 @@ namespace CsQuery.Web
 
         #region private methods
 
+        private void ApplyOptions(IHttpWebRequest request)
+        {
+            request.Timeout = (int)Math.Floor(Options.Timeout.TotalMilliseconds);
+            request.UserAgent = Options.UserAgent;
+
+        }
+
         /// <summary>
         /// Gets response stream from a webrequest using the correct encoding.
         /// </summary>
@@ -380,6 +418,7 @@ namespace CsQuery.Web
 
         protected StreamReader GetResponseStreamReader(IHttpWebRequest request)
         {
+
             var response = request.GetResponse();
 
             //var response = request.GetResponse();
@@ -393,6 +432,18 @@ namespace CsQuery.Web
         }
 
         #endregion
+
+        /// <summary>
+        /// Return the character set encoding for an IHttpWebResponse
+        /// </summary>
+        ///
+        /// <param name="response">
+        /// The response.
+        /// </param>
+        ///
+        /// <returns>
+        /// The encoding.
+        /// </returns>
 
         public static Encoding GetEncoding(IHttpWebResponse response)
         {

@@ -105,6 +105,7 @@
     <Compile Include="Core\Dom\OuterHtml.cs" />
     <Compile Include="Core\Dom\SpecialElements.cs" />
     <Compile Include="Core\Selectors\ContentIsNotNumeric.cs" />
+    <Compile Include="Core\WebIO\BasicWeb.cs" />
     <Compile Include="ExtensionMethods\Xml.cs" />
     <Compile Include="HtmlParser\CharacterSetEncoding.cs" />
     <Compile Include="HtmlParser\HtmlEncoding.cs" />

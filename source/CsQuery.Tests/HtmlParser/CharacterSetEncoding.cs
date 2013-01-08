@@ -30,17 +30,7 @@ namespace CsQuery.Tests.HtmlParser
         string htmlEnd = "</div></body></html>";
         char hebrewChar = (char)164;
 
-        private MemoryStream GetMemoryStream(string html, Encoding encoding)
-        {
-            MemoryStream stream = new MemoryStream();
-            //var utf8 = new UTF8Encoding(false);
-            StreamWriter writer = new StreamWriter(stream, encoding);
-            writer.Write(html);
-            writer.Flush();
-            stream.Position = 0;
-
-            return stream;
-        }
+      
 
         [TestMethod, Test]
         public void MetaTag()

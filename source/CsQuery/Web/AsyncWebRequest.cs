@@ -29,6 +29,8 @@ namespace CsQuery.Web
         public AsyncWebRequest(IHttpWebRequest request)
         {
             Request = request;
+            Timeout = request.Timeout;
+            UserAgent = request.UserAgent;
         }
 
         #endregion
@@ -88,24 +90,6 @@ namespace CsQuery.Web
             }
         }
         
-        /// <summary>
-        /// Time, in milliseconds, after which a web request will be aborted.
-        /// </summary>
-        public int Timeout
-        {
-            get;
-            set;
-        }
-        
-
-        /// <summary>
-        /// Get or set the user agent string used when the request is made
-        /// </summary>
-        public string UserAgent
-        {
-            get;
-            set;
-        }
 
         /// <summary>
         /// The time that the async request was initiated.
@@ -257,6 +241,11 @@ namespace CsQuery.Web
                 return GetDocument();
             }
         }
+
+        /// <summary>
+        /// The HTML returned by the response.
+        /// </summary>
+
         public string Html
         {
             get
@@ -421,5 +410,39 @@ namespace CsQuery.Web
 
         #endregion
 
+
+       
+
+        ServerConfig ICsqWebRequest.Options
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the timeout, in milliseconds, for this AsyncWebRequest
+        /// </summary>
+
+        public int Timeout
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the user agent.
+        /// </summary>
+
+        public string UserAgent
+        {
+            get;
+            set;
+        }
     }
 }

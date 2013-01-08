@@ -20,6 +20,7 @@ namespace CsQuery.Tests.Mocks
     {
         public MockHttpWebRequest()
         {
+            ResponseTime = 100;
             Timeout = 1200;
             Headers = new WebHeaderCollection();
         }
@@ -41,8 +42,12 @@ namespace CsQuery.Tests.Mocks
             request._RequestUri = uri;
             return request;
         }
-      
 
+        /// <summary>
+        /// Gets or sets the time that a response should take when using the mock.
+        /// </summary>
+
+        public int ResponseTime { get; set; }
 
         private Uri _RequestUri;
 
@@ -82,6 +87,11 @@ namespace CsQuery.Tests.Mocks
             if (!String.IsNullOrEmpty(CharacterSet))
             {
                 response.AddHeader(HttpResponseHeader.ContentType, "text/html;charset=" + CharacterSet);
+            }
+
+            if (ResponseTime > Timeout)
+            {
+                 throw new WebException("The response was not receved within " + Timeout + " milliseconds.",WebExceptionStatus.Timeout);
             }
 
             return response;
@@ -506,7 +516,7 @@ namespace CsQuery.Tests.Mocks
             }));
             AutoResetEvent autoEvent = new AutoResetEvent(false);
 
-            AsyncTimer = new System.Threading.Timer(cb, autoEvent, 100, System.Threading.Timeout.Infinite);
+            AsyncTimer = new System.Threading.Timer(cb, autoEvent, ResponseTime, System.Threading.Timeout.Infinite);
             return autoEvent;
         }
 

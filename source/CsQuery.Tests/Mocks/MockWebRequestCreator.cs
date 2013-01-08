@@ -15,6 +15,7 @@ namespace CsQuery.Tests.Mocks
             var req= MockHttpWebRequest.Create(url);
             req.CharacterSet = CharacterSet;
             req.ResponseStream = ResponseStream;
+            req.ResponseTime = ResponseTime;
             return req;
         }
         public string CharacterSet { get; set; }
@@ -36,5 +37,6 @@ namespace CsQuery.Tests.Mocks
                 _ResponseStream = value;
             }
         }
+        public int ResponseTime { get; set; }
     }
 }
