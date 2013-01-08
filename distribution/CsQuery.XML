@@ -13590,20 +13590,32 @@
              A new document.
              </returns>
         </member>
-        <member name="F:CsQuery.HtmlParser.ElementFactory.charSetEncoding">
+        <member name="F:CsQuery.HtmlParser.ElementFactory.AlreadyReEncoded">
             <summary>
-            The character set encoding that's currently active.
+            When true, the document's character set encoding has changed due to a meta http-equiv
+            directive. This can only happen once. After this we will change the encoding of the stream
+            from that point forward only.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.ElementFactory.reEncode">
+        <member name="F:CsQuery.HtmlParser.ElementFactory.ReEncode">
             <summary>
             This flag can be set during parsing if the character set encoding found in a meta tag is
             different than the stream's current encoding.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.ElementFactory.activeStream">
+        <member name="F:CsQuery.HtmlParser.ElementFactory.ActiveStream">
             <summary>
             The active stream.
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParser.ElementFactory.ActiveStreamReader">
+            <summary>
+            The active stream reader.
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParser.ElementFactory.ActiveEncoding">
+            <summary>
+            The active encoding.
             </summary>
         </member>
         <member name="M:CsQuery.HtmlParser.ElementFactory.Parse(System.IO.Stream,System.Text.Encoding)">
@@ -13618,7 +13630,7 @@
              Thrown when the requested operation is invalid.
              </exception>
             
-             <param name="html">
+             <param name="inputStream">
              The HTML input.
              </param>
              <param name="encoding">
@@ -24697,11 +24709,13 @@
         </member>
         <member name="M:CsQuery.Web.CsqWebRequest.Get">
              <summary>
-             Initiate a synchronous GET request.
+             Get the HTML using a synchronous HTTP request. This will return a string using the encoding
+             specified by the MIME type. If the document uses an encoding specified in a content-type
+             header, it will NOT be reflected by the results of this method.
              </summary>
             
              <returns>
-             The HTML returned by a successful request
+             The HTML returned by a successful request.
              </returns>
         </member>
         <member name="M:CsQuery.Web.CsqWebRequest.Get(HttpWebAdapters.IHttpWebRequest)">
@@ -24864,14 +24878,14 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="P:CsQuery.Web.AsyncWebRequest.HtmlStringbuilder">
-            <summary>
-            Accumulator for the HTML response
-            </summary>
-        </member>
         <member name="P:CsQuery.Web.AsyncWebRequest.ResponseStream">
             <summary>
-            Stream of the HTM Lresponse
+            Stream of the HTML response
+            </summary>
+        </member>
+        <member name="P:CsQuery.Web.AsyncWebRequest.ResponseEncoding">
+            <summary>
+            Gets or sets the encoding of the response stream
             </summary>
         </member>
         <member name="P:CsQuery.Web.AsyncWebRequest.CallbackSuccess">
@@ -24954,14 +24968,9 @@
             The async HttpWebResponse
             </summary>
         </member>
-        <member name="P:CsQuery.Web.AsyncWebRequest.Html">
-            <summary>
-            Return the Html response from the request
-            </summary>
-        </member>
         <member name="P:CsQuery.Web.AsyncWebRequest.Dom">
             <summary>
-            Return a document from the HTML web request result. DEPRECATED. use GetDocument() instead.
+            Return a document from the HTML web request result.
             </summary>
         </member>
         <member name="T:CsQuery.Web.ServerConfig">
@@ -25024,11 +25033,6 @@
             Web request state: a class encapsulating information about an async web request
             </summary>
         </member>
-        <member name="F:CsQuery.Web.WebRequestState.RequestData">
-            <summary>
-            The request
-            </summary>
-        </member>
         <member name="F:CsQuery.Web.WebRequestState.BufferRead">
             <summary>
             A buffer
@@ -25039,14 +25043,9 @@
             The WebRequest
             </summary>
         </member>
-        <member name="F:CsQuery.Web.WebRequestState.ResponseStream">
+        <member name="F:CsQuery.Web.WebRequestState.ResponseStreamAsync">
             <summary>
             The response stream.
-            </summary>
-        </member>
-        <member name="F:CsQuery.Web.WebRequestState.StreamDecode">
-            <summary>
-            The stream decoder.
             </summary>
         </member>
         <member name="F:CsQuery.Web.WebRequestState.RequestInfo">
