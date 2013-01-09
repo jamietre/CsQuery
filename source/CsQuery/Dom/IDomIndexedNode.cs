@@ -19,7 +19,7 @@ namespace CsQuery
         /// An sequence of strings
         /// </returns>
 
-        IEnumerable<string> IndexKeys();
+        IEnumerable<ushort[]> IndexKeys();
 
         /// <summary>
         /// The object that is the target of the index (normally, the object itself)

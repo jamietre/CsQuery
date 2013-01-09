@@ -143,7 +143,7 @@ namespace CsQuery.Engine
                     lastResult = null;
                 }
                 
-                string key = "";
+                List<ushort> key = new List<ushort>();
                 SelectorType removeSelectorType = 0;
 
                 if (useIndex && !selector.NoIndex)
@@ -189,7 +189,8 @@ namespace CsQuery.Engine
                         && selector.AttributeSelectorType != AttributeSelectorType.NotExists
                         && selector.AttributeSelectorType != AttributeSelectorType.NotEquals)
                     {
-                        key = "!" + (char)HtmlData.Tokenize(selector.AttributeName);
+                        key.Add('!');
+                        key.Add(HtmlData.Tokenize(selector.AttributeName));
 
                         // AttributeValue must still be matched manually - so remove this flag only if the
                         // selector is conclusive without further checking
@@ -201,17 +202,20 @@ namespace CsQuery.Engine
                     }
                     else if (selector.SelectorType.HasFlag(SelectorType.Tag))
                     {
-                        key = "+" + (char)HtmlData.Tokenize(selector.Tag);
+                        key.Add('+');
+                        key.Add(HtmlData.Tokenize(selector.Tag));
                         removeSelectorType=SelectorType.Tag;
                     }
                     else if (selector.SelectorType.HasFlag(SelectorType.ID))
                     {
-                        key = "#" + (char)HtmlData.TokenizeCaseSensitive(selector.ID);
+                        key.Add('#');
+                        key.Add(HtmlData.TokenizeCaseSensitive(selector.ID));
                         removeSelectorType=SelectorType.ID;
                     }
                     else if (selector.SelectorType.HasFlag(SelectorType.Class))
                     {
-                        key = "." + (char)HtmlData.TokenizeCaseSensitive(selector.Class);
+                        key.Add('.');
+                        key.Add(HtmlData.TokenizeCaseSensitive(selector.Class));
                         removeSelectorType=SelectorType.Class;
                     }
 #endif
@@ -222,7 +226,7 @@ namespace CsQuery.Engine
 
                 IEnumerable<IDomObject> result = null;
 
-                if (key != String.Empty)
+                if (key.Count>0)
                 {
                     // This is the main index access point: if we have an index key, we'll get as much as we can from the index.
                     // Anything else will be handled manually.
@@ -251,16 +255,22 @@ namespace CsQuery.Engine
        
                     if (selectionSource == null)
                     {
-                        result = Document.DocumentIndex.QueryIndex(key + HtmlData.indexSeparator, depth, descendants);
+                        var subKey = key.Concat(HtmlData.indexSeparator);
+                        result = Document.DocumentIndex.QueryIndex(
+                            subKey.ToArray(), 
+                            depth, 
+                            descendants);
                     }
                     else
                     {
                         HashSet<IDomObject> elementMatches = new HashSet<IDomObject>();
                         result = elementMatches;
-
+                        
                         foreach (IDomObject obj in selectionSource)
                         {
-                            elementMatches.AddRange(Document.DocumentIndex.QueryIndex(key + HtmlData.indexSeparator + obj.Path,
+                            var subKey = key.Concat(HtmlData.indexSeparator).Concat(obj.Path);
+
+                            elementMatches.AddRange(Document.DocumentIndex.QueryIndex(subKey.ToArray(),
                                     depth, descendants));
                         }
                     }
@@ -284,8 +294,12 @@ namespace CsQuery.Engine
                     foreach (IDomObject obj in GetAllChildOrDescendants(selector.TraversalType,selectionSource))
                     {
 
-                        //key = HtmlData.indexSeparator + obj.Path;
-                        HashSet<IDomObject> srcKeys = new HashSet<IDomObject>(Document.DocumentIndex.QueryIndex(HtmlData.indexSeparator + obj.Path));
+
+                        var subKey = new ushort[] { HtmlData.indexSeparator }.Concat(obj.Path);
+
+                        HashSet<IDomObject> srcKeys = new HashSet<IDomObject>(Document.DocumentIndex.QueryIndex(
+                            subKey.ToArray()));
+
                         foreach (IDomObject match in selector.SelectElements)
                         {
                             if (srcKeys.Contains(match))
@@ -320,7 +334,7 @@ namespace CsQuery.Engine
 
             // Return the results as a list so that any user will not cause the selector to be run again
             
-            return output.OrderBy(item => item.Path, Implementation.TrueStringComparer.Comparer).ToList();
+            return output.OrderBy(item => item.Path, Implementation.PathKeyComparer.Comparer).ToList();
 
         }
 
@@ -705,6 +719,18 @@ namespace CsQuery.Engine
 
         #region private methods
 
+        //private ushort[] CombineKeys(ushort[] list1, ushort[] list2)
+        //{
+        //    int start = list1.Length;
+        //    ushort[] subKey = new ushort[start + list2.Length];
+        //    list1.CopyTo(subKey, 0);
+            
+        //    for (int i = 0; i < list2.Length; i++)
+        //    {
+        //        subKey[i + start] = list2[i];
+        //    }
+        //    return subKey;
+        //}
         private IEnumerable<IDomObject> EmptyEnumerable()
         {
             yield break;

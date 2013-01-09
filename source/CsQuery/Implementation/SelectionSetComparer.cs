@@ -52,8 +52,8 @@ namespace CsQuery.Implementation
         public int Compare(IDomObject x, IDomObject y)
         {
             return Order == SelectionSetOrder.Ascending ?
-                TrueStringComparer.Comparer.Compare(x.Path, y.Path) :
-                TrueStringComparer.Comparer.Compare(y.Path, x.Path);
+                PathKeyComparer.Comparer.Compare(x.Path, y.Path) :
+                PathKeyComparer.Comparer.Compare(y.Path, x.Path);
         }
     }
 }

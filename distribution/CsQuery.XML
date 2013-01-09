@@ -7818,7 +7818,7 @@
              true if default value, false if not.
              </returns>
         </member>
-        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.String,System.UInt16)">
+        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.Char,System.UInt16)">
              <summary>
              Index key.
              </summary>
@@ -7834,7 +7834,7 @@
              A string
              </returns>
         </member>
-        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.String,System.String)">
+        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.Char,System.String)">
              <summary>
              Index key.
              </summary>
@@ -7850,7 +7850,7 @@
              A string
              </returns>
         </member>
-        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.String,System.String,System.String)">
+        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.Char,System.String,System.UInt16[])">
              <summary>
              Index key.
              </summary>
@@ -7869,7 +7869,7 @@
              .
              </returns>
         </member>
-        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.String,System.UInt16,System.String)">
+        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.Char,System.UInt16,System.UInt16[])">
              <summary>
              Generates a key that will be used to refernece this item in the index
              </summary>
@@ -9687,7 +9687,7 @@
             Interface for a DOM index. Defines methods to add and remove items from the index, and query the index.
             </summary>
         </member>
-        <member name="M:CsQuery.IDomIndex.AddToIndex(System.String,CsQuery.IDomIndexedNode)">
+        <member name="M:CsQuery.IDomIndex.AddToIndex(System.UInt16[],CsQuery.IDomIndexedNode)">
              <summary>
              Adds an element to the index.
              </summary>
@@ -9709,7 +9709,7 @@
              The element.
              </param>
         </member>
-        <member name="M:CsQuery.IDomIndex.RemoveFromIndex(System.String)">
+        <member name="M:CsQuery.IDomIndex.RemoveFromIndex(System.UInt16[])">
              <summary>
              Removes an element from the index
              </summary>
@@ -9728,7 +9728,7 @@
              The element.
              </param>
         </member>
-        <member name="M:CsQuery.IDomIndex.QueryIndex(System.String,System.Int32,System.Boolean)">
+        <member name="M:CsQuery.IDomIndex.QueryIndex(System.UInt16[],System.Int32,System.Boolean)">
              <summary>
              Queries the index
              </summary>
@@ -9747,7 +9747,7 @@
              An enumerator that allows foreach to be used to process query index in this collection.
              </returns>
         </member>
-        <member name="M:CsQuery.IDomIndex.QueryIndex(System.String)">
+        <member name="M:CsQuery.IDomIndex.QueryIndex(System.UInt16[])">
              <summary>
              Queries the index.
              </summary>
@@ -15783,6 +15783,77 @@
             Gets the current stream
             </summary>
         </member>
+        <member name="T:CsQuery.Implementation.PathKeyComparer">
+            <summary>
+            A string comparer that is not concerned with anything other than the raw value of the characters. No encoding, no culture.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.PathKeyComparer.Compare(System.UInt16[],System.UInt16[])">
+             <summary>
+             Compares two string objects to determine their relative ordering.
+             </summary>
+            
+             <param name="x">
+             String to be compared.
+             </param>
+             <param name="y">
+             String to be compared.
+             </param>
+            
+             <returns>
+             Negative if 'x' is less than 'y', 0 if they are equal, or positive if it is greater.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.PathKeyComparer.CompareEqualLength(System.UInt16[],System.UInt16[])">
+             <summary>
+             Marginally faster when just testing equality than using Compare
+             </summary>
+            
+             <param name="x">
+             String to be compared.
+             </param>
+             <param name="y">
+             String to be compared.
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.PathKeyComparer.Equals(System.UInt16[],System.UInt16[])">
+             <summary>
+             Tests if two string objects are considered equal.
+             </summary>
+            
+             <param name="x">
+             String to be compared.
+             </param>
+             <param name="y">
+             String to be compared.
+             </param>
+            
+             <returns>
+             true if the objects are considered equal, false if they are not.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.PathKeyComparer.GetHashCode(System.UInt16[])">
+             <summary>
+             Calculates the hash code for this object.
+             </summary>
+            
+             <param name="obj">
+             The object.
+             </param>
+            
+             <returns>
+             The hash code for this object.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Implementation.PathKeyComparer.Comparer">
+            <summary>
+            Gets an instance of TrueStringComparer
+            </summary>
+        </member>
         <member name="T:CsQuery.Implementation.TrueStringComparer">
             <summary>
             A string comparer that is not concerned with anything other than the raw value of the characters. No encoding, no culture.
@@ -20785,19 +20856,19 @@
             If the request resulted in an exception, the exception.
             </summary>
         </member>
-        <member name="T:CsQuery.Implementation.IRangeSortedDictionary`1">
+        <member name="T:CsQuery.Implementation.IRangeSortedDictionary`2">
             <summary>
             A sorted dictionary that allows lookup by range.
             </summary>
         </member>
-        <member name="M:CsQuery.Implementation.IRangeSortedDictionary`1.GetRangeKeys(System.String)">
+        <member name="M:CsQuery.Implementation.IRangeSortedDictionary`2.GetRangeKeys(`0[])">
             <summary>
             Return all keys starting with subKey
             </summary>
             <param name="subKey">The substring to match</param>
             <returns></returns>
         </member>
-        <member name="M:CsQuery.Implementation.IRangeSortedDictionary`1.GetRange(System.String)">
+        <member name="M:CsQuery.Implementation.IRangeSortedDictionary`2.GetRange(`0[])">
             <summary>
             Return all values having keys beginning with subKey
             </summary>
@@ -21723,7 +21794,7 @@
             </summary>
             <param name="element"></param>
         </member>
-        <member name="M:CsQuery.Implementation.DomDocument.AddToIndex(System.String,CsQuery.IDomIndexedNode)">
+        <member name="M:CsQuery.Implementation.DomDocument.AddToIndex(System.UInt16[],CsQuery.IDomIndexedNode)">
             <summary>
             Add an element to the index using a specified index key
             </summary>
@@ -21736,13 +21807,13 @@
             </summary>
             <param name="element"></param>
         </member>
-        <member name="M:CsQuery.Implementation.DomDocument.RemoveFromIndex(System.String)">
+        <member name="M:CsQuery.Implementation.DomDocument.RemoveFromIndex(System.UInt16[])">
             <summary>
             Remove an element from the index using its key
             </summary>
             <param name="key"></param>
         </member>
-        <member name="M:CsQuery.Implementation.DomDocument.QueryIndex(System.String,System.Int32,System.Boolean)">
+        <member name="M:CsQuery.Implementation.DomDocument.QueryIndex(System.UInt16[],System.Int32,System.Boolean)">
             <summary>
             Query the document's index for a subkey up to a specific depth, optionally including descendants that match the selector
             </summary>
@@ -21751,7 +21822,7 @@
             <param name="includeDescendants"></param>
             <returns></returns>
         </member>
-        <member name="M:CsQuery.Implementation.DomDocument.QueryIndex(System.String)">
+        <member name="M:CsQuery.Implementation.DomDocument.QueryIndex(System.UInt16[])">
             <summary>
             Query the document's index for a subkey
             </summary>
@@ -25942,7 +26013,7 @@
             is always false.
             </summary>
         </member>
-        <member name="T:CsQuery.Implementation.RangeSortedDictionary`1">
+        <member name="T:CsQuery.Implementation.RangeSortedDictionary`2">
             <summary>
             A dictionary that is substring-lookup capable. This is the data structure used to index HTML documents for selectors.
             A SortedSet of keys is used for the index because it allows fast access by substring. A list of keys obtained from the
@@ -25950,22 +26021,29 @@
             </summary>
             <typeparam name="TValue"></typeparam>
         </member>
-        <member name="M:CsQuery.Implementation.RangeSortedDictionary`1.#ctor">
-            <summary>
-            Default constructor.
-            </summary>
+        <member name="M:CsQuery.Implementation.RangeSortedDictionary`2.#ctor(System.Collections.Generic.IComparer{`0[]},System.Collections.Generic.IEqualityComparer{`0[]},`0)">
+             <summary>
+             Default constructor.
+             </summary>
+            
+             <param name="comparer">
+             The comparer.
+             </param>
+             <param name="indexSeparator">
+             The index separator
+             </param>
         </member>
-        <member name="F:CsQuery.Implementation.RangeSortedDictionary`1.Keys">
+        <member name="F:CsQuery.Implementation.RangeSortedDictionary`2.Keys">
             <summary>
             An ordered set of all the keys in this dictionary.
             </summary>
         </member>
-        <member name="F:CsQuery.Implementation.RangeSortedDictionary`1.Index">
+        <member name="F:CsQuery.Implementation.RangeSortedDictionary`2.Index">
             <summary>
             The inner index.
             </summary>
         </member>
-        <member name="M:CsQuery.Implementation.RangeSortedDictionary`1.GetRangeKeys(System.String)">
+        <member name="M:CsQuery.Implementation.RangeSortedDictionary`2.GetRangeKeys(`0[])">
              <summary>
              Retrieve all the keys that match the subkey provided; that is, all keys that start with the
              value of 'subkey'.
@@ -25979,7 +26057,7 @@
              A sequence of keys found in the dictionary.
              </returns>
         </member>
-        <member name="M:CsQuery.Implementation.RangeSortedDictionary`1.GetRange(System.String,System.Int32,System.Boolean)">
+        <member name="M:CsQuery.Implementation.RangeSortedDictionary`2.GetRange(`0[],System.Int32,System.Boolean)">
              <summary>
              Return all matching keys at the specified depth relative to the subkey, e.g. 0 will return
              only the element that exactly matches the subkey.
@@ -25999,7 +26077,7 @@
              A sequence of TValue elements.
              </returns>
         </member>
-        <member name="M:CsQuery.Implementation.RangeSortedDictionary`1.GetRange(System.String)">
+        <member name="M:CsQuery.Implementation.RangeSortedDictionary`2.GetRange(`0[])">
              <summary>
              Return a sequence of values for each key that starts with the value of 'subkey'.
              </summary>
@@ -26012,7 +26090,7 @@
              A sequence of values from the dictionary.
              </returns>
         </member>
-        <member name="M:CsQuery.Implementation.RangeSortedDictionary`1.Add(System.String,`0)">
+        <member name="M:CsQuery.Implementation.RangeSortedDictionary`2.Add(`0[],`1)">
              <summary>
              Adds a key/value pair to the dictionary
              </summary>
@@ -26024,7 +26102,7 @@
              [out] The value.
              </param>
         </member>
-        <member name="M:CsQuery.Implementation.RangeSortedDictionary`1.ContainsKey(System.String)">
+        <member name="M:CsQuery.Implementation.RangeSortedDictionary`2.ContainsKey(`0[])">
              <summary>
              Test whether the dictionary contains a value for 'key'
              </summary>
@@ -26037,7 +26115,7 @@
              true if it succeeds, false if it fails.
              </returns>
         </member>
-        <member name="M:CsQuery.Implementation.RangeSortedDictionary`1.Remove(System.String)">
+        <member name="M:CsQuery.Implementation.RangeSortedDictionary`2.Remove(`0[])">
              <summary>
              Removes the given key
              </summary>
@@ -26050,7 +26128,7 @@
              true if it succeeds, false if it fails.
              </returns>
         </member>
-        <member name="M:CsQuery.Implementation.RangeSortedDictionary`1.TryGetValue(System.String,`0@)">
+        <member name="M:CsQuery.Implementation.RangeSortedDictionary`2.TryGetValue(`0[],`1@)">
              <summary>
              Try to get a value by name
              </summary>
@@ -26066,7 +26144,7 @@
              true if it succeeds, false if it fails.
              </returns>
         </member>
-        <member name="M:CsQuery.Implementation.RangeSortedDictionary`1.Add(System.Collections.Generic.KeyValuePair{System.String,`0})">
+        <member name="M:CsQuery.Implementation.RangeSortedDictionary`2.Add(System.Collections.Generic.KeyValuePair{`0[],`1})">
              <summary>
              Adds a key/value pair to the dictionary.
              </summary>
@@ -26075,12 +26153,12 @@
              The item to test for.
              </param>
         </member>
-        <member name="M:CsQuery.Implementation.RangeSortedDictionary`1.Clear">
+        <member name="M:CsQuery.Implementation.RangeSortedDictionary`2.Clear">
             <summary>
             Clears this object to its blank/initial state.
             </summary>
         </member>
-        <member name="M:CsQuery.Implementation.RangeSortedDictionary`1.Contains(System.Collections.Generic.KeyValuePair{System.String,`0})">
+        <member name="M:CsQuery.Implementation.RangeSortedDictionary`2.Contains(System.Collections.Generic.KeyValuePair{`0[],`1})">
              <summary>
              Test whether the KeyValuePair object exists in this dictionary.
              </summary>
@@ -26093,7 +26171,7 @@
              true if the object is in this collection, false if not.
              </returns>
         </member>
-        <member name="M:CsQuery.Implementation.RangeSortedDictionary`1.CopyTo(System.Collections.Generic.KeyValuePair{System.String,`0}[],System.Int32)">
+        <member name="M:CsQuery.Implementation.RangeSortedDictionary`2.CopyTo(System.Collections.Generic.KeyValuePair{`0[],`1}[],System.Int32)">
              <summary>
              Copies the contents of the dictionary to an array of KeyValuePair objects.
              </summary>
@@ -26105,7 +26183,7 @@
              Zero-based index of the array at which to start copying.
              </param>
         </member>
-        <member name="M:CsQuery.Implementation.RangeSortedDictionary`1.Remove(System.Collections.Generic.KeyValuePair{System.String,`0})">
+        <member name="M:CsQuery.Implementation.RangeSortedDictionary`2.Remove(System.Collections.Generic.KeyValuePair{`0[],`1})">
              <summary>
              Removes the given KeyValuePair from the dictionary if it exists
              </summary>
@@ -26118,7 +26196,7 @@
              true if it succeeds, false if it fails.
              </returns>
         </member>
-        <member name="M:CsQuery.Implementation.RangeSortedDictionary`1.GetEnumerator">
+        <member name="M:CsQuery.Implementation.RangeSortedDictionary`2.GetEnumerator">
              <summary>
              Gets the enumerator.
              </summary>
@@ -26127,17 +26205,17 @@
              The enumerator.
              </returns>
         </member>
-        <member name="P:CsQuery.Implementation.RangeSortedDictionary`1.KeysAudit">
+        <member name="P:CsQuery.Implementation.RangeSortedDictionary`2.KeysAudit">
             <summary>
             Returns the keys in human-readable format.
             </summary>
         </member>
-        <member name="P:CsQuery.Implementation.RangeSortedDictionary`1.Values">
+        <member name="P:CsQuery.Implementation.RangeSortedDictionary`2.Values">
             <summary>
             Gets the values.
             </summary>
         </member>
-        <member name="P:CsQuery.Implementation.RangeSortedDictionary`1.Item(System.String)">
+        <member name="P:CsQuery.Implementation.RangeSortedDictionary`2.Item(`0[])">
              <summary>
              Return the value for 'key'
              </summary>
@@ -26150,12 +26228,12 @@
              The indexed item.
              </returns>
         </member>
-        <member name="P:CsQuery.Implementation.RangeSortedDictionary`1.Count">
+        <member name="P:CsQuery.Implementation.RangeSortedDictionary`2.Count">
             <summary>
             Gets the number of items in this dictionary.
             </summary>
         </member>
-        <member name="P:CsQuery.Implementation.RangeSortedDictionary`1.IsReadOnly">
+        <member name="P:CsQuery.Implementation.RangeSortedDictionary`2.IsReadOnly">
             <summary>
             Gets a value indicating whether this object is read only. This is always false.
             </summary>

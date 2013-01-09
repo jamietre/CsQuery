@@ -185,7 +185,7 @@ namespace CsQuery.Implementation
         //private bool _settingDocType;
         private IList<ICSSStyleSheet> _StyleSheets;
         private IDictionary<string, object> _Data;
-        private RangeSortedDictionary<IDomObject> _SelectorXref;
+        private RangeSortedDictionary<ushort,IDomObject> _SelectorXref;
 
         #endregion
 
@@ -222,13 +222,15 @@ namespace CsQuery.Implementation
         /// <summary>
         /// The index
         /// </summary>
-        public RangeSortedDictionary<IDomObject> SelectorXref
+        public RangeSortedDictionary<ushort,IDomObject> SelectorXref
         {
             get
             {
                 if (_SelectorXref == null)
                 {
-                    _SelectorXref = new RangeSortedDictionary<IDomObject>();
+                    _SelectorXref = new RangeSortedDictionary<ushort,IDomObject>(PathKeyComparer.Comparer,
+                        PathKeyComparer.Comparer,
+                        HtmlData.indexSeparator);
                 }
                 return _SelectorXref;
             }
@@ -254,11 +256,11 @@ namespace CsQuery.Implementation
         /// The full path to this node. For Document nodes, this is always empty.
         /// </summary>
 
-        public override string Path
+        public override ushort[] Path
         {
             get
             {
-                return "";
+                return new ushort[] {};
             }
         }
 
@@ -459,7 +461,7 @@ namespace CsQuery.Implementation
         /// <param name="element"></param>
         public void AddToIndex(IDomIndexedNode element)
         {
-            foreach (string key in element.IndexKeys())
+            foreach (ushort[] key in element.IndexKeys())
             {
                 AddToIndex(key, element);
             }
@@ -478,7 +480,7 @@ namespace CsQuery.Implementation
         /// </summary>
         /// <param name="key"></param>
         /// <param name="element"></param>
-        public void AddToIndex(string key, IDomIndexedNode element)
+        public void AddToIndex(ushort[] key, IDomIndexedNode element)
         {
             SelectorXref.Add(key, element.IndexReference);
         }
@@ -500,7 +502,7 @@ namespace CsQuery.Implementation
                 }
             }
 
-            foreach (string key in element.IndexKeys())
+            foreach (ushort[] key in element.IndexKeys())
             {
                 RemoveFromIndex(key);
             }
@@ -510,7 +512,7 @@ namespace CsQuery.Implementation
         /// Remove an element from the index using its key
         /// </summary>
         /// <param name="key"></param>
-        public void RemoveFromIndex(string key)
+        public void RemoveFromIndex(ushort[] key)
         {
             SelectorXref.Remove(key);
         }
@@ -522,7 +524,7 @@ namespace CsQuery.Implementation
         /// <param name="depth">The zero-based depth to which searches should be limited</param>
         /// <param name="includeDescendants"></param>
         /// <returns></returns>
-        public IEnumerable<IDomObject> QueryIndex(string subKey, int depth, bool includeDescendants)
+        public IEnumerable<IDomObject> QueryIndex(ushort[] subKey, int depth, bool includeDescendants)
         {
             return SelectorXref.GetRange(subKey, depth, includeDescendants);
         }
@@ -532,7 +534,7 @@ namespace CsQuery.Implementation
         /// </summary>
         /// <param name="subKey"></param>
         /// <returns></returns>
-        public IEnumerable<IDomObject> QueryIndex(string subKey)
+        public IEnumerable<IDomObject> QueryIndex(ushort[] subKey)
         {
             return SelectorXref.GetRange(subKey);
         }

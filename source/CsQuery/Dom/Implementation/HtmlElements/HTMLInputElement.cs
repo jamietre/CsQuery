@@ -114,7 +114,7 @@ namespace CsQuery.Implementation
         /// An enumerator that allows foreach to be used to process index keys in this collection.
         /// </returns>
 
-        public override IEnumerable<string> IndexKeys()
+        public override IEnumerable<ushort[]> IndexKeys()
         {
             return base.IndexKeys();
         }

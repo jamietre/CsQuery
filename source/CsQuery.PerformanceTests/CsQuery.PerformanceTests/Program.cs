@@ -26,11 +26,12 @@ namespace CsQuery.PerformanceTests
             if (!Support.TryGetFilePath("CsQuery.PerformanceTests\\Output", out OutputDirectory))
             {
                 OutputDirectory = exeLocation + "\\Output";
-                if (!Directory.Exists(OutputDirectory))
-                {
-                    Directory.CreateDirectory(OutputDirectory);
-                }
             }
+            if (!Directory.Exists(OutputDirectory))
+            {
+                Directory.CreateDirectory(OutputDirectory);
+            }
+            
 
             ResourceDirectory = exeLocation;
 

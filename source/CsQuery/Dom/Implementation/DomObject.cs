@@ -172,7 +172,7 @@ namespace CsQuery.Implementation
         /// own ID.
         /// </summary>
 
-        public virtual string Path
+        public virtual ushort[] Path
         {
             get
             {
@@ -199,7 +199,7 @@ namespace CsQuery.Implementation
 
                 return _ParentNode != null ?
                    GetPath() :
-                    "_" + PathID;
+                    new ushort[2] { (ushort)'_', PathID };
 #endif
 
             }
@@ -213,10 +213,10 @@ namespace CsQuery.Implementation
         /// The path.
         /// </returns>
 
-        protected virtual string GetPath()
+        protected virtual ushort[] GetPath()
         {
             DomObject curNode = this;
-            StringBuilder sb = new StringBuilder();
+            List<ushort> path = new List<ushort>();
 
             while (curNode != null)
             {
@@ -227,10 +227,11 @@ namespace CsQuery.Implementation
                 }
 
 #endif
-                sb.Append(curNode.PathID);
+                path.Add(curNode.PathID);
                 curNode = curNode._ParentNode;
             }
-            return sb.Reverse().ToString();
+            path.Reverse();
+            return path.ToArray();
         }
 
 
@@ -381,14 +382,14 @@ namespace CsQuery.Implementation
         }
 
 #else
-        public virtual char PathID
+        public virtual ushort PathID
         {
             get
             {
                 // Don't actually store paths with non-element nodes as they aren't indexed and don't have children.
                 // Fast read access is less important than not having to reset them when moved.
 
-                return (char)(Index+2);
+                return (ushort)(Index+2);
             }
         }
 #endif
@@ -1577,7 +1578,7 @@ namespace CsQuery.Implementation
         /// A sequence of keys
         /// </returns>
 
-        public virtual IEnumerable<string> IndexKeys()
+        public virtual IEnumerable<ushort[]> IndexKeys()
         {
             throw new InvalidOperationException("This is not an indexed object.");
         }

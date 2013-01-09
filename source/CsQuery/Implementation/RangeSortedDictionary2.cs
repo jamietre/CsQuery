@@ -8,7 +8,7 @@ using CsQuery.ExtensionMethods;
 using CsQuery.HtmlParser;
 using CsQuery.Implementation;
 
-#if !ARRAYPATH
+#if ARRAYPATH
 
 namespace CsQuery.Implementation
 {
@@ -18,29 +18,18 @@ namespace CsQuery.Implementation
     /// SortedSet for a selector is used to obtain the target references from a regular dictionary.
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
-    public class RangeSortedDictionary<TKey,TValue> : IRangeSortedDictionary<TKey,TValue> where TKey: IConvertible, IComparable
+    public class RangeSortedDictionary<TValue> : IRangeSortedDictionary<ushort[],TValue>
     {
         #region constructor
 
         /// <summary>
         /// Default constructor.
         /// </summary>
-        ///
-        /// <param name="comparer">
-        /// The comparer.
-        /// </param>
-        /// <param name="indexSeparator">
-        /// The index separator
-        /// </param>
 
-        public RangeSortedDictionary(IComparer<TKey[]> setComparer, IEqualityComparer<TKey[]> equalityComparer, TKey indexSeparator)
+        public RangeSortedDictionary()
         {
-            //Keys = new SortedSet<string>(TrueStringComparer.Comparer);
-            //Index = new Dictionary<string, TValue>(TrueStringComparer.Comparer);
-            Keys = new SortedSet<TKey[]>(setComparer);
-            Index = new Dictionary<TKey[], TValue>(equalityComparer);
-            IndexSeparator = indexSeparator;
-
+            Keys = new SortedSet<ushort[]>(PathKeyComparer.Comparer);
+            Index = new Dictionary<ushort[], TValue>(PathKeyComparer.Comparer);
             //Index = new MonoDictionary<string, TValue>(TrueStringComparer.Comparer);
             //Index = new Net46.Dictionary<string, TValue>(TrueStringComparer.Comparer);
         }
@@ -49,7 +38,6 @@ namespace CsQuery.Implementation
 
         #region private properties
 
-        private TKey IndexSeparator;
         // the "threadsafe" flag causes certain objects to be compiled with thread safety. This causes
         // a performance hit so this is done mostly for debugging
         
@@ -61,13 +49,13 @@ namespace CsQuery.Implementation
         /// An ordered set of all the keys in this dictionary.
         /// </summary>
 
-        protected SortedSet<TKey[]> Keys;
+        protected SortedSet<ushort[]> Keys;
 
         /// <summary>
         /// The inner index.
         /// </summary>
 
-        protected IDictionary<TKey[], TValue> Index;
+        protected IDictionary<ushort[],TValue> Index;
 
         #endregion
 
@@ -77,8 +65,7 @@ namespace CsQuery.Implementation
         /// Returns the keys in human-readable format.
         /// </summary>
 
-        public IEnumerable<string> KeysAudit
-        { 
+        public IEnumerable<string> KeysAudit { 
             get 
             {
                 foreach (var item in Keys)
@@ -89,16 +76,15 @@ namespace CsQuery.Implementation
                    
                     string humanReadableKey = "";
                     int startIndex = 1;
-                    if (!item[0].Equals( IndexSeparator))
+                    if (item[0] != HtmlData.indexSeparator)
                     {
-                        ushort keyPart = (ushort)Convert.ChangeType(item[1], typeof(ushort));
-                        humanReadableKey = Convert.ChangeType(item[0],typeof(char)) + HtmlData.TokenName(keyPart) + '/';
+                        humanReadableKey = item[0] + HtmlData.TokenName((ushort)item[1])+'/';
                         startIndex = 3;
                     }
                         
                     for (int i = startIndex;i<item.Length;i++)
                     {
-                        ushort c = (ushort)Convert.ChangeType(item[i], typeof(ushort));
+                        ushort c = item[i];
                         humanReadableKey += ((ushort)c).ToString().PadLeft(3,'0');
                         if (i<item.Length-1) {
                             humanReadableKey += '/';
@@ -122,36 +108,16 @@ namespace CsQuery.Implementation
         /// A sequence of keys found in the dictionary.
         /// </returns>
 
-        //public IEnumerable<TKey[]> GetRangeKeys(TKey[] subkey)
-        //{
-
-        //    if (subkey==null || subkey.Length==0) {
-        //        yield break;
-        //    }
-        //    string lastKey = subkey.Substring(0,subkey.Length - 1) + (char)(((int)subkey[subkey.Length - 1]) + 1);
-            
-        //    foreach (var key in Keys.GetViewBetween(subkey, lastKey))
-        //    {
-        //        if (key != lastKey)
-        //        {
-        //            yield return key;
-        //        }
-        //    }
-        //}
-        public IEnumerable<TKey[]> GetRangeKeys(TKey[] subkey)
+        public IEnumerable<ushort[]> GetRangeKeys(ushort[] subkey)
         {
 
-            if (subkey == null || subkey.Length == 0)
-            {
+            if (subkey==null || subkey.Length==0) {
                 yield break;
             }
-
-            int lastEl = (int)Convert.ChangeType(subkey[subkey.Length - 1], typeof(int));
-
-            TKey[] lastKey = subkey.Take(subkey.Length - 1)
-                .Concat((TKey)Convert.ChangeType(lastEl+ 1,typeof(TKey)))
+            ushort[] lastKey = subkey.Take(subkey.Length-1)
+                .Concat((ushort)(subkey[subkey.Length-1]+1))
                 .ToArray();
-
+                        
             foreach (var key in Keys.GetViewBetween(subkey, lastKey))
             {
                 if (key != lastKey)
@@ -180,7 +146,7 @@ namespace CsQuery.Implementation
         /// A sequence of TValue elements.
         /// </returns>
 
-        public IEnumerable<TValue> GetRange(TKey[] subKey, int depth, bool descendants)
+        public IEnumerable<TValue> GetRange(ushort[] subKey, int depth, bool descendants)
         {
             if (depth == 0 && !descendants)
             {
@@ -230,7 +196,7 @@ namespace CsQuery.Implementation
         /// A sequence of values from the dictionary.
         /// </returns>
 
-        public IEnumerable<TValue> GetRange(TKey[] subKey)
+        public IEnumerable<TValue> GetRange(ushort[] subKey)
         {
             foreach (var key in GetRangeKeys(subKey))
             {
@@ -253,7 +219,7 @@ namespace CsQuery.Implementation
         /// [out] The value.
         /// </param>
 
-        public void Add(TKey[] key, TValue value)
+        public void Add(ushort[] key, TValue value)
         {
 #if threadsafe
             lock (_locker)
@@ -280,12 +246,12 @@ namespace CsQuery.Implementation
         /// true if it succeeds, false if it fails.
         /// </returns>
 
-        public bool ContainsKey(TKey[] key)
+        public bool ContainsKey(ushort[] key)
         {
             return Keys.Contains(key);
         }
 
-        ICollection<TKey[]> IDictionary<TKey[], TValue>.Keys
+        ICollection<string> IDictionary<string, TValue>.Keys
         {
             get { return Keys; }
         }
@@ -302,7 +268,7 @@ namespace CsQuery.Implementation
         /// true if it succeeds, false if it fails.
         /// </returns>
 
-        public bool Remove(TKey[] key)
+        public bool Remove(string key)
         {
 #if threadsafe
             lock (_locker)
@@ -337,7 +303,7 @@ namespace CsQuery.Implementation
         /// true if it succeeds, false if it fails.
         /// </returns>
 
-        public bool TryGetValue(TKey[] key, out TValue value)
+        public bool TryGetValue(string key, out TValue value)
         {
             return Index.TryGetValue(key, out value);
       
@@ -366,7 +332,7 @@ namespace CsQuery.Implementation
         /// The indexed item.
         /// </returns>
 
-        public TValue this[TKey[] key]
+        public TValue this[string key]
         {
             get
             {
@@ -404,7 +370,7 @@ namespace CsQuery.Implementation
         /// The item to test for.
         /// </param>
 
-        public void Add(KeyValuePair<TKey[], TValue> item)
+        public void Add(KeyValuePair<string, TValue> item)
         {
             Add(item.Key, item.Value);
         }
@@ -438,7 +404,7 @@ namespace CsQuery.Implementation
         /// true if the object is in this collection, false if not.
         /// </returns>
 
-        public bool Contains(KeyValuePair<TKey[], TValue> item)
+        public bool Contains(KeyValuePair<string, TValue> item)
         {
             return Index.Contains(item);
         }
@@ -454,7 +420,7 @@ namespace CsQuery.Implementation
         /// Zero-based index of the array at which to start copying.
         /// </param>
 
-        public void CopyTo(KeyValuePair<TKey[], TValue>[] array, int arrayIndex)
+        public void CopyTo(KeyValuePair<string, TValue>[] array, int arrayIndex)
         {
             foreach (var kvp in this)
             {
@@ -492,7 +458,7 @@ namespace CsQuery.Implementation
         /// true if it succeeds, false if it fails.
         /// </returns>
 
-        public bool Remove(KeyValuePair<TKey[], TValue> item)
+        public bool Remove(KeyValuePair<string, TValue> item)
         {
             return Remove(item.Key);
         }
@@ -509,12 +475,12 @@ namespace CsQuery.Implementation
         /// The enumerator.
         /// </returns>
 
-        public IEnumerator<KeyValuePair<TKey[], TValue>> GetEnumerator()
+        public IEnumerator<KeyValuePair<string, TValue>> GetEnumerator()
         {
             // Don't use dictionary enumerator - return values in sorted order when enumerating over entire object
             foreach (var key in Keys)
             {
-                yield return new KeyValuePair<TKey[], TValue>(key, Index[key]);
+                yield return new KeyValuePair<string, TValue>(key, Index[key]);
             }
         }
 
@@ -531,4 +497,5 @@ namespace CsQuery.Implementation
  
     }
 }
+
 #endif
