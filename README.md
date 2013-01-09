@@ -359,17 +359,27 @@ Another thing that you do a lot in jQuery is this:
 
     var jqObject = $(domElement);
 
-That is, you wrap a single DOM element in a jQuery object so you can use jQuery methods to manipulate it. Without the "default method" concept in C#, you'd be looking at:
+That is, you wrap a single DOM element in a jQuery object so you can use jQuery methods to manipulate it. The CsQuery way to do this is create a new `CQ` object, and pass in the element in the constructor:
 
-    var csqObject = CQ.Create(domElement);
+    var csqObject = new CQ(domElement);
 
-That felt a bit to wordy for something that you do a lot, so there is a `Csq()` method on DOM elements that does the same thing:
+There is also a shortcut:
 
-    var csqObject = domElement.Csq();
+    var csqObject = domElement.Cq();
+
+For example:
+
+    bool visible = domElement.Cq().Is(":visible");
+
+These both produce the same result: A `CQ` object bound to the with `domElement` as the selection.
+
+Note that this is *not the same* as the very similar-looking Create method:
+
+    var csqObject = CQ.Create(domElement);   // probably not what you want!!
+
+The `Create` methods *always* create a new DOM. Calling the method above would result in a brand-new DOM with a single element. It's not bound to your original DOM any more; in fact, the element it contains is a clone of your original `domElement`.
     
-    bool visible = domElement.Csq().Is(":visible");
 
-This, by the way, is the only external dependency that the DOM model has.
 
 ##### Utility Methods
 
