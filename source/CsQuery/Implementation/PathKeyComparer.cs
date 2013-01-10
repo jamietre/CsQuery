@@ -119,68 +119,35 @@ namespace CsQuery.Implementation
         /// <returns>
         /// The hash code for this object.
         /// </returns>
+        
+        
 
         public int GetHashCode(ushort[] obj)
         {
-            byte[] buffer = new byte[obj.Length * 2];
-            Buffer.BlockCopy(obj, 0, buffer, 0, buffer.Length);
-
-            //return CompilerGenerated(buffer);
-
             unchecked
             {
-                const int p = 16777619;
+                        
+                const int HashP = 16777619;
                 int hash = (int)2166136261;
 
-                for (int i = 0; i < buffer.Length; i++)
-                    hash = (hash ^ buffer[i]) * p;
+                for (ushort i = 0; i < obj.Length; i++)
+                    hash = (hash ^ obj[i]) * HashP;
+                
 
-                hash += hash << 13;
-                hash ^= hash >> 7;
-                hash += hash << 3;
-                hash ^= hash >> 17;
-                hash += hash << 5;
-                return hash;
+                //hash += hash << 13;
+                //hash ^= hash >> 7;
+                //hash += hash << 3;
+                //hash ^= hash >> 17;
+                //hash += hash << 5;
+                
+                return ((((hash + (hash << 13))
+                    ^ (hash >> 7))
+                    + (hash << 3))
+                    ^ (hash >> 17))
+                    + (hash << 5);
             }
             
         }
 
-        //private int CompilerGenerated(byte[] array)
-        //{
-        //    unchecked
-        //    {
-        //        int i = 0;
-        //        int hash = 17;
-        //        int rounded = array.Length & ~3;
-
-        //        hash = 31 * hash + array.Length;
-
-        //        for (; i < rounded; i += 4)
-        //        {
-        //            hash = 31 * hash + BitConverter.ToInt32(array, i);
-        //        }
-
-        //        if (i < array.Length)
-        //        {
-        //            int val = array[i];
-        //            i++;
-
-        //            if (i < array.Length)
-        //            {
-        //                val |= array[i] << 8;
-        //                i++;
-
-        //                if (i < array.Length)
-        //                {
-        //                    val |= array[i] << 16;
-        //                }
-        //            }
-
-        //            hash = 31 * hash + val;
-        //        }
-
-        //        return hash;
-        //    }
-        //}
     }
 }

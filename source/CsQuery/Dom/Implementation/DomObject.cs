@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Runtime.InteropServices;
 using CsQuery.HtmlParser;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
@@ -213,7 +214,7 @@ namespace CsQuery.Implementation
         /// The path.
         /// </returns>
 
-        protected virtual ushort[] GetPath()
+        protected virtual ushort[] GetPath_UnOptimized()
         {
             DomObject curNode = this;
             List<ushort> path = new List<ushort>();
@@ -227,14 +228,58 @@ namespace CsQuery.Implementation
                 }
 
 #endif
+
                 path.Add(curNode.PathID);
                 curNode = curNode._ParentNode;
             }
+
             path.Reverse();
             return path.ToArray();
         }
 
+        /// <summary>
+        /// Gets the full path to this document.
+        /// </summary>
+        ///
+        /// <returns>
+        /// The path.
+        /// </returns>
+        
+        protected virtual ushort[] GetPath()
+        {
+   
 
+            DomObject curNode = this;
+            ushort index = 0;
+
+            byte[] path = new byte[8];
+            int len = 8;
+
+            while (curNode != null)
+            {
+                path[index++] = (byte)(curNode.PathID >> 8);
+                path[index++] = (byte)(curNode.PathID & 255);
+
+                if (index == len)
+                {
+                    len <<= 1;
+
+                    var newPath = new byte[len];
+                    Buffer.BlockCopy(path, 0, newPath, 0, index);
+                    path = newPath;
+                }
+
+                curNode = curNode._ParentNode;
+            }
+
+            Array.Reverse(path, 0, index);
+             
+            ushort[] output = new ushort[index >> 1];
+            Buffer.BlockCopy(path, 0, output, 0, index);
+
+            return output;
+            
+        }
         /// <summary>
         /// The DOM for this object. This is obtained by looking at its parents value until it finds a
         /// non-null Document in a parent. The value is cached locally as long as the current value of
