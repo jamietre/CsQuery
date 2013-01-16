@@ -24785,7 +24785,8 @@
         </member>
         <member name="M:CsQuery.Web.CsqWebRequest.GetResponseStreamReader(HttpWebAdapters.IHttpWebRequest)">
              <summary>
-             Gets response stream from a webrequest using the correct encoding.
+             Gets response stream from a webrequest using the correct encoding. If the encoding is not
+             specified, then the encoding will be detected from the BOM.
              </summary>
             
              <param name="request">
@@ -24798,7 +24799,7 @@
         </member>
         <member name="M:CsQuery.Web.CsqWebRequest.GetEncoding(HttpWebAdapters.IHttpWebResponse)">
              <summary>
-             Return the character set encoding for an IHttpWebResponse
+             Return the character set encoding for an IHttpWebResponse.
              </summary>
             
              <param name="response">
@@ -24806,7 +24807,8 @@
              </param>
             
              <returns>
-             The encoding.
+             The encoding, or null if no encoding was specified on the response, or the specified encoding
+             was not recognized.
              </returns>
         </member>
         <member name="P:CsQuery.Web.CsqWebRequest.Options">
@@ -24862,6 +24864,11 @@
         <member name="P:CsQuery.Web.CsqWebRequest.PostData">
             <summary>
             Gets the information describing the post data to be sent this request.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Web.CsqWebRequest.Encodings">
+            <summary>
+            A dictionary of all encodings available on this system
             </summary>
         </member>
         <member name="T:CsQuery.Web.AsyncWebRequest">

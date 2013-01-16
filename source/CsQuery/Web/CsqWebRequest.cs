@@ -407,7 +407,8 @@ namespace CsQuery.Web
         }
 
         /// <summary>
-        /// Gets response stream from a webrequest using the correct encoding.
+        /// Gets response stream from a webrequest using the correct encoding. If the encoding is not
+        /// specified, then the encoding will be detected from the BOM.
         /// </summary>
         ///
         /// <param name="request">
@@ -420,23 +421,27 @@ namespace CsQuery.Web
 
         protected StreamReader GetResponseStreamReader(IHttpWebRequest request)
         {
-
             var response = request.GetResponse();
-
-            //var response = request.GetResponse();
-            //var encoding = response.Headers["
 
             StreamReader reader;
             var encoding = GetEncoding(response);
-
-            reader = new StreamReader(response.GetResponseStream(), encoding);
+            if (encoding != null)
+            {
+                reader = new StreamReader(response.GetResponseStream(), encoding);
+            }
+            else
+            {
+                // when no encoding was specified on the HTTP response, just use BOM, and fall back on UTF8.
+                
+                reader = new StreamReader(response.GetResponseStream(),Encoding.UTF8, true);
+            }
             return reader;
         }
 
         #endregion
 
         /// <summary>
-        /// Return the character set encoding for an IHttpWebResponse
+        /// Return the character set encoding for an IHttpWebResponse.
         /// </summary>
         ///
         /// <param name="response">
@@ -444,7 +449,8 @@ namespace CsQuery.Web
         /// </param>
         ///
         /// <returns>
-        /// The encoding.
+        /// The encoding, or null if no encoding was specified on the response, or the specified encoding
+        /// was not recognized.
         /// </returns>
 
         public static Encoding GetEncoding(IHttpWebResponse response)
@@ -452,12 +458,13 @@ namespace CsQuery.Web
             Encoding encoding = null;
             if (!String.IsNullOrEmpty(response.CharacterSet)) {
                 EncodingInfo info;
-                if (Encodings.TryGetValue(response.CharacterSet,out info)) {
+                if (Encodings.TryGetValue(response.CharacterSet, out info))
+                {
                     encoding = info.GetEncoding();
-                } 
+                }
             }
             
-            return encoding ?? DefaultEncoding;
+            return encoding;
         }
 
         /// <summary>
@@ -480,30 +487,7 @@ namespace CsQuery.Web
             }
         }
 
-        /// <summary>
-        /// The default encoding for a web page
-        /// </summary>
-
-        private static Encoding DefaultEncoding
-        {
-            get
-            {
-                if (_DefaultEncoding == null)
-                {
-                    EncodingInfo info;
-                    if (!Encodings.TryGetValue("ISO-8859-1", out info))
-                    {
-                        _DefaultEncoding = Encoding.UTF8;
-                    }
-                    else
-                    {
-                        _DefaultEncoding = info.GetEncoding();
-                    }
-                }
-                return _DefaultEncoding;
-
-            }
-        }
+       
 
     }
 }
