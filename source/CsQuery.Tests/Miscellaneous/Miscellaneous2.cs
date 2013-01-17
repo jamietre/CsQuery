@@ -24,24 +24,24 @@ namespace CsQuery.Tests.Miscellaneous
     [TestFixture, TestClass]
     public class Reindex: CsQueryTest
     {
-        [Test, TestMethod]
-        public void TestJp()
-        {
-            //var dom = CQ.CreateFromUrl("http://ao.recruit.co.jp/form.html");
-            //var target = dom["a[href='recruit-mp.co.jp/company/data/']"];
-            //Assert.AreEqual("recruit-mp.co.jp/company/data/", target.Text();
-            bool done = false;
-             CQ.CreateFromUrlAsync("http://www.ahram.org.eg/Stars-Arts/News/194972.aspx")
-                 .Then(response =>
-              {
-                  var dom = response.Dom;
-string content = string.Empty;
-            content = dom["#txtBody  > p"].Text();
-            done = true;
-});
+//        [Test, TestMethod]
+//        public void TestJp()
+//        {
+//            //var dom = CQ.CreateFromUrl("http://ao.recruit.co.jp/form.html");
+//            //var target = dom["a[href='recruit-mp.co.jp/company/data/']"];
+//            //Assert.AreEqual("recruit-mp.co.jp/company/data/", target.Text();
+//            bool done = false;
+//             CQ.CreateFromUrlAsync("http://www.ahram.org.eg/Stars-Arts/News/194972.aspx")
+//                 .Then(response =>
+//              {
+//                  var dom = response.Dom;
+//string content = string.Empty;
+//            content = dom["#txtBody  > p"].Text();
+//            done = true;
+//});
 
-             while (done == false) ;
-        }
+//             while (done == false) ;
+//        }
 
         /// <summary>
         /// 
