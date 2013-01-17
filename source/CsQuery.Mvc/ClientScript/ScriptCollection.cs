@@ -274,29 +274,18 @@ namespace CsQuery.Mvc.ClientScript
 
             string fileName;
             ScriptParser parser=null;
-            try
-            {
-                fileName = MapPath(normalizedPath);
-                parser = new ScriptParser(fileName);
-            }
-            catch (FileNotFoundException e)
-            {
-                if (!IgnoreErrors)
-                {
-                    throw e;
-                }
-            }
-
+            
+            fileName = MapPath(normalizedPath);
+            
+            parser = new ScriptParser(fileName);
+            
             scriptRef = new ScriptRef
             {
                 Name = normalizedName,
                 Path = normalizedPath
             };
-
-            // Parser can be null if there was an error loading the script, but IgnoreErrors=true. If this
-            // is the case just skip everything, there will be no dependencies. 
-            // 
-            if (parser != null)
+            
+            if (parser.IsPhysicalFile)
             {
                 var options = new HashSet<string>();
 

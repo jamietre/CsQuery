@@ -61,7 +61,6 @@ namespace CsQuery.Web
         Lazy<List<KeyValuePair<string, string>>> _PostData = new Lazy<List<KeyValuePair<string, string>>>();
         private ServerConfig _Options;
         private static Dictionary<string, EncodingInfo> _Encodings;
-        private static Encoding _DefaultEncoding;
 
         #endregion
 
