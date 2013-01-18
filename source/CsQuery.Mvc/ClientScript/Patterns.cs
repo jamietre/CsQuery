@@ -12,20 +12,51 @@ namespace CsQuery.Mvc.ClientScript
     /// </summary>
     public static class Patterns
     {
-        private static Regex RegexStartComment = new Regex(@"^\s*/\*(?<comment>.*?)(\*/)*$");
 
         /// <summary>
-        /// The regular expression end comment.
+        /// A whitespace line
         /// </summary>
-
-        private static Regex RegexEndComment = new Regex(@"^(?<comment>.*)\*/\s*$");
+        
         private static Regex RegexWhiteSpace = new Regex(@"^\s*$");
 
-        // matches "/* xxx */" or "// xxx", ignoring whitespace
-        private static Regex RegexFullLineComment = new Regex(@"^\s*//(?<comment>.*)$");
-        private static Regex RegexOneLineComment = new Regex(@"^\s*/\*(?<comment>.*)\*/$");
+        /// <summary>
+        /// Matches the start of a multi-line comment block e.g.
+        ///    /* xxx
+        /// </summary>
 
-        // match "using arg1 arg2;" ignoring whitespace around ;
+        private static Regex RegexStartComment = new Regex(@"^\s*/\*\s*(?<comment>.*?)(\*/)*$");
+
+        /// <summary>
+        /// Matches the end of a multi-line comment block e.g.
+        ///    xxx */
+        /// </summary>
+
+
+        private static Regex RegexEndComment = new Regex(@"^(?<comment>.*)\*/\s*$");
+
+        
+        /// <summary>
+        ///  matches a single line comment, e.g. 
+        ///    // xxx
+        /// ignoring whitespace. Will also eliminate any extra slashes opening the comment block.
+        /// </summary>
+
+        private static Regex RegexFullLineComment = new Regex(@"^\s*//+\s*(?<comment>.*)$");
+
+        /// <summary>
+        /// matches a multi-line comment that is opened and closed on a single line, e.g. 
+        ///    /* xxx */
+        /// ignoring whitespace
+        /// </summary>
+        
+        private static Regex RegexOneLineComment = new Regex(@"^\s*/\*\s*(?<comment>.*)\*/$");
+
+        
+
+        /// <summary>
+        /// The regular expression dependency.
+        /// </summary>
+
         private static Regex RegexDependency = new Regex(@"^\s*using\s+(?<dep>[%/\-A-Za-z0-9\{\}\.]+?)(\s+(?<opt>[A-Za-z0-9\./]+?))*\s*;*\s*$");
         
         // match "using-options aaaa bbbb xxxx;"

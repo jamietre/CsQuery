@@ -44,6 +44,10 @@ namespace CsQuery.Mvc.Tests.Controllers
             return View();
 
         }
+        public ActionResult DepsOutsideLibrarypath()
+        {
+            return View();
+        }
 
         public void Cq_Index()
         {
