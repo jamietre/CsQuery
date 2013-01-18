@@ -127,11 +127,12 @@
     <None Include="Views\Test\Action1.cshtml" />
     <None Include="Views\Test\DepsOutsideLibraryPath.cshtml" />
     <None Include="Views\Test\Index6.cshtml" />
+    <None Include="Views\Test\UnresolvedScripts.cshtml" />
     <None Include="Views\Test\Index5.cshtml" />
     <None Include="Views\Test\Index4.cshtml" />
     <None Include="Views\Test\Index3.cshtml" />
     <None Include="Views\Test\Index2.cshtml" />
-    <None Include="Views\Test\InvalidDependencies.cshtml" />
+    <None Include="Views\Test\InvalidScripts.cshtml" />
     <None Include="Views\Test\Index.cshtml" />
     <None Include="Views\web.config">
       <SubType>Designer</SubType>

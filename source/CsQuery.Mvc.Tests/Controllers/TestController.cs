@@ -34,15 +34,15 @@ namespace CsQuery.Mvc.Tests.Controllers
 
         public ActionResult Action1()
         {
-            
-            return View();
-            
+            return View();            
         }
-        public ActionResult InvalidDependencies()
+        public ActionResult InvalidScripts()
         {
-
             return View();
-
+        }
+        public ActionResult UnresolvedScripts()
+        {
+            return View();
         }
         public ActionResult DepsOutsideLibrarypath()
         {

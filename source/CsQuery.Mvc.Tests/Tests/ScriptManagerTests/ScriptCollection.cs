@@ -21,7 +21,7 @@ namespace CsQuery.Mvc.Tests.ScriptManagerTests
     {
         public ScriptCollectionTest()
         {
-            var html = Support.GetFile("CsQuery.Mvc.Tests/Views/Test/Index6.cshtml");
+            var html = Support.GetFile("CsQuery.Mvc.Tests/Views/Test/unresolvedscripts.cshtml");
             Dom = CQ.Create(html);
             pathList = new PathList();
             pathList.Add("~/scripts");
@@ -31,7 +31,7 @@ namespace CsQuery.Mvc.Tests.ScriptManagerTests
         PathList pathList;
 
         [Test,TestMethod]
-        public void Test() {
+        public void SimpleTest() {
             ScriptCollection coll = new ScriptCollection(pathList, MapPath);
 
         }
