@@ -17,12 +17,6 @@ namespace CsQuery.Web
         const int BufferSize = 1024;
 
         /// <summary>
-        /// The request
-        /// </summary>
-
-        public StringBuilder RequestData;
-
-        /// <summary>
         /// A buffer
         /// </summary>
 
@@ -38,14 +32,8 @@ namespace CsQuery.Web
         /// The response stream.
         /// </summary>
 
-        public Stream ResponseStream;
-        
+        public Stream ResponseStreamAsync;
 
-        /// <summary>
-        /// The stream decoder.
-        /// </summary>
-
-        public Decoder StreamDecode = Encoding.UTF8.GetDecoder();
 
         /// <summary>
         /// Information describing the request.
@@ -64,9 +52,8 @@ namespace CsQuery.Web
         public WebRequestState(AsyncWebRequest requestInfo)
         {
             BufferRead = new byte[BufferSize];
-            RequestData = new StringBuilder(String.Empty);
             Request = requestInfo.Request;
-            ResponseStream = null;
+            ResponseStreamAsync = null;
             RequestInfo = requestInfo;
         }
     }

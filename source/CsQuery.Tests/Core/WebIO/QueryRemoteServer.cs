@@ -139,12 +139,12 @@ namespace CsQuery.Tests.Core.WebIO
 
         }
 
-		[Test, TestMethod]
-		public void GetCompressedResponseTest()
-		{
-			CQ mCQ = CQ.CreateFromUrl("http://api.jquery.com/jQuery.contains/");
-			Assert.IsTrue(mCQ.Select("#jq-footerNavigation").Length == 1, "I found an expected content container - if jQuery changed their web site or compressing method this could fail.");
-		}
+        //[Test, TestMethod]
+        //public void GetCompressedResponseTest()
+        //{
+        //    CQ mCQ = CQ.CreateFromUrl("http://api.jquery.com/jQuery.contains/");
+        //    Assert.IsTrue(mCQ.Select("#jq-footerNavigation").Length == 1, "I found an expected content container - if jQuery changed their web site or compressing method this could fail.");
+        //}
 
         private void FinishRequest(ICsqWebResponse response)
         {

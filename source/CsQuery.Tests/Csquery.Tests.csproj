@@ -105,6 +105,7 @@
     <Compile Include="Core\Dom\OuterHtml.cs" />
     <Compile Include="Core\Dom\SpecialElements.cs" />
     <Compile Include="Core\Selectors\ContentIsNotNumeric.cs" />
+    <Compile Include="Core\WebIO\BasicWeb.cs" />
     <Compile Include="ExtensionMethods\Xml.cs" />
     <Compile Include="HtmlParser\CharacterSetEncoding.cs" />
     <Compile Include="HtmlParser\HtmlEncoding.cs" />
@@ -127,6 +128,7 @@
     <Compile Include="Core\Methods\Text.cs" />
     <Compile Include="Core\Methods\Slice.cs" />
     <Content Include="Resources\ABS - Auto Brake Service.htm" />
+    <Content Include="Resources\arabic.htm" />
     <Content Include="Resources\jsdom\Level2\anchor.html" />
     <Content Include="Resources\jsdom\Level2\anchor2.html" />
     <Content Include="Resources\jsdom\Level2\anchor3.html" />
@@ -229,6 +231,7 @@
     <Compile Include="Core\Selectors\Extensions.cs" />
     <Compile Include="Implementation\RangeSortedDictionary.cs" />
     <Compile Include="Miscellaneous\Miscellaneous2.cs" />
+    <Compile Include="Mocks\MockAsyncResult.cs" />
     <Compile Include="Utility\Support.cs" />
     <Compile Include="Utility\FastActivator.cs" />
     <Compile Include="Examples\Tables.cs" />

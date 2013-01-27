@@ -30,13 +30,51 @@ namespace CsQuery
 
         public string RenderSelection()
         {
-            StringWriter sw = new StringWriter();
+            return RenderSelection(OutputFormatters.Default);
+        }
+
+        /// <summary>
+        /// Renders just the selection set completely.
+        /// </summary>
+        ///
+        /// <param name="outputFormatter">
+        /// The output formatter.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string of HTML.
+        /// </returns>
+
+        public string RenderSelection(IOutputFormatter outputFormatter)
+        {
+            StringWriter writer = new StringWriter();
+            RenderSelection(outputFormatter, writer);
+
+            return writer.ToString();
+        }
+
+        /// <summary>
+        /// Renders just the selection set completely.
+        /// </summary>
+        ///
+        /// <param name="outputFormatter">
+        /// The output formatter.
+        /// </param>
+        /// <param name="writer">
+        /// The writer.
+        /// </param>
+        ///
+        /// <returns>
+        /// A string of HTML.
+        /// </returns>
+
+        public void RenderSelection(IOutputFormatter outputFormatter, StringWriter writer)
+        {
             foreach (IDomObject elm in this)
             {
-                elm.Render(OutputFormatters.Default, sw);
+                elm.Render(outputFormatter, writer);
             }
 
-            return sw.ToString();
         }
 
         /// <summary>

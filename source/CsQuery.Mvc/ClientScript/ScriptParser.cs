@@ -26,13 +26,11 @@ namespace CsQuery.Mvc.ClientScript
 
         private TextReader StreamReader;
         private string _FileName;
+        /// <summary>
+        /// When true the parser is currently in a multilinecomment
+        /// </summary>
 
-        #endregion
-
-        #region public properties
-
-
-        public bool InMultilineComment { get; protected set; }
+        private bool InMultilineComment;
 
         /// <summary>
         /// Gets or sets a value indicating whether the last read line is a comment.
@@ -43,7 +41,18 @@ namespace CsQuery.Mvc.ClientScript
         /// the entire line is a commment.
         /// </value>
 
-        public bool InComment { get; protected set; }
+        public bool InComment;
+        
+        #endregion
+
+        #region public properties
+
+        /// <summary>
+        /// When true, this script represents a physical file in the filesystem. If false, it is either
+        /// invalid, or resolved in another way.
+        /// </summary>
+
+        public bool IsPhysicalFile { get; protected set; }
 
         /// <summary>
         /// The full text of the file
@@ -67,21 +76,17 @@ namespace CsQuery.Mvc.ClientScript
                 return _FileName;
             }
             protected set {
-                int qPos = value.IndexOf("?");
-                string fileName = qPos < 0 ?
-                    value :
-                    value.Substring(0, qPos);
+                string fileName = GetJustFilePath(value);
 
-
-                if (!File.Exists(fileName))
-                {
-                    throw new FileNotFoundException(String.Format("Dependency \"{0}\" could not be resolved in the file system.",
-                        value));
-                }
+                IsPhysicalFile = IsValidFileName(fileName) 
+                    && File.Exists(fileName);
 
                 _FileName = fileName;
-                FileData = File.ReadAllText(fileName);
-                StreamReader = new StringReader(FileData);
+                if (IsPhysicalFile)
+                {
+                    FileData = File.ReadAllText(fileName);
+                    StreamReader = new StringReader(FileData);
+                }
             }
         }
 
@@ -180,6 +185,46 @@ namespace CsQuery.Mvc.ClientScript
         #endregion
 
         #region private methods
+
+        /// <summary>
+        /// Test if the path appears to be a valid file name
+        /// </summary>
+        ///
+        /// <param name="path">
+        /// Full pathname of the file.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if valid file name, false if not.
+        /// </returns>
+
+        private bool IsValidFileName(string path)
+        {
+            int lastDotIndex = path.LastIndexOf(".");
+            int lastSlashIndex = path.LastIndexOf("\\");
+
+            return (lastDotIndex == 0
+                || lastDotIndex > lastSlashIndex);
+        }
+        /// <summary>
+        /// Gets just file path, removing querystring
+        /// </summary>
+        ///
+        /// <param name="path">
+        /// Full pathname of the file.
+        /// </param>
+        ///
+        /// <returns>
+        /// The just file path.
+        /// </returns>
+
+        private string GetJustFilePath(string path)
+        {
+            int qPos = path.IndexOf("?");
+            return  qPos < 0 ?
+                path :
+                path.Substring(0, qPos);
+        }
 
         private string GetMD5Hash(string input)
         {

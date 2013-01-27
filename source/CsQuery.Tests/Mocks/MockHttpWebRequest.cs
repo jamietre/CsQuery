@@ -4,6 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.Runtime.Serialization;
+using System.IO;
+using System.Threading;
+using CsQuery.Web;
+
 using HttpWebAdapters;
 
 namespace CsQuery.Tests.Mocks
@@ -14,6 +18,12 @@ namespace CsQuery.Tests.Mocks
 
     public class MockHttpWebRequest: IHttpWebRequest
     {
+        public MockHttpWebRequest()
+        {
+            ResponseTime = 100;
+            Timeout = 1200;
+            Headers = new WebHeaderCollection();
+        }
         /// <summary>
         /// Creates a new mock MockHttpWebRequest.
         /// </summary>
@@ -32,8 +42,12 @@ namespace CsQuery.Tests.Mocks
             request._RequestUri = uri;
             return request;
         }
-      
 
+        /// <summary>
+        /// Gets or sets the time that a response should take when using the mock.
+        /// </summary>
+
+        public int ResponseTime { get; set; }
 
         private Uri _RequestUri;
 
@@ -51,7 +65,7 @@ namespace CsQuery.Tests.Mocks
         /// Gets or sets the HTML that will be sent as a response.
         /// </summary>
 
-        public string ResponseHtml { get; set; }
+        public Stream ResponseStream { get; set; }
 
         public Uri RequestUri
         {
@@ -64,17 +78,28 @@ namespace CsQuery.Tests.Mocks
             set;
         }
 
-        IHttpWebResponse IHttpWebRequest.GetResponse()
+        private IHttpWebResponse GetResponse()
         {
             var response = new MockHttpWebResponse();
             response.CharacterSet = CharacterSet;
-            response.ResponseHtml = ResponseHtml;
+            response.ResponseStream = ResponseStream;
+
             if (!String.IsNullOrEmpty(CharacterSet))
             {
                 response.AddHeader(HttpResponseHeader.ContentType, "text/html;charset=" + CharacterSet);
             }
 
+            if (ResponseTime > Timeout)
+            {
+                 throw new WebException("The response was not receved within " + Timeout + " milliseconds.",WebExceptionStatus.Timeout);
+            }
+
             return response;
+        }
+
+        IHttpWebResponse IHttpWebRequest.GetResponse()
+        {
+            return GetResponse();
         }
 
         public System.IO.Stream GetRequestStream()
@@ -252,14 +277,8 @@ namespace CsQuery.Tests.Mocks
 
         public int Timeout
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get;
+            set;
         }
 
         public int ReadWriteTimeout
@@ -334,14 +353,8 @@ namespace CsQuery.Tests.Mocks
 
         public WebHeaderCollection Headers
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get;
+            set;
         }
 
         public IWebProxy Proxy
@@ -444,11 +457,11 @@ namespace CsQuery.Tests.Mocks
         {
             get
             {
-                throw new NotImplementedException();
+                return Headers["UserAgent"];
             }
             set
             {
-                throw new NotImplementedException();
+                Headers["UserAgent"] = value;
             }
         }
 
@@ -476,14 +489,45 @@ namespace CsQuery.Tests.Mocks
             }
         }
 
+        MockAsyncResult AsyncResult;
+        Timer AsyncTimer;
+        private AsyncCallback Callback;
+
         public IAsyncResult BeginGetResponse(AsyncCallback callback, object state)
+        {
+            AsyncResult = new MockAsyncResult
+            {
+                 IsCompleted = false,
+                 AsyncState=state,
+                 CompletedSynchronously = false,
+                 AsyncWaitHandle = GetWaitHandle()
+            };
+            Callback = callback;
+            return AsyncResult;
+
+            
+        }
+
+        private WaitHandle GetWaitHandle()
+        {
+            var cb = new TimerCallback(new Action<object>((stateInfo)=> {
+                AsyncResult.IsCompleted = true;
+                Callback.DynamicInvoke(AsyncResult);
+            }));
+            AutoResetEvent autoEvent = new AutoResetEvent(false);
+
+            AsyncTimer = new System.Threading.Timer(cb, autoEvent, ResponseTime, System.Threading.Timeout.Infinite);
+            return autoEvent;
+        }
+
+        void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             throw new NotImplementedException();
         }
-
+        
         public IHttpWebResponse EndGetResponse(IAsyncResult result)
         {
-            throw new NotImplementedException();
+            return GetResponse();
         }
 
         public IAsyncResult BeginGetRequestStream(AsyncCallback callback, object state)
@@ -495,5 +539,7 @@ namespace CsQuery.Tests.Mocks
         {
             throw new NotImplementedException();
         }
+
+        
     }
 }

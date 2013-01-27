@@ -16,7 +16,11 @@ namespace CsQuery.Tests.Mocks
         /// Gets or sets the HTML that will be sent as a response.
         /// </summary>
 
-        public string ResponseHtml { get; set; }
+        public Stream ResponseStream
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Gets the stream that is used to read the body of the response from the server.
@@ -33,19 +37,8 @@ namespace CsQuery.Tests.Mocks
 
         public Stream GetResponseStream()
         {
-            var output = new MemoryStream();
-            
-            Encoding encoding = String.IsNullOrEmpty(CharacterSet) ?
-                Encoding.UTF8 :
-                Encoding.GetEncoding(CharacterSet);
-            
-            var writer = new StreamWriter(output,encoding);
+            return ResponseStream;
 
-            writer.Write(ResponseHtml);
-            writer.Flush();
-
-            output.Position = 0;
-            return output;
         }
 
         protected WebHeaderCollection _Headers;

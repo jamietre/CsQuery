@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using CsQuery;
 using CsQuery.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -20,6 +21,7 @@ namespace CsQuery.Tests
     [TestClass,TestFixture]
     public abstract class CsQueryTest
     {
+
         private static string _SolutionDirectory;
 
         /// <summary>
@@ -178,10 +180,14 @@ namespace CsQuery.Tests
         /// <returns></returns>
         protected CQ TestDom(string name)
         {
-           
 
-            string html = Support.GetFile(TestDomPath(name));
+
+            string html = TestHtml(name);
             return CQ.CreateDocument(html);
+        }
+        protected string TestHtml(string name)
+        {
+            return Support.GetFile(TestDomPath(name));
         }
         public static string TestDomPath(string name)
         {
@@ -190,6 +196,32 @@ namespace CsQuery.Tests
                name + ".htm";
 
             return SolutionDirectory + "\\CsQuery.Tests\\Resources\\" + fName;
+        }
+
+        /// <summary>
+        /// Gets a memory stream from a string encoded with a specific encoding.
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// The HTML.
+        /// </param>
+        /// <param name="encoding">
+        /// The encoding.
+        /// </param>
+        ///
+        /// <returns>
+        /// The memory stream.
+        /// </returns>
+
+        protected MemoryStream GetMemoryStream(string html, Encoding encoding=null)
+        {
+            MemoryStream stream = new MemoryStream();
+            StreamWriter writer = new StreamWriter(stream, encoding ?? new UTF8Encoding(false));
+            writer.Write(html);
+            writer.Flush();
+            stream.Position = 0;
+
+            return stream;
         }
     }
 }

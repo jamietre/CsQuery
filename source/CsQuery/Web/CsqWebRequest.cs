@@ -16,7 +16,7 @@ namespace CsQuery.Web
     /// A CsqWebRequest object manages data and state related to a WebRequest
     /// </summary>
 
-    public class CsqWebRequest: ICsqWebRequest
+    public class CsqWebRequest : ICsqWebRequest
     {
         #region constructor
 
@@ -59,10 +59,28 @@ namespace CsQuery.Web
 
         IHttpWebRequestFactory WebRequestFactory;
         Lazy<List<KeyValuePair<string, string>>> _PostData = new Lazy<List<KeyValuePair<string, string>>>();
+        private ServerConfig _Options;
+        private static Dictionary<string, EncodingInfo> _Encodings;
 
         #endregion
 
         #region public properties
+
+        /// <summary>
+        /// Gets options for controlling the operation.
+        /// </summary>
+
+        public ServerConfig Options
+        {
+            get
+            {
+                return _Options ?? ServerConfig.Default;
+            }
+            set
+            {
+                _Options = value;
+            }
+        }
         
         /// <summary>
         /// The url to load.
@@ -74,8 +92,17 @@ namespace CsQuery.Web
         /// The UserAgent string to present to the remote server.
         /// </summary>
 
-        public string UserAgent {get;set;}
-
+        public string UserAgent
+        {
+            get
+            {
+                return Options.UserAgent;
+            }
+            set
+            {
+                Options.UserAgent = value;
+            }
+        }
         /// <summary>
         /// Gets or sets a value indicating whether the asynchronous.
         /// </summary>
@@ -98,13 +125,20 @@ namespace CsQuery.Web
         /// The time, in milliseconds, after which to abort an incomplete request.
         /// </summary>
 
-        public int Timeout { get; set; }
+        public int Timeout { 
+            get {
+                return (int)Math.Floor(Options.Timeout.TotalMilliseconds);
+            }
+            set {
+                Options.Timeout = TimeSpan.FromMilliseconds(value);
+            }
+        }
 
         /// <summary>
         /// A unique ID for this request. This will be automatically generated if not assigned.
         /// </summary>
 
-        public object Id {get;set;}
+        public object Id { get; set; }
 
         /// <summary>
         /// Gets or sets the HTML.
@@ -112,7 +146,8 @@ namespace CsQuery.Web
 
         public string Html
         {
-            get;set;
+            get;
+            set;
         }
 
         /// <summary>
@@ -124,8 +159,9 @@ namespace CsQuery.Web
             get
             {
                 StringBuilder sb = new StringBuilder();
-                foreach (var kvp in PostData) {
-                    sb.Append((sb.Length==0?"":"&") + HttpUtility.UrlEncode(kvp.Key+ "=" + kvp.Value));
+                foreach (var kvp in PostData)
+                {
+                    sb.Append((sb.Length == 0 ? "" : "&") + HttpUtility.UrlEncode(kvp.Key + "=" + kvp.Value));
                 }
                 return sb.ToString();
             }
@@ -133,18 +169,22 @@ namespace CsQuery.Web
             {
                 PostData.Clear();
                 string[] pairs = value.Split('&');
-                string key=String.Empty;
-                string val=String.Empty;
-                foreach (string item in pairs) {
+                string key = String.Empty;
+                string val = String.Empty;
+                foreach (string item in pairs)
+                {
                     int pos = item.IndexOf("=");
- 
-                    if (pos>0) {
-                        key = item.Substring(0,pos);
-                        val = item.Substring(pos+1);
-                    } else {
-                        key=item;
+
+                    if (pos > 0)
+                    {
+                        key = item.Substring(0, pos);
+                        val = item.Substring(pos + 1);
                     }
-                    PostData.Add(new KeyValuePair<string,string>(key,val));
+                    else
+                    {
+                        key = item;
+                    }
+                    PostData.Add(new KeyValuePair<string, string>(key, val));
                 }
             }
         }
@@ -153,15 +193,16 @@ namespace CsQuery.Web
         /// Gets the information describing the post data to be sent this request.
         /// </summary>
 
-        public List<KeyValuePair<string,string>> PostData 
+        public List<KeyValuePair<string, string>> PostData
         {
-            get {
+            get
+            {
                 return _PostData.Value;
             }
         }
 
         #endregion
-        
+
         #region public methods
 
         /// <summary>
@@ -183,14 +224,9 @@ namespace CsQuery.Web
         public ManualResetEvent GetAsync(Action<ICsqWebResponse> success, Action<ICsqWebResponse> fail)
         {
             IHttpWebRequest request = GetWebRequest();
-            var requestInfo = new AsyncWebRequest(request);
-            requestInfo.Timeout = Timeout;
-            requestInfo.UserAgent = UserAgent;
-            requestInfo.Id = Id;
-            requestInfo.CallbackSuccess  = success;
-            requestInfo.CallbackFail = fail;
+            ApplyOptions(request);
 
-            return requestInfo.GetAsync();
+            return GetAsync(request, success, fail);
         }
 
         /// <summary>
@@ -215,35 +251,39 @@ namespace CsQuery.Web
         public ManualResetEvent GetAsync(IHttpWebRequest request, Action<ICsqWebResponse> success, Action<ICsqWebResponse> fail)
         {
             var requestInfo = new AsyncWebRequest(request);
-            requestInfo.Timeout = Timeout;
-            requestInfo.UserAgent = UserAgent;
+            // do not apply options when using this method.
+
             requestInfo.Id = Id;
-            requestInfo.CallbackSuccess  = success;
+            requestInfo.CallbackSuccess = success;
             requestInfo.CallbackFail = fail;
 
             return requestInfo.GetAsync();
         }
 
-
         /// <summary>
-        /// Initiate a synchronous GET request.
+        /// Get the HTML using a synchronous HTTP request. This will return a string using the encoding
+        /// specified by the MIME type. If the document uses an encoding specified in a content-type
+        /// header, it will NOT be reflected by the results of this method.
         /// </summary>
         ///
         /// <returns>
-        /// The HTML returned by a successful request
+        /// The HTML returned by a successful request.
         /// </returns>
 
         public string Get()
         {
             IHttpWebRequest request = GetWebRequest();
+            ApplyOptions(request);
 
-            Html=null;
+            Html = null;
 
-            using (StreamReader responseReader = GetResponseStreamReader(request)) {
+            using (StreamReader responseReader = GetResponseStreamReader(request))
+            {
                 Html = responseReader.ReadToEnd();
             }
             return Html;
         }
+
 
         /// <summary>
         /// Initiate a synchronous GET request from an existing IHttpWebRequest object
@@ -279,7 +319,8 @@ namespace CsQuery.Web
         public IHttpWebRequest GetWebRequest()
         {
             IHttpWebRequest request = WebRequestFactory.Create(new Uri(Url));
-            
+            ApplyOptions(request);
+
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             return request;
         }
@@ -292,8 +333,9 @@ namespace CsQuery.Web
         /// The data returned by the POST request
         /// </returns>
 
-        public string Post() {
-            return Post(Url,PostData);
+        public string Post()
+        {
+            return Post(Url, PostData);
         }
 
         /// <summary>
@@ -308,8 +350,9 @@ namespace CsQuery.Web
         /// The data returned by the POST request
         /// </returns>
 
-        public string Post(string url) {
-            return Post(url,PostData);
+        public string Post(string url)
+        {
+            return Post(url, PostData);
         }
 
         /// <summary>
@@ -333,8 +376,9 @@ namespace CsQuery.Web
             byte[] data = encoding.GetBytes(PostDataString);
 
             IHttpWebRequest request = WebRequestFactory.Create(new Uri(Url));
+            ApplyOptions(request);
 
-            request.UserAgent = UserAgent ?? "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)";
+            
             request.Method = HttpWebRequestMethod.POST;
             request.ContentType = "application/x-www-form-urlencoded";
             request.ContentLength = data.Length;
@@ -349,13 +393,21 @@ namespace CsQuery.Web
             }
             return Html;
         }
-        
+
         #endregion
 
         #region private methods
 
+        private void ApplyOptions(IHttpWebRequest request)
+        {
+            request.Timeout = (int)Math.Floor(Options.Timeout.TotalMilliseconds);
+            request.UserAgent = Options.UserAgent;
+
+        }
+
         /// <summary>
-        /// Gets response stream from a webrequest using the correct encoding.
+        /// Gets response stream from a webrequest using the correct encoding. If the encoding is not
+        /// specified, then the encoding will be detected from the BOM.
         /// </summary>
         ///
         /// <param name="request">
@@ -366,22 +418,75 @@ namespace CsQuery.Web
         /// The response stream.
         /// </returns>
 
-        protected StreamReader GetResponseStreamReader(IHttpWebRequest request) {
+        protected StreamReader GetResponseStreamReader(IHttpWebRequest request)
+        {
             var response = request.GetResponse();
-            
-            //var response = request.GetResponse();
-            //var encoding = response.Headers["
-        
-            StreamReader reader;
-            var encoding = String.IsNullOrEmpty(response.CharacterSet) ?
-                Encoding.UTF8 :
-                Encoding.GetEncoding(response.CharacterSet);
 
-            reader = new StreamReader(response.GetResponseStream(), encoding);
+            StreamReader reader;
+            var encoding = GetEncoding(response);
+            if (encoding != null)
+            {
+                reader = new StreamReader(response.GetResponseStream(), encoding);
+            }
+            else
+            {
+                // when no encoding was specified on the HTTP response, just use BOM, and fall back on UTF8.
+                
+                reader = new StreamReader(response.GetResponseStream(),Encoding.UTF8, true);
+            }
             return reader;
         }
 
         #endregion
+
+        /// <summary>
+        /// Return the character set encoding for an IHttpWebResponse.
+        /// </summary>
+        ///
+        /// <param name="response">
+        /// The response.
+        /// </param>
+        ///
+        /// <returns>
+        /// The encoding, or null if no encoding was specified on the response, or the specified encoding
+        /// was not recognized.
+        /// </returns>
+
+        public static Encoding GetEncoding(IHttpWebResponse response)
+        {
+            Encoding encoding = null;
+            if (!String.IsNullOrEmpty(response.CharacterSet)) {
+                EncodingInfo info;
+                if (Encodings.TryGetValue(response.CharacterSet, out info))
+                {
+                    encoding = info.GetEncoding();
+                }
+            }
+            
+            return encoding;
+        }
+
+        /// <summary>
+        /// A dictionary of all encodings available on this system
+        /// </summary>
+
+        private static Dictionary<string,EncodingInfo> Encodings
+        {
+            get
+            {
+                if (_Encodings == null)
+                {
+                    _Encodings = new Dictionary<string, EncodingInfo>(StringComparer.CurrentCultureIgnoreCase);
+                    foreach (var encoding in Encoding.GetEncodings())
+                    {
+                        _Encodings[encoding.Name] = encoding;
+                    }
+                }
+                return _Encodings;
+            }
+        }
+
+       
 
     }
 }

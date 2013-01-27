@@ -38,6 +38,7 @@ namespace CsQuery.Tests.Core.Implementation
 
         private static char[] chars;
         private static int pos = 0;
+
         protected string NextKey(int length)
         {
             string key= "";

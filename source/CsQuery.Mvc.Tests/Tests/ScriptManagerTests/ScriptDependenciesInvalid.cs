@@ -30,14 +30,28 @@ namespace CsQuery.Mvc.Tests
         {
             Assert.Throws<FileNotFoundException>(() =>
             {
-                var doc = RenderView<TestController>("invaliddependencies", false);
+                var doc = RenderView<TestController>("invalidscripts", false);
             });
 
             
         }
 
-        
+        /// <summary>
+        /// Ensure that root-level scripts that can't be resolved don't throw errors
+        /// </summary>
 
+        [Test, TestMethod]
+        public void GetViewWithUnresolvedScripts()
+        {
+            var doc = RenderView<TestController>("unresolvedscripts", false);
+
+            // there should be 2 scripts generated, dep5 which is "nocombine" plus the others
+            Assert.AreEqual(2, doc["script.csquery-generated"].Length);
+
+            // .. plus the existing 5
+            Assert.AreEqual(7, doc["script"].Length);
+            
+        }
          
     }
 }

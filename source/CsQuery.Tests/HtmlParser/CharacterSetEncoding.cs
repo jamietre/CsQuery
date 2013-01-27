@@ -30,141 +30,84 @@ namespace CsQuery.Tests.HtmlParser
         string htmlEnd = "</div></body></html>";
         char hebrewChar = (char)164;
 
+      
+
         [TestMethod, Test]
         public void MetaTag()
         {
-            
 
             var encoder = Encoding.GetEncoding("windows-1255");
-            
 
             var html = htmlStart + htmlStartMeta + htmlStart3 +hebrewChar + htmlEnd;
             var htmlNoRecode = htmlStart + htmlStart3 + hebrewChar + htmlEnd;
 
+            var dom = CQ.Create(GetMemoryStream(htmlNoRecode, encoder));
 
-            // read it in again, but without encoding
-
-            //encoded.Position = 0;
-
-            var dom = CQ.Create(html);
-            var output = dom.Render(OutputFormatters.HtmlEncodingMinimum);
-
-            // FINALLY  -- grab the character from CsQuery's output, and ensure that this all worked out.
+            // grab the character from CsQuery's output, and ensure that this all worked out.
             
             var outputHebrewChar = dom["#test"].Text();
 
-            //  write the string to an encoded stream  to get the correct encoding manually
-            MemoryStream encoded = new MemoryStream();
-            var writer = new StreamWriter(encoded, encoder);
-            writer.Write(html);
-            writer.Flush();
+            // Test directly from the stream
 
-            encoded.Position = 0;
-            string htmlHebrew = new StreamReader(encoded, encoder).ReadToEnd();
+            string htmlHebrew = new StreamReader(GetMemoryStream(htmlNoRecode,encoder),encoder).ReadToEnd();
+
             var sourceHebrewChar = htmlHebrew.Substring(htmlHebrew.IndexOf("test>") + 5, 1);
 
-            Assert.AreEqual(sourceHebrewChar, outputHebrewChar);
+            // CsQuery should fail to parse it
+             
+            Assert.AreNotEqual(hebrewChar, outputHebrewChar);
 
-            // Try this again WITHOUT charset encoding.
+            // the unicode version should not match the 1255 versions
+            Assert.AreNotEqual(hebrewChar, sourceHebrewChar);
 
-            var clone = CQ.Create(htmlNoRecode);
-            string newHtml = clone.Render(OutputFormatters.HtmlEncodingMinimum);
-            var dom2 = CQ.Create(newHtml);
+            // the actual character from codepage 1255
+            Assert.AreEqual("₪", sourceHebrewChar);
 
-            outputHebrewChar = dom2["#test"].Text();
-            Assert.AreNotEqual(sourceHebrewChar, outputHebrewChar);
+            // Now try it same as the original test - but with the meta tag identifying character set.
 
-            var reader = new StreamReader(encoded);
-            string interim = reader.ReadToEnd();
+            var htmlWindows1255 = GetMemoryStream(html, encoder);
 
-            encoded = new MemoryStream();
-            writer = new StreamWriter(encoded, Encoding.UTF8);
-            writer.Write(interim);
-            writer.Flush();
+            // pass it the wrong encoding deliberately
+            dom = CQ.Create(htmlWindows1255, Encoding.GetEncoding("ISO-8859-1"));
+            outputHebrewChar = dom["#test"].Text();
 
-
-            // read it back one more time
-
-            encoded.Position = 0;
-            reader = new StreamReader(encoded);
-            string final = reader.ReadToEnd();
-
-
-//            var encoded = encoder.GetBytes(html);
-
-
-
+            Assert.AreEqual(sourceHebrewChar,outputHebrewChar);
         }
+
 
         [TestMethod, Test]
         public void MetaTagOutsideBlock()
         {
 
-
             var encoder = Encoding.GetEncoding("windows-1255");
 
             string filler = "<script type=\"text/javascript\" src=\"dummy\"></script>";
             var html = htmlStart;
+            
             for (int i = 1; i < 5000 / filler.Length; i++)
             {
                 html += filler;
             }
+            html += htmlStartMeta + htmlStart3;
 
+            // pad enough after the meta so that the hebrew character is in block 3.
+            // If it were in block 2, it could only reflect the prior encoding.
             
-            html+=htmlStartMeta + htmlStart3 + hebrewChar + htmlEnd;
-            var htmlNoRecode = htmlStart + htmlStart3 + hebrewChar + htmlEnd;
+            for (int i = 1; i < 5000 / filler.Length; i++)
+            {
+                html += filler;
+            }
+            
+            html+=hebrewChar + htmlEnd;
 
+            // Now try it  same as the original test - but with the meta tag identifying character set.
 
-            var dom = CQ.Create(html);
-            var output = dom.Render(OutputFormatters.HtmlEncodingMinimum);
+            var htmlWindows1255 = GetMemoryStream(html, encoder);
 
-            // FINALLY  -- grab the character from CsQuery's output, and ensure that this all worked out.
-
+            var dom = CQ.Create(htmlWindows1255, Encoding.GetEncoding("ISO-8859-1"));
             var outputHebrewChar = dom["#test"].Text();
 
-            //  write the string to an encoded stream  to get the correct encoding manually
-            MemoryStream encoded = new MemoryStream();
-            var writer = new StreamWriter(encoded, encoder);
-            writer.Write(html);
-            writer.Flush();
-
-            encoded.Position = 0;
-            string htmlHebrew = new StreamReader(encoded, encoder).ReadToEnd();
-            var sourceHebrewChar = htmlHebrew.Substring(htmlHebrew.IndexOf("test>") + 5, 1);
-
-
-            // THIS IS THE DIFFERENCE BETWEEN THIS AND THE OTHER TEST
-            // the encoding should be ignored
-            Assert.AreNotEqual(sourceHebrewChar, outputHebrewChar);
-
-            // Try this again WITHOUT charset encoding.
-
-            var clone = CQ.Create(htmlNoRecode);
-            string newHtml = clone.Render(OutputFormatters.HtmlEncodingMinimum);
-            var dom2 = CQ.Create(newHtml);
-
-            outputHebrewChar = dom2["#test"].Text();
-            Assert.AreNotEqual(sourceHebrewChar, outputHebrewChar);
-
-            var reader = new StreamReader(encoded);
-            string interim = reader.ReadToEnd();
-
-            encoded = new MemoryStream();
-            writer = new StreamWriter(encoded, Encoding.UTF8);
-            writer.Write(interim);
-            writer.Flush();
-
-
-            // read it back one more time
-
-            encoded.Position = 0;
-            reader = new StreamReader(encoded);
-            string final = reader.ReadToEnd();
-
-
-            //            var encoded = encoder.GetBytes(html);
-
-
+            Assert.AreEqual("₪", outputHebrewChar);
 
         }
 
@@ -173,7 +116,7 @@ namespace CsQuery.Tests.HtmlParser
         {
             var creator = new Mocks.MockWebRequestCreator();
             creator.CharacterSet = "windows-1255";
-            creator.ResponseHTML = htmlStart + htmlStart3 + hebrewChar + htmlEnd;
+            creator.ResponseStream = GetMemoryStream(htmlStart + htmlStart3 + hebrewChar + htmlEnd, Encoding.GetEncoding("windows-1255"));
             
             CsqWebRequest request = new CsqWebRequest("http://test.com", creator);
             
@@ -193,15 +136,74 @@ namespace CsQuery.Tests.HtmlParser
 
             // try it again, using the meta tag
             creator.CharacterSet = "windows-1255";
-            creator.ResponseHTML = htmlStart + htmlStartMeta + htmlStart3 + hebrewChar + htmlEnd;
+            creator.ResponseStream = GetMemoryStream(htmlStart + htmlStartMeta + htmlStart3 + hebrewChar + htmlEnd, Encoding.GetEncoding("windows-1255"));
 
+            /// CreateFromUrl process
+            
             request = new CsqWebRequest("http://test.com", creator);
-            var dom3 = CQ.Create(request.Get());
+            var httpRequest = request.GetWebRequest();
+            var response = httpRequest.GetResponse();
+            var responseStream = response.GetResponseStream();
+            var encoding = CsqWebRequest.GetEncoding(response);
+
+            var dom3 = CQ.CreateDocument(responseStream, encoding);
             var outputHebrewChar2 = dom3["#test"].Text();
 
             Assert.AreEqual(outputHebrewChar, outputHebrewChar2);
 
         }
+        [TestMethod, Test]
+        public void Utf8NoContentType()
+        {
 
+            var creator = new Mocks.MockWebRequestCreator();
+            creator.CharacterSet = "ISO-8859-1";
+            creator.ResponseStream = GetMemoryStream(TestHtml("arabic"), new UTF8Encoding(false));
+
+            CsqWebRequest request = new CsqWebRequest("http://test.com", creator);
+            
+            // remove the content type header
+            var html = request.Get();
+            var start = html.IndexOf(@"<meta http-equiv=""Content-Type""");
+            var end = html.IndexOf(">",start);
+            html = html.Substring(0,start)+html.Substring(end+1);
+
+            var dom = CQ.CreateDocument(html);
+            var expected = @"البابا: اوقفوا ""المجزرة"" في سوريا قبل ان تتحول البلاد الى ""أطلال""";
+
+            Assert.AreNotEqual(expected, dom["h1"].Text());
+
+            //test synchronous: this is the code that CreateFromURL uses 
+
+            request = new CsqWebRequest("http://test.com", creator);
+
+            var httpRequest = request.GetWebRequest();
+            var response = httpRequest.GetResponse();
+            var responseStream = response.GetResponseStream();
+            var encoding = CsqWebRequest.GetEncoding(response);
+            var dom2 = CQ.CreateDocument(responseStream, encoding);
+
+            Assert.AreEqual(expected, dom2["h1"].Text());
+
+            // Test async version now
+
+            request = new CsqWebRequest("http://test.com", creator);
+            
+            bool? done=null;
+            CQ dom3=null;
+
+            request.GetAsync((r) =>
+            {
+                dom3 = r.Dom;
+                done = true;
+            }, (r)=>{
+                done = false;   
+            });
+
+            while (done == null) ;
+            Assert.IsTrue((bool)done);
+            Assert.AreEqual(expected, dom3["h1"].Text());
+
+        }
     }
 }

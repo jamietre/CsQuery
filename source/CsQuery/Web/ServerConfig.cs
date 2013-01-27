@@ -19,7 +19,7 @@ namespace CsQuery.Web
             _Default = new ServerConfig
             {
                 Timeout = TimeSpan.FromSeconds(10),
-                UserAgent = null
+                UserAgent = "Mozilla/5.0 (compatible; CsQuery/1.3)"
             };
         }
 
