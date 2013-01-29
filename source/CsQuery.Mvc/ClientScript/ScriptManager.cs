@@ -37,6 +37,19 @@ namespace CsQuery.Mvc.ClientScript
         }
 
         /// <summary>
+        /// Creates a ScriptManager for the ScriptEnvironment data passed
+        /// </summary>
+        ///
+        /// <param name="env">
+        /// The environment.
+        /// </param>
+
+        public ScriptManager(ScriptEnvironment env)
+        {
+            ScriptEnvironment = env;
+        }
+
+        /// <summary>
         /// Default constructor; creates this ScriptManager for the specified library path &amp; MapPath
         /// function.
         /// </summary>
@@ -93,22 +106,23 @@ namespace CsQuery.Mvc.ClientScript
             {
                 throw new ArgumentException("The resolveUrlFunc function cannot be null.");
             }
+
+                 
             Initialize(null, mapPathFunc, resolveUrlFunc);
         }
 
         private void Initialize(PathList libraryPath, Func<string, string> mapPathFunc, Func<string, string> resolveUrlFunc)
         {
-            MapPath = mapPathFunc ?? HttpContext.Current.Server.MapPath;
-            ResolveUrl = resolveUrlFunc ?? DefaultResolveUrlFunc;
+            ScriptEnvironment = new ScriptEnvironment
+            {
+                MapPath = mapPathFunc,
+                LibraryPath = libraryPath,
+                ResolveUrl = resolveUrlFunc
+            };
 
-
-            LibraryPath = libraryPath ?? new PathList();
         }
 
-        private string DefaultResolveUrlFunc(string url)
-        {
-            return UrlHelper.GenerateContentUrl(url, new HttpContextWrapper(HttpContext.Current));
-        }
+       
         /// <summary>
         /// Identifier used to generate unique IDs for the generated script bundles
         /// </summary>
@@ -126,10 +140,12 @@ namespace CsQuery.Mvc.ClientScript
 
         #region private properties
 
-        private Func<string, string> MapPath;
-        private Func<string, string> ResolveUrl;
+        private ScriptEnvironment ScriptEnvironment;
+
 
         #endregion
+
+        #region public properties
 
         /// <summary>
         /// Gets or sets options that control the operation of the ScriptManager.
@@ -137,11 +153,8 @@ namespace CsQuery.Mvc.ClientScript
 
         public ViewEngineOptions Options { get; set; }
 
-        /// <summary>
-        /// Gets or sets the paths in the library search path
-        /// </summary>
         
-        public PathList LibraryPath { get; set; }
+        #endregion
 
         /// <summary>
         /// Resolve all script dependencies in the bound CQ document. Scripts that cotain a "data-
@@ -163,11 +176,7 @@ namespace CsQuery.Mvc.ClientScript
             //        + "[src]";
 
             // Filter out non-relative paths (remote URLs)
-            CQ scripts = doc[scriptSelector].Filter(item =>
-            {
-                return !PathList.IsRemoteUrl(item.UrlSource());
-            });
-
+            CQ scripts = doc[scriptSelector];
 
 
             if (scripts.Length == 0)
@@ -195,12 +204,13 @@ namespace CsQuery.Mvc.ClientScript
 
             // resolve dependencies
 
-            ScriptCollection coll = new ScriptCollection(LibraryPath,MapPath);
+            ScriptCollection coll = new ScriptCollection(ScriptEnvironment);
             coll.NoCache = Options.HasFlag(ViewEngineOptions.NoCache);
             coll.IgnoreErrors = Options.HasFlag(ViewEngineOptions.IgnoreMissingScripts);
 
             // identify the insertion point for the script bundle
             var firstScriptEl = coll.AddFromCq(scripts);
+
             var firstScript = firstScriptEl == null ? 
                 head.Children().First() : 
                 firstScriptEl.Cq();
@@ -319,7 +329,7 @@ namespace CsQuery.Mvc.ClientScript
             }
 
             
-            return CQ.CreateFragment(String.Format(template, ResolveUrl(url)));
+            return CQ.CreateFragment(String.Format(template, ScriptEnvironment.ResolveUrl(url)));
         }
         private ScriptBundle GetScriptBundle(string bundleAlias)
         {

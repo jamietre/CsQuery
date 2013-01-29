@@ -17,7 +17,7 @@ namespace CsQuery
     /// some javascript code actually uses this in logic we allow the same kind of access. It also eliminates the
     /// need to cast frequently, for example, when accessing the results of a jQuery object by index.
     /// </summary>
-    public interface IDomObject: IDomNode
+    public interface IDomObject : IDomNode
     {
         // To simulate the way the real DOM works, most properties/methods of things directly in the DOM
         // are part of a common interface, even if they do not apply.
@@ -94,7 +94,7 @@ namespace CsQuery
         /// <value>
         /// A sequence of strings	   
         /// </value>
-        
+
         IEnumerable<string> Classes { get; }
 
         /// <summary>
@@ -705,15 +705,30 @@ namespace CsQuery
 #if DEBUG_PATH
         string PathID {get; }
 #else
-        ushort PathID { get; }
+        [Obsolete]
+        char PathID { get; }
+
+        /// <summary>
+        /// Gets the full pathname of the node file.
+        /// </summary>
+
+        ushort NodePathID { get; }
 #endif
+
 
         /// <summary>
         /// Gets the unique path to this element from the root of the heirarchy. This is generally only
         /// used for internal purposes.
         /// </summary>
 
-        ushort[] Path { get; }
+        [Obsolete]
+        string Path { get; }
+
+        /// <summary>
+        /// Gets the full pathname of the node file.
+        /// </summary>
+
+        ushort[] NodePath { get; }
 
         /// <summary>
         /// Wrap this element in a CQ object. This is the CsQuery equivalent of the common jQuery

@@ -167,10 +167,10 @@ namespace CsQuery.Implementation
                         switch (OutputOrder)
                         {
                             case SelectionSetOrder.Ascending:
-                                _OrderedList = MutableList.OrderBy(item => item.Path, PathKeyComparer.Comparer);
+                                _OrderedList = MutableList.OrderBy(item => item.NodePath, PathKeyComparer.Comparer);
                                 break;
                             case SelectionSetOrder.Descending:
-                                _OrderedList = MutableList.OrderByDescending(item => item.Path, PathKeyComparer.Comparer);
+                                _OrderedList = MutableList.OrderByDescending(item => item.NodePath, PathKeyComparer.Comparer);
                                 break;
                             case SelectionSetOrder.OrderAdded:
                                 _OrderedList = MutableListOrdered;

@@ -21,24 +21,20 @@ namespace CsQuery.Mvc.ClientScript
             Dependencies = new List<ScriptRef>();
         }
 
-        private string _Name;
+        private string _Path;
+
 
         /// <summary>
-        /// The name in normalized form e.g. "folder/script.js". If this is from a libary, it should be relative to the
-        /// base of its library folder. It should never include tildes and always include extensions.
+        /// Return the relative path root for this file, e.g. the path excluding the file name.
         /// </summary>
-        ///
-        /// <value>
-        /// The name.
-        /// </value>
 
-        public string Name { 
-            get {
-                return _Name;
+        public string RelativePathRoot
+        {
+            get
+            {
+
+                return Path.BeforeLast("/")+"/";
             }
-            set{
-                _Name = value.ToLower();
-            } 
         }
 
         /// <summary>
@@ -64,7 +60,17 @@ namespace CsQuery.Mvc.ClientScript
         /// Virtual path to the dependency
         /// </summary>
 
-        public string Path { get; set; }
+        public string Path
+        {
+            get
+            {
+                return _Path;
+            }
+            set
+            {
+                _Path = value.Replace("\\", "/");
+            }
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether the dependency path has been resolved. 
@@ -138,7 +144,7 @@ namespace CsQuery.Mvc.ClientScript
 
         public override string ToString()
         {
-            return "[" + Name + "]: \"" + Path + "\"";
+            return "[" + Path + "]: \"" + Path + "\"";
         }
 
         /// <summary>
@@ -151,7 +157,7 @@ namespace CsQuery.Mvc.ClientScript
 
         public void UpdateFrom(ScriptRef other)
         {
-            if (other==null || other.Name != Name)
+            if (other == null || other.Path != Path)
             {
                 throw new InvalidOperationException("The other script reference must have the same name as this one.");
             }

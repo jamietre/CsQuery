@@ -173,7 +173,7 @@ namespace CsQuery.Implementation
         /// own ID.
         /// </summary>
 
-        public virtual ushort[] Path
+        public virtual ushort[] NodePath
         {
             get
             {
@@ -200,11 +200,30 @@ namespace CsQuery.Implementation
 
                 return _ParentNode != null ?
                    GetPath() :
-                    new ushort[2] { (ushort)'_', PathID };
+                    new ushort[2] { (ushort)'_', NodePathID };
 #endif
 
             }
         }
+
+        /// <summary>
+        /// Gets the unique path to this element as a string. THIS METHOD IS OBSOLETE. It has been replaced by NodePath.
+        /// </summary>
+
+        [Obsolete]
+        public virtual string Path
+        {
+            get
+            {
+                StringBuilder path = new StringBuilder();
+                foreach (var item in NodePath)
+                {
+                    path.Append(item);
+                }
+                return path.ToString();
+            }
+        }
+
 
         /// <summary>
         /// Gets the full path to this document.
@@ -229,7 +248,7 @@ namespace CsQuery.Implementation
 
 #endif
 
-                path.Add(curNode.PathID);
+                path.Add(curNode.NodePathID);
                 curNode = curNode._ParentNode;
             }
 
@@ -257,8 +276,8 @@ namespace CsQuery.Implementation
 
             while (curNode != null)
             {
-                path[index++] = (byte)(curNode.PathID >> 8);
-                path[index++] = (byte)(curNode.PathID & 255);
+                path[index++] = (byte)(curNode.NodePathID >> 8);
+                path[index++] = (byte)(curNode.NodePathID & 255);
 
                 if (index == len)
                 {
@@ -409,12 +428,14 @@ namespace CsQuery.Implementation
             }
         }
 
+        
+#if DEBUG_PATH
         /// <summary>
         /// Unique ID assigned when added to a dom. This is not the full path but just the ID at this
         /// level. The full path is never stored with each node to prevent having to regenerate if node
         /// trees are moved.
         /// </summary>
-#if DEBUG_PATH
+        /// 
         public virtual string PathID
         {
             get
@@ -427,7 +448,28 @@ namespace CsQuery.Implementation
         }
 
 #else
-        public virtual ushort PathID
+
+        /// <summary>
+        /// Gets a unique ID for this element among its siblings. THIS METHOD IS OBSOLETE. It has been replaced by NodePath.
+        /// </summary>
+        
+        [Obsolete]
+        public virtual char PathID
+        {
+            get
+            {
+                // Don't actually store paths with non-element nodes as they aren't indexed and don't have children.
+                // Fast read access is less important than not having to reset them when moved.
+
+                return (char)(Index + 2);
+            }
+        }
+
+        /// <summary>
+        /// Gets a unique ID for this element among its siblings.
+        /// </summary>
+
+        public virtual ushort NodePathID
         {
             get
             {

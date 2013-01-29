@@ -268,7 +268,7 @@ namespace CsQuery.Engine
                         
                         foreach (IDomObject obj in selectionSource)
                         {
-                            var subKey = key.Concat(HtmlData.indexSeparator).Concat(obj.Path);
+                            var subKey = key.Concat(HtmlData.indexSeparator).Concat(obj.NodePath);
 
                             elementMatches.AddRange(Document.DocumentIndex.QueryIndex(subKey.ToArray(),
                                     depth, descendants));
@@ -295,7 +295,7 @@ namespace CsQuery.Engine
                     {
 
 
-                        var subKey = new ushort[] { HtmlData.indexSeparator }.Concat(obj.Path);
+                        var subKey = new ushort[] { HtmlData.indexSeparator }.Concat(obj.NodePath);
 
                         HashSet<IDomObject> srcKeys = new HashSet<IDomObject>(Document.DocumentIndex.QueryIndex(
                             subKey.ToArray()));
@@ -333,8 +333,8 @@ namespace CsQuery.Engine
             output.AddRange(lastResult);
 
             // Return the results as a list so that any user will not cause the selector to be run again
-            
-            return output.OrderBy(item => item.Path, Implementation.PathKeyComparer.Comparer).ToList();
+
+            return output.OrderBy(item => item.NodePath, Implementation.PathKeyComparer.Comparer).ToList();
 
         }
 

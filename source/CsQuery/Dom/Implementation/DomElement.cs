@@ -275,11 +275,11 @@ namespace CsQuery.Implementation
                 {
                     if (InnerAttributes.ContainsKey(HtmlData.IDAttrId))
                     {
-                        Document.DocumentIndex.RemoveFromIndex(IndexKey('#', HtmlData.TokenizeCaseSensitive(Id), Path));
+                        Document.DocumentIndex.RemoveFromIndex(IndexKey('#', HtmlData.TokenizeCaseSensitive(Id), NodePath));
                     }
                     if (value != null)
                     {
-                        Document.DocumentIndex.AddToIndex(IndexKey('#', HtmlData.TokenizeCaseSensitive(value), Path), this);
+                        Document.DocumentIndex.AddToIndex(IndexKey('#', HtmlData.TokenizeCaseSensitive(value), NodePath), this);
                     }
                 }
                 SetAttributeRaw(HtmlData.IDAttrId, value);
@@ -833,7 +833,7 @@ namespace CsQuery.Implementation
         public override IEnumerable<ushort[]> IndexKeys()
         {
 
-            ushort[] path = Path;
+            ushort[] path = NodePath;
 
             yield return new ushort[] { HtmlData.indexSeparator }.Concat(path).ToArray();
             
@@ -1621,7 +1621,7 @@ namespace CsQuery.Implementation
 #if DEBUG_PATH
             return "!" + HtmlData.TokenName(attrId).ToLower() + HtmlData.indexSeparator + Path;
 #else
-            return new ushort[] { '!', attrId, HtmlData.indexSeparator }.Concat(Path).ToArray();
+            return new ushort[] { '!', attrId, HtmlData.indexSeparator }.Concat(NodePath).ToArray();
 #endif
         }
 
@@ -1711,7 +1711,7 @@ namespace CsQuery.Implementation
 
         protected ushort[] IndexKey(char prefix, ushort keyTokenId)
         {
-            return IndexKey(prefix, keyTokenId, Path);
+            return IndexKey(prefix, keyTokenId, NodePath);
         }
 
         /// <summary>
@@ -1731,7 +1731,7 @@ namespace CsQuery.Implementation
 
         protected ushort[] IndexKey(char prefix, string key)
         {
-            return IndexKey(prefix, key, Path);
+            return IndexKey(prefix, key, NodePath);
         }
 
         /// <summary>
