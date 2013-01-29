@@ -22,7 +22,7 @@ namespace CsQuery.StringScanner.Patterns
 
         }
         /// <summary>
-        /// Match a pattern for am attribute name selector
+        /// Match a pattern for an attribute name selector
         /// </summary>
         /// <param name="index"></param>
         /// <param name="character"></param>
@@ -36,7 +36,7 @@ namespace CsQuery.StringScanner.Patterns
             }
             else
             {
-                return CharacterData.IsType(character,CharacterType.HtmlIDNameExceptStart);
+                return CharacterData.IsType(character,CharacterType.HtmlAttributeName);
             }
         }
     }

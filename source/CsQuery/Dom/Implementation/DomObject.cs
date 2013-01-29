@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Runtime.InteropServices;
 using CsQuery.HtmlParser;
 using CsQuery.ExtensionMethods;
 using CsQuery.ExtensionMethods.Internal;
@@ -172,7 +173,7 @@ namespace CsQuery.Implementation
         /// own ID.
         /// </summary>
 
-        public virtual string Path
+        public virtual ushort[] Path
         {
             get
             {
@@ -199,7 +200,7 @@ namespace CsQuery.Implementation
 
                 return _ParentNode != null ?
                    GetPath() :
-                    "_" + PathID;
+                    new ushort[2] { (ushort)'_', PathID };
 #endif
 
             }
@@ -213,10 +214,10 @@ namespace CsQuery.Implementation
         /// The path.
         /// </returns>
 
-        protected virtual string GetPath()
+        protected virtual ushort[] GetPath_UnOptimized()
         {
             DomObject curNode = this;
-            StringBuilder sb = new StringBuilder();
+            List<ushort> path = new List<ushort>();
 
             while (curNode != null)
             {
@@ -227,13 +228,58 @@ namespace CsQuery.Implementation
                 }
 
 #endif
-                sb.Append(curNode.PathID);
+
+                path.Add(curNode.PathID);
                 curNode = curNode._ParentNode;
             }
-            return sb.Reverse().ToString();
+
+            path.Reverse();
+            return path.ToArray();
         }
 
+        /// <summary>
+        /// Gets the full path to this document.
+        /// </summary>
+        ///
+        /// <returns>
+        /// The path.
+        /// </returns>
+        
+        protected virtual ushort[] GetPath()
+        {
+   
 
+            DomObject curNode = this;
+            ushort index = 0;
+
+            byte[] path = new byte[8];
+            int len = 8;
+
+            while (curNode != null)
+            {
+                path[index++] = (byte)(curNode.PathID >> 8);
+                path[index++] = (byte)(curNode.PathID & 255);
+
+                if (index == len)
+                {
+                    len <<= 1;
+
+                    var newPath = new byte[len];
+                    Buffer.BlockCopy(path, 0, newPath, 0, index);
+                    path = newPath;
+                }
+
+                curNode = curNode._ParentNode;
+            }
+
+            Array.Reverse(path, 0, index);
+             
+            ushort[] output = new ushort[index >> 1];
+            Buffer.BlockCopy(path, 0, output, 0, index);
+
+            return output;
+            
+        }
         /// <summary>
         /// The DOM for this object. This is obtained by looking at its parents value until it finds a
         /// non-null Document in a parent. The value is cached locally as long as the current value of
@@ -381,14 +427,16 @@ namespace CsQuery.Implementation
         }
 
 #else
-        public virtual char PathID
+        public virtual ushort PathID
         {
             get
             {
                 // Don't actually store paths with non-element nodes as they aren't indexed and don't have children.
                 // Fast read access is less important than not having to reset them when moved.
-
-                return (char)(Index+2);
+                unchecked
+                {
+                    return (ushort)(Index + 2);
+                }
             }
         }
 #endif
@@ -1577,7 +1625,7 @@ namespace CsQuery.Implementation
         /// A sequence of keys
         /// </returns>
 
-        public virtual IEnumerable<string> IndexKeys()
+        public virtual IEnumerable<ushort[]> IndexKeys()
         {
             throw new InvalidOperationException("This is not an indexed object.");
         }

@@ -75,11 +75,11 @@ namespace CsQuery.StringScanner
             // The requirements are different for HTML5 vs. older HTML specs but basically we don't want to be
             // too rigorous on this one -- the tagname spec is about right and includes underscores & colons
 
-            return new Patterns.HtmlID();
+            return new Patterns.HtmlIDSelector();
         }
 
         /// <summary>
-        /// Gets an expect pattern for a string that's an HTML attribuye name
+        /// Gets an expect pattern for a string that's an HTML attribte name
         /// </summary>
         ///
         /// <returns>

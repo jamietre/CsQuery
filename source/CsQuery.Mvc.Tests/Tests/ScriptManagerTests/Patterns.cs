@@ -86,7 +86,7 @@ namespace CsQuery.Mvc.Tests
             var pat = Patterns.StartComment;
 
             Assert.IsTrue(pat.IsMatch("/* a comment */"));
-            Assert.IsTrue(Matches(pat, "/* a comment */", " a comment ","comment"));
+            Assert.IsTrue(Matches(pat, "/* a comment */", "a comment ","comment"));
 
             Assert.IsTrue(pat.IsMatch("/* a start comment"));
             Assert.IsFalse(pat.IsMatch("an end comment */"));

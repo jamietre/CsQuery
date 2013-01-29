@@ -65,7 +65,6 @@ namespace CsQuery
         /// A new CQ object.
         /// </returns>
 
-        [Obsolete]
         public static CQ Create(char[] html)
         {
             return new CQ(html.AsString(), HtmlParsingMode.Auto, HtmlParsingOptions.Default, DocType.Default);

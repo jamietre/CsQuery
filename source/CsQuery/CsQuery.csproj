@@ -86,7 +86,6 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>Trewtech.pfx</AssemblyOriginatorKeyFile>
     <AssemblyOriginatorKeyFile>CsQuery.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
@@ -333,6 +332,8 @@
     <Compile Include="HttpWebAdapters\Impl\HttpWebResponseAdapter.cs" />
     <Compile Include="HttpWebAdapters\WebResponseStub.cs" />
     <Compile Include="Implementation\CombinedTextReader.cs" />
+    <Compile Include="Implementation\PathKeyComparer.cs" />
+    <Compile Include="Implementation\RangeSortedDictionary2.cs" />
     <Compile Include="Implementation\MonoDictionary.cs" />
     <Compile Include="Implementation\TrueStringComparer.cs" />
     <Compile Include="Output\HtmlEncoderFull.cs" />
@@ -364,11 +365,11 @@
     <Compile Include="StringScanner\IValueInfoT.cs" />
     <Compile Include="StringScanner\MatchFunctions.cs" />
     <Compile Include="StringScanner\Patterns\Bounded.cs" />
+    <Compile Include="StringScanner\Patterns\HtmlIDSelector.cs" />
     <Compile Include="StringScanner\Patterns\HTMLTagSelectorName.cs" />
     <Compile Include="StringScanner\Patterns\HTMLAttributeName.cs" />
     <Compile Include="StringScanner\Patterns\CssClassName.cs" />
     <Compile Include="StringScanner\Patterns\EscapedString.cs" />
-    <Compile Include="StringScanner\Patterns\HtmlID.cs" />
     <Compile Include="StringScanner\Patterns\Number.cs" />
     <Compile Include="StringScanner\Patterns\OptionallyQuoted.cs" />
     <Compile Include="StringScanner\Patterns\Quoted.cs" />
@@ -475,7 +476,6 @@
     <None Include="Documentation\Todo.md" />
     <None Include="Documentation\DifferencesFromJQuery.md" />
     <None Include="README-compilation.md" />
-    <None Include="Trewtech.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Implementation\enumSelectionSetOrder.cs" />
@@ -523,8 +523,6 @@ xcopy $(TargetDir)CsQuery.xml $(SolutionDir)..\Distribution /Y
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UseGlobalSettings="True" />
-      <UserProperties BuildVersion_UpdateFileVersion="False" BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UseGlobalSettings="False" />
       <UserProperties BuildVersion_UseGlobalSettings="False" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="False" />
     </VisualStudio>
   </ProjectExtensions>

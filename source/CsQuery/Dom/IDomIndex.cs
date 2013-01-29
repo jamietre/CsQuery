@@ -16,7 +16,7 @@ namespace CsQuery
         /// The primary selection index.
         /// </summary>
 
-        RangeSortedDictionary<IDomObject> SelectorXref { get; }
+        RangeSortedDictionary<ushort,IDomObject> SelectorXref { get; }
 
         /// <summary>
         /// Adds an element to the index.
@@ -30,7 +30,7 @@ namespace CsQuery
         /// The element.
         /// </param>
 
-        void AddToIndex(string key, IDomIndexedNode element);
+        void AddToIndex(ushort[] key, IDomIndexedNode element);
 
         /// <summary>
         /// Adds an element to the index.
@@ -51,7 +51,7 @@ namespace CsQuery
         /// is determined by environmental settings. This is for internal use.
         /// </param>
 
-        void RemoveFromIndex(string key);
+        void RemoveFromIndex(ushort[] key);
 
         /// <summary>
         /// Removes an element from the index.
@@ -81,7 +81,7 @@ namespace CsQuery
         /// An enumerator that allows foreach to be used to process query index in this collection.
         /// </returns>
 
-        IEnumerable<IDomObject> QueryIndex(string subKey, int depth, bool includeDescendants);
+        IEnumerable<IDomObject> QueryIndex(ushort[] subKey, int depth, bool includeDescendants);
 
         /// <summary>
         /// Queries the index.
@@ -95,7 +95,7 @@ namespace CsQuery
         /// An enumerator that allows foreach to be used to process query index in this collection.
         /// </returns>
 
-        IEnumerable<IDomObject> QueryIndex(string subKey);
+        IEnumerable<IDomObject> QueryIndex(ushort[] subKey);
 
         /// <summary>
         /// Any user data to be persisted with this DOM.

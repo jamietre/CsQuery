@@ -60,7 +60,7 @@ namespace CsQuery.StringScanner
         /// </summary>
         Separator=0x400,
         /// <summary>
-        /// ISO10646 character set
+        /// ISO10646 character set excluding numbers
         /// </summary>
         AlphaISO10646 = 0x800,
 
@@ -95,13 +95,15 @@ namespace CsQuery.StringScanner
         /// </summary>
         HtmlTagNameExceptStart = 0x20000,
         /// <summary>
-        /// Something that can be the first character of a legal HTML ID value.
+        /// Something that can be a character of a legal HTML ID value.
         /// </summary>
-        HtmlIDNameExceptStart = 0x40000,
+        HtmlAttributeName = 0x40000,
+
+
         /// <summary>
-        /// .
+        /// Terminates a selector or part of a selector
         /// </summary>
-        HtmlIDNameSelectorExceptStart=0x80000,
+        SelectorTerminator = 0x80000,
 
         // an HTML "space" is actually different from "white space" which is defined in the HTML5 spec
         // as UNICODE whitespace and is a lot of characters. But we are generally only concerned with

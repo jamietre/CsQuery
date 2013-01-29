@@ -275,11 +275,11 @@ namespace CsQuery.Implementation
                 {
                     if (InnerAttributes.ContainsKey(HtmlData.IDAttrId))
                     {
-                        Document.DocumentIndex.RemoveFromIndex(IndexKey("#", HtmlData.TokenizeCaseSensitive(Id), Path));
+                        Document.DocumentIndex.RemoveFromIndex(IndexKey('#', HtmlData.TokenizeCaseSensitive(Id), Path));
                     }
                     if (value != null)
                     {
-                        Document.DocumentIndex.AddToIndex(IndexKey("#", HtmlData.TokenizeCaseSensitive(value), Path), this);
+                        Document.DocumentIndex.AddToIndex(IndexKey('#', HtmlData.TokenizeCaseSensitive(value), Path), this);
                     }
                 }
                 SetAttributeRaw(HtmlData.IDAttrId, value);
@@ -830,27 +830,27 @@ namespace CsQuery.Implementation
         /// An enumerator that allows foreach to be used to process index keys in this collection.
         /// </returns>
 
-        public override IEnumerable<string> IndexKeys()
+        public override IEnumerable<ushort[]> IndexKeys()
         {
 
-            string path = Path;
+            ushort[] path = Path;
 
-            yield return HtmlData.indexSeparator + path;
+            yield return new ushort[] { HtmlData.indexSeparator }.Concat(path).ToArray();
             
-            yield return IndexKey("+",_NodeNameID, path);
+            yield return IndexKey('+',_NodeNameID, path);
 
             string id = Id;
             
             if (!String.IsNullOrEmpty(id))
             {
-                yield return IndexKey("#", HtmlData.TokenizeCaseSensitive(id), path);
+                yield return IndexKey('#', HtmlData.TokenizeCaseSensitive(id), path);
             }
 
             if (HasClasses)
             {
                 foreach (ushort clsId in _Classes)
                 {
-                    yield return IndexKey(".", clsId, path);
+                    yield return IndexKey('.', clsId, path);
                 }
             }
 
@@ -858,16 +858,16 @@ namespace CsQuery.Implementation
 
             if (HasClasses)
             {
-                yield return IndexKey("!", HtmlData.ClassAttrId, path);
+                yield return IndexKey('!', HtmlData.ClassAttrId, path);
             }
             if (HasStyles)
             {
-                yield return IndexKey("!", HtmlData.tagSTYLE, path);
+                yield return IndexKey('!', HtmlData.tagSTYLE, path);
             }
 
             foreach (ushort token in IndexAttributesTokens())
             {
-                yield return IndexKey("!", token, path); ;
+                yield return IndexKey('!', token, path); ;
             }
         }
 
@@ -993,7 +993,7 @@ namespace CsQuery.Implementation
                     _Classes.Add(tokenId);
                     if (IsIndexed)
                     {
-                        Document.DocumentIndex.AddToIndex(IndexKey(".", tokenId), this);
+                        Document.DocumentIndex.AddToIndex(IndexKey('.', tokenId), this);
                     }
                     
                     result = true;
@@ -1031,7 +1031,7 @@ namespace CsQuery.Implementation
                     _Classes.Remove(tokenId);
                     if (!IsDisconnected)
                     {
-                        Document.DocumentIndex.RemoveFromIndex(IndexKey(".",tokenId));
+                        Document.DocumentIndex.RemoveFromIndex(IndexKey('.',tokenId));
                     }
 
                     result = true;
@@ -1599,7 +1599,7 @@ namespace CsQuery.Implementation
         /// .
         /// </returns>
 
-        public string AttributeIndexKey(string attrName)
+        public ushort[] AttributeIndexKey(string attrName)
         {
             return AttributeIndexKey(HtmlData.Tokenize(attrName));
         }
@@ -1616,12 +1616,12 @@ namespace CsQuery.Implementation
         /// .
         /// </returns>
 
-        public string AttributeIndexKey(ushort attrId)
+        public ushort[] AttributeIndexKey(ushort attrId)
         {
 #if DEBUG_PATH
             return "!" + HtmlData.TokenName(attrId).ToLower() + HtmlData.indexSeparator + Path;
 #else
-            return "!" + (char)attrId + HtmlData.indexSeparator + Path;
+            return new ushort[] { '!', attrId, HtmlData.indexSeparator }.Concat(Path).ToArray();
 #endif
         }
 
@@ -1709,7 +1709,7 @@ namespace CsQuery.Implementation
         /// A string
         /// </returns>
 
-        protected string IndexKey(string prefix, ushort keyTokenId)
+        protected ushort[] IndexKey(char prefix, ushort keyTokenId)
         {
             return IndexKey(prefix, keyTokenId, Path);
         }
@@ -1729,7 +1729,7 @@ namespace CsQuery.Implementation
         /// A string
         /// </returns>
 
-        protected string IndexKey(string prefix, string key)
+        protected ushort[] IndexKey(char prefix, string key)
         {
             return IndexKey(prefix, key, Path);
         }
@@ -1752,7 +1752,7 @@ namespace CsQuery.Implementation
         /// .
         /// </returns>
 
-        protected string IndexKey(string prefix, string key, string path)
+        protected ushort[] IndexKey(char prefix, string key, ushort[] path)
         {
             return IndexKey(prefix, HtmlData.Tokenize(key), path);
         }
@@ -1775,12 +1775,20 @@ namespace CsQuery.Implementation
         /// A string representing the key for this item in the index
         /// </returns>
 
-        protected string IndexKey(string prefix, ushort keyTokenId, string path)
+        protected ushort[] IndexKey(char prefix, ushort keyTokenId, ushort[] path)
         {
 #if DEBUG_PATH
             return prefix + HtmlData.TokenName(keyTokenId) + HtmlData.indexSeparator + path;
 #else
-            return prefix + (char)keyTokenId + HtmlData.indexSeparator + path;
+            ushort[] key = new ushort[path.Length + 3];
+            key[0] = (ushort)prefix;
+            key[1] = keyTokenId;
+            key[2] = HtmlData.indexSeparator;
+            for (int i = 0; i < path.Length; i++)
+            {
+                key[i + 3] = path[i];
+            }
+            return key;
 #endif
         }
 

@@ -10,6 +10,7 @@ using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
+using CollectionAssert = NUnit.Framework.CollectionAssert;
 using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery.Mvc.Tests.Controllers;
@@ -19,39 +20,35 @@ using CsQuery.ExtensionMethods.Internal;
 namespace CsQuery.Mvc.Tests
 {
     [TestClass,TestFixture]
-    public class ScriptDependenciesInvalid: AppHostBase
+    public class ScriptDependenciesNonLibrary: AppHostBase
     {
         /// <summary>
         /// The partial view InvalidDependencies is unresolvable and should throw an error.
         /// </summary>
 
         [Test,TestMethod]
-        public void GetViewWithErrors()
+        public void All()
         {
-            Assert.Throws<FileNotFoundException>(() =>
-            {
-                var doc = RenderView<TestController>("invalidscripts", false);
-            });
+            
+            var doc = RenderView<TestController>("depsoutsidelibrarypath", false);
 
+            
+
+            var bundleScripts = doc["script[src^=/cqbundle]"];
+            var otherScripts = doc["script"].Not(bundleScripts);
+
+
+            Assert.AreEqual(1, bundleScripts.Length);
+            
+            var bundleUrl = bundleScripts.Attr("src");
+            var bundles = Host.BundleFilesForUrl(bundleUrl);
+            Assert.AreEqual(3, bundles.Count());
+
+            var files = bundles.Select(item => item.AfterLast("\\"));
+            CollectionAssert.AreEqual(new String[] { "dep8.js", "dep9.js", "dep10.js" }, files.ToList());
             
         }
 
-        /// <summary>
-        /// Ensure that root-level scripts that can't be resolved don't throw errors
-        /// </summary>
-
-        [Test, TestMethod]
-        public void GetViewWithUnresolvedScripts()
-        {
-            var doc = RenderView<TestController>("unresolvedscripts", false);
-
-            // there should be 2 scripts generated, dep5 & dep6 which is "nocombine" plus the others
-            Assert.AreEqual(3, doc["script.csquery-generated"].Length);
-
-            // .. plus the existing 5
-            Assert.AreEqual(8, doc["script"].Length);
-            
-        }
          
     }
 }

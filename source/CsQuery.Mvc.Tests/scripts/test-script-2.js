@@ -1,6 +1,6 @@
 ﻿// A comment
  
-/* using dep1
+/* <reference path="dep1.js" />
  using dep2
 
  end of dependencies */

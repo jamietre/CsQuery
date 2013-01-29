@@ -27,7 +27,7 @@ namespace CsQuery.StringScanner.Patterns
         /// <param name="index"></param>
         /// <param name="character"></param>
         /// <returns></returns>
-        protected static bool IsValidTagName(int index, char character)
+        private static bool IsValidTagName(int index, char character)
         {
             if (index == 0)
             {

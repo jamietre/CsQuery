@@ -100,6 +100,7 @@
     <Compile Include="Tests\AppHostBase.cs" />
     <Compile Include="Tests\ScriptManagerTests\BundleContents_Minimize.cs" />
     <Compile Include="Tests\ScriptManagerTests\BundleContents_NoBundle.cs" />
+    <Compile Include="Tests\ScriptManagerTests\ScriptDependenciesNonLibrary.cs" />
     <Compile Include="Tests\ScriptManagerTests\ScriptCollection.cs" />
     <Compile Include="Tests\ScriptManagerTests\ScriptDependenciesVersion.cs" />
     <Compile Include="Tests\ScriptManagerTests\ScriptLocations.cs" />
@@ -124,6 +125,8 @@
     <None Include="Views\Index.cshtml" />
     <None Include="Views\Shared\_Layout.cshtml" />
     <None Include="Views\Test\Action1.cshtml" />
+    <None Include="Views\Test\DepsOutsideLibraryPath.cshtml" />
+    <None Include="Views\Test\Index6.cshtml" />
     <None Include="Views\Test\UnresolvedScripts.cshtml" />
     <None Include="Views\Test\Index5.cshtml" />
     <None Include="Views\Test\Index4.cshtml" />
@@ -176,6 +179,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="scripts\dep10.js" />
+    <Content Include="scripts\sub-lib\dep9.js" />
+    <Content Include="scripts\test-script-8.js" />
+    <Content Include="scripts\dep8.js" />
     <Content Include="scripts\libs2\dep6-1.2.3.js" />
     <Content Include="scripts\libs2\dep7-1.4-beta.js" />
     <Content Include="scripts\libs2\dep6-1.2.2.js" />

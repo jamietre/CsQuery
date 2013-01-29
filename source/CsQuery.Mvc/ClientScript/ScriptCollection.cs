@@ -287,7 +287,7 @@ namespace CsQuery.Mvc.ClientScript
             
             if (parser.IsPhysicalFile)
             {
-                var options = new HashSet<string>();
+                string textOnly = "";
 
                 using (parser)
                 {
@@ -295,36 +295,29 @@ namespace CsQuery.Mvc.ClientScript
                     while ((line = parser.ReadLine()) != null
                         && !parser.AnyCodeYet)
                     {
-                        var match = Patterns.Dependency.Match(line);
-                        var matchOptions = Patterns.Options.Match(line);
+                        textOnly += line + System.Environment.NewLine;
 
-                        if (match.Success)
-                        {
-                            string depName = match.Groups["dep"].Value;
-                            var optGroup = match.Groups["opt"];
-
-                            scriptRef.Dependencies.Add(new ScriptRef
-                            {
-                                Name = PathList.NormalizeName(depName),
-                                Path = null,
-                                NoCombine = optGroup.Captures.Any<Capture>(item => item.Value == "nocombine")
-                            });
-                        }
-                        else if (matchOptions.Success)
-                        {
-                            foreach (Group grp in matchOptions.Groups)
-                            {
-                                options.Add(grp.Value.ToLower());
-                            }
+                        ScriptRef dependencyRef;
+                        if (TryGetDependencyRef_UsingFormat(line, out dependencyRef)) {
+                            scriptRef.Dependencies.Add(dependencyRef);
                         }
                     }
 
-                    scriptRef.ScriptHash = parser.FileHash;
-                    scriptRef.NoCombine = options.Contains("nocombine");
 
+                    scriptRef.ScriptHash = parser.FileHash;
                 }
 
-                
+                // now parse the entire text again for the XML format
+
+                //var xml = CQ.CreateFragment(textOnly);
+                //foreach (var el in xml["reference"])
+                //{
+                //      ScriptRef dependencyRef;
+                //      if (TryGetDependencyRef_CQ(el, out dependencyRef))
+                //      {
+                //          scriptRef.Dependencies.Add(dependencyRef);
+                //      }
+                //}
             }
 
             if (!NoCache)
@@ -333,6 +326,97 @@ namespace CsQuery.Mvc.ClientScript
             }
             
             return scriptRef;
+
+        }
+
+        /// <summary>
+        /// Try get dependency reference from a "reference" element
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element.
+        /// </param>
+        /// <param name="scriptRef">
+        /// The relative path to the file to analyze.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
+        protected bool TryGetDependencyRef_CQ(IDomObject element, out ScriptRef scriptRef)
+        {
+            bool noCombine = element.HasAttribute("nocombine");
+            bool ignore = element.HasAttribute("ignore");
+
+            scriptRef = null;
+
+            string options = element["options"];
+            if (!string.IsNullOrEmpty(options))
+            {
+                var optList = options.Split(new char[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+                
+                
+                ignore =ignore || optList.Contains("ignore", StringComparer.CurrentCultureIgnoreCase);
+                noCombine = noCombine || optList.Contains("nocombine", StringComparer.CurrentCultureIgnoreCase);
+            }
+            if (ignore) {
+                return false;
+            }
+            
+            var depName = element["path"];
+
+            scriptRef = new ScriptRef
+            {
+                Name = PathList.NormalizeName(depName),
+                Path = null,
+                NoCombine = noCombine
+            };
+            return true;
+        }
+
+        /// <summary>
+        /// Analyzes a line and returns a dependency ScriptRef if it matches the "using xxx" format.
+        /// </summary>
+        ///
+        /// <param name="line">
+        /// The line.
+        /// </param>
+        /// <param name="scriptRef">
+        /// The relative path to the file to analyze.
+        /// </param>
+        ///
+        /// <returns>
+        /// The dependency reference using format.
+        /// </returns>
+
+        protected bool TryGetDependencyRef_UsingFormat(string line, out ScriptRef scriptRef)
+        {
+            var match = Patterns.Dependency.Match(line);
+            //var matchOptions = Patterns.Options.Match(line);
+
+            if (match.Success)
+            {
+                string depName = match.Groups["dep"].Value;
+                var optGroup = match.Groups["opt"];
+
+                //scriptRef.Dependencies.Add(new ScriptRef
+                //{
+                //    Name = PathList.NormalizeName(depName),
+                //    Path = null,
+                //    NoCombine = optGroup.Captures.Any<Capture>(item => item.Value == "nocombine")
+                //});
+                scriptRef =  new ScriptRef
+                {
+                    Name = PathList.NormalizeName(depName),
+                    Path = null,
+                    NoCombine = optGroup.Captures.Any<Capture>(item => item.Value == "nocombine")
+                };
+                return true;
+            }  else {
+                scriptRef = null;
+                return false;
+            }
 
         }
 
@@ -361,7 +445,7 @@ namespace CsQuery.Mvc.ClientScript
                 ScriptRef depRef;
                 if (!ResolvedDependencies.TryGetValue(dep.Name, out depRef))
                 {
-                    string virtualPath = FindInLibaryPath(dep.Name);
+                    string virtualPath = PathToDependency(scriptRef.RelativePathRoot, dep.Name);
                     if (virtualPath == null)
                     {
                         if (IgnoreErrors)
@@ -404,6 +488,34 @@ namespace CsQuery.Mvc.ClientScript
             
         }
 
+        private string PathToDependency(string currentRelativePath,string fileName)
+        {
+            bool isRelative = IsRelativePath(fileName);
+            
+            string path = isRelative ?
+                currentRelativePath + "/" + fileName :
+                fileName;
+
+            string directPath = MapPath(path);
+
+
+            bool exists = false;
+            if (!String.IsNullOrEmpty(path))
+            {
+                exists = File.Exists(path);
+                if (!exists)
+                {
+                    path = null;
+                }
+            }
+
+            if (!exists && IsRelativePath(fileName))
+            {
+                path = PathToLibraryFile(fileName);
+            }
+            return path;
+        }
+
         /// <summary>
         /// Searches the LibraryPath for a match for this file.
         /// </summary>
@@ -421,7 +533,7 @@ namespace CsQuery.Mvc.ClientScript
         /// The found dependency.
         /// </returns>
 
-        private string FindInLibaryPath(string fileName)
+        private string PathToLibraryFile(string fileName)
         {
             string pattern = null;
             if (Patterns.NonLiteralFilenames.IsMatch(fileName))
@@ -500,6 +612,12 @@ namespace CsQuery.Mvc.ClientScript
                 return null;
             }
         }
+
+        private bool IsRelativePath(string file)
+        {
+            return !file.StartsWith("/") && !file.StartsWith("~/");
+        }
+
 
         #endregion
 

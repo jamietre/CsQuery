@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.Mvc.ClientScript
 {
@@ -38,6 +39,25 @@ namespace CsQuery.Mvc.ClientScript
             set{
                 _Name = value.ToLower();
             } 
+        }
+
+        /// <summary>
+        /// Return the relative path root for this file, e.g. the path excluding the file name.
+        /// </summary>
+
+        public string RelativePathRoot
+        {
+            get
+            {
+                if (Path.Contains("/"))
+                {
+                    return Path.BeforeLast("/");
+                }
+                else
+                {
+                    return Path;
+                }
+            }
         }
 
         /// <summary>

@@ -113,12 +113,12 @@ namespace CsQuery.Mvc
         /// <summary>
         /// A lookup of ClassName, indicating whether to bother with CQ for this controller
         /// </summary>
-        private static IDictionary<string, bool> HasCqMethodsRef = new Dictionary<string, bool>();
+        private static IDictionary<string, bool> HasCqMethodsRef = new Dictionary<string, bool>(StringComparer.CurrentCultureIgnoreCase);
         
         /// <summary>
         /// A map of ClassName+ActonName to a method
         /// </summary>
-        private static IDictionary<string, MethodInfo> CqMethods;
+        private static IDictionary<string, MethodInfo> CqMethods = new Dictionary<string, MethodInfo>(StringComparer.CurrentCultureIgnoreCase);
 
         #endregion
 
@@ -330,12 +330,9 @@ namespace CsQuery.Mvc
 
                     string name = mi.Name;
 
-                    if (hasMethods==false) {
+                    if (hasMethods == false)
+                    {
                         hasMethods = true;
-                        if (CqMethods == null)
-                        {
-                            CqMethods = new Dictionary<string, MethodInfo>(StringComparer.CurrentCultureIgnoreCase);
-                        }
                     }
                     CqMethods.Add(controllerName+"_"+name, mi);
                 }

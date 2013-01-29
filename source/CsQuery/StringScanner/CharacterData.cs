@@ -54,7 +54,7 @@ namespace CsQuery.StringScanner
             SetHtmlTagNameStart((uint)CharacterType.HtmlTagSelectorStart);
             SetHtmlTagSelectorExceptStart((uint)CharacterType.HtmlTagSelectorExceptStart);
 
-            SetHtmlIdNameExceptStart((uint)CharacterType.HtmlIDNameExceptStart);
+            SetHtmlAttributeName((uint)CharacterType.HtmlAttributeName);
 
             // html tag end
             setBit(charsHtmlSpace + "/>", (uint)CharacterType.HtmlTagOpenerEnd);
@@ -67,6 +67,7 @@ namespace CsQuery.StringScanner
             setBit(charsHtmlSpace + ">", (uint)CharacterType.HtmlAttributeValueTerminator);
 
             SetAlphaISO10646((uint)CharacterType.AlphaISO10646);
+            SetSelectorTerminator((uint)CharacterType.SelectorTerminator);
         }
 
         #endregion
@@ -303,12 +304,20 @@ namespace CsQuery.StringScanner
             // 161 = A1
             SetRange(hsb, 0x00A1, 0xFFFF);
         }
-
+        private static void SetSelectorTerminator(uint hsb)
+        {
+            setBit(charsWhitespace, hsb);
+            setBit(",:[>~+.#", hsb);
+        }
         /// <summary>
-        /// Matches anything but the first character for a valid ID or name value. The first character is just alpha.
+        /// Matches anything but the first character for a valid HTML attribute name.
         /// </summary>
-        /// <param name="hsb"></param>
-        private static void SetHtmlIdNameExceptStart(uint hsb)
+        ///
+        /// <param name="hsb">
+        /// the target
+        /// </param>
+
+        private static void SetHtmlAttributeName(uint hsb)
         {
             SetAlphaISO10646(hsb);
             setBit(charsNumericExtended, hsb);

@@ -705,7 +705,7 @@ namespace CsQuery
 #if DEBUG_PATH
         string PathID {get; }
 #else
-        char PathID { get; }
+        ushort PathID { get; }
 #endif
 
         /// <summary>
@@ -713,7 +713,7 @@ namespace CsQuery
         /// used for internal purposes.
         /// </summary>
 
-        string Path { get; }
+        ushort[] Path { get; }
 
         /// <summary>
         /// Wrap this element in a CQ object. This is the CsQuery equivalent of the common jQuery

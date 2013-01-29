@@ -110,6 +110,18 @@ namespace CsQuery.Tests.Miscellaneous
 
         }
 
+        [Test, TestMethod]
+        public void Issue80()
+        {
+            var dom = CQ.Create(@"
+<div>bar match</div>
+<div id='123'>
+</div>
+</div>");
+
+            var query = dom["div#123"];
+            Assert.AreEqual(1, query.Length);
+        }
         #region setup
         public override void FixtureSetUp()
         {

@@ -7,16 +7,16 @@ using CsQuery.StringScanner.Implementation;
 namespace CsQuery.StringScanner.Patterns
 {
     /// <summary>
-    /// ID can contain any character other than a space.
+    /// ID can contain any character other than a space; however, a selector is bounded by other terminators.
     /// </summary>
-    public class HtmlID: EscapedString
+    public class HtmlIDSelector: EscapedString
     {
         /// <summary>
         /// Default constructor.
         /// </summary>
 
-        public HtmlID(): 
-            base(IsValidID)
+        public HtmlIDSelector() : 
+            base(IsValidIDSelector)
         {
 
         }
@@ -36,10 +36,11 @@ namespace CsQuery.StringScanner.Patterns
         /// true if valid identifier, false if not.
         /// </returns>
 
-        private static bool IsValidID(int index, char character)
+        private static bool IsValidIDSelector(int index, char character)
         {
 
-            return !CharacterData.IsType(character, CharacterType.HtmlSpace);
+            return !CharacterData.IsType(character, CharacterType.SelectorTerminator) &&
+                !CharacterData.IsType(character, CharacterType.HtmlSpace);
         }
     }
 }
