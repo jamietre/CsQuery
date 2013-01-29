@@ -26,13 +26,28 @@ What's more, the entire test suite from Sizzle (the jQuery CSS selector engine) 
 
 ### Installation
 
+
 **Latest release:** Version 1.3.3 (December 30, 2012)
 
 To install the latest release from NuGet package manager:
 
     PM> Install-Package CsQuery
 
+
+**Latest beta release:** Version 1.3.4-beta1 (January 28, 2012)
+
+    PM> Install-Package CsQuery -Pre
+
+1.3.4 includes bug fixes:
+
+  * Handle out-of-bounds character set changes
+  * Allow changing character set via meta tag outside of HEAD
+  * Allow non-alpha ID selectors
+
+
 To install manually, add a reference to `CsQuery.DLL`. There are no external dependencies.
+
+
 
 
 ### Compiling from Source
