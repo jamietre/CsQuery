@@ -274,7 +274,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return new ushort[] {};
+                return "";
             }
         }
 

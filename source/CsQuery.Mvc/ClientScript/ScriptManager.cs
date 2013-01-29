@@ -205,8 +205,7 @@ namespace CsQuery.Mvc.ClientScript
             // resolve dependencies
 
             ScriptCollection coll = new ScriptCollection(ScriptEnvironment);
-            coll.NoCache = Options.HasFlag(ViewEngineOptions.NoCache);
-            coll.IgnoreErrors = Options.HasFlag(ViewEngineOptions.IgnoreMissingScripts);
+            coll.Options= Options;
 
             // identify the insertion point for the script bundle
             var firstScriptEl = coll.AddFromCq(scripts);

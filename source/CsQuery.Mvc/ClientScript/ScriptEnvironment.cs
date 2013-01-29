@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,7 +20,9 @@ namespace CsQuery.Mvc.ClientScript
         private Func<string, string> _MapPath;
         private Func<string, string> _ResolveUrl;
 
-        private string _AppRootFilesystemPath;
+        private static string _FileSystemRootPath;
+        private static string _AppRootPath;
+
         /// <summary>
         /// The MapPath function to convert a path to a hard filesystem path
         /// </summary>
@@ -41,13 +43,13 @@ namespace CsQuery.Mvc.ClientScript
         /// Library path list to search
         /// </summary>
 
-        public PathList c { get; set; }
+        public PathList LibraryPath { get; set; }
 
         /// <summary>
-        /// The relative path to the script
+        /// The app relative path to the script, e.g. "~/" for the application root
         /// </summary>
 
-        public string ScriptPath { get; set; }
+        public string RelativePathRoot { get; set; }
 
         /// <summary>
         /// Gets or sets the function to resolve a URL.
@@ -77,29 +79,81 @@ namespace CsQuery.Mvc.ClientScript
         /// path as a string.
         /// </returns>
 
-        public string MapToAppRootPath(string path)
+        public string MapToAppRelativePath(string path)
         {
-            if (IsUrl(path) || !IsValidFileName(path))
+            path = ResolveParents(NormalizeSlashes(path));
+
+            
+            if (IsUrl(path) || path.StartsWith("~/"))
             {
-                throw new ArgumentException("'" + path + "' is not a valid file path.");
+                return path;
             }
 
-            int hardPathRootLen = AppRootFilesystemPath.Length;
-            string fsRelPath;
-
-            if (path.StartsWith("~/") || path.StartsWith("~\\"))
-            {
-                fsRelPath = MapPath(path).Substring(hardPathRootLen);
+            // it's a file-relative path, add the ScriptPath
+            if (!path.StartsWith("/")) {
+                return RelativePathRoot+path;
             }
-            else if (path.StartsWith("/") || path.StartsWith("\\"))
+
+
+            // if we're here, the path starts with a slash so it's rooted.
+            // the virtual root is the same - just add a tilde
+
+            if (FileSystemRootPath.Length == AppRootPath.Length)
             {
-                fsRelPath = path.Substring(1).Replace("/", "\\");
+                return "~" + path;
             }
             else
             {
-                fsRelPath = MapPath(ScriptPath).Substring(hardPathRootLen) + "\\" + path.Replace("/", "\\");
+                int folders = AppRootPath.Substring(FileSystemRootPath.Length).Split('\\').Length;
+
+                string prefix = "";
+                for (int i = 0; i < folders; i++)
+                {
+                    prefix += "/..";
+                }
+                return  "~" + prefix + path;
             }
-            return "\\" + fsRelPath;
+
+        }
+
+        /// <summary>
+        /// Remove ../ when possible
+        /// </summary>
+        ///
+        /// <param name="path">
+        /// Full pathname to search.
+        /// </param>
+        ///
+        /// <returns>
+        /// A cleaner path
+        /// </returns>
+
+        public static string ResolveParents(string path) {
+            var paths = new List<string>(path.Split('/'));
+            for (int i=0;i<paths.Count;i++)
+            {
+                if (paths[i] == ".." && i > 0)
+                {
+                    paths.RemoveRange(i - 1, 2);
+                }
+            }
+            return string.Join("/", paths);
+        }
+        /// <summary>
+        /// Converts all backslashses to forward slashes
+        /// </summary>
+        ///
+        /// <param name="path">
+        /// Full pathname to search.
+        /// </param>
+        ///
+        /// <returns>
+        /// .
+        /// </returns>
+
+        public static string NormalizeSlashes(string path)
+        {
+            return path.Replace("\\", "/");
         }
 
         /// <summary>
@@ -120,7 +174,7 @@ namespace CsQuery.Mvc.ClientScript
         }
 
         /// <summary>
-        /// Maps a path to a unique path: converts relative paths to the app rooted path, and leaves
+        /// Maps a path to a unique path: converts relative paths to the app rooted path (~/), and leaves
         /// external paths alone.
         /// </summary>
         ///
@@ -136,14 +190,13 @@ namespace CsQuery.Mvc.ClientScript
         {
             return IsUrl(path) ?
                 path :
-                MapToAppRootPath(path);
+                MapToAppRelativePath(path);
         }
         private string DefaultResolveUrl(string url)
         {
             return System.Web.Mvc.UrlHelper.GenerateContentUrl(url, new HttpContextWrapper(HttpContext.Current));
         }
-
-
+        
         /// <summary>
         /// Test if the path appears to be a valid file name
         /// </summary>
@@ -166,7 +219,7 @@ namespace CsQuery.Mvc.ClientScript
         }
 
         /// <summary>
-        /// Test if the path represents a physical file
+        /// Test if Path is a physical file
         /// </summary>
         ///
         /// <param name="path">
@@ -183,15 +236,37 @@ namespace CsQuery.Mvc.ClientScript
                     && IsValidFileName(path)
                     && File.Exists(path);
         }
-        private string AppRootFilesystemPath
+
+        /// <summary>
+        /// Gets the full pathname of the IIS root in the file system
+        /// </summary>
+
+        private string FileSystemRootPath
         {
             get
             {
-                if (_AppRootFilesystemPath == null)
+                if (_FileSystemRootPath == null)
                 {
-                    _AppRootFilesystemPath = MapPath("/");
+                    _FileSystemRootPath = MapPath("/");
                 }
-                return _AppRootFilesystemPath;
+                return _FileSystemRootPath;
+            }
+
+        }
+
+        /// <summary>
+        /// The application root path in the file system
+        /// </summary>
+
+        private string AppRootPath
+        {
+            get
+            {
+                if (_AppRootPath == null)
+                {
+                    _AppRootPath = MapPath("~/");
+                }
+                return _AppRootPath;
             }
 
         }

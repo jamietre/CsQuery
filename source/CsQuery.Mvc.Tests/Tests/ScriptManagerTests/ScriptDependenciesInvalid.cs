@@ -45,11 +45,8 @@ namespace CsQuery.Mvc.Tests
         {
             var doc = RenderView<TestController>("unresolvedscripts", false);
 
-<<<<<<< HEAD
-            // there should be 2 scripts generated, dep5 & dep6 which is "nocombine" plus the others
-=======
-            // there should be 2 scripts generated, dep5 which is "nocombine" plus the others
->>>>>>> pathkey
+            // there should be 3 scripts generated, dep5 & dep6 which is "nocombine" plus the others
+
             Assert.AreEqual(3, doc["script.csquery-generated"].Length);
 
             // .. plus the existing 5

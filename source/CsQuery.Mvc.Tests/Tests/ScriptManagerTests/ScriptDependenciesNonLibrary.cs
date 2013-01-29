@@ -31,7 +31,6 @@ namespace CsQuery.Mvc.Tests
         {
             
             var doc = RenderView<TestController>("depsoutsidelibrarypath", false);
-
             
 
             var bundleScripts = doc["script[src^=/cqbundle]"];

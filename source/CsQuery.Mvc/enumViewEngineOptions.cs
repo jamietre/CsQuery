@@ -43,6 +43,11 @@ namespace CsQuery.Mvc
         /// <summary>
         /// When set, scripts are resolved, but not bundled.
         /// </summary>
-        NoBundle = 32
+        NoBundle = 32,
+
+        /// <summary>
+        /// When true, the Visual Studio format XML &lt;reference ... &gt; tags will be resolved by the script manager as "using" 
+        /// </summary>
+        ResolveXmlReferences = 64
     }
 }

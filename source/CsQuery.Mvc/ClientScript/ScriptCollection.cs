@@ -61,17 +61,10 @@ namespace CsQuery.Mvc.ClientScript
         #region public properties
 
         /// <summary>
-        /// When true, script dependencies will not be cached, and each script re-parsed every time the
-        /// page is loaded. Normally, scripts are only analyzed for dependencies the first time they are
-        /// accessed, and the cache is only reset when the application restarts. During development, this
-        /// is not convenient. Enabling this option will prevent caching.
+        /// Gets or sets options for controlling the operation.
         /// </summary>
-        ///
-        /// <value>
-        /// The options.
-        /// </value>
 
-        public bool NoCache { get; set; }
+        public ViewEngineOptions Options { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to ignore errors.
@@ -231,7 +224,7 @@ namespace CsQuery.Mvc.ClientScript
                 catch (FileNotFoundException e)
                 {
                     throw new FileNotFoundException(String.Format("Unable to resolve dependencies for \"{0}\": " + e.Message,
-                        script));
+                        script.Path));
                 }
             }
             return OrderedDependencies;
@@ -293,18 +286,21 @@ namespace CsQuery.Mvc.ClientScript
 
                 // now parse the entire text again for the XML format
 
-                var xml = CQ.CreateFragment(textOnly);
-                foreach (var el in xml["reference"])
+                if (Options.HasFlag(ViewEngineOptions.ResolveXmlReferences))
                 {
-                      ScriptRef dependencyRef;
-                      if (TryGetDependencyRef_CQ(scriptRef,el, out dependencyRef))
-                      {
-                          scriptRef.Dependencies.Add(dependencyRef);
-                      }
+                    var xml = CQ.CreateFragment(textOnly);
+                    foreach (var el in xml["reference"])
+                    {
+                        ScriptRef dependencyRef;
+                        if (TryGetDependencyRef_CQ(scriptRef, el, out dependencyRef))
+                        {
+                            scriptRef.Dependencies.Add(dependencyRef);
+                        }
+                    }
                 }
             }
 
-            if (!NoCache)
+            if (!Options.HasFlag(ViewEngineOptions.NoCache))
             {
                 ResolvedDependencies[uniquePath] = scriptRef;
             }
@@ -353,11 +349,16 @@ namespace CsQuery.Mvc.ClientScript
             
             var depName = element["path"];
 
+            string path;
+            if (!TryResolvePath(parent.RelativePathRoot,depName, out path) && !IgnoreErrors) {
+                 throw new FileNotFoundException(String.Format("Unable to find dependency \"{0}\" in the file \"{1}\".", depName, parent.Path)); 
+            }
             scriptRef = new ScriptRef
             {
-                Path = ResolvePath(parent.RelativePathRoot,depName),
+                Path = path,
                 NoCombine = noCombine
             };
+            
             return true;
         }
 
@@ -389,12 +390,7 @@ namespace CsQuery.Mvc.ClientScript
                 string depName = match.Groups["dep"].Value;
                 var optGroup = match.Groups["opt"];
 
-                //scriptRef.Dependencies.Add(new ScriptRef
-                //{
-                //    Name = PathList.NormalizeName(depName),
-                //    Path = null,
-                //    NoCombine = optGroup.Captures.Any<Capture>(item => item.Value == "nocombine")
-                //});
+               // see if they omitted a file extension
 
                 var lastDot = depName.LastIndexOf(".");
                 var lastSlash = depName.Replace("\\","/").LastIndexOf("/");
@@ -402,13 +398,20 @@ namespace CsQuery.Mvc.ClientScript
                 {
                     depName += ".js";
                 }
-                    
-                scriptRef =  new ScriptRef
+
+                string path;
+                if (!TryResolvePath(parent.RelativePathRoot, depName, out path) && !IgnoreErrors)
                 {
-                    Path = ResolvePath(parent.RelativePathRoot,depName),
+                     throw new FileNotFoundException(String.Format("Unable to find dependency \"{0}\" in the file \"{1}\".", depName, parent.Path));
+                }
+
+                scriptRef = new ScriptRef
+                {
+                    Path = path,
                     NoCombine = optGroup.Captures.Any<Capture>(item => item.Value == "nocombine")
                 };
                 return true;
+                
             }  else {
                 scriptRef = null;
                 return false;
@@ -469,10 +472,10 @@ namespace CsQuery.Mvc.ClientScript
             
         }
 
-        private string ResolvePath(string relativePathRoot, string fileName)
+        private bool TryResolvePath(string relativePathRoot, string fileName, out string path)
         {
-            string path = null;
             string appRelativePath;
+
             bool isFileRelativePath = IsFileRelativePath(fileName);
 
             if (!isFileRelativePath)
@@ -481,7 +484,7 @@ namespace CsQuery.Mvc.ClientScript
             }
             else
             {
-                appRelativePath = relativePathRoot + fileName;
+                appRelativePath = ScriptEnvironment.ResolveParents(relativePathRoot + fileName);
             }
 
             string fsPath = ScriptEnvironment.MapPath(appRelativePath);
@@ -498,9 +501,11 @@ namespace CsQuery.Mvc.ClientScript
 
             if (path == null && !IgnoreErrors)
             {
-                throw new FileNotFoundException(String.Format("Unable to find dependency \"{0}\" in the LibraryPath.", path));
+                return false;
             }
-            return path;
+            else {
+                return true;
+            }
         }
 
         /// <summary>

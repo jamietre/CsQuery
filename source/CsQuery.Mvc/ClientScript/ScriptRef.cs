@@ -37,24 +37,6 @@ namespace CsQuery.Mvc.ClientScript
             }
         }
 
-        /// <summary>
-        /// Return the relative path root for this file, e.g. the path excluding the file name.
-        /// </summary>
-
-        public string RelativePathRoot
-        {
-            get
-            {
-                if (Path.Contains("/"))
-                {
-                    return Path.BeforeLast("/");
-                }
-                else
-                {
-                    return Path;
-                }
-            }
-        }
 
         /// <summary>
         /// Virtual path to the dependency

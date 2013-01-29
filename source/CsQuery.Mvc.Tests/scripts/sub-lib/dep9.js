@@ -1,1 +1,2 @@
-﻿var dep9;
+﻿// using ../dep8.js
+var dep9;
