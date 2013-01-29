@@ -24,31 +24,25 @@ namespace CsQuery.Mvc.ClientScript
         /// Constructor for Script Collection.
         /// </summary>
         ///
-        /// <param name="libraryPath">
-        /// A PathList object containing the libraries to search for dependencies.
-        /// </param>
-        /// <param name="mapPathFunc">
-        /// The MapPath function, e.g. HttpContext.Current.MapPath
+        /// <param name="scriptEnvironment">
+        /// The ScriptEnvironment for this collection
         /// </param>
 
-        public ScriptCollection(PathList libraryPath, Func<string,string> mapPathFunc)
+
+        public ScriptCollection(ScriptEnvironment scriptEnvironment)
         {
-            MapPath = mapPathFunc;
-            LibraryPath = libraryPath;
+            ScriptEnvironment = scriptEnvironment;
             Scripts = new HashSet<ScriptRef>();
             DependenciesOrdered = new List<string>();
-            //ScriptSources = new HashSet<ScriptRef>();
         }
+        
         #endregion
 
         #region private properties
-        
-        internal static ConcurrentDictionary<string, ScriptRef> ResolvedDependencies
-            = new ConcurrentDictionary<string, ScriptRef>(); 
-    
+        private ScriptEnvironment ScriptEnvironment;
 
-        private PathList LibraryPath;
-        private Func<string, string> MapPath;
+        internal static ConcurrentDictionary<string, ScriptRef> ResolvedDependencies
+            = new ConcurrentDictionary<string, ScriptRef>();
 
         /// <summary>
         /// The file paths at the top level (the members of this collection)
@@ -62,11 +56,9 @@ namespace CsQuery.Mvc.ClientScript
 
         private List<string> DependenciesOrdered;
 
-
-
-
-
         #endregion
+
+        #region public properties
 
         /// <summary>
         /// When true, script dependencies will not be cached, and each script re-parsed every time the
@@ -90,6 +82,8 @@ namespace CsQuery.Mvc.ClientScript
         /// </value>
 
         public bool IgnoreErrors { get; set; }
+        
+        #endregion
 
         #region public methods
 
@@ -130,21 +124,22 @@ namespace CsQuery.Mvc.ClientScript
 
         public ScriptRef AddPath(string virtualPath)
         {
-            string name;
 
             // if the path maps to something in our known libraries, 
             // create a reference using its generic name, and not the full path.
-            
-            if (!LibraryPath.TryGetName(virtualPath,out name)) {
-                name=virtualPath;
-            }
+             
+            //if (!LibraryPath.TryGetName(virtualPath,out name)) {
+            //    name=virtualPath;
+            //}
 
-            var scriptRef = GetScriptRef(name, virtualPath);
+            var scriptRef = GetScriptRef(virtualPath);
             Scripts.Add(scriptRef);
             return scriptRef;
         }
 
+     
 
+      
         /// <summary>
         /// Return dependencies found in the document.
         /// </summary>
@@ -227,7 +222,7 @@ namespace CsQuery.Mvc.ClientScript
                 {
                     foreach (var dep in GetDependencies(script))
                     {
-                        if (FoundDependencies.Add(dep.Name))
+                        if (FoundDependencies.Add(dep.Path))
                         {
                             OrderedDependencies.Add(dep);
                         }
@@ -246,13 +241,6 @@ namespace CsQuery.Mvc.ClientScript
         /// Gets a script reference given a path.
         /// </summary>
         ///
-        /// <exception cref="FileNotFoundException">
-        /// Thrown when the requested file is not present.
-        /// </exception>
-        ///
-        /// <param name="name">
-        /// The name to use for this script.
-        /// </param>
         /// <param name="virtualPath">
         /// Virtual path to the script.
         /// </param>
@@ -261,28 +249,24 @@ namespace CsQuery.Mvc.ClientScript
         /// The script reference.
         /// </returns>
 
-        protected ScriptRef GetScriptRef(string name,string virtualPath)
+        protected ScriptRef GetScriptRef(string virtualPath)
         {
             ScriptRef scriptRef;
-            string normalizedPath = PathList.NormalizePath(virtualPath);
-            string normalizedName= PathList.NormalizeName(name);
+            var uniquePath = ScriptEnvironment.UniquePath(virtualPath);
+            
+            //string normalizedPath = PathList.NormalizePath(virtualPath);
+            //string normalizedName= PathList.NormalizeName(name);
 
-            if (ResolvedDependencies.TryGetValue(normalizedName, out scriptRef))
+            if (ResolvedDependencies.TryGetValue(uniquePath, out scriptRef))
             {
                 return scriptRef;
             }
 
-            string fileName;
-            ScriptParser parser=null;
-            
-            fileName = MapPath(normalizedPath);
-            
-            parser = new ScriptParser(fileName);
+            ScriptParser parser = new ScriptParser(ScriptEnvironment, uniquePath);
             
             scriptRef = new ScriptRef
             {
-                Name = normalizedName,
-                Path = normalizedPath
+                Path  = uniquePath
             };
             
             if (parser.IsPhysicalFile)
@@ -298,7 +282,7 @@ namespace CsQuery.Mvc.ClientScript
                         textOnly += line + System.Environment.NewLine;
 
                         ScriptRef dependencyRef;
-                        if (TryGetDependencyRef_UsingFormat(line, out dependencyRef)) {
+                        if (TryGetDependencyRef_UsingFormat(scriptRef,line, out dependencyRef)) {
                             scriptRef.Dependencies.Add(dependencyRef);
                         }
                     }
@@ -313,7 +297,7 @@ namespace CsQuery.Mvc.ClientScript
                 foreach (var el in xml["reference"])
                 {
                       ScriptRef dependencyRef;
-                      if (TryGetDependencyRef_CQ(el, out dependencyRef))
+                      if (TryGetDependencyRef_CQ(scriptRef,el, out dependencyRef))
                       {
                           scriptRef.Dependencies.Add(dependencyRef);
                       }
@@ -322,7 +306,7 @@ namespace CsQuery.Mvc.ClientScript
 
             if (!NoCache)
             {
-                ResolvedDependencies[normalizedName] = scriptRef;
+                ResolvedDependencies[uniquePath] = scriptRef;
             }
             
             return scriptRef;
@@ -330,9 +314,12 @@ namespace CsQuery.Mvc.ClientScript
         }
 
         /// <summary>
-        /// Try get dependency reference from a "reference" element
+        /// Try get dependency reference from a "reference" element.
         /// </summary>
         ///
+        /// <param name="parent">
+        /// The parent.
+        /// </param>
         /// <param name="element">
         /// The element.
         /// </param>
@@ -344,7 +331,7 @@ namespace CsQuery.Mvc.ClientScript
         /// true if it succeeds, false if it fails.
         /// </returns>
 
-        protected bool TryGetDependencyRef_CQ(IDomObject element, out ScriptRef scriptRef)
+        protected bool TryGetDependencyRef_CQ(ScriptRef parent, IDomObject element, out ScriptRef scriptRef)
         {
             bool noCombine = element.HasAttribute("nocombine");
             bool ignore = element.HasAttribute("ignore");
@@ -368,8 +355,7 @@ namespace CsQuery.Mvc.ClientScript
 
             scriptRef = new ScriptRef
             {
-                Name = PathList.NormalizeName(depName),
-                Path = null,
+                Path = ResolvePath(parent.RelativePathRoot,depName),
                 NoCombine = noCombine
             };
             return true;
@@ -379,6 +365,9 @@ namespace CsQuery.Mvc.ClientScript
         /// Analyzes a line and returns a dependency ScriptRef if it matches the "using xxx" format.
         /// </summary>
         ///
+        /// <param name="parent">
+        /// The parent.
+        /// </param>
         /// <param name="line">
         /// The line.
         /// </param>
@@ -390,7 +379,7 @@ namespace CsQuery.Mvc.ClientScript
         /// The dependency reference using format.
         /// </returns>
 
-        protected bool TryGetDependencyRef_UsingFormat(string line, out ScriptRef scriptRef)
+        protected bool TryGetDependencyRef_UsingFormat(ScriptRef parent, string line, out ScriptRef scriptRef)
         {
             var match = Patterns.Dependency.Match(line);
             //var matchOptions = Patterns.Options.Match(line);
@@ -406,10 +395,17 @@ namespace CsQuery.Mvc.ClientScript
                 //    Path = null,
                 //    NoCombine = optGroup.Captures.Any<Capture>(item => item.Value == "nocombine")
                 //});
+
+                var lastDot = depName.LastIndexOf(".");
+                var lastSlash = depName.Replace("\\","/").LastIndexOf("/");
+                if (lastDot<0 || lastDot < lastSlash)
+                {
+                    depName += ".js";
+                }
+                    
                 scriptRef =  new ScriptRef
                 {
-                    Name = PathList.NormalizeName(depName),
-                    Path = null,
+                    Path = ResolvePath(parent.RelativePathRoot,depName),
                     NoCombine = optGroup.Captures.Any<Capture>(item => item.Value == "nocombine")
                 };
                 return true;
@@ -443,24 +439,9 @@ namespace CsQuery.Mvc.ClientScript
             {
 
                 ScriptRef depRef;
-                if (!ResolvedDependencies.TryGetValue(dep.Name, out depRef))
+                if (!ResolvedDependencies.TryGetValue(dep.Path, out depRef))
                 {
-                    string virtualPath = PathToDependency(scriptRef.RelativePathRoot, dep.Name);
-                    if (virtualPath == null)
-                    {
-                        if (IgnoreErrors)
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            throw new FileNotFoundException(String.Format("Unable to find dependency \"{0}\" in the LibraryPath.", dep.Name));
-                        }
-                    }
-
-                    depRef = GetScriptRef(dep.Name, virtualPath);
-                    
-                    
+                    depRef = GetScriptRef(dep.Path);                    
                 }
 
                 // When we resolve a dependency, whether it was created or resolved from the cache, update the
@@ -488,21 +469,36 @@ namespace CsQuery.Mvc.ClientScript
             
         }
 
-        private string PathToDependency(string currentRelativePath,string fileName)
+        private string ResolvePath(string relativePathRoot, string fileName)
         {
-            bool isRelative = IsRelativePath(fileName);
+            string path = null;
+            string appRelativePath;
+            bool isFileRelativePath = IsFileRelativePath(fileName);
+
+            if (!isFileRelativePath)
+            {
+                appRelativePath = ScriptEnvironment.MapToAppRelativePath(fileName);
+            }
+            else
+            {
+                appRelativePath = relativePathRoot + fileName;
+            }
+
+            string fsPath = ScriptEnvironment.MapPath(appRelativePath);
+            bool exists = !String.IsNullOrEmpty(fsPath) && File.Exists(fsPath);
             
-            string directPath = isRelative ?
-                currentRelativePath + "/" + fileName :
-                fileName;
+            // try to search the library for any paths that have no root or app root (~/)
 
-            string path = MapPath(directPath);
-
-
-            bool exists = !String.IsNullOrEmpty(path) && File.Exists(path);
-            if (!exists && IsRelativePath(fileName))
+            if (!exists && isFileRelativePath)
             {
                 path = PathToLibraryFile(fileName);
+            } else {
+                path = appRelativePath;
+            }
+
+            if (path == null && !IgnoreErrors)
+            {
+                throw new FileNotFoundException(String.Format("Unable to find dependency \"{0}\" in the LibraryPath.", path));
             }
             return path;
         }
@@ -532,13 +528,13 @@ namespace CsQuery.Mvc.ClientScript
                 pattern = Regex.Escape(fileName).Replace("\\{version}", Patterns.FileVersionRegex);
             }
 
-            foreach (var libPath in LibraryPath.ToList())
+            foreach (var libPath in ScriptEnvironment.LibraryPath.ToList())
             {
                 string matchingFile = null;
-                string dir = MapPath(libPath);
+                string dir = ScriptEnvironment.MapPath(libPath);
                 if (!Directory.Exists(dir))
                 {
-                    LibraryPath.Remove(libPath);
+                    ScriptEnvironment.LibraryPath.Remove(libPath);
                     continue;
                 }
 
@@ -550,6 +546,11 @@ namespace CsQuery.Mvc.ClientScript
                 else
                 {
                     string path = Path.Combine(dir, fileName);
+
+                    if (!ScriptEnvironment.IsValidFileName(path))
+                    {
+                        path += ".js";
+                    }
 
                     if (File.Exists(path))
                     {
@@ -604,12 +605,24 @@ namespace CsQuery.Mvc.ClientScript
             }
         }
 
-        private bool IsRelativePath(string file)
+        /// <summary>
+        /// The file is a relative path - is not rooted and is not ~/ rooted to the app.
+        /// </summary>
+        ///
+        /// <param name="file">
+        /// The file.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if relative path, false if not.
+        /// </returns>
+
+        private bool IsFileRelativePath(string file)
         {
             return !file.StartsWith("/") && !file.StartsWith("~/");
         }
 
-
+    
         #endregion
 
         #region ICollection methods

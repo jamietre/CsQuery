@@ -13,17 +13,17 @@ namespace CsQuery.Mvc.ClientScript
 
         #region constructor
 
-        public  ScriptParser(string fileName)
+        public  ScriptParser(ScriptEnvironment scriptEnvironment,string fileName)
         {
+            ScriptEnvironment = scriptEnvironment;
             FileName = fileName;
-
         }
 
         #endregion
 
         #region private properties
 
-
+        private ScriptEnvironment ScriptEnvironment;
         private TextReader StreamReader;
         private string _FileName;
         /// <summary>
@@ -78,18 +78,28 @@ namespace CsQuery.Mvc.ClientScript
             protected set {
                 string fileName = GetJustFilePath(value);
 
-                IsPhysicalFile = IsValidFileName(fileName) 
-                    && File.Exists(fileName);
+                IsPhysicalFile = !ScriptEnvironment.IsUrl(fileName)
+                    && ScriptEnvironment.IsValidFileName(fileName) 
+                    && File.Exists(ScriptEnvironment.MapPath(fileName));
 
+                if (IsPhysicalFile)
+                {
+                    FilePath = ScriptEnvironment.MapPath(fileName);
+                }
                 _FileName = fileName;
                 if (IsPhysicalFile)
                 {
-                    FileData = File.ReadAllText(fileName);
+                    FileData = File.ReadAllText(FilePath);
                     StreamReader = new StringReader(FileData);
                 }
             }
         }
 
+        public string FilePath
+        {
+            get;
+            protected set;
+        }
         /// <summary>
         /// When true, indicates that non-whitespace, non-code lines have been parsed already.
         /// </summary>
@@ -186,45 +196,25 @@ namespace CsQuery.Mvc.ClientScript
 
         #region private methods
 
-        /// <summary>
-        /// Test if the path appears to be a valid file name
-        /// </summary>
-        ///
-        /// <param name="path">
-        /// Full pathname of the file.
-        /// </param>
-        ///
-        /// <returns>
-        /// true if valid file name, false if not.
-        /// </returns>
-
-        private bool IsValidFileName(string path)
-        {
-            int lastDotIndex = path.LastIndexOf(".");
-            int lastSlashIndex = path.LastIndexOf("\\");
-
-            return (lastDotIndex == 0
-                || lastDotIndex > lastSlashIndex);
-        }
-        /// <summary>
-        /// Gets just file path, removing querystring
-        /// </summary>
-        ///
-        /// <param name="path">
-        /// Full pathname of the file.
-        /// </param>
-        ///
-        /// <returns>
-        /// The just file path.
-        /// </returns>
-
         private string GetJustFilePath(string path)
         {
             int qPos = path.IndexOf("?");
-            return  qPos < 0 ?
+            return qPos < 0 ?
                 path :
                 path.Substring(0, qPos);
         }
+
+        /// <summary>
+        /// Calculate an MD5 hash for the string
+        /// </summary>
+        ///
+        /// <param name="input">
+        /// String to hash
+        /// </param>
+        ///
+        /// <returns>
+        /// The hash
+        /// </returns>
 
         private string GetMD5Hash(string input)
         {
@@ -248,5 +238,7 @@ namespace CsQuery.Mvc.ClientScript
         }
 
         #endregion
+
+
     }
 }

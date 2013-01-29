@@ -256,11 +256,25 @@ namespace CsQuery.Implementation
         /// The full path to this node. For Document nodes, this is always empty.
         /// </summary>
 
-        public override ushort[] Path
+        public override ushort[] NodePath
         {
             get
             {
                 return new ushort[] {};
+            }
+        }
+
+        /// <summary>
+        /// Gets the unique path to this element as a string. THIS METHOD IS OBSOLETE. It has been
+        /// replaced by NodePath.
+        /// </summary>
+
+        [Obsolete]
+        public override string Path
+        {
+            get
+            {
+                return "";
             }
         }
 

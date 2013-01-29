@@ -13,11 +13,19 @@ using CsQuery.Implementation;
 namespace CsQuery.Implementation
 {
     /// <summary>
-    /// A dictionary that is substring-lookup capable. This is the data structure used to index HTML documents for selectors.
-    /// A SortedSet of keys is used for the index because it allows fast access by substring. A list of keys obtained from the
-    /// SortedSet for a selector is used to obtain the target references from a regular dictionary.
+    /// A dictionary that is substring-lookup capable. This is the data structure used to index HTML
+    /// documents for selectors. A SortedSet of keys is used for the index because it allows fast
+    /// access by substring. A list of keys obtained from the SortedSet for a selector is used to
+    /// obtain the target references from a regular dictionary.
     /// </summary>
-    /// <typeparam name="TValue"></typeparam>
+    ///
+    /// <typeparam name="TKey">
+    /// Type of the key.
+    /// </typeparam>
+    /// <typeparam name="TValue">
+    /// Type of the value
+    /// </typeparam>
+
     public class RangeSortedDictionary<TKey,TValue> : IRangeSortedDictionary<TKey,TValue> where TKey: IConvertible, IComparable
     {
         #region constructor
@@ -26,11 +34,14 @@ namespace CsQuery.Implementation
         /// Default constructor.
         /// </summary>
         ///
-        /// <param name="comparer">
+        /// <param name="setComparer">
         /// The comparer.
         /// </param>
+        /// <param name="equalityComparer">
+        /// The equality comparer.
+        /// </param>
         /// <param name="indexSeparator">
-        /// The index separator
+        /// The index separator.
         /// </param>
 
         public RangeSortedDictionary(IComparer<TKey[]> setComparer, IEqualityComparer<TKey[]> equalityComparer, TKey indexSeparator)

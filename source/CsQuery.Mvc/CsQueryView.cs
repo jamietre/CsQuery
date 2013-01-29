@@ -113,12 +113,12 @@ namespace CsQuery.Mvc
         /// <summary>
         /// A lookup of ClassName, indicating whether to bother with CQ for this controller
         /// </summary>
-        private static IDictionary<string, bool> HasCqMethodsRef = new Dictionary<string, bool>();
+        private static IDictionary<string, bool> HasCqMethodsRef = new Dictionary<string, bool>(StringComparer.CurrentCultureIgnoreCase);
         
         /// <summary>
         /// A map of ClassName+ActonName to a method
         /// </summary>
-        private static IDictionary<string, MethodInfo> CqMethods;
+        private static IDictionary<string, MethodInfo> CqMethods = new Dictionary<string, MethodInfo>(StringComparer.CurrentCultureIgnoreCase);
 
         #endregion
 
@@ -217,8 +217,8 @@ namespace CsQuery.Mvc
                     }
                     if (scriptManagerActive)
                     {
-
-                        ManageScripts(deferredCq.Dom, (System.Web.Mvc.WebViewPage)instance);
+                        
+                        ManageScripts(deferredCq.Dom, (System.Web.Mvc.WebViewPage)instance,viewContext);
                     }
 
                     
@@ -232,11 +232,31 @@ namespace CsQuery.Mvc
             base.RenderView(viewContext, writer, instance);
         }
 
-     
-        private void ManageScripts(CQ cqDoc, WebViewPage viewPage) {
-            ScriptManager mgr = new ScriptManager();
+        /// <summary>
+        /// Manage scripts.
+        /// </summary>
+        ///
+        /// <param name="cqDoc">
+        /// The cq document.
+        /// </param>
+        /// <param name="viewPage">
+        /// The view page.
+        /// </param>
+        /// <param name="viewContext">
+        /// The active view context
+        /// </param>
+
+
+        private void ManageScripts(CQ cqDoc, WebViewPage viewPage, ViewContext viewContext) {
+            ScriptManager mgr = new ScriptManager(new ScriptEnvironment
+            {
+                  LibraryPath = LibraryPath,
+                  RelativePathRoot =viewContext.RequestContext.HttpContext.Request.AppRelativeCurrentExecutionFilePath,
+                  MapPath = viewContext.RequestContext.HttpContext.Server.MapPath
+            });
+
             mgr.Options = Options;
-            mgr.LibraryPath = LibraryPath;
+
             mgr.ResolveScriptDependencies(cqDoc);
             
         }
@@ -332,10 +352,6 @@ namespace CsQuery.Mvc
 
                     if (hasMethods==false) {
                         hasMethods = true;
-                        if (CqMethods == null)
-                        {
-                            CqMethods = new Dictionary<string, MethodInfo>(StringComparer.CurrentCultureIgnoreCase);
-                        }
                     }
                     CqMethods.Add(controllerName+"_"+name, mi);
                 }

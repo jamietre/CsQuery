@@ -282,22 +282,6 @@ namespace CsQuery.Mvc.ClientScript
 
         #region static methods
 
-        /// <summary>
-        /// Test if the path is a URL, or a local path
-        /// </summary>
-        ///
-        /// <param name="path">
-        /// Full pathname of the file.
-        /// </param>
-        ///
-        /// <returns>
-        /// true if remote url, false if not.
-        /// </returns>
-
-        public static bool IsRemoteUrl(string path) {
-            // this should probably instead check for *:// but OK for now
-             return path.StartsWith("http://") || path.StartsWith("https://") || path.StartsWith("ftp://");
-        }
         
         /// <summary>
         /// Normalizes a path name by adding virtual notation and removing trailing slashes.
@@ -341,6 +325,7 @@ namespace CsQuery.Mvc.ClientScript
                         "");
         }
 
+
         /// <summary>
         /// Normalize a path to a name, e.g. remove relative bases, and ensure there is an extension.
         /// </summary>
@@ -382,6 +367,7 @@ namespace CsQuery.Mvc.ClientScript
                 (!AllowedExtensions.Contains(suffix) ? ".js" : "");
         }
 
+        
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

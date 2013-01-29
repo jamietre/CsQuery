@@ -32,7 +32,11 @@ namespace CsQuery.Mvc.Tests.ScriptManagerTests
 
         [Test,TestMethod]
         public void SimpleTest() {
-            ScriptCollection coll = new ScriptCollection(pathList, MapPath);
+            ScriptCollection coll = new ScriptCollection(new ScriptEnvironment {
+                RelativePathRoot="c:/",
+                 LibraryPath=pathList, 
+                 MapPath = MapPath
+            });
 
         }
 
