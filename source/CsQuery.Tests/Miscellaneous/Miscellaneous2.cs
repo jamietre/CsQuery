@@ -14,6 +14,7 @@ using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
 using CsQuery.Utility;
+using System.Net;
 
 namespace CsQuery.Tests.Miscellaneous
 {
@@ -24,24 +25,37 @@ namespace CsQuery.Tests.Miscellaneous
     [TestFixture, TestClass]
     public class Reindex: CsQueryTest
     {
-//        [Test, TestMethod]
-//        public void TestJp()
-//        {
-//            //var dom = CQ.CreateFromUrl("http://ao.recruit.co.jp/form.html");
-//            //var target = dom["a[href='recruit-mp.co.jp/company/data/']"];
-//            //Assert.AreEqual("recruit-mp.co.jp/company/data/", target.Text();
-//            bool done = false;
-//             CQ.CreateFromUrlAsync("http://www.ahram.org.eg/Stars-Arts/News/194972.aspx")
-//                 .Then(response =>
-//              {
-//                  var dom = response.Dom;
-//string content = string.Empty;
-//            content = dom["#txtBody  > p"].Text();
-//            done = true;
-//});
+        //[Test, TestMethod]
+        //public void TestJp()
+        //{
+        //    //var dom = CQ.CreateFromUrl("http://ao.recruit.co.jp/form.html");
+        //    //var target = dom["a[href='recruit-mp.co.jp/company/data/']"];
+        //    //Assert.AreEqual("recruit-mp.co.jp/company/data/", target.Text();
+            
+        //    bool done = false;
+        //    string content = null;
+        //    CQ dom;
 
-//             while (done == false) ;
-//        }
+        //    CQ.CreateFromUrlAsync("http://www.ahram.org.eg/Stars-Arts/News/194972.aspx")
+        //        .Then(response =>
+        //     {
+        //         dom = response.Dom;
+        //         content = string.Empty;
+        //         content = dom["#txtBody  > p"].Text();
+        //         done = true;
+        //     });
+
+
+        //    WebClient client = new WebClient();
+        //    client.Encoding = System.Text.Encoding.UTF8;
+        //    string b = client.DownloadString("http://www.ahram.org.eg/Stars-Arts/News/194972.aspx");
+        //    var dom2 = CQ.Create(b);
+        //    var content2 = dom2["#txtBody > p"].Text();
+
+        //    while (done == false) ;
+        //    Assert.AreEqual(content, content2);
+
+        //}
 
         /// <summary>
         /// 

@@ -6105,10 +6105,20 @@
             Gets a unique ID for this element among its siblings
             </summary>
         </member>
+        <member name="P:CsQuery.IDomObject.NodePathID">
+            <summary>
+            Gets the full pathname of the node file.
+            </summary>
+        </member>
         <member name="P:CsQuery.IDomObject.Path">
             <summary>
             Gets the unique path to this element from the root of the heirarchy. This is generally only
             used for internal purposes.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IDomObject.NodePath">
+            <summary>
+            Gets the full pathname of the node file.
             </summary>
         </member>
         <member name="P:CsQuery.IDomObject.NodeNameID">
@@ -6719,10 +6729,15 @@
             Gets a value indicating whether this object type should be indexed.
             </summary>
         </member>
-        <member name="P:CsQuery.Implementation.DomObject.Path">
+        <member name="P:CsQuery.Implementation.DomObject.NodePath">
             <summary>
             The full path to this node. This is calculated by requesting the parent path and adding its
             own ID.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.Path">
+            <summary>
+            Gets the unique path to this element as a string. THIS METHOD IS OBSOLETE. It has been replaced by NodePath.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomObject.Document">
@@ -6773,9 +6788,12 @@
         </member>
         <member name="P:CsQuery.Implementation.DomObject.PathID">
             <summary>
-            Unique ID assigned when added to a dom. This is not the full path but just the ID at this
-            level. The full path is never stored with each node to prevent having to regenerate if node
-            trees are moved.
+            Gets a unique ID for this element among its siblings. THIS METHOD IS OBSOLETE. It has been replaced by NodePath.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.NodePathID">
+            <summary>
+            Gets a unique ID for this element among its siblings.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomObject.Depth">
@@ -22132,9 +22150,15 @@
             The direct parent of this node.
             </summary>
         </member>
-        <member name="P:CsQuery.Implementation.DomDocument.Path">
+        <member name="P:CsQuery.Implementation.DomDocument.NodePath">
             <summary>
             The full path to this node. For Document nodes, this is always empty.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomDocument.Path">
+            <summary>
+            Gets the unique path to this element as a string. THIS METHOD IS OBSOLETE. It has been
+            replaced by NodePath.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomDocument.Depth">
@@ -26032,23 +26056,33 @@
             </summary>
         </member>
         <member name="T:CsQuery.Implementation.RangeSortedDictionary`2">
-            <summary>
-            A dictionary that is substring-lookup capable. This is the data structure used to index HTML documents for selectors.
-            A SortedSet of keys is used for the index because it allows fast access by substring. A list of keys obtained from the
-            SortedSet for a selector is used to obtain the target references from a regular dictionary.
-            </summary>
-            <typeparam name="TValue"></typeparam>
+             <summary>
+             A dictionary that is substring-lookup capable. This is the data structure used to index HTML
+             documents for selectors. A SortedSet of keys is used for the index because it allows fast
+             access by substring. A list of keys obtained from the SortedSet for a selector is used to
+             obtain the target references from a regular dictionary.
+             </summary>
+            
+             <typeparam name="TKey">
+             Type of the key.
+             </typeparam>
+             <typeparam name="TValue">
+             Type of the value
+             </typeparam>
         </member>
         <member name="M:CsQuery.Implementation.RangeSortedDictionary`2.#ctor(System.Collections.Generic.IComparer{`0[]},System.Collections.Generic.IEqualityComparer{`0[]},`0)">
              <summary>
              Default constructor.
              </summary>
             
-             <param name="comparer">
+             <param name="setComparer">
              The comparer.
              </param>
+             <param name="equalityComparer">
+             The equality comparer.
+             </param>
              <param name="indexSeparator">
-             The index separator
+             The index separator.
              </param>
         </member>
         <member name="F:CsQuery.Implementation.RangeSortedDictionary`2.Keys">
