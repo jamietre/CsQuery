@@ -315,6 +315,7 @@
     <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\TreeBuilderConstants.cs" />
     <Compile Include="HtmlParserSharp\HtmlParserSharp\Core\UTF16Buffer.cs" />
     <Compile Include="HtmlParserSharp\HtmlParserSharp\TreeBuilders\XmlTreeBuilder.cs" />
+    <Compile Include="HtmlParser\BOMReader.cs" />
     <Compile Include="HtmlParser\enumHtmlParsingOptions.cs" />
     <Compile Include="HtmlParser\CsQueryTreeBuilder.cs" />
     <Compile Include="HtmlParser\ElementFactory.cs" />
@@ -523,7 +524,7 @@ xcopy $(TargetDir)CsQuery.xml $(SolutionDir)..\Distribution /Y
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="False" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="False" />
+      <UserProperties BuildVersion_UpdateFileVersion="False" BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UseGlobalSettings="False" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

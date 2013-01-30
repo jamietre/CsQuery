@@ -60,5 +60,11 @@ namespace CsQuery.Web
         /// </summary>
 
         WebException WebException { get; }
+
+        /// <summary>
+        /// Gets the response character set encoding identified by the response header
+        /// </summary>
+
+        Encoding ResponseEncoding { get; }
     }
 }

@@ -82,7 +82,7 @@ namespace CsQuery.Tests.Core.WebIO
                 p2resolved = true;
             }));
 
-            bool complete = false;
+            bool? complete = null;
             CQ.WhenAll(promise1,promise2).Then(new Action<ICsqWebResponse>((response) =>
             {
                 complete = true;
@@ -91,13 +91,14 @@ namespace CsQuery.Tests.Core.WebIO
                 
             }), new Action(() =>
             {
+                complete = false;
                 Assert.Fail("The web requests were rejected.");
             }));
 
             // if we don't do this the test will exit before finishing
             CQ.WaitForAsyncEvents(10000);
-
-            Assert.IsTrue(complete);
+            while (complete == null) ;
+            Assert.IsTrue(complete==true);
         }
 
         [Test, TestMethod]

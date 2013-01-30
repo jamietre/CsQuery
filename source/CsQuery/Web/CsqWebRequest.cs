@@ -440,7 +440,8 @@ namespace CsQuery.Web
         #endregion
 
         /// <summary>
-        /// Return the character set encoding for an IHttpWebResponse.
+        /// Return the character set encoding for an IHttpWebResponse, or null if no encoding is
+        /// specified.
         /// </summary>
         ///
         /// <param name="response">

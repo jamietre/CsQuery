@@ -24,8 +24,14 @@ namespace CsQuery.Promises
                 FailOnResolutionExceptions = true;
             }
         }
+
         #region private properties
 
+        /// <summary>
+        /// The thread locker object
+        /// </summary>
+
+        internal object Locker = new object();
         private Func<object, IPromise> _Success;
         private Func<object, IPromise> _Failure;
 
@@ -83,7 +89,7 @@ namespace CsQuery.Promises
         /// resolved or rejected./.
         /// </summary>
 
-        protected Deferred NextDeferred;
+        protected List<Deferred> NextDeferred=null;
 
         /// <summary>
         /// Indicates whether this object has been resolved yet. A null value means unresolved; true or
@@ -163,30 +169,35 @@ namespace CsQuery.Promises
 
         public IPromise Then(Delegate success, Delegate failure = null)
         {
-            NextDeferred = new Deferred();
-
-            MethodInfo method = success != null ?
-                success.Method :
-                failure.Method;
-
-            Type returnType = method.ReturnType;
-            Type[] parameters = method.GetParameters().Select(item => item.ParameterType).ToArray();
-
-            bool useParms = parameters.Length > 0;
-
-            Success = new Func<object, IPromise>((parm) =>
+            lock (Locker)
             {
-                object result = success.DynamicInvoke(GetParameters(useParms));
-                return result as IPromise;
 
-            });
-            Failure = new Func<object, IPromise>((parm) =>
-            {
-                object result = failure.DynamicInvoke(GetParameters(useParms));
-                return result as IPromise;
-            });
+                var deferred = GetNextDeferred();
 
-            return NextDeferred;
+                MethodInfo method = success != null ?
+                    success.Method :
+                    failure.Method;
+
+                Type returnType = method.ReturnType;
+                Type[] parameters = method.GetParameters().Select(item => item.ParameterType).ToArray();
+
+                bool useParms = parameters.Length > 0;
+
+                Success = new Func<object, IPromise>((parm) =>
+                {
+                    object result = success.DynamicInvoke(GetParameters(useParms));
+                    return result as IPromise;
+
+                });
+                Failure = new Func<object, IPromise>((parm) =>
+                {
+                    object result = failure.DynamicInvoke(GetParameters(useParms));
+                    return result as IPromise;
+                });
+
+                return deferred;
+            
+            }
         }
 
         /// <summary>
@@ -206,24 +217,26 @@ namespace CsQuery.Promises
 
         public IPromise Then(PromiseAction<object> success, PromiseAction<object> failure = null)
         {
-            NextDeferred = new Deferred();
-
-            Success = new Func<object, IPromise>((parm) =>
+            lock (Locker)
             {
-                success(parm);
-                return null;
-            });
-            if (failure != null)
-            {
-                Failure = new Func<object, IPromise>((parm) =>
+                var deferred = GetNextDeferred();
+                Success = new Func<object, IPromise>((parm) =>
                 {
-                    failure(parm);
+                    success(parm);
                     return null;
                 });
+                if (failure != null)
+                {
+                    Failure = new Func<object, IPromise>((parm) =>
+                    {
+                        failure(parm);
+                        return null;
+                    });
 
+                }
+
+                return deferred;
             }
-            
-            return NextDeferred;
         }
 
         /// <summary>
@@ -243,19 +256,24 @@ namespace CsQuery.Promises
 
         public IPromise Then(PromiseFunction<object> success, PromiseFunction<object> failure = null)
         {
-            NextDeferred = new Deferred();
-            Success = new Func<object,IPromise>((parm) => {
-                return success(Parameter);
-            });
-            if (failure != null)
+            lock (Locker)
             {
-                Failure = new Func<object, IPromise>((parm) =>
+                var deferred = GetNextDeferred();
+
+                Success = new Func<object, IPromise>((parm) =>
                 {
                     return success(Parameter);
                 });
+                if (failure != null)
+                {
+                    Failure = new Func<object, IPromise>((parm) =>
+                    {
+                        return success(Parameter);
+                    });
+                }
+
+                return deferred;
             }
-            
-            return NextDeferred;
         }
 
         /// <summary>
@@ -275,23 +293,26 @@ namespace CsQuery.Promises
 
         public IPromise Then(Action success, Action failure = null)
         {
-            NextDeferred = new Deferred();
-            Success = new Func<object, IPromise>((parm) =>
+            lock (Locker)
             {
-                success();
-                return null;
-            });
-            if (failure != null)
-            {
-                Failure = new Func<object, IPromise>((parm) =>
+                var deferred = GetNextDeferred();
+                Success = new Func<object, IPromise>((parm) =>
                 {
-                    failure();
+                    success();
                     return null;
                 });
+                if (failure != null)
+                {
+                    Failure = new Func<object, IPromise>((parm) =>
+                    {
+                        failure();
+                        return null;
+                    });
 
+                }
+
+                return deferred;
             }
-            
-            return NextDeferred;
         }
 
         /// <summary>
@@ -311,21 +332,24 @@ namespace CsQuery.Promises
 
         public IPromise Then(Func<IPromise> success, Func<IPromise> failure = null)
         {
-            NextDeferred = new Deferred();
-            Success = new Func<object, IPromise>((parm) =>
+            lock (Locker)
             {
-                return success();
-            });
-            if (failure != null)
-            {
-                Failure = new Func<object, IPromise>((parm) =>
+                var deferred = GetNextDeferred();
+                Success = new Func<object, IPromise>((parm) =>
                 {
-                    return failure();
+                    return success();
                 });
+                if (failure != null)
+                {
+                    Failure = new Func<object, IPromise>((parm) =>
+                    {
+                        return failure();
+                    });
 
+                }
+
+                return deferred;
             }
-            
-            return NextDeferred;
         }
 
         /// <summary>
@@ -357,29 +381,35 @@ namespace CsQuery.Promises
 
         protected void ResolveImpl()
         {
-            if (Success != null)
+            lock (Locker)
             {
-                if (!FailOnResolutionExceptions)
+                if (Success != null)
                 {
-                    try
+                    if (!FailOnResolutionExceptions)
+                    {
+                        try
+                        {
+                            Success(Parameter);
+                        }
+                        catch
+                        {
+                            RejectImpl();
+                            return;
+                        }
+                    }
+                    else
                     {
                         Success(Parameter);
                     }
-                    catch
-                    {
-                        RejectImpl();
-                        return;
-                    }
                 }
-                else
-                {
-                    Success(Parameter);
-                }
-            }
 
-            if (NextDeferred != null)
-            {
-                NextDeferred.Resolve(Parameter);
+                if (NextDeferred != null)
+                {
+                    NextDeferred.ForEach(item =>
+                    {
+                        item.Resolve(Parameter);
+                    });
+                }
             }
         }
 
@@ -406,8 +436,22 @@ namespace CsQuery.Promises
             }
             if (NextDeferred != null)
             {
-                NextDeferred.Reject(Parameter);
+                NextDeferred.ForEach(item =>
+                {
+                    item.Reject(Parameter);
+                });
             }
+        }
+
+        private Deferred GetNextDeferred()
+        {
+            var deferred = new Deferred();
+            if (NextDeferred == null)
+            {
+                NextDeferred = new List<Deferred>();
+            }
+            NextDeferred.Add(deferred);
+            return deferred;
         }
         #endregion
 

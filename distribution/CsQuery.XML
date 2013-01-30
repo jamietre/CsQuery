@@ -13287,6 +13287,63 @@
             </summary>
             <returns>The document</returns>
         </member>
+        <member name="T:CsQuery.HtmlParser.BOMReader">
+            <summary>
+            A class to parse and expose information about the byte order marks (BOM) for a stream.
+            </summary>
+        </member>
+        <member name="M:CsQuery.HtmlParser.BOMReader.#ctor(System.IO.Stream)">
+             <summary>
+             Default constructor.
+             </summary>
+            
+             <param name="stream">
+             The stream to analyze.
+             </param>
+        </member>
+        <member name="M:CsQuery.HtmlParser.BOMReader.Parse">
+            <summary>
+            Parses the input stream to obtain an encoding
+            </summary>
+        </member>
+        <member name="M:CsQuery.HtmlParser.BOMReader.Matches(System.Byte[])">
+             <summary>
+             Test if the header matches the bytes passed (up to the length of the array passed)
+             </summary>
+            
+             <param name="buffer">
+             The buffer.
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="P:CsQuery.HtmlParser.BOMReader.StreamWithoutBOM">
+            <summary>
+            The input stream stripped of the BOM
+            </summary>
+        </member>
+        <member name="P:CsQuery.HtmlParser.BOMReader.StreamWithBOM">
+            <summary>
+            The original stream
+            </summary>
+        </member>
+        <member name="P:CsQuery.HtmlParser.BOMReader.DefaultEncoding">
+            <summary>
+            Gets or sets the default encoding for the stream (if no BOM detected)
+            </summary>
+        </member>
+        <member name="P:CsQuery.HtmlParser.BOMReader.IsBOM">
+            <summary>
+            When true, indicates a valid BOM was detected
+            </summary>
+        </member>
+        <member name="P:CsQuery.HtmlParser.BOMReader.IsXML">
+            <summary>
+            The document had no BOM, but was an XML document.
+            </summary>
+        </member>
         <member name="T:CsQuery.HtmlParsingOptions">
             <summary>
             The options used when parsing strings of HTML
@@ -13617,6 +13674,11 @@
              A new document.
              </returns>
         </member>
+        <member name="F:CsQuery.HtmlParser.ElementFactory.EncodingFixedFromBOM">
+            <summary>
+            When the encoding is determined by byte order marks, do not allow a charset/meta tag to take precedence
+            </summary>
+        </member>
         <member name="F:CsQuery.HtmlParser.ElementFactory.AlreadyReEncoded">
             <summary>
             When true, the document's character set encoding has changed due to a meta http-equiv
@@ -13734,6 +13796,11 @@
         <member name="P:CsQuery.HtmlParser.ElementFactory.FragmentContext">
             <summary>
             Gets or sets a context for the fragment, e.g. a tag name
+            </summary>
+        </member>
+        <member name="F:CsQuery.HtmlParser.ElementFactory.ReEncodeAction.ChangeEncoding">
+            <summary>
+            The encoding was set from a META tag, allow it to be changed.
             </summary>
         </member>
         <member name="T:CsQuery.HtmlParsingMode">

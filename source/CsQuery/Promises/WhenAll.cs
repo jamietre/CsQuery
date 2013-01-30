@@ -193,16 +193,19 @@ namespace CsQuery.Promises
 
         private void Configure(IEnumerable<IPromise> promises)
         {
-            Success = true;
-            Deferred = new Deferred();
-
-            int count=0;
-            foreach (var promise in promises)
+            lock (_locker)
             {
-                count++;
-                promise.Then((Action)PromiseResolve,(Action)PromiseReject);
+                Success = true;
+                Deferred = new Deferred();
+
+                int count = 0;
+                foreach (var promise in promises)
+                {
+                    count++;
+                    promise.Then((Action)PromiseResolve, (Action)PromiseReject);
+                }
+                TotalCount = count;
             }
-            TotalCount = count;
 
         }
 
@@ -212,7 +215,10 @@ namespace CsQuery.Promises
 
         private void PromiseResolve()
         {
-            ResolvedCount++;
+            lock (_locker)
+            {
+                ResolvedCount++;
+            }
         }
 
         /// <summary>
@@ -221,15 +227,21 @@ namespace CsQuery.Promises
 
         private void PromiseReject()
         {
-            Success = false;
-            ResolvedCount++;
+            lock (_locker)
+            {
+                Success = false;
+                ResolvedCount++;
+            }
         }
 
         private void TimedOut()
         {
-            Success = false;
-            CompletePromise();
-        }
+            lock (_locker)
+            {
+                Success = false;
+                CompletePromise();
+            }
+            }
 
         private void CompletePromise()
         {

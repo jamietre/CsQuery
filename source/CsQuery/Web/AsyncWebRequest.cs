@@ -55,7 +55,7 @@ namespace CsQuery.Web
         /// Gets or sets the encoding of the response stream
         /// </summary>
 
-        protected Encoding ResponseEncoding { get; set; }
+        public Encoding ResponseEncoding { get; set; }
         
         private WebException _WebException;
         

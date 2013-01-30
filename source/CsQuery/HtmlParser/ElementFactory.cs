@@ -111,7 +111,12 @@ namespace CsQuery.HtmlParser
         {
             None = 0,
             ReEncode = 1,
+            /// <summary>
+            /// The encoding was set from a META tag, allow it to be changed.
+            /// </summary>
             ChangeEncoding = 2
+            
+
         }
 
         /// <summary>
@@ -238,21 +243,28 @@ namespace CsQuery.HtmlParser
             // create a combined stream from the pre-fetched part, and the remainder (whose position
             // will be wherever it was left after reading the part 1 block).
             
-            Stream stream = new CombinedStream(part1stream,inputStream);
+            Stream stream;
 
-            
             if (ActiveEncoding == null)
             {
-                ActiveStreamReader= new StreamReader(stream, true);
+                // try to read encoding from the BOM
+                
+                var bomReader = new BOMReader(part1stream);
+                stream = new CombinedStream(bomReader.StreamWithoutBOM, inputStream);
+
+                if (bomReader.IsBOM)
+                {
+                    ActiveEncoding = bomReader.Encoding;
+                }
             }
             else
             {
-                ActiveStreamReader = new StreamReader(stream, encoding,false);
-                
+                stream = new CombinedStream(part1stream, inputStream);
             }
 
-            ActiveEncoding = ((StreamReader)ActiveStreamReader).CurrentEncoding;
-            var originalCharSetEncoding = ActiveEncoding;
+            ActiveStreamReader = new StreamReader(stream, ActiveEncoding ?? Encoding.UTF8, false);
+            
+           
 
             if (HtmlParsingMode == HtmlParsingMode.Auto || 
                 ((HtmlParsingMode == HtmlParsingMode.Fragment )
@@ -285,9 +297,6 @@ namespace CsQuery.HtmlParser
                     FragmentContext = ctx;
                 }
             }
-
-          
-
 
             Reset();
 
@@ -324,17 +333,6 @@ namespace CsQuery.HtmlParser
                         stream = part1stream;
                     }
 
-
-                    // re-encode the entire stream
-
-                    //TextReader tempReader = new StreamReader(stream, originalCharSetEncoding);
-
-                    //MemoryStream encoded = new MemoryStream();
-                    //var writer = new StreamWriter(encoded, ActiveEncoding);
-                    //writer.Write(tempReader.ReadToEnd());
-                    //writer.Flush();
-
-                    //encoded.Position = 0;
 
                     // assign the re-mapped stream to the source and start again
                     ActiveStreamReader = new StreamReader(stream, ActiveEncoding);
@@ -531,6 +529,9 @@ namespace CsQuery.HtmlParser
 
         private void tokenizer_EncodingDeclared(object sender, EncodingDetectedEventArgs e)
         {
+
+
+
             Encoding encoding;
             try
             {
@@ -542,18 +543,13 @@ namespace CsQuery.HtmlParser
                 return;
             }
 
-            // if we can't actually reset the document because more than the buffer has been read already, just ignore it
-
-            //if (activeStream.CanRead && activeStream.Position > preprocessorBlockSize)
-            //{
-            //    e.AcceptEncoding = false;
-            //    return;
-            //}
 
             bool accept = false;
 
+            // only accept new encodings from meta if there has been no encoding identified already
 
-            if (encoding != null && !encoding.Equals(ActiveEncoding))
+            if (encoding != null && 
+                ActiveEncoding==null)
             {
                 accept = true;
                 ActiveEncoding = encoding;

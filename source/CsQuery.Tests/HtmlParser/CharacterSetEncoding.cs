@@ -41,11 +41,14 @@ namespace CsQuery.Tests.HtmlParser
             var html = htmlStart + htmlStartMeta + htmlStart3 +hebrewChar + htmlEnd;
             var htmlNoRecode = htmlStart + htmlStart3 + hebrewChar + htmlEnd;
 
+
+            // create a windows-1255 encoded stream
+            
             var dom = CQ.Create(GetMemoryStream(htmlNoRecode, encoder));
 
             // grab the character from CsQuery's output, and ensure that this all worked out.
             
-            var outputHebrewChar = dom["#test"].Text();
+            var csqueryHebrewChar = dom["#test"].Text();
 
             // Test directly from the stream
 
@@ -54,11 +57,9 @@ namespace CsQuery.Tests.HtmlParser
             var sourceHebrewChar = htmlHebrew.Substring(htmlHebrew.IndexOf("test>") + 5, 1);
 
             // CsQuery should fail to parse it
-             
-            Assert.AreNotEqual(hebrewChar, outputHebrewChar);
 
-            // the unicode version should not match the 1255 versions
-            Assert.AreNotEqual(hebrewChar, sourceHebrewChar);
+            Assert.AreNotEqual(sourceHebrewChar, csqueryHebrewChar);
+
 
             // the actual character from codepage 1255
             Assert.AreEqual("₪", sourceHebrewChar);
@@ -67,11 +68,12 @@ namespace CsQuery.Tests.HtmlParser
 
             var htmlWindows1255 = GetMemoryStream(html, encoder);
 
-            // pass it the wrong encoding deliberately
-            dom = CQ.Create(htmlWindows1255, Encoding.GetEncoding("ISO-8859-1"));
-            outputHebrewChar = dom["#test"].Text();
+            // Now run again with the charset meta tag, but no encoding specified.
+            dom = CQ.Create(htmlWindows1255);
 
-            Assert.AreEqual(sourceHebrewChar,outputHebrewChar);
+            csqueryHebrewChar = dom["#test"].Text();
+
+            Assert.AreEqual(sourceHebrewChar,csqueryHebrewChar);
         }
 
 
@@ -104,7 +106,7 @@ namespace CsQuery.Tests.HtmlParser
 
             var htmlWindows1255 = GetMemoryStream(html, encoder);
 
-            var dom = CQ.Create(htmlWindows1255, Encoding.GetEncoding("ISO-8859-1"));
+            var dom = CQ.Create(htmlWindows1255, null);
             var outputHebrewChar = dom["#test"].Text();
 
             Assert.AreEqual("₪", outputHebrewChar);
@@ -175,6 +177,7 @@ namespace CsQuery.Tests.HtmlParser
 
             //test synchronous: this is the code that CreateFromURL uses 
 
+            creator.CharacterSet = null;
             request = new CsqWebRequest("http://test.com", creator);
 
             var httpRequest = request.GetWebRequest();
