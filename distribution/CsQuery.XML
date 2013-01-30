@@ -13674,11 +13674,6 @@
              A new document.
              </returns>
         </member>
-        <member name="F:CsQuery.HtmlParser.ElementFactory.EncodingFixedFromBOM">
-            <summary>
-            When the encoding is determined by byte order marks, do not allow a charset/meta tag to take precedence
-            </summary>
-        </member>
         <member name="F:CsQuery.HtmlParser.ElementFactory.AlreadyReEncoded">
             <summary>
             When true, the document's character set encoding has changed due to a meta http-equiv
@@ -13826,6 +13821,45 @@
         <member name="F:CsQuery.HtmlParsingMode.Document">
             <summary>
             A complete document; the HTML and BODY tag constructs will be addded if missing..
+            </summary>
+        </member>
+        <member name="T:CsQuery.HtmlParser.HtmlEncoding">
+            <summary>
+            Simplify access to character set encodings for this system.
+            </summary>
+        </member>
+        <member name="M:CsQuery.HtmlParser.HtmlEncoding.TryGetEncoding(System.String,System.Text.Encoding@)">
+             <summary>
+             Try to get a character set encoding from its web name.
+             </summary>
+            
+             <param name="encodingName">
+             Name of the encoding.
+             </param>
+             <param name="encoding">
+             [out] The encoding.
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
+        </member>
+        <member name="M:CsQuery.HtmlParser.HtmlEncoding.GetEncoding(System.String)">
+             <summary>
+             Gets an encoding.
+             </summary>
+            
+             <param name="encodingName">
+             Name of the encoding.
+             </param>
+            
+             <returns>
+             The encoding.
+             </returns>
+        </member>
+        <member name="P:CsQuery.HtmlParser.HtmlEncoding.Encodings">
+            <summary>
+            A dictionary of all encodings available on this system
             </summary>
         </member>
         <member name="T:CsQuery.HtmlParser.HtmlStyles">
@@ -20369,6 +20403,11 @@
             Default constuctor for a Deferred object.
             </summary>
         </member>
+        <member name="F:CsQuery.Promises.Deferred.Locker">
+            <summary>
+            The thread locker object
+            </summary>
+        </member>
         <member name="F:CsQuery.Promises.Deferred.NextDeferred">
             <summary>
             The next deferred objected in the chain; resolved or rejected when any bound delegate is
@@ -20950,6 +20989,11 @@
         <member name="P:CsQuery.Web.ICsqWebResponse.WebException">
             <summary>
             If the request resulted in an exception, the exception.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Web.ICsqWebResponse.ResponseEncoding">
+            <summary>
+            Gets the response character set encoding identified by the response header
             </summary>
         </member>
         <member name="T:CsQuery.Implementation.IRangeSortedDictionary`2">
@@ -24972,7 +25016,8 @@
         </member>
         <member name="M:CsQuery.Web.CsqWebRequest.GetEncoding(HttpWebAdapters.IHttpWebResponse)">
              <summary>
-             Return the character set encoding for an IHttpWebResponse.
+             Return the character set encoding for an IHttpWebResponse, or null if no encoding is
+             specified.
              </summary>
             
              <param name="response">
@@ -25037,11 +25082,6 @@
         <member name="P:CsQuery.Web.CsqWebRequest.PostData">
             <summary>
             Gets the information describing the post data to be sent this request.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Web.CsqWebRequest.Encodings">
-            <summary>
-            A dictionary of all encodings available on this system
             </summary>
         </member>
         <member name="T:CsQuery.Web.AsyncWebRequest">
