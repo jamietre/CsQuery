@@ -154,6 +154,9 @@ namespace CsQuery.Tests.HtmlParser
             Assert.AreEqual(outputHebrewChar, outputHebrewChar2);
 
         }
+
+        private string arabicExpected = @"البابا: اوقفوا ""المجزرة"" في سوريا قبل ان تتحول البلاد الى ""أطلال""";
+
         [TestMethod, Test]
         public void Utf8NoContentType()
         {
@@ -165,15 +168,11 @@ namespace CsQuery.Tests.HtmlParser
             CsqWebRequest request = new CsqWebRequest("http://test.com", creator);
             
             // remove the content type header
-            var html = request.Get();
-            var start = html.IndexOf(@"<meta http-equiv=""Content-Type""");
-            var end = html.IndexOf(">",start);
-            html = html.Substring(0,start)+html.Substring(end+1);
+            var html = ReplaceCharacterSet(request.Get());
 
             var dom = CQ.CreateDocument(html);
-            var expected = @"البابا: اوقفوا ""المجزرة"" في سوريا قبل ان تتحول البلاد الى ""أطلال""";
 
-            Assert.AreNotEqual(expected, dom["h1"].Text());
+            Assert.AreNotEqual(arabicExpected, dom["h1"].Text());
 
             //test synchronous: this is the code that CreateFromURL uses 
 
@@ -186,7 +185,7 @@ namespace CsQuery.Tests.HtmlParser
             var encoding = CsqWebRequest.GetEncoding(response);
             var dom2 = CQ.CreateDocument(responseStream, encoding);
 
-            Assert.AreEqual(expected, dom2["h1"].Text());
+            Assert.AreEqual(arabicExpected, dom2["h1"].Text());
 
             // Test async version now
 
@@ -205,8 +204,111 @@ namespace CsQuery.Tests.HtmlParser
 
             while (done == null) ;
             Assert.IsTrue((bool)done);
-            Assert.AreEqual(expected, dom3["h1"].Text());
+            Assert.AreEqual(arabicExpected, dom3["h1"].Text());
 
+        }
+
+      
+        /// <summary>
+        /// Ensure that BOM takes precendence over anything else
+        /// </summary>
+
+        [TestMethod, Test]
+        public void MismatchedContentTypeHeaderAndBOM()
+        {
+
+            var creator = new Mocks.MockWebRequestCreator();
+            creator.CharacterSet = "ISO-8859-1";
+            
+            // response stream has UTF8 BOM; the latin encoding should be ignored.
+            var html = ReplaceCharacterSet(TestHtml("arabic"));
+            creator.ResponseStream = GetMemoryStream(html, new UTF8Encoding(true));
+
+            CsqWebRequest request = new CsqWebRequest("http://test.com", creator);
+
+
+            var dom = ProcessMockWebRequestSync(request);
+
+            Assert.AreEqual(arabicExpected, dom["h1"].Text());
+
+          
+        }
+
+        /// <summary>
+        /// XML encoding declarations should kick in if there's no content-type or BOM.
+        /// </summary>
+
+        [TestMethod, Test]
+        public void XmlEncodingDeclaration()
+        {
+
+            var creator = new Mocks.MockWebRequestCreator();
+            creator.CharacterSet = null;
+            
+            var html =  ReplaceCharacterSet(TestHtml("arabic"),"ISO-8859-1");
+                       
+            creator.ResponseStream = GetMemoryStream(html, null);
+            CsqWebRequest request = new CsqWebRequest("http://test.com", creator);
+
+            var dom = ProcessMockWebRequestSync(request);
+            Assert.AreNotEqual(arabicExpected, dom["h1"].Text());
+
+
+            // contains xml UTF8 and inline ISO encoding
+            
+            html = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>" + html;
+            creator.ResponseStream = GetMemoryStream(html, null);
+            request = new CsqWebRequest("http://test.com", creator);
+            
+            dom = ProcessMockWebRequestSync(request);
+            Assert.AreEqual(arabicExpected, dom["h1"].Text());
+          
+        }
+        /// <summary>
+        /// Removes the "meta http-equiv='Content-Type'" header, or replaces it with a different character set
+        /// </summary>
+        ///
+        /// <param name="html">
+        /// The HTML.
+        /// </param>
+        ///
+        /// <returns>
+        /// Cleaner HTML
+        /// </returns>
+
+        private string ReplaceCharacterSet(string html, string with="")
+        {
+            // remove the content type header
+            var start = html.IndexOf(@"<meta http-equiv=""Content-Type""");
+            var end = html.IndexOf(">", start);
+
+            string replaceWith = "";
+            if (!String.IsNullOrEmpty(with))
+            {
+                replaceWith = String.Format(@"<meta http-equiv=""Content-Type"" content=""text/html; charset={0}"" />", with);
+            }
+            return html.Substring(0, start) + replaceWith + html.Substring(end + 1);
+        }
+
+        /// <summary>
+        /// Process the mock web request synchronously using same rules as CreateFromUrl
+        /// </summary>
+        ///
+        /// <param name="request">
+        /// The request.
+        /// </param>
+        ///
+        /// <returns>
+        /// .
+        /// </returns>
+
+        private CQ ProcessMockWebRequestSync(CsqWebRequest request)
+        {
+            var httpRequest = request.GetWebRequest();
+            var response = httpRequest.GetResponse();
+            var responseStream = response.GetResponseStream();
+            var encoding = CsqWebRequest.GetEncoding(response);
+           return  CQ.CreateDocument(responseStream, encoding);
         }
     }
 }

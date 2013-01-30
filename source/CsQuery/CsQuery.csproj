@@ -320,6 +320,7 @@
     <Compile Include="HtmlParser\CsQueryTreeBuilder.cs" />
     <Compile Include="HtmlParser\ElementFactory.cs" />
     <Compile Include="HtmlParser\enumHtmlParsingMode.cs" />
+    <Compile Include="HtmlParser\HtmlEncoding.cs" />
     <Compile Include="HtmlParser\HtmlStyles.cs" />
     <Compile Include="HtmlParser\enumTokenProperties.cs" />
     <Compile Include="Implementation\CombinedStream.cs" />
@@ -524,7 +525,7 @@ xcopy $(TargetDir)CsQuery.xml $(SolutionDir)..\Distribution /Y
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UpdateFileVersion="False" BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UseGlobalSettings="False" />
+      <UserProperties BuildVersion_UseGlobalSettings="False" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="False" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

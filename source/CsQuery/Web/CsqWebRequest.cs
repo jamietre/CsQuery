@@ -60,7 +60,7 @@ namespace CsQuery.Web
         IHttpWebRequestFactory WebRequestFactory;
         Lazy<List<KeyValuePair<string, string>>> _PostData = new Lazy<List<KeyValuePair<string, string>>>();
         private ServerConfig _Options;
-        private static Dictionary<string, EncodingInfo> _Encodings;
+
 
         #endregion
 
@@ -456,36 +456,15 @@ namespace CsQuery.Web
         public static Encoding GetEncoding(IHttpWebResponse response)
         {
             Encoding encoding = null;
+            
             if (!String.IsNullOrEmpty(response.CharacterSet)) {
-                EncodingInfo info;
-                if (Encodings.TryGetValue(response.CharacterSet, out info))
-                {
-                    encoding = info.GetEncoding();
-                }
+                HtmlParser.HtmlEncoding.TryGetEncoding(response.CharacterSet, out encoding);
             }
             
             return encoding;
         }
 
-        /// <summary>
-        /// A dictionary of all encodings available on this system
-        /// </summary>
-
-        private static Dictionary<string,EncodingInfo> Encodings
-        {
-            get
-            {
-                if (_Encodings == null)
-                {
-                    _Encodings = new Dictionary<string, EncodingInfo>(StringComparer.CurrentCultureIgnoreCase);
-                    foreach (var encoding in Encoding.GetEncodings())
-                    {
-                        _Encodings[encoding.Name] = encoding;
-                    }
-                }
-                return _Encodings;
-            }
-        }
+     
 
        
 

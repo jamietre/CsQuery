@@ -25,56 +25,56 @@ namespace CsQuery.Tests.Miscellaneous
     [TestFixture, TestClass]
     public class Reindex: CsQueryTest
     {
-        [Test, TestMethod]
-        public void TestJp()
-        {
-            string content1 = null;
-            CQ dom;
-            bool done = false;
+//        [Test, TestMethod]
+//        public void TestJp()
+//        {
+//            string content1 = null;
+//            CQ dom;
+//            bool done = false;
 
-            CQ.CreateFromUrlAsync("http://www.ahram.org.eg/Stars-Arts/News/194972.aspx")
-                .Then(response =>
-                {
-                    dom = response.Dom;
-                    content1 = string.Empty;
-                    content1 = dom["#txtBody  > p"].Text();
-                    done = true;
-                }, response =>
-                {
-                    done = true;
-                });
+//            CQ.CreateFromUrlAsync("http://www.ahram.org.eg/Stars-Arts/News/194972.aspx")
+//                .Then(response =>
+//                {
+//                    dom = response.Dom;
+//                    content1 = string.Empty;
+//                    content1 = dom["#txtBody  > p"].Text();
+//                    done = true;
+//                }, response =>
+//                {
+//                    done = true;
+//                });
  
-            while (done == false) ;
+//            while (done == false) ;
  
-            // Now content 1 comes incorrect like this "ظپظ…ظ†ط° ظ‚ط¯ظ…طھ ط£ظ„ط¨ظˆظ…ظ‡ط§ ط§ظ„ط£ظˆظ„' ط³ط§ظ"
+//            // Now content 1 comes incorrect like this "ظپظ…ظ†ط° ظ‚ط¯ظ…طھ ط£ظ„ط¨ظˆظ…ظ‡ط§ ط§ظ„ط£ظˆظ„' ط³ط§ظ"
  
-            // ** Start Using Web Client 
+//            // ** Start Using Web Client 
 
             
-            WebClient client = new WebClient();
-            client.Encoding = System.Text.Encoding
-.UTF8;
-            string downloadedString = client.DownloadString("http://www.ahram.org.eg/Stars-Arts/News/194972.aspx");
+//            WebClient client = new WebClient();
+//            client.Encoding = System.Text.Encoding
+//.UTF8;
+//            string downloadedString = client.DownloadString("http://www.ahram.org.eg/Stars-Arts/News/194972.aspx");
  
-            // At this point the downloaded string is correct. it get all html document and the inner test like this "ا وحاولت باستمرار أن تنحاز بحسها الفطري إلي نصوص لها جمالها وقيمتها التي تناسب دقة أدائها وشدة وضوح المعاني والحروف"
+//            // At this point the downloaded string is correct. it get all html document and the inner test like this "ا وحاولت باستمرار أن تنحاز بحسها الفطري إلي نصوص لها جمالها وقيمتها التي تناسب دقة أدائها وشدة وضوح المعاني والحروف"
  
-            var dom2 = CQ.Create(downloadedString);
-            var content2 = dom2["#txtBody > p"].Text();
+//            var dom2 = CQ.Create(downloadedString);
+//            var content2 = dom2["#txtBody > p"].Text();
  
-            // The downlowaded string is corrupted again after using CQ.Create. it looks like this "ظپظ…ظ†ط° ظ‚ط¯ظ…طھ ط£ظ„ط¨ظˆظ…ظ‡ط§ ط§ظ„ط£ظˆظ„' ط³ط§ظ"
-            // So content 1 = content 2 
+//            // The downlowaded string is corrupted again after using CQ.Create. it looks like this "ظپظ…ظ†ط° ظ‚ط¯ظ…طھ ط£ظ„ط¨ظˆظ…ظ‡ط§ ط§ظ„ط£ظˆظ„' ط³ط§ظ"
+//            // So content 1 = content 2 
  
  
-           // try change the charset in downloaded string to utf8
-            //downloadedString = downloadedString.Replace("charset=windows-1256", "charset=utf8");
+//           // try change the charset in downloaded string to utf8
+//            //downloadedString = downloadedString.Replace("charset=windows-1256", "charset=utf8");
            
-            var dom3 = CQ.Create(downloadedString);
-            var content3 = dom3["#txtBody > p"].Text();
+//            var dom3 = CQ.Create(downloadedString);
+//            var content3 = dom3["#txtBody > p"].Text();
  
-            // Content3 is correct now and the text looks like this "فمنذ قدمت ألبومها الأول' ساكن' وهي تسكن وجدان وأذهان الجماهير العربية في منطقة لم تبرحها حتي الآن, ورغم أنها فنانة تنتمي لجيل الأغنية الجديدة إلا إننا نحس من وراء صوتها بشجن تراثنا العربي كله في"
+//            // Content3 is correct now and the text looks like this "فمنذ قدمت ألبومها الأول' ساكن' وهي تسكن وجدان وأذهان الجماهير العربية في منطقة لم تبرحها حتي الآن, ورغم أنها فنانة تنتمي لجيل الأغنية الجديدة إلا إننا نحس من وراء صوتها بشجن تراثنا العربي كله في"
  
         
-        }
+//        }
 
         /// <summary>
         /// 

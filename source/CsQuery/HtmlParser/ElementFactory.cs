@@ -240,31 +240,56 @@ namespace CsQuery.HtmlParser
                 return new DomFragment();
             }
 
+
+        
             // create a combined stream from the pre-fetched part, and the remainder (whose position
             // will be wherever it was left after reading the part 1 block).
             
             Stream stream;
 
-            if (ActiveEncoding == null)
-            {
-                // try to read encoding from the BOM
-                
-                var bomReader = new BOMReader(part1stream);
-                stream = new CombinedStream(bomReader.StreamWithoutBOM, inputStream);
+            // The official order of precedence for character set processing is as follows:
+            //
+            // HTTP Content-Type header
+            // byte-order mark (BOM)
+            // XML declaration
+            // meta element
+            // link charset attribute
+            // 
+            // http://www.w3.org/International/questions/qa-html-encoding-declarations#precedence
+            //
+            // Chrome does this:
+            // 
+            // A UTF-16 or UTF-8 BOM overrides the HTTP declaration for Internet Explorer, Safari and Chrome browsers.
+            //
+            // We act like chrome.
 
-                if (bomReader.IsBOM)
+            
+            var bomReader = new BOMReader(part1stream);
+            
+            if (bomReader.IsBOM) {
+                
+                // if there is a BOM encoding, and there's either no active encoding specified already, or it's utf-8/utf-16
+                // then use it.
+
+                if (ActiveEncoding == null ||
+                    (bomReader.Encoding.WebName == "utf-8" || bomReader.Encoding.WebName == "utf-16"))
                 {
                     ActiveEncoding = bomReader.Encoding;
                 }
+                
+                // either way strip the BOM.
+                
+                stream = new CombinedStream(bomReader.StreamWithoutBOM, inputStream);
             }
             else
             {
+                // no BOM, just reset the input stream
+                
+                part1stream.Position = 0;
                 stream = new CombinedStream(part1stream, inputStream);
             }
 
             ActiveStreamReader = new StreamReader(stream, ActiveEncoding ?? Encoding.UTF8, false);
-            
-           
 
             if (HtmlParsingMode == HtmlParsingMode.Auto || 
                 ((HtmlParsingMode == HtmlParsingMode.Fragment )

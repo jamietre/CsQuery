@@ -76,12 +76,14 @@ The last major release is 1.3.0. This release implements a new HTML5-compliant p
 
 ### Documentation
 
-Documentation is being moved from here to the `documentation` folder in the repository. There is detailed documentation for these methods:
+Documentation is being moved from here to the `documentation` folder in the repository. There is detailed documentation for these topics:
 
 - [Create](https://github.com/jamietre/CsQuery/blob/master/documentation/create.md): Creating a new DOM from HTML in memory, a file, a stream, or a URL
 - [Render](https://github.com/jamietre/CsQuery/blob/master/documentation/render.md): Rendering your DOM back to HTML
 - [CreateFromUrl](https://github.com/jamietre/CsQuery/blob/master/documentation/createfromurl.md): Creating CsQuery objects from a remote source
 - [Promises](https://github.com/jamietre/CsQuery/blob/master/documentation/promises.md): An overview of the CsQuery Promise API, which is useful for managing asynchronous events. This is useful when loading content from remote URLs without blocking execution while you're waiting for the response.
+- [How CsQuery handles character set encoding](https://github.com/jamietre/CsQuery/blob/master/documentation/charset-encoding.md): Explanation of the different ways a character set encoding can be specified in an HTML document, and how CsQuery detects and prioritizes them.
+
 
 Everything else will be found here in the readme. It covers most common uses for reading HTML documents from files and URLS, and using it like jQuery. 
 

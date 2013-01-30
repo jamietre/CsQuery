@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Xml;
 using CsQuery.Implementation;
 
 namespace CsQuery.HtmlParser
@@ -27,7 +28,8 @@ namespace CsQuery.HtmlParser
             InputStream = stream;
             Parse();
         }
-
+        
+        private const int XmlBlockSize = 256;
         private Stream InputStream;
         private byte[] Header = new byte[5];
         private int BytesRead;
@@ -53,14 +55,16 @@ namespace CsQuery.HtmlParser
                     InputStream.Position = BomLength;
                     stream = InputStream;
                 }
-                else if (BytesRead == 5 && InputStream.CanRead)
+                else if (InputStream.CanRead)
                 {
-                    var headerStream = new MemoryStream(Header, BomLength, 5 - BomLength);
+                    var headerStream = new MemoryStream(Header, BomLength, BytesRead - BomLength);
                     stream = new CombinedStream(headerStream, InputStream);
                 }
                 else
                 {
-                    stream = new MemoryStream(Header, BomLength, 5 - BytesRead);
+                    // means the stream was shorter than the preamble we tried to read.
+                    
+                    stream = new MemoryStream(Header, BomLength, BytesRead - BytesRead);
                 }
                 return stream;
             }
@@ -81,9 +85,9 @@ namespace CsQuery.HtmlParser
                     InputStream.Position = 0;
                     stream = InputStream;
                 }
-                else if (BytesRead == 5 && InputStream.CanRead)
+                else if (InputStream.CanRead)
                 {
-                    var headerStream = new MemoryStream(Header);
+                    var headerStream = new MemoryStream(Header, 0, BytesRead);
                     stream = new CombinedStream(headerStream, InputStream);
                 }
                 else
@@ -119,7 +123,7 @@ namespace CsQuery.HtmlParser
         protected void Parse()
         {
 
-            int BytesRead = InputStream.Read(Header, 0, 5);           
+            BytesRead = InputStream.Read(Header, 0, 5);           
             Encoding = GetFileEncoding();
         }
 
@@ -167,12 +171,58 @@ namespace CsQuery.HtmlParser
                 
             else if (Matches(new byte[] { 0x3c, 0x3f, 0x78, 0x6d, 0x6c }))
             {
-                enc = Encoding.Default;
-                BomLength=5;
+                enc = GetEncodingFromXML();
+                BomLength = 0;
+                IsBOM = true;
                 IsXML = true;
             }
 
             return enc;
+        }
+
+        private Encoding GetEncodingFromXML()
+        {
+            byte[] newBytes = new byte[XmlBlockSize];
+            Header.CopyTo(newBytes, 0);
+
+
+            BytesRead += InputStream.Read(newBytes, BytesRead, XmlBlockSize - BytesRead);
+            Header = newBytes;
+
+            string xml="";
+            char lastC=(char)0;
+            char c = (char)0;
+            for (var i = 0; i < BytesRead; i++)
+            {
+                lastC = c;
+                c =(char)Header[i];
+                
+                xml += c;
+                if (lastC == '?' && c == '>')
+                {
+                    break;
+                }
+            }
+
+            if (!String.IsNullOrEmpty(xml))
+            {
+                XmlDocument doc = new XmlDocument();
+                try
+                {
+                    doc.LoadXml(xml + "<root></root>");
+                    XmlDeclaration declaration = (XmlDeclaration)doc.ChildNodes[0];
+
+                    return HtmlParser.HtmlEncoding.GetEncoding(declaration.Encoding);
+                }
+
+                catch { }
+            }
+            
+            
+            return null;
+
+            
+
         }
 
         /// <summary>
