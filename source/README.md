@@ -14,6 +14,7 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 - [Issue #77](https://github.com/jamietre/CsQuery/issues/77) `Timeout` not respected for web methods
 - [Issue #80](https://github.com/jamietre/CsQuery/issues/80) Some valid HTML5 ID selectors not allowed
 - [Issue #78](https://github.com/jamietre/CsQuery/issues/78) and [Issue #75](https://github.com/jamietre/CsQuery/issues/75) Various character set handling issues: detect character set from META tag; allow changing character set outside of HEAD; handle invalid/unkown situations gracefully.
+- Resolve reentrant threading issue with `When.All` causing it to potentially fail if promise is resolved concurrent with constructor.
 
 *Issue #76 results in `string IDomObject.Path` and `char IDomObject.PathID` being deprecated and replaced 
 with `ushort[] NodePath` and `ushort NodePathID` properties. The old properties will be removed in a future version*
