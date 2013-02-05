@@ -13319,6 +13319,11 @@
              true if it succeeds, false if it fails.
              </returns>
         </member>
+        <member name="P:CsQuery.HtmlParser.BOMReader.Encoding">
+            <summary>
+            Gets the encoding detected for the stream
+            </summary>
+        </member>
         <member name="P:CsQuery.HtmlParser.BOMReader.StreamWithoutBOM">
             <summary>
             The input stream stripped of the BOM

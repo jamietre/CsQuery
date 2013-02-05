@@ -34,7 +34,11 @@ namespace CsQuery.HtmlParser
         private byte[] Header = new byte[5];
         private int BytesRead;
         private int BomLength;
-        
+
+        /// <summary>
+        /// Gets the encoding detected for the stream
+        /// </summary>
+
         public Encoding Encoding { get; protected set; }
 
         /// <summary>
