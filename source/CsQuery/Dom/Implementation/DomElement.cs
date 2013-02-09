@@ -681,9 +681,16 @@ namespace CsQuery.Implementation
                     StringBuilder sb = new StringBuilder();
                     StringWriter sw = new StringWriter(sb);
 
-                    foreach (IDomObject elm in ChildNodes.Where(item => item.NodeType == NodeType.TEXT_NODE))
+                    foreach (IDomObject elm in ChildNodes)
                     {
-                        formatter.Render(elm, sw);
+                        if (elm.NodeType == CsQuery.NodeType.TEXT_NODE)
+                        {
+                            formatter.Render(elm, sw);
+                        }
+                        else
+                        {
+                            sb.Append(elm.InnerText);
+                        }
                     }
 
                     return sb.ToString();
