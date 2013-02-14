@@ -170,60 +170,50 @@ namespace CsQuery.Mvc.ClientScript
            
 
             string scriptSelector = "script[src][type='text/javascript'], script[src]:not([type]), link[type='text/css']";
-                
-            //+ (Options.HasFlag(ViewEngineOptions.ProcessAllScripts) ?
-            //        "" : ".csquery-script")
-            //        + "[src]";
 
-            // Filter out non-relative paths (remote URLs)
             CQ scripts = doc[scriptSelector];
-
 
             if (scripts.Length == 0)
             {
                 return;
             }
             
-            // move scripts to head as needed first
-
-            var toMove = scripts.Filter("[data-location='head']");
-            var head = doc["head"];
-
-            if (toMove.Length > 0)
-            {
+            // move scripts first
+            // TODO: Optimize using a query caching mechanism so
                 
-                foreach (var item in toMove)
-                {
-                    if (item.ParentNode != head)
-                    {
-                        head.Append(item);
-                        item.RemoveAttribute("data-location");
-                    }
+            foreach (var item in scripts.Filter("[data-moveto]"))
+            {
+                var target = doc.Select(item["data-moveto"]);
+                if (target.Length>0) {
+                    target.First().Append(item);
+                    item.RemoveAttribute("data-moveto");
                 }
             }
+            
 
             // resolve dependencies
 
             ScriptCollection coll = new ScriptCollection(ScriptEnvironment);
             coll.Options= Options;
 
-            // identify the insertion point for the script bundle
+            // identify the insertion point for the script bundle. AddFromCq returns the first script with dependencies,
+            // so scripts should be added right before that one. Otherwise they should be added
+            // at the end of head.
+            
             var firstScriptEl = coll.AddFromCq(scripts);
+            CQ firstScript=null;
 
-            var firstScript = firstScriptEl == null ? 
-                head.Children().First() : 
-                firstScriptEl.Cq();
-
+            if (firstScriptEl != null)
+            {
+                firstScript = firstScriptEl.Cq();
+            }
+           
             string bundleUrl;
             List<ScriptRef> dependencies = coll.GetDependencies()
                 .Where(item=>!coll.Contains(item))
                 .ToList();
 
-            // find the first script with dependencies
-            
-
             // Now add scripts directly for dependencies marked as NoCombine.
-
 
             
             var inlineScripts = Options.HasFlag(ViewEngineOptions.NoBundle) ?
@@ -233,8 +223,17 @@ namespace CsQuery.Mvc.ClientScript
 
             foreach (var item in inlineScripts)
             {
-                firstScript.Before(GetScriptHtml(item.Path, item.ScriptHash));
-            }
+                var script = GetScriptHtml(item.Path, item.ScriptHash);
+                if (firstScript != null)
+                {
+                    firstScript.Before(script);
+                }
+                else
+                {
+                    firstScript = script;
+                    doc["body"].Append(script);
+                }
+           }
 
             // Before creating the bundle, remove any duplicates of the same script on the page
 
@@ -248,12 +247,18 @@ namespace CsQuery.Mvc.ClientScript
                 {
                     // when nocache is set, we will regenerate the bundle, but not change the script ID. The v=
                     // flag will be changed by BundleTable. 
+                    
                     if (Options.HasFlag(ViewEngineOptions.NoCache))
                     {
                         string removeUrl = "~" + bundleUrl.Before("?");
                         BundleTable.Bundles.Remove(BundleTable.Bundles.GetBundleFor(removeUrl));
                         hasBundle = false;
                         ScriptID++;
+                        
+                        // this code attempts to un-cache the bundle, it doesn't work.
+                        // leaving it here until some permanent solution is found as a reminder
+                        // 
+                        // http://stackoverflow.com/questions/12317391/how-to-force-bundlecollection-to-flush-cached-script-bundles-in-mvc4
                         // 
                         //var bundleList = BundleTable.Bundles.ToList();
                         //BundleTable.Bundles.Clear();
@@ -274,27 +279,31 @@ namespace CsQuery.Mvc.ClientScript
 
                 if (!hasBundle)
                 {
-
-                    string bundleAlias = "~/cqbundle" + ScriptID;
-                    var bundle = GetScriptBundle(bundleAlias);
-
-                    var activeDependencies = dependencies.Where(item => !item.NoCombine);
-                    foreach (var item in activeDependencies)
+                    var activeDependencies = dependencies.Where(item => !item.NoCombine).ToList();
+                    if (activeDependencies.Count > 0)
                     {
-                        bundle.Include(item.Path);
-                    }
+                        string bundleAlias = "~/cqbundle" + ScriptID;
+                        var bundle = GetScriptBundle(bundleAlias);
 
 
-                    BundleTable.Bundles.Add(bundle);
-                    if (HttpContext.Current != null)
-                    {
-                        bundleUrl = BundleTable.Bundles.ResolveBundleUrl(bundleAlias, true);
+
+                        foreach (var item in activeDependencies)
+                        {
+                            bundle.Include(item.Path);
+                        }
+
+
+                        BundleTable.Bundles.Add(bundle);
+                        if (HttpContext.Current != null)
+                        {
+                            bundleUrl = BundleTable.Bundles.ResolveBundleUrl(bundleAlias, true);
+                        }
+                        else
+                        {
+                            bundleUrl = bundleAlias + "_no_http_context";
+                        }
+                        Bundles[coll] = bundleUrl;
                     }
-                    else
-                    {
-                        bundleUrl = bundleAlias + "_no_http_context";
-                    }
-                    Bundles[coll] = bundleUrl;
                 }
 
                 var scriptPlaceholder = scripts.First();
@@ -302,8 +311,10 @@ namespace CsQuery.Mvc.ClientScript
 
 
                 // add bundle after all noncombined scripts
-
-                firstScript.Before(GetScriptHtml(bundleUrl));
+                if (!String.IsNullOrEmpty(bundleUrl))
+                {
+                    firstScript.Before(GetScriptHtml(bundleUrl));
+                }
             }
                
             

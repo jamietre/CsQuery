@@ -30,9 +30,9 @@ namespace CsQuery.Mvc.Tests
         public void VerifyLocations()
         {
             var dom = Doc["head > script"];
-            // 2 that are there already; 1 moved from body; 1 that is created by bundler.
+            // 2 that are there already; 1 moved from body
             
-            Assert.AreEqual(4, dom.Length);
+            Assert.AreEqual(3, dom.Length);
 
             dom = Doc["body > script"];
             Assert.AreEqual(2, dom.Length);

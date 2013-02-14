@@ -113,7 +113,7 @@ namespace CsQuery.Mvc
             
             if (location == ScriptLocations.Head)
             {
-                el.Attr("data-location","head");
+                el.Attr("data-moveto","head");
             }
 
             return new HtmlString(el.Render());

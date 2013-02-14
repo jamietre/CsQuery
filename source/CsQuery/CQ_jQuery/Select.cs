@@ -18,7 +18,6 @@ namespace CsQuery
     public partial class CQ
     {
 
-
         /// <summary>
         /// Return a specific element from the selection set.
         /// </summary>
@@ -54,7 +53,7 @@ namespace CsQuery
         /// </remarks>
         ///
         /// <param name="selector">
-        /// A string containing a selector expression.
+        /// A Selector object.
         /// </param>
         ///
         /// <returns>
@@ -65,34 +64,53 @@ namespace CsQuery
         /// http://api.jquery.com/jQuery/#jQuery1
         /// </url>
 
+        public CQ Select(Selector selector)
+        {
+            CQ csq= NewCqInDomain();
+ 
+            csq.Selector = selector;
+                   
+            // When running a true "Select" (which runs against the DOM, versus methods that operate
+            // against the selection set) we should use the CsQueryParent document, which is the DOM
+            // that sourced this.
+
+            var selectorSource = CsQueryParent == null ?
+                Document :
+                CsQueryParent.Document;
+
+
+            csq.SetSelection(csq.Selector.Select(selectorSource),
+                    SelectionSetOrder.Ascending);
+
+            
+            return csq;
+        }
+
+        /// <summary>
+        /// Select elements and return a new CSQuery object.
+        /// </summary>
+        ///
+        /// <param name="selector">
+        /// A string containing a selector expression.
+        /// </param>
+        ///
+        /// <returns>
+        /// A new CQ object.
+        /// </returns>
+
         public CQ Select(string selector)
         {
-            CQ csq;
             var sel = new Selector(selector);
-
             if (sel.IsHmtl)
             {
-                csq = CQ.Create(selector);
+                CQ csq = CQ.Create(selector);
                 csq.CsQueryParent = this;
+                return csq;
             }
             else
             {
-                // When running a true "Select" (which runs against the DOM, versus methods that operate
-                // against the selection set) we should use the CsQueryParent document, which is the DOM
-                // that sourced this.
-
-                var selectorSource = CsQueryParent == null ?
-                    Document :
-                    CsQueryParent.Document;
-
-                csq = NewCqInDomain();
-                csq.Selector = sel;
-                csq.SetSelection(csq.Selector.Select(selectorSource),
-                        SelectionSetOrder.Ascending);
-                
+                return Select(sel);
             }
-            return csq;
-            
         }
 
         /// <summary>

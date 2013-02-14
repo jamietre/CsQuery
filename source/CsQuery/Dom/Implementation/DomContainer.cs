@@ -181,7 +181,7 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <param name="item">
-        /// The item.
+        /// The element to append.
         /// </param>
 
         public override void AppendChild(IDomObject item)
@@ -190,11 +190,12 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Appends a child without checking if it already exists.c
+        /// Appends a child without checking if it already exists. This should only be used during DOM
+        /// construction.
         /// </summary>
         ///
         /// <param name="item">
-        /// The item.
+        /// The element to append.
         /// </param>
 
         internal override void AppendChildUnsafe(IDomObject item)
@@ -207,7 +208,7 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <param name="item">
-        /// The item.
+        /// The element to remove.
         /// </param>
 
         public override void RemoveChild(IDomObject item)

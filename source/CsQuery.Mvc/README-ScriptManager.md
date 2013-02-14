@@ -1,6 +1,7 @@
 ##CsQuery.MVC Script Manager
 
-The ScriptManager is an optional component of the CsQuery.MVC framework. It is enabled with the `EnableScriptManager` option on the view engine.
+The ScriptManager is an optional component of the CsQuery.MVC framework. It is enabled with the 
+`EnableScriptManager` option on the view engine.
 
 When activated it prodives the following functionality:
 
@@ -12,7 +13,7 @@ When activated it prodives the following functionality:
 
 The convention for loading dependencies is not intended to tell you how to actually use them. 
 It simply ensures the script is loaded and run on each page. For example, if you load a jQuery plugin, 
-there should be nothign more to do: it will be available. If you load a node module, you'll need to use 
+there should be nothing more to do: it will be available. If you load a node module, you'll need to use 
 a `require` implementation designed for browsers to access it. The intent is that your web page works 
 in exactly the same way it would if you just loaded each script individually. 
 
@@ -53,8 +54,17 @@ would locate the file "tooltips" in subfolder "jquery" of anything on the librar
 
 #### Options
 
-You can pass options as a third keyword on a `using` directive, or as keyword after a `using-options` directive. The latter case makes this option apply to the file itself. For example:
+You can pass options as a third keyword on a `using` directive, or as keyword after a `using-options` directive. 
+The latter case makes this option apply to the file itself. For example:
 
 /* using jquery nocombine */
 
 Will include the script `jquery.js` but will not bundle it, instead, it will add a direct script reference.
+
+#### Script tag options
+
+`data-moveto="head|selector"`	Will relocate a script as the last child of the first element matching the selector (head, of course, is also just a selector)
+
+(not implemented)
+
+You can invoke bundling on script tags by adding a `data-bundle` tag, or optionally `data-bundle="bundle-name"`.

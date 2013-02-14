@@ -178,6 +178,7 @@
     <Compile Include="Dom\Implementation\HtmlElements\HTMLStyleElement.cs" />
     <Compile Include="Dom\Implementation\HtmlElements\HTMLScriptElement.cs" />
     <Compile Include="Dom\Implementation\HtmlElements\HTMLLabelElement.cs" />
+    <Compile Include="Dom\Implementation\NodeEventArgs.cs" />
     <Compile Include="Dom\Implementation\StyleSheet.cs" />
     <Compile Include="Dom\IReadOnlyCollection.cs" />
     <Compile Include="Dom\HtmlElements\IHTMLFormElement.cs" />
@@ -382,6 +383,7 @@
     <Compile Include="Engine\SelectorParser.cs" />
     <Compile Include="ExtensionMethods\Forms.cs" />
     <Compile Include="Utility\FastActivator.cs" />
+    <Compile Include="Utility\SelectorCache.cs" />
     <Compile Include="Utility\Types.cs" />
     <Compile Include="Web\enumRequestState.cs" />
     <Compile Include="Web\ICsqWebRequestMetadata.cs" />
