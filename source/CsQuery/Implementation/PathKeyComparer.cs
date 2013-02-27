@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -31,6 +32,26 @@ namespace CsQuery.Implementation
                 return _Comparer;
             }
         }
+        public unsafe  int Compare3(ushort[] x, ushort[] y)
+        {
+            int pos = 0;
+            int len = x.Length < y.Length ? x.Length : y.Length;
+            fixed (ushort* fpx = &x[0], fpy = &y[0])
+            {
+                ushort* px = fpx;
+                ushort* py = fpy;
+                while (pos < len && *px == *py)
+                {
+                    px++;
+                    py++;
+                    pos++;
+                }
+            }
+
+            return pos < len ?
+                 (x[pos] < y[pos] ? -1 : 1) :
+                 (x.Length < y.Length ? -1 : x.Length > y.Length ? 1 : 0);
+        }
 
         /// <summary>
         /// Compares two string objects to determine their relative ordering.
@@ -47,17 +68,95 @@ namespace CsQuery.Implementation
         /// Negative if 'x' is less than 'y', 0 if they are equal, or positive if it is greater.
         /// </returns>
 
+
         public int Compare(ushort[] x, ushort[] y)
         {
+            int xlen = x.Length;
+            int ylen = y.Length;
+
+            int ilen = xlen < ylen ? xlen :  ylen;
+            int ipos = 0;
+
+            while (ipos < ilen && x[ipos] == y[ipos])
+                ++ipos;
+
+            return ipos < ilen
+                        ? (x[ipos] < y[ipos] ? -1 : 1)
+                        : (xlen <ylen ? -1 : xlen > ylen ? 1 : 0);
+        }
+
+
+
+
+
+
+            //int pos = 0;
+            //int len = Math.Min(x.Length, y.Length);
+
+            //// the below is probably not worth it for less than 5 (or so) elements,
+            ////   so just do the old way
+            //if (len < 5)
+            //{
+            //  while (pos < len && x[pos] == y[pos])
+            //    ++pos;
+
+            //  return pos < len ?
+            //    x[pos].CompareTo(y[pos]) :
+            //    x.Length.CompareTo(y.Length);
+            //}
+
+            //ushort lastX = x[len-1];
+            //bool lastSame = true;
+
+            //if (x[len-1] == y[len-1])
+            //    --x[len-1]; // can be anything else
+            //else
+            //    lastSame = false;
+
+            //while (x[pos] == y[pos])
+            //    ++pos;
+
+
+            //return pos < len-1 ?
+            //    x[pos].CompareTo(y[pos]) :
+            //    lastSame ? x.Length.CompareTo(y.Length)
+            //             : lastX.CompareTo(y[len-1]);
+
+        
+        [DllImport("msvcrt.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern int memcmp(ushort[] b1, ushort[] b2, long count);
+
+        public int Compare4(ushort[] x, ushort[] y)
+        {
+            int xLen = x.Length, yLen = y.Length;
+
+            int len = xLen < yLen
+                          ? xLen
+                          : yLen;
+
+
+            var samePartEqual = memcmp(x, y, len * 2) == 0;
+
+            if (samePartEqual)
+            {
+                if (xLen == yLen)
+                {
+                    return 0;
+                }
+                return xLen < yLen
+                       ? -1
+                       : xLen > yLen ?
+                        1 : 0;
+            }
+
+
             int pos = 0;
-            int len = Math.Min(x.Length, y.Length);
-            while (pos < len && x[pos] == y[pos])
+            while (x[pos] == y[pos])
                 pos++;
 
-            return pos<len ?
-                x[pos].CompareTo(y[pos]) :
-                x.Length.CompareTo(y.Length);
-
+            return (x[pos] < y[pos]
+                        ? -1
+                        : x[pos] > y[pos] ? 1 : 0);
         }
 
         /// <summary>

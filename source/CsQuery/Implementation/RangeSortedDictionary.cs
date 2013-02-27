@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using CsQuery.ExtensionMethods;
+using CsQuery.ExtensionMethods.Internal;
 using CsQuery.HtmlParser;
 using CsQuery.Implementation;
 
@@ -157,19 +158,27 @@ namespace CsQuery.Implementation
                 yield break;
             }
 
-            int lastEl = (int)Convert.ChangeType(subkey[subkey.Length - 1], typeof(int));
+            //int lastEl = (int)Convert.ChangeType(subkey[subkey.Length - 1], typeof(int));
 
-            TKey[] lastKey = subkey.Take(subkey.Length - 1)
-                .Concat((TKey)Convert.ChangeType(lastEl+ 1,typeof(TKey)))
-                .ToArray();
+            //if (subkey[subkey.Length - 1].Equals(IndexSeparator))
+            //{
+            //    if (Keys.Contains(subkey))
+            //        yield return subkey;
+            //}
+            //else
+            //{
 
-            foreach (var key in Keys.GetViewBetween(subkey, lastKey))
-            {
-                if (key != lastKey)
+
+                TKey[] lastKey = subkey.Concat(IndexSeparator).ToArray();
+
+                foreach (var key in Keys.GetViewBetween(subkey, lastKey))
                 {
-                    yield return key;
+                    if (key != lastKey)
+                    {
+                        yield return key;
+                    }
                 }
-            }
+            //}
         }
 
         /// <summary>

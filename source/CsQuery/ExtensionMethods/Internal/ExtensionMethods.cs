@@ -35,13 +35,13 @@ namespace CsQuery.ExtensionMethods.Internal
         /// <returns>
         /// true if one of, false if not.
         /// </returns>
-  
+
 
         public static bool IsOneOf(this Enum theEnum, params Enum[] values)
         {
             return values.Any(item => item.Equals(theEnum));
 
-          
+
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace CsQuery.ExtensionMethods.Internal
 
         public static bool IsOneOf(this string match, params string[] values)
         {
-            return IsOneOf(match,true, values);
+            return IsOneOf(match, true, values);
         }
 
         /// <summary>
@@ -82,13 +82,13 @@ namespace CsQuery.ExtensionMethods.Internal
         /// true if one of, false if not.
         /// </returns>
 
-        public static bool IsOneOf(this string match, bool matchCase=true, params string[] values )
+        public static bool IsOneOf(this string match, bool matchCase = true, params string[] values)
         {
             return values.Any(item => match.Equals(item,
                 matchCase ? StringComparison.CurrentCulture :
                 StringComparison.CurrentCultureIgnoreCase));
 
-          
+
         }
 
         /// <summary>
@@ -117,12 +117,12 @@ namespace CsQuery.ExtensionMethods.Internal
         {
             return GetValue(value).ToString();
         }
-       
+
         #endregion
 
         #region IEnumerable<T> extension methods
 
-        
+
 
         /// <summary>
         /// Add all the items in a sequence to a collection.
@@ -147,7 +147,7 @@ namespace CsQuery.ExtensionMethods.Internal
             }
         }
 
-      
+
 
         /// <summary>
         /// Return true of a given collection is null or has no values
@@ -158,7 +158,7 @@ namespace CsQuery.ExtensionMethods.Internal
         public static bool IsNullOrEmpty<T>(this IEnumerable<T> baseList)
         {
             return baseList == null ||
-                (baseList is ICollection<T> && ((ICollection<T>)baseList).Count==0) ||
+                (baseList is ICollection<T> && ((ICollection<T>)baseList).Count == 0) ||
                 !baseList.Any();
         }
 
@@ -213,15 +213,15 @@ namespace CsQuery.ExtensionMethods.Internal
             return single;
         }
 
-     
 
-       
+
+
 
         #endregion
 
         #region string methods
 
-         ///<summary>
+        ///<summary>
         /// Converts a character array to a string.
         /// </summary>
         ///
@@ -254,10 +254,11 @@ namespace CsQuery.ExtensionMethods.Internal
         /// An integer
         /// </returns>
 
-        public static int OccurrencesOf(this string text, char find) {
-            int pos=0;
+        public static int OccurrencesOf(this string text, char find)
+        {
+            int pos = 0;
             int count = 0;
-            while ((pos = text.IndexOf(find,pos))>=0)
+            while ((pos = text.IndexOf(find, pos)) >= 0)
             {
                 count++;
                 pos++;
@@ -333,7 +334,8 @@ namespace CsQuery.ExtensionMethods.Internal
         /// <returns></returns>
         public static string SubstringBetween(this string text, int startIndex, int endIndex)
         {
-            if (endIndex > text.Length || endIndex <0) {
+            if (endIndex > text.Length || endIndex < 0)
+            {
                 return "";
             }
             return (text.Substring(startIndex, endIndex - startIndex));
@@ -555,7 +557,7 @@ namespace CsQuery.ExtensionMethods.Internal
 
         #endregion
 
-        #region char and char array methods 
+        #region char and char array methods
 
         /// <summary>
         /// Return a substring from a character array starting at the startIndex provided of the
@@ -603,7 +605,7 @@ namespace CsQuery.ExtensionMethods.Internal
         {
             int len = text.Length - startIndex;
             var sb = new StringBuilder(len);
-            sb.Append(text, startIndex,len);
+            sb.Append(text, startIndex, len);
             return sb.ToString();
 
         }
@@ -649,7 +651,7 @@ namespace CsQuery.ExtensionMethods.Internal
 
         public static int Seek(this char[] text, string seek, int startIndex)
         {
-            int nextPos =startIndex;
+            int nextPos = startIndex;
 
             char firstChar = seek[0];
             while (nextPos >= 0)
@@ -674,7 +676,7 @@ namespace CsQuery.ExtensionMethods.Internal
                     {
                         nextPos++;
                     }
-                }  
+                }
             }
             return -1;
         }
@@ -731,6 +733,151 @@ namespace CsQuery.ExtensionMethods.Internal
 
         #region Array methods
 
+        /// <summary>
+        /// Concatenate two byte arrays, returning a new array.
+        /// </summary>
+        ///
+        /// <param name="source1">
+        /// Source for the.
+        /// </param>
+        /// <param name="source2">
+        /// Source 2.
+        /// </param>
+        ///
+        /// <returns>
+        /// .
+        /// </returns>
+
+        public static byte[] Concatenate(this byte[] source1, byte[] source2)
+        {
+            byte[] bytes = new byte[source1.Length + source2.Length];
+
+            Buffer.BlockCopy(source1, 0, bytes, 0, source1.Length);
+            Buffer.BlockCopy(source2, 0, bytes, source1.Length, source2.Length);
+            return bytes;
+
+        }
+
+        /// <summary>
+        /// Converts ushort array to a byte array.
+        /// </summary>
+        ///
+        /// <param name="source">
+        /// Source for the.
+        /// </param>
+        ///
+        /// <returns>
+        /// source as a byte[].
+        /// </returns>
+
+        public static byte[] ToByteArray(this ushort[] source)
+        {
+            var len = source.Length << 1;
+            byte[] bytes = new byte[len];
+
+            Buffer.BlockCopy(source, 0, bytes, 0, len);
+            return bytes;
+        }
+
+        /// <summary>
+        /// Converts a ushort to a byte array.
+        /// </summary>
+        ///
+        /// <param name="source">
+        /// Source for the.
+        /// </param>
+        ///
+        /// <returns>
+        /// source as a byte[].
+        /// </returns>
+
+        public static byte[] ToByteArray(this ushort source)
+        {
+            byte[] bytes = new byte[2];
+            bytes[0] = source.LowByte();
+            bytes[1] = source.HighByte();
+            return bytes;
+        }
+
+        /// <summary>
+        /// Get the low byte from a ushort
+        /// </summary>
+        ///
+        /// <param name="source">
+        /// Source for the.
+        /// </param>
+        ///
+        /// <returns>
+        /// .
+        /// </returns>
+
+        public static byte HighByte(this ushort source)
+        {
+            unchecked
+            {
+                return (byte)(source >> 8);
+            }
+        }
+
+        /// <summary>
+        /// Get the low byte from a uint
+        /// </summary>
+        ///
+        /// <param name="source">
+        /// Source for the.
+        /// </param>
+        ///
+        /// <returns>
+        /// .
+        /// </returns>
+
+        public static byte HighByte(this int source)
+        {
+            unchecked
+            {
+                return (byte)(source >> 8);
+            }
+        }
+
+        /// <summary>
+        /// An ushort extension method that high byte.
+        /// </summary>
+        ///
+        /// <param name="source">
+        /// Source for the.
+        /// </param>
+        ///
+        /// <returns>
+        /// .
+        /// </returns>
+
+        public static byte LowByte(this ushort source)
+        {
+            unchecked
+            {
+                return (byte)(source & 255);
+            }
+        }
+
+        /// <summary>
+        /// Gets the highbyte of the lower two bytes from an int (e.g. treating it as a ushort)
+        /// </summary>
+        ///
+        /// <param name="source">
+        /// Source for the.
+        /// </param>
+        ///
+        /// <returns>
+        /// .
+        /// </returns>
+
+        public static byte LowByte(this int source)
+        {
+            unchecked
+            {
+                return (byte)(source & 255);
+            }
+        }
         /// <summary>
         /// Return the index of item in an array. If count is > 0 then that is considered the length of
         /// the array.
@@ -845,7 +992,7 @@ namespace CsQuery.ExtensionMethods.Internal
             return newList;
         }
 
-       
+
         #endregion
     }
 }

@@ -200,7 +200,7 @@ namespace CsQuery.Implementation
 
                 return _ParentNode != null ?
                    GetPath() :
-                    new ushort[2] { (ushort)'_', NodePathID };
+                    new ushort[2] { (ushort)'_', (ushort)Index };
 #endif
 
             }
@@ -248,7 +248,7 @@ namespace CsQuery.Implementation
 
 #endif
 
-                path.Add(curNode.NodePathID);
+                path.Add((ushort)curNode.Index);
                 curNode = curNode._ParentNode;
             }
 
@@ -276,8 +276,8 @@ namespace CsQuery.Implementation
 
             while (curNode != null)
             {
-                path[index++] = (byte)(curNode.NodePathID >> 8);
-                path[index++] = (byte)(curNode.NodePathID & 255);
+                path[index++] = (byte)(curNode.Index & 255);
+                path[index++] = (byte)(curNode.Index >> 8);
 
                 if (index == len)
                 {
@@ -465,22 +465,7 @@ namespace CsQuery.Implementation
             }
         }
 
-        /// <summary>
-        /// Gets a unique ID for this element among its siblings.
-        /// </summary>
 
-        public virtual ushort NodePathID
-        {
-            get
-            {
-                // Don't actually store paths with non-element nodes as they aren't indexed and don't have children.
-                // Fast read access is less important than not having to reset them when moved.
-                unchecked
-                {
-                    return (ushort)(Index + 2);
-                }
-            }
-        }
 #endif
 
         
@@ -538,30 +523,8 @@ namespace CsQuery.Implementation
 
         public int Index
         {
-            get
-            {
-                if (_Index < 0)
-                {
-                    if (ParentNode != null)
-                    {
-                        _Index = ParentNode.ChildNodes.IndexOf(this);
-                    }
-                    else
-                    {
-                        _Index = 0;
-                    }
-                }
-                return _Index;
-            }
-            internal set
-            {
-                _Index = value;
-#if CACHE_PATH
-                // whenever the index is updated, the element has been moved; de-cache
-                
-                _Path = null;
-#endif
-            }
+            get; set;
+            
         }
 
         /// <summary>

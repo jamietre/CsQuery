@@ -708,11 +708,6 @@ namespace CsQuery
         [Obsolete]
         char PathID { get; }
 
-        /// <summary>
-        /// Gets the full pathname of the node file.
-        /// </summary>
-
-        ushort NodePathID { get; }
 #endif
 
 

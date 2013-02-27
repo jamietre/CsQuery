@@ -51,7 +51,7 @@ namespace CsQuery.HtmlParser
         /// </summary>
         
         //public const char indexSeparator = (char)1;
-        public const ushort indexSeparator = 1;
+        public const ushort indexSeparator = 65535;
 #endif
 
 
