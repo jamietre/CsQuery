@@ -126,7 +126,6 @@
     <None Include="Views\Shared\_Layout.cshtml" />
     <None Include="Views\Test\Action1.cshtml" />
     <None Include="Views\Test\DepsOutsideLibraryPath.cshtml" />
-    <None Include="Views\Test\Index6.cshtml" />
     <None Include="Views\Test\UnresolvedScripts.cshtml" />
     <None Include="Views\Test\Index5.cshtml" />
     <None Include="Views\Test\Index4.cshtml" />

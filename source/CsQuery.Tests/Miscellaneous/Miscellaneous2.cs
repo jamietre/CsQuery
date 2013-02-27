@@ -25,8 +25,13 @@ namespace CsQuery.Tests.Miscellaneous
     [TestFixture, TestClass]
     public class Reindex: CsQueryTest
     {
-//        [Test, TestMethod]
-//        public void TestJp()
+        [Test, TestMethod]
+        public void InnerText()
+        {
+            var dom = CQ.Create("<p><b>inner text</b>innertext2</p>");
+
+            Assert.AreEqual(dom["p"].Text(), dom["p"][0].InnerText);
+        }
 //        {
 //            string content1 = null;
 //            CQ dom;

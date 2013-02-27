@@ -112,17 +112,15 @@ namespace CsQuery
         /// <param name="sb">
         /// .
         /// </param>
-        /// <param name="elements">
+        /// <param name="nodes">
         /// .
         /// </param>
 
-        private void Text(StringBuilder sb, IEnumerable<IDomObject> elements)
+        private void Text(StringBuilder sb, IEnumerable<IDomObject> nodes)
         {
             IDomObject lastElement = null;
-            foreach (IDomObject obj in elements)
+            foreach (IDomObject obj in nodes)
             {
-                //string text = Text(obj);
-                
                 int len = sb.Length;
                 
                 Text(sb, obj);

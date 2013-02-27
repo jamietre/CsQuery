@@ -18,6 +18,7 @@ namespace CsQuery.Mvc.ClientScript
 
     public class ScriptCollection: ICollection<ScriptRef>
     {
+
         #region constructor
 
         /// <summary>
@@ -117,22 +118,12 @@ namespace CsQuery.Mvc.ClientScript
 
         public ScriptRef AddPath(string virtualPath)
         {
-
-            // if the path maps to something in our known libraries, 
-            // create a reference using its generic name, and not the full path.
-             
-            //if (!LibraryPath.TryGetName(virtualPath,out name)) {
-            //    name=virtualPath;
-            //}
-
             var scriptRef = GetScriptRef(virtualPath);
             Scripts.Add(scriptRef);
             return scriptRef;
         }
 
-     
-
-      
+         
         /// <summary>
         /// Return dependencies found in the document.
         /// </summary>
@@ -245,10 +236,8 @@ namespace CsQuery.Mvc.ClientScript
         protected ScriptRef GetScriptRef(string virtualPath)
         {
             ScriptRef scriptRef;
+
             var uniquePath = ScriptEnvironment.UniquePath(virtualPath);
-            
-            //string normalizedPath = PathList.NormalizePath(virtualPath);
-            //string normalizedName= PathList.NormalizeName(name);
 
             if (ResolvedDependencies.TryGetValue(uniquePath, out scriptRef))
             {
@@ -530,7 +519,8 @@ namespace CsQuery.Mvc.ClientScript
             string pattern = null;
             if (Patterns.NonLiteralFilenames.IsMatch(fileName))
             {
-                pattern = Regex.Escape(fileName).Replace("\\{version}", Patterns.FileVersionRegex);
+                pattern = Regex.Escape(fileName)
+                    .Replace("\\{version}", Patterns.FileVersionRegex);
             }
 
             foreach (var libPath in ScriptEnvironment.LibraryPath.ToList())
@@ -742,6 +732,7 @@ namespace CsQuery.Mvc.ClientScript
         }
 
         #endregion
+
     }
     
 }

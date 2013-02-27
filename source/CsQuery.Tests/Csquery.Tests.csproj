@@ -229,6 +229,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Core\Selectors\Extensions.cs" />
+    <Compile Include="Implementation\ChildNodeList.cs" />
     <Compile Include="Implementation\RangeSortedDictionary.cs" />
     <Compile Include="Miscellaneous\Miscellaneous2.cs" />
     <Compile Include="Mocks\MockAsyncResult.cs" />

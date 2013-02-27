@@ -26,6 +26,7 @@ namespace CsQuery
             HtmlEncoder = HtmlEncoders.Basic;
             DocType = DocType.HTML5;
             GetOutputFormatter = GetDefaultOutputFormatter;
+            //CachedQueries = 1;
         }
 
         #endregion
@@ -230,8 +231,8 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Provides access to the PseudoSelectors object, which allows registering new filters and accessing information
-        /// and instances about existing filters.
+        /// Provides access to the PseudoSelectors object, which allows registering new filters and
+        /// accessing information and instances about existing filters.
         /// </summary>
         ///
         /// <value>
@@ -244,6 +245,19 @@ namespace CsQuery
                 return PseudoSelectors.Items;
             }
         }
+
+        /// <summary>
+        /// The number of queries to be cached for a given object. By default, the last query will be
+        /// cached, but this can be increased to optimize performance as needed.
+        /// </summary>
+
+        //public static int CachedQueries
+        //{
+        //    get;
+        //    set;
+        //}
+
+
         #endregion
 
     }

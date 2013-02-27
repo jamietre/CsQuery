@@ -37,7 +37,7 @@ namespace CsQuery.Mvc.Tests
     </head>
     <body>
         <div></div>
-        <script type='text/javascript' src='~/script' class='inbody' data-location='head'></script>
+        <script type='text/javascript' src='~/script' class='inbody' data-moveto='head'></script>
     </body>
 ");
             var mgr = new ScriptManager(MapPath, ResolveUrl);
@@ -48,12 +48,12 @@ namespace CsQuery.Mvc.Tests
             mgr.ResolveScriptDependencies(doc);
 
 
-            Assert.AreEqual(3, doc["head"].Children().Length);
+            Assert.AreEqual(2, doc["head"].Children().Length);
             Assert.AreEqual(doc[".inbody"][0].ParentNode, doc["head"][0]);
 
-            var libScript =doc["head > .csquery-generated"];
-            Assert.AreEqual(1, libScript.Length, "The library include was added.");
-            Assert.AreEqual(libScript[0].ParentNode.ChildElements.First(), libScript[0],"The library include was first element.");
+           // var libScript =doc["head > .csquery-generated"];
+           // Assert.AreEqual(1, libScript.Length, "The library include was added.");
+           // Assert.AreEqual(libScript[0].ParentNode.ChildElements.First(), libScript[0],"The library include was first element.");
 
         }
 

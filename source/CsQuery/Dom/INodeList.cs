@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.CompilerServices;
+using CsQuery.Implementation;
 
 namespace CsQuery
 {
@@ -33,5 +34,6 @@ namespace CsQuery
 
         IDomObject Item(int index);
 
+        event EventHandler<NodeEventArgs> OnChanged;
     }
 }

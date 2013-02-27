@@ -54,6 +54,8 @@ namespace CsQuery.Implementation
 
         #region public properties
 
+        public event EventHandler<NodeEventArgs> OnChanged;
+
         /// <summary>
         /// Gets or sets the object that owns this list (the parent)
         /// </summary>
@@ -117,12 +119,9 @@ namespace CsQuery.Implementation
             {
                 item.Remove();
             }
-            //if (item.Document != Owner.Document)
-            //{
-            //    ((DomObject)item).Document = null;
-            //}
 
             // Ensure ID uniqueness - remove ID if same-named object already exists
+            
             if (!String.IsNullOrEmpty(item.Id)
                 && !Owner.IsFragment
                 && Owner.Document.GetElementById(item.Id) != null)
@@ -131,12 +130,20 @@ namespace CsQuery.Implementation
             }
 
             InnerList.Add(item);
+
             AddParent(item, InnerList.Count - 1);
+            RaiseChangedEvent(item);
         }
+
         /// <summary>
-        /// Add a child without validating that a node is a member of this DOM already or that the ID is unique
+        /// Add a child without validating that a node is a member of this DOM already or that the ID is
+        /// unique.
         /// </summary>
-        /// <param name="item"></param>
+        ///
+        /// <param name="item">
+        /// The item to add
+        /// </param>
+
         public void AddAlways(IDomObject item)
         {
             InnerList.Add(item);
@@ -156,7 +163,6 @@ namespace CsQuery.Implementation
 
         public void Insert(int index, IDomObject item)
         {
-            //RemoveParent(item);
             if (item.ParentNode != null)
             {
 
@@ -170,20 +176,30 @@ namespace CsQuery.Implementation
             {
                 InnerList.Insert(index, item);
             }
+            
             // This must come BEFORE AddParent - otherwise the index entry will be present already at this position 
+            
             Reindex(index + 1); 
             AddParent(item, index);
+
+            RaiseChangedEvent(item);
         }
+
         /// <summary>
         /// Remove an item from this list and update index.
         /// </summary>
-        /// <param name="index"></param>
+        ///
+        /// <param name="index">
+        /// The ordinal index at which to remove the node
+        /// </param>
+
         public void RemoveAt(int index)
         {
             IDomObject item = InnerList[index];
             InnerList.RemoveAt(index);
             RemoveParent(item);
             Reindex(index);
+            RaiseChangedEvent(item);
         }
 
         /// <summary>
@@ -250,6 +266,14 @@ namespace CsQuery.Implementation
 
         #region private methods
 
+        private void RaiseChangedEvent(IDomObject node)
+        {
+            var onChanged = OnChanged;
+            if (onChanged != null)
+            {
+                onChanged(this, new NodeEventArgs(node));
+            }
+        }
 
         private void RemoveParent(IDomObject element)
         {

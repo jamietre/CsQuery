@@ -351,7 +351,7 @@ namespace CsQuery.Engine
         /// The sequence of matching elements
         /// </returns>
 
-        public IEnumerable<IDomObject> Select(IDomDocument document)
+        public IList<IDomObject> Select(IDomDocument document)
         {
             return Select(document, (IEnumerable<IDomObject>)null);
         }
@@ -371,7 +371,7 @@ namespace CsQuery.Engine
         /// The sequence of matching elements.
         /// </returns>
 
-        public IEnumerable<IDomObject> Select(IDomDocument document, IDomObject context)
+        public IList<IDomObject> Select(IDomDocument document, IDomObject context)
         {
             return Select(document, Objects.Enumerate(context));
         }
@@ -391,7 +391,7 @@ namespace CsQuery.Engine
         /// The sequence of matching elements.
         /// </returns>
 
-        public IEnumerable<IDomObject> Select(IDomDocument document, IEnumerable<IDomObject> context)
+        public IList<IDomObject> Select(IDomDocument document, IEnumerable<IDomObject> context)
         {
             
             return GetEngine(document).Select(context);
@@ -521,6 +521,39 @@ namespace CsQuery.Engine
             }
             return output;
         }
+
+        /// <summary>
+        /// Serves as a hash function for a particular type.
+        /// </summary>
+        ///
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object" />.
+        /// </returns>
+
+        public override int GetHashCode()
+        {
+            return ToString().GetHashCode();
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="T:System.Object" /> is equal to the current
+        /// <see cref="T:System.Object" />.
+        /// </summary>
+        ///
+        /// <param name="obj">
+        /// The object to compare with the current object.
+        /// </param>
+        ///
+        /// <returns>
+        /// true if the specified <see cref="T:System.Object" /> is equal to the current
+        /// <see cref="T:System.Object" />; otherwise, false.
+        /// </returns>
+
+        public override bool Equals(object obj)
+        {
+            return ToString().Equals(obj);
+        }
+
         #endregion
 
         #region interface members
