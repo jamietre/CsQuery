@@ -10,8 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D65543
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsQuery.Mvc", "..\..\..\CsQuery\source\CsQuery.Mvc\CsQuery.Mvc.csproj", "{1697FBB9-9116-4FDF-8F92-25C2DE8DC39B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csquery.com.tests", "csquery.com.tests\csquery.com.tests.csproj", "{F92E2B21-758F-4EB2-A99B-4F2518CBF0B9}"
 EndProject
 Global
@@ -24,10 +22,6 @@ Global
 		{91E2E61A-A55B-4FA5-B35E-4ACE16698D43}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91E2E61A-A55B-4FA5-B35E-4ACE16698D43}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91E2E61A-A55B-4FA5-B35E-4ACE16698D43}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1697FBB9-9116-4FDF-8F92-25C2DE8DC39B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1697FBB9-9116-4FDF-8F92-25C2DE8DC39B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1697FBB9-9116-4FDF-8F92-25C2DE8DC39B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1697FBB9-9116-4FDF-8F92-25C2DE8DC39B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F92E2B21-758F-4EB2-A99B-4F2518CBF0B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F92E2B21-758F-4EB2-A99B-4F2518CBF0B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F92E2B21-758F-4EB2-A99B-4F2518CBF0B9}.Release|Any CPU.ActiveCfg = Release|Any CPU

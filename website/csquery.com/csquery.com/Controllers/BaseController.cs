@@ -15,7 +15,7 @@ namespace CsQuerySite.Controllers
         {
             // get all javascripts that aren't found in the header or footer
             var scripts = Doc["script[type=text/javascript],script:not([type])"]
-                .Not(Doc["#footer-scripts,head"].Find("script"));
+                .Not(Doc["#footer-scripts script,head script"]);
 
             var head = Doc["head"];
             var foot = Doc["#footer-scripts"];

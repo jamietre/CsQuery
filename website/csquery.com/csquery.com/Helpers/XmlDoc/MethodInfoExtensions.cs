@@ -41,10 +41,22 @@ namespace CsQuerySite.Helpers.XmlDoc
         /// <summary>
         /// Return the method signature as a string.
         /// </summary>
-        /// <param name="method">The Method</param>
-        /// <param name="callable">Return as an callable string(public void a(string b) would return a(b))</param>
-        /// <returns>Method signature</returns>
-        public static string GetSignature(this MethodInfo method, bool callable = false)
+        ///
+        /// <param name="method">
+        /// The Method.
+        /// </param>
+        /// <param name="useFullyQualifiedTypes">
+        /// (optional) When true, the full type namespace is used.
+        /// </param>
+        /// <param name="callable">
+        /// Return as an callable string(public void a(string b) would return a(b))
+        /// </param>
+        ///
+        /// <returns>
+        /// Method signature.
+        /// </returns>
+
+        public static string GetSignature(this MethodInfo method, bool useFullyQualifiedTypes=false,bool callable = false)
         {
                 
             var sigBuilder = new StringBuilder();
@@ -139,13 +151,22 @@ namespace CsQuerySite.Helpers.XmlDoc
             return sigBuilder.ToString();
         }
 
-
         /// <summary>
-        /// Get full type name with full namespace names
+        /// Get full type name with full namespace names.
         /// </summary>
-        /// <param name="type">Type. May be generic or nullable</param>
-        /// <returns>Full type name, fully qualified namespaces</returns>
-        public static string TypeName(Type type)
+        ///
+        /// <param name="type">
+        /// Type. May be generic or nullable.
+        /// </param>
+        /// <param name="useFullyQualifiedTypes">
+        /// (optional) When true, the full type namespace is used.
+        /// </param>
+        ///
+        /// <returns>
+        /// Full type name, fully qualified namespaces.
+        /// </returns>
+
+        public static string TypeName(Type type, bool useFullyQualifiedTypes=false)
         {
             var nullableType = Nullable.GetUnderlyingType(type);
             if (nullableType != null)
@@ -161,10 +182,11 @@ namespace CsQuerySite.Helpers.XmlDoc
                     return TypeName(type.GetElementType()) + "[]";
                 }
 
-                //if (type.Si
                 switch (type.Name)
                 {
                     case "String": return "string";
+                    case "Byte": return "byte";
+                    case "SByte": return "sbyte";
                     case "Int16": return "short";
                     case "UInt16": return "ushort";          
                     case "Int32": return "int";
@@ -174,11 +196,24 @@ namespace CsQuerySite.Helpers.XmlDoc
                     case "Decimal": return "decimal";
                     case "Double": return "double";
                     case "Object": return "object";
+                    case "Char": return "char";
+                    case "Boolean": return "boolean";
                     case "Void": return "void";
 
                     default:
                     {
-                        return string.IsNullOrWhiteSpace(type.FullName) ? type.Name : type.FullName;
+                        string typeName;
+                        if (useFullyQualifiedTypes)
+                        {
+                            typeName=string.IsNullOrWhiteSpace(type.FullName) ? type.Name : type.FullName;
+                        }
+                        else
+                        {
+                            typeName=type.Name;
+                        }
+                        return typeName.EndsWith("&") ?
+                            typeName.Substring(0,typeName.Length - 1) :
+                            typeName;
                     }
                 }
             }

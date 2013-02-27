@@ -14,6 +14,12 @@
     padding: 0;
     border-collapse: collapse;
 }
+
+.nav-bar-bg > .nav-bar
+{
+    margin-top: 0px;
+    margin-right: 40px;
+}
 .nav-bar-bg { height: 40px; background: #4d4d4d; margin-top: 0px; padding: 0; }
 .row {
      width: 100%;

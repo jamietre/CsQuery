@@ -27,11 +27,13 @@ namespace CsQuerySite.Helpers.XmlDoc
         {
             if (memberInfo is PropertyInfo)
             {
+                // properties cannot be overloaded; only one is ever returned
                 return Enumerate<XmlElement>(XMLFromProperty((PropertyInfo)memberInfo));
 
             }
             else if (memberInfo is MethodInfo)
             {
+                
                 return XMLFromMethod((MethodInfo)memberInfo);
             }
             else

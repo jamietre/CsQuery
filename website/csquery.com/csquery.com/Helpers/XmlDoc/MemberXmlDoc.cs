@@ -13,6 +13,8 @@ namespace CsQuerySite.Helpers.XmlDoc
 
     public class MemberXmlDoc: IReadOnlyDictionary<string,string>
     {
+        #region constructors
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -50,15 +52,44 @@ namespace CsQuerySite.Helpers.XmlDoc
 
             foreach (XmlNode node in doc)
             {
-                if (node is XmlElement)
-                {
-                    var el = (XmlElement)node;
-                    xmlDocs[node.Name] = node.Value;
-                }
+                ProcessXml(node);
             }
         }
 
+        private void ProcessXml(XmlNode node)
+        {
+            if (node is XmlElement)
+            {
+                var el = (XmlElement)node;
+                if (el.Name == "member")
+                {
+                    foreach (XmlNode child in el.ChildNodes)
+                    {
+                        ProcessXml(child);
+                    }
+                }
+                else
+                {
+                    xmlDocs[node.Name] = node.InnerText;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region private properties
+
         private Dictionary<string, string> xmlDocs;
+
+        private bool IsParamArray(ParameterInfo info)
+        {
+            return info.GetCustomAttribute(typeof(ParamArrayAttribute), true) != null;
+        }
+
+        #endregion
+
+        #region public properties
 
         /// <summary>
         /// Test whether this member is static
@@ -99,13 +130,20 @@ namespace CsQuerySite.Helpers.XmlDoc
         /// </summary>
 
         public bool CanReadProperty { get; protected set; }
+
+        /// <summary>
+        /// When true, the property is settable
+        /// </summary>
+
         public bool CanWriteProperty { get; protected set; }
 
         /// <summary>
-        /// Gets the signature of the function
+        /// Gets or sets the signature of the function.
         /// </summary>
-        ///  <remarks>
-        /// The signature is built from reflected info.
+        ///
+        /// <remarks>
+        /// The signature is built from reflected info. The signature returns <c>formatted code</c> that
+        /// should match the compilable method signature.
         /// </remarks>
 
         public string Signature
@@ -160,10 +198,6 @@ namespace CsQuerySite.Helpers.XmlDoc
             }
         }
 
-        private bool IsParamArray(ParameterInfo info)
-        {
-            return info.GetCustomAttribute(typeof(ParamArrayAttribute), true) != null;
-        }
 
         public string Name
         {
@@ -173,15 +207,23 @@ namespace CsQuerySite.Helpers.XmlDoc
             }
         }
 
-        public bool ContainsKey(string key)
-        {
-            return xmlDocs.ContainsKey(key);
-        }
+        /// <summary>
+        /// Gets the keys of the XML docs for this member; e.g. the node names
+        /// </summary>
 
         public IEnumerable<string> Keys
         {
             get { return xmlDocs.Keys; }
         }
+
+        #endregion
+
+        public bool ContainsKey(string key)
+        {
+            return xmlDocs.ContainsKey(key);
+        }
+
+       
 
         public bool TryGetValue(string key, out string value)
         {
