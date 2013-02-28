@@ -135,7 +135,7 @@ namespace CsQuery.Tests.Core.Selectors
 		[Test, TestMethod]
 		public void HexWith6DigitsEscapedSelector()
 		{
-			string html = "<div id=\"B&W?\"><p>test</p></div>";
+			string html = "<div id='B&W?'><p>test</p></div>";
 			var dom = CsQuery.CQ.CreateFragment(html);
 			var result = dom.Select("#B\\000026W\\3F");
 			Assert.Greater(result.Length, 0);

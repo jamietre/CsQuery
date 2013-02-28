@@ -8,11 +8,19 @@ using CsQuery.Engine;
 namespace CsQuery.Utility
 {
     /// <summary>
-    /// Class to cache selectors on a DOM
+    /// Class to cache selectors on a DOM. NOT YET IMPLEMENTED.
     /// </summary>
 
     public class SelectorCache
     {
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        ///
+        /// <param name="cqSource">
+        /// The cq source.
+        /// </param>
+
         public SelectorCache(CQ cqSource)
         {
             CqSource = cqSource;
@@ -22,6 +30,11 @@ namespace CsQuery.Utility
         private CQ  CqSource;
 
         private IDictionary<Selector, IList<IDomObject>> _SelectionCache;
+
+        /// <summary>
+        /// Gets the selection cache.
+        /// </summary>
+
         protected IDictionary<Selector, IList<IDomObject>> SelectionCache
         {
             get
@@ -34,6 +47,18 @@ namespace CsQuery.Utility
 
             }
         }
+
+        /// <summary>
+        /// Run the selector.
+        /// </summary>
+        ///
+        /// <param name="selector">
+        /// The selector.
+        /// </param>
+        ///
+        /// <returns>
+        /// .
+        /// </returns>
 
         public CQ Select(string selector)
         {

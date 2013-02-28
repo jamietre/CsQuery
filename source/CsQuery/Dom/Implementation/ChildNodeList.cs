@@ -54,6 +54,10 @@ namespace CsQuery.Implementation
 
         #region public properties
 
+        /// <summary>
+        /// Event raised when the NodeList changes.
+        /// </summary>
+
         public event EventHandler<NodeEventArgs> OnChanged;
 
         /// <summary>
@@ -168,6 +172,11 @@ namespace CsQuery.Implementation
 
                 item.Remove();
             }
+
+            // This must come BEFORE AddParent - otherwise the index entry will be present already at this position 
+
+            Reindex(index, 1); 
+
             if (index == InnerList.Count)
             {
                 InnerList.Add(item);
@@ -177,9 +186,7 @@ namespace CsQuery.Implementation
                 InnerList.Insert(index, item);
             }
             
-            // This must come BEFORE AddParent - otherwise the index entry will be present already at this position 
-            
-            Reindex(index + 1); 
+
             AddParent(item, index);
 
             RaiseChangedEvent(item);
@@ -198,7 +205,7 @@ namespace CsQuery.Implementation
             IDomObject item = InnerList[index];
             InnerList.RemoveAt(index);
             RemoveParent(item);
-            Reindex(index);
+            Reindex(index,0);
             RaiseChangedEvent(item);
         }
 
@@ -302,14 +309,26 @@ namespace CsQuery.Implementation
             }
         }
 
-        //Reindex all documents > index (used after inserting, when relative index among siblings changes)
-        private void Reindex(int index)
+        /// <summary>
+        /// Reindex all documents starting with Index=index greater than parameter index (used after inserting,
+        /// when relative index among siblings changes)
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// The index at which to insert the element.
+        /// </param>
+
+        private void Reindex(int index, int offset)
         {
             if (index < InnerList.Count)
             {
                 bool isDisconnected = Owner.IsDisconnected;
 
-                for (int i = index; i < InnerList.Count; i++)
+                int start = offset == 1 ? InnerList.Count-1 : index;
+                int end = offset == 1 ? index-1 : InnerList.Count;
+                int counter = offset == 0 ? 1 : -1;
+
+                for (int i = start; i != end; i += counter)
                 {
                     if (!isDisconnected && InnerList[i].IsIndexed)
                     {
@@ -317,14 +336,14 @@ namespace CsQuery.Implementation
 
                         // This would get assigned anyway but this is much faster since we already know the index
                         Owner.Document.DocumentIndex.RemoveFromIndex(el);
-                        el.Index = i;
+                        el.Index = i + offset;
 
                         Owner.Document.DocumentIndex.AddToIndex(el);
                     }
                     else
                     {
                         // this should run for disconnected nodes & for n
-                        ((DomObject)InnerList[i]).Index = i;
+                        ((DomObject)InnerList[i]).Index = i+offset;
                     }
                 }
             }

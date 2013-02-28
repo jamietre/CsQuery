@@ -246,18 +246,6 @@ namespace CsQuery
             }
         }
 
-        /// <summary>
-        /// The number of queries to be cached for a given object. By default, the last query will be
-        /// cached, but this can be increased to optimize performance as needed.
-        /// </summary>
-
-        //public static int CachedQueries
-        //{
-        //    get;
-        //    set;
-        //}
-
-
         #endregion
 
     }

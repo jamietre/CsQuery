@@ -279,15 +279,17 @@ namespace CsQuery.Implementation
             lock (_locker)
             {
 #endif
-                if (Keys.Add(key))
-                {
-                    Index.Add(key, value);
-                }
+            // Removed validation check after adding to the SortedSet: these collections are always
+            // synchronized; the performance difference of not checking only hurts when the key is already
+            // there which isn't typical. 
+            
+            Index.Add(key, value);
+            Keys.Add(key);
 #if threadsafe
             }
 #endif
         }
-
+      
         /// <summary>
         /// Test whether the dictionary contains a value for 'key'
         /// </summary>

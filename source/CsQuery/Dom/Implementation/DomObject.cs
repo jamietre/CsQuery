@@ -28,15 +28,6 @@ namespace CsQuery.Implementation
 
         private IDomDocument _Document;
 
-      
-        /// <summary>
-        /// Backing property for index.
-        /// </summary>
-
-        private int _Index;
-
-        
-
 #if CACHE_PATH
         /// <summary>
         /// Backing prop for path
@@ -523,7 +514,7 @@ namespace CsQuery.Implementation
 
         public int Index
         {
-            get; set;
+            get; internal set;
             
         }
 

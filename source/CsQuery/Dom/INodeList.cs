@@ -34,6 +34,10 @@ namespace CsQuery
 
         IDomObject Item(int index);
 
+        /// <summary>
+        /// Event raised when the NodeList changes
+        /// </summary>
+
         event EventHandler<NodeEventArgs> OnChanged;
     }
 }

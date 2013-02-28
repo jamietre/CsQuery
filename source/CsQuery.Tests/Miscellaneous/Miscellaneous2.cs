@@ -26,12 +26,21 @@ namespace CsQuery.Tests.Miscellaneous
     public class Reindex: CsQueryTest
     {
         [Test, TestMethod]
+        public void Issue85_CleanElementAdding()
+        {
+            CQ dom = "<table><tr></tr></table>";
+            dom["tr"].Append("<td />");
+            Assert.AreEqual("<table><tbody><tr><td></td></tr></tbody></table>", dom.Render());
+        }
+
+        [Test, TestMethod]
         public void InnerText()
         {
             var dom = CQ.Create("<p><b>inner text</b>innertext2</p>");
 
             Assert.AreEqual(dom["p"].Text(), dom["p"][0].InnerText);
         }
+
 //        {
 //            string content1 = null;
 //            CQ dom;

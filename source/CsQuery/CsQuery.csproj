@@ -336,9 +336,11 @@
     <Compile Include="HttpWebAdapters\Impl\HttpWebResponseAdapter.cs" />
     <Compile Include="HttpWebAdapters\WebResponseStub.cs" />
     <Compile Include="Implementation\CombinedTextReader.cs" />
+    <Compile Include="Implementation\MonoSortedSet.cs" />
     <Compile Include="Implementation\PathKeyComparer.cs" />
     <Compile Include="Implementation\RangeSortedDictionary2.cs" />
     <Compile Include="Implementation\MonoDictionary.cs" />
+    <Compile Include="Implementation\RBTree.cs" />
     <Compile Include="Implementation\TrueStringComparer.cs" />
     <Compile Include="Output\HtmlEncoderFull.cs" />
     <Compile Include="Output\HtmlEncoderMinimumNbsp.cs" />

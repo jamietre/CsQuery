@@ -182,35 +182,11 @@ namespace CsQuery.Implementation
 
         #region private properties
 
-        //private bool _settingDocType;
         private IList<ICSSStyleSheet> _StyleSheets;
         private IDictionary<string, object> _Data;
         private RangeSortedDictionary<ushort,IDomObject> _SelectorXref;
         
-        //private IDictionary<Selector, IList<IDomObject>> _SelectionCache;
-
-        /// <summary>
-        /// The last selection.
-        /// </summary>
-
-        //protected IList<IDomObject> LastSelection;
-
-        /// <summary>
-        /// Cache of recent selections.
-        /// </summary>
-
-        //protected IDictionary<Selector, IList<IDomObject>> SelectionCache
-        //{
-        //    get
-        //    {
-        //        if (_SelectionCache == null)
-        //        {
-        //            _SelectionCache = new Dictionary<Selector, IList<IDomObject>>();
-        //        }
-        //        return _SelectionCache;
-        //    }
-        //}
-
+        
         #endregion
 
         #region public properties
