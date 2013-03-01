@@ -34,7 +34,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-
+#if DEBUG
 namespace CsQuery.Implementation.Mono
 {
     [Serializable]
@@ -1040,4 +1040,6 @@ namespace Mono.ValidationTest {
 		}
 	}
 }
+#endif
+
 #endif

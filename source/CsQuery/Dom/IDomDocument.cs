@@ -12,14 +12,14 @@ namespace CsQuery
     /// analagous to the web browser "document" object.
     /// </summary>
 
-    public interface IDomDocument : IDomContainer
+    public interface IDomDocument : IDomContainer, IDomIndexRanged
     {
 
         /// <summary>
         /// An interface to the internal indexing methods. You generally should not use this.
         /// </summary>
 
-        IDomIndex DocumentIndex { get; }
+        IDomIndexRanged DocumentIndex { get; }
 
         /// <summary>
         /// Gets the document type node for this document, or null if none exists.
@@ -247,5 +247,11 @@ namespace CsQuery
 
         IDomDocument CreateNew();
 
+
+        /// <summary>
+        /// Any user data to be persisted with this DOM.
+        /// </summary>
+
+        IDictionary<string, object> Data { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿   //
+﻿//
 // SortedSet.cs
 //
 // Authors:
@@ -35,8 +35,12 @@ using System.Security;
 using System.Security.Permissions;
 using System.Diagnostics;
 
-// SortedSet is basically implemented as a reduction of SortedDictionary<K, V>
+#pragma warning disable 1591 // Missing XML comment
+#pragma warning disable 1570 // XML comment on 'construct' has badly formed XML — 'reason'
+#pragma warning disable 1587 // XML comment is not placed on a valid element
 
+// SortedSet is basically implemented as a reduction of SortedDictionary<K, V>
+#if DEBUG
 namespace CsQuery.Implementation.Mono
 {
 
@@ -717,3 +721,4 @@ namespace CsQuery.Implementation.Mono
 	}
 }
 
+#endif

@@ -373,6 +373,13 @@ namespace CsQuery.HtmlParser
                 throw new InvalidOperationException("The character set encoding changed twice, something seems to be wrong.");
             }
 
+            // set this before returning document to the client to improve performance during DOM alteration
+
+            if (treeBuilder.Document.DocumentIndex is IDomIndexRanged)
+            {
+                ((IDomIndexRanged)treeBuilder.Document).QueueChanges = true;
+            }
+            
 
             return treeBuilder.Document;
         }

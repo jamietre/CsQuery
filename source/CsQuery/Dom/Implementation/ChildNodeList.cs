@@ -175,7 +175,7 @@ namespace CsQuery.Implementation
 
             // This must come BEFORE AddParent - otherwise the index entry will be present already at this position 
 
-            Reindex(index, 1); 
+            ReindexFromRight(index); 
 
             if (index == InnerList.Count)
             {
@@ -205,7 +205,7 @@ namespace CsQuery.Implementation
             IDomObject item = InnerList[index];
             InnerList.RemoveAt(index);
             RemoveParent(item);
-            Reindex(index,0);
+            ReindexFromLeft(index);
             RaiseChangedEvent(item);
         }
 
@@ -310,25 +310,22 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Reindex all documents starting with Index=index greater than parameter index (used after inserting,
-        /// when relative index among siblings changes)
+        /// Reindex a range of elements starting at index, through the end
         /// </summary>
         ///
         /// <param name="index">
         /// The index at which to insert the element.
         /// </param>
 
-        private void Reindex(int index, int offset)
+        private void ReindexFromLeft(int index)
         {
             if (index < InnerList.Count)
             {
                 bool isDisconnected = Owner.IsDisconnected;
 
-                int start = offset == 1 ? InnerList.Count-1 : index;
-                int end = offset == 1 ? index-1 : InnerList.Count;
-                int counter = offset == 0 ? 1 : -1;
 
-                for (int i = start; i != end; i += counter)
+                int end = InnerList.Count;
+                for (int i = index; i < end; i++)
                 {
                     if (!isDisconnected && InnerList[i].IsIndexed)
                     {
@@ -336,14 +333,50 @@ namespace CsQuery.Implementation
 
                         // This would get assigned anyway but this is much faster since we already know the index
                         Owner.Document.DocumentIndex.RemoveFromIndex(el);
-                        el.Index = i + offset;
+                        el.Index = i;
 
                         Owner.Document.DocumentIndex.AddToIndex(el);
                     }
                     else
                     {
                         // this should run for disconnected nodes & for n
-                        ((DomObject)InnerList[i]).Index = i+offset;
+                        ((DomObject)InnerList[i]).Index = i;
+                    }
+                }
+            }
+
+        }
+        /// <summary>
+        /// Reindex all documents starting the last index through index, from right to left.
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// The index at which to insert the element.
+        /// </param>
+
+        private void ReindexFromRight(int index)
+        {
+            if (index < InnerList.Count)
+            {
+                bool isDisconnected = Owner.IsDisconnected;
+
+                int end = index - 1;
+                for (int i = InnerList.Count-1; i > end; i--)
+                {
+                    if (!isDisconnected && InnerList[i].IsIndexed)
+                    {
+                        var el = (DomElement)InnerList[i];
+
+                        // This would get assigned anyway but this is much faster since we already know the index
+                        Owner.Document.DocumentIndex.RemoveFromIndex(el);
+                        el.Index = i + 1;
+
+                        Owner.Document.DocumentIndex.AddToIndex(el);
+                    }
+                    else
+                    {
+                        // this should run for disconnected nodes & for n
+                        ((DomObject)InnerList[i]).Index = i+1;
                     }
                 }
             }

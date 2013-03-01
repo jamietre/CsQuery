@@ -205,7 +205,10 @@
     <Compile Include="Dom\Implementation\NodeList.cs" />
     <Compile Include="Dom\Implementation\HtmlElements\HTMLOptionsCollection.cs" />
     <Compile Include="Dom\HtmlElements\IHTMLSelectElement.cs" />
-    <Compile Include="Dom\IDomIndex.cs" />
+    <Compile Include="Engine\DomIndex.cs" />
+    <Compile Include="Engine\IDomIndexRanged.cs" />
+    <Compile Include="Engine\DomIndexRanged.cs" />
+    <Compile Include="Engine\IDomIndex.cs" />
     <Compile Include="Dom\IDomObjectT.cs" />
     <Compile Include="Dom\HtmlElements\IHTMLOptionsCollection.cs" />
     <Compile Include="Dom\Implementation\AttributeCollection.cs" />
@@ -247,6 +250,7 @@
     <Compile Include="Engine\PseudoClassSelectors\PseudoSelector.cs" />
     <Compile Include="Engine\PseudoClassSelectors\IPseudoSelectorChild.cs" />
     <Compile Include="Engine\PseudoClassSelectors\IPseudoSelectorFilter.cs" />
+    <Compile Include="Engine\IndexOperation.cs" />
     <Compile Include="EquationParser\enumAssociation.cs" />
     <Compile Include="EquationParser\enumOperationType.cs" />
     <Compile Include="EquationParser\Equations.cs" />
@@ -338,10 +342,8 @@
     <Compile Include="Implementation\CombinedTextReader.cs" />
     <Compile Include="Implementation\MonoSortedSet.cs" />
     <Compile Include="Implementation\PathKeyComparer.cs" />
-    <Compile Include="Implementation\RangeSortedDictionary2.cs" />
     <Compile Include="Implementation\MonoDictionary.cs" />
     <Compile Include="Implementation\RBTree.cs" />
-    <Compile Include="Implementation\TrueStringComparer.cs" />
     <Compile Include="Output\HtmlEncoderFull.cs" />
     <Compile Include="Output\HtmlEncoderMinimumNbsp.cs" />
     <Compile Include="Output\HtmlEncoders.cs" />
@@ -423,7 +425,7 @@
     <Compile Include="Dom\IDomDocumentType.cs" />
     <Compile Include="Dom\IDomElement.cs" />
     <Compile Include="Dom\IDomFragment.cs" />
-    <Compile Include="Dom\IDomIndexedNode.cs" />
+    <Compile Include="Engine\IDomIndexedNode.cs" />
     <Compile Include="Dom\IDomInnerText.cs" />
     <Compile Include="Dom\IDomInvalidElement.cs" />
     <Compile Include="Dom\IDomObject.cs" />
@@ -448,14 +450,12 @@
     <Compile Include="Engine\PseudoClassSelectors\Css\NthChildMatcher.cs" />
     <Compile Include="Engine\SelectorEngine.cs" />
     <Compile Include="ExtensionMethods\Internal\ExtensionMethods.cs" />
-    <Compile Include="Implementation\SmallDictionary.cs" />
     <Compile Include="Web\AsyncPostbackData.cs" />
     <Compile Include="Web\IAsyncRequestQueue.cs" />
     <Compile Include="Web\ICsqWebRequest.cs" />
     <Compile Include="Web\IWebRequestInfo.cs" />
     <Compile Include="Web\CsqWebRequest.cs" />
     <Compile Include="Web\AsyncWebRequest.cs" />
-    <Compile Include="Implementation\SimpleDictionary.cs" />
     <Compile Include="Web\ServerConfig.cs" />
     <Compile Include="Web\WebRequestState.cs" />
     <Compile Include="Implementation\SelectionSet.cs" />
@@ -530,7 +530,7 @@ xcopy $(TargetDir)CsQuery.xml $(SolutionDir)..\Distribution /Y
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UpdateFileVersion="False" BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UseGlobalSettings="False" />
+      <UserProperties BuildVersion_UseGlobalSettings="False" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="False" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

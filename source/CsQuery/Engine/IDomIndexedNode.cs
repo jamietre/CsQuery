@@ -19,6 +19,16 @@ namespace CsQuery
         /// An sequence of strings
         /// </returns>
 
+        IEnumerable<ushort[]> IndexKeysRanged();
+
+        /// <summary>
+        /// Enumerates index keys in this collection.
+        /// </summary>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process index keys in this collection.
+        /// </returns>
+
         IEnumerable<ushort[]> IndexKeys();
 
         /// <summary>

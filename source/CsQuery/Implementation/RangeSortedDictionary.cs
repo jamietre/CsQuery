@@ -47,14 +47,9 @@ namespace CsQuery.Implementation
 
         public RangeSortedDictionary(IComparer<TKey[]> setComparer, IEqualityComparer<TKey[]> equalityComparer, TKey indexSeparator)
         {
-            //Keys = new SortedSet<string>(TrueStringComparer.Comparer);
-            //Index = new Dictionary<string, TValue>(TrueStringComparer.Comparer);
             Keys = new SortedSet<TKey[]>(setComparer);
             Index = new Dictionary<TKey[], TValue>(equalityComparer);
             IndexSeparator = indexSeparator;
-
-            //Index = new MonoDictionary<string, TValue>(TrueStringComparer.Comparer);
-            //Index = new Net46.Dictionary<string, TValue>(TrueStringComparer.Comparer);
         }
         
         #endregion
@@ -62,6 +57,7 @@ namespace CsQuery.Implementation
         #region private properties
 
         private TKey IndexSeparator;
+
         // the "threadsafe" flag causes certain objects to be compiled with thread safety. This causes
         // a performance hit so this is done mostly for debugging
         
@@ -134,22 +130,6 @@ namespace CsQuery.Implementation
         /// A sequence of keys found in the dictionary.
         /// </returns>
 
-        //public IEnumerable<TKey[]> GetRangeKeys(TKey[] subkey)
-        //{
-
-        //    if (subkey==null || subkey.Length==0) {
-        //        yield break;
-        //    }
-        //    string lastKey = subkey.Substring(0,subkey.Length - 1) + (char)(((int)subkey[subkey.Length - 1]) + 1);
-            
-        //    foreach (var key in Keys.GetViewBetween(subkey, lastKey))
-        //    {
-        //        if (key != lastKey)
-        //        {
-        //            yield return key;
-        //        }
-        //    }
-        //}
         public IEnumerable<TKey[]> GetRangeKeys(TKey[] subkey)
         {
 
@@ -158,27 +138,16 @@ namespace CsQuery.Implementation
                 yield break;
             }
 
-            //int lastEl = (int)Convert.ChangeType(subkey[subkey.Length - 1], typeof(int));
+            TKey[] lastKey = subkey.Concat(IndexSeparator).ToArray();
 
-            //if (subkey[subkey.Length - 1].Equals(IndexSeparator))
-            //{
-            //    if (Keys.Contains(subkey))
-            //        yield return subkey;
-            //}
-            //else
-            //{
-
-
-                TKey[] lastKey = subkey.Concat(IndexSeparator).ToArray();
-
-                foreach (var key in Keys.GetViewBetween(subkey, lastKey))
+            foreach (var key in Keys.GetViewBetween(subkey, lastKey))
+            {
+                if (key != lastKey)
                 {
-                    if (key != lastKey)
-                    {
-                        yield return key;
-                    }
+                    yield return key;
                 }
-            //}
+            }
+            
         }
 
         /// <summary>
@@ -550,7 +519,8 @@ namespace CsQuery.Implementation
         }
 
         #endregion
- 
+
+     
     }
 }
 #endif

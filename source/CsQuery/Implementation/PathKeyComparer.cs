@@ -131,19 +131,11 @@ namespace CsQuery.Implementation
         {
             unchecked
             {
-                        
-                const int HashP = 16777619;
+                const int hashP = 16777619;
                 int hash = (int)2166136261;
 
-                for (ushort i = 0; i < obj.Length; i++)
-                    hash = (hash ^ obj[i]) * HashP;
-                
-
-                //hash += hash << 13;
-                //hash ^= hash >> 7;
-                //hash += hash << 3;
-                //hash ^= hash >> 17;
-                //hash += hash << 5;
+                for (int i = 0; i < obj.Length; i++)
+                    hash = (hash ^ obj[i]) * hashP;
                 
                 return ((((hash + (hash << 13))
                     ^ (hash >> 7))

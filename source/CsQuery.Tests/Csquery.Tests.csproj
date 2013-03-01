@@ -55,7 +55,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;SLOW_TESTS</DefineConstants>
+    <DefineConstants>TRACE;xSLOW_TESTS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -230,6 +230,7 @@
     </Compile>
     <Compile Include="Core\Selectors\Extensions.cs" />
     <Compile Include="Implementation\ChildNodeList.cs" />
+    <Compile Include="Implementation\IndexQueue.cs" />
     <Compile Include="Implementation\RangeSortedDictionary.cs" />
     <Compile Include="Miscellaneous\Miscellaneous2.cs" />
     <Compile Include="Mocks\MockAsyncResult.cs" />

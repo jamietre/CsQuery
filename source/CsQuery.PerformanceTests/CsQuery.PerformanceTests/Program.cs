@@ -38,7 +38,7 @@ namespace CsQuery.PerformanceTests
             Type[] TestTypes = new Type[] { 
                 typeof(_Performance_SmallDom)
                 , typeof(_Performance_MediumDom)
-                , typeof(_Performance_BigDom) 
+                ,typeof(_Performance_BigDom) 
             };
 
             foreach (var type in TestTypes)

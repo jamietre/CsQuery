@@ -91,6 +91,7 @@ namespace CsQuery.PerformanceTests
             string testName,
             string description = "")
         {
+            GC.Collect();
             var comp = PerfCompare.Compare(action1,action2,testName,description);
             Output(comp);
         }

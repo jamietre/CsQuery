@@ -287,6 +287,14 @@ namespace CsQuery.HtmlParser
             document = fragment ?
                 new DomFragment() :
                 new DomDocument();
+
+            // don't do this while creating the document; while this improves performance when working
+            // interactively it would add overhead now. 
+
+            if (document.DocumentIndex is IDomIndexRanged)
+            {
+                ((IDomIndexRanged)document).QueueChanges = false;
+            }
         }
 
         /// <summary>

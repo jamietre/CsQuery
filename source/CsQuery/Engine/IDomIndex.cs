@@ -9,14 +9,8 @@ namespace CsQuery
     /// <summary>
     /// Interface for a DOM index. Defines methods to add and remove items from the index, and query the index.
     /// </summary>
-    public interface IDomIndex 
+    public interface IDomIndex
     {
-
-        /// <summary>
-        /// The primary selection index.
-        /// </summary>
-
-        RangeSortedDictionary<ushort,IDomObject> SelectorXref { get; }
 
         /// <summary>
         /// Adds an element to the index.
@@ -63,25 +57,6 @@ namespace CsQuery
 
         void RemoveFromIndex(IDomIndexedNode element);
 
-        /// <summary>
-        /// Queries the index
-        /// </summary>
-        ///
-        /// <param name="subKey">
-        /// The sub key.
-        /// </param>
-        /// <param name="depth">
-        /// The depth.
-        /// </param>
-        /// <param name="includeDescendants">
-        /// true to include, false to exclude the descendants.
-        /// </param>
-        ///
-        /// <returns>
-        /// An enumerator that allows foreach to be used to process query index in this collection.
-        /// </returns>
-
-        IEnumerable<IDomObject> QueryIndex(ushort[] subKey, int depth, bool includeDescendants);
 
         /// <summary>
         /// Queries the index.
@@ -98,9 +73,20 @@ namespace CsQuery
         IEnumerable<IDomObject> QueryIndex(ushort[] subKey);
 
         /// <summary>
-        /// Any user data to be persisted with this DOM.
+        /// Clears this object to its blank/initial state.
         /// </summary>
 
-        IDictionary<string, object> Data { get; set; }
+        void Clear();
+
+        /// <summary>
+        /// The number of unique index keys
+        /// </summary>
+        ///
+        /// <returns>
+        /// The count of items in the index
+        /// </returns>
+
+        int Count { get; }
+
     }
 }

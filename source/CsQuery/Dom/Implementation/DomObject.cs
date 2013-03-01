@@ -282,10 +282,19 @@ namespace CsQuery.Implementation
                 curNode = curNode._ParentNode;
             }
 
-            Array.Reverse(path, 0, index);
-             
-            ushort[] output = new ushort[index >> 1];
-            Buffer.BlockCopy(path, 0, output, 0, index);
+
+            //Array.Reverse(path, 0, index);
+            
+            //int olen = index>>1;
+            ushort[] output = new ushort[index>>1];
+            int j = 0;
+            
+            while (index>0)
+            {
+                output[j++] = (ushort)((path[--index] << 8) + path[--index]);
+            }
+
+           // Buffer.BlockCopy(path, 0, output, 0, index);
 
             return output;
             
@@ -511,11 +520,24 @@ namespace CsQuery.Implementation
         /// <summary>
         /// The element's absolute index among its siblings.
         /// </summary>
-
         public int Index
         {
-            get; internal set;
-            
+            get;
+            internal set;
+        }
+
+        /// <summary>
+        /// Gets or sets the identifier of the node path.
+        /// TODO: We are going to use this to create a sparse index so we don't have to reindex each time a node is removed
+        /// </summary>
+
+        [Obsolete]
+        public ushort NodePathID
+        {
+            get
+            {
+                return (ushort)Index;
+            }
         }
 
         /// <summary>
@@ -1621,10 +1643,28 @@ namespace CsQuery.Implementation
         /// A sequence of keys
         /// </returns>
 
+        public virtual IEnumerable<ushort[]> IndexKeysRanged()
+        {
+            throw new InvalidOperationException("This is not an indexed object.");
+        }
+
+        /// <summary>
+        /// Enumerates index keys in this collection.
+        /// </summary>
+        ///
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the requested operation is invalid.
+        /// </exception>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process index keys in this collection.
+        /// </returns>
+
         public virtual IEnumerable<ushort[]> IndexKeys()
         {
             throw new InvalidOperationException("This is not an indexed object.");
         }
+
 
         /// <summary>
         /// Gets the object to which this index entry refers.

@@ -47,6 +47,7 @@ using System.Diagnostics;
 #pragma warning disable 1570 // XML comment on 'construct' has badly formed XML — 'reason'
 #pragma warning disable 1587 // XML comment is not placed on a valid element
 
+#if DEBUG
 namespace CsQuery.Implementation
 {
 
@@ -1375,3 +1376,5 @@ namespace CsQuery.Implementation
 
 }
 
+
+#endif

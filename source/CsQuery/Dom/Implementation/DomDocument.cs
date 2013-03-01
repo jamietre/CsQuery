@@ -15,7 +15,7 @@ namespace CsQuery.Implementation
     /// <summary>
     /// Special node type to represent the DOM.
     /// </summary>
-    public class DomDocument : DomContainer<DomDocument>, IDomDocument, IDomIndex
+    public class DomDocument : DomContainer<DomDocument>, IDomDocument
     {
         #region static methods 
 
@@ -147,7 +147,7 @@ namespace CsQuery.Implementation
         public DomDocument()
             : base()
         {
-  
+            
         }
 
         /// <summary>
@@ -168,15 +168,6 @@ namespace CsQuery.Implementation
         }
 
 
-        /// <summary>
-        /// Clears this object to its blank/initial state.
-        /// </summary>
-
-        protected void Clear()
-        {
-            ChildNodes.Clear();
-            SelectorXref.Clear();
-        }
 
         #endregion
 
@@ -184,9 +175,8 @@ namespace CsQuery.Implementation
 
         private IList<ICSSStyleSheet> _StyleSheets;
         private IDictionary<string, object> _Data;
-        private RangeSortedDictionary<ushort,IDomObject> _SelectorXref;
-        
-        
+        private DomIndexRanged _DomIndex = new DomIndexRanged();
+
         #endregion
 
         #region public properties
@@ -211,30 +201,14 @@ namespace CsQuery.Implementation
         /// Exposes the Document as an IDomIndex object
         /// </summary>
 
-        public IDomIndex DocumentIndex
+        public IDomIndexRanged DocumentIndex
         {
             get
             {
-                return (IDomIndex)this;
+                return _DomIndex;
             }
         }
 
-        /// <summary>
-        /// The index
-        /// </summary>
-        public RangeSortedDictionary<ushort,IDomObject> SelectorXref
-        {
-            get
-            {
-                if (_SelectorXref == null)
-                {
-                    _SelectorXref = new RangeSortedDictionary<ushort,IDomObject>(PathKeyComparer.Comparer,
-                        PathKeyComparer.Comparer,
-                        HtmlData.indexSeparator);
-                }
-                return _SelectorXref;
-            }
-        }
 
         /// <summary>
         /// The direct parent of this node.
@@ -469,90 +443,8 @@ namespace CsQuery.Implementation
 
         #region public methods
 
-        /// <summary>
-        /// Add an element to the index using the default keys for this element
-        /// </summary>
-        /// <param name="element"></param>
-        public void AddToIndex(IDomIndexedNode element)
-        {
-            foreach (ushort[] key in element.IndexKeys())
-            {
-                AddToIndex(key, element);
-            }
 
-            if (element.HasChildren)
-            {
-                foreach (DomElement child in ((IDomContainer)element).ChildElements)
-                {
-                    AddToIndex(child);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Add an element to the index using a specified index key
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="element"></param>
-        public void AddToIndex(ushort[] key, IDomIndexedNode element)
-        {
-            SelectorXref.Add(key, element.IndexReference);
-        }
-        
-        /// <summary>
-        /// Remove an element from the index
-        /// </summary>
-        /// <param name="element"></param>
-        public void RemoveFromIndex(IDomIndexedNode element)
-        {
-            if (element.HasChildren)
-            {
-                foreach (IDomElement child in ((IDomContainer)element).ChildElements)
-                {
-                    if (child.IsIndexed)
-                    {
-                        RemoveFromIndex(child);
-                    }
-                }
-            }
-
-            foreach (ushort[] key in element.IndexKeys())
-            {
-                RemoveFromIndex(key);
-            }
-        }
-
-        /// <summary>
-        /// Remove an element from the index using its key
-        /// </summary>
-        /// <param name="key"></param>
-        public void RemoveFromIndex(ushort[] key)
-        {
-            SelectorXref.Remove(key);
-        }
-
-        /// <summary>
-        /// Query the document's index for a subkey up to a specific depth, optionally including descendants that match the selector
-        /// </summary>
-        /// <param name="subKey"></param>
-        /// <param name="depth">The zero-based depth to which searches should be limited</param>
-        /// <param name="includeDescendants"></param>
-        /// <returns></returns>
-        public IEnumerable<IDomObject> QueryIndex(ushort[] subKey, int depth, bool includeDescendants)
-        {
-            return SelectorXref.GetRange(subKey, depth, includeDescendants);
-        }
-
-        /// <summary>
-        /// Query the document's index for a subkey
-        /// </summary>
-        /// <param name="subKey"></param>
-        /// <returns></returns>
-        public IEnumerable<IDomObject> QueryIndex(ushort[] subKey)
-        {
-            return SelectorXref.GetRange(subKey);
-        }
-
+     
         /// <summary>
         /// Returns a reference to the element by its ID.
         /// </summary>
@@ -841,35 +733,6 @@ namespace CsQuery.Implementation
         {
             return "DOM Root (" + DocType.ToString() + ", " + DescendantCount().ToString() + " elements)";
         }
-        #endregion
-
-        #region private methods
-
-        /// <summary>
-        /// Return a sequence of elements that excludes non-Element (e.g. Text) nodes
-        /// </summary>
-        ///
-        /// <param name="objectList">
-        /// The input sequence
-        /// </param>
-        ///
-        /// <returns>
-        /// A sequence of elements
-        /// </returns>
-
-        protected IEnumerable<IDomElement> OnlyElements(IEnumerable<IDomObject> objectList)
-        {
-            foreach (IDomObject obj in objectList)
-            {
-                if (obj.NodeType == NodeType.ELEMENT_NODE)
-                {
-                    yield return (IDomElement)obj;
-                }
-            }
-            yield break;
-        }
-
-        #endregion
 
         /// <summary>
         /// Creates an IDomDocument that is derived from this one. The new type can also be a derived
@@ -890,28 +753,6 @@ namespace CsQuery.Implementation
             return CreateNew(typeof(T));
         }
 
-        private IDomDocument CreateNew(Type t) 
-        {
-            IDomDocument newDoc;
-            if (t == typeof(IDomDocument))
-            {
-                newDoc = new DomDocument();
-
-            }
-            else if (t == typeof(IDomFragment))
-            {
-                newDoc = new DomFragment();
-            }
-            
-            else
-            {
-                throw new ArgumentException(String.Format("I don't know about an IDomDocument subclass \"{1}\"",
-                    t.ToString()));
-            }
-
-            return newDoc;
-        }
-
         /// <summary>
         /// Creates an IDomDocument that is derived from this one. The new type can also be a derived
         /// type, such as IDomFragment. The new object will inherit DomRenderingOptions from this one.
@@ -927,7 +768,7 @@ namespace CsQuery.Implementation
             return CreateNew<IDomDocument>();
         }
 
-       
+
 
         /// <summary>
         /// Creates an IDomDocument that is derived from this one. The new type can also be a derived
@@ -956,14 +797,14 @@ namespace CsQuery.Implementation
             if (typeof(T) == typeof(IDomDocument))
             {
                 //newDoc = new DomDocument(elements);
-                newDoc = DomDocument.Create(elements,HtmlParsingMode.Document);
+                newDoc = DomDocument.Create(elements, HtmlParsingMode.Document);
 
             }
             else if (typeof(T) == typeof(IDomFragment))
             {
                 newDoc = DomDocument.Create(elements, HtmlParsingMode.Fragment);
             }
-           
+
             else
             {
                 throw new ArgumentException(String.Format("I don't know about an IDomDocument subclass \"{1}\"",
@@ -972,6 +813,178 @@ namespace CsQuery.Implementation
 
             return newDoc;
         }
+
+        #endregion
+
+        #region IDomIndex methods
+
+        /// <summary>
+        /// Adds to the index.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to add
+        /// </param>
+
+        void IDomIndex.AddToIndex(IDomIndexedNode element)
+        {
+            DocumentIndex.AddToIndex(element);
+        }
+
+        void IDomIndex.AddToIndex(ushort[] key, IDomIndexedNode element)
+        {
+            DocumentIndex.AddToIndex(key, element);
+        }
+
+        /// <summary>
+        /// Removes the element from the index
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to remove
+        /// </param>
+
+        void IDomIndex.RemoveFromIndex(IDomIndexedNode element)
+        {
+            DocumentIndex.RemoveFromIndex(element);
+            
+        }
+
+        /// <summary>
+        /// Remove an element from the index using its key.
+        /// </summary>
+        ///
+        /// <param name="key">
+        /// The key to remove
+        /// </param>
+
+        void IDomIndex.RemoveFromIndex(ushort[] key)
+        {
+            DocumentIndex.RemoveFromIndex(key);
+        }
+
+
+        /// <summary>
+        /// Query the document's index for a subkey
+        /// </summary>
+        /// <param name="subKey"></param>
+        /// <returns></returns>
+        IEnumerable<IDomObject> IDomIndex.QueryIndex(ushort[] subKey)
+        {
+            return DocumentIndex.QueryIndex(subKey);
+        }
+
+
+        /// <summary>
+        /// Clears this object to its blank/initial state.
+        /// </summary>
+
+        void IDomIndex.Clear()
+        {
+            ChildNodes.Clear();
+            DocumentIndex.Clear();
+        }
+
+        int IDomIndex.Count
+        {
+            get
+            {
+                return DocumentIndex.Count;
+            }
+        }
+
+        bool IDomIndexRanged.QueueChanges
+        {
+            get
+            {
+                return ((IDomIndexRanged)DocumentIndex).QueueChanges;
+            }
+            set
+            {
+                ((IDomIndexRanged)DocumentIndex).QueueChanges = value;
+            }
+        }
+
+        /// <summary>
+        /// Query the document's index for a subkey up to a specific depth, optionally including
+        /// descendants that match the selector.
+        /// </summary>
+        ///
+        /// <param name="subKey">
+        /// .
+        /// </param>
+        /// <param name="depth">
+        /// The zero-based depth to which searches should be limited.
+        /// </param>
+        /// <param name="includeDescendants">
+        /// .
+        /// </param>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process query index in this collection.
+        /// </returns>
+
+        IEnumerable<IDomObject> IDomIndexRanged.QueryIndex(ushort[] subKey, int depth, bool includeDescendants)
+        {
+            return ((IDomIndexRanged)DocumentIndex).QueryIndex(subKey, depth, includeDescendants);
+        }
+        #endregion
+
+
+        #region private methods
+
+
+        private IDomDocument CreateNew(Type t)
+        {
+            IDomDocument newDoc;
+            if (t == typeof(IDomDocument))
+            {
+                newDoc = new DomDocument();
+
+            }
+            else if (t == typeof(IDomFragment))
+            {
+                newDoc = new DomFragment();
+            }
+
+            else
+            {
+                throw new ArgumentException(String.Format("I don't know about an IDomDocument subclass \"{1}\"",
+                    t.ToString()));
+            }
+
+            return newDoc;
+        }
+
+
+        /// <summary>
+        /// Return a sequence of elements that excludes non-Element (e.g. Text) nodes
+        /// </summary>
+        ///
+        /// <param name="objectList">
+        /// The input sequence
+        /// </param>
+        ///
+        /// <returns>
+        /// A sequence of elements
+        /// </returns>
+
+        protected IEnumerable<IDomElement> OnlyElements(IEnumerable<IDomObject> objectList)
+        {
+            foreach (IDomObject obj in objectList)
+            {
+                if (obj.NodeType == NodeType.ELEMENT_NODE)
+                {
+                    yield return (IDomElement)obj;
+                }
+            }
+            yield break;
+        }
+
+        #endregion
+
+       
+        
 
     }
     

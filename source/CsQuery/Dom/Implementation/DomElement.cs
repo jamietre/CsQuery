@@ -829,8 +829,8 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Returns all the keys that should be in the index for this item (keys for class, tag,
-        /// attributes, and id)
+        /// Index keys for this collection. This method returns keys without path information, they are
+        /// only for use with a non-ranged index.
         /// </summary>
         ///
         /// <returns>
@@ -839,10 +839,67 @@ namespace CsQuery.Implementation
 
         public override IEnumerable<ushort[]> IndexKeys()
         {
+            yield return new ushort[] {'+', _NodeNameID};
+
+            string id = Id;
+
+
+            if (!String.IsNullOrEmpty(id))
+            {
+                yield return new ushort[] {'#', HtmlData.TokenizeCaseSensitive(id)};
+            }
+
+            if (HasClasses)
+            {
+                foreach (ushort clsId in _Classes)
+                {
+                    yield return new ushort[] { '.', clsId };
+                }
+            }
+
+            // index attributes
+
+            if (HasClasses)
+            {
+                yield return new ushort[] {'!', HtmlData.ClassAttrId };
+            }
+            if (HasStyles)
+            {
+                yield return new ushort[] { '!', HtmlData.tagSTYLE };
+            }
+
+            foreach (ushort token in IndexAttributesTokens())
+            {
+                yield return new ushort[] { '!', token };
+            }
+        }
+
+        /// <summary>
+        /// Returns all the keys that should be in the index for this item (keys for class, tag,
+        /// attributes, and id)
+        /// </summary>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process index keys in this collection.
+        /// </returns>
+
+        public override IEnumerable<ushort[]> IndexKeysRanged()
+        {
 
             ushort[] path = NodePath;
 
-            yield return new ushort[] { HtmlData.indexSeparator }.Concat(path).ToArray();
+            ushort[] output = new ushort[path.Length + 1];
+            output[0] = HtmlData.indexSeparator;
+
+            for (int i = 0; i < path.Length; i++)
+            {
+                output[i + 1] = path[i];
+            }
+            //Buffer.BlockCopy(path, 0, output, 2, path.Length * 2);
+
+            yield return output;
+
+            //yield return new ushort[] { HtmlData.indexSeparator }.Concat(path).ToArray();
             
             yield return IndexKey('+',_NodeNameID, path);
 
@@ -1791,7 +1848,11 @@ namespace CsQuery.Implementation
             key[0] = (ushort)prefix;
             key[1] = keyTokenId;
             key[2] = HtmlData.indexSeparator;
-            for (int i = 0; i < path.Length; i++)
+
+            //Buffer.BlockCopy(path, 0, key, 6, path.Length * 2);
+
+            int len = path.Length;
+            for (int i = 0; i < len; i++)
             {
                 key[i + 3] = path[i];
             }

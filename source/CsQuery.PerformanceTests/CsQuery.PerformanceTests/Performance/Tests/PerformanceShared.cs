@@ -42,6 +42,7 @@ namespace CsQuery.PerformanceTests.Tests
         
         public void LoadingDom()
         {
+
             var html = Support.GetFile(Program.ResourceDirectory+"\\"+DocName+".htm");
             
             Action csq = new Action(() =>
