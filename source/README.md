@@ -8,6 +8,16 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ### Change Log
 
+#### Version 1.3.5
+
+- [Issue #82](https://github.com/jamietre/CsQuery/issues/82) `DomObject.Text` property not returning correct text when nested text nodes are present
+- Index not being updated correctly for some node
+
+Some performance improvements:
+
+- Performance improvements in HTML parser
+- Defer index updates until next query, meaning index will not have to be rebuilt following DOM changes unless needed.
+
 #### Version 1.3.4
 
 - [Issue #76](https://github.com/jamietre/CsQuery/issues/76) Change Path to use `ushort` array instead of string to solve hash collission problem with index.
