@@ -141,19 +141,12 @@ Assigning a string to a CQ object parses it automatically:
 
     CQ dom = "<div>Hello world! <b>I am feeling bold!</b> What about <b>you?</b></div>";
     
-    /// find all "b" nodes (there are two in this example)
     
-    var bold = dom["b"];                  
+    var bold = dom["b"];                  /// find all "b" nodes (there are two in this example)
+       
+    string boldText = bold.Text();        /// jQuery text method; == "I am feeling bold! you?"
     
-    /// get the text with the jQuery text method
-    
-    string boldText = bold.Text();        /// =="I am feeling bold! you?"
-    
-    /// jQuery Remove method
-    
-    bold.Remove();                 
-    
-    /// write the altered DOM back
+    bold.Remove();                        /// jQuery Remove method
     
     var html = dom.Render();              /// =="<div>Hello world! </div>
     
