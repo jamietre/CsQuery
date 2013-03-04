@@ -41,7 +41,7 @@ Here's a basic example of parsing HTML, selecting something, altering it, and re
     
     bold.Remove();                        /// jQuery Remove method
     
-    string html = dom.Render();           /// =="<div>Hello world! </div>
+    string html = dom.Render();           /// =="<div>Hello world!  What about </div>
 
 There are other ways to create `CQ` objects, run selectors, and change the DOM. You can also use the property indexer 
 to like an array indexer, e.g. `dom[0]` returns the first element in your selection. If there is one, that is! 
