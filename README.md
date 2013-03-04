@@ -41,10 +41,10 @@ Here's a basic example of parsing HTML, selecting something, altering it, and re
     
     bold.Remove();                        /// jQuery Remove method
     
-    string html = dom.Render();           /// =="<div>Hello world!  What about </div>
+    string html = dom.Render();           /// =="<div>Hello world!  What about </div>"
 
 There are other ways to create `CQ` objects, run selectors, and change the DOM. You can also use the property indexer 
-to like an array indexer, e.g. `dom[0]` returns the first element in your selection. If there is one, that is! 
+like an array indexer, e.g. `dom[0]` returns the first element in your selection. If there is one, that is! 
 Using the LINQ method `dom.FirstOrDefault()` might be a better choice for many situations. In javascript, you'd often test the
 `Length` property of a selection to see if there were any results. The `CQ` object exposes an `IEnumerable<IDomObject>` interface,
 so you can use LINQ to simplify many operations. But you still have all the tools that you're used to from jQuery, too.
