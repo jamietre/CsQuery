@@ -135,6 +135,28 @@ If you are interested in this project and want to contribute anything, let me kn
 
 ### Usage
 
+*Getting started: parse some HTML, alter it, and write it back to a string*
+
+Assigning a string to a CQ object parses it automatically:
+
+    CQ dom = "<div>Hello world! <b>I am feeling bold!</b> What about <b>you?</b></div>";
+    
+    /// find all "b" nodes (there are two in this example)
+    
+    var bold = dom["b"];                  
+    
+    /// get the text with the jQuery text method
+    
+    string boldText = bold.Text();        /// =="I am feeling bold! you?"
+    
+    /// jQuery Remove method
+    
+    bold.Remove();                 
+    
+    /// write the altered DOM back
+    
+    var html = dom.Render();              /// =="<div>Hello world! </div>
+    
 ##### Creating a new DOM
 
 Complete documentation: [Create method](https://github.com/jamietre/CsQuery/blob/master/documentation/create.md)
