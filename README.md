@@ -26,8 +26,9 @@ What's more, the entire test suite from Sizzle (the jQuery CSS selector engine) 
 
 ##### It's incredibly easy
 
-Pretty much everything you need is in the `CQ` object, which is designed to work like a jQuery object. Assigning a string to a CQ object parses it. THe property indexer `['...']` runs a CSS selector,
-and returns new CQ object, like `$('...')` using jQuery. Finally, the `Render` method writes the DOM back to a string.
+Pretty much everything you need is in the `CQ` object, which is designed to work like a jQuery object. Assigning a string to a CQ object parses it. The property indexer `['...']` runs a CSS selector,
+and returns new CQ object, like `$('...')` using jQuery. Finally, the `Render` method writes the DOM back to a string. From a `CQ` object, you
+have access to the complete jQuery API to traverse and manipulate your document, as well as an extensive browser DOM model.
 
 Here's a basic example of parsing HTML, selecting something, altering it, and rendering it back to a string.
 
@@ -42,11 +43,11 @@ Here's a basic example of parsing HTML, selecting something, altering it, and re
     
     string html = dom.Render();           /// =="<div>Hello world! </div>
 
-There are other ways to create CQ objects, run selectors, and change the DOM. The property indexer used above can
-also be used to create HTML fragments, like the default method with jQuery. 
-
-You can also use the property indexer to like an array indexer, e.g. `dom[0]` returns the first element in your selection. (If there is one, that is! Using the LINQ method
-`dom.FirstOrDefault()` might be a better choice for many situations).
+There are other ways to create `CQ` objects, run selectors, and change the DOM. You can also use the property indexer 
+to like an array indexer, e.g. `dom[0]` returns the first element in your selection. If there is one, that is! 
+Using the LINQ method `dom.FirstOrDefault()` might be a better choice for many situations. In javascript, you'd often test the
+`Length` property of a selection to see if there were any results. The `CQ` object exposes an `IEnumerable<IDomObject>` interface,
+so you can use LINQ to simplify many operations. But you still have all the tools that you're used to from jQuery, too.
 
 Like in jQuery, each CQ object is made up of DOM elements. In CsQuery, the basic node is an `IDomObject` and is analagous to
 an HTML element or other node (like a text node or comment node). Most of the typical HTML element methods are available.
