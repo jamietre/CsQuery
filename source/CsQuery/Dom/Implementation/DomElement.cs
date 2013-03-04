@@ -895,12 +895,9 @@ namespace CsQuery.Implementation
             {
                 output[i + 1] = path[i];
             }
-            //Buffer.BlockCopy(path, 0, output, 2, path.Length * 2);
 
             yield return output;
 
-            //yield return new ushort[] { HtmlData.indexSeparator }.Concat(path).ToArray();
-            
             yield return IndexKey('+',_NodeNameID, path);
 
             string id = Id;
@@ -959,7 +956,9 @@ namespace CsQuery.Implementation
             {
                 clone.Style = Style.Clone();
             }
-            // will not create ChildNodes lazy object unless results are returned (this is why we don't use AddRange)
+
+            // will not create ChildNodes lazy object unless results are returned (this is why we don't use
+            // AddRange) 
 
             var childNodes = (ChildNodeList)clone.ChildNodes;
             foreach (IDomObject child in CloneChildren())

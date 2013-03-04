@@ -257,44 +257,40 @@ namespace CsQuery.Implementation
         
         protected virtual ushort[] GetPath()
         {
-   
 
             DomObject curNode = this;
             ushort index = 0;
 
-            byte[] path = new byte[8];
-            int len = 8;
+            ushort[] path = new ushort[32];
+            int len = 32;
 
             while (curNode != null)
             {
-                path[index++] = (byte)(curNode.Index & 255);
-                path[index++] = (byte)(curNode.Index >> 8);
+                path[index++] = (ushort)(curNode.Index);
 
                 if (index == len)
                 {
                     len <<= 1;
 
-                    var newPath = new byte[len];
-                    Buffer.BlockCopy(path, 0, newPath, 0, index);
+                    var newPath= new ushort[len];
+                    Buffer.BlockCopy(path, 0, newPath, 0, index<<1);
                     path = newPath;
                 }
 
                 curNode = curNode._ParentNode;
             }
 
-
-            //Array.Reverse(path, 0, index);
+            // because we obtained the path by traversing backards up the tree, instead of recursing (which
+            // will cause a stack overflow & performs a lot worse anyway) we must reverse the array before
+            // returning it. 
             
-            //int olen = index>>1;
-            ushort[] output = new ushort[index>>1];
-            int j = 0;
+            ushort[] output = new ushort[index];
+            int i = 0;
             
             while (index>0)
             {
-                output[j++] = (ushort)((path[--index] << 8) + path[--index]);
+                output[i++] = path[--index];
             }
-
-           // Buffer.BlockCopy(path, 0, output, 0, index);
 
             return output;
             
