@@ -26,7 +26,7 @@ namespace CsQuery.Tests.Core.Dom
             DomFragment concreteFrag = (DomFragment)frag[0].Document;
             Assert.IsTrue(concreteFrag.IsFragment);
             Assert.IsTrue(concreteFrag.IsIndexed);
-            Assert.AreNotEqual(0, ((IDomIndex)concreteFrag).Count);
+            Assert.AreNotEqual(0, ((IDomIndex)concreteFrag.DocumentIndex).Count);
         }
 
         [Test, TestMethod]

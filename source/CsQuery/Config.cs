@@ -5,6 +5,7 @@ using System.Text;
 using System.Dynamic;
 using CsQuery.Engine;
 using CsQuery.Output;
+using CsQuery.Implementation;
 using System.Net;
 using HttpWebAdapters;
 
@@ -26,6 +27,8 @@ namespace CsQuery
             HtmlEncoder = HtmlEncoders.Basic;
             DocType = DocType.HTML5;
             GetOutputFormatter = GetDefaultOutputFormatter;
+            GetDomIndexProvider = GetDefaultDomIndexProvider;
+
             //CachedQueries = 1;
         }
 
@@ -56,6 +59,11 @@ namespace CsQuery
         private static IOutputFormatter GetDefaultOutputFormatter()
         {
             return OutputFormatters.Create(DomRenderingOptions, HtmlEncoder);
+        }
+
+        private static IDomIndexRanged GetDefaultDomIndexProvider()
+        {
+            return new DomIndexRanged();
         }
 
         #endregion
@@ -244,6 +252,17 @@ namespace CsQuery
             get {
                 return PseudoSelectors.Items;
             }
+        }
+
+        /// <summary>
+        /// Factory that returns an instace of the indexer used when creating documents. CsQuery understands objects that implement
+        /// IDomIndex and IDomIndexRanged.
+        /// </summary>
+
+        public static Func<IDomIndex> GetDomIndexProvider
+        {
+            get;
+            set;
         }
 
         #endregion

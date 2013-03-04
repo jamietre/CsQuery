@@ -16,20 +16,6 @@ namespace CsQuery
         /// Adds an element to the index.
         /// </summary>
         ///
-        /// <param name="key">
-        /// The index key. This should be a unique path to the element in the Document tree. The format
-        /// is determined by environmental settings. This is for internal use.
-        /// </param>
-        /// <param name="element">
-        /// The element.
-        /// </param>
-
-        void AddToIndex(ushort[] key, IDomIndexedNode element);
-
-        /// <summary>
-        /// Adds an element to the index.
-        /// </summary>
-        ///
         /// <param name="element">
         /// The element.
         /// </param>
@@ -37,15 +23,17 @@ namespace CsQuery
         void AddToIndex(IDomIndexedNode element);
 
         /// <summary>
-        /// Removes an element from the index
+        /// Adds an element to the index for the specified key.
         /// </summary>
         ///
         /// <param name="key">
-        /// The index key. This should be a unique path to the element in the Document tree. The format
-        /// is determined by environmental settings. This is for internal use.
+        /// The key.
+        /// </param>
+        /// <param name="element">
+        /// The element.
         /// </param>
 
-        void RemoveFromIndex(ushort[] key);
+        void AddToIndex(ushort[] key, IDomIndexedNode element);
 
         /// <summary>
         /// Removes an element from the index.
@@ -56,6 +44,19 @@ namespace CsQuery
         /// </param>
 
         void RemoveFromIndex(IDomIndexedNode element);
+
+        /// <summary>
+        /// Removes a key from the index
+        /// </summary>
+        ///
+        /// <param name="key">
+        /// The key.
+        /// </param>
+        /// <param name="element">
+        /// The element.
+        /// </param>
+
+        void RemoveFromIndex(ushort[] key, IDomIndexedNode element);
 
 
         /// <summary>

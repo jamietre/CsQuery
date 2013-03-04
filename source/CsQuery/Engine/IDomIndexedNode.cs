@@ -19,7 +19,7 @@ namespace CsQuery
         /// An sequence of strings
         /// </returns>
 
-        IEnumerable<ushort[]> IndexKeysRanged();
+        //IEnumerable<ushort[]> IndexKeysRanged();
 
         /// <summary>
         /// Enumerates index keys in this collection.
@@ -36,5 +36,7 @@ namespace CsQuery
         /// </summary>
 
         IDomObject IndexReference { get; }
+
+
     }
 }

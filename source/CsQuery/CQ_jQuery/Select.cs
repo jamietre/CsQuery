@@ -101,7 +101,7 @@ namespace CsQuery
         public CQ Select(string selector)
         {
             var sel = new Selector(selector);
-            if (sel.IsHmtl)
+            if (sel.IsHtml)
             {
                 CQ csq = CQ.Create(selector);
                 csq.CsQueryParent = this;

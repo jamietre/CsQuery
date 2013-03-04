@@ -477,7 +477,7 @@ namespace CsQuery
                 Selector = new Selector(selector);
 
                 SetSelection(Selector.ToContextSelector().Select(Document, context),
-                    Selector.IsHmtl ?
+                    Selector.IsHtml ?
                         SelectionSetOrder.OrderAdded :
                         SelectionSetOrder.Ascending);
             }

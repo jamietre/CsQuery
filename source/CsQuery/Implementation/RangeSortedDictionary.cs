@@ -173,7 +173,6 @@ namespace CsQuery.Implementation
         {
             if (depth == 0 && !descendants)
             {
-                //if (Index.ContainsKey(subKey))
                 if (Index.ContainsKey(subKey))
                 {
                     yield return Index[subKey];
@@ -192,11 +191,7 @@ namespace CsQuery.Implementation
                     if (key.Length > len)
                     {
                         {
-#if DEBUG_PATH
-                            curDepth = (key.Length - len) / HtmlData.pathIdLength;
-#else
                             curDepth = key.Length - len;
-#endif
                         }
                     }
                     if (curDepth == depth || (descendants && curDepth >= depth))

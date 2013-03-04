@@ -38,5 +38,14 @@ namespace CsQuery
 
         IEnumerable<IDomObject> QueryIndex(ushort[] subKey, int depth, bool includeDescendants);
 
+        /// <summary>
+        /// Removes the given key.
+        /// </summary>
+        ///
+        /// <param name="key">
+        /// The key to remove.
+        /// </param>
+
+        //void RemoveFromIndex(ushort[] key);
     }
 }

@@ -141,13 +141,28 @@ namespace CsQuery.Implementation
         #region constructors
 
         /// <summary>
-        /// Create a new, empty DOM document
+        /// Create a new, empty DOM document using the default DomIndex provider.
         /// </summary>
         /// 
+        
         public DomDocument()
-            : base()
+            : this(null)
         {
             
+        }
+
+        /// <summary>
+        /// Create a new, empty DOM document using the provided DomIndex instance
+        /// </summary>
+        ///
+        /// <param name="domIndex">
+        /// An index provider
+        /// </param>
+
+        public DomDocument(IDomIndex domIndex)
+            : base()
+        {
+            _DomIndex = domIndex ?? CsQuery.Config.GetDomIndexProvider();
         }
 
         /// <summary>
@@ -167,15 +182,13 @@ namespace CsQuery.Implementation
 
         }
 
-
-
         #endregion
 
         #region private properties
 
         private IList<ICSSStyleSheet> _StyleSheets;
         private IDictionary<string, object> _Data;
-        private DomIndexRanged _DomIndex = new DomIndexRanged();
+        private IDomIndex _DomIndex;
 
         #endregion
 
@@ -201,7 +214,7 @@ namespace CsQuery.Implementation
         /// Exposes the Document as an IDomIndex object
         /// </summary>
 
-        public IDomIndexRanged DocumentIndex
+        public IDomIndex DocumentIndex
         {
             get
             {
@@ -816,121 +829,6 @@ namespace CsQuery.Implementation
 
         #endregion
 
-        #region IDomIndex methods
-
-        /// <summary>
-        /// Adds to the index.
-        /// </summary>
-        ///
-        /// <param name="element">
-        /// The element to add
-        /// </param>
-
-        void IDomIndex.AddToIndex(IDomIndexedNode element)
-        {
-            DocumentIndex.AddToIndex(element);
-        }
-
-        void IDomIndex.AddToIndex(ushort[] key, IDomIndexedNode element)
-        {
-            DocumentIndex.AddToIndex(key, element);
-        }
-
-        /// <summary>
-        /// Removes the element from the index
-        /// </summary>
-        ///
-        /// <param name="element">
-        /// The element to remove
-        /// </param>
-
-        void IDomIndex.RemoveFromIndex(IDomIndexedNode element)
-        {
-            DocumentIndex.RemoveFromIndex(element);
-            
-        }
-
-        /// <summary>
-        /// Remove an element from the index using its key.
-        /// </summary>
-        ///
-        /// <param name="key">
-        /// The key to remove
-        /// </param>
-
-        void IDomIndex.RemoveFromIndex(ushort[] key)
-        {
-            DocumentIndex.RemoveFromIndex(key);
-        }
-
-
-        /// <summary>
-        /// Query the document's index for a subkey
-        /// </summary>
-        /// <param name="subKey"></param>
-        /// <returns></returns>
-        IEnumerable<IDomObject> IDomIndex.QueryIndex(ushort[] subKey)
-        {
-            return DocumentIndex.QueryIndex(subKey);
-        }
-
-
-        /// <summary>
-        /// Clears this object to its blank/initial state.
-        /// </summary>
-
-        void IDomIndex.Clear()
-        {
-            ChildNodes.Clear();
-            DocumentIndex.Clear();
-        }
-
-        int IDomIndex.Count
-        {
-            get
-            {
-                return DocumentIndex.Count;
-            }
-        }
-
-        bool IDomIndexRanged.QueueChanges
-        {
-            get
-            {
-                return ((IDomIndexRanged)DocumentIndex).QueueChanges;
-            }
-            set
-            {
-                ((IDomIndexRanged)DocumentIndex).QueueChanges = value;
-            }
-        }
-
-        /// <summary>
-        /// Query the document's index for a subkey up to a specific depth, optionally including
-        /// descendants that match the selector.
-        /// </summary>
-        ///
-        /// <param name="subKey">
-        /// .
-        /// </param>
-        /// <param name="depth">
-        /// The zero-based depth to which searches should be limited.
-        /// </param>
-        /// <param name="includeDescendants">
-        /// .
-        /// </param>
-        ///
-        /// <returns>
-        /// An enumerator that allows foreach to be used to process query index in this collection.
-        /// </returns>
-
-        IEnumerable<IDomObject> IDomIndexRanged.QueryIndex(ushort[] subKey, int depth, bool includeDescendants)
-        {
-            return ((IDomIndexRanged)DocumentIndex).QueryIndex(subKey, depth, includeDescendants);
-        }
-        #endregion
-
-
         #region private methods
 
 
@@ -982,8 +880,6 @@ namespace CsQuery.Implementation
         }
 
         #endregion
-
-       
         
 
     }

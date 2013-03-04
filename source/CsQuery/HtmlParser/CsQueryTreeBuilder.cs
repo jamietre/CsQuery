@@ -293,7 +293,7 @@ namespace CsQuery.HtmlParser
 
             if (document.DocumentIndex is IDomIndexRanged)
             {
-                ((IDomIndexRanged)document).QueueChanges = false;
+                ((IDomIndexRanged)document.DocumentIndex).QueueChanges = false;
             }
         }
 

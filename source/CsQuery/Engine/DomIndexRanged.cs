@@ -90,9 +90,16 @@ namespace CsQuery.Engine
 
         public void AddToIndex(IDomIndexedNode element)
         {
-            foreach (ushort[] key in element.IndexKeysRanged())
+
+            
+            ushort[] path = element.IndexReference.NodePath;
+
+            QueueAddToIndex(RangePath(path), element);
+
+
+            foreach (ushort[] key in element.IndexKeys())
             {
-                QueueAddToIndex(key, element);
+                QueueAddToIndex(RangePath(key,path), element);
             }
 
             if (element.HasChildren)
@@ -105,6 +112,7 @@ namespace CsQuery.Engine
 
         }
 
+        
         /// <summary>
         /// Adds an element to the index for the specified key.
         /// </summary>
@@ -118,19 +126,23 @@ namespace CsQuery.Engine
 
         public void AddToIndex(ushort[] key, IDomIndexedNode element)
         {
-            QueueAddToIndex(key, element);
+            QueueAddToIndex(RangePath(key, element),element);
         }
+
         /// <summary>
         /// Remove an element from the index using its key.
         /// </summary>
         ///
         /// <param name="key">
-        /// The key to remove
+        /// The key to remove.
+        /// </param>
+        /// <param name="element">
+        /// The element to remove; this is ignored fort IDomIndexRange because it is identified by the key.
         /// </param>
 
-        public void RemoveFromIndex(ushort[] key)
+        public void RemoveFromIndex(ushort[] key, IDomIndexedNode element)
         {
-            QueueRemoveFromIndex(key);
+            QueueRemoveFromIndex(RangePath(key,element));
         }
 
         /// <summary>
@@ -143,6 +155,11 @@ namespace CsQuery.Engine
 
         public void RemoveFromIndex(IDomIndexedNode element)
         {
+            ushort[] path = element.IndexReference.NodePath;
+
+            QueueRemoveFromIndex(RangePath(null, path));
+
+
             if (element.HasChildren)
             {
                 foreach (IDomElement child in ((IDomContainer)element).ChildElements)
@@ -154,9 +171,9 @@ namespace CsQuery.Engine
                 }
             }
 
-            foreach (ushort[] key in element.IndexKeysRanged())
+            foreach (ushort[] key in element.IndexKeys())
             {
-                QueueRemoveFromIndex(key);
+                QueueRemoveFromIndex(RangePath(key,path));
             }
         }
 
@@ -298,5 +315,89 @@ namespace CsQuery.Engine
                 }
             }
         }
+
+        /// <summary>
+        /// Convert a key & path to a path suitable for view selection.
+        /// </summary>
+        ///
+        /// <param name="key">
+        /// The key to remove.
+        /// </param>
+        /// <param name="path">
+        /// Full pathname of the file.
+        /// </param>
+        ///
+        /// <returns>
+        /// A key
+        /// </returns>
+
+        private ushort[] RangePath(ushort[] key, ushort[] path)
+        {
+            int keyLen = key == null ? 0 : key.Length;
+
+            ushort[] output = new ushort[keyLen + path.Length + 1];
+
+            int i = 0;
+            for (i = 0; i < keyLen; i++)
+            {
+                output[i] = key[i];
+            }
+            output[i++] = HtmlData.indexSeparator;
+
+            int j = 0;
+            while (j < path.Length)
+            {
+                output[i++] = path[j++];
+            }
+            return output;
+        }
+
+        /// <summary>
+        /// Convert a key & path to a path suitable for view selection.
+        /// </summary>
+        ///
+        /// <param name="key">
+        /// The key to remove.
+        /// </param>
+        /// <param name="element">
+        /// The element to add.
+        /// </param>
+        ///
+        /// <returns>
+        /// A key.
+        /// </returns>
+
+        private ushort[] RangePath(ushort[] key, IDomIndexedNode element)
+        {
+            ushort[] path = element.IndexReference.NodePath;
+            return RangePath(key, path);
+        }
+
+        /// <summary>
+        /// Return the default selection key
+        /// </summary>
+        ///
+        /// <param name="path">
+        /// Full pathname of the file.
+        /// </param>
+        ///
+        /// <returns>
+        /// A key.
+        /// </returns>
+
+        private ushort[] RangePath(ushort[] path)
+        {
+            ushort[] output = new ushort[path.Length + 1];
+            output[0] = HtmlData.indexSeparator;
+            
+            int j = 0;
+            int i = 1;
+            while (j < path.Length)
+            {
+                output[i++] = path[j++];
+            }
+            return output;
+        }
+
     }
 }

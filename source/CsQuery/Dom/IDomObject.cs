@@ -720,6 +720,14 @@ namespace CsQuery
         string Path { get; }
 
         /// <summary>
+        /// Gets the identifier of this node in the index. This isn't used right now in the index. It is
+        /// intended that this will become distinct from Index so the index can be sparse (e.g. we don't
+        /// have to reindex when removing things)
+        /// </summary>
+
+        ushort NodePathID { get; }
+
+        /// <summary>
         /// Gets the full pathname of the node file.
         /// </summary>
 

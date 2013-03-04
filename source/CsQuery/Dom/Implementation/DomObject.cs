@@ -527,7 +527,6 @@ namespace CsQuery.Implementation
         /// TODO: We are going to use this to create a sparse index so we don't have to reindex each time a node is removed
         /// </summary>
 
-        [Obsolete]
         public ushort NodePathID
         {
             get

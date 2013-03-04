@@ -377,7 +377,7 @@ namespace CsQuery.HtmlParser
 
             if (treeBuilder.Document.DocumentIndex is IDomIndexRanged)
             {
-                ((IDomIndexRanged)treeBuilder.Document).QueueChanges = true;
+                ((IDomIndexRanged)treeBuilder.Document.DocumentIndex).QueueChanges = true;
             }
             
 

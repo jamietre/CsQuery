@@ -142,7 +142,7 @@ namespace CsQuery.Engine
         /// selector, but should return a new HTML fragment).
         /// </summary>
 
-        public bool IsHmtl
+        public bool IsHtml
         {
             get
             {

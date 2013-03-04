@@ -28,6 +28,13 @@ namespace CsQuery.Engine
         private List<SelectorClause> ActiveSelectors;
         private int activeSelectorId;
 
+        private enum IndexMode
+        {
+            None = 0,
+            Basic  = 1,
+            Subselect = 2
+        }
+
         #endregion
 
         #region public properties
@@ -109,9 +116,18 @@ namespace CsQuery.Engine
             // or if the first element is not indexed, or the context is not from the same
             // document as this selector is bound.
 
-            bool useIndex = context.IsNullOrEmpty() || 
-                (!context.First().IsDisconnected && context.First().IsIndexed && context.First().Document==Document);
-
+            IndexMode indexMode;
+            if (context.IsNullOrEmpty()) {
+                indexMode = IndexMode.None;
+            } else {
+                IDomObject first = context.First();
+                bool useIndex = !first.IsDisconnected && first.IsIndexed && first.Document==Document;
+                indexMode = !useIndex ?
+                    IndexMode.None :
+                    Document.DocumentIndex is IDomIndexRanged ?
+                        IndexMode.Subselect :
+                        IndexMode.Basic;
+            }
 
             for (activeSelectorId = 0; activeSelectorId < ActiveSelectors.Count; activeSelectorId++)
             {
@@ -146,42 +162,42 @@ namespace CsQuery.Engine
                 List<ushort> key = new List<ushort>();
                 SelectorType removeSelectorType = 0;
 
-                if (useIndex && !selector.NoIndex)
+                // determine the type of traversal & depth for this selector
+
+                int depth = 0;
+                bool descendants = true;
+                    
+                switch (selector.TraversalType)
+                {
+                    case TraversalType.Child:
+                        depth = selector.ChildDepth;
+                        descendants = false;
+                        break;
+                    case TraversalType.Filter:
+                    case TraversalType.Adjacent:
+                    case TraversalType.Sibling:
+                        depth = 0;
+                        descendants = false;
+                        break;
+                    case TraversalType.Descendent:
+                        depth = 1;
+                        descendants = true;
+                        break;
+                    // default: fall through with default values set above.
+                }
+
+                bool canUseBasicIndex = (selectionSource == null)
+                    && descendants
+                    && depth == 0;
+
+
+                // build index keys when possible for the active index type
+
+                if ((indexMode == IndexMode.Subselect ||
+                    (indexMode == IndexMode.Basic && canUseBasicIndex))
+                    && !selector.NoIndex)
                 {
 
-#if DEBUG_PATH
-
-                    if (selector.SelectorType.HasFlag(SelectorType.AttributeValue) 
-                        && selector.AttributeSelectorType != AttributeSelectorType.NotExists
-                        && selector.AttributeSelectorType != AttributeSelectorType.NotEquals)
-                    {
-                        key = "!" + selector.AttributeName.ToLower();
-
-                        // AttributeValue must still be matched manually - so remove this flag only if the
-                        // selector is conclusive without further checking
-                        
-                        if (selector.AttributeSelectorType == AttributeSelectorType.Exists)
-                        {
-                            removeSelectorType = SelectorType.AttributeValue;
-                        }
-                    }
-                    else if (selector.SelectorType.HasFlag(SelectorType.Tag))
-                    {
-                        key = "+"+selector.Tag.ToLower();
-                        removeSelectorType=SelectorType.Tag;
-                    }
-                    else if (selector.SelectorType.HasFlag(SelectorType.ID))
-                    {
-                        key = "#" + selector.ID;
-                        removeSelectorType=SelectorType.ID;
-                    }
-                    else if (selector.SelectorType.HasFlag(SelectorType.Class))
-                    {
-                        key = "." + selector.Class;
-                        removeSelectorType=SelectorType.Class;
-                    }
-
-#else
                     // We don't want to use the index for "NotEquals" selectors because a missing attribute
                     // is considered a valid match
                     
@@ -218,7 +234,6 @@ namespace CsQuery.Engine
                         key.Add(HtmlData.TokenizeCaseSensitive(selector.Class));
                         removeSelectorType=SelectorType.Class;
                     }
-#endif
                 }
 
                 // If part of the selector was indexed, key will not be empty. Return initial set from the
@@ -231,35 +246,23 @@ namespace CsQuery.Engine
                     // This is the main index access point: if we have an index key, we'll get as much as we can from the index.
                     // Anything else will be handled manually.
 
-                    int depth = 0;
-                    bool descendants = true;
-                    
-                    switch (selector.TraversalType)
-                    {
-                        case TraversalType.Child:
-                            depth = selector.ChildDepth;
-                            descendants = false;
-                            break;
-                        case TraversalType.Filter:
-                        case TraversalType.Adjacent:
-                        case TraversalType.Sibling:
-                            depth = 0;
-                            descendants = false;
-                            break;
-                        case TraversalType.Descendent:
-                            depth = 1;
-                            descendants = true;
-                            break;
-                        // default: fall through with default values set above.
-                    }
+                  
        
                     if (selectionSource == null)
                     {
-                        var subKey = key.Concat(HtmlData.indexSeparator);
-                        result = Document.DocumentIndex.QueryIndex(
-                            subKey.ToArray(), 
-                            depth, 
-                            descendants);
+                        if (indexMode == IndexMode.Subselect)
+                        {
+                            var subKey = key.Concat(HtmlData.indexSeparator).ToArray();
+                            result= ((IDomIndexRanged)Document.DocumentIndex).QueryIndex(
+                                    subKey,
+                                    depth,
+                                    descendants);
+                        }
+                        else
+                        {
+                            result = Document.DocumentIndex.QueryIndex(key.ToArray());
+                        }
+
                     }
                     else
                     {
@@ -268,10 +271,12 @@ namespace CsQuery.Engine
                         
                         foreach (IDomObject obj in selectionSource)
                         {
-                            var subKey = key.Concat(HtmlData.indexSeparator).Concat(obj.NodePath);
 
-                            elementMatches.AddRange(Document.DocumentIndex.QueryIndex(subKey.ToArray(),
-                                    depth, descendants));
+                            var subKey = key.Concat(HtmlData.indexSeparator).Concat(obj.NodePath);
+                            var matches = ((IDomIndexRanged)Document.DocumentIndex).QueryIndex(subKey.ToArray(),
+                                    depth, descendants);
+
+                            elementMatches.AddRange(matches);
                         }
                     }
 

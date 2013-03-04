@@ -46,7 +46,12 @@ namespace CsQuery.Engine
                     AddToIndex(child);
                 }
             }
-
+            
+            foreach (var key in element.IndexKeys())
+            {
+                AddToIndex(key, element);
+            }
+            
         }
 
          
@@ -63,20 +68,37 @@ namespace CsQuery.Engine
 
         public void AddToIndex(ushort[] key, IDomIndexedNode element)
         {
-         //   Index.Add(key,element.IndexKeysRanged());
-     
+            HashSet<IDomObject> existing;
+            if (!Index.TryGetValue(key, out existing))
+            {
+                existing = new HashSet<IDomObject>();
+                existing.Add(element.IndexReference);
+                Index.Add(key, existing);
+            }
+            else
+            {
+                existing.Add(element.IndexReference);
+            }
         }
+
         /// <summary>
         /// Remove an element from the index using its key.
         /// </summary>
         ///
         /// <param name="key">
-        /// The key to remove
+        /// The key to remove.
+        /// </param>
+        /// <param name="element">
+        /// The element to remove.
         /// </param>
 
-        public void RemoveFromIndex(ushort[] key)
+        public void RemoveFromIndex(ushort[] key, IDomIndexedNode element)
         {
-            Index.Remove(key);
+            HashSet<IDomObject> existing;
+            if (Index.TryGetValue(key, out existing))
+            {
+                existing.Remove(element.IndexReference);
+            }
         }
 
         /// <summary>
@@ -102,7 +124,7 @@ namespace CsQuery.Engine
 
             foreach (ushort[] key in element.IndexKeys())
             {
-                RemoveFromIndex(key);
+                RemoveFromIndex(key,element);
             }
         }
 
@@ -147,79 +169,10 @@ namespace CsQuery.Engine
             get
             {
                 throw new NotImplementedException();
-                //return SelectorXref.Count;
             }
         }
 
-        /// <summary>
-        /// Add an element to the index using a specified index key.
-        /// </summary>
-        ///
-        /// <param name="key">
-        /// The key
-        /// </param>
-        /// <param name="element">
-        /// The element target
-        /// </param>
-
-        private void QueueAddToIndex(ushort[] key, IDomIndexedNode element)
-        {
-            //if (QueueChanges)
-            //{
-              
-            //    PendingIndexChanges.Enqueue(new IndexOperation
-            //    {
-            //        Key = key,
-            //        Value = element.IndexReference,
-            //        IndexOperationType = IndexOperationType.Add
-            //    });
-            //}
-            //else
-            //{
-            //    SelectorXref.Add(key, element.IndexReference);
-            //}
-        }
-        private void QueueRemoveFromIndex(ushort[] key)
-        {
-            //if (QueueChanges)
-            //{
-
-            //    PendingIndexChanges.Enqueue(new IndexOperation
-            //    {
-            //        Key = key,
-            //        IndexOperationType = IndexOperationType.Remove
-            //    });
-            //}
-            //else
-            //{
-            //    SelectorXref.Remove(key);
-            //}
-        }
-
-        private void ProcessQueue()
-        {
-            //if (_PendingIndexChanges == null)
-            //{
-            //    return;
-            //}
-
-            //while (PendingIndexChanges.Count > 0)
-            //{
-            //    var item = PendingIndexChanges.Dequeue();
-
-            //    switch (item.IndexOperationType)
-            //    {
-            //        case IndexOperationType.Add:
-            //            SelectorXref.Add(item.Key, item.Value);
-            //            break;
-            //        case IndexOperationType.Remove:
-            //            bool changed = false;
-
-            //            SelectorXref.Remove(item.Key);
-            //            break;
-            //    }
-            //}
-        }
+     
 
     }
 }

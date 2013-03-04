@@ -57,6 +57,19 @@ namespace CsQuery.Implementation
         {
         }
 
+        /// <summary>
+        /// Create a new DomFragment using the provided DomIndex instance.
+        /// </summary>
+        ///
+        /// <param name="domIndex">
+        /// A DomIndex provider
+        /// </param>
+
+        public DomFragment(IDomIndex domIndex)
+            : base(domIndex)
+        {
+            
+        }
 
         /// <summary>
         /// Gets the type of the node. For DomFragment objects, this is always NodeType.DOCUMENT_FRAGMENT_NODE.

@@ -88,6 +88,12 @@
              The pseudo PseudoSelectors configuration object.
              </value>
         </member>
+        <member name="P:CsQuery.Config.GetDomIndexProvider">
+            <summary>
+            Factory that returns an instace of the indexer used when creating documents. CsQuery understands objects that implement
+            IDomIndex and IDomIndexRanged.
+            </summary>
+        </member>
         <member name="T:CsQuery.StartupOptions">
             <summary>
             Flags for specifying initial configuration behavior of CsQuery.
@@ -6124,6 +6130,13 @@
             used for internal purposes.
             </summary>
         </member>
+        <member name="P:CsQuery.IDomObject.NodePathID">
+            <summary>
+            Gets the identifier of this node in the index. This isn't used right now in the index. It is
+            intended that this will become distinct from Index so the index can be sparse (e.g. we don't
+            have to reindex when removing things)
+            </summary>
+        </member>
         <member name="P:CsQuery.IDomObject.NodePath">
             <summary>
             Gets the full pathname of the node file.
@@ -7292,15 +7305,6 @@
             An marker and interface exposing properties required for a node that should be indexed
             </summary>
         </member>
-        <member name="M:CsQuery.IDomIndexedNode.IndexKeysRanged">
-             <summary>
-             A sequence of all the index keys that can be used to access this object
-             </summary>
-            
-             <returns>
-             An sequence of strings
-             </returns>
-        </member>
         <member name="M:CsQuery.IDomIndexedNode.IndexKeys">
              <summary>
              Enumerates index keys in this collection.
@@ -7429,16 +7433,6 @@
              <summary>
              Index keys for this collection. This method returns keys without path information, they are
              only for use with a non-ranged index.
-             </summary>
-            
-             <returns>
-             An enumerator that allows foreach to be used to process index keys in this collection.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.IndexKeysRanged">
-             <summary>
-             Returns all the keys that should be in the index for this item (keys for class, tag,
-             attributes, and id)
              </summary>
             
              <returns>
@@ -7880,76 +7874,6 @@
             
              <returns>
              true if default value, false if not.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.Char,System.UInt16)">
-             <summary>
-             Index key.
-             </summary>
-            
-             <param name="prefix">
-             The prefix.
-             </param>
-             <param name="keyTokenId">
-             Identifier for the key token.
-             </param>
-            
-             <returns>
-             A string
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.Char,System.String)">
-             <summary>
-             Index key.
-             </summary>
-            
-             <param name="prefix">
-             The prefix.
-             </param>
-             <param name="key">
-             The key.
-             </param>
-            
-             <returns>
-             A string
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.Char,System.String,System.UInt16[])">
-             <summary>
-             Index key.
-             </summary>
-            
-             <param name="prefix">
-             The prefix.
-             </param>
-             <param name="key">
-             The key.
-             </param>
-             <param name="path">
-             Full pathname of the file.
-             </param>
-            
-             <returns>
-             .
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.IndexKey(System.Char,System.UInt16,System.UInt16[])">
-             <summary>
-             Generates a key that will be used to refernece this item in the index
-             </summary>
-            
-             <param name="prefix">
-             The prefix.
-             </param>
-             <param name="keyTokenId">
-             Identifier for the key token.
-             </param>
-             <param name="path">
-             Full path to the element.
-             </param>
-            
-             <returns>
-             A string representing the key for this item in the index
              </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.DescendantElements">
@@ -9778,19 +9702,6 @@
             Interface for a DOM index. Defines methods to add and remove items from the index, and query the index.
             </summary>
         </member>
-        <member name="M:CsQuery.IDomIndex.AddToIndex(System.UInt16[],CsQuery.IDomIndexedNode)">
-             <summary>
-             Adds an element to the index.
-             </summary>
-            
-             <param name="key">
-             The index key. This should be a unique path to the element in the Document tree. The format
-             is determined by environmental settings. This is for internal use.
-             </param>
-             <param name="element">
-             The element.
-             </param>
-        </member>
         <member name="M:CsQuery.IDomIndex.AddToIndex(CsQuery.IDomIndexedNode)">
              <summary>
              Adds an element to the index.
@@ -9800,14 +9711,16 @@
              The element.
              </param>
         </member>
-        <member name="M:CsQuery.IDomIndex.RemoveFromIndex(System.UInt16[])">
+        <member name="M:CsQuery.IDomIndex.AddToIndex(System.UInt16[],CsQuery.IDomIndexedNode)">
              <summary>
-             Removes an element from the index
+             Adds an element to the index for the specified key.
              </summary>
             
              <param name="key">
-             The index key. This should be a unique path to the element in the Document tree. The format
-             is determined by environmental settings. This is for internal use.
+             The key.
+             </param>
+             <param name="element">
+             The element.
              </param>
         </member>
         <member name="M:CsQuery.IDomIndex.RemoveFromIndex(CsQuery.IDomIndexedNode)">
@@ -9815,6 +9728,18 @@
              Removes an element from the index.
              </summary>
             
+             <param name="element">
+             The element.
+             </param>
+        </member>
+        <member name="M:CsQuery.IDomIndex.RemoveFromIndex(System.UInt16[],CsQuery.IDomIndexedNode)">
+             <summary>
+             Removes a key from the index
+             </summary>
+            
+             <param name="key">
+             The key.
+             </param>
              <param name="element">
              The element.
              </param>
@@ -9872,13 +9797,16 @@
              The element to add.
              </param>
         </member>
-        <member name="M:CsQuery.Engine.DomIndex.RemoveFromIndex(System.UInt16[])">
+        <member name="M:CsQuery.Engine.DomIndex.RemoveFromIndex(System.UInt16[],CsQuery.IDomIndexedNode)">
              <summary>
              Remove an element from the index using its key.
              </summary>
             
              <param name="key">
-             The key to remove
+             The key to remove.
+             </param>
+             <param name="element">
+             The element to remove.
              </param>
         </member>
         <member name="M:CsQuery.Engine.DomIndex.RemoveFromIndex(CsQuery.IDomIndexedNode)">
@@ -9907,18 +9835,6 @@
             <summary>
             Clears this object to its blank/initial state.
             </summary>
-        </member>
-        <member name="M:CsQuery.Engine.DomIndex.QueueAddToIndex(System.UInt16[],CsQuery.IDomIndexedNode)">
-             <summary>
-             Add an element to the index using a specified index key.
-             </summary>
-            
-             <param name="key">
-             The key
-             </param>
-             <param name="element">
-             The element target
-             </param>
         </member>
         <member name="P:CsQuery.Engine.DomIndex.Count">
              <summary>
@@ -9989,13 +9905,16 @@
              The element to add.
              </param>
         </member>
-        <member name="M:CsQuery.Engine.DomIndexRanged.RemoveFromIndex(System.UInt16[])">
+        <member name="M:CsQuery.Engine.DomIndexRanged.RemoveFromIndex(System.UInt16[],CsQuery.IDomIndexedNode)">
              <summary>
              Remove an element from the index using its key.
              </summary>
             
              <param name="key">
-             The key to remove
+             The key to remove.
+             </param>
+             <param name="element">
+             The element to remove; this is ignored fort IDomIndexRange because it is identified by the key.
              </param>
         </member>
         <member name="M:CsQuery.Engine.DomIndexRanged.RemoveFromIndex(CsQuery.IDomIndexedNode)">
@@ -10057,6 +9976,21 @@
              <param name="element">
              The element target
              </param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:CsQuery.Engine.DomIndexRanged.RangePath(System.UInt16[],System.UInt16[])" -->
+        <!-- Badly formed XML comment ignored for member "M:CsQuery.Engine.DomIndexRanged.RangePath(System.UInt16[],CsQuery.IDomIndexedNode)" -->
+        <member name="M:CsQuery.Engine.DomIndexRanged.RangePath(System.UInt16[])">
+             <summary>
+             Return the default selection key
+             </summary>
+            
+             <param name="path">
+             Full pathname of the file.
+             </param>
+            
+             <returns>
+             A key.
+             </returns>
         </member>
         <member name="P:CsQuery.Engine.DomIndexRanged.PendingIndexChanges">
             <summary>
@@ -22186,9 +22120,18 @@
         </member>
         <member name="M:CsQuery.Implementation.DomDocument.#ctor">
             <summary>
-            Create a new, empty DOM document
+            Create a new, empty DOM document using the default DomIndex provider.
             </summary>
             
+        </member>
+        <member name="M:CsQuery.Implementation.DomDocument.#ctor(CsQuery.IDomIndex)">
+             <summary>
+             Create a new, empty DOM document using the provided DomIndex instance
+             </summary>
+            
+             <param name="domIndex">
+             An index provider
+             </param>
         </member>
         <member name="M:CsQuery.Implementation.DomDocument.Populate(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
              <summary>
@@ -22458,65 +22401,6 @@
              options as the current object.
              </returns>
         </member>
-        <member name="M:CsQuery.Implementation.DomDocument.CsQuery#IDomIndex#AddToIndex(CsQuery.IDomIndexedNode)">
-             <summary>
-             Adds to the index.
-             </summary>
-            
-             <param name="element">
-             The element to add
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomDocument.CsQuery#IDomIndex#RemoveFromIndex(CsQuery.IDomIndexedNode)">
-             <summary>
-             Removes the element from the index
-             </summary>
-            
-             <param name="element">
-             The element to remove
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomDocument.CsQuery#IDomIndex#RemoveFromIndex(System.UInt16[])">
-             <summary>
-             Remove an element from the index using its key.
-             </summary>
-            
-             <param name="key">
-             The key to remove
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomDocument.CsQuery#IDomIndex#QueryIndex(System.UInt16[])">
-            <summary>
-            Query the document's index for a subkey
-            </summary>
-            <param name="subKey"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomDocument.CsQuery#IDomIndex#Clear">
-            <summary>
-            Clears this object to its blank/initial state.
-            </summary>
-        </member>
-        <member name="M:CsQuery.Implementation.DomDocument.CsQuery#IDomIndexRanged#QueryIndex(System.UInt16[],System.Int32,System.Boolean)">
-             <summary>
-             Query the document's index for a subkey up to a specific depth, optionally including
-             descendants that match the selector.
-             </summary>
-            
-             <param name="subKey">
-             .
-             </param>
-             <param name="depth">
-             The zero-based depth to which searches should be limited.
-             </param>
-             <param name="includeDescendants">
-             .
-             </param>
-            
-             <returns>
-             An enumerator that allows foreach to be used to process query index in this collection.
-             </returns>
-        </member>
         <member name="M:CsQuery.Implementation.DomDocument.OnlyElements(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
              <summary>
              Return a sequence of elements that excludes non-Element (e.g. Text) nodes
@@ -22642,6 +22526,15 @@
             <summary>
             Default constructor.
             </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.DomFragment.#ctor(CsQuery.IDomIndex)">
+             <summary>
+             Create a new DomFragment using the provided DomIndex instance.
+             </summary>
+            
+             <param name="domIndex">
+             A DomIndex provider
+             </param>
         </member>
         <member name="M:CsQuery.Implementation.DomFragment.CreateNew">
              <summary>
@@ -27197,7 +27090,7 @@
              The selector clause at the index specified
              </returns>
         </member>
-        <member name="P:CsQuery.Engine.Selector.IsHmtl">
+        <member name="P:CsQuery.Engine.Selector.IsHtml">
             <summary>
             Gets a value indicating whether this object is an HTML selector (e.g. it's not really a
             selector, but should return a new HTML fragment).
