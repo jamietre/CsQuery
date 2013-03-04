@@ -135,21 +135,56 @@ If you are interested in this project and want to contribute anything, let me kn
 
 ### Usage
 
-*Getting started: parse some HTML, alter it, and write it back to a string*
+*Getting started: parse some HTML, extract something, alter it, and write it back to a string*
 
-Assigning a string to a CQ object parses it automatically:
+Assigning a string to a CQ object parses it automatically into a `CQ` object. THe property indexer `['...']` runs a CSS selector,
+and returns new CQ object, like `$('...')` using jQuery. Finally, the `Render` method writes the DOM back to a string.
 
     CQ dom = "<div>Hello world! <b>I am feeling bold!</b> What about <b>you?</b></div>";
     
     
-    var bold = dom["b"];                  /// find all "b" nodes (there are two in this example)
+    string bold = dom["b"];               /// find all "b" nodes (there are two in this example)
        
     string boldText = bold.Text();        /// jQuery text method; == "I am feeling bold! you?"
     
     bold.Remove();                        /// jQuery Remove method
     
-    var html = dom.Render();              /// =="<div>Hello world! </div>
+    string html = dom.Render();           /// =="<div>Hello world! </div>
+
+There are other ways to create CQ objects, run selectors, and change the DOM. The property indexer used above can
+also be used to create HTML fragments, like the default method with jQuery. 
+
+You can also use the property indexer to like an array indexer, e.g. `dom[0]` returns the first element in your selection. (If there is one, that is! Using the LINQ method
+`dom.FirstOrDefault()` might be a better choice for many situations).
+
+Like in jQuery, each CQ object is made up of DOM elements. In CsQuery, the basic node is an `IDomObject` and is analagous to
+an HTML element or other node (like a text node or comment node). Most of the typical HTML element methods are available.
+So, using these alternatives, to obtain only the first bolded item from the example above:
+
+*use CSS to choose first node only*
+
+    string bold = dom["div > b:first-child"].Text();
     
+*use jQuery CSS filter extensions to return the first item in the selection*
+    
+    string bold = dom["b:first"].Text();
+
+*use LINQ First to get the first item, and the DOM node "InnerText" method*
+
+    string bold = dom["b"].First().InnerText;
+    
+*use indexer to get the first item, and "Select" instead of the indexer to make it more readable*
+    
+    string bold = dom.Select("b")[0].InnerText;
+    
+*Use jQuery "contents" method to return the text node children, the indexer to get the first, and the
+ DOM node "nodeValue" method to get the contents of a text node*
+    
+    string bold = dom["b"].contents()[0].NodeValue
+
+Each of these returns the same thing: "I am feeling bold!"
+
+
 ##### Creating a new DOM
 
 Complete documentation: [Create method](https://github.com/jamietre/CsQuery/blob/master/documentation/create.md)
