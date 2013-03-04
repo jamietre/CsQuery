@@ -24,6 +24,7 @@ obj
 *.suo
 *.user
 *.sln.docstates
+*.jtconfig
 
 # Build results
 [Dd]ebug/
