@@ -72,7 +72,7 @@ So, using these alternatives, to obtain only the first bolded item from the exam
 *Use jQuery "contents" method to return the text node children, the indexer to get the first, and the
  DOM node "nodeValue" method to get the contents of a text node*
     
-    string bold = dom["b"].contents()[0].NodeValue
+    string bold = dom["b"].Contents()[0].NodeValue
 
 Each of these returns the same thing: "I am feeling bold!"
 
