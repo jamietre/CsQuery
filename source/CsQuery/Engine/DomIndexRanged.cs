@@ -8,10 +8,11 @@ using CsQuery.HtmlParser;
 namespace CsQuery.Engine
 {
     /// <summary>
-    /// An index that can return a range of values
+    /// A DOM index that can return a range of values. The IDomIndexRange interface is known to the
+    /// selection engine; when availabile it will be use to optimize subqueries.
     /// </summary>
 
-    public class DomIndexRanged: IDomIndexRanged
+    public class DomIndexRanged: IDomIndex
     {
         /// <summary>
         /// Default constructor.
@@ -204,20 +205,27 @@ namespace CsQuery.Engine
         }
 
         /// <summary>
-        /// Query the document's index for a subkey.
+        /// Query the document's index.
         /// </summary>
         ///
-        /// <param name="subKey">
-        /// The subkey to match
+        /// <param name="key">
+        /// The key to seek.
         /// </param>
         ///
         /// <returns>
-        /// A sequence of all matching keys
+        /// A sequence of all elements matching the index key.
         /// </returns>
 
-        public IEnumerable<IDomObject> QueryIndex(ushort[] subKey)
+        public IEnumerable<IDomObject> QueryIndex(ushort[] key)
         {
             ProcessQueue();
+
+            ushort[] subKey = new ushort[key.Length + 1];
+            Buffer.BlockCopy(key, 0, subKey, 0, key.Length<<1);
+            
+            subKey[key.Length] = HtmlData.indexSeparator;
+
+
             return SelectorXref.GetRange(subKey);
         }
 
@@ -246,6 +254,15 @@ namespace CsQuery.Engine
                 ProcessQueue();
                 return SelectorXref.Count;
             }
+        }
+
+        /// <summary>
+        /// Returns the features that this index implements.
+        /// </summary>
+
+        public DomIndexFeatures Features
+        {
+            get { return DomIndexFeatures.Lookup | DomIndexFeatures.Range | DomIndexFeatures.Queue; }
         }
 
         /// <summary>
@@ -317,7 +334,7 @@ namespace CsQuery.Engine
         }
 
         /// <summary>
-        /// Convert a key & path to a path suitable for view selection.
+        /// Convert a key/path combination to a path suitable for view selection.
         /// </summary>
         ///
         /// <param name="key">
@@ -328,7 +345,7 @@ namespace CsQuery.Engine
         /// </param>
         ///
         /// <returns>
-        /// A key
+        /// A key.
         /// </returns>
 
         private ushort[] RangePath(ushort[] key, ushort[] path)
@@ -353,7 +370,7 @@ namespace CsQuery.Engine
         }
 
         /// <summary>
-        /// Convert a key & path to a path suitable for view selection.
+        /// Convert a key/path combination to a path suitable for view selection.
         /// </summary>
         ///
         /// <param name="key">

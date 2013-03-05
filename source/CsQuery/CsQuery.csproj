@@ -103,6 +103,7 @@
   <ItemGroup>
     <Compile Include="Config.cs" />
     <Compile Include="Config\enumStartupOptions.cs" />
+    <Compile Include="CsQueryConfig.cs" />
     <Compile Include="CQ_CsQuery\HasAttr.cs" />
     <Compile Include="CQ_CsQuery\AttrReplace.cs" />
     <Compile Include="CQ_CsQuery\Version.cs" />
@@ -205,8 +206,11 @@
     <Compile Include="Dom\Implementation\NodeList.cs" />
     <Compile Include="Dom\Implementation\HtmlElements\HTMLOptionsCollection.cs" />
     <Compile Include="Dom\HtmlElements\IHTMLSelectElement.cs" />
-    <Compile Include="Engine\DomIndex.cs" />
-    <Compile Include="Engine\IDomIndexRanged.cs" />
+    <Compile Include="Engine\DomIndexNone.cs" />
+    <Compile Include="Engine\DomIndexProviders.cs" />
+    <Compile Include="Engine\DomIndexSimple.cs" />
+    <Compile Include="Engine\enumDomIndexFeatures.cs" />
+    <Compile Include="Engine\IDomIndexProvider.cs" />
     <Compile Include="Engine\DomIndexRanged.cs" />
     <Compile Include="Engine\IDomIndex.cs" />
     <Compile Include="Dom\IDomObjectT.cs" />
@@ -530,7 +534,7 @@ xcopy $(TargetDir)CsQuery.xml $(SolutionDir)..\Distribution /Y
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="False" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="False" />
+      <UserProperties BuildVersion_UpdateFileVersion="False" BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UseGlobalSettings="False" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

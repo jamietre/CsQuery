@@ -830,8 +830,7 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Index keys for this collection. This method returns keys without path information, they are
-        /// only for use with a non-ranged index.
+        /// Index keys for this collection.
         /// </summary>
         ///
         /// <returns>
@@ -875,65 +874,6 @@ namespace CsQuery.Implementation
             }
         }
 
-
-
-        /// <summary>
-        /// Returns all the keys that should be in the index for this item (keys for class, tag,
-        /// attributes, and id)
-        /// </summary>
-        ///
-        /// <returns>
-        /// An enumerator that allows foreach to be used to process index keys in this collection.
-        /// </returns>
-
-        //public override IEnumerable<ushort[]> IndexKeysRanged()
-        //{
-
-        //    ushort[] path = NodePath;
-
-        //    ushort[] output = new ushort[path.Length + 1];
-        //    output[0] = HtmlData.indexSeparator;
-
-        //    for (int i = 0; i < path.Length; i++)
-        //    {
-        //        output[i + 1] = path[i];
-        //    }
-
-        //    yield return output;
-
-        //    yield return IndexKey('+',_NodeNameID, path);
-
-        //    string id = Id;
-            
-        //    if (!String.IsNullOrEmpty(id))
-        //    {
-        //        yield return IndexKey('#', HtmlData.TokenizeCaseSensitive(id), path);
-        //    }
-
-        //    if (HasClasses)
-        //    {
-        //        foreach (ushort clsId in _Classes)
-        //        {
-        //            yield return IndexKey('.', clsId, path);
-        //        }
-        //    }
-
-        //    // index attributes
-
-        //    if (HasClasses)
-        //    {
-        //        yield return IndexKey('!', HtmlData.ClassAttrId, path);
-        //    }
-        //    if (HasStyles)
-        //    {
-        //        yield return IndexKey('!', HtmlData.tagSTYLE, path);
-        //    }
-
-        //    foreach (ushort token in IndexAttributesTokens())
-        //    {
-        //        yield return IndexKey('!', token, path); ;
-        //    }
-        //}
 
         /// <summary>
         /// Makes a deep copy of this object.
@@ -1151,10 +1091,10 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <param name="tokenId">
-        /// .
+        /// The token ID of the attribute
         /// </param>
         /// <param name="value">
-        /// .
+        /// The value to set
         /// </param>
 
         protected void SetAttribute(ushort tokenId, string value)
@@ -1343,11 +1283,11 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <param name="name">
-        /// .
+        /// The name of the attribute
         /// </param>
         ///
         /// <returns>
-        /// The attribute.
+        /// The attribute value, or null if the attribute is missing.
         /// </returns>
 
         public override string GetAttribute(string name)
@@ -1362,11 +1302,11 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <param name="tokenId">
-        /// .
+        /// The token ID of the attribute
         /// </param>
         ///
         /// <returns>
-        /// The attribute.
+        /// The attribute value.
         /// </returns>
 
         internal string GetAttribute(ushort tokenId)
@@ -1383,11 +1323,11 @@ namespace CsQuery.Implementation
         /// The attribute name.
         /// </param>
         /// <param name="defaultValue">
-        /// .
+        /// The value to return if the attribute is missing.
         /// </param>
         ///
         /// <returns>
-        /// The attribute.
+        /// The attribute value.
         /// </returns>
 
         public override string GetAttribute(string name, string defaultValue)
@@ -1401,10 +1341,10 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <param name="tokenId">
-        /// .
+        /// The token ID of the attribute.
         /// </param>
         /// <param name="defaultValue">
-        /// .
+        /// The value to return if the attribute is missing.
         /// </param>
         ///
         /// <returns>
@@ -1429,18 +1369,18 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Try get attribute.
+        /// Try get an attribute value.
         /// </summary>
         ///
         /// <param name="tokenId">
-        /// .
+        /// The token ID of the attribute
         /// </param>
         /// <param name="value">
-        /// .
+        /// The value of the attribute
         /// </param>
         ///
         /// <returns>
-        /// true if it succeeds, false if it fails.
+        /// true if the attribute exists, false if not
         /// </returns>
 
         public bool TryGetAttribute(ushort tokenId, out string value)
@@ -1463,18 +1403,18 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Try get attribute.
+        /// Try to get attribute value by name.
         /// </summary>
         ///
         /// <param name="name">
-        /// .
+        /// The attribute name
         /// </param>
         /// <param name="value">
-        /// .
+        /// The attribute value
         /// </param>
         ///
         /// <returns>
-        /// true if it succeeds, false if it fails.
+        /// true if the attribute exists, false if not
         /// </returns>
 
         public override bool TryGetAttribute(string name, out string value)
@@ -1498,11 +1438,12 @@ namespace CsQuery.Implementation
         // ICSSStyleDeclations
 
         /// <summary>
-        /// Add a single style in the form "styleName: value".
+        /// Add a single style in the form "styleName: value", validating that the style is known and the
+        /// value is in the correct format for that style.
         /// </summary>
         ///
         /// <param name="style">
-        /// .
+        /// The style.
         /// </param>
 
         public override void AddStyle(string style)
@@ -1515,10 +1456,11 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <param name="style">
-        /// .
+        /// The style.
         /// </param>
         /// <param name="strict">
-        /// true to strict.
+        /// When true, CSS syntax checking is enforced. If the style is unknown or the value is not of
+        /// the correct format, an error will be thrown.
         /// </param>
 
         public override void AddStyle(string style, bool strict)
@@ -1527,15 +1469,15 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Removes the style described by name.
+        /// Removes the named style from the "styles" property of this element.
         /// </summary>
         ///
         /// <param name="name">
-        /// .
+        /// The name of the style to remove.
         /// </param>
         ///
         /// <returns>
-        /// true if it succeeds, false if it fails.
+        /// true if the style was present, false if not.
         /// </returns>
 
         public override bool RemoveStyle(string name)
@@ -1544,7 +1486,7 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Sets the styles.
+        /// Sets the style property to the s
         /// </summary>
         ///
         /// <param name="styles">
@@ -1557,83 +1499,21 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Sets the styles.
+        /// Sets the style property from a string of style definitions separated by semicolons, e.g.
+        /// "style1: value; style2: value;".
         /// </summary>
         ///
         /// <param name="styles">
         /// The styles.
         /// </param>
         /// <param name="strict">
-        /// true to strict.
+        /// When true, CSS syntax checking is enforced. If the style is unknown or the value is not of
+        /// the correct format, an error will be thrown.
         /// </param>
 
         public void SetStyles(string styles, bool strict)
         {
             Style.SetStyles(styles, strict);
-        }
-
-        /// <summary>
-        /// Sets a style.
-        /// </summary>
-        ///
-        /// <exception cref="NotImplementedException">
-        /// Thrown when the requested operation is unimplemented.
-        /// </exception>
-        ///
-        /// <param name="name">
-        /// .
-        /// </param>
-        /// <param name="value">
-        /// .
-        /// </param>
-
-        public void SetStyle(string name, string value)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Sets a style.
-        /// </summary>
-        ///
-        /// <exception cref="NotImplementedException">
-        /// Thrown when the requested operation is unimplemented.
-        /// </exception>
-        ///
-        /// <param name="name">
-        /// .
-        /// </param>
-        /// <param name="value">
-        /// .
-        /// </param>
-        /// <param name="strict">
-        /// true to strict.
-        /// </param>
-
-        public void SetStyle(string name, string value, bool strict)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Gets a style.
-        /// </summary>
-        ///
-        /// <exception cref="NotImplementedException">
-        /// Thrown when the requested operation is unimplemented.
-        /// </exception>
-        ///
-        /// <param name="name">
-        /// .
-        /// </param>
-        ///
-        /// <returns>
-        /// The style.
-        /// </returns>
-
-        public string GetStyle(string name)
-        {
-            throw new NotImplementedException();
         }
 
         #endregion
@@ -1766,109 +1646,6 @@ namespace CsQuery.Implementation
         {
             return NodeNameID == HtmlData.tagINPUT || NodeNameID == HtmlData.tagTEXTAREA;
         }
-
-        /// <summary>
-        /// Index key.
-        /// </summary>
-        ///
-        /// <param name="prefix">
-        /// The prefix.
-        /// </param>
-        /// <param name="keyTokenId">
-        /// Identifier for the key token.
-        /// </param>
-        ///
-        /// <returns>
-        /// A string
-        /// </returns>
-
-        //protected ushort[] IndexKey(char prefix, ushort keyTokenId)
-        //{
-        //    return IndexKey(prefix, keyTokenId, NodePath);
-        //}
-
-        /// <summary>
-        /// Index key.
-        /// </summary>
-        ///
-        /// <param name="prefix">
-        /// The prefix.
-        /// </param>
-        /// <param name="key">
-        /// The key.
-        /// </param>
-        ///
-        /// <returns>
-        /// A string
-        /// </returns>
-
-        //protected ushort[] IndexKey(char prefix, string key)
-        //{
-        //    return IndexKey(prefix, key, NodePath);
-        //}
-
-        /// <summary>
-        /// Index key.
-        /// </summary>
-        ///
-        /// <param name="prefix">
-        /// The prefix.
-        /// </param>
-        /// <param name="key">
-        /// The key.
-        /// </param>
-        /// <param name="path">
-        /// Full pathname of the file.
-        /// </param>
-        ///
-        /// <returns>
-        /// .
-        /// </returns>
-
-        //protected ushort[] IndexKey(char prefix, string key, ushort[] path)
-        //{
-        //    return IndexKey(prefix, HtmlData.Tokenize(key), path);
-        //}
-
-        /// <summary>
-        /// Generates a key that will be used to refernece this item in the index
-        /// </summary>
-        ///
-        /// <param name="prefix">
-        /// The prefix.
-        /// </param>
-        /// <param name="keyTokenId">
-        /// Identifier for the key token.
-        /// </param>
-        /// <param name="path">
-        /// Full path to the element.
-        /// </param>
-        ///
-        /// <returns>
-        /// A string representing the key for this item in the index
-        /// </returns>
-
-//        protected ushort[] IndexKey(char prefix, ushort keyTokenId, ushort[] path)
-//        {
-//#if DEBUG_PATH
-//            return prefix + HtmlData.TokenName(keyTokenId) + HtmlData.indexSeparator + path;
-//#else
-//            ushort[] key = new ushort[path.Length + 3];
-//            key[0] = (ushort)prefix;
-//            key[1] = keyTokenId;
-//            key[2] = HtmlData.indexSeparator;
-
-//            //Buffer.BlockCopy(path, 0, key, 6, path.Length * 2);
-
-//            int len = path.Length;
-//            for (int i = 0; i < len; i++)
-//            {
-//                key[i + 3] = path[i];
-//            }
-//            return key;
-//#endif
-//        }
-
         
         #endregion
 

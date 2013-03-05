@@ -90,11 +90,7 @@ namespace CsQuery.Implementation
             get 
             {
                 foreach (var item in Keys)
-                {
-#if DEBUG_PATH
-                    yield return item;
-#else
-                   
+                {  
                     string humanReadableKey = "";
                     int startIndex = 1;
                     if (!item[0].Equals( IndexSeparator))
@@ -113,7 +109,6 @@ namespace CsQuery.Implementation
                         }
                     }
                     yield return humanReadableKey;
-#endif
                 }
             } 
         }

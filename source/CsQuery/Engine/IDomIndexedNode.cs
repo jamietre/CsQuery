@@ -11,15 +11,6 @@ namespace CsQuery
     
     public interface IDomIndexedNode: IDomNode
     {
-        /// <summary>
-        /// A sequence of all the index keys that can be used to access this object
-        /// </summary>
-        ///
-        /// <returns>
-        /// An sequence of strings
-        /// </returns>
-
-        //IEnumerable<ushort[]> IndexKeysRanged();
 
         /// <summary>
         /// Enumerates index keys in this collection.

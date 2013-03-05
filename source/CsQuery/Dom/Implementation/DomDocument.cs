@@ -162,7 +162,7 @@ namespace CsQuery.Implementation
         public DomDocument(IDomIndex domIndex)
             : base()
         {
-            _DomIndex = domIndex ?? CsQuery.Config.GetDomIndexProvider();
+            _DomIndex = domIndex ?? CsQuery.Config.DomIndexProvider.GetDomIndex();
         }
 
         /// <summary>
@@ -809,7 +809,6 @@ namespace CsQuery.Implementation
             IDomDocument newDoc;
             if (typeof(T) == typeof(IDomDocument))
             {
-                //newDoc = new DomDocument(elements);
                 newDoc = DomDocument.Create(elements, HtmlParsingMode.Document);
 
             }

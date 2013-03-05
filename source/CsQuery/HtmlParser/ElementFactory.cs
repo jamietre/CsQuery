@@ -9,6 +9,7 @@ using CsQuery.Implementation;
 using CsQuery.Utility;
 using CsQuery.StringScanner;
 using CsQuery.HtmlParser;
+using CsQuery.Engine;
 using HtmlParserSharp;
 
 namespace CsQuery.HtmlParser
@@ -30,6 +31,26 @@ namespace CsQuery.HtmlParser
             ConfigureDefaultContextMap();
         }
 
+        /// <summary>
+        /// Default constructor, creates a factory with the default DomIndexProvider
+        /// </summary>
+
+        public ElementFactory(): this(Config.DomIndexProvider) 
+        {
+        }
+
+        /// <summary>
+        /// Creates a factory using the DomIndexProvider passed by parameter
+        /// </summary>
+        ///
+        /// <param name="domIndexProvider">
+        /// The DomIndexProvider that will be used when creating new DomDocument objects from this factory.
+        /// </param>
+
+        public ElementFactory(IDomIndexProvider domIndexProvider)
+        {
+            DomIndexProvider = domIndexProvider;
+        }
 
         #endregion
 
@@ -76,6 +97,7 @@ namespace CsQuery.HtmlParser
         {
             return new ElementFactory();
         }
+
         private static ElementFactory GetNewParser(HtmlParsingMode parsingMode, HtmlParsingOptions parsingOptions, DocType docType)
         {
             var parser = new ElementFactory();
@@ -83,7 +105,7 @@ namespace CsQuery.HtmlParser
             parser.DocType = GetDocType(docType);
             parser.HtmlParsingOptions = MergeOptions(parsingOptions);
             return parser;
-       }
+        }
 
 
         #endregion
@@ -105,6 +127,7 @@ namespace CsQuery.HtmlParser
 
         private static IDictionary<string, string> DefaultContext;
         private Tokenizer tokenizer;
+        private IDomIndexProvider DomIndexProvider;
         private CsQueryTreeBuilder treeBuilder;
 
         private enum ReEncodeAction
@@ -375,9 +398,9 @@ namespace CsQuery.HtmlParser
 
             // set this before returning document to the client to improve performance during DOM alteration
 
-            if (treeBuilder.Document.DocumentIndex is IDomIndexRanged)
+            if (treeBuilder.Document.DocumentIndex.Features.HasFlag(DomIndexFeatures.Queue))
             {
-                ((IDomIndexRanged)treeBuilder.Document.DocumentIndex).QueueChanges = true;
+                treeBuilder.Document.DocumentIndex.QueueChanges = true;
             }
             
 
@@ -517,7 +540,7 @@ namespace CsQuery.HtmlParser
 
         private void InitializeTreeBuilder()
         {
-            treeBuilder = new CsQueryTreeBuilder();
+            treeBuilder = new CsQueryTreeBuilder(DomIndexProvider);
 
             treeBuilder.NamePolicy = XmlViolationPolicy.Allow;
             treeBuilder.WantsComments = !HtmlParsingOptions.HasFlag(HtmlParsingOptions.IgnoreComments);

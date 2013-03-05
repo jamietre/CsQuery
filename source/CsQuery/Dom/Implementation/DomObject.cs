@@ -424,26 +424,6 @@ namespace CsQuery.Implementation
             }
         }
 
-        
-#if DEBUG_PATH
-        /// <summary>
-        /// Unique ID assigned when added to a dom. This is not the full path but just the ID at this
-        /// level. The full path is never stored with each node to prevent having to regenerate if node
-        /// trees are moved.
-        /// </summary>
-        /// 
-        public virtual string PathID
-        {
-            get
-            {
-                // Don't actually store paths with non-element nodes as they aren't indexed and don't have children.
-                // Fast read access is less important than not having to reset them when moved.
-
-                return HtmlParser.HtmlData.BaseXXEncode(Index);
-            }
-        }
-
-#else
 
         /// <summary>
         /// Gets a unique ID for this element among its siblings. THIS METHOD IS OBSOLETE. It has been replaced by NodePath.
@@ -461,9 +441,6 @@ namespace CsQuery.Implementation
             }
         }
 
-
-#endif
-
         
         /// <summary>
         /// Gets the depth of the current node.
@@ -473,11 +450,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-#if DEBUG_PATH
-                return ParentNode==null ? 0 : ParentNode.Depth + 1;
-#else
                 return GetDepth();
-#endif
             }
 
         }

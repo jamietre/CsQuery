@@ -8,53 +8,32 @@ using CsQuery.HtmlParser;
 namespace CsQuery.Engine
 {
     /// <summary>
-    /// DOM index that only stores the index target. This will perform much better than the ranged
-    /// index for dom construction &amp; manipulation, but worse for complex queries.
-    /// 
-    /// TODO: Work in progress/
+    /// Simple implementation of DOM index that only stores a reference to the index target. This
+    /// will perform much better than the ranged index for dom construction &amp; manipulation, but
+    /// worse for complex queries.
     /// </summary>
 
-    public class DomIndex: IDomIndex
+    public class DomIndexNone: IDomIndex
     {
         /// <summary>
         /// Default constructor for the index
         /// </summary>
 
-        public DomIndex()
+        public DomIndexNone()
         {
-            Index = new Dictionary<ushort[], ICollection<IDomObject>>(PathKeyComparer.Comparer);
-        }
-
-        private IDictionary<ushort[], ICollection<IDomObject>> Index;
-
-        private ICollection<IDomObject> GetElementSet() {
-            return new List<IDomObject>();
         }
 
         /// <summary>
-        /// Add an element to the index using the default keys for this element.
+        /// Adds an element to the index.
         /// </summary>
         ///
         /// <param name="element">
-        /// The element to add
+        /// The element to add.
         /// </param>
 
         public void AddToIndex(IDomIndexedNode element)
         {
-
-            if (element.HasChildren)
-            {
-                foreach (DomElement child in ((IDomContainer)element).ChildElements)
-                {
-                    AddToIndex(child);
-                }
-            }
-            
-            foreach (var key in element.IndexKeys())
-            {
-                AddToIndex(key, element);
-            }
-            
+            return;
         }
 
          
@@ -71,17 +50,7 @@ namespace CsQuery.Engine
 
         public void AddToIndex(ushort[] key, IDomIndexedNode element)
         {
-            ICollection<IDomObject> existing;
-            if (!Index.TryGetValue(key, out existing))
-            {
-                existing = GetElementSet();
-                existing.Add(element.IndexReference);
-                Index.Add(key, existing);
-            }
-            else
-            {
-                existing.Add(element.IndexReference);
-            }
+            return;
         }
 
         /// <summary>
@@ -97,11 +66,7 @@ namespace CsQuery.Engine
 
         public void RemoveFromIndex(ushort[] key, IDomIndexedNode element)
         {
-            ICollection<IDomObject> existing;
-            if (Index.TryGetValue(key, out existing))
-            {
-                existing.Remove(element.IndexReference);
-            }
+            return;
         }
 
         /// <summary>
@@ -114,21 +79,7 @@ namespace CsQuery.Engine
 
         public void RemoveFromIndex(IDomIndexedNode element)
         {
-            if (element.HasChildren)
-            {
-                foreach (IDomElement child in ((IDomContainer)element).ChildElements)
-                {
-                    if (child.IsIndexed)
-                    {
-                        RemoveFromIndex(child);
-                    }
-                }
-            }
-
-            foreach (ushort[] key in element.IndexKeys())
-            {
-                RemoveFromIndex(key,element);
-            }
+            return;
         }
 
         /// <summary>
@@ -145,22 +96,42 @@ namespace CsQuery.Engine
 
         public IEnumerable<IDomObject> QueryIndex(ushort[] subKey)
         {
-            ICollection<IDomObject> existing;
-            if (Index.TryGetValue(subKey, out existing))
-            {
-                return existing.OrderBy(item => item);
-
-            }
-            return Enumerable.Empty<IDomObject>();
+            throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Queries the index, returning all matching elements.
+        /// </summary>
+        ///
+        /// <exception cref="NotImplementedException">
+        /// Thrown when the requested operation is unimplemented.
+        /// </exception>
+        ///
+        /// <param name="subKey">
+        /// The subkey to match.
+        /// </param>
+        /// <param name="depth">
+        /// The depth.
+        /// </param>
+        /// <param name="includeDescendants">
+        /// true to include, false to exclude the descendants.
+        /// </param>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process query index in this collection.
+        /// </returns>
+
+        public IEnumerable<IDomObject> QueryIndex(ushort[] subKey, int depth, bool includeDescendants)
+        {
+            throw new NotImplementedException();
+        }
         /// <summary>
         /// Clears this object to its blank/initial state.
         /// </summary>
 
         public void Clear()
         {
-            Index.Clear();
+            return;
         }
 
         /// <summary>
@@ -175,11 +146,35 @@ namespace CsQuery.Engine
         {
             get
             {
-                return Index.Count;
+                return 0;
             }
         }
 
-     
+        /// <summary>
+        /// Returns the features that this index implements.
+        /// </summary>
 
+        public DomIndexFeatures Features
+        {
+            get { return 0; }
+        }
+
+        /// <summary>
+        /// When true, changes are queued until the next read operation. For the DomIndexNone provider, this is always false.
+        /// </summary>
+
+        public bool QueueChanges
+        {
+            get
+            {
+                return false;
+            }
+            set
+            {
+                return;
+            }
+        }
+
+ 
     }
 }

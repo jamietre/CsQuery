@@ -7,6 +7,7 @@ using HtmlParserSharp.Common;
 using HtmlParserSharp.Core;
 using CsQuery;
 using CsQuery.Implementation;
+using CsQuery.Engine;
 
 namespace CsQuery.HtmlParser
 {
@@ -15,11 +16,34 @@ namespace CsQuery.HtmlParser
     /// </summary>
     public class CsQueryTreeBuilder : CoalescingTreeBuilder<DomObject>
     {
-        
         /// <summary>
-        /// The current doc.
+        /// Constructor; requires a DomDocument object to populate.
         /// </summary>
-        private DomDocument document;
+        ///
+        /// <param name="domIndexProvider">
+        /// The DomIndexProvider that provides instances of DomIndex objects that determine the indexing
+        /// strategy for new documents.
+        /// </param>
+
+        public CsQueryTreeBuilder(IDomIndexProvider domIndexProvider)
+            : base()
+        {
+            DomIndexProvider = domIndexProvider;
+        }
+
+
+        /// <summary>
+        /// Returns the document.
+        /// </summary>
+        ///
+        /// <value>
+        /// The document.
+        /// </value>
+
+        internal DomDocument Document;
+
+
+        private IDomIndexProvider DomIndexProvider;
 
         /// <summary>
         /// This is a fragment
@@ -69,7 +93,7 @@ namespace CsQuery.HtmlParser
                 lastChild.NodeValue += text;
                 
             } else {
-                lastChild = document.CreateTextNode(text);
+                lastChild = Document.CreateTextNode(text);
                 parent.AppendChildUnsafe(lastChild);
             }
         }
@@ -111,9 +135,9 @@ namespace CsQuery.HtmlParser
 
         protected override void AppendDoctypeToDocument(string name, string publicIdentifier, string systemIdentifier)
         {
-            var doctype = document.CreateDocumentType(name,publicIdentifier,systemIdentifier);
+            var doctype = Document.CreateDocumentType(name,publicIdentifier,systemIdentifier);
 
-            document.AppendChildUnsafe(doctype);
+            Document.AppendChildUnsafe(doctype);
         }
 
         /// <summary>
@@ -142,7 +166,7 @@ namespace CsQuery.HtmlParser
 
         override protected void AppendCommentToDocument(String comment)
         {
-            document.AppendChildUnsafe(document.CreateComment(comment));
+            Document.AppendChildUnsafe(Document.CreateComment(comment));
         }
 
         /// <summary>
@@ -202,12 +226,12 @@ namespace CsQuery.HtmlParser
                     string attributeName = AttributeName(attributes.GetLocalName(i), attributes.GetURI(i));
                     rv.SetAttribute(attributeName, attributes.GetValue(i));
                 }
-                document.AppendChildUnsafe(rv);
+                Document.AppendChildUnsafe(rv);
                 return rv;
             }
             else
             {
-                return document;
+                return Document;
             }
         }
 
@@ -284,16 +308,19 @@ namespace CsQuery.HtmlParser
         override protected void Start(bool fragment)
         {
             isFragment = fragment;
-            document = fragment ?
-                new DomFragment() :
-                new DomDocument();
+            if (Document == null)
+            {
+                Document = fragment ?
+                    new DomFragment(DomIndexProvider.GetDomIndex()) :
+                    new DomDocument(DomIndexProvider.GetDomIndex());
+            }
 
             // don't do this while creating the document; while this improves performance when working
             // interactively it would add overhead now. 
 
-            if (document.DocumentIndex is IDomIndexRanged)
+            if (Document.DocumentIndex.Features.HasFlag(DomIndexFeatures.Queue))
             {
-                ((IDomIndexRanged)document.DocumentIndex).QueueChanges = false;
+                Document.DocumentIndex.QueueChanges = false;
             }
         }
 
@@ -320,21 +347,6 @@ namespace CsQuery.HtmlParser
             //document.setUserData("nu.validator.document-mode", mode, null); // TODO
         }
 
-        /// <summary>
-        /// Returns the document.
-        /// </summary>
-        ///
-        /// <value>
-        /// The document.
-        /// </value>
-
-        internal IDomDocument Document
-        {
-            get
-            {
-                return document;
-            }
-        }
 
         /// <summary>
         /// Inserts foster parented characters.
@@ -364,7 +376,7 @@ namespace CsQuery.HtmlParser
                     lastAsText.NodeValue += text;
                     return;
                 }
-                parent.InsertBefore(document.CreateTextNode(text), table);
+                parent.InsertBefore(Document.CreateTextNode(text), table);
                 return;
             }
             // fall through
@@ -377,7 +389,7 @@ namespace CsQuery.HtmlParser
             }
             else
             {
-                stackParent.AppendChildUnsafe(document.CreateTextNode(text));
+                stackParent.AppendChildUnsafe(Document.CreateTextNode(text));
             }
         }
 

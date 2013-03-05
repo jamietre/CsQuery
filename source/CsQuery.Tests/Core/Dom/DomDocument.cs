@@ -11,6 +11,7 @@ using CsQuery.EquationParser;
 using CsQuery.EquationParser.Implementation;
 using CsQuery.EquationParser.Implementation.Functions;
 using CsQuery.Implementation;
+using CsQuery.Engine;
 
 namespace CsQuery.Tests.Core.Dom
 {
@@ -26,7 +27,15 @@ namespace CsQuery.Tests.Core.Dom
             DomDocument concreteFrag = (DomDocument)frag[0].Document;
             Assert.IsFalse(concreteFrag.IsDisconnected);
             Assert.IsTrue(concreteFrag.IsIndexed);
-            Assert.AreNotEqual(0, ((IDomIndex)concreteFrag.DocumentIndex).Count);
+            var index = concreteFrag.DocumentIndex;
+            if (index.Features.HasFlag(DomIndexFeatures.Lookup) || index.Features.HasFlag(DomIndexFeatures.Range))
+            {
+                Assert.AreNotEqual(0, index.Count);
+            }
+            else
+            {
+                Assert.AreEqual(0, index.Count);
+            }
         }
 
         [Test, TestMethod]

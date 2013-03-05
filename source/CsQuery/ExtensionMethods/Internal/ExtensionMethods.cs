@@ -8,8 +8,10 @@ using System.Dynamic;
 using System.Text;
 using System.Reflection;
 using System.Diagnostics;
+using System.IO;
 using CsQuery;
 using CsQuery.StringScanner;
+using CsQuery.Utility;
 
 namespace CsQuery.ExtensionMethods.Internal
 {
@@ -220,6 +222,26 @@ namespace CsQuery.ExtensionMethods.Internal
         #endregion
 
         #region string methods
+
+        /// <summary>
+        /// Convert a string to a stream.
+        /// </summary>
+        ///
+        /// <param name="input">
+        /// The input to act on.
+        /// </param>
+        /// <param name="encoding">
+        /// (optional) the encoding of the stream. Defaults to UTF8
+        /// </param>
+        ///
+        /// <returns>
+        /// input as a Stream.
+        /// </returns>
+
+        public static Stream ToStream(this string input, Encoding encoding = null) {
+            encoding = encoding ?? new UTF8Encoding(false);
+            return Support.GetEncodedStream(input ?? "", encoding);
+        }
 
         ///<summary>
         /// Converts a character array to a string.

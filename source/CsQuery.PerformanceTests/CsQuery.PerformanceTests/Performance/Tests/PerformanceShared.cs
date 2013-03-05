@@ -10,6 +10,10 @@ using HtmlAgilityPack;
 using Fizzler.Systems.HtmlAgilityPack;
 using System.Diagnostics;
 using CsQuery.EquationParser;
+using CsQuery.Engine;
+using CsQuery.Implementation;
+using CsQuery.HtmlParser;
+using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.PerformanceTests.Tests
 {
@@ -45,19 +49,57 @@ namespace CsQuery.PerformanceTests.Tests
 
             var html = Support.GetFile(Program.ResourceDirectory+"\\"+DocName+".htm");
             
-            Action csq = new Action(() =>
+            Action csq1 = new Action(() =>
             {
-                var csqDoc = CQ.Create(html);
+                var factory = new ElementFactory(DomIndexProviders.None);
+                
+                using (var stream = html.ToStream()) {
+                    var document = factory.Parse(stream,Encoding.UTF8);
+                    var csqDoc = CQ.Create(document);
+                }
+                
                 //var test = csqDoc["*"].Count();
             });
 
+            Action csq2 = new Action(() =>
+            {
+                var factory = new ElementFactory(DomIndexProviders.Simple);
+
+                using (var stream = html.ToStream())
+                {
+                    var document = factory.Parse(stream, Encoding.UTF8);
+                    var csqDoc = CQ.Create(document);
+                }
+
+                //var test = csqDoc["*"].Count();
+            });
+            Action csq3 = new Action(() =>
+            {
+                var factory = new ElementFactory(DomIndexProviders.Ranged);
+
+                using (var stream = html.ToStream())
+                {
+                    var document = factory.Parse(stream, Encoding.UTF8);
+                    var csqDoc = CQ.Create(document);
+                }
+
+                //var test = csqDoc["*"].Count();
+            });
             Action hap = new Action(() =>
             {
                 var hapDoc = new HtmlDocument();
                 hapDoc.LoadHtml(html);
                 //var test = hapDoc.DocumentNode.QuerySelectorAll("*").Count();
             });
-            Compare(csq, hap, "Create DOM from html");
+
+            IDictionary<string,Action> tests = new Dictionary<string,Action>();
+
+            tests.Add("No Index (CsQuery)", csq1);
+            tests.Add("Simple Index (CsQuery)",csq2);
+            tests.Add("Ranged Index (CsQuery)",csq3);
+            tests.Add("HAP",hap);
+
+            Compare(tests, "Create DOM from html");
 
         }
 

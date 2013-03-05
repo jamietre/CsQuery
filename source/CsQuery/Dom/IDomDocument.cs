@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using CsQuery.Utility;
 using CsQuery.HtmlParser;
+using CsQuery.Engine;
 
 namespace CsQuery
 {

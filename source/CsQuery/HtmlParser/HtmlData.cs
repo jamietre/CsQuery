@@ -19,14 +19,6 @@ namespace CsQuery.HtmlParser
     {
         #region constants and data
 
-        // when false, will use binary data for the character set
-
-#if DEBUG_PATH
-        public static bool Debug = true;
-        public const int pathIdLength = 3;
-        public const char indexSeparator = '>';
-#else
-
         /// <summary>
         /// Indicates whether this has been compiled in debug mode. When true, DOM index paths will be
         /// stored internally in extended human-readable format.
@@ -52,8 +44,6 @@ namespace CsQuery.HtmlParser
         
         //public const char indexSeparator = (char)1;
         public const ushort indexSeparator = 65535;
-#endif
-
 
         // Hardcode some tokens to improve performance when referring to them often
 
@@ -416,13 +406,6 @@ namespace CsQuery.HtmlParser
 
         private static string defaultPadding;
 
-        // The character set used to generate path IDs
-        // For production use, this is replaced with a string of all ansi characters
-
-        private static char[] baseXXchars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".ToArray();
-        private static int encodingLength; // set in constructor
-        private static int maxPathIndex;
-
         // This will be a lookup table where each value contains binary flags indicating what
         // properties are true for that value. We fix a size that's at an even binary boundary
         // so we can mask it for fast comparisons. If the number of tags with data exceeded 64
@@ -446,21 +429,11 @@ namespace CsQuery.HtmlParser
             // values. You'd be hard pressed to exceed this limit (65k for a single level) on one single web page. 
             // (Famous last words right?)
 
-#if !DEBUG_PATH
-            baseXXchars = new char[65533];
-            for (ushort i = 0; i < 65533; i++)
-            {
-                baseXXchars[i] = (char)(i + 2);
-            }
-#endif
-
-            encodingLength = baseXXchars.Length;
             defaultPadding = "";
             for (int i = 1; i < pathIdLength; i++)
             {
                 defaultPadding = defaultPadding + "0";
             }
-            maxPathIndex = (int)Math.Pow(encodingLength, pathIdLength) - 1;
 
             MustBeQuotedAll = new char[CharacterData.charsHtmlSpaceArray.Length + MustBeQuoted.Length];
             MustBeQuoted.CopyTo(MustBeQuotedAll, 0);
@@ -996,52 +969,6 @@ namespace CsQuery.HtmlParser
         public static string TokenName(ushort tokenId)
         {
             return tokenId <= 0 ? "" : Tokens[tokenId - 2];
-        }
-
-        /// <summary>
-        /// Encode to base XX (defined in constants)
-        /// </summary>
-        ///
-        /// <exception cref="OverflowException">
-        /// Thrown when an arithmetic overflow occurs.
-        /// </exception>
-        ///
-        /// <param name="number">
-        /// The number to baseXX encode
-        /// </param>
-        ///
-        /// <returns>
-        /// A baseXX encoded string 
-        /// </returns>
-
-        public static string BaseXXEncode(int number)
-        {
-
-            // optimize for small numbers - this should mostly eliminate the ineffieciency of base62
-            // encoding while giving benefits for storage space
-
-            if (number < encodingLength)
-            {
-                return defaultPadding + baseXXchars[number];
-            }
-
-            if (number > maxPathIndex)
-            {
-                throw new OverflowException("Maximum number of child nodes (" + maxPathIndex + ") exceeded.");
-            }
-            string sc_result = "";
-            int num_to_encode = number;
-            int i = 0;
-            do
-            {
-                i++;
-                sc_result = baseXXchars[(num_to_encode % encodingLength)] + sc_result;
-                num_to_encode = ((num_to_encode - (num_to_encode % encodingLength)) / encodingLength);
-
-            }
-            while (num_to_encode != 0);
-
-            return sc_result.PadLeft(pathIdLength, '0');
         }
 
         /// <summary>

@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using CsQuery.ExtensionMethods;
 using CsQuery.HtmlParser;
+using CsQuery.Engine;
 
 namespace CsQuery.Implementation
 {

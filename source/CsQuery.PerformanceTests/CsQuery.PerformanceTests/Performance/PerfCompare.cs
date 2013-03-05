@@ -10,6 +10,9 @@ using HtmlAgilityPack;
 using Fizzler.Systems.HtmlAgilityPack;
 using System.Diagnostics;
 using CsQuery.EquationParser;
+using CsQuery.Engine;
+using CsQuery.HtmlParser;
+using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.PerformanceTests
 {
@@ -17,7 +20,9 @@ namespace CsQuery.PerformanceTests
     public class PerfCompare
     {
         public string Context { get; set; }
-        public CQ CsqueryDocument { get; set; }
+        public CQ CsqueryDocument_Simple { get; set; }
+        public CQ CsqueryDocument_Ranged { get; set; }
+        public CQ CsqueryDocument_NoIndex { get; set; }
         public HtmlDocument HapDocument { get; set; }
         public TimeSpan MaxTestTime { get; set; }
         
@@ -28,7 +33,30 @@ namespace CsQuery.PerformanceTests
         public void LoadBoth(string doc)
         {
             var html = Support.GetFile(Program.ResourceDirectory+"\\"+doc+".htm");
-            CsqueryDocument = CQ.Create(html);
+
+            var factory = new ElementFactory(DomIndexProviders.Simple);
+
+            using (var stream = html.ToStream())
+            {
+                var document = factory.Parse(stream, Encoding.UTF8);
+                CsqueryDocument_Simple = CQ.Create(document);
+            }
+
+            factory = new ElementFactory(DomIndexProviders.Ranged);
+
+            using (var stream = html.ToStream())
+            {
+                var document = factory.Parse(stream, Encoding.UTF8);
+                CsqueryDocument_Ranged= CQ.Create(document);
+            }
+
+            factory = new ElementFactory(DomIndexProviders.None);
+
+            using (var stream = html.ToStream())
+            {
+                var document = factory.Parse(stream, Encoding.UTF8);
+                CsqueryDocument_NoIndex = CQ.Create(document);
+            }
 
             HapDocument = new HtmlDocument();
             HapDocument.LoadHtml(html);
@@ -36,7 +64,8 @@ namespace CsQuery.PerformanceTests
 
         public PerfComparison Compare(string selector)
         {
-            int cqCount = CsqueryDocument[selector].Length;
+            int cqCount = CsqueryDocument_Simple[selector].Length;
+            
             int hapCount=0;
             try
             {
@@ -56,9 +85,19 @@ namespace CsQuery.PerformanceTests
             // use Count() for both to ensure that all results are retrieved (e.g. if the engine is lazy)
 
             string testName = "CSS selector: { " + selector + " }";
-            Action csq = new Action(() =>
+            Action csq1 = new Action(() =>
             {
-                int csqLength = CsqueryDocument[selector].Count();
+                int csqLength = CsqueryDocument_NoIndex[selector].Count(); 
+            });
+
+            Action csq2 = new Action(() =>
+            {
+                int csqLength = CsqueryDocument_Simple[selector].Count(); 
+            });
+
+            Action csq3 = new Action(() =>
+            {
+                int csqLength = CsqueryDocument_Ranged[selector].Count();
             });
 
             Action hap = new Action(() =>
@@ -66,13 +105,19 @@ namespace CsQuery.PerformanceTests
                 int hapLength = HapDocument.DocumentNode.QuerySelectorAll(selector).Count();
             });
 
-            var results = Compare(csq, hap, testName,description);
+            IDictionary<string, Action> actions = new Dictionary<string, Action>();
+            actions.Add("No Index (CsQuery)", csq1);
+            actions.Add("Simple Index (CsQuery)", csq2);
+            actions.Add("Ranged Index (CsQuery)", csq3);
+            actions.Add("HAP", hap);
+
+            var results = Compare(actions, testName, description);
             results.SameResults = same;
             results.Context = Context;
             return results;
         }
 
-        public PerfComparison Compare(Action action1, Action action2, 
+        public PerfComparison Compare(IEnumerable<KeyValuePair<string,Action>> actions, 
             string testName,
             string description="")
         {
@@ -82,14 +127,15 @@ namespace CsQuery.PerformanceTests
             var maxTime = MaxTestTime;
             DateTime start = DateTime.Now;
 
-            var csqPerf = Test(action1, maxTime, "CsQuery");
-            var hapPerf = Test(action2, maxTime, "Fizzler");
-
             comparison.TestName = testName;
             comparison.Description = description;
 
-            comparison.Data.Add(csqPerf);
-            comparison.Data.Add(hapPerf);
+            foreach (var item in actions)
+            {
+                var perf = Test(item.Value, maxTime, item.Key);
+                comparison.Data.Add(perf);
+            }
+
             comparison.SameResults = true;
 
             return comparison;

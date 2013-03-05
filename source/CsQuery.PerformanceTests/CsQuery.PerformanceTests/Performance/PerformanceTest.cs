@@ -87,12 +87,12 @@ namespace CsQuery.PerformanceTests
             var comp = PerfCompare.Compare(selector);
             Output(comp);
         }
-        protected void Compare(Action action1, Action action2,
+        protected void Compare(IEnumerable<KeyValuePair<string,Action>> actions,
             string testName,
             string description = "")
         {
             GC.Collect();
-            var comp = PerfCompare.Compare(action1,action2,testName,description);
+            var comp = PerfCompare.Compare(actions, testName, description);
             Output(comp);
         }
 

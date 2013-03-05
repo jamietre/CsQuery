@@ -116,7 +116,7 @@ namespace CsQuery.Engine
             // or if the first element is not indexed, or the context is not from the same
             // document as this selector is bound.
 
-            IndexMode indexMode;
+            
             bool useIndex;
             if (context.IsNullOrEmpty()) {
                 useIndex = true;
@@ -125,11 +125,11 @@ namespace CsQuery.Engine
                 useIndex = !first.IsDisconnected && first.IsIndexed && first.Document==Document;
             }
 
-            indexMode = !useIndex ?
-                IndexMode.None :
-                Document.DocumentIndex is IDomIndexRanged ?
-                    IndexMode.Subselect :
-                    IndexMode.Basic;
+            // determine which index features can be used for this query
+            
+            DomIndexFeatures features = !useIndex ?
+                0 :
+                Document.DocumentIndex.Features;
 
             for (activeSelectorId = 0; activeSelectorId < ActiveSelectors.Count; activeSelectorId++)
             {
@@ -195,8 +195,8 @@ namespace CsQuery.Engine
 
                 // build index keys when possible for the active index type
 
-                if ((indexMode == IndexMode.Subselect ||
-                    (indexMode == IndexMode.Basic && canUseBasicIndex))
+                if ((features.HasFlag(DomIndexFeatures.Range) ||
+                    (features.HasFlag(DomIndexFeatures.Lookup) && canUseBasicIndex))
                     && !selector.NoIndex)
                 {
 
@@ -252,19 +252,11 @@ namespace CsQuery.Engine
        
                     if (selectionSource == null)
                     {
-                        if (indexMode == IndexMode.Subselect)
-                        {
-                            var subKey = key.Concat(HtmlData.indexSeparator).ToArray();
-                            result= ((IDomIndexRanged)Document.DocumentIndex).QueryIndex(
-                                    subKey,
-                                    depth,
-                                    descendants);
-                        }
-                        else
-                        {
-                            result = Document.DocumentIndex.QueryIndex(key.ToArray());
-                        }
-
+                        // we don't need to test for index features at this point; if canUseBasicIndex = false and we
+                        // are here, then the prior logic dictates that the ranged index is available. But always use
+                        // the simple index if that's all we need because it could be faster. 
+                        
+                        result = Document.DocumentIndex.QueryIndex(key.ToArray());
                     }
                     else
                     {
@@ -274,9 +266,9 @@ namespace CsQuery.Engine
                         foreach (IDomObject obj in selectionSource)
                         {
 
-                            var subKey = key.Concat(HtmlData.indexSeparator).Concat(obj.NodePath);
-                            var matches = ((IDomIndexRanged)Document.DocumentIndex).QueryIndex(subKey.ToArray(),
-                                    depth, descendants);
+                            var subKey = key.Concat(HtmlData.indexSeparator).Concat(obj.NodePath).ToArray();
+                            
+                            var matches = Document.DocumentIndex.QueryIndex(subKey,depth, descendants);
 
                             elementMatches.AddRange(matches);
                         }
