@@ -11,7 +11,7 @@ namespace CsQuery
     /// Interface for a node. This is the most generic construct in the CsQuery DOM.
     /// </summary>
 
-    public interface IDomNode : ICloneable 
+    public interface IDomNode : ICloneable
     {
         /// <summary>
         /// Gets the type of the node.

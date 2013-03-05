@@ -1780,8 +1780,25 @@ namespace CsQuery.Implementation
          {
              return Clone();
          }
+         /// <summary>
+         /// Compares this IDomObject object to another to determine their relative ordering.
+         /// </summary>
+         ///
+         /// <param name="other">
+         /// Another instance to compare.
+         /// </param>
+         ///
+         /// <returns>
+         /// Negative if this object is less than the other, 0 if they are equal, or positive if this is
+         /// greater.
+         /// </returns>
 
+         public int CompareTo(IDomObject other)
+         {
+             return PathKeyComparer.Comparer.Compare(NodePath, other.NodePath);
+         }
         #endregion
-        
+
+         
     }
 }

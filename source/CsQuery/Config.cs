@@ -61,7 +61,7 @@ namespace CsQuery
             return OutputFormatters.Create(DomRenderingOptions, HtmlEncoder);
         }
 
-        private static IDomIndexRanged GetDefaultDomIndexProvider()
+        private static IDomIndex GetDefaultDomIndexProvider()
         {
             return new DomIndexRanged();
         }

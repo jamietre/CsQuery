@@ -22,11 +22,14 @@ namespace CsQuery.Engine
 
         public DomIndex()
         {
-            Index = new Dictionary<ushort[], HashSet<IDomObject>>(PathKeyComparer.Comparer);
+            Index = new Dictionary<ushort[], ICollection<IDomObject>>(PathKeyComparer.Comparer);
         }
 
-        private IDictionary<ushort[], HashSet<IDomObject>> Index;
+        private IDictionary<ushort[], ICollection<IDomObject>> Index;
 
+        private ICollection<IDomObject> GetElementSet() {
+            return new List<IDomObject>();
+        }
 
         /// <summary>
         /// Add an element to the index using the default keys for this element.
@@ -68,10 +71,10 @@ namespace CsQuery.Engine
 
         public void AddToIndex(ushort[] key, IDomIndexedNode element)
         {
-            HashSet<IDomObject> existing;
+            ICollection<IDomObject> existing;
             if (!Index.TryGetValue(key, out existing))
             {
-                existing = new HashSet<IDomObject>();
+                existing = GetElementSet();
                 existing.Add(element.IndexReference);
                 Index.Add(key, existing);
             }
@@ -94,7 +97,7 @@ namespace CsQuery.Engine
 
         public void RemoveFromIndex(ushort[] key, IDomIndexedNode element)
         {
-            HashSet<IDomObject> existing;
+            ICollection<IDomObject> existing;
             if (Index.TryGetValue(key, out existing))
             {
                 existing.Remove(element.IndexReference);
@@ -142,8 +145,13 @@ namespace CsQuery.Engine
 
         public IEnumerable<IDomObject> QueryIndex(ushort[] subKey)
         {
-            throw new NotImplementedException();
-            //return SelectorXref.GetRange(subKey);
+            ICollection<IDomObject> existing;
+            if (Index.TryGetValue(subKey, out existing))
+            {
+                return existing.OrderBy(item => item);
+
+            }
+            return Enumerable.Empty<IDomObject>();
         }
 
         /// <summary>
@@ -152,8 +160,7 @@ namespace CsQuery.Engine
 
         public void Clear()
         {
-            //SelectorXref.Clear();
-            //_PendingIndexChanges = null;
+            Index.Clear();
         }
 
         /// <summary>
@@ -168,7 +175,7 @@ namespace CsQuery.Engine
         {
             get
             {
-                throw new NotImplementedException();
+                return Index.Count;
             }
         }
 

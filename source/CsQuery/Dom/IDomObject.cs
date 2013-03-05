@@ -17,7 +17,7 @@ namespace CsQuery
     /// some javascript code actually uses this in logic we allow the same kind of access. It also eliminates the
     /// need to cast frequently, for example, when accessing the results of a jQuery object by index.
     /// </summary>
-    public interface IDomObject : IDomNode
+    public interface IDomObject : IDomNode, IComparable<IDomObject>
     {
         // To simulate the way the real DOM works, most properties/methods of things directly in the DOM
         // are part of a common interface, even if they do not apply.

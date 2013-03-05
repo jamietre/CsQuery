@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace CsQuery.Implementation
 {
@@ -110,7 +111,22 @@ namespace CsQuery.Implementation
 
         public bool Equals(ushort[] x, ushort[] y)
         {
-            return x.Length == y.Length && CompareEqualLength(x, y);
+            int len = x.Length;
+
+            if (len != y.Length)
+            {
+                return false;
+            }
+
+            while (len-->0)
+            {
+                if (x[len] != y[len])
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>

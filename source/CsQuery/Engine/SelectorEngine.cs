@@ -117,17 +117,19 @@ namespace CsQuery.Engine
             // document as this selector is bound.
 
             IndexMode indexMode;
+            bool useIndex;
             if (context.IsNullOrEmpty()) {
-                indexMode = IndexMode.None;
+                useIndex = true;
             } else {
                 IDomObject first = context.First();
-                bool useIndex = !first.IsDisconnected && first.IsIndexed && first.Document==Document;
-                indexMode = !useIndex ?
-                    IndexMode.None :
-                    Document.DocumentIndex is IDomIndexRanged ?
-                        IndexMode.Subselect :
-                        IndexMode.Basic;
+                useIndex = !first.IsDisconnected && first.IsIndexed && first.Document==Document;
             }
+
+            indexMode = !useIndex ?
+                IndexMode.None :
+                Document.DocumentIndex is IDomIndexRanged ?
+                    IndexMode.Subselect :
+                    IndexMode.Basic;
 
             for (activeSelectorId = 0; activeSelectorId < ActiveSelectors.Count; activeSelectorId++)
             {
@@ -292,30 +294,7 @@ namespace CsQuery.Engine
                     }
                     
                 }
-                else if (selector.SelectorType.HasFlag(SelectorType.Elements))
-                {
-                    HashSet<IDomObject> elementMatches = new HashSet<IDomObject>();
-                    result = elementMatches;
-                    foreach (IDomObject obj in GetAllChildOrDescendants(selector.TraversalType,selectionSource))
-                    {
-
-
-                        var subKey = new ushort[] { HtmlData.indexSeparator }.Concat(obj.NodePath);
-
-                        HashSet<IDomObject> srcKeys = new HashSet<IDomObject>(Document.DocumentIndex.QueryIndex(
-                            subKey.ToArray()));
-
-                        foreach (IDomObject match in selector.SelectElements)
-                        {
-                            if (srcKeys.Contains(match))
-                            {
-                                elementMatches.Add(match);
-                            }
-                        }
-                    }
-
-                    selector.SelectorType &= ~SelectorType.Elements;
-                }
+             
 
                 // If any selectors were not handled via the index, match them manually
                 
@@ -432,7 +411,7 @@ namespace CsQuery.Engine
         /// Adjacent or Sibling selector) is already processed.
         /// </summary>
         ///
-        /// <param name="list">
+        /// <param name="source">
         /// The sequence of elements to filter.
         /// </param>
         /// <param name="selector">
@@ -443,7 +422,7 @@ namespace CsQuery.Engine
         /// The sequence of elements matching the selector.
         /// </returns>
 
-        protected IEnumerable<IDomObject> GetMatches(IEnumerable<IDomObject> list, SelectorClause selector)
+        protected IEnumerable<IDomObject> GetMatches(IEnumerable<IDomObject> source, SelectorClause selector)
         {
             // Maintain a hashset of every element already searched. Since result sets frequently contain items which are
             // children of other items in the list, we would end up searching the tree repeatedly
@@ -456,7 +435,7 @@ namespace CsQuery.Engine
 
             // The source list for the current iteration
 
-            IEnumerable<IDomObject> curList = list;
+            IEnumerable<IDomObject> curList = source;
             
             // the results obtained so far in this iteration
 
@@ -467,10 +446,18 @@ namespace CsQuery.Engine
             uniqueElements = new HashSet<IDomObject>();
 
 
+            if (selector.SelectorType.HasFlag(SelectorType.Elements))
+            {
+
+                var set = GetAllChildOrDescendants(selector.TraversalType, source);
+
+                return set.Intersect(selector.SelectElements);
+            }
+
             // For the jQuery extensions (which are mapped to the position in the output, not the DOM) we have to enumerate
             // the results first, rather than targeting specific child elements. Handle it here,
 
-            if (selector.SelectorType.HasFlag(SelectorType.PseudoClass))
+            else if (selector.SelectorType.HasFlag(SelectorType.PseudoClass))
             {
                 if (selector.IsResultListPosition) {
                     return GetResultPositionMatches(curList, selector);
@@ -724,18 +711,6 @@ namespace CsQuery.Engine
 
         #region private methods
 
-        //private ushort[] CombineKeys(ushort[] list1, ushort[] list2)
-        //{
-        //    int start = list1.Length;
-        //    ushort[] subKey = new ushort[start + list2.Length];
-        //    list1.CopyTo(subKey, 0);
-            
-        //    for (int i = 0; i < list2.Length; i++)
-        //    {
-        //        subKey[i + start] = list2[i];
-        //    }
-        //    return subKey;
-        //}
         private IEnumerable<IDomObject> EmptyEnumerable()
         {
             yield break;
@@ -744,9 +719,18 @@ namespace CsQuery.Engine
         /// <summary>
         /// Map a list to its siblings or adjacent elements if needed. Ignore other traversal types.
         /// </summary>
-        /// <param name="traversalType"></param>
-        /// <param name="list"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="traversalType">
+        /// The traversal type
+        /// </param>
+        /// <param name="list">
+        /// The source list
+        /// </param>
+        ///
+        /// <returns>
+        /// Sequence of adjacent or sibling elements.
+        /// </returns>
+
         protected IEnumerable<IDomObject> GetAdjacentOrSiblings(TraversalType traversalType, IEnumerable<IDomObject> list)
         {
             IEnumerable<IDomObject> sourceList;

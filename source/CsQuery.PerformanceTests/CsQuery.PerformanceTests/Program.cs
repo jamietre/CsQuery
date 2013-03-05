@@ -46,7 +46,7 @@ namespace CsQuery.PerformanceTests
                 PerformanceShared test = (PerformanceShared)Objects.CreateInstance(type);
                 test.LoadingDom();
                 test.Miscellanous();
-                test.IDSelectors();
+               test.IDSelectors();
                 test.AttributeSelectors();
                 test.SubSelectors();
                 test.NthChild();
