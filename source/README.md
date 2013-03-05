@@ -10,13 +10,52 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 #### Version 1.3.5
 
+**Bug fixes**
+
 - [Issue #82](https://github.com/jamietre/CsQuery/issues/82) `DomObject.Text` property not returning correct text when nested text nodes are present
-- Index not being updated correctly for some node
+- Index not being updated correctly for some node removals
 
-Some performance improvements:
+**Pperformance improvements**
 
-- Performance improvements in HTML parser
-- Defer index updates until next query, meaning index will not have to be rebuilt following DOM changes unless needed.
+- HTML Parser: Optimize some constructs held over from C origins for C#/.NET 
+- Decouple index implementation from the `Document` and `ElementFactory` classes to permit alternate implementations
+- Implement `IDomIndexProvider` interface to add a service locator for the index implementation.
+- Implement `DomIndexNone`, `DomIndexSimple` and `DomIndexRanged` index implementations to permit different strategies to optimize performance. `DomIndexSimple` can cut DOM construction time almost in half with some sacrifice in complex selector performance.
+- In `DomIndexRanged`, defer index updates until next query, meaning index will not have to be rebuilt following DOM changes unless needed.
+
+To configure the default index provider, change `Config.DomIndexProvider`:
+
+*Use the default index - subselect capable, slowest build time*
+
+    Config.DomIndexProvider = DomIndexProviders.Ranged;
+
+*Use the new lookup-only index: fast build time, extremely fast for simple global selectors.*
+
+    Config.DomIndexProvider = DomIndexProviders.Simple;
+
+*Disable the index completely: fastests build, slow selectors. Probably a bad choice except for performance testing*
+
+    Config.DomIndexProvider = DomIndexProviders.None;
+
+*Use an index provider other than the default*
+
+It's possible to do this, although there's no way to directly pass a `DomIndexProvider` when creating a new `CQ` object using the public API. However, it's fairly straightfoward to use `ElementFactory` directly to build a  new `CQ` object with an alternate strategy:
+
+    var factory = new ElementFactory(DomIndexProviders.Simple);
+
+    CQ dom;
+    using (var stream = html.ToStream())
+    {
+        var document = factory.Parse(stream, Encoding.UTF8);
+        dom = CQ.Create(document);
+    }
+
+`ToStream` is a `string` extension method defined in `CsQuery.ExtensionMethods.Internal` which converts a string to a UTF8 stream. If you intended to create documents often using different indexing strategies within the same application, this could be wrapped as an extension method easily.
+
+
+**Other changes**
+
+- Add `CsQueryConfig` class to encapsulate configurations. Static `Config` class now implements an instance of `CsQueryConfig`.
 
 #### Version 1.3.4
 

@@ -31,7 +31,7 @@ namespace CsQuery
             HtmlEncoder = HtmlEncoders.Basic;
             DocType = DocType.HTML5;
             GetOutputFormatter = GetDefaultOutputFormatter;
-            DomIndexProvider = DomIndexProviders.None ;
+            DomIndexProvider = DomIndexProviders.Ranged;
 
         }
 
