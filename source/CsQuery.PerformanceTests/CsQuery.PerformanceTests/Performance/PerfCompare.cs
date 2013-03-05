@@ -106,10 +106,22 @@ namespace CsQuery.PerformanceTests
             });
 
             IDictionary<string, Action> actions = new Dictionary<string, Action>();
-            actions.Add("No Index (CsQuery)", csq1);
-            actions.Add("Simple Index (CsQuery)", csq2);
-            actions.Add("Ranged Index (CsQuery)", csq3);
-            actions.Add("HAP", hap);
+            if (Program.IncludeTests.HasFlag(TestMethods.CsQuery_NoIndex))
+            {
+                actions.Add("No Index (CsQuery)", csq1);
+            }
+            if (Program.IncludeTests.HasFlag(TestMethods.CsQuery_SimpleIndex))
+            {
+                actions.Add("Simple Index (CsQuery)", csq2);
+            }
+            if (Program.IncludeTests.HasFlag(TestMethods.CsQuery_RangedIndex))
+            {
+                actions.Add("Ranged Index (CsQuery)", csq3);
+            }
+            if (Program.IncludeTests.HasFlag(TestMethods.HAP))
+            {
+                actions.Add("HAP", hap);
+            }
 
             var results = Compare(actions, testName, description);
             results.SameResults = same;

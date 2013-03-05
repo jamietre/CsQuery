@@ -20,6 +20,7 @@ namespace CsQuery.PerformanceTests.Tests
     
     public abstract class PerformanceShared : PerformanceTest
     {
+        
         protected abstract string DocName {get;}
        
         protected abstract string DocDescription { get; }
@@ -57,8 +58,7 @@ namespace CsQuery.PerformanceTests.Tests
                     var document = factory.Parse(stream,Encoding.UTF8);
                     var csqDoc = CQ.Create(document);
                 }
-                
-                //var test = csqDoc["*"].Count();
+
             });
 
             Action csq2 = new Action(() =>
@@ -71,7 +71,6 @@ namespace CsQuery.PerformanceTests.Tests
                     var csqDoc = CQ.Create(document);
                 }
 
-                //var test = csqDoc["*"].Count();
             });
             Action csq3 = new Action(() =>
             {
@@ -89,15 +88,24 @@ namespace CsQuery.PerformanceTests.Tests
             {
                 var hapDoc = new HtmlDocument();
                 hapDoc.LoadHtml(html);
-                //var test = hapDoc.DocumentNode.QuerySelectorAll("*").Count();
             });
 
             IDictionary<string,Action> tests = new Dictionary<string,Action>();
 
-            tests.Add("No Index (CsQuery)", csq1);
-            tests.Add("Simple Index (CsQuery)",csq2);
-            tests.Add("Ranged Index (CsQuery)",csq3);
-            tests.Add("HAP",hap);
+            if (Program.IncludeTests.HasFlag(TestMethods.CsQuery_NoIndex)) {
+                tests.Add("No Index (CsQuery)", csq1);
+            }
+            if (Program.IncludeTests.HasFlag(TestMethods.CsQuery_SimpleIndex)) {
+                tests.Add("Simple Index (CsQuery)",csq2);
+            }
+            if (Program.IncludeTests.HasFlag(TestMethods.CsQuery_RangedIndex))
+            {
+                tests.Add("Ranged Index (CsQuery)", csq3);
+            }
+            if (Program.IncludeTests.HasFlag(TestMethods.HAP))
+            {
+                tests.Add("HAP", hap);
+            }
 
             Compare(tests, "Create DOM from html");
 

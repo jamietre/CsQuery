@@ -13,8 +13,24 @@ namespace CsQuery.PerformanceTests
     /// Fizzler. Will produce results in txt and csv files in the "Output" subfolder.
     /// </summary>
 
+    [Flags]
+    public enum TestMethods
+    {
+        CsQuery_NoIndex = 1,
+        CsQuery_SimpleIndex = 2,
+        CsQuery_RangedIndex = 4,
+        HAP = 8
+    }
+
     public class Program
     {
+        public static TestMethods IncludeTests
+        {
+            get
+            {
+                return TestMethods.CsQuery_SimpleIndex | TestMethods.HAP;
+            }
+        }
         public static string OutputDirectory;
         public static string ResourceDirectory;
 
