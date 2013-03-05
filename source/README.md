@@ -8,14 +8,14 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ### Change Log
 
-#### Version 1.3.5
+#### Version 1.3.5 (prerelease)
 
 **Bug fixes**
 
 - [Issue #82](https://github.com/jamietre/CsQuery/issues/82) `DomObject.Text` property not returning correct text when nested text nodes are present
 - Index not being updated correctly for some node removals
 
-**Pperformance improvements**
+**Performance improvements**
 
 - HTML Parser: Optimize some constructs held over from C origins for C#/.NET 
 - Decouple index implementation from the `Document` and `ElementFactory` classes to permit alternate implementations
