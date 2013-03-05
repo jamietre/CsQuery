@@ -9,24 +9,20 @@
             Global configuration and defaults
             </summary>
         </member>
-        <member name="F:CsQuery.Config._DynamicObjectType">
-            <summary>
-            Internal to avoid Obsolete warning from DomRenderingOptions until we remove it
-            </summary>
-        </member>
-        <member name="M:CsQuery.Config.GetDefaultOutputFormatter">
-             <summary>
-             Creates an OutputFormatter using the default options &amp; encoder.
-             </summary>
-            
-             <returns>
-             The default output formatter.
-             </returns>
-        </member>
         <member name="F:CsQuery.Config.StartupOptions">
             <summary>
             The default startup options. These are flags. 
             </summary>
+        </member>
+        <member name="P:CsQuery.Config.PseudoClassFilters">
+             <summary>
+             Provides access to the PseudoSelectors object, which allows registering new filters and
+             accessing information and instances about existing filters.
+             </summary>
+            
+             <value>
+             The pseudo PseudoSelectors configuration object.
+             </value>
         </member>
         <member name="P:CsQuery.Config.DomRenderingOptions">
             <summary>
@@ -78,20 +74,10 @@
             parsing JSON into an unspecified type.
             </summary>
         </member>
-        <member name="P:CsQuery.Config.PseudoClassFilters">
-             <summary>
-             Provides access to the PseudoSelectors object, which allows registering new filters and
-             accessing information and instances about existing filters.
-             </summary>
-            
-             <value>
-             The pseudo PseudoSelectors configuration object.
-             </value>
-        </member>
-        <member name="P:CsQuery.Config.GetDomIndexProvider">
+        <member name="P:CsQuery.Config.DomIndexProvider">
             <summary>
-            Factory that returns an instace of the indexer used when creating documents. CsQuery understands objects that implement
-            IDomIndex and IDomIndexRanged.
+            Gets or sets the default DomIndexProvider, which returns an instance of a DomIndex that
+            defines the indexing strategy for new documents.
             </summary>
         </member>
         <member name="T:CsQuery.StartupOptions">
@@ -104,6 +90,85 @@
             When true, CsQuery will scan the client assembly for extensions. Any classes 
             found in a namespace CsQuery.Extensions will be configured automatically. Default is true; 
             disable this flag to disable this behavior
+            </summary>
+        </member>
+        <member name="T:CsQuery.CsQueryConfig">
+            <summary>
+            Global configuration and defaults
+            </summary>
+        </member>
+        <member name="M:CsQuery.CsQueryConfig.#ctor">
+            <summary>
+            Default constructor; populates the CsQueryConfig object with system default options.
+            </summary>
+        </member>
+        <member name="F:CsQuery.CsQueryConfig._DynamicObjectType">
+            <summary>
+            Internal to avoid Obsolete warning from DomRenderingOptions until we remove it
+            </summary>
+        </member>
+        <member name="M:CsQuery.CsQueryConfig.GetDefaultOutputFormatter">
+             <summary>
+             Creates an OutputFormatter using the default options &amp; encoder.
+             </summary>
+            
+             <returns>
+             The default output formatter.
+             </returns>
+        </member>
+        <member name="P:CsQuery.CsQueryConfig.DomIndexProvider">
+            <summary>
+            Gets or sets the DomIndexProvider, that creates instances of the DomIndex used for new documents.
+            </summary>
+        </member>
+        <member name="P:CsQuery.CsQueryConfig.DomRenderingOptions">
+            <summary>
+            The default rendering options. These will be used when configuring a default OutputFormatter.
+            Note that if the default OutputFormatter has been changed, this setting is not guaranteed to
+            have any effect on output.
+            </summary>
+        </member>
+        <member name="P:CsQuery.CsQueryConfig.HtmlParsingOptions">
+            <summary>
+            The default HTML parsing options. These will be used when parsing HTML without specifying any options. 
+            </summary>
+        </member>
+        <member name="P:CsQuery.CsQueryConfig.HtmlEncoder">
+            <summary>
+            The default HTML encoder.
+            </summary>
+        </member>
+        <member name="P:CsQuery.CsQueryConfig.OutputFormatter">
+            <summary>
+            The default OutputFormatter. The GetOutputFormatter property can also be used to provide a
+            new instance whenever a default OutputFormatter is requested; setting that property will
+            supersede any existing value of this property.
+            </summary>
+        </member>
+        <member name="P:CsQuery.CsQueryConfig.GetOutputFormatter">
+            <summary>
+            A delegate that returns a new instance of the default output formatter to use for rendering.
+            The OutputFormatter property can also be used to return a single instance of a reusable
+            IOutputFormatter object; setting that property will supersede any existing value of this
+            property.
+            </summary>
+        </member>
+        <member name="P:CsQuery.CsQueryConfig.WebRequestFactory">
+            <summary>
+            A method that returns a new HttpWebRequest. This is mostly useful for providing an alternate
+            implementation for testing.
+            </summary>
+        </member>
+        <member name="P:CsQuery.CsQueryConfig.DocType">
+            <summary>
+            Default document type. This is the parsing mode that will be used when creating documents
+            that have no DocType and no mode is explicitly defined.
+            </summary>
+        </member>
+        <member name="P:CsQuery.CsQueryConfig.DynamicObjectType">
+            <summary>
+            Gets or sets the default dynamic object type. This is the type of object used by default when
+            parsing JSON into an unspecified type.
             </summary>
         </member>
         <member name="T:CsQuery.CQ">
@@ -6720,6 +6785,20 @@
              A copy of this object.
              </returns>
         </member>
+        <member name="M:CsQuery.Implementation.DomObject.CompareTo(CsQuery.IDomObject)">
+             <summary>
+             Compares this IDomObject object to another to determine their relative ordering.
+             </summary>
+            
+             <param name="other">
+             Another instance to compare.
+             </param>
+            
+             <returns>
+             Negative if this object is less than the other, 0 if they are equal, or positive if this is
+             greater.
+             </returns>
+        </member>
         <member name="P:CsQuery.Implementation.DomObject.NodeType">
             <summary>
             Gets the type of the node.
@@ -7431,8 +7510,7 @@
         </member>
         <member name="M:CsQuery.Implementation.DomElement.IndexKeys">
              <summary>
-             Index keys for this collection. This method returns keys without path information, they are
-             only for use with a non-ranged index.
+             Index keys for this collection.
              </summary>
             
              <returns>
@@ -7540,10 +7618,10 @@
              </summary>
             
              <param name="tokenId">
-             .
+             The token ID of the attribute
              </param>
              <param name="value">
-             .
+             The value to set
              </param>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.SetAttribute(System.String)">
@@ -7610,11 +7688,11 @@
              </summary>
             
              <param name="name">
-             .
+             The name of the attribute
              </param>
             
              <returns>
-             The attribute.
+             The attribute value, or null if the attribute is missing.
              </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.GetAttribute(System.UInt16)">
@@ -7625,11 +7703,11 @@
              </summary>
             
              <param name="tokenId">
-             .
+             The token ID of the attribute
              </param>
             
              <returns>
-             The attribute.
+             The attribute value.
              </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.GetAttribute(System.String,System.String)">
@@ -7642,11 +7720,11 @@
              The attribute name.
              </param>
              <param name="defaultValue">
-             .
+             The value to return if the attribute is missing.
              </param>
             
              <returns>
-             The attribute.
+             The attribute value.
              </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.GetAttribute(System.UInt16,System.String)">
@@ -7656,10 +7734,10 @@
              </summary>
             
              <param name="tokenId">
-             .
+             The token ID of the attribute.
              </param>
              <param name="defaultValue">
-             .
+             The value to return if the attribute is missing.
              </param>
             
              <returns>
@@ -7668,34 +7746,34 @@
         </member>
         <member name="M:CsQuery.Implementation.DomElement.TryGetAttribute(System.UInt16,System.String@)">
              <summary>
-             Try get attribute.
+             Try get an attribute value.
              </summary>
             
              <param name="tokenId">
-             .
+             The token ID of the attribute
              </param>
              <param name="value">
-             .
+             The value of the attribute
              </param>
             
              <returns>
-             true if it succeeds, false if it fails.
+             true if the attribute exists, false if not
              </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.TryGetAttribute(System.String,System.String@)">
              <summary>
-             Try get attribute.
+             Try to get attribute value by name.
              </summary>
             
              <param name="name">
-             .
+             The attribute name
              </param>
              <param name="value">
-             .
+             The attribute value
              </param>
             
              <returns>
-             true if it succeeds, false if it fails.
+             true if the attribute exists, false if not
              </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.ToString">
@@ -7709,11 +7787,12 @@
         </member>
         <member name="M:CsQuery.Implementation.DomElement.AddStyle(System.String)">
              <summary>
-             Add a single style in the form "styleName: value".
+             Add a single style in the form "styleName: value", validating that the style is known and the
+             value is in the correct format for that style.
              </summary>
             
              <param name="style">
-             .
+             The style.
              </param>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.AddStyle(System.String,System.Boolean)">
@@ -7722,28 +7801,29 @@
              </summary>
             
              <param name="style">
-             .
+             The style.
              </param>
              <param name="strict">
-             true to strict.
+             When true, CSS syntax checking is enforced. If the style is unknown or the value is not of
+             the correct format, an error will be thrown.
              </param>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.RemoveStyle(System.String)">
              <summary>
-             Removes the style described by name.
+             Removes the named style from the "styles" property of this element.
              </summary>
             
              <param name="name">
-             .
+             The name of the style to remove.
              </param>
             
              <returns>
-             true if it succeeds, false if it fails.
+             true if the style was present, false if not.
              </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.SetStyles(System.String)">
              <summary>
-             Sets the styles.
+             Sets the style property to the s
              </summary>
             
              <param name="styles">
@@ -7752,67 +7832,17 @@
         </member>
         <member name="M:CsQuery.Implementation.DomElement.SetStyles(System.String,System.Boolean)">
              <summary>
-             Sets the styles.
+             Sets the style property from a string of style definitions separated by semicolons, e.g.
+             "style1: value; style2: value;".
              </summary>
             
              <param name="styles">
              The styles.
              </param>
              <param name="strict">
-             true to strict.
+             When true, CSS syntax checking is enforced. If the style is unknown or the value is not of
+             the correct format, an error will be thrown.
              </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.SetStyle(System.String,System.String)">
-             <summary>
-             Sets a style.
-             </summary>
-            
-             <exception cref="T:System.NotImplementedException">
-             Thrown when the requested operation is unimplemented.
-             </exception>
-            
-             <param name="name">
-             .
-             </param>
-             <param name="value">
-             .
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.SetStyle(System.String,System.String,System.Boolean)">
-             <summary>
-             Sets a style.
-             </summary>
-            
-             <exception cref="T:System.NotImplementedException">
-             Thrown when the requested operation is unimplemented.
-             </exception>
-            
-             <param name="name">
-             .
-             </param>
-             <param name="value">
-             .
-             </param>
-             <param name="strict">
-             true to strict.
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.GetStyle(System.String)">
-             <summary>
-             Gets a style.
-             </summary>
-            
-             <exception cref="T:System.NotImplementedException">
-             Thrown when the requested operation is unimplemented.
-             </exception>
-            
-             <param name="name">
-             .
-             </param>
-            
-             <returns>
-             The style.
-             </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.AttributeIndexKey(System.String)">
              <summary>
@@ -9689,20 +9719,19 @@
             Logic: if nothing specifically selected, find the first enabled option, otherwise, the first disabled option.
             </summary>
         </member>
-        <member name="T:CsQuery.Engine.DomIndex">
+        <member name="T:CsQuery.Engine.DomIndexNone">
             <summary>
-            DOM index that only stores the index target. This will perform much better than the ranged
-            index for dom construction &amp; manipulation, but worse for complex queries.
-            
-            TODO: Work in progress/
+            Simple implementation of DOM index that only stores a reference to the index target. This
+            will perform much better than the ranged index for dom construction &amp; manipulation, but
+            worse for complex queries.
             </summary>
         </member>
-        <member name="T:CsQuery.IDomIndex">
+        <member name="T:CsQuery.Engine.IDomIndex">
             <summary>
             Interface for a DOM index. Defines methods to add and remove items from the index, and query the index.
             </summary>
         </member>
-        <member name="M:CsQuery.IDomIndex.AddToIndex(CsQuery.IDomIndexedNode)">
+        <member name="M:CsQuery.Engine.IDomIndex.AddToIndex(CsQuery.IDomIndexedNode)">
              <summary>
              Adds an element to the index.
              </summary>
@@ -9711,7 +9740,7 @@
              The element.
              </param>
         </member>
-        <member name="M:CsQuery.IDomIndex.AddToIndex(System.UInt16[],CsQuery.IDomIndexedNode)">
+        <member name="M:CsQuery.Engine.IDomIndex.AddToIndex(System.UInt16[],CsQuery.IDomIndexedNode)">
              <summary>
              Adds an element to the index for the specified key.
              </summary>
@@ -9723,7 +9752,7 @@
              The element.
              </param>
         </member>
-        <member name="M:CsQuery.IDomIndex.RemoveFromIndex(CsQuery.IDomIndexedNode)">
+        <member name="M:CsQuery.Engine.IDomIndex.RemoveFromIndex(CsQuery.IDomIndexedNode)">
              <summary>
              Removes an element from the index.
              </summary>
@@ -9732,7 +9761,7 @@
              The element.
              </param>
         </member>
-        <member name="M:CsQuery.IDomIndex.RemoveFromIndex(System.UInt16[],CsQuery.IDomIndexedNode)">
+        <member name="M:CsQuery.Engine.IDomIndex.RemoveFromIndex(System.UInt16[],CsQuery.IDomIndexedNode)">
              <summary>
              Removes a key from the index
              </summary>
@@ -9744,7 +9773,7 @@
              The element.
              </param>
         </member>
-        <member name="M:CsQuery.IDomIndex.QueryIndex(System.UInt16[])">
+        <member name="M:CsQuery.Engine.IDomIndex.QueryIndex(System.UInt16[])">
              <summary>
              Queries the index.
              </summary>
@@ -9757,100 +9786,12 @@
              An enumerator that allows foreach to be used to process query index in this collection.
              </returns>
         </member>
-        <member name="M:CsQuery.IDomIndex.Clear">
+        <member name="M:CsQuery.Engine.IDomIndex.Clear">
             <summary>
             Clears this object to its blank/initial state.
             </summary>
         </member>
-        <member name="P:CsQuery.IDomIndex.Count">
-             <summary>
-             The number of unique index keys
-             </summary>
-            
-             <returns>
-             The count of items in the index
-             </returns>
-        </member>
-        <member name="M:CsQuery.Engine.DomIndex.#ctor">
-            <summary>
-            Default constructor for the index
-            </summary>
-        </member>
-        <member name="M:CsQuery.Engine.DomIndex.AddToIndex(CsQuery.IDomIndexedNode)">
-             <summary>
-             Add an element to the index using the default keys for this element.
-             </summary>
-            
-             <param name="element">
-             The element to add
-             </param>
-        </member>
-        <member name="M:CsQuery.Engine.DomIndex.AddToIndex(System.UInt16[],CsQuery.IDomIndexedNode)">
-             <summary>
-             Adds an element to the index for the specified key.
-             </summary>
-            
-             <param name="key">
-             The key to remove.
-             </param>
-             <param name="element">
-             The element to add.
-             </param>
-        </member>
-        <member name="M:CsQuery.Engine.DomIndex.RemoveFromIndex(System.UInt16[],CsQuery.IDomIndexedNode)">
-             <summary>
-             Remove an element from the index using its key.
-             </summary>
-            
-             <param name="key">
-             The key to remove.
-             </param>
-             <param name="element">
-             The element to remove.
-             </param>
-        </member>
-        <member name="M:CsQuery.Engine.DomIndex.RemoveFromIndex(CsQuery.IDomIndexedNode)">
-             <summary>
-             Remove an element from the index.
-             </summary>
-            
-             <param name="element">
-             The element to remove
-             </param>
-        </member>
-        <member name="M:CsQuery.Engine.DomIndex.QueryIndex(System.UInt16[])">
-             <summary>
-             Query the document's index for a subkey.
-             </summary>
-            
-             <param name="subKey">
-             The subkey to match
-             </param>
-            
-             <returns>
-             A sequence of all matching keys
-             </returns>
-        </member>
-        <member name="M:CsQuery.Engine.DomIndex.Clear">
-            <summary>
-            Clears this object to its blank/initial state.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Engine.DomIndex.Count">
-             <summary>
-             The number of unique index keys.
-             </summary>
-            
-             <returns>
-             The count of items in the index.
-             </returns>
-        </member>
-        <member name="T:CsQuery.IDomIndexRanged">
-            <summary>
-            Interface for a DOM index. Defines methods to add and remove items from the index, and query the index.
-            </summary>
-        </member>
-        <member name="M:CsQuery.IDomIndexRanged.QueryIndex(System.UInt16[],System.Int32,System.Boolean)">
+        <member name="M:CsQuery.Engine.IDomIndex.QueryIndex(System.UInt16[],System.Int32,System.Boolean)">
              <summary>
              Queries the index, returning all matching elements
              </summary>
@@ -9869,14 +9810,352 @@
              An enumerator that allows foreach to be used to process query index in this collection.
              </returns>
         </member>
-        <member name="P:CsQuery.IDomIndexRanged.QueueChanges">
+        <member name="P:CsQuery.Engine.IDomIndex.Features">
+            <summary>
+            Returns the features that this index implements
+            </summary>
+        </member>
+        <member name="P:CsQuery.Engine.IDomIndex.Count">
+             <summary>
+             The number of unique index keys
+             </summary>
+            
+             <returns>
+             The count of items in the index
+             </returns>
+        </member>
+        <member name="P:CsQuery.Engine.IDomIndex.QueueChanges">
             <summary>
             When true, changes are queued until the next read operation
             </summary>
         </member>
+        <member name="M:CsQuery.Engine.DomIndexNone.#ctor">
+            <summary>
+            Default constructor for the index
+            </summary>
+        </member>
+        <member name="M:CsQuery.Engine.DomIndexNone.AddToIndex(CsQuery.IDomIndexedNode)">
+             <summary>
+             Adds an element to the index.
+             </summary>
+            
+             <param name="element">
+             The element to add.
+             </param>
+        </member>
+        <member name="M:CsQuery.Engine.DomIndexNone.AddToIndex(System.UInt16[],CsQuery.IDomIndexedNode)">
+             <summary>
+             Adds an element to the index for the specified key.
+             </summary>
+            
+             <param name="key">
+             The key to remove.
+             </param>
+             <param name="element">
+             The element to add.
+             </param>
+        </member>
+        <member name="M:CsQuery.Engine.DomIndexNone.RemoveFromIndex(System.UInt16[],CsQuery.IDomIndexedNode)">
+             <summary>
+             Remove an element from the index using its key.
+             </summary>
+            
+             <param name="key">
+             The key to remove.
+             </param>
+             <param name="element">
+             The element to remove.
+             </param>
+        </member>
+        <member name="M:CsQuery.Engine.DomIndexNone.RemoveFromIndex(CsQuery.IDomIndexedNode)">
+             <summary>
+             Remove an element from the index.
+             </summary>
+            
+             <param name="element">
+             The element to remove
+             </param>
+        </member>
+        <member name="M:CsQuery.Engine.DomIndexNone.QueryIndex(System.UInt16[])">
+             <summary>
+             Query the document's index for a subkey.
+             </summary>
+            
+             <param name="subKey">
+             The subkey to match
+             </param>
+            
+             <returns>
+             A sequence of all matching keys
+             </returns>
+        </member>
+        <member name="M:CsQuery.Engine.DomIndexNone.QueryIndex(System.UInt16[],System.Int32,System.Boolean)">
+             <summary>
+             Queries the index, returning all matching elements.
+             </summary>
+            
+             <exception cref="T:System.NotImplementedException">
+             Thrown when the requested operation is unimplemented.
+             </exception>
+            
+             <param name="subKey">
+             The subkey to match.
+             </param>
+             <param name="depth">
+             The depth.
+             </param>
+             <param name="includeDescendants">
+             true to include, false to exclude the descendants.
+             </param>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process query index in this collection.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Engine.DomIndexNone.Clear">
+            <summary>
+            Clears this object to its blank/initial state.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Engine.DomIndexNone.Count">
+             <summary>
+             The number of unique index keys.
+             </summary>
+            
+             <returns>
+             The count of items in the index.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Engine.DomIndexNone.Features">
+            <summary>
+            Returns the features that this index implements.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Engine.DomIndexNone.QueueChanges">
+            <summary>
+            When true, changes are queued until the next read operation. For the DomIndexNone provider, this is always false.
+            </summary>
+        </member>
+        <member name="T:CsQuery.DomIndexProviders">
+            <summary>
+            The default DomIndexProvider.
+            </summary>
+        </member>
+        <member name="M:CsQuery.DomIndexProviders.#cctor">
+            <summary>
+            Static constructor.
+            </summary>
+        </member>
+        <member name="P:CsQuery.DomIndexProviders.Simple">
+             <summary>
+             Return a SimpleDomIndex provider
+             </summary>
+            
+             <returns>
+             The DomIndex instance
+             </returns>
+        </member>
+        <member name="P:CsQuery.DomIndexProviders.Ranged">
+            <summary>
+            Returns a RangedDomIndex provider
+            </summary>
+        </member>
+        <member name="P:CsQuery.DomIndexProviders.None">
+            <summary>
+            Returns a NoDomIndex provider
+            </summary>
+        </member>
+        <member name="T:CsQuery.SimpleDomIndexProvider">
+            <summary>
+             DomIndexProvider returning a SimpleDomIndex
+            </summary>
+        </member>
+        <member name="T:CsQuery.Engine.IDomIndexProvider">
+            <summary>
+            Interface for a service locator providing in instance of a DomIndex
+            </summary>
+        </member>
+        <member name="M:CsQuery.Engine.IDomIndexProvider.GetDomIndex">
+            <summary>
+            Return an instance of a DomIndex class
+            </summary>
+        </member>
+        <member name="M:CsQuery.SimpleDomIndexProvider.GetDomIndex">
+             <summary>
+             Return an instance of a DomIndex class.
+             </summary>
+            
+             <returns>
+             The DomIndex instance
+             </returns>
+        </member>
+        <member name="T:CsQuery.RangedDomIndexProvider">
+            <summary>
+            DomIndexProvider returning a RangedDomIndex
+            </summary>
+        </member>
+        <member name="M:CsQuery.RangedDomIndexProvider.GetDomIndex">
+             <summary>
+             Return an instance of a DomIndex class.
+             </summary>
+            
+             <returns>
+             The DomIndex instance
+             </returns>
+        </member>
+        <member name="T:CsQuery.NoDomIndexProvider">
+            <summary>
+            DomIndexProvider returning a RangedDomIndex
+            </summary>
+        </member>
+        <member name="M:CsQuery.NoDomIndexProvider.GetDomIndex">
+             <summary>
+             Return an instance of a DomIndex class.
+             </summary>
+            
+             <returns>
+             The DomIndex instance
+             </returns>
+        </member>
+        <member name="T:CsQuery.Engine.DomIndexSimple">
+            <summary>
+            Simple implementation of DOM index that only stores a reference to the index target. This
+            will perform much better than the ranged index for dom construction &amp; manipulation, but
+            worse for complex queries.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Engine.DomIndexSimple.#ctor">
+            <summary>
+            Default constructor for the index
+            </summary>
+        </member>
+        <member name="M:CsQuery.Engine.DomIndexSimple.AddToIndex(CsQuery.IDomIndexedNode)">
+             <summary>
+             Add an element to the index using the default keys for this element.
+             </summary>
+            
+             <param name="element">
+             The element to add
+             </param>
+        </member>
+        <member name="M:CsQuery.Engine.DomIndexSimple.AddToIndex(System.UInt16[],CsQuery.IDomIndexedNode)">
+             <summary>
+             Adds an element to the index for the specified key.
+             </summary>
+            
+             <param name="key">
+             The key to remove.
+             </param>
+             <param name="element">
+             The element to add.
+             </param>
+        </member>
+        <member name="M:CsQuery.Engine.DomIndexSimple.RemoveFromIndex(System.UInt16[],CsQuery.IDomIndexedNode)">
+             <summary>
+             Remove an element from the index using its key.
+             </summary>
+            
+             <param name="key">
+             The key to remove.
+             </param>
+             <param name="element">
+             The element to remove.
+             </param>
+        </member>
+        <member name="M:CsQuery.Engine.DomIndexSimple.RemoveFromIndex(CsQuery.IDomIndexedNode)">
+             <summary>
+             Remove an element from the index.
+             </summary>
+            
+             <param name="element">
+             The element to remove
+             </param>
+        </member>
+        <member name="M:CsQuery.Engine.DomIndexSimple.QueryIndex(System.UInt16[])">
+             <summary>
+             Query the document's index for a subkey.
+             </summary>
+            
+             <param name="subKey">
+             The subkey to match
+             </param>
+            
+             <returns>
+             A sequence of all matching keys
+             </returns>
+        </member>
+        <member name="M:CsQuery.Engine.DomIndexSimple.Clear">
+            <summary>
+            Clears this object to its blank/initial state.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Engine.DomIndexSimple.QueryIndex(System.UInt16[],System.Int32,System.Boolean)">
+             <summary>
+             Queries the index, returning all matching elements. For the SimpleIndex, this is not implemented.
+             </summary>
+            
+             <exception cref="T:System.NotImplementedException">
+             Thrown when the requested operation is unimplemented.
+             </exception>
+            
+             <param name="subKey">
+             The subkey to match.
+             </param>
+             <param name="depth">
+             The depth.
+             </param>
+             <param name="includeDescendants">
+             true to include, false to exclude the descendants.
+             </param>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process query index in this collection.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Engine.DomIndexSimple.Count">
+             <summary>
+             The number of unique index keys.
+             </summary>
+            
+             <returns>
+             The count of items in the index.
+             </returns>
+        </member>
+        <member name="P:CsQuery.Engine.DomIndexSimple.Features">
+            <summary>
+            Returns the features that this index implements.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Engine.DomIndexSimple.QueueChanges">
+            <summary>
+            When true, changes are queued until the next read operation. For the SimpleIndex provider,
+            this is always true; setting it has no effect.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Engine.DomIndexFeatures">
+            <summary>
+            Flags specifying the features that a given IndexProvider offers
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.DomIndexFeatures.Lookup">
+            <summary>
+            Index is capable of returning a sequence of elements matching a key
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.DomIndexFeatures.Range">
+            <summary>
+            Index is capable of returning a range of elements matching a subkey.
+            </summary>
+        </member>
+        <member name="F:CsQuery.Engine.DomIndexFeatures.Queue">
+            <summary>
+            Indexes implementing this feature can queue changes to improve performance. When this is true, the QueueChanges method must be implemented.
+            </summary>
+        </member>
         <member name="T:CsQuery.Engine.DomIndexRanged">
             <summary>
-            An index that can return a range of values
+            A DOM index that can return a range of values. The IDomIndexRange interface is known to the
+            selection engine; when availabile it will be use to optimize subqueries.
             </summary>
         </member>
         <member name="M:CsQuery.Engine.DomIndexRanged.#ctor">
@@ -9949,15 +10228,15 @@
         </member>
         <member name="M:CsQuery.Engine.DomIndexRanged.QueryIndex(System.UInt16[])">
              <summary>
-             Query the document's index for a subkey.
+             Query the document's index.
              </summary>
             
-             <param name="subKey">
-             The subkey to match
+             <param name="key">
+             The key to seek.
              </param>
             
              <returns>
-             A sequence of all matching keys
+             A sequence of all elements matching the index key.
              </returns>
         </member>
         <member name="M:CsQuery.Engine.DomIndexRanged.Clear">
@@ -9977,8 +10256,38 @@
              The element target
              </param>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:CsQuery.Engine.DomIndexRanged.RangePath(System.UInt16[],System.UInt16[])" -->
-        <!-- Badly formed XML comment ignored for member "M:CsQuery.Engine.DomIndexRanged.RangePath(System.UInt16[],CsQuery.IDomIndexedNode)" -->
+        <member name="M:CsQuery.Engine.DomIndexRanged.RangePath(System.UInt16[],System.UInt16[])">
+             <summary>
+             Convert a key/path combination to a path suitable for view selection.
+             </summary>
+            
+             <param name="key">
+             The key to remove.
+             </param>
+             <param name="path">
+             Full pathname of the file.
+             </param>
+            
+             <returns>
+             A key.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Engine.DomIndexRanged.RangePath(System.UInt16[],CsQuery.IDomIndexedNode)">
+             <summary>
+             Convert a key/path combination to a path suitable for view selection.
+             </summary>
+            
+             <param name="key">
+             The key to remove.
+             </param>
+             <param name="element">
+             The element to add.
+             </param>
+            
+             <returns>
+             A key.
+             </returns>
+        </member>
         <member name="M:CsQuery.Engine.DomIndexRanged.RangePath(System.UInt16[])">
              <summary>
              Return the default selection key
@@ -10020,6 +10329,11 @@
              <returns>
              The count of items in the index.
              </returns>
+        </member>
+        <member name="P:CsQuery.Engine.DomIndexRanged.Features">
+            <summary>
+            Returns the features that this index implements.
+            </summary>
         </member>
         <member name="T:CsQuery.Implementation.AttributeCollection">
             <summary>
@@ -13618,10 +13932,24 @@
             The tree builder glue for building a tree through the public DOM APIs.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.CsQueryTreeBuilder.document">
-            <summary>
-            The current doc.
-            </summary>
+        <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.#ctor(CsQuery.Engine.IDomIndexProvider)">
+             <summary>
+             Constructor; requires a DomDocument object to populate.
+             </summary>
+            
+             <param name="domIndexProvider">
+             The DomIndexProvider that provides instances of DomIndex objects that determine the indexing
+             strategy for new documents.
+             </param>
+        </member>
+        <member name="F:CsQuery.HtmlParser.CsQueryTreeBuilder.Document">
+             <summary>
+             Returns the document.
+             </summary>
+            
+             <value>
+             The document.
+             </value>
         </member>
         <member name="F:CsQuery.HtmlParser.CsQueryTreeBuilder.isFragment">
             <summary>
@@ -13861,15 +14189,6 @@
              The attribute name.
              </returns>
         </member>
-        <member name="P:CsQuery.HtmlParser.CsQueryTreeBuilder.Document">
-             <summary>
-             Returns the document.
-             </summary>
-            
-             <value>
-             The document.
-             </value>
-        </member>
         <member name="T:CsQuery.HtmlParser.ElementFactory">
             <summary>
             Element factory to build a CsQuery DOM using HtmlParserSharp.
@@ -13891,6 +14210,20 @@
             <summary>
             Static constructor.
             </summary>
+        </member>
+        <member name="M:CsQuery.HtmlParser.ElementFactory.#ctor">
+            <summary>
+            Default constructor, creates a factory with the default DomIndexProvider
+            </summary>
+        </member>
+        <member name="M:CsQuery.HtmlParser.ElementFactory.#ctor(CsQuery.Engine.IDomIndexProvider)">
+             <summary>
+             Creates a factory using the DomIndexProvider passed by parameter
+             </summary>
+            
+             <param name="domIndexProvider">
+             The DomIndexProvider that will be used when creating new DomDocument objects from this factory.
+             </param>
         </member>
         <member name="M:CsQuery.HtmlParser.ElementFactory.Create(System.IO.Stream,System.Text.Encoding,CsQuery.HtmlParsingMode,CsQuery.HtmlParsingOptions,CsQuery.DocType)">
              <summary>
@@ -22124,7 +22457,7 @@
             </summary>
             
         </member>
-        <member name="M:CsQuery.Implementation.DomDocument.#ctor(CsQuery.IDomIndex)">
+        <member name="M:CsQuery.Implementation.DomDocument.#ctor(CsQuery.Engine.IDomIndex)">
              <summary>
              Create a new, empty DOM document using the provided DomIndex instance
              </summary>
@@ -22527,7 +22860,7 @@
             Default constructor.
             </summary>
         </member>
-        <member name="M:CsQuery.Implementation.DomFragment.#ctor(CsQuery.IDomIndex)">
+        <member name="M:CsQuery.Implementation.DomFragment.#ctor(CsQuery.Engine.IDomIndex)">
              <summary>
              Create a new DomFragment using the provided DomIndex instance.
              </summary>
@@ -23691,23 +24024,6 @@
              The string, or an empty string if the token ID was not found
              </returns>
         </member>
-        <member name="M:CsQuery.HtmlParser.HtmlData.BaseXXEncode(System.Int32)">
-             <summary>
-             Encode to base XX (defined in constants)
-             </summary>
-            
-             <exception cref="T:System.OverflowException">
-             Thrown when an arithmetic overflow occurs.
-             </exception>
-            
-             <param name="number">
-             The number to baseXX encode
-             </param>
-            
-             <returns>
-             A baseXX encoded string 
-             </returns>
-        </member>
         <member name="M:CsQuery.HtmlParser.HtmlData.AttributeEncode(System.String,System.Boolean,System.String@)">
              <summary>
              HtmlEncode a string, except for double-quotes, so it can be enclosed in single-quotes.
@@ -24410,7 +24726,7 @@
              Adjacent or Sibling selector) is already processed.
              </summary>
             
-             <param name="list">
+             <param name="source">
              The sequence of elements to filter.
              </param>
              <param name="selector">
@@ -24473,12 +24789,20 @@
              </returns>
         </member>
         <member name="M:CsQuery.Engine.SelectorEngine.GetAdjacentOrSiblings(CsQuery.Engine.TraversalType,System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
-            <summary>
-            Map a list to its siblings or adjacent elements if needed. Ignore other traversal types.
-            </summary>
-            <param name="traversalType"></param>
-            <param name="list"></param>
-            <returns></returns>
+             <summary>
+             Map a list to its siblings or adjacent elements if needed. Ignore other traversal types.
+             </summary>
+            
+             <param name="traversalType">
+             The traversal type
+             </param>
+             <param name="list">
+             The source list
+             </param>
+            
+             <returns>
+             Sequence of adjacent or sibling elements.
+             </returns>
         </member>
         <member name="M:CsQuery.Engine.SelectorEngine.GetAllChildOrDescendants(CsQuery.Engine.TraversalType,System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
             <summary>
@@ -24628,6 +24952,22 @@
             <typeparam name="T"></typeparam>
             <param name="list"></param>
             <returns></returns>
+        </member>
+        <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.ToStream(System.String,System.Text.Encoding)">
+             <summary>
+             Convert a string to a stream.
+             </summary>
+            
+             <param name="input">
+             The input to act on.
+             </param>
+             <param name="encoding">
+             (optional) the encoding of the stream. Defaults to UTF8
+             </param>
+            
+             <returns>
+             input as a Stream.
+             </returns>
         </member>
         <member name="M:CsQuery.ExtensionMethods.Internal.ExtensionMethods.AsString(System.Char[])">
             <summary>
