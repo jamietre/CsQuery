@@ -62,14 +62,14 @@ namespace CsQuery.PerformanceTests
             HapDocument.LoadHtml(html);
         }
 
-        public PerfComparison Compare(string selector)
+        public PerfComparison Compare(string selector, string xpath)
         {
             int cqCount = CsqueryDocument_Simple[selector].Length;
             
             int hapCount=0;
             try
             {
-                hapCount = HapDocument.DocumentNode.QuerySelectorAll(selector).Count();
+                hapCount = HapDocument.DocumentNode.SelectNodes(xpath).OrDefault().Count();
             }
             catch { }
 
@@ -84,26 +84,33 @@ namespace CsQuery.PerformanceTests
 
             // use Count() for both to ensure that all results are retrieved (e.g. if the engine is lazy)
 
-            string testName = "CSS selector: { " + selector + " }";
+            string testName = String.Format("css '{0}', xpath '{1}'", selector, xpath);
             Action csq1 = new Action(() =>
             {
-                int csqLength = CsqueryDocument_NoIndex[selector].Count(); 
+                var csqLength = CsqueryDocument_NoIndex[selector].ToList(); 
             });
 
             Action csq2 = new Action(() =>
             {
-                int csqLength = CsqueryDocument_Simple[selector].Count(); 
+                var csqLength = CsqueryDocument_Simple[selector].ToList(); 
             });
 
             Action csq3 = new Action(() =>
             {
-                int csqLength = CsqueryDocument_Ranged[selector].Count();
+                var csqLength = CsqueryDocument_Ranged[selector].ToList();
+            });
+
+            Action fiz = new Action(() =>
+            {
+                var hapLength = HapDocument.DocumentNode.QuerySelectorAll(selector).ToList();
+                
             });
 
             Action hap = new Action(() =>
             {
-                int hapLength = HapDocument.DocumentNode.QuerySelectorAll(selector).Count();
+                var hapLength = HapDocument.DocumentNode.SelectNodes(xpath).OrDefault().ToList();
             });
+
 
             IDictionary<string, Action> actions = new Dictionary<string, Action>();
             if (Program.IncludeTests.HasFlag(TestMethods.CsQuery_NoIndex))
@@ -122,7 +129,10 @@ namespace CsQuery.PerformanceTests
             {
                 actions.Add("HAP", hap);
             }
-
+            if (Program.IncludeTests.HasFlag(TestMethods.Fizzler))
+            {
+                actions.Add("Fizzler", fiz);
+            }
             var results = Compare(actions, testName, description);
             results.SameResults = same;
             results.Context = Context;

@@ -102,20 +102,19 @@ namespace CsQuery.PerformanceTests.Tests
             {
                 tests.Add("Ranged Index (CsQuery)", csq3);
             }
-            if (Program.IncludeTests.HasFlag(TestMethods.HAP))
+            if (Program.IncludeTests.HasFlag(TestMethods.HAP) || Program.IncludeTests.HasFlag(TestMethods.Fizzler))
             {
                 tests.Add("HAP", hap);
             }
-
             Compare(tests, "Create DOM from html");
 
         }
 
         public void IDSelectors()
         {
-            Compare("#body");
-            Compare("#button");
-            Compare("#missing");
+            Compare("#body","//*[@id='body']");
+            Compare("#button","//*[@id='button']");
+            Compare("#missing","//*[@id='missing']");
 
             //Assert.IsTrue(true,"Performance tests completed.");
         }
@@ -123,19 +122,19 @@ namespace CsQuery.PerformanceTests.Tests
 
         public void SubSelectors()
         {
-            Compare("div > span");
-            Compare("div span:first-child");
-            Compare("div span:last-child");
-            Compare("div > span:last-child");
-            Compare("div span:only-child");
+            Compare("div > span","//div/span");
+            Compare("div span:first-child","//div//span[1]");
+            Compare("div span:last-child","//div//span[last()]");
+            Compare("div > span:last-child","//div/span[last()]");
+            Compare("div span:only-child","//div//span[last() = 1]");
         }
 
 
         public void AttributeSelectors()
         {
-            Compare("[type]");
-            Compare("input[type]");
-            Compare("input[type][checked]");
+            Compare("[type]","//*[@type]");
+            Compare("input[type]","//input[@type]");
+            Compare("input[type][checked]","//input[@type and (@checked)]");
         }
 
 
@@ -143,18 +142,19 @@ namespace CsQuery.PerformanceTests.Tests
         {
 
 
-            Compare("div:nth-child(3)");
-            Compare("div:nth-child(2n+1)");
-            Compare("div:nth-last-child(3)");
-            Compare("div:nth-last-child(2n+1)");
+            Compare("div:nth-child(3)","//div[(position() = 3)]");
+            Compare("div:nth-child(2n+1)","//div[(position() -1) mod 2 = 0 and position() >= 1]");
+            Compare("div:nth-last-child(3)","//div[position() = last() - 3]");
+            Compare("div:nth-last-child(2n+1)", "//div[(position() +1) mod -2 = 0 and position() < (last() -1)]");
         }
 
 
 
         public  void Miscellanous()
         {
-            Compare("*");
-
+            Compare("*","//*");
+            Compare("div.thumb", "//div[contains(concat(' ', normalize-space(@class), ' '), ' thumb ')]");
+            Compare(".note", "//*[contains(concat(' ', normalize-space(@class), ' '), ' note ')]");
         }
 
     }

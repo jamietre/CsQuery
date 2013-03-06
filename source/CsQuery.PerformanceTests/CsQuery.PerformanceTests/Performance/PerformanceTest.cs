@@ -82,9 +82,9 @@ namespace CsQuery.PerformanceTests
 
         protected PerfCompare PerfCompare;
 
-        protected void Compare(string selector)
+        protected void Compare(string selector, string xpath)
         {
-            var comp = PerfCompare.Compare(selector);
+            var comp = PerfCompare.Compare(selector,xpath);
             Output(comp);
         }
         protected void Compare(IEnumerable<KeyValuePair<string,Action>> actions,

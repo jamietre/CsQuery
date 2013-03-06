@@ -19,7 +19,8 @@ namespace CsQuery.PerformanceTests
         CsQuery_NoIndex = 1,
         CsQuery_SimpleIndex = 2,
         CsQuery_RangedIndex = 4,
-        HAP = 8
+        HAP = 8,
+        Fizzler=16
     }
 
     public class Program
@@ -28,7 +29,7 @@ namespace CsQuery.PerformanceTests
         {
             get
             {
-                return TestMethods.CsQuery_SimpleIndex | TestMethods.HAP;
+                return TestMethods.CsQuery_RangedIndex | TestMethods.HAP;
             }
         }
         public static string OutputDirectory;
@@ -52,8 +53,8 @@ namespace CsQuery.PerformanceTests
             ResourceDirectory = exeLocation;
 
             Type[] TestTypes = new Type[] { 
-                typeof(_Performance_SmallDom)
-                , typeof(_Performance_MediumDom)
+                typeof(_Performance_SmallDom),
+                typeof(_Performance_MediumDom)
                 ,typeof(_Performance_BigDom) 
             };
 

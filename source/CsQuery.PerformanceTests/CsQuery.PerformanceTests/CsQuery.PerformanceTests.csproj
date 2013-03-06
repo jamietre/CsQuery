@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Performance\PerfCompare.cs" />
     <Compile Include="Performance\PerfComparison.cs" />
     <Compile Include="Performance\PerfData.cs" />
