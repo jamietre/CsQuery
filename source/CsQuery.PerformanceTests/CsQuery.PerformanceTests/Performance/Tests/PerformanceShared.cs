@@ -133,6 +133,7 @@ namespace CsQuery.PerformanceTests.Tests
         public void AttributeSelectors()
         {
             Compare("[type]","//*[@type]");
+            Compare("[type]", "descendant-or-self::*[@type]");
             Compare("input[type]","//input[@type]");
             Compare("input[type][checked]","//input[@type and (@checked)]");
         }
@@ -155,6 +156,10 @@ namespace CsQuery.PerformanceTests.Tests
             Compare("*","//*");
             Compare("div.thumb", "//div[contains(concat(' ', normalize-space(@class), ' '), ' thumb ')]");
             Compare(".note", "//*[contains(concat(' ', normalize-space(@class), ' '), ' note ')]");
+            Compare("table tr:nth-child(3) td:nth-child(2)", "//table//tr[3]//td[2]");
+            Compare("div + div","//div/following-sibling::*[name() = 'div' and (position() = 1)]");
+
+
         }
 
     }

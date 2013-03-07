@@ -120,7 +120,7 @@ namespace CsQuery.PerformanceTests
                 + qu + comp.Description + qu + ","
                 + (comp.SameResults ? 1 : 0).ToString() + ","
                 + qu + comp.Best.Source + qu + ","
-                + qu + comp.HowMuchFaster().ToString() + qu;
+                + qu + comp.HowMuchWorse().ToString() + qu;
 
 
             foreach (var item in comp.Data) {

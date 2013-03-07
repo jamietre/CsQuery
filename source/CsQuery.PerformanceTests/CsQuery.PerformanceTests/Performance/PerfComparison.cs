@@ -69,53 +69,100 @@ namespace CsQuery.PerformanceTests
         /// The number x which the winner beat the next best
         /// </summary>
         /// <returns></returns>
-        public double HowMuchFaster()
+        public double HowMuchWorse()
         {
             EnsureStatisticsCalculated();
-            return Math.Round(_Best.IterationsPerSecond / _NextBest.IterationsPerSecond, 2);
+            return HowMuchWorse(_Best,_NextBest);
         }
+
         public override string ToString()
         {
             string divider="-----------------------" ;
             string newline = System.Environment.NewLine;
-            string results = "";
-            results += ">>> Comparison for \"" + TestName + "\"" + newline;
+            var results = new List<string>();
+
+            results.Add(">>> Comparison for " + TestName );
+
             if (!String.IsNullOrEmpty(Description))
             {
-                results += ">>> " + Description + newline;
+                results.Add(">>> " + Description + newline);
             }
-            results += divider + newline;
 
-            foreach (var item in Data)
+            results.Add("Target".PadRight(40)
+                +"iterations/s".PadRight(16)
+                +"%".PadRight(16)
+                +"winner xFaster");
+
+            results.Add(divider);
+
+            var ordered = Data.OrderByDescending(item => item.Iterations);
+            var best = ordered.First();
+
+            int pos = 1;
+            foreach (var item in ordered)
             {
-                results += "\"" + item.Source + "\": ";
-                if (item.Iterations == 0)
-                {
-                    results += String.Format("Failed, error: \"{0}\"",item.ErrorMessage) + newline;
-                }
-                else
-                {
-                    results += String.Format("{0} iterations per second ({1} in {2} seconds)",
-                    Math.Round(item.IterationsPerSecond, 1),
-                    item.Iterations,
-                    Math.Round((double)item.Time.TotalMilliseconds / 1000d, 1))
-                    + newline;
-                }
+                string result = String.Format("#{0}. {1}", pos, item.Source).PadRight(40);
 
-                
+                    if (item.Iterations == 0)
+                    {
+                        result += String.Format("Failed, error: \"{0}\"", item.ErrorMessage) + newline;
+                    }
+                    else
+                    {
+                        result += String.Format("{0}", Math.Round(item.IterationsPerSecond, 2)).PadRight(16);
+
+                        if (pos > 1)
+                        {
+
+                            result += String.Format("{0}%", PercentWorse(best, item)).PadRight(16)
+                                    + String.Format("{0}x", HowMuchBetter(best, item));
+                        }
+
+                    }
+                results.Add(result);
+                pos++;
             }
-            results += divider + newline;
+            results.Add(divider);
 
-            string howMuchFaster = NextBest.Iterations > 0 ?
-                HowMuchFaster().ToString() :
-                "--";
-            results += String.Format(">>> WINNER: \"{0}\" -- {1} times faster than next best performer ({2})",
-                Best.Source, 
-                howMuchFaster,
-                NextBest.Source);
 
-            return results;
+            return String.Join(Environment.NewLine,results);
         }
+
+        private double PercentWorse(PerfData result1, PerfData result2)
+        {
+            return (HowMuchWorse(result1, result2)) * 100;
+        }
+        private double HowMuchWorse(PerfData result1, PerfData result2)
+        {
+            return PctDiff(result1, result2, true);
+        }
+        private double HowMuchBetter(PerfData result1, PerfData result2)
+        {
+            return PctDiff(result1, result2, false);
+        }
+
+        private double PctDiff(PerfData result1, PerfData result2, bool showPctWorse)
+        {
+            double faster = result1.IterationsPerSecond > result2.IterationsPerSecond ?
+                result1.IterationsPerSecond : result2.IterationsPerSecond;
+
+            double slower = result1.IterationsPerSecond > result2.IterationsPerSecond ?
+                result2.IterationsPerSecond :result1.IterationsPerSecond;
+
+            if (showPctWorse)
+            {
+                return faster != 0 ?
+                    Math.Round(slower / faster, 2) :
+                    0;
+            }
+            else
+            {
+                return slower != 0 ?
+                Math.Round(faster / slower, 2) :
+                0;
+            }
+        }
+
 
         private void EnsureStatisticsCalculated()
         {

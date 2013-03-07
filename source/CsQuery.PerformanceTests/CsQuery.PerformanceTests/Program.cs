@@ -29,7 +29,11 @@ namespace CsQuery.PerformanceTests
         {
             get
             {
-                return TestMethods.CsQuery_RangedIndex | TestMethods.HAP;
+                return TestMethods.CsQuery_RangedIndex | 
+                    TestMethods.CsQuery_NoIndex |
+                    TestMethods.CsQuery_SimpleIndex |
+                    TestMethods.Fizzler |
+                    TestMethods.HAP;
             }
         }
         public static string OutputDirectory;
