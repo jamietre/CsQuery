@@ -15,6 +15,7 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 - [Issue #82](https://github.com/jamietre/CsQuery/issues/82) `DomObject.Text` property not returning correct text when nested text nodes are present
 - Index not being updated correctly for some node removals
 
+
 **Performance improvements**
 
 - HTML Parser: Optimize some constructs held over from C origins for C#/.NET 
@@ -56,6 +57,7 @@ It's possible to do this, although there's no way to directly pass a `DomIndexPr
 **Other changes**
 
 - Add `CsQueryConfig` class to encapsulate configurations. Static `Config` class now implements an instance of `CsQueryConfig`.
+- Add `TextContent` method; standardize implementation of `InnerText` and `TextContent` to roughly match Chrome. Ensure `Text()` jQuery method is consistent with `TextContent`.
 
 #### Version 1.3.4
 

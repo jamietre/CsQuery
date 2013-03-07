@@ -125,13 +125,13 @@ namespace CsQuery
                             var selList = sel.ChildElementsOfTag<IHTMLOptionElement>(HtmlData.tagOPTION);
                             result = String.Join(",", selList
                                 .Where(item => item.HasAttribute("selected") && !item.Disabled)
-                                .Select(item => item.Value ?? item.InnerText));
+                                .Select(item => item.Value ?? item.TextContent));
                             return result;
                         }
                         
                     case HtmlData.tagOPTION:
                         val = e.GetAttribute("value");
-                        return val ?? e.InnerText;
+                        return val ?? e.TextContent;
                     default:
                         return e.GetAttribute("value", String.Empty);
                 }
@@ -170,7 +170,7 @@ namespace CsQuery
                 {
                     case HtmlData.tagTEXTAREA:
                         // should we delete existing children first? they should not exist
-                        e.InnerText = val;
+                        e.TextContent = val;
                         break;
                     case HtmlData.tagINPUT:
                         switch (e.GetAttribute("type", String.Empty))

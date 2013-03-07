@@ -206,7 +206,7 @@ namespace CsQuery.ExtensionMethods.Forms
             switch (element.NodeNameID)
             {
                 case HtmlData.tagTEXTAREA:
-                    element.InnerText = value;
+                    element.TextContent = value;
                     break;
                 case HtmlData.tagINPUT:
                     switch (element["type"])

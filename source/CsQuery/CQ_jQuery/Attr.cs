@@ -68,7 +68,7 @@ namespace CsQuery
                         }
                         else if (name == "value" && el.NodeName == "TEXTAREA")
                         {
-                            return el.InnerText;
+                            return el.TextContent;
                         }
                         break;
                 }

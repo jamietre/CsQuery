@@ -35,7 +35,7 @@ namespace CsQuery.Tests.jQuery
         public void Text()
         {
             var expected = "This link has class=\"blog\": Simon Willison's Weblog";
-            Assert.AreEqual(jQuery("#sap").Text(), expected, "Check for merged text of more then one element.");
+            Assert.AreEqual(expected,jQuery("#sap").Text(), "Check for merged text of more then one element.");
 
             // Check serialization of text values
             var textNode = document.CreateTextNode("foo");

@@ -60,7 +60,7 @@ namespace CsQuery.Tests.Examples
             var myTable = doc[".TABLEBORDER"];
             var res = myTable.Find("tr")
                 .Select(tr=>tr.Cq().Find("td")
-                                 .Select(td => td.InnerText)
+                                 .Select(td => td.TextContent)
                                  .ToList())
                 .ToList();
 

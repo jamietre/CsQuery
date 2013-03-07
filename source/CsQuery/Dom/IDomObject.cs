@@ -131,14 +131,28 @@ namespace CsQuery
         string OuterHTML { get; set; }
 
         /// <summary>
-        /// Gets or sets the text content of a node and its descendants.
+        /// Gets or sets the text content of a node and its descendants, formatted like Chrome (a new
+        /// line for each text node, a space between inline elements, a new line for block elements). The
+        /// contents of comments, CDATA nodes, SCRIPT, STYLE and TEXTAREA nodes are ignored. Note: this
+        /// is an IE property; there is no standard. The way CsQuery formats using InnerText is roughly
+        /// like Chrome but may not match exactly.
+        /// </summary>
+        ///
+        /// <url>
+        /// http://msdn.microsoft.com/en-us/library/ms533899%28v=VS.85%29.aspx
+        /// </url>
+
+        string InnerText { get; set; }
+
+        /// <summary>
+        /// Gets or sets the text content of a node and its descendants, including all whitespace.
         /// </summary>
         ///
         /// <url>
         /// https://developer.mozilla.org/en/DOM/Node.textContent
         /// </url>
 
-        string InnerText { get; set; }
+        string TextContent { get; set; }
 
         /// <summary>
         /// Adds a node to the end of the list of children of a specified parent node. If the node

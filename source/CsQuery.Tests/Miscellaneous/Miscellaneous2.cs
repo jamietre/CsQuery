@@ -26,6 +26,22 @@ namespace CsQuery.Tests.Miscellaneous
     public class Reindex: CsQueryTest
     {
         [Test, TestMethod]
+        public void InnerTextFixBroken()
+        {
+            var dom = TestDom("wiki-cheese");
+
+            dom["span,p,div"].Each(
+                    obj =>
+                    {
+                        if (string.IsNullOrEmpty(obj.TextContent.Trim()) && string.IsNullOrEmpty(obj.InnerHTML))
+                            obj.Remove();
+                    });
+           
+
+
+        }
+
+        [Test, TestMethod]
         public void Issue85_CleanElementAdding()
         {
             CQ dom = "<table><tr></tr></table>";

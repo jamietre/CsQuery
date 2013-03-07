@@ -4095,30 +4095,6 @@
              http://api.jquery.com/text/#text2
              </url>
         </member>
-        <member name="M:CsQuery.CQ.Text(System.Text.StringBuilder,System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
-             <summary>
-             Helper for public Text() function to act recursively.
-             </summary>
-            
-             <param name="sb">
-             .
-             </param>
-             <param name="nodes">
-             .
-             </param>
-        </member>
-        <member name="M:CsQuery.CQ.Text(System.Text.StringBuilder,CsQuery.IDomObject)">
-             <summary>
-             Get the combined text contents of this and all child elements.
-             </summary>
-            
-             <param name="sb">
-             The StribgBuilder object to write to
-             </param>
-             <param name="obj">
-             The object.
-             </param>
-        </member>
         <member name="M:CsQuery.CQ.SetChildText(CsQuery.IDomElement,System.String)">
              <summary>
              Sets a child text for this element, using the text node type appropriate for this element's type
@@ -5997,7 +5973,20 @@
         </member>
         <member name="P:CsQuery.IDomObject.InnerText">
              <summary>
-             Gets or sets the text content of a node and its descendants.
+             Gets or sets the text content of a node and its descendants, formatted like Chrome (a new
+             line for each text node, a space between inline elements, a new line for block elements). The
+             contents of comments, CDATA nodes, SCRIPT, STYLE and TEXTAREA nodes are ignored. Note: this
+             is an IE property; there is no standard. The way CsQuery formats using InnerText is roughly
+             like Chrome but may not match exactly.
+             </summary>
+            
+             <url>
+             http://msdn.microsoft.com/en-us/library/ms533899%28v=VS.85%29.aspx
+             </url>
+        </member>
+        <member name="P:CsQuery.IDomObject.TextContent">
+             <summary>
+             Gets or sets the text content of a node and its descendants, including all whitespace.
              </summary>
             
              <url>
@@ -7499,6 +7488,49 @@
              A new element that inherits DomElement
              </returns>
         </member>
+        <member name="M:CsQuery.Implementation.DomElement.GetTextContent(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+             <summary>
+             Helper for public Text() function to act recursively.
+             </summary>
+            
+             <param name="sb">
+             A stringbuilder
+             </param>
+             <param name="nodes">
+             The nodes to access innnerText from
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.GetInnerText(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+             <summary>
+             Enumerates get inner text in this collection
+             
+             Rules:
+             
+             All whitespace between text or inline nodes is coalesced to a single whitespace.
+             A block node starts a new line.
+             Leading and trailing whitespace is omitted.
+             </summary>
+            
+             <param name="nodes">
+             The nodes to access innnerText from.
+             </param>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process get inner text in this collection.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.AddOwnText_TextContent(System.Collections.Generic.List{System.String},CsQuery.IDomObject)">
+             <summary>
+             Get the text contents o
+             </summary>
+            
+             <param name="sb">
+             The StribgBuilder object to write to
+             </param>
+             <param name="obj">
+             The object.
+             </param>
+        </member>
         <member name="M:CsQuery.Implementation.DomElement.ElementHtml">
              <summary>
              Returns the HTML for this element, but ignoring children/innerHTML.
@@ -7509,6 +7541,13 @@
              </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.IndexKeys">
+             <summary>
+             Gets or sets the outer HTML.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en-US/docs/DOM/element.outerHTML
+             </url>
              <summary>
              Index keys for this collection.
              </summary>
@@ -8215,10 +8254,23 @@
             Returns text of the inner HTML. When setting, any children will be removed.
             </summary>
         </member>
-        <member name="P:CsQuery.Implementation.DomElement.InnerText">
+        <member name="P:CsQuery.Implementation.DomElement.TextContent">
             <summary>
             Gets or sets the text content of a node and its descendants.
             </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.InnerText">
+             <summary>
+             Gets or sets the text content of a node and its descendants, formatted like Chrome (a new
+             line for each text node, a space between inline elements, a new line for block elements). The
+             contents of comments, CDATA nodes, SCRIPT, STYLE and TEXTAREA nodes are ignored. Note: this
+             is an IE property; there is no standard. The way CsQuery formats using InnerText is roughly
+             like Chrome but may not match exactly.
+             </summary>
+            
+             <url>
+             http://msdn.microsoft.com/en-us/library/ms533899%28v=VS.85%29.aspx
+             </url>
         </member>
         <member name="P:CsQuery.Implementation.DomElement.ElementIndex">
             <summary>
@@ -8239,15 +8291,6 @@
             <summary>
             A sequence of all unique class names defined on this element.
             </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.OuterHTML">
-             <summary>
-             Gets or sets the outer HTML.
-             </summary>
-            
-             <url>
-             https://developer.mozilla.org/en-US/docs/DOM/element.outerHTML
-             </url>
         </member>
         <member name="P:CsQuery.Implementation.DomElement.CsQuery#IAttributeCollection#Item(System.String)">
              <summary>

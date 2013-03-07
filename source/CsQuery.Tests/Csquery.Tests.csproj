@@ -96,6 +96,7 @@
     <Compile Include="Arrays.cs" />
     <Compile Include="AssertEx.cs" />
     <Compile Include="Core\Documents\MultipleDocs.cs" />
+    <Compile Include="Core\Dom\InnerText.cs" />
     <Compile Include="Core\Dom\DomText.cs" />
     <Compile Include="Core\Dom\HTMLSelectElement.cs" />
     <Compile Include="Core\Dom\DomSelectElement.cs" />
@@ -104,6 +105,8 @@
     <Compile Include="Core\Dom\DomElement.cs" />
     <Compile Include="Core\Dom\OuterHtml.cs" />
     <Compile Include="Core\Dom\SpecialElements.cs" />
+    <Compile Include="Core\Index\RangedIndexTests.cs" />
+    <Compile Include="Core\Index\SharedIndexTests.cs" />
     <Compile Include="Core\Selectors\ContentIsNotNumeric.cs" />
     <Compile Include="Core\WebIO\BasicWeb.cs" />
     <Compile Include="ExtensionMethods\Xml.cs" />

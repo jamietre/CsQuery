@@ -329,6 +329,19 @@ namespace CsQuery.Implementation
                 throw new InvalidOperationException("Assigning InnerText is not valid for this element type.");
             }
         }
+
+        public virtual string TextContent
+        {
+            get
+            {
+                throw new InvalidOperationException("Accessing TextContent is not valid for this element type.");
+            }
+            set
+            {
+                throw new InvalidOperationException("Assigning TextContent is not valid for this element type.");
+            }
+        }
+
         // Owner can be null (this is an unbound element)
         // if so create an arbitrary one.
 

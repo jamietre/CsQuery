@@ -30,12 +30,38 @@ namespace CsQuery
 
         public string Text()
         {
+
+
             StringBuilder sb = new StringBuilder();
 
-            Text(sb, SelectionSet);
+            AddTextToStringBuilder(sb, Selection);
 
             return sb.ToString();
         }
+
+
+        protected void AddTextToStringBuilder(StringBuilder sb, IEnumerable<IDomObject> nodes)
+        {
+            foreach (var item in nodes) {
+                
+                switch(item.NodeType) {
+                    case NodeType.TEXT_NODE:
+                        sb.Append(item.NodeValue);
+                        break;
+                    case NodeType.DOCUMENT_NODE:
+                    case NodeType.DOCUMENT_FRAGMENT_NODE:
+                        AddTextToStringBuilder(sb,item.ChildNodes);
+                        break;
+                    case NodeType.ELEMENT_NODE:
+                        sb.Append(item.TextContent);
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+        }
+        
 
         /// <summary>
         /// Set the content of each element in the set of matched elements to the specified text.
@@ -86,18 +112,18 @@ namespace CsQuery
         {
 
             int count = 0;
-            StringBuilder sb = new StringBuilder();
+            
             foreach (IDomElement obj in Elements)
             {
-                sb.Clear();
-                Text(sb, obj);
-                string newText = func(count, sb.ToString()).ToString();
-                if (sb.ToString() != newText)
+                var inner = obj.TextContent;
+                string newText = func(count, inner).ToString();
+                if (newText != inner)
                 {
                     SetChildText(obj, newText);
                 }
                 count++;
             }
+
             return this;
         }
 
@@ -105,68 +131,6 @@ namespace CsQuery
 
         #region private methods
 
-        /// <summary>
-        /// Helper for public Text() function to act recursively.
-        /// </summary>
-        ///
-        /// <param name="sb">
-        /// .
-        /// </param>
-        /// <param name="nodes">
-        /// .
-        /// </param>
-
-        private void Text(StringBuilder sb, IEnumerable<IDomObject> nodes)
-        {
-            IDomObject lastElement = null;
-            foreach (IDomObject obj in nodes)
-            {
-                int len = sb.Length;
-                
-                Text(sb, obj);
-                
-                if (lastElement != null && obj.Index > 0
-                   && obj.PreviousSibling != lastElement
-                    && sb.Length > len)
-                {
-                    sb.Append(" ");
-                }
-
-                lastElement = obj;
-
-            }
-        }
-
-        /// <summary>
-        /// Get the combined text contents of this and all child elements.
-        /// </summary>
-        ///
-        /// <param name="sb">
-        /// The StribgBuilder object to write to
-        /// </param>
-        /// <param name="obj">
-        /// The object.
-        /// </param>
-        
-        private void Text(StringBuilder sb, IDomObject obj)
-        {
-            switch (obj.NodeType)
-            {
-                case NodeType.TEXT_NODE:
-                case NodeType.CDATA_SECTION_NODE:
-                case NodeType.COMMENT_NODE:
-                    sb.Append(obj.NodeValue);
-                    break;
-                case NodeType.ELEMENT_NODE:
-                case NodeType.DOCUMENT_FRAGMENT_NODE:
-                case NodeType.DOCUMENT_NODE:
-                    Text(sb, obj.ChildNodes);
-                    break;
-                case NodeType.DOCUMENT_TYPE_NODE:
-                default:
-                    break;
-            }
-        }
 
 
         /// <summary>

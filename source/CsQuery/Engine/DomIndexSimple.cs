@@ -21,14 +21,29 @@ namespace CsQuery.Engine
 
         public DomIndexSimple()
         {
-            Index = new Dictionary<ushort[], ICollection<IDomObject>>(PathKeyComparer.Comparer);
+            Index = new Dictionary<ushort[], IndexValue>(PathKeyComparer.Comparer);
         }
 
-        private IDictionary<ushort[], ICollection<IDomObject>> Index;
 
-        private ICollection<IDomObject> GetElementSet() {
-            return new List<IDomObject>();
+        struct IndexValue
+        {
+            public List<IDomObject> Set;
+            public bool IsSorted;
+            public void Initialize()
+            {
+            
+                Set = new List<IDomObject>();
+            }
+            public void Sort()
+            {
+                Set.Sort();
+                IsSorted = true;
+            }
         }
+
+        private IDictionary<ushort[], IndexValue> Index;
+
+        
 
         /// <summary>
         /// Add an element to the index using the default keys for this element.
@@ -70,16 +85,17 @@ namespace CsQuery.Engine
 
         public void AddToIndex(ushort[] key, IDomIndexedNode element)
         {
-            ICollection<IDomObject> existing;
+            IndexValue existing;
             if (!Index.TryGetValue(key, out existing))
             {
-                existing = GetElementSet();
-                existing.Add(element.IndexReference);
+                existing.Initialize();
+                existing.Set.Add(element.IndexReference);
                 Index.Add(key, existing);
             }
             else
             {
-                existing.Add(element.IndexReference);
+                existing.Set.Add(element.IndexReference);
+                existing.IsSorted = false;
             }
         }
 
@@ -96,10 +112,11 @@ namespace CsQuery.Engine
 
         public void RemoveFromIndex(ushort[] key, IDomIndexedNode element)
         {
-            ICollection<IDomObject> existing;
+            IndexValue existing;
             if (Index.TryGetValue(key, out existing))
             {
-                existing.Remove(element.IndexReference);
+                existing.Set.Remove(element.IndexReference);
+                existing.IsSorted = false;
             }
         }
 
@@ -144,10 +161,13 @@ namespace CsQuery.Engine
 
         public IEnumerable<IDomObject> QueryIndex(ushort[] subKey)
         {
-            ICollection<IDomObject> existing;
+            IndexValue existing;
             if (Index.TryGetValue(subKey, out existing))
             {
-                return existing.OrderBy(item => item);
+                if (!existing.IsSorted) {
+                    existing.Set.Sort();
+                }
+                return existing.Set;
 
             }
             return Enumerable.Empty<IDomObject>();

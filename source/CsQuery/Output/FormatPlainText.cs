@@ -122,13 +122,13 @@ namespace CsQuery.Output
                                 case "PRE":
                                     RemoveTrailingWhitespace(sb);
                                     sb.Append(System.Environment.NewLine);
-                                    sb.Append(ToStandardLineEndings(el.InnerText));
+                                    sb.Append(ToStandardLineEndings(el.TextContent));
                                     RemoveTrailingWhitespace(sb);
                                     sb.Append(System.Environment.NewLine);
                                     skipWhitespace = true;
                                     break;
                                 case "A":
-                                    sb.Append(el.InnerText + " (" + el["href"] + ")");
+                                    sb.Append(el.TextContent + " (" + el["href"] + ")");
                                     break;
                                 default:
                                     
