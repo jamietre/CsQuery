@@ -132,6 +132,7 @@
     <Compile Include="Core\Methods\Slice.cs" />
     <Content Include="Resources\ABS - Auto Brake Service.htm" />
     <Content Include="Resources\arabic.htm" />
+    <Content Include="Resources\jquery-unit-index.textContents.txt" />
     <Content Include="Resources\jsdom\Level2\anchor.html" />
     <Content Include="Resources\jsdom\Level2\anchor2.html" />
     <Content Include="Resources\jsdom\Level2\anchor3.html" />
@@ -208,6 +209,7 @@
     <Content Include="Resources\PupilLogin.htm" />
     <Content Include="Resources\samsung-ebay-2.htm" />
     <Content Include="Resources\samsung-ebay.htm" />
+    <Content Include="Resources\TestHtml.textContent.txt" />
     <Content Include="Resources\TextAreaTest.htm" />
     <Compile Include="Core\OutputFormatters\FormatPlainText.cs" />
     <Compile Include="Core\Selectors\CSS3\LastChild.cs" />

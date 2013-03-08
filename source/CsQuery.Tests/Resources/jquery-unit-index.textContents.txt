@@ -1,0 +1,234 @@
+
+	jQuery Test Suite
+		(minified)
+	
+	
+	
+	
+	
+
+	
+	
+		
+	
+	
+	
+    
+	
+	
+		See this blog entry for more information.
+		
+			Here are some links in a normal paragraph: Google,
+			Google Groups (Link).
+			This link has class="blog":
+			diveintomark
+
+		
+		
+			Everything inside the red border is inside a div with id="foo".
+			This is a normal link: Yahoo
+			This link has class="blog": Simon Willison's Weblog
+
+		
+		
+		Try them out:
+		
+		
+		
+			Action:
+			
+			
+			
+
+			
+			
+			
+
+			
+			
+
+			
+			
+
+			Button
+
+			foobar
+
+			
+				Nothing
+				1
+				2
+				3
+			
+			
+				Nothing
+				1
+				2
+				3
+			
+			
+				Nothing
+				1
+				2
+				3
+				no value
+			
+			
+				
+					Nothing
+					1
+					2
+				
+				3
+				no value
+			
+			
+				1
+				2
+				3
+			
+
+			
+				
+				
+			
+
+			
+			
+			
+			
+			
+			
+
+			test element
+		
+		Float test.
+		
+		
+			
+			
+		
+		
+
+		
+			
+			
+			
+			
+		
+
+		
+			?
+Z
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+				ABC
+				ABC
+				ABC
+			
+			
+				ABC
+				ABC
+				ABC
+			
+			
+				YES
+			
+			
+				NO
+			
+			
+			
+			
+			NO
+			
+			
+			
+			
+				NO
+			
+			
+			
+				
+			
+		
+		
+			
+				
+					
+					
+					
+					
+				
+			
+			hi there 
+			
+				hidden
+			
+		
+
+		
+			
+				Rice
+				Beans
+				Blinis
+				Tofu
+			
+
+			I'm hungry. I should...
+			...Eat lots of food... |
+			...Eat a little food... |
+			...Eat no food...
+			...Eat a burger...
+			...Eat some funyuns...
+			...Eat some funyuns...
+		
+
+		
+			
+			
+		
+
+		
+			1
+			2
+		
+	
+	
+	
+		
+			fadeInfadeIn
+			fadeOutfadeOut
+
+			showshow
+			hidehide
+
+			toggleintogglein
+			toggleouttoggleout
+
+
+			slideUpslideUp
+			slideDownslideDown
+
+			slideToggleInslideToggleIn
+			slideToggleOutslideToggleOut
+
+			fadeToggleInfadeToggleIn
+			fadeToggleOutfadeToggleOut
+
+			fadeTofadeTo
+		
+
+		
+	
+

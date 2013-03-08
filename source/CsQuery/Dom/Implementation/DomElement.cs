@@ -727,10 +727,13 @@ namespace CsQuery.Implementation
 
         /// <summary>
         /// Gets or sets the text content of a node and its descendants, formatted like Chrome (a new
-        /// line for each text node, a space between inline elements, a new line for block elements). The
-        /// contents of comments, CDATA nodes, SCRIPT, STYLE and TEXTAREA nodes are ignored. Note: this
-        /// is an IE property; there is no standard. The way CsQuery formats using InnerText is roughly
-        /// like Chrome but may not match exactly.
+        /// line for each text node, a space between inline elements, a new line for block elements).
+        /// Unlike browsers, the contents of hidden elements are included, since we cannot determine
+        /// conclusively what is hidden.
+        /// 
+        /// The contents of comments, CDATA nodes, SCRIPT, STYLE and TEXTAREA nodes are ignored. Note:
+        /// this is an IE property; there is no standard. The way CsQuery formats using InnerText is
+        /// roughly like Chrome but may not match exactly.
         /// </summary>
         ///
         /// <url>
@@ -763,158 +766,7 @@ namespace CsQuery.Implementation
             }
         }
 
-        private bool isWhitespace(string what)
-        {
-            return what == "" || what == " " || what == Environment.NewLine;
-        }
         
-        /// <summary>
-        /// Helper for public Text() function to act recursively.
-        /// </summary>
-        ///
-        /// <param name="sb">
-        /// A stringbuilder
-        /// </param>
-        /// <param name="nodes">
-        /// The nodes to access innnerText from
-        /// </param>
-
-        private IEnumerable<string> GetTextContent(IEnumerable<IDomObject> nodes)
-        {
-            var content = new List<string>();
-            Stack<IDomObject> stack = new Stack<IDomObject>(nodes.Reverse());
-
-            while (stack.Count>0) {
-                var el = stack.Pop();
-
-                if (el.HasChildren) {
-                    foreach (var node in el.ChildNodes.Reverse()) {
-                        stack.Push(node);
-                    }
-                } else {
-
-                    AddOwnText_TextContent(content, el);
-                }
-            }
-            return content;
-        }
-
-        /// <summary>
-        /// Enumerates get inner text in this collection
-        /// 
-        /// Rules:
-        /// 
-        /// All whitespace between text or inline nodes is coalesced to a single whitespace.
-        /// A block node starts a new line.
-        /// Leading and trailing whitespace is omitted.
-        /// </summary>
-        ///
-        /// <param name="nodes">
-        /// The nodes to access innnerText from.
-        /// </param>
-        ///
-        /// <returns>
-        /// An enumerator that allows foreach to be used to process get inner text in this collection.
-        /// </returns>
-
-        private IEnumerable<string> GetInnerText(IEnumerable<IDomObject> nodes)
-        {
-            var content = new List<string>();
-            Stack<IDomObject> stack = new Stack<IDomObject>(nodes.Reverse());
-
-
-            while (stack.Count > 0)
-            {
-                var el = stack.Pop();
-
-                // coalesce adjacent text nodes
-                
-                if (HtmlData.IsBlock(el.NodeNameID) && content.Count>0 && content[content.Count-1]!=Environment.NewLine)
-                {
-                    if (isWhitespace(content[content.Count - 1]))
-                    {
-                        content[content.Count - 1] = System.Environment.NewLine;
-                    }
-                    else
-                    {
-                        content.Add(System.Environment.NewLine);
-                    }
-                }
-
-                if (el.HasChildren)
-                {
-                    foreach (var node in el.ChildNodes.Reverse())
-                    {
-                        stack.Push(node);
-                    }
-                        
-                }
-                else
-                {
-                    AddOwnText_InnerText(content, el);
-                }
-            }
-            // replace last trailing whitespace with newline
-            if (content.Count>0 && isWhitespace(content[content.Count - 1]))
-            {
-                content[content.Count - 1] = Environment.NewLine;
-            }
-            return content;
-        }
-
-        /// <summary>
-        /// Get the text contents o
-        /// </summary>
-        ///
-        /// <param name="sb">
-        /// The StribgBuilder object to write to
-        /// </param>
-        /// <param name="obj">
-        /// The object.
-        /// </param>
-
-        private void AddOwnText_TextContent(List<string> list, IDomObject obj)
-        {
-            switch (obj.NodeType)
-            {
-                case NodeType.TEXT_NODE:
-                    list.Add(obj.NodeValue);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private void AddOwnText_InnerText(List<string> list, IDomObject obj)
-        {
-            var parentNodeId = obj.ParentNode.NodeNameID;
-            if (parentNodeId == HtmlData.tagSCRIPT || parentNodeId == HtmlData.tagSTYLE || parentNodeId == HtmlData.tagTEXTAREA)
-            {
-                return;
-            }
-            
-            switch (obj.NodeType)
-            {
-                case NodeType.TEXT_NODE:
-                    var clean = obj.NodeValue.Trim();
-
-                    if (!isWhitespace(clean)) {
-                        list.Add(clean);
-                        // add a single whitespace to replace any trailing whitespace
-                        if (obj.NodeValue.TrimEnd() != obj.NodeValue)
-                        {
-                            list.Add(" ");
-                        }
-                    } 
-                    else if (list.Count>0 && !isWhitespace(list[list.Count-1]))
-                    {
-                        list.Add(" ");
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
 
         /// <summary>
         /// The index excluding text nodes.
@@ -979,6 +831,7 @@ namespace CsQuery.Implementation
         }
 
         #endregion
+
         #region public methods
 
 
@@ -1695,6 +1548,165 @@ namespace CsQuery.Implementation
         #endregion
 
         #region private methods
+
+        private bool isWhitespace(string what)
+        {
+            return what == "" || what == " " || what == Environment.NewLine;
+        }
+
+        /// <summary>
+        /// Helper for public Text() function to act recursively.
+        /// </summary>
+        ///
+        /// <param name="sb">
+        /// A stringbuilder
+        /// </param>
+        /// <param name="nodes">
+        /// The nodes to access innnerText from
+        /// </param>
+
+        private IEnumerable<string> GetTextContent(IEnumerable<IDomObject> nodes)
+        {
+            var content = new List<string>();
+            Stack<IDomObject> stack = new Stack<IDomObject>(nodes.Reverse());
+
+            while (stack.Count > 0)
+            {
+                var el = stack.Pop();
+
+                if (el.HasChildren)
+                {
+                    foreach (var node in el.ChildNodes.Reverse())
+                    {
+                        stack.Push(node);
+                    }
+                }
+                else
+                {
+
+                    AddOwnText_TextContent(content, el);
+                }
+            }
+            return content;
+        }
+
+        /// <summary>
+        /// Enumerates get inner text in this collection
+        /// 
+        /// Rules:
+        /// 
+        /// All whitespace between text or inline nodes is coalesced to a single whitespace.
+        /// A block node starts a new line.
+        /// Leading and trailing whitespace is omitted.
+        /// </summary>
+        ///
+        /// <param name="nodes">
+        /// The nodes to access innnerText from.
+        /// </param>
+        ///
+        /// <returns>
+        /// An enumerator that allows foreach to be used to process get inner text in this collection.
+        /// </returns>
+
+        private IEnumerable<string> GetInnerText(IEnumerable<IDomObject> nodes)
+        {
+            var content = new List<string>();
+            Stack<IDomObject> stack = new Stack<IDomObject>(nodes.Reverse());
+
+
+            while (stack.Count > 0)
+            {
+                var el = stack.Pop();
+
+                // coalesce adjacent text nodes
+
+                if (HtmlData.IsBlock(el.NodeNameID) && content.Count > 0 && content[content.Count - 1] != Environment.NewLine)
+                {
+                    if (isWhitespace(content[content.Count - 1]))
+                    {
+                        content[content.Count - 1] = System.Environment.NewLine;
+                    }
+                    else
+                    {
+                        content.Add(System.Environment.NewLine);
+                    }
+                }
+
+                if (el.HasChildren)
+                {
+                    foreach (var node in el.ChildNodes.Reverse())
+                    {
+                        stack.Push(node);
+                    }
+
+                }
+                else
+                {
+                    AddOwnText_InnerText(content, el);
+                }
+            }
+            // replace last trailing whitespace with newline
+            if (content.Count > 0 && isWhitespace(content[content.Count - 1]))
+            {
+                content[content.Count - 1] = Environment.NewLine;
+            }
+            return content;
+        }
+
+        /// <summary>
+        /// Get the text contents o
+        /// </summary>
+        ///
+        /// <param name="sb">
+        /// The StribgBuilder object to write to
+        /// </param>
+        /// <param name="obj">
+        /// The object.
+        /// </param>
+
+        private void AddOwnText_TextContent(List<string> list, IDomObject obj)
+        {
+            switch (obj.NodeType)
+            {
+                case NodeType.TEXT_NODE:
+                    list.Add(obj.NodeValue);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void AddOwnText_InnerText(List<string> list, IDomObject obj)
+        {
+            var parentNodeId = obj.ParentNode.NodeNameID;
+            if (parentNodeId == HtmlData.tagSCRIPT || parentNodeId == HtmlData.tagSTYLE || parentNodeId == HtmlData.tagTEXTAREA)
+            {
+                return;
+            }
+
+            switch (obj.NodeType)
+            {
+                case NodeType.TEXT_NODE:
+                    var clean = obj.NodeValue.Trim();
+
+                    if (!isWhitespace(clean))
+                    {
+                        list.Add(clean);
+                        // add a single whitespace to replace any trailing whitespace
+                        if (obj.NodeValue.TrimEnd() != obj.NodeValue)
+                        {
+                            list.Add(" ");
+                        }
+                    }
+                    else if (list.Count > 0 && !isWhitespace(list[list.Count - 1]))
+                    {
+                        list.Add(" ");
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
 
         private void SetNodeName(string nodeName)
         {

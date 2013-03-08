@@ -8,6 +8,15 @@ namespace CsQuery.Tests
 {
     public static class TestExtensionMethods
     {
+        public static string AsString(this ushort[] array)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var sh in array)
+            {
+                sb.Append((char)sh);
+            }
+            return sb.ToString();
+        }
         public static bool IsNullOrEmpty<T>(this IEnumerable<T> baseList)
         {
             if (baseList == null) return true;

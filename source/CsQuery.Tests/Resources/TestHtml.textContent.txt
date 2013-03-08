@@ -1,0 +1,36 @@
+﻿    Hello there
+     
+    
+        ▾
+        jamietre 
+        
+            3,215
+        
+        
+            
+            2
+        
+        
+            
+            13
+        
+
+        
+        
+        |
+        Test textarea <div><span></div>
+    
+
+    
+        
+            
+                Nested hidden span
+                Nested hidden header
+            
+        
+        
+            Nested non-hidden span
+            Nested non=hidden header
+        
+    
+

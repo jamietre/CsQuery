@@ -132,10 +132,13 @@ namespace CsQuery
 
         /// <summary>
         /// Gets or sets the text content of a node and its descendants, formatted like Chrome (a new
-        /// line for each text node, a space between inline elements, a new line for block elements). The
-        /// contents of comments, CDATA nodes, SCRIPT, STYLE and TEXTAREA nodes are ignored. Note: this
-        /// is an IE property; there is no standard. The way CsQuery formats using InnerText is roughly
-        /// like Chrome but may not match exactly.
+        /// line for each text node, a space between inline elements, a new line for block elements).
+        /// Unlike browsers, the contents of hidden elements are included, since we cannot determine
+        /// conclusively what is hidden.
+        /// 
+        /// The contents of comments, CDATA nodes, SCRIPT, STYLE and TEXTAREA nodes are ignored. Note:
+        /// this is an IE property; there is no standard. The way CsQuery formats using InnerText is
+        /// roughly like Chrome but may not match exactly.
         /// </summary>
         ///
         /// <url>
