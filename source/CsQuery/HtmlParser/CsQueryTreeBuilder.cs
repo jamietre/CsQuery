@@ -315,12 +315,13 @@ namespace CsQuery.HtmlParser
                     new DomDocument(DomIndexProvider.GetDomIndex());
             }
 
-            // don't do this while creating the document; while this improves performance when working
-            // interactively it would add overhead now. 
+            // don't queue changes this while creating the document; while this improves performance when
+            // working interactively, but it would add overhead now. 
 
-            if (Document.DocumentIndex.Features.HasFlag(DomIndexFeatures.Queue))
+            IDomIndexQueue indexQueue = Document.DocumentIndex as IDomIndexQueue;
+            if (indexQueue != null)
             {
-                Document.DocumentIndex.QueueChanges = false;
+                indexQueue.QueueChanges = false;
             }
         }
 

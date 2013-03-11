@@ -113,8 +113,9 @@ namespace CsQuery.Engine
             IEnumerable<IDomObject> selectionSource=null;
 
             // Disable the index if there is no context (e.g. disconnected elements)
-            // or if the first element is not indexed, or the context is not from the same
-            // document as this selector is bound.
+            // or if the first element is not indexed, or the context is not from the same document as this
+            // selector is bound. Determine which features can be used for this query by casting the index
+            // to the known interfaces. 
 
             
             bool useIndex;
@@ -125,11 +126,14 @@ namespace CsQuery.Engine
                 useIndex = !first.IsDisconnected && first.IsIndexed && first.Document==Document;
             }
 
-            // determine which index features can be used for this query
-            
-            DomIndexFeatures features = !useIndex ?
-                0 :
-                Document.DocumentIndex.Features;
+            IDomIndexRanged rangedIndex=null;
+            IDomIndexSimple simpleIndex=null;
+
+            if (useIndex)
+            {
+                rangedIndex = Document.DocumentIndex as IDomIndexRanged;
+                simpleIndex = Document.DocumentIndex as IDomIndexSimple;
+            }
 
             for (activeSelectorId = 0; activeSelectorId < ActiveSelectors.Count; activeSelectorId++)
             {
@@ -195,8 +199,8 @@ namespace CsQuery.Engine
 
                 // build index keys when possible for the active index type
 
-                if ((features.HasFlag(DomIndexFeatures.Range) ||
-                    (features.HasFlag(DomIndexFeatures.Lookup) && canUseBasicIndex))
+                if (rangedIndex != null ||
+                    (simpleIndex != null && canUseBasicIndex)
                     && !selector.NoIndex)
                 {
 
@@ -256,7 +260,7 @@ namespace CsQuery.Engine
                         // are here, then the prior logic dictates that the ranged index is available. But always use
                         // the simple index if that's all we need because it could be faster. 
                         
-                        result = Document.DocumentIndex.QueryIndex(key.ToArray());
+                        result = simpleIndex.QueryIndex(key.ToArray());
                     }
                     else
                     {
@@ -268,7 +272,7 @@ namespace CsQuery.Engine
 
                             var subKey = key.Concat(HtmlData.indexSeparator).Concat(obj.NodePath).ToArray();
                             
-                            var matches = Document.DocumentIndex.QueryIndex(subKey,depth, descendants);
+                            var matches = rangedIndex.QueryIndex(subKey,depth, descendants);
 
                             elementMatches.AddRange(matches);
                         }
@@ -702,6 +706,13 @@ namespace CsQuery.Engine
         #endregion
 
         #region private methods
+
+        private DomIndexFeatures GetFeatures(IDomIndex index)
+        {
+            return (index is IDomIndexQueue ? DomIndexFeatures.Queue : 0) |
+                (index is IDomIndexRanged ? DomIndexFeatures.Range : 0);
+
+        }
 
         private IEnumerable<IDomObject> EmptyEnumerable()
         {

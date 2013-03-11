@@ -50,7 +50,7 @@ namespace CsQuery.Engine
 
         #region private properties
 
-        private IDictionary<string, Type> InnerSelectors;
+        private ConcurrentDictionary<string, Type> InnerSelectors;
         
         #endregion
 
@@ -185,7 +185,7 @@ namespace CsQuery.Engine
         public void Register(string name, Type type)
         {
             ValidateType(type);
-            InnerSelectors.Add(name, type);
+            InnerSelectors[name]= type;
         }
 
         /// <summary>
@@ -222,7 +222,8 @@ namespace CsQuery.Engine
 
         public bool Unregister(string name)
         {
-            return InnerSelectors.Remove(name);
+            Type value;
+            return InnerSelectors.TryRemove(name, out value);
         }
 
         #endregion
@@ -265,7 +266,7 @@ namespace CsQuery.Engine
                     if (t.GetInterface("IPseudoSelector") != null)
                     {
                         IPseudoSelector instance = (IPseudoSelector)FastActivator.CreateInstance(t);
-                        InnerSelectors.Add(instance.Name,t);
+                        InnerSelectors[instance.Name]=t;
                         loaded++;
                     }
 
