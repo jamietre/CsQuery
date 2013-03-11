@@ -127,9 +127,9 @@ namespace CsQuery.Engine
 
             // determine which index features can be used for this query
             
-            DomIndexFeatures features = !useIndex ?
-                0 :
-                Document.DocumentIndex.Features;
+
+            IDomIndexRanged rangedIndex = Document.DocumentIndex as IDomIndexRanged;
+            IDomIndexSimple simpleIndex = Document.DocumentIndex as IDomIndexSimple;
 
             for (activeSelectorId = 0; activeSelectorId < ActiveSelectors.Count; activeSelectorId++)
             {
@@ -195,8 +195,8 @@ namespace CsQuery.Engine
 
                 // build index keys when possible for the active index type
 
-                if ((features.HasFlag(DomIndexFeatures.Range) ||
-                    (features.HasFlag(DomIndexFeatures.Lookup) && canUseBasicIndex))
+                if (rangedIndex != null ||
+                    (simpleIndex != null && canUseBasicIndex)
                     && !selector.NoIndex)
                 {
 
@@ -256,7 +256,7 @@ namespace CsQuery.Engine
                         // are here, then the prior logic dictates that the ranged index is available. But always use
                         // the simple index if that's all we need because it could be faster. 
                         
-                        result = Document.DocumentIndex.QueryIndex(key.ToArray());
+                        result = simpleIndex.QueryIndex(key.ToArray());
                     }
                     else
                     {
@@ -268,7 +268,7 @@ namespace CsQuery.Engine
 
                             var subKey = key.Concat(HtmlData.indexSeparator).Concat(obj.NodePath).ToArray();
                             
-                            var matches = Document.DocumentIndex.QueryIndex(subKey,depth, descendants);
+                            var matches = rangedIndex.QueryIndex(subKey,depth, descendants);
 
                             elementMatches.AddRange(matches);
                         }
@@ -702,6 +702,13 @@ namespace CsQuery.Engine
         #endregion
 
         #region private methods
+
+        private DomIndexFeatures GetFeatures(IDomIndex index)
+        {
+            return (index is IDomIndexQueue ? DomIndexFeatures.Queue : 0) |
+                (index is IDomIndexRanged ? DomIndexFeatures.Range : 0);
+
+        }
 
         private IEnumerable<IDomObject> EmptyEnumerable()
         {

@@ -206,7 +206,10 @@
     <Compile Include="Dom\Implementation\NodeList.cs" />
     <Compile Include="Dom\Implementation\HtmlElements\HTMLOptionsCollection.cs" />
     <Compile Include="Dom\HtmlElements\IHTMLSelectElement.cs" />
+    <Compile Include="Engine\IDomIndexSimple.cs" />
     <Compile Include="Engine\DomIndexNone.cs" />
+    <Compile Include="Engine\IDomIndexRanged.cs" />
+    <Compile Include="Engine\IDomIndexQueue.cs" />
     <Compile Include="Engine\DomIndexProviders.cs" />
     <Compile Include="Engine\DomIndexSimple.cs" />
     <Compile Include="Engine\enumDomIndexFeatures.cs" />
@@ -534,7 +537,7 @@ xcopy $(TargetDir)CsQuery.xml $(SolutionDir)..\Distribution /Y
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UpdateFileVersion="False" BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UseGlobalSettings="False" />
+      <UserProperties BuildVersion_UseGlobalSettings="False" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_UpdateFileVersion="False" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

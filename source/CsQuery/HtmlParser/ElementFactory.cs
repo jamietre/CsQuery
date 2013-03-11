@@ -115,7 +115,7 @@ namespace CsQuery.HtmlParser
         /// <summary>
         /// Size of the blocks to read from the input stream (char[] = 2x bytes)
         /// </summary>
-        private const int tokenizerBlockSize = 2048;
+        private const int tokenizerBlockChars = 2048;
 
         /// <summary>
         /// Size of the preprocessor block; the maximum number of bytes in which the character set
@@ -123,7 +123,7 @@ namespace CsQuery.HtmlParser
         /// tokenizer won't quit before moving outside the preprocessor block.
         /// </summary>
 
-        private const int preprocessorBlockSize = 4096;
+        private const int preprocessorBlockBytes = 4096;
 
         private static IDictionary<string, string> DefaultContext;
         private Tokenizer tokenizer;
@@ -253,8 +253,8 @@ namespace CsQuery.HtmlParser
            // split into two streams so we can restart if needed
            // without having to re-parse the entire stream.
 
-            byte[] part1bytes = new byte[preprocessorBlockSize];
-            int part1size = inputStream.Read(part1bytes, 0, preprocessorBlockSize);
+            byte[] part1bytes = new byte[preprocessorBlockBytes];
+            int part1size = inputStream.Read(part1bytes, 0, preprocessorBlockBytes);
 
             MemoryStream part1stream = new MemoryStream(part1bytes);
                  
@@ -350,12 +350,14 @@ namespace CsQuery.HtmlParser
 
             Tokenize();
 
+            // If the character set was declared within the first block
+
             if (ReEncode == ReEncodeAction.ReEncode)
             {
 
                 AlreadyReEncoded = true;
 
-                if (ActiveStreamOffset >= preprocessorBlockSize)
+                if (ActiveStreamOffset >= preprocessorBlockBytes)
                 {
                     // this should never happen, since we test this when accepting an alternate encoding and should
                     // have already decided to change the encoding midstream instead of restart. But as a failsafe
@@ -381,7 +383,6 @@ namespace CsQuery.HtmlParser
                         stream = part1stream;
                     }
 
-
                     // assign the re-mapped stream to the source and start again
                     ActiveStreamReader = new StreamReader(stream, ActiveEncoding);
                 }
@@ -391,16 +392,12 @@ namespace CsQuery.HtmlParser
 
             }
 
-            if (ReEncode != ReEncodeAction.None)
-            {
-                throw new InvalidOperationException("The character set encoding changed twice, something seems to be wrong.");
-            }
-
             // set this before returning document to the client to improve performance during DOM alteration
 
-            if (treeBuilder.Document.DocumentIndex.Features.HasFlag(DomIndexFeatures.Queue))
+            IDomIndexQueue indexQueue = treeBuilder.Document.DocumentIndex as IDomIndexQueue;
+            if (indexQueue!=null)
             {
-                treeBuilder.Document.DocumentIndex.QueueChanges = true;
+                indexQueue.QueueChanges = true;
             }
             
 
@@ -613,7 +610,7 @@ namespace CsQuery.HtmlParser
                 // then it's illegal, don't actually restart, just change encoding midstream. 
 
                 if (!AlreadyReEncoded && 
-                     ActiveStreamOffset < preprocessorBlockSize)
+                     ActiveStreamOffset < preprocessorBlockBytes)
                 {
                     ReEncode = ReEncodeAction.ReEncode;
                     accept = true;
@@ -642,7 +639,7 @@ namespace CsQuery.HtmlParser
 
             try
             {
-                char[] buffer = new char[tokenizerBlockSize];
+                char[] buffer = new char[tokenizerBlockChars];
                 UTF16Buffer bufr = new UTF16Buffer(buffer, 0, 0);
                 bool lastWasCR = false;
                 int len = -1;
@@ -707,6 +704,11 @@ namespace CsQuery.HtmlParser
                 tokenizer.End();
             }
         }
+
+        /// <summary>
+        /// If a new character set encoding was declared and it's too late to change, switch to the new
+        /// one midstream.
+        /// </summary>
 
         private void CheckForReEncode()
         {

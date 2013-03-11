@@ -13,7 +13,7 @@ namespace CsQuery.Engine
     /// worse for complex queries.
     /// </summary>
 
-    public class DomIndexNone: IDomIndex
+    public class DomIndexNone : IDomIndex
     {
         /// <summary>
         /// Default constructor for the index
@@ -36,7 +36,7 @@ namespace CsQuery.Engine
             return;
         }
 
-         
+
         /// <summary>
         /// Adds an element to the index for the specified key.
         /// </summary>
@@ -175,6 +175,6 @@ namespace CsQuery.Engine
             }
         }
 
- 
+
     }
 }
