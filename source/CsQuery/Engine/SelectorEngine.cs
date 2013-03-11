@@ -113,8 +113,9 @@ namespace CsQuery.Engine
             IEnumerable<IDomObject> selectionSource=null;
 
             // Disable the index if there is no context (e.g. disconnected elements)
-            // or if the first element is not indexed, or the context is not from the same
-            // document as this selector is bound.
+            // or if the first element is not indexed, or the context is not from the same document as this
+            // selector is bound. Determine which features can be used for this query by casting the index
+            // to the known interfaces. 
 
             
             bool useIndex;
@@ -125,11 +126,14 @@ namespace CsQuery.Engine
                 useIndex = !first.IsDisconnected && first.IsIndexed && first.Document==Document;
             }
 
-            // determine which index features can be used for this query
-            
+            IDomIndexRanged rangedIndex=null;
+            IDomIndexSimple simpleIndex=null;
 
-            IDomIndexRanged rangedIndex = Document.DocumentIndex as IDomIndexRanged;
-            IDomIndexSimple simpleIndex = Document.DocumentIndex as IDomIndexSimple;
+            if (useIndex)
+            {
+                rangedIndex = Document.DocumentIndex as IDomIndexRanged;
+                simpleIndex = Document.DocumentIndex as IDomIndexSimple;
+            }
 
             for (activeSelectorId = 0; activeSelectorId < ActiveSelectors.Count; activeSelectorId++)
             {
