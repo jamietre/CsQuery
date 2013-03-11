@@ -13,7 +13,7 @@ namespace CsQuery.Engine
     /// worse for complex queries.
     /// </summary>
 
-    public class DomIndexSimple: IDomIndex
+    public class DomIndexSimple: IDomIndex, IDomIndexSimple
     {
         /// <summary>
         /// Default constructor for the index
@@ -198,14 +198,6 @@ namespace CsQuery.Engine
             }
         }
 
-        /// <summary>
-        /// Returns the features that this index implements.
-        /// </summary>
-
-        public DomIndexFeatures Features
-        {
-            get { return DomIndexFeatures.Lookup; }
-        }
 
         /// <summary>
         /// When true, changes are queued until the next read operation. For the SimpleIndex provider,

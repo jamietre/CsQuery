@@ -45,7 +45,7 @@ namespace CsQuery.Tests.Core.Dom
         public void QueryByID()
         {
             Assert.AreEqual(1,Dom["#div1"].Length);
-            Assert.AreEqual(Dom["#div1"],Index.QueryIndex(GetKey("#div1")));
+            Assert.AreEqual(Dom["#div1"],((IDomIndexSimple)Index).QueryIndex(GetKey("#div1")));
 
         }
         private ushort[] GetKey(string what)

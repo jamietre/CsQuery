@@ -25,6 +25,13 @@ namespace CsQuery.Tests.Miscellaneous
     [TestFixture, TestClass]
     public class Reindex: CsQueryTest
     {
+
+        [Test, TestMethod]
+        public void Issue87()
+        {
+            var dom = CQ.CreateFromUrl("http://1000carats.net/Changement%20couleur.htm");
+            Assert.True(true);
+        }
         [Test, TestMethod]
         public void InnerTextFixBroken()
         {

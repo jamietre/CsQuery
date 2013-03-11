@@ -5974,10 +5974,13 @@
         <member name="P:CsQuery.IDomObject.InnerText">
              <summary>
              Gets or sets the text content of a node and its descendants, formatted like Chrome (a new
-             line for each text node, a space between inline elements, a new line for block elements). The
-             contents of comments, CDATA nodes, SCRIPT, STYLE and TEXTAREA nodes are ignored. Note: this
-             is an IE property; there is no standard. The way CsQuery formats using InnerText is roughly
-             like Chrome but may not match exactly.
+             line for each text node, a space between inline elements, a new line for block elements).
+             Unlike browsers, the contents of hidden elements are included, since we cannot determine
+             conclusively what is hidden.
+             
+             The contents of comments, CDATA nodes, SCRIPT, STYLE and TEXTAREA nodes are ignored. Note:
+             this is an IE property; there is no standard. The way CsQuery formats using InnerText is
+             roughly like Chrome but may not match exactly.
              </summary>
             
              <url>
@@ -7488,49 +7491,6 @@
              A new element that inherits DomElement
              </returns>
         </member>
-        <member name="M:CsQuery.Implementation.DomElement.GetTextContent(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
-             <summary>
-             Helper for public Text() function to act recursively.
-             </summary>
-            
-             <param name="sb">
-             A stringbuilder
-             </param>
-             <param name="nodes">
-             The nodes to access innnerText from
-             </param>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.GetInnerText(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
-             <summary>
-             Enumerates get inner text in this collection
-             
-             Rules:
-             
-             All whitespace between text or inline nodes is coalesced to a single whitespace.
-             A block node starts a new line.
-             Leading and trailing whitespace is omitted.
-             </summary>
-            
-             <param name="nodes">
-             The nodes to access innnerText from.
-             </param>
-            
-             <returns>
-             An enumerator that allows foreach to be used to process get inner text in this collection.
-             </returns>
-        </member>
-        <member name="M:CsQuery.Implementation.DomElement.AddOwnText_TextContent(System.Collections.Generic.List{System.String},CsQuery.IDomObject)">
-             <summary>
-             Get the text contents o
-             </summary>
-            
-             <param name="sb">
-             The StribgBuilder object to write to
-             </param>
-             <param name="obj">
-             The object.
-             </param>
-        </member>
         <member name="M:CsQuery.Implementation.DomElement.ElementHtml">
              <summary>
              Returns the HTML for this element, but ignoring children/innerHTML.
@@ -7881,6 +7841,49 @@
              <param name="strict">
              When true, CSS syntax checking is enforced. If the style is unknown or the value is not of
              the correct format, an error will be thrown.
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.GetTextContent(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+             <summary>
+             Helper for public Text() function to act recursively.
+             </summary>
+            
+             <param name="sb">
+             A stringbuilder
+             </param>
+             <param name="nodes">
+             The nodes to access innnerText from
+             </param>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.GetInnerText(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+             <summary>
+             Enumerates get inner text in this collection
+             
+             Rules:
+             
+             All whitespace between text or inline nodes is coalesced to a single whitespace.
+             A block node starts a new line.
+             Leading and trailing whitespace is omitted.
+             </summary>
+            
+             <param name="nodes">
+             The nodes to access innnerText from.
+             </param>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process get inner text in this collection.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomElement.AddOwnText_TextContent(System.Collections.Generic.List{System.String},CsQuery.IDomObject)">
+             <summary>
+             Get the text contents o
+             </summary>
+            
+             <param name="sb">
+             The StribgBuilder object to write to
+             </param>
+             <param name="obj">
+             The object.
              </param>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.AttributeIndexKey(System.String)">
@@ -8262,10 +8265,13 @@
         <member name="P:CsQuery.Implementation.DomElement.InnerText">
              <summary>
              Gets or sets the text content of a node and its descendants, formatted like Chrome (a new
-             line for each text node, a space between inline elements, a new line for block elements). The
-             contents of comments, CDATA nodes, SCRIPT, STYLE and TEXTAREA nodes are ignored. Note: this
-             is an IE property; there is no standard. The way CsQuery formats using InnerText is roughly
-             like Chrome but may not match exactly.
+             line for each text node, a space between inline elements, a new line for block elements).
+             Unlike browsers, the contents of hidden elements are included, since we cannot determine
+             conclusively what is hidden.
+             
+             The contents of comments, CDATA nodes, SCRIPT, STYLE and TEXTAREA nodes are ignored. Note:
+             this is an IE property; there is no standard. The way CsQuery formats using InnerText is
+             roughly like Chrome but may not match exactly.
              </summary>
             
              <url>
@@ -9762,6 +9768,24 @@
             Logic: if nothing specifically selected, find the first enabled option, otherwise, the first disabled option.
             </summary>
         </member>
+        <member name="T:CsQuery.Engine.IDomIndexSimple">
+            <summary>
+            Interface for a DOM index that is queryable.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Engine.IDomIndexSimple.QueryIndex(System.UInt16[])">
+             <summary>
+             Queries the index.
+             </summary>
+            
+             <param name="subKey">
+             The sub key.
+             </param>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process query index in this collection.
+             </returns>
+        </member>
         <member name="T:CsQuery.Engine.DomIndexNone">
             <summary>
             Simple implementation of DOM index that only stores a reference to the index target. This
@@ -9816,46 +9840,9 @@
              The element.
              </param>
         </member>
-        <member name="M:CsQuery.Engine.IDomIndex.QueryIndex(System.UInt16[])">
-             <summary>
-             Queries the index.
-             </summary>
-            
-             <param name="subKey">
-             The sub key.
-             </param>
-            
-             <returns>
-             An enumerator that allows foreach to be used to process query index in this collection.
-             </returns>
-        </member>
         <member name="M:CsQuery.Engine.IDomIndex.Clear">
             <summary>
             Clears this object to its blank/initial state.
-            </summary>
-        </member>
-        <member name="M:CsQuery.Engine.IDomIndex.QueryIndex(System.UInt16[],System.Int32,System.Boolean)">
-             <summary>
-             Queries the index, returning all matching elements
-             </summary>
-            
-             <param name="subKey">
-             The sub key.
-             </param>
-             <param name="depth">
-             The depth.
-             </param>
-             <param name="includeDescendants">
-             true to include, false to exclude the descendants.
-             </param>
-            
-             <returns>
-             An enumerator that allows foreach to be used to process query index in this collection.
-             </returns>
-        </member>
-        <member name="P:CsQuery.Engine.IDomIndex.Features">
-            <summary>
-            Returns the features that this index implements
             </summary>
         </member>
         <member name="P:CsQuery.Engine.IDomIndex.Count">
@@ -9866,11 +9853,6 @@
              <returns>
              The count of items in the index
              </returns>
-        </member>
-        <member name="P:CsQuery.Engine.IDomIndex.QueueChanges">
-            <summary>
-            When true, changes are queued until the next read operation
-            </summary>
         </member>
         <member name="M:CsQuery.Engine.DomIndexNone.#ctor">
             <summary>
@@ -9977,6 +9959,40 @@
         <member name="P:CsQuery.Engine.DomIndexNone.QueueChanges">
             <summary>
             When true, changes are queued until the next read operation. For the DomIndexNone provider, this is always false.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Engine.IDomIndexRanged">
+            <summary>
+            Interface for a DOM index that can be queried for a range of elements 
+            </summary>
+        </member>
+        <member name="M:CsQuery.Engine.IDomIndexRanged.QueryIndex(System.UInt16[],System.Int32,System.Boolean)">
+             <summary>
+             Queries the index, returning all matching elements
+             </summary>
+            
+             <param name="subKey">
+             The sub key.
+             </param>
+             <param name="depth">
+             The depth.
+             </param>
+             <param name="includeDescendants">
+             true to include, false to exclude the descendants.
+             </param>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process query index in this collection.
+             </returns>
+        </member>
+        <member name="T:CsQuery.Engine.IDomIndexQueue">
+            <summary>
+            Interface for a DOM index that contains a Queue feature.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Engine.IDomIndexQueue.QueueChanges">
+            <summary>
+            When true, changes are queued until the next read operation
             </summary>
         </member>
         <member name="T:CsQuery.DomIndexProviders">
@@ -10163,11 +10179,6 @@
              <returns>
              The count of items in the index.
              </returns>
-        </member>
-        <member name="P:CsQuery.Engine.DomIndexSimple.Features">
-            <summary>
-            Returns the features that this index implements.
-            </summary>
         </member>
         <member name="P:CsQuery.Engine.DomIndexSimple.QueueChanges">
             <summary>
@@ -10372,11 +10383,6 @@
              <returns>
              The count of items in the index.
              </returns>
-        </member>
-        <member name="P:CsQuery.Engine.DomIndexRanged.Features">
-            <summary>
-            Returns the features that this index implements.
-            </summary>
         </member>
         <member name="T:CsQuery.Implementation.AttributeCollection">
             <summary>
@@ -14237,12 +14243,12 @@
             Element factory to build a CsQuery DOM using HtmlParserSharp.
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.ElementFactory.tokenizerBlockSize">
+        <member name="F:CsQuery.HtmlParser.ElementFactory.tokenizerBlockChars">
             <summary>
             Size of the blocks to read from the input stream (char[] = 2x bytes)
             </summary>
         </member>
-        <member name="F:CsQuery.HtmlParser.ElementFactory.preprocessorBlockSize">
+        <member name="F:CsQuery.HtmlParser.ElementFactory.preprocessorBlockBytes">
             <summary>
             Size of the preprocessor block; the maximum number of bytes in which the character set
             encoding can be changed. This must be at least as large (IN BYTES!) as the tokenizer block or the
@@ -14386,6 +14392,12 @@
              <param name="e">
              Encoding detected event information.
              </param>
+        </member>
+        <member name="M:CsQuery.HtmlParser.ElementFactory.CheckForReEncode">
+            <summary>
+            If a new character set encoding was declared and it's too late to change, switch to the new
+            one midstream.
+            </summary>
         </member>
         <member name="M:CsQuery.HtmlParser.ElementFactory.ConfigureDefaultContextMap">
             <summary>

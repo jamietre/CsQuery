@@ -12,7 +12,7 @@ namespace CsQuery.Engine
     /// selection engine; when availabile it will be use to optimize subqueries.
     /// </summary>
 
-    public class DomIndexRanged: IDomIndex
+    public class DomIndexRanged: IDomIndex, IDomIndexSimple, IDomIndexRanged, IDomIndexQueue
     {
         /// <summary>
         /// Default constructor.
@@ -254,15 +254,6 @@ namespace CsQuery.Engine
                 ProcessQueue();
                 return SelectorXref.Count;
             }
-        }
-
-        /// <summary>
-        /// Returns the features that this index implements.
-        /// </summary>
-
-        public DomIndexFeatures Features
-        {
-            get { return DomIndexFeatures.Lookup | DomIndexFeatures.Range | DomIndexFeatures.Queue; }
         }
 
         /// <summary>

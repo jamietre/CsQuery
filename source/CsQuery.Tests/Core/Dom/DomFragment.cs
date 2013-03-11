@@ -28,7 +28,8 @@ namespace CsQuery.Tests.Core.Dom
             Assert.IsTrue(concreteFrag.IsFragment);
             Assert.IsTrue(concreteFrag.IsIndexed);
             var index = concreteFrag.DocumentIndex;
-            if (index.Features.HasFlag(DomIndexFeatures.Lookup) || index.Features.HasFlag(DomIndexFeatures.Range))
+
+            if (index is IDomIndexSimple)
             {
                 Assert.AreNotEqual(0, index.Count);
             }
