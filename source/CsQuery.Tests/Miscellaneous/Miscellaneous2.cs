@@ -29,8 +29,16 @@ namespace CsQuery.Tests.Miscellaneous
         [Test, TestMethod]
         public void Issue87()
         {
-            var dom = CQ.CreateFromUrl("http://1000carats.net/Changement%20couleur.htm");
-            Assert.True(true);
+            CQ dom = "<div>Hello world! <b>I am feeling bold!</b> What about <b>you?</b></div>";
+
+
+            CQ bold = dom["b"];               /// find all "b" nodes (there are two in this example)
+
+            string boldText = bold.Text();        /// jQuery text method; == "I am feeling bold! you?"
+
+            bold.Remove();                        /// jQuery Remove method
+
+            string html = dom.Render();           /// =="<div>Hello world!  What about </div>"
         }
         [Test, TestMethod]
         public void InnerTextFixBroken()

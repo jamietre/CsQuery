@@ -35,13 +35,27 @@ Here's a basic example of parsing HTML, selecting something, altering it, and re
     CQ dom = "<div>Hello world! <b>I am feeling bold!</b> What about <b>you?</b></div>";
     
     
-    string bold = dom["b"];               /// find all "b" nodes (there are two in this example)
+    CQ bold = dom["b"];               /// find all "b" nodes (there are two in this example)
+
+      > bold.ToList()
+      > Count = 2
+      > [0]: {<b>...</b>}
+      > [1]: {<b>...</b>}
+    
+      > bold.First().RenderSelection()
+      > "<b>I am feeling bold!</b>"
        
-    string boldText = bold.Text();        /// jQuery text method; == "I am feeling bold! you?"
+    string boldText = bold.Text();        /// jQuery text method;
+    
+      > boldText
+      > "I am feeling bold! you?"
     
     bold.Remove();                        /// jQuery Remove method
-    
-    string html = dom.Render();           /// =="<div>Hello world!  What about </div>"
+   
+    string html = dom.Render();           
+
+      > html
+      > "<div>Hello world!  What about </div>"
 
 There are other ways to create `CQ` objects, run selectors, and change the DOM. You can also use the property indexer 
 like an array indexer, e.g. `dom[0]` returns the first element in your selection. If there is one, that is! 
