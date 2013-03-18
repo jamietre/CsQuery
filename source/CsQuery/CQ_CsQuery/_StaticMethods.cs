@@ -214,9 +214,5 @@ namespace CsQuery
         
         #endregion
 
-        #region private methods
-
-       
-        #endregion
     }
 }

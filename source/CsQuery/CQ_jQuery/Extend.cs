@@ -14,19 +14,19 @@ namespace CsQuery
     public partial class CQ
     {
         /// <summary>
-        /// Map each property of the objects in sources to the target object.  Returns an expando object
-        /// (either the target object, if it's an expando object, or a new expando object)
+        /// Map properties of inputObjects to target. If target is an expando object, it will be updated.
+        /// If not, a new one will be created including the properties of target and inputObjects.
         /// </summary>
         ///
         /// <param name="target">
-        /// .
+        /// The target of the mapping, or null to create a new target.
         /// </param>
         /// <param name="sources">
-        /// .
+        /// One or more objects that are the source of the mapping.
         /// </param>
         ///
         /// <returns>
-        /// .
+        /// The target object itself, if non-null, or a new dynamic object, if the target is null.
         /// </returns>
 
         public static object Extend(object target, params object[] sources)
@@ -35,22 +35,22 @@ namespace CsQuery
         }
 
         /// <summary>
-        /// Map each property of the objects in sources to the target object.  Returns an expando object
-        /// (either the target object, if it's an expando object, or a new expando object)
+        /// Map properties of inputObjects to target. If target is an expando object, it will be updated.
+        /// If not, a new one will be created including the properties of target and inputObjects.
         /// </summary>
         ///
         /// <param name="deep">
-        /// true to deep.
+        /// When true, will clone properties that are objects.
         /// </param>
         /// <param name="target">
-        /// .
+        /// The target of the mapping, or null to create a new target
         /// </param>
-        /// <param name="sources">
-        /// .
+        /// <param name="inputObjects">
+        /// One or more objects that are the source of the mapping
         /// </param>
         ///
         /// <returns>
-        /// .
+        /// The target object itself, if non-null, or a new dynamic object, if the target is null
         /// </returns>
 
         public static object Extend(bool deep, object target, params object[] sources)

@@ -10,19 +10,20 @@ using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery.EquationParser;
 using CsQuery.EquationParser.Implementation;
 using CsQuery.EquationParser.Implementation.Functions;
-using CsQuery.Implementation;
-using CsQuery.Engine;
 
 namespace CsQuery.Tests.Core.Dom
 {
     [TestFixture, TestClass]
-    public class RangedIndexTests: SharedIndexTests<DomIndexRanged>
+    public class DomContainer
     {
         [Test, TestMethod]
-        public void RunTests()
+        public void ChildNodeIndexer()
         {
-            // not yet ready..
-            RunAllTests();
+            CQ dom = "<div>Test</div>";
+
+            Assert.AreEqual("DIV", dom.Document[0].NodeName);
+
+            Assert.AreEqual("Test", dom.Document[0][0].NodeValue);
         }
     }
 }

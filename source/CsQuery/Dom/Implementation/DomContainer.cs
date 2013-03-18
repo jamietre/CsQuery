@@ -308,6 +308,27 @@ namespace CsQuery.Implementation
             return count;
         }
 
+
+        /// <summary>
+        /// The child node at the specified index.
+        /// </summary>
+        ///
+        /// <param name="index">
+        /// The zero-based index of the child node to access.
+        /// </param>
+        ///
+        /// <returns>
+        /// IDomObject, the element at the specified index within this node's children.
+        /// </returns>
+
+        public override IDomObject this[int index]
+        {
+            get
+            {
+                return ChildNodes[index];
+            }
+        }
+
         #region interface members
         IDomObject IDomObject.Clone()
         {

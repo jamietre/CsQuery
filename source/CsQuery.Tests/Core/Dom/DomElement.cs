@@ -38,6 +38,8 @@ namespace CsQuery.Tests.Core.Dom
             Assert.AreEqual("hidden", dom[0].Type);
             Assert.IsTrue(dom.Is(":hidden"));
         }
+
+    
     }
 }
 

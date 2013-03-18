@@ -25,11 +25,11 @@ namespace CsQuery
         public IDomElement FirstElement()
         {
 
-            using (IEnumerator<IDomElement> enumer = Elements.GetEnumerator())
+            using (IEnumerator<IDomElement> sequence = Elements.GetEnumerator())
             {
-                if (enumer.MoveNext())
+                if (sequence.MoveNext())
                 {
-                    return enumer.Current;
+                    return sequence.Current;
                 }
                 else
                 {

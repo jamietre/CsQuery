@@ -265,27 +265,6 @@ namespace CsQuery
             return CQ.Create(html);
         }
 
-       
-        ///// <summary>
-        ///// Create a new CQ object from html
-        ///// </summary>
-        ///// <param name="text"></param>
-        ///// <returns></returns>
-        //public static implicit operator CQ(char[] html)
-        //{
-        //    return CQ.Create(html);
-        //}
-
-        ///// <summary>
-        ///// Create a new CQ object from an element
-        ///// </summary>
-        ///// <param name="obj"></param>
-        ///// <returns></returns>
-        //public static implicit operator CQ(DomObject obj)
-        //{
-        //    return CQ.Create(obj);
-        //}
-
         #endregion
 
         #region Internal DOM creation methods

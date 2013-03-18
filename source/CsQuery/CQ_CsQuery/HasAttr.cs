@@ -26,7 +26,7 @@ namespace CsQuery
         /// <returns>
         /// A string of the attribute value, or null if the attribute does not exist.
         /// </returns>
-        ///
+        
         public bool HasAttr(string name)
         {
             if (Length > 0 && !string.IsNullOrEmpty(name))

@@ -162,7 +162,7 @@ namespace CsQuery.Implementation
         public DomDocument(IDomIndex domIndex)
             : base()
         {
-            _DomIndex = domIndex ?? CsQuery.Config.DomIndexProvider.GetDomIndex();
+            DocumentIndex = domIndex ?? CsQuery.Config.DomIndexProvider.GetDomIndex();
         }
 
         /// <summary>
@@ -188,7 +188,6 @@ namespace CsQuery.Implementation
 
         private IList<ICSSStyleSheet> _StyleSheets;
         private IDictionary<string, object> _Data;
-        private IDomIndex _DomIndex;
 
         #endregion
 
@@ -211,15 +210,12 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Exposes the Document as an IDomIndex object
+        /// Return the DocumentIndex for this document.
         /// </summary>
 
         public IDomIndex DocumentIndex
         {
-            get
-            {
-                return _DomIndex;
-            }
+            get; protected set;
         }
 
 

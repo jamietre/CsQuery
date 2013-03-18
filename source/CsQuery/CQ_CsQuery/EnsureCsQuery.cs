@@ -14,9 +14,9 @@ namespace CsQuery
     public partial class CQ
     {
         /// <summary>
-        /// Return a CsQuery object wrapping the enumerable passed, or the object itself if it's already
-        /// a CsQuery obect. Unlike CsQuery(context), this will not create a new CsQuery object from an
-        /// existing one.
+        /// Return a CsQuery object wrapping the sequence passed, or the object itself if it's already a
+        /// CsQuery obect. Unlike "new CsQuery(context)", this will not create a new CsQuery object from
+        /// an existing one.
         /// </summary>
         ///
         /// <param name="elements">
@@ -24,7 +24,7 @@ namespace CsQuery
         /// </param>
         ///
         /// <returns>
-        /// A new CQ object when the source is disconnect elements, or the CQ object passed.
+        /// A new CQ object when the source is disconnected elements, or the CQ object passed.
         /// </returns>
 
         public CQ EnsureCsQuery(IEnumerable<IDomObject> elements)

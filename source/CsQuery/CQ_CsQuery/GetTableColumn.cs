@@ -14,8 +14,8 @@ namespace CsQuery
     public partial class CQ
     {
         /// <summary>
-        /// Given a table header or cell, returns all members of the column in the table. This will most
-        /// likely not work as you would expect if there are colspan cells.
+        /// Given a table header or cell, returns all members of the same column in the table. This will
+        /// most likely not work as you would expect if there are colspan cells.
         /// </summary>
         ///
         /// <returns>
