@@ -15,6 +15,7 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 - [Issue #82](https://github.com/jamietre/CsQuery/issues/82) `DomObject.Text` property not returning correct text when nested text nodes are present
 - Index not being updated correctly for some node removals
 - `this[int index]` indexer property not implemented on `DomDocument`. Moved implementation from `DomElement` to `DomContainer` to ensure it's available for all container nodes.
+- Fix bug in `CsQuery.Extend` when updating POCO properties
 
 **Performance improvements**
 

@@ -240,6 +240,7 @@
     <Compile Include="Implementation\RangeSortedDictionary.cs" />
     <Compile Include="Miscellaneous\Miscellaneous2.cs" />
     <Compile Include="Mocks\MockAsyncResult.cs" />
+    <Compile Include="Utility\Extend.cs" />
     <Compile Include="Utility\Support.cs" />
     <Compile Include="Utility\FastActivator.cs" />
     <Compile Include="Examples\Tables.cs" />

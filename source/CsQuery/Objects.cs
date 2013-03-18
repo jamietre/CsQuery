@@ -1569,7 +1569,7 @@ namespace CsQuery
                             {
                                 continue;
                             }
-                            propInfo.GetSetMethod().Invoke(value, null);
+                            propInfo.GetSetMethod().Invoke(target,new object[] {value});
 
                         }
                         else if (member is FieldInfo)
