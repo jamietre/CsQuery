@@ -220,7 +220,6 @@
              <returns>
              A string of the attribute value, or null if the attribute does not exist.
              </returns>
-            
         </member>
         <member name="M:CsQuery.CQ.AttrReplace(System.String,System.String,System.String)">
              <summary>
@@ -709,8 +708,8 @@
         </member>
         <member name="M:CsQuery.CQ.GetTableColumn">
              <summary>
-             Given a table header or cell, returns all members of the column in the table. This will most
-             likely not work as you would expect if there are colspan cells.
+             Given a table header or cell, returns all members of the same column in the table. This will
+             most likely not work as you would expect if there are colspan cells.
              </summary>
             
              <returns>
@@ -854,9 +853,9 @@
         </member>
         <member name="M:CsQuery.CQ.EnsureCsQuery(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
              <summary>
-             Return a CsQuery object wrapping the enumerable passed, or the object itself if it's already
-             a CsQuery obect. Unlike CsQuery(context), this will not create a new CsQuery object from an
-             existing one.
+             Return a CsQuery object wrapping the sequence passed, or the object itself if it's already a
+             CsQuery obect. Unlike "new CsQuery(context)", this will not create a new CsQuery object from
+             an existing one.
              </summary>
             
              <param name="elements">
@@ -864,7 +863,7 @@
              </param>
             
              <returns>
-             A new CQ object when the source is disconnect elements, or the CQ object passed.
+             A new CQ object when the source is disconnected elements, or the CQ object passed.
              </returns>
         </member>
         <member name="M:CsQuery.CQ.SelectionHtml">
@@ -1859,39 +1858,39 @@
         </member>
         <member name="M:CsQuery.CQ.Extend(System.Object,System.Object[])">
              <summary>
-             Map each property of the objects in sources to the target object.  Returns an expando object
-             (either the target object, if it's an expando object, or a new expando object)
+             Map properties of inputObjects to target. If target is an expando object, it will be updated.
+             If not, a new one will be created including the properties of target and inputObjects.
              </summary>
             
              <param name="target">
-             .
+             The target of the mapping, or null to create a new target.
              </param>
              <param name="sources">
-             .
+             One or more objects that are the source of the mapping.
              </param>
             
              <returns>
-             .
+             The target object itself, if non-null, or a new dynamic object, if the target is null.
              </returns>
         </member>
         <member name="M:CsQuery.CQ.Extend(System.Boolean,System.Object,System.Object[])">
              <summary>
-             Map each property of the objects in sources to the target object.  Returns an expando object
-             (either the target object, if it's an expando object, or a new expando object)
+             Map properties of inputObjects to target. If target is an expando object, it will be updated.
+             If not, a new one will be created including the properties of target and inputObjects.
              </summary>
             
              <param name="deep">
-             true to deep.
+             When true, will clone properties that are objects.
              </param>
              <param name="target">
-             .
+             The target of the mapping, or null to create a new target
              </param>
-             <param name="sources">
-             .
+             <param name="inputObjects">
+             One or more objects that are the source of the mapping
              </param>
             
              <returns>
-             .
+             The target object itself, if non-null, or a new dynamic object, if the target is null
              </returns>
         </member>
         <member name="M:CsQuery.CQ.Map``1(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},System.Func{CsQuery.IDomObject,``0})">
@@ -7366,6 +7365,19 @@
             Get all child elements
             </summary>
         </member>
+        <member name="P:CsQuery.Implementation.DomContainer`1.Item(System.Int32)">
+             <summary>
+             The child node at the specified index.
+             </summary>
+            
+             <param name="index">
+             The zero-based index of the child node to access.
+             </param>
+            
+             <returns>
+             IDomObject, the element at the specified index within this node's children.
+             </returns>
+        </member>
         <member name="T:CsQuery.IDomElement">
             <summary>
             A regular DOM element
@@ -8214,19 +8226,6 @@
              </summary>
             
              <param name="attribute">
-             The zero-based index of the child node to access.
-             </param>
-            
-             <returns>
-             IDomObject, the element at the specified index within this node's children.
-             </returns>
-        </member>
-        <member name="P:CsQuery.Implementation.DomElement.Item(System.Int32)">
-             <summary>
-             The child node at the specified index.
-             </summary>
-            
-             <param name="index">
              The zero-based index of the child node to access.
              </param>
             
@@ -22809,7 +22808,7 @@
         </member>
         <member name="P:CsQuery.Implementation.DomDocument.DocumentIndex">
             <summary>
-            Exposes the Document as an IDomIndex object
+            Return the DocumentIndex for this document.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomDocument.ParentNode">

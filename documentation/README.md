@@ -6,7 +6,8 @@ For now I am going to try to document important features here; these files will 
 
 *Note: these links will not work if you are reading this from the GitHub landing page. Click "readme.md" above first. There's no way to make them work from the readme preview and the readme file itself.*
 
-- [Create](create.md)
-- [CreateFromUrl](createfromurl.md)
-- [Promises](promises.md)
-- [Render](render.md)
+- [Create](create.md) - loading from local content (a stream, file, or string)
+- [CreateFromUrl](createfromurl.md) - loading from the web
+- [Promises](promises.md) - a programming device for simplifying asynchronous callbacks
+- [Render](render.md) - outputting the contents of a CQ object as HTML
+- [Indexing Strategies](indexing-strategies) - choosing an indexing strategy that is optimized for your purposes

@@ -1,7 +1,8 @@
 ### Promises in CsQuery
 
-More recent versions jQuery introduced a "deferred" object for managing callbacks using a concept called *Promises*. Though this is less relevant for CsQuery because your work won't be interactive for the most part, there is one important situation where you will have to manage asynchronous events: loading data from a web server.
+**Note: this will be deprecated in version 2.0 and replaced with async methods**
 
+More recent versions jQuery introduced a "deferred" object for managing callbacks using a concept called *Promises*. Though this is less relevant for CsQuery because your work won't be interactive for the most part, there is one important situation where you will have to manage asynchronous events: loading data from a web server.
 
 The `CQ.CreateFromUrlAsync` method can return an `IPromise<ICsqWebResponse>` object. The basic promise API (from CommonJS Promises/A) has only one method:
 
