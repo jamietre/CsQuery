@@ -88,6 +88,26 @@ namespace CsQuery.Tests.Core.Css
             Assert.AreEqual("20px", div.Css("height"));
         }
 
+        [Test, TestMethod]
+        public void RemoveStyle()
+        {
+            CQ dom = "<div style='height: 10; width: 10; display: none;'>";
+
+            Assert.AreEqual("height: 10; width: 10; display: none;", dom["div"][0]["style"]);
+
+            dom["div"].Css("width", null);
+            Assert.AreEqual("height: 10; display: none;", dom["div"][0]["style"]);
+
+            dom["div"].Css("width",20);
+            Assert.AreEqual("height: 10; width: 20px; display: none;", dom["div"][0]["style"]);
+
+            dom["div"].Css("width", "");
+            Assert.AreEqual("height: 10; display: none;", dom["div"][0]["style"]);
+
+            dom["div"].CssSet(new { display = null as object });
+            Assert.AreEqual("height: 10", dom["div"][0]["style"]);
+        }
+
         protected class StylesClass
         {
             public string width;

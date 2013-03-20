@@ -25,6 +25,22 @@ namespace CsQuery.Tests.Miscellaneous
     [TestFixture, TestClass]
     public class Reindex: CsQueryTest
     {
+        //[Test, TestMethod]
+        //public void XmlProb()
+        //{
+
+        //    var dom = CsQuery.CQ.CreateFromUrl("http://feeds.benzinga.com/benzinga");
+
+        //    dom = "<p style='height:10; width:10'>";
+        //    dom.Each((i,e) =>
+        //    {
+        //        e.RemoveStyle("height");
+        //    });
+        //    Console.WriteLine("Got items: " + dom["item"].Count());
+        //    Console.WriteLine("Got item HTML" + dom["item"].First().Html());
+        //    Console.WriteLine("Link is: " + dom["item"].First()["link"].Html());
+        //    Console.Read();
+        //}
 
         [Test, TestMethod]
         public void Issue87()

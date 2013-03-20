@@ -45,9 +45,9 @@ namespace CsQuery
             }
             foreach (IDomElement e in Elements)
             {
-                foreach (var key in dict)
+                foreach (var item in dict)
                 {
-                    e.Style[key.Key] = key.Value.ToString();
+                    e.Style[item.Key] = StringOrNull(item.Value);
                 }
             }
             return this;
@@ -84,7 +84,7 @@ namespace CsQuery
 
             foreach (IDomElement e in Elements)
             {
-                e.Style[name] = value.ToString();
+                e.Style[name] = StringOrNull(value);
             }
             return this;
         }
@@ -177,7 +177,19 @@ namespace CsQuery
             return def;
 
         }
-        
+
+        private string StringOrNull(object value)
+        {
+
+            if (value==null) {
+                return null;
+            } else {
+                string text = value.ToString();
+                return text=="" ? 
+                    null : 
+                    text;
+            }
+        }
 
     }
 }
