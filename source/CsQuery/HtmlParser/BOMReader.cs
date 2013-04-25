@@ -42,6 +42,19 @@ namespace CsQuery.HtmlParser
         public Encoding Encoding { get; protected set; }
 
         /// <summary>
+        /// Gets the encoding, or the default encoding provided if no explicit encoding is available
+        /// </summary>
+        ///
+        /// <returns>
+        /// The encoding.
+        /// </returns>
+
+        public Encoding GetEncoding(Encoding defaultEncoding)
+        {
+            return Encoding ?? defaultEncoding;
+        }
+
+        /// <summary>
         /// The input stream stripped of the BOM
         /// </summary>
 
@@ -134,7 +147,7 @@ namespace CsQuery.HtmlParser
         private Encoding GetFileEncoding()
         {
             
-            Encoding enc = Encoding.Default;
+            Encoding enc = null;
 
 
             if (Matches(new byte[] { 0xef, 0xbb, 0xbf }))

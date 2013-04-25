@@ -44,8 +44,7 @@ namespace CsQuery
                     case "class":
                         return el.ClassName;
                     case "style":
-                        string st = el.Style.ToString();
-                        return st == "" ? null : st;
+                        return el.Style.ToString();
                     default:
                         if (el.TryGetAttribute(name, out value))
                         {
@@ -299,7 +298,7 @@ namespace CsQuery
                         e.ClassName = "";
                         break;
                     case "style":
-                        e.Style.Clear();
+                        e.Style = null;
                         break;
                     default:
                         e.RemoveAttribute(name);

@@ -169,7 +169,7 @@ namespace CsQuery.Implementation
         #region public properties
 
         /// <summary>
-        /// An object encapsulating the Styles associated with this element.
+        /// An object encapsulating the Styles associated with this element. 
         /// </summary>
 
         public override CSSStyleDeclaration Style
@@ -178,36 +178,56 @@ namespace CsQuery.Implementation
             {
                 if (_Style == null)
                 {
-                    _Style = new CSSStyleDeclaration();
-                    _Style.OnHasStylesChanged += new EventHandler<CSSStyleChangedArgs>(_Style_OnHasStylesChanged);
+                    SetStyle(new CSSStyleDeclaration());
 
                 }
                 return _Style;
             }
-            protected set
+            set
             {
-                _Style = value;
-                _Style.OnHasStylesChanged += new EventHandler<CSSStyleChangedArgs>(_Style_OnHasStylesChanged);
-                if (_Style != null && _Style.HasStyles)
-                {
-                    AttributeRemoveFromIndex(HtmlData.tagSTYLE);
-                }
-                else
-                {
 
+                var hadStyleAttribute = HasStyleAttribute;
+                
+                SetStyle(value);
+                if (HasStyleAttribute != hadStyleAttribute)
+                {
+                    StyleAttributeIndexChanged();
                 }
             }
         }
 
+        /// <summary>
+        /// Sets a style to a non-null value
+        /// </summary>
+        ///
+        /// <param name="style">
+        /// The style.
+        /// </param>
+
+        void SetStyle(CSSStyleDeclaration style)
+        {
+            _Style = style;
+            if (style != null)
+            {
+                _Style.OnHasStylesChanged += new EventHandler<CSSStyleChangedArgs>(_Style_OnHasStylesChanged);
+            }
+            
+        }
+
         void _Style_OnHasStylesChanged(object sender, CSSStyleChangedArgs e)
         {
-            if (e.HasStyles)
+            StyleAttributeIndexChanged();
+        }
+
+        void StyleAttributeIndexChanged()
+        {
+            if (HasStyleAttribute)
             {
-                AttributeRemoveFromIndex(HtmlData.tagSTYLE);
+                AttributeAddToIndex(HtmlData.tagSTYLE);
             }
             else
             {
-                AttributeAddToIndex(HtmlData.tagSTYLE);
+                AttributeRemoveFromIndex(HtmlData.tagSTYLE);
             }
         }
 
@@ -459,7 +479,7 @@ namespace CsQuery.Implementation
             get
             {
                 return HasClasses ||
-                    HasStyles ||
+                    HasStyleAttribute ||
                     HasInnerAttributes;
             }
         }
@@ -472,12 +492,20 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return _Style != null && _Style.HasStyles;
+                return HasStyleAttribute && _Style.HasStyles;
+            }
+        }
+
+        protected bool HasStyleAttribute
+        {
+            get
+            {
+                return _Style != null && _Style.HasStyleAttribute;
             }
         }
 
         /// <summary>
-        /// Returns true if this node has CSS classes.
+        /// Returns true if this node has a "class" attribute. This can be true even if there are no classes.
         /// </summary>
 
         public override bool HasClasses
@@ -502,6 +530,18 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Gets or sets the outer HTML.
+        /// </summary>
+        ///
+        /// <value>
+        /// An enumerator that allows foreach to be used to process index keys in this collection.
+        /// </value>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en-US/docs/DOM/element.outerHTML
+        /// </url>
+        
         public override string OuterHTML
         {
             get
@@ -832,14 +872,7 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Gets or sets the outer HTML.
-        /// </summary>
-        ///
-        /// <url>
-        /// https://developer.mozilla.org/en-US/docs/DOM/element.outerHTML
-        /// </url>
-        /// <summary>
-        /// Index keys for this collection.
+        /// Return the index keys for this element. 
         /// </summary>
         ///
         /// <returns>
@@ -872,7 +905,7 @@ namespace CsQuery.Implementation
             {
                 yield return AttributeIndexKey(HtmlData.ClassAttrId);
             }
-            if (HasStyles)
+            if (HasStyleAttribute)
             {
                 yield return AttributeIndexKey(HtmlData.tagSTYLE);
             }
@@ -904,7 +937,7 @@ namespace CsQuery.Implementation
             {
                 clone._Classes = new List<ushort>(_Classes);
             }
-            if (HasStyles)
+            if (HasStyleAttribute)
             {
                 clone.Style = Style.Clone();
             }
@@ -1259,12 +1292,9 @@ namespace CsQuery.Implementation
                         return false;
                     }
                 case HtmlData.tagSTYLE:
-                    if (HasStyles)
+                    if (HasStyleAttribute)
                     {
-                        foreach (var style in Style.Keys)
-                        {
-                            Style.Remove(style);
-                        }
+                        Style = null;
                         return true;
                     }
                     else
@@ -1861,7 +1891,7 @@ namespace CsQuery.Implementation
                 case HtmlData.ClassAttrId:
                     return HasClasses;
                 case HtmlData.tagSTYLE:
-                    return HasStyles;
+                    return HasStyleAttribute;
                 default:
                     return _InnerAttributes != null
                         && InnerAttributes.ContainsKey(tokenId);
@@ -2022,7 +2052,7 @@ namespace CsQuery.Implementation
         int IAttributeCollection.Length
         {
             get {
-                int otherAttributes = (HasClasses ? 1 : 0) + (HasStyles ? 1 : 0);
+                int otherAttributes = (HasClasses ? 1 : 0) + (HasStyleAttribute ? 1 : 0);
 
                 return otherAttributes + (!HasInnerAttributes ? 0 :
                     InnerAttributes.Count);
@@ -2066,7 +2096,7 @@ namespace CsQuery.Implementation
             {
                 yield return new KeyValuePair<string, string>("class", ClassName);
             }
-            if (HasStyles)
+            if (HasStyleAttribute)
             {
                 yield return new KeyValuePair<string, string>("style", Style.ToString());
             }

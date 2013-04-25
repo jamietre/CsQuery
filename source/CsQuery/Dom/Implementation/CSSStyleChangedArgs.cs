@@ -15,19 +15,19 @@ namespace CsQuery.Implementation
         /// Constructor.
         /// </summary>
         ///
-        /// <param name="hasStyles">
+        /// <param name="hasStyleAttribute">
         /// A value indicating whether this object has styles following the change.
         /// </param>
 
-        public CSSStyleChangedArgs(bool hasStyles)
+        public CSSStyleChangedArgs(bool hasStyleAttribute)
         {
-            HasStyles = hasStyles;
+            HasStyleAttribute = hasStyleAttribute;
         }
         /// <summary>
         /// Gets a value indicating whether this object has styles following the change.
         /// </summary>
 
-        public bool HasStyles
+        public bool HasStyleAttribute
         {
             get;
             protected set;

@@ -4,7 +4,7 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 
-namespace CsQuery
+namespace CsQuery.Implementation
 {
     /// <summary>
     /// Interface for read only list.

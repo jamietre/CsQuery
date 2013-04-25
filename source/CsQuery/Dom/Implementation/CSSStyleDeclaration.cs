@@ -82,16 +82,18 @@ namespace CsQuery.Implementation
 
         #region private properties
 
-        /// <summary>
-        /// Warning: Do not attempt to access _Styles directly from this class or any subclass to determine whether or 
-        /// not there are styles, since it also depends on QuickSetStyles. Use HasStyles method instead.
-        /// </summary>
-        
-        private IDictionary<ushort, string> _Styles;
+
+        protected IDictionary<ushort, string> _Styles;
         private string _QuickSetValue;
 
         /// <summary>
-        /// Inner dictionary of the styles.
+        /// Inner dictionary of the styles. Note: The presence of a value for _Styles is used to indicate
+        /// that a "style" attribute exists. Therefore any code which accesses Styles should always check
+        /// HasStylesAttribute first to avoid creation of the attribute as a side effect of testing it.
+        /// 
+        /// This is a bit brittle but necessary because of QuickSetValue: we need the Styles dictionary
+        /// to be created automatically in order for it to be populated with QuickSetValue when its
+        /// access is required.
         /// </summary>
 
         protected IDictionary<ushort, string> Styles
@@ -109,13 +111,18 @@ namespace CsQuery.Implementation
                 }
                 return _Styles;
             }
+            set
+            {
+                _Styles = value;
+            }
         }
-        
+
         /// <summary>
-        /// For fast DOM creation - since styles are not indexed or validated.
-        /// If they are ever accessed by style name, they will be parsed on demand.
+        /// For fast DOM creation - since styles are not indexed or validated. If they are ever accessed
+        /// by style name, they will be parsed on demand.
         /// </summary>
-        protected string QuickSetValue
+
+        private string QuickSetValue
         {
             get
             {
@@ -123,12 +130,12 @@ namespace CsQuery.Implementation
             }
             set
             {
-                bool hadStyles = HasStyles;
+                bool hadStyleAttribute = HasStyleAttribute;
                 _QuickSetValue = value;
-                DoOnHasStylesChanged(hadStyles);
-                //UpdateIndex(hadStyles);
+                DoOnHasStyleAttributeChanged(HasStyleAttribute);
             }
         }
+
         #endregion
 
         #region public properties
@@ -154,7 +161,7 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return HasStyles ? Styles.Count : 0;
+                return HasStyleAttribute ? Styles.Count : 0;
             }
         }
 
@@ -183,17 +190,29 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return QuickSetValue != null || (_Styles != null && Styles.Count > 0);
+                return HasStyleAttribute && Styles.Count > 0;
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this object has a style attribute. (The attribute can be
+        /// empty - this can be true while HasStyles is false).
+        /// </summary>
+
+        public bool HasStyleAttribute
+        {
+            get
+            {
+                return QuickSetValue != null || _Styles != null;
+            }
+        }
         /// <summary>
         /// Gets the number of styles in this collection.
         /// </summary>
 
         public int Count
         {
-            get { return !HasStyles ? 0 : Styles.Count; }
+            get { return !HasStyleAttribute ? 0 : Styles.Count; }
         }
 
         /// <summary>
@@ -215,10 +234,15 @@ namespace CsQuery.Implementation
             get
             {
                 List<string> keys = new List<string>();
-                foreach (var kvp in Styles)
+
+                if (HasStyleAttribute)
                 {
-                    keys.Add(HtmlData.TokenName(kvp.Key));
+                    foreach (var kvp in Styles)
+                    {
+                        keys.Add(HtmlData.TokenName(kvp.Key));
+                    }
                 }
+
                 return keys;
             }
         }      
@@ -229,7 +253,16 @@ namespace CsQuery.Implementation
 
         public ICollection<string> Values
         {
-            get { return Styles.Values; }
+            get {
+                if (HasStyleAttribute)
+                {
+                    return Styles.Values;
+                }
+                else
+                {
+                    return new List<string>();
+                }
+            }
         }
         /// <summary>
         /// Get or set the named style
@@ -325,10 +358,12 @@ namespace CsQuery.Implementation
             }
             else
             {
+                IDictionary<ushort, string> styles = new Dictionary<ushort, string>();
                 foreach (KeyValuePair<ushort, string> kvp in Styles)
                 {
-                    clone.Styles.Add(kvp);
+                    styles.Add(kvp);
                 }
+                clone.Styles = styles;
             }
             return clone;
         }
@@ -407,14 +442,24 @@ namespace CsQuery.Implementation
                 }
             }
         }
+
         /// <summary>
-        /// Remove a single named style
+        /// Remove a single named style.
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        ///
+        /// <param name="name">
+        /// The name of the style to remove
+        /// </param>
+        ///
+        /// <returns>
+        /// true if it succeeds, false if it fails.
+        /// </returns>
+
         public bool Remove(string name)
         {
-            return Styles.Remove(HtmlData.Tokenize(name));
+            return HasStyleAttribute ?
+                Styles.Remove(HtmlData.Tokenize(name)) :
+                false;
         }
 
         /// <summary>
@@ -447,11 +492,10 @@ namespace CsQuery.Implementation
         /// </summary>
         public void Clear()
         {
-            if (_Styles != null)
+            if (HasStyleAttribute)
             {
                 Styles.Clear();
             }
-            QuickSetValue = null;
         }
         /// <summary>
         /// Returns true if the named style is defined
@@ -460,7 +504,9 @@ namespace CsQuery.Implementation
         /// <returns></returns>
         public bool HasStyle(string styleName)
         {
-            return Styles.ContainsKey(HtmlData.Tokenize(styleName));
+            return HasStyleAttribute ?
+                Styles.ContainsKey(HtmlData.Tokenize(styleName)) :
+                false;
         }
         /// <summary>
         /// Sets style setting with no parsing
@@ -469,9 +515,9 @@ namespace CsQuery.Implementation
         /// <param name="value"></param>
         public void SetRaw(string name, string value)
         {
-            bool hadStyles = HasStyles;
+            bool hadStyleAttribute = HasStyleAttribute;
             Styles[HtmlData.Tokenize(name)] = value;
-            DoOnHasStylesChanged(hadStyles);
+            DoOnHasStyleAttributeChanged(hadStyleAttribute);
         }
 
         /// <summary>
@@ -491,7 +537,15 @@ namespace CsQuery.Implementation
 
         public bool TryGetValue(string name, out string value)
         {
-            return Styles.TryGetValue(HtmlData.Tokenize(name), out value);
+            if (HasStyleAttribute)
+            {
+                return Styles.TryGetValue(HtmlData.Tokenize(name), out value);
+            }
+            else
+            {
+                value = null;
+                return false;
+            }
         }
 
         /// <summary>
@@ -508,15 +562,11 @@ namespace CsQuery.Implementation
 
         public string GetStyle(string name)
         {
-            string value;
-            if (Styles.TryGetValue(HtmlData.Tokenize(name), out value))
-            {
-                return value;
-            }
-            else
-            {
-                return null;
-            }
+            string value = null;
+            if (HasStyleAttribute) {
+                Styles.TryGetValue(HtmlData.Tokenize(name), out value);
+            } 
+            return value;
         }
 
         /// <summary>
@@ -648,7 +698,8 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Return the formatted string representation of this style, as HTML.
+        /// Return the formatted string representation of this style, as HTML, or null if there is no
+        /// style attribute.
         /// </summary>
         ///
         /// <returns>
@@ -657,8 +708,9 @@ namespace CsQuery.Implementation
 
         public override string ToString()
         {
-            string style = String.Empty;
-            if (HasStyles)
+            string style = HasStyleAttribute ? "" : null;
+
+            if (HasStyleAttribute)
             {
                 if (QuickSetValue != null)
                 {
@@ -666,7 +718,6 @@ namespace CsQuery.Implementation
                 }
                 else
                 {
-                    string delim = Styles.Count > 1 ? ";" : "";
                     bool first = true;
                     foreach (var kvp in Styles)
                     {
@@ -679,7 +730,7 @@ namespace CsQuery.Implementation
                             first = false;
                         }
 
-                        style += HtmlData.TokenName(kvp.Key) + ": " + kvp.Value + delim;
+                        style += HtmlData.TokenName(kvp.Key) + ": " + kvp.Value + ";";
 
                     }
                 }
@@ -800,22 +851,24 @@ namespace CsQuery.Implementation
 
         private IEnumerable<KeyValuePair<string, string>> stylesEnumerable()
         {
-            foreach (var kvp in Styles)
+            if (HasStyleAttribute)
             {
-                yield return new KeyValuePair<string, string>(HtmlData.TokenName(kvp.Key).ToLower(), kvp.Value);
+                foreach (var kvp in Styles)
+                {
+                    yield return new KeyValuePair<string, string>(HtmlData.TokenName(kvp.Key).ToLower(), kvp.Value);
 
+                }
             }
-            yield break;
         }
 
-        private void DoOnHasStylesChanged(bool hadStyles)
+        private void DoOnHasStyleAttributeChanged(bool hadStyleAttribute)
         {
-            if (hadStyles != HasStyles)
+            if (hadStyleAttribute != HasStyleAttribute)
             {
                 var evt = OnHasStylesChanged;
                 if (evt != null)
                 {
-                    var args = new CSSStyleChangedArgs(HasStyles);
+                    var args = new CSSStyleChangedArgs(HasStyleAttribute);
                     evt(this, args);
                 }
             }
@@ -829,7 +882,9 @@ namespace CsQuery.Implementation
         }
         bool IDictionary<string, string>.ContainsKey(string key)
         {
-            return Styles.ContainsKey(HtmlData.Tokenize(key));
+            return HasStyleAttribute ?
+                Styles.ContainsKey(HtmlData.Tokenize(key)) :
+                false;
         }
         void ICollection<KeyValuePair<string, string>>.Add(KeyValuePair<string, string> item)
         {
@@ -839,23 +894,35 @@ namespace CsQuery.Implementation
 
         bool ICollection<KeyValuePair<string, string>>.Contains(KeyValuePair<string, string> item)
         {
-            return Styles.Contains(new KeyValuePair<ushort, string>(HtmlData.Tokenize(item.Key), item.Value));
+            return HasStyleAttribute ?
+                Styles.Contains(new KeyValuePair<ushort, string>(HtmlData.Tokenize(item.Key), item.Value)) :
+                false;
         }
 
         void ICollection<KeyValuePair<string, string>>.CopyTo(KeyValuePair<string, string>[] array, int arrayIndex)
         {
-            array = new KeyValuePair<string, string>[Styles.Count];
-            int index = 0;
-            foreach (var kvp in Styles)
+            if (HasStyleAttribute && HasStyles)
             {
-                array[index++] = new KeyValuePair<string, string>(HtmlData.TokenName(kvp.Key).ToLower(), kvp.Value);
+                array = new KeyValuePair<string, string>[Styles.Count];
+                int index = 0;
+                foreach (var kvp in Styles)
+                {
+                    array[index++] = new KeyValuePair<string, string>(HtmlData.TokenName(kvp.Key).ToLower(), kvp.Value);
+                }
             }
         }
 
         bool ICollection<KeyValuePair<string, string>>.Remove(KeyValuePair<string, string> item)
         {
-            var kvp = new KeyValuePair<ushort, string>(HtmlData.Tokenize(item.Key), item.Value);
-            return Styles.Remove(kvp);
+            if (HasStyleAttribute)
+            {
+                var kvp = new KeyValuePair<ushort, string>(HtmlData.Tokenize(item.Key), item.Value);
+                return Styles.Remove(kvp);
+            }
+            else
+            {
+                return false;
+            }
         }
 
         IEnumerator<KeyValuePair<string, string>> IEnumerable<KeyValuePair<string, string>>.GetEnumerator()

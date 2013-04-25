@@ -76,7 +76,7 @@ namespace CsQuery
         /// An object encapsulating the Styles associated with this element.
         /// </summary>
 
-        CSSStyleDeclaration Style { get; }
+        CSSStyleDeclaration Style { get; set; }
 
         /// <summary>
         /// gets and sets the value of the class attribute of the specified element.

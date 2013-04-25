@@ -236,6 +236,7 @@
     </Compile>
     <Compile Include="Core\Selectors\Extensions.cs" />
     <Compile Include="Implementation\ChildNodeList.cs" />
+    <Compile Include="Implementation\CssStyleDeclaration.cs" />
     <Compile Include="Implementation\IndexQueue.cs" />
     <Compile Include="Implementation\RangeSortedDictionary.cs" />
     <Compile Include="Miscellaneous\Miscellaneous2.cs" />

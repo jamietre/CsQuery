@@ -20,7 +20,7 @@ namespace CsQuery.Tests.Core.WebIO
     public class _WebIO_QueryRemoteServer : CsQueryTest
     {
         private KeyValuePair<string,string>[] urls = new KeyValuePair<string,string>[] {
-            new KeyValuePair<string,string>("https://github.com/jamietre/csquery","img[alt='GitHub']"),
+            new KeyValuePair<string,string>("https://github.com/jamietre/csquery","div.repo-desc-homepage"),
             new KeyValuePair<string,string>("http://www.cnn.com/","#cnn_hdr")
         };
         

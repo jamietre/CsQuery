@@ -105,7 +105,7 @@ namespace CsQuery.Tests.Core.Css
             Assert.AreEqual("height: 10; display: none;", dom["div"][0]["style"]);
 
             dom["div"].CssSet(new { display = null as object });
-            Assert.AreEqual("height: 10", dom["div"][0]["style"]);
+            Assert.AreEqual("height: 10;", dom["div"][0]["style"]);
         }
 
         protected class StylesClass

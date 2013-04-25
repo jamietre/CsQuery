@@ -91,27 +91,71 @@ namespace CsQuery.Implementation
             {
                 foreach (var item in Keys)
                 {  
-                    string humanReadableKey = "";
-                    int startIndex = 1;
-                    if (!item[0].Equals( IndexSeparator))
-                    {
-                        ushort keyPart = (ushort)Convert.ChangeType(item[1], typeof(ushort));
-                        humanReadableKey = Convert.ChangeType(item[0],typeof(char)) + HtmlData.TokenName(keyPart) + '/';
-                        startIndex = 3;
-                    }
-                        
-                    for (int i = startIndex;i<item.Length;i++)
-                    {
-                        ushort c = (ushort)Convert.ChangeType(item[i], typeof(ushort));
-                        humanReadableKey += ((ushort)c).ToString().PadLeft(3,'0');
-                        if (i<item.Length-1) {
-                            humanReadableKey += '/';
-                        }
-                    }
-                    yield return humanReadableKey;
+                    yield return HumanReadableKey(item, IndexSeparator);
                 }
             } 
         }
+
+        /// <summary>
+        /// Convert an index key to human readable form.
+        /// </summary>
+        ///
+        /// <typeparam name="T">
+        /// Generic type parameter
+        /// </typeparam>
+        /// <param name="indexKey">
+        /// The index key.
+        /// </param>
+        /// <param name="indexSeparator">
+        /// The index separator.
+        /// </param>
+        ///
+        /// <returns>
+        /// The human readable key.
+        /// </returns>
+
+        public static string HumanReadableKey(object indexKeyArray, object indexSeparator)
+        {
+            string humanReadableKey = "";
+            int startIndex = 1;
+            ushort[] indexKey = (ushort[])indexKeyArray;
+
+            if (!indexKey[0].Equals(indexSeparator))
+            {
+                ushort keyPart = (ushort)Convert.ChangeType(indexKey[1], typeof(ushort));
+                humanReadableKey = Convert.ChangeType(indexKey[0], typeof(char)) + HtmlData.TokenName(keyPart) + '/';
+                startIndex = 3;
+            }
+
+            for (int i = startIndex; i < indexKey.Length; i++)
+            {
+                ushort c = (ushort)Convert.ChangeType(indexKey[i], typeof(ushort));
+                humanReadableKey += ((ushort)c).ToString().PadLeft(3, '0');
+                if (i < indexKey.Length - 1)
+                {
+                    humanReadableKey += '/';
+                }
+            }
+            return humanReadableKey;
+        }
+
+        /// <summary>
+        /// Convert an index key to human readable form.
+        /// </summary>
+        ///
+        /// <param name="indexKey">
+        /// The index key.
+        /// </param>
+        ///
+        /// <returns>
+        /// The human readable key.
+        /// </returns>
+
+        public static string HumanReadableKey(object indexKey)
+        {
+            return HumanReadableKey(indexKey, 0);
+        }
+
         /// <summary>
         /// Retrieve all the keys that match the subkey provided; that is, all keys that start with the
         /// value of 'subkey'.

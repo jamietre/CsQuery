@@ -25,8 +25,18 @@ namespace CsQuery.Engine
 
         private RangeSortedDictionary<ushort, IDomObject> _SelectorXref;
 
-
-        private Queue<IndexOperation> _PendingIndexChanges;
+        private Queue<IndexOperation> __PendingIndexChanges=null;
+        private Queue<IndexOperation> _PendingIndexChanges
+        {
+            get
+            {
+                return __PendingIndexChanges;
+            }
+            set
+            {
+                __PendingIndexChanges = value;
+            }
+        }
 
 
         /// <summary>

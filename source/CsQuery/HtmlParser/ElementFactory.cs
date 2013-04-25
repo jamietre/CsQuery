@@ -294,8 +294,13 @@ namespace CsQuery.HtmlParser
                 // if there is a BOM encoding, and there's either no active encoding specified already, or it's utf-8/utf-16
                 // then use it.
 
+                var bomEncoding = bomReader.Encoding;
+
                 if (ActiveEncoding == null ||
-                    (bomReader.Encoding.WebName == "utf-8" || bomReader.Encoding.WebName == "utf-16"))
+                    (bomReader.Encoding != null && 
+                        (bomReader.Encoding.WebName == "utf-8" || bomReader.Encoding.WebName == "utf-16")
+                    )
+                )
                 {
                     ActiveEncoding = bomReader.Encoding;
                 }

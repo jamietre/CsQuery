@@ -226,7 +226,7 @@ namespace CsQuery.Tests.Core.Attributes
             Assert.AreEqual("badge2",badge2.Classes.First());
 
             var styleOnly = dom["#hidden-div > :first-child"][0];
-            var style= "width:100;height:200";
+            var style= "width: 100; height: 200;";
 
             Assert.IsTrue(styleOnly.HasAttributes);
             Assert.IsFalse(styleOnly.HasClasses);

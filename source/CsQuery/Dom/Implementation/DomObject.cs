@@ -687,7 +687,7 @@ namespace CsQuery.Implementation
             {
                 return null;
             }
-            protected set
+            set
             {
                 throw new InvalidOperationException("Style is not applicable to this node type.");
             }
