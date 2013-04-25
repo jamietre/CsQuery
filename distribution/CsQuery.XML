@@ -5218,11 +5218,11 @@
              Constructor.
              </summary>
             
-             <param name="hasStyles">
+             <param name="hasStyleAttribute">
              A value indicating whether this object has styles following the change.
              </param>
         </member>
-        <member name="P:CsQuery.Implementation.CSSStyleChangedArgs.HasStyles">
+        <member name="P:CsQuery.Implementation.CSSStyleChangedArgs.HasStyleAttribute">
             <summary>
             Gets a value indicating whether this object has styles following the change.
             </summary>
@@ -7503,6 +7503,15 @@
              A new element that inherits DomElement
              </returns>
         </member>
+        <member name="M:CsQuery.Implementation.DomElement.SetStyle(CsQuery.Implementation.CSSStyleDeclaration)">
+             <summary>
+             Sets a style to a non-null value
+             </summary>
+            
+             <param name="style">
+             The style.
+             </param>
+        </member>
         <member name="M:CsQuery.Implementation.DomElement.ElementHtml">
              <summary>
              Returns the HTML for this element, but ignoring children/innerHTML.
@@ -7514,14 +7523,7 @@
         </member>
         <member name="M:CsQuery.Implementation.DomElement.IndexKeys">
              <summary>
-             Gets or sets the outer HTML.
-             </summary>
-            
-             <url>
-             https://developer.mozilla.org/en-US/docs/DOM/element.outerHTML
-             </url>
-             <summary>
-             Index keys for this collection.
+             Return the index keys for this element. 
              </summary>
             
              <returns>
@@ -8086,7 +8088,7 @@
         </member>
         <member name="P:CsQuery.Implementation.DomElement.Style">
             <summary>
-            An object encapsulating the Styles associated with this element.
+            An object encapsulating the Styles associated with this element. 
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomElement.Attributes">
@@ -8194,13 +8196,26 @@
         </member>
         <member name="P:CsQuery.Implementation.DomElement.HasClasses">
             <summary>
-            Returns true if this node has CSS classes.
+            Returns true if this node has a "class" attribute. This can be true even if there are no classes.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.DomElement.IsIndexed">
             <summary>
             Gets a value indicating whether this object type should be indexed.
             </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.DomElement.OuterHTML">
+             <summary>
+             Gets or sets the outer HTML.
+             </summary>
+            
+             <value>
+             An enumerator that allows foreach to be used to process index keys in this collection.
+             </value>
+            
+             <url>
+             https://developer.mozilla.org/en-US/docs/DOM/element.outerHTML
+             </url>
         </member>
         <member name="P:CsQuery.Implementation.DomElement.InnerHtmlAllowed">
             <summary>
@@ -8408,7 +8423,7 @@
             The node that was added or removed.
             </summary>
         </member>
-        <member name="T:CsQuery.IReadOnlyCollection`1">
+        <member name="T:CsQuery.Implementation.IReadOnlyDictionary`2">
              <summary>
              Interface for read only collection.
              </summary>
@@ -8417,7 +8432,16 @@
              Generic type parameter.
              </typeparam>
         </member>
-        <member name="P:CsQuery.IReadOnlyCollection`1.Count">
+        <member name="T:CsQuery.Implementation.IReadOnlyCollection`1">
+             <summary>
+             Interface for read only collection.
+             </summary>
+            
+             <typeparam name="T">
+             Generic type parameter.
+             </typeparam>
+        </member>
+        <member name="P:CsQuery.Implementation.IReadOnlyCollection`1.Count">
             <summary>
             Gets the number of items in the collection. 
             </summary>
@@ -8440,7 +8464,7 @@
              Generic type parameter.
              </typeparam>
         </member>
-        <member name="T:CsQuery.IReadOnlyList`1">
+        <member name="T:CsQuery.Implementation.IReadOnlyList`1">
              <summary>
              Interface for read only list.
              </summary>
@@ -8449,7 +8473,7 @@
              Generic type parameter.
              </typeparam>
         </member>
-        <member name="P:CsQuery.IReadOnlyList`1.Item(System.Int32)">
+        <member name="P:CsQuery.Implementation.IReadOnlyList`1.Item(System.Int32)">
              <summary>
              Indexer to get items within this collection using array index syntax.
              </summary>
@@ -13901,6 +13925,15 @@
              <param name="stream">
              The stream to analyze.
              </param>
+        </member>
+        <member name="M:CsQuery.HtmlParser.BOMReader.GetEncoding(System.Text.Encoding)">
+             <summary>
+             Gets the encoding, or the default encoding provided if no explicit encoding is available
+             </summary>
+            
+             <returns>
+             The encoding.
+             </returns>
         </member>
         <member name="M:CsQuery.HtmlParser.BOMReader.Parse">
             <summary>
@@ -23222,12 +23255,6 @@
              The parent rule.
              </param>
         </member>
-        <member name="F:CsQuery.Implementation.CSSStyleDeclaration._Styles">
-            <summary>
-            Warning: Do not attempt to access _Styles directly from this class or any subclass to determine whether or 
-            not there are styles, since it also depends on QuickSetStyles. Use HasStyles method instead.
-            </summary>
-        </member>
         <member name="M:CsQuery.Implementation.CSSStyleDeclaration.Clone">
              <summary>
              Create a clone of this CSSStyleDeclaration object bound to the owner passed.
@@ -23274,11 +23301,17 @@
              </param>
         </member>
         <member name="M:CsQuery.Implementation.CSSStyleDeclaration.Remove(System.String)">
-            <summary>
-            Remove a single named style
-            </summary>
-            <param name="name"></param>
-            <returns></returns>
+             <summary>
+             Remove a single named style.
+             </summary>
+            
+             <param name="name">
+             The name of the style to remove
+             </param>
+            
+             <returns>
+             true if it succeeds, false if it fails.
+             </returns>
         </member>
         <member name="M:CsQuery.Implementation.CSSStyleDeclaration.RemoveStyle(System.String)">
              <summary>
@@ -23398,7 +23431,8 @@
         </member>
         <member name="M:CsQuery.Implementation.CSSStyleDeclaration.ToString">
              <summary>
-             Return the formatted string representation of this style, as HTML.
+             Return the formatted string representation of this style, as HTML, or null if there is no
+             style attribute.
              </summary>
             
              <returns>
@@ -23449,13 +23483,19 @@
         </member>
         <member name="P:CsQuery.Implementation.CSSStyleDeclaration.Styles">
             <summary>
-            Inner dictionary of the styles.
+            Inner dictionary of the styles. Note: The presence of a value for _Styles is used to indicate
+            that a "style" attribute exists. Therefore any code which accesses Styles should always check
+            HasStylesAttribute first to avoid creation of the attribute as a side effect of testing it.
+            
+            This is a bit brittle but necessary because of QuickSetValue: we need the Styles dictionary
+            to be created automatically in order for it to be populated with QuickSetValue when its
+            access is required.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.CSSStyleDeclaration.QuickSetValue">
             <summary>
-            For fast DOM creation - since styles are not indexed or validated.
-            If they are ever accessed by style name, they will be parsed on demand.
+            For fast DOM creation - since styles are not indexed or validated. If they are ever accessed
+            by style name, they will be parsed on demand.
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.CSSStyleDeclaration.ParentRule">
@@ -23484,6 +23524,12 @@
         <member name="P:CsQuery.Implementation.CSSStyleDeclaration.HasStyles">
             <summary>
             True if there is at least one style.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.CSSStyleDeclaration.HasStyleAttribute">
+            <summary>
+            Gets a value indicating whether this object has a style attribute. (The attribute can be
+            empty - this can be true while HasStyles is false).
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.CSSStyleDeclaration.Count">
@@ -26901,6 +26947,38 @@
             <summary>
             The inner index.
             </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.RangeSortedDictionary`2.HumanReadableKey(System.Object,System.Object)">
+             <summary>
+             Convert an index key to human readable form.
+             </summary>
+            
+             <typeparam name="T">
+             Generic type parameter
+             </typeparam>
+             <param name="indexKey">
+             The index key.
+             </param>
+             <param name="indexSeparator">
+             The index separator.
+             </param>
+            
+             <returns>
+             The human readable key.
+             </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.RangeSortedDictionary`2.HumanReadableKey(System.Object)">
+             <summary>
+             Convert an index key to human readable form.
+             </summary>
+            
+             <param name="indexKey">
+             The index key.
+             </param>
+            
+             <returns>
+             The human readable key.
+             </returns>
         </member>
         <member name="M:CsQuery.Implementation.RangeSortedDictionary`2.GetRangeKeys(`0[])">
              <summary>
