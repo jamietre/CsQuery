@@ -100,11 +100,8 @@ namespace CsQuery.Implementation
         /// Convert an index key to human readable form.
         /// </summary>
         ///
-        /// <typeparam name="T">
-        /// Generic type parameter
-        /// </typeparam>
-        /// <param name="indexKey">
-        /// The index key.
+        /// <param name="indexKeyArray">
+        /// Array of index keys.
         /// </param>
         /// <param name="indexSeparator">
         /// The index separator.

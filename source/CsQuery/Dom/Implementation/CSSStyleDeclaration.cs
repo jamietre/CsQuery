@@ -82,8 +82,7 @@ namespace CsQuery.Implementation
 
         #region private properties
 
-
-        protected IDictionary<ushort, string> _Styles;
+        private IDictionary<ushort, string> _Styles;
         private string _QuickSetValue;
 
         /// <summary>

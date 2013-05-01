@@ -330,6 +330,14 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Gets or sets the text content of a node and its descendants, including all whitespace.
+        /// </summary>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/DOM/Node.textContent
+        /// </url>
+
         public virtual string TextContent
         {
             get

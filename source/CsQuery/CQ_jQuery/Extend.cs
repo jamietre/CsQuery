@@ -43,14 +43,14 @@ namespace CsQuery
         /// When true, will clone properties that are objects.
         /// </param>
         /// <param name="target">
-        /// The target of the mapping, or null to create a new target
+        /// The target of the mapping, or null to create a new target.
         /// </param>
-        /// <param name="inputObjects">
-        /// One or more objects that are the source of the mapping
+        /// <param name="sources">
+        /// One or more objects that are the source of the mapping.
         /// </param>
         ///
         /// <returns>
-        /// The target object itself, if non-null, or a new dynamic object, if the target is null
+        /// The target object itself, if non-null, or a new dynamic object, if the target is null.
         /// </returns>
 
         public static object Extend(bool deep, object target, params object[] sources)

@@ -8,6 +8,19 @@ namespace CsQuery.Tests
 {
     public static class TestExtensionMethods
     {
+        public static string ElementText(this IDomObject element)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (element.HasChildren)
+            {
+                foreach (var child in element.ChildNodes.Where(item=>item.NodeType == NodeType.TEXT_NODE))
+                {
+                    sb.Append(child.NodeValue);
+                }
+            }
+            return sb.ToString();
+        }
+
         public static string AsString(this ushort[] array)
         {
             StringBuilder sb = new StringBuilder();

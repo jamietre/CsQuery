@@ -14,6 +14,7 @@ using MsTestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using TestContext = NUnit.Framework.TestContext;
 using CsQuery;
 using CsQuery.Utility;
+using CsQuery.Tests.ExtensionMethods;
 
 namespace CsQuery.Tests
 {
@@ -34,6 +35,16 @@ namespace CsQuery.Tests
             }
             Assert.AreEqual(0, Errors.Count, String.Join(System.Environment.NewLine, Errors));
 
+        }
+
+        [Test, TestMethod]
+        public void ElementTextTest()
+        {
+            CQ dom = "<div>Level 1 <span>Level 2</span> More Level 1</div>";
+            var el = dom["div"][0];
+            Assert.AreEqual("Level 1  More Level 1", el.ElementText());
+            Assert.AreEqual("Level 1 Level 2 More Level 1", el.TextContent);
+            
         }
 
 

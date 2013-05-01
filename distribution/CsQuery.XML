@@ -1883,14 +1883,14 @@
              When true, will clone properties that are objects.
              </param>
              <param name="target">
-             The target of the mapping, or null to create a new target
+             The target of the mapping, or null to create a new target.
              </param>
-             <param name="inputObjects">
-             One or more objects that are the source of the mapping
+             <param name="sources">
+             One or more objects that are the source of the mapping.
              </param>
             
              <returns>
-             The target object itself, if non-null, or a new dynamic object, if the target is null
+             The target object itself, if non-null, or a new dynamic object, if the target is null.
              </returns>
         </member>
         <member name="M:CsQuery.CQ.Map``1(System.Collections.Generic.IEnumerable{CsQuery.IDomObject},System.Func{CsQuery.IDomObject,``0})">
@@ -4093,6 +4093,18 @@
              <url>
              http://api.jquery.com/text/#text2
              </url>
+        </member>
+        <member name="M:CsQuery.CQ.AddTextToStringBuilder(System.Text.StringBuilder,System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
+             <summary>
+             Helper to add the text contents of a sequence of nodes to the StringBuilder
+             </summary>
+            
+             <param name="sb">
+             The target
+             </param>
+             <param name="nodes">
+             The nodes to add
+             </param>
         </member>
         <member name="M:CsQuery.CQ.SetChildText(CsQuery.IDomElement,System.String)">
              <summary>
@@ -6851,6 +6863,15 @@
             Gets or sets the text content of a node and its descendants.
             </summary>
         </member>
+        <member name="P:CsQuery.Implementation.DomObject.TextContent">
+             <summary>
+             Gets or sets the text content of a node and its descendants, including all whitespace.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/DOM/Node.textContent
+             </url>
+        </member>
         <member name="P:CsQuery.Implementation.DomObject.InnerHTML">
             <summary>
             Gets or sets or gets the HTML of an elements descendants.
@@ -7862,12 +7883,13 @@
              Helper for public Text() function to act recursively.
              </summary>
             
-             <param name="sb">
-             A stringbuilder
-             </param>
              <param name="nodes">
-             The nodes to access innnerText from
+             The nodes to access InnerText from.
              </param>
+            
+             <returns>
+             A sequence of the strings of the child text nodes
+             </returns>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.GetInnerText(System.Collections.Generic.IEnumerable{CsQuery.IDomObject})">
              <summary>
@@ -7890,14 +7912,14 @@
         </member>
         <member name="M:CsQuery.Implementation.DomElement.AddOwnText_TextContent(System.Collections.Generic.List{System.String},CsQuery.IDomObject)">
              <summary>
-             Get the text contents o
+             Helper function to add the text contents of an element to a list of strings.
              </summary>
             
-             <param name="sb">
-             The StribgBuilder object to write to
+             <param name="list">
+             The target list.
              </param>
              <param name="obj">
-             The object.
+             The object containing text content.
              </param>
         </member>
         <member name="M:CsQuery.Implementation.DomElement.AttributeIndexKey(System.String)">
@@ -8194,6 +8216,11 @@
             Returns true if this node has any styles defined.
             </summary>
         </member>
+        <member name="P:CsQuery.Implementation.DomElement.HasStyleAttribute">
+            <summary>
+            Gets a value indicating whether this object has a style attribute.
+            </summary>
+        </member>
         <member name="P:CsQuery.Implementation.DomElement.HasClasses">
             <summary>
             Returns true if this node has a "class" attribute. This can be true even if there are no classes.
@@ -8422,15 +8449,6 @@
             <summary>
             The node that was added or removed.
             </summary>
-        </member>
-        <member name="T:CsQuery.Implementation.IReadOnlyDictionary`2">
-             <summary>
-             Interface for read only collection.
-             </summary>
-            
-             <typeparam name="T">
-             Generic type parameter.
-             </typeparam>
         </member>
         <member name="T:CsQuery.Implementation.IReadOnlyCollection`1">
              <summary>
@@ -26953,11 +26971,8 @@
              Convert an index key to human readable form.
              </summary>
             
-             <typeparam name="T">
-             Generic type parameter
-             </typeparam>
-             <param name="indexKey">
-             The index key.
+             <param name="indexKeyArray">
+             Array of index keys.
              </param>
              <param name="indexSeparator">
              The index separator.

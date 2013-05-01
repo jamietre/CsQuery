@@ -496,6 +496,10 @@ namespace CsQuery.Implementation
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this object has a style attribute.
+        /// </summary>
+
         protected bool HasStyleAttribute
         {
             get
@@ -1568,12 +1572,14 @@ namespace CsQuery.Implementation
         /// Helper for public Text() function to act recursively.
         /// </summary>
         ///
-        /// <param name="sb">
-        /// A stringbuilder
-        /// </param>
         /// <param name="nodes">
-        /// The nodes to access innnerText from
+        /// The nodes to access InnerText from.
         /// </param>
+        ///
+        /// <returns>
+        /// A sequence of the strings of the child text nodes
+        /// </returns>
+
 
         private IEnumerable<string> GetTextContent(IEnumerable<IDomObject> nodes)
         {
@@ -1664,14 +1670,14 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Get the text contents o
+        /// Helper function to add the text contents of an element to a list of strings.
         /// </summary>
         ///
-        /// <param name="sb">
-        /// The StribgBuilder object to write to
+        /// <param name="list">
+        /// The target list.
         /// </param>
         /// <param name="obj">
-        /// The object.
+        /// The object containing text content.
         /// </param>
 
         private void AddOwnText_TextContent(List<string> list, IDomObject obj)

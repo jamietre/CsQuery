@@ -39,28 +39,6 @@ namespace CsQuery
         }
 
 
-        protected void AddTextToStringBuilder(StringBuilder sb, IEnumerable<IDomObject> nodes)
-        {
-            foreach (var item in nodes) {
-                
-                switch(item.NodeType) {
-                    case NodeType.TEXT_NODE:
-                        sb.Append(item.NodeValue);
-                        break;
-                    case NodeType.DOCUMENT_NODE:
-                    case NodeType.DOCUMENT_FRAGMENT_NODE:
-                        AddTextToStringBuilder(sb,item.ChildNodes);
-                        break;
-                    case NodeType.ELEMENT_NODE:
-                        sb.Append(item.TextContent);
-                        break;
-                    default:
-                        break;
-                }
-
-            }
-        }
-        
 
         /// <summary>
         /// Set the content of each element in the set of matched elements to the specified text.
@@ -130,7 +108,41 @@ namespace CsQuery
 
         #region private methods
 
+        /// <summary>
+        /// Helper to add the text contents of a sequence of nodes to the StringBuilder
+        /// </summary>
+        ///
+        /// <param name="sb">
+        /// The target
+        /// </param>
+        /// <param name="nodes">
+        /// The nodes to add
+        /// </param>
 
+        private void AddTextToStringBuilder(StringBuilder sb, IEnumerable<IDomObject> nodes)
+        {
+            foreach (var item in nodes)
+            {
+
+                switch (item.NodeType)
+                {
+                    case NodeType.TEXT_NODE:
+                        sb.Append(item.NodeValue);
+                        break;
+                    case NodeType.DOCUMENT_NODE:
+                    case NodeType.DOCUMENT_FRAGMENT_NODE:
+                        AddTextToStringBuilder(sb, item.ChildNodes);
+                        break;
+                    case NodeType.ELEMENT_NODE:
+                        sb.Append(item.TextContent);
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+        }
+        
 
         /// <summary>
         /// Sets a child text for this element, using the text node type appropriate for this element's type
