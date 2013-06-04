@@ -655,26 +655,29 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Creates the document type node. 
+        /// Creates a document type node.
         /// </summary>
         ///
         /// <param name="type">
         /// The type.
         /// </param>
-        /// <param name="publicIdentifier">
-        /// Public identifier
+        /// <param name="access">
+        /// The access type, public or private.
         /// </param>
-        /// <param name="systemIdentifier">
-        /// System identifier
+        /// <param name="FPI">
+        /// The formal public identifier of the doc type.
+        /// </param>
+        /// <param name="URI">
+        /// The URI of the doc type.
         /// </param>
         ///
         /// <returns>
         /// The new document type.
         /// </returns>
 
-        public IDomDocumentType CreateDocumentType(string type, string publicIdentifier, string systemIdentifier)
+        public IDomDocumentType CreateDocumentType(string type, string access, string FPI, string URI)
         {
-            return new DomDocumentType(type, publicIdentifier, systemIdentifier);
+            return new DomDocumentType(type, access,FPI,URI);
         }
 
         /// <summary>

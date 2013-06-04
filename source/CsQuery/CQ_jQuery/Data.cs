@@ -202,7 +202,15 @@ namespace CsQuery
         {
             string data = First().Attr("data-" + key);
 
-            return JSON.ParseJSON(data);
+            if (!String.IsNullOrEmpty(data))
+            {
+                object value;
+                if (JSON.TryParseJSONValue(data, typeof(object), out value))
+                {
+                    return value;
+                }
+            }
+            return data;
         }
 
         /// <summary>

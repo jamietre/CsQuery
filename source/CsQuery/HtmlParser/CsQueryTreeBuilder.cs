@@ -126,16 +126,16 @@ namespace CsQuery.HtmlParser
         /// <param name="name">
         /// The name.
         /// </param>
-        /// <param name="publicIdentifier">
-        /// DocType public identifier
+        /// <param name="fpi">
+        /// The formal public identifier
         /// </param>
-        /// <param name="systemIdentifier">
-        /// DocType system identifier.
+        /// <param name="uri">
+        /// The URI
         /// </param>
 
-        protected override void AppendDoctypeToDocument(string name, string publicIdentifier, string systemIdentifier)
+        protected override void AppendDoctypeToDocument(string name, string fpi, string uri)
         {
-            var doctype = Document.CreateDocumentType(name,publicIdentifier,systemIdentifier);
+           var doctype = Document.CreateDocumentType(name,"PUBLIC",fpi,uri);
 
             Document.AppendChildUnsafe(doctype);
         }

@@ -23,8 +23,9 @@ namespace CsQuery
         /// HTML 4 Transitional
         /// </summary>
         HTML4 = 2,
+        
         /// <summary>
-        /// XHTML -- all tags will be explicitly closed.
+        /// XHTML Transitional
         /// </summary>
         XHTML = 3,
         /// <summary>
@@ -34,7 +35,11 @@ namespace CsQuery
         /// <summary>
         /// HTML 4 Strict
         /// </summary>
-        HTML4Strict = 5
+        HTML4Strict = 5,
 
+        /// <summary>
+        /// XHTML Strict.
+        /// </summary>
+        XHTMLStrict = 6
     }
 }

@@ -41,24 +41,27 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
-        /// Constructor to create a specific document type node
+        /// Constructor to create a specific document type node.
         /// </summary>
         ///
         /// <param name="type">
         /// The type.
         /// </param>
-        /// <param name="publicIdentifier">
-        /// Identifier for the public.
+        /// <param name="access">
+        /// PUBLIC or SYSTEM
         /// </param>
-        /// <param name="systemIdentifier">
+        /// <param name="FPI">
         /// Identifier for the system.
         /// </param>
+        /// <param name="URI">
+        /// URI of the document.
+        /// </param>
 
-        public DomDocumentType(string type, string publicIdentifier, string systemIdentifier)
+        public DomDocumentType(string type, string access, string FPI, string URI)
             : base()
         {
 
-            SetDocType(type, publicIdentifier, systemIdentifier);
+            SetDocType(type, access, FPI, URI);
         }
         #endregion
 
@@ -68,8 +71,9 @@ namespace CsQuery.Implementation
                 @"^\s*([a-zA-Z0-9]+)\s+[a-zA-Z]+(\s+""(.*?)"")*\s*$", 
             RegexOptions.IgnoreCase);
         private string DocTypeName { get; set; }
-        private string PublicIdentifier {get; set;}
-        private string SystemIdentifier { get; set; }
+        private string Access {get; set;}
+        private string FPI { get; set; }
+        private string URI { get; set; }
 
         #endregion
 
@@ -127,15 +131,17 @@ namespace CsQuery.Implementation
             get
             {
                 return DocTypeName +
-                    (!String.IsNullOrEmpty(PublicIdentifier) ? " \"" + PublicIdentifier +"\"": "") +
-                    (!String.IsNullOrEmpty(SystemIdentifier) ? " \"" + SystemIdentifier +"\"": "");
+                    (!String.IsNullOrEmpty(Access) ? " "+Access  : "") +
+                    (!String.IsNullOrEmpty(FPI) ? " \"" + FPI + "\"" : "") +
+                    (!String.IsNullOrEmpty(URI) ? " \"" + URI + "\"" : "");
 
             }
             set
             {
                 string docTypeName="";
-                string publicIdentifier="";
-                string systemIdentifier="";
+                string fpi="";
+                string access="";
+                string uri = "";
 
                 MatchCollection matches = DocTypeRegex.Matches(value);
                 if (matches.Count > 0)
@@ -144,42 +150,61 @@ namespace CsQuery.Implementation
                     if (matches[0].Groups.Count ==4 )
                     {
                         var grp = matches[0].Groups[3];
-                        publicIdentifier = grp.Captures[0].Value;
+                        access = grp.Captures[0].Value;
                         if (grp.Captures.Count > 1)
                         {
-                            systemIdentifier = grp.Captures[1].Value;
+                            fpi = grp.Captures[1].Value;
+                            uri= grp.Captures[2].Value;
                         }
                     }
                 }
               
-                SetDocType(docTypeName,publicIdentifier,systemIdentifier);
+                SetDocType(docTypeName,access,fpi,uri);
             }
         }
 
-        private void SetDocType(string type, string publicIdentifier, string systemIdentifier)
+        private void SetDocType(string type, string access, string fpi, string uri)
         {
             DocTypeName = type.ToLower();
-            PublicIdentifier = publicIdentifier==null ? "" : publicIdentifier.ToLower();
-            SystemIdentifier = systemIdentifier==null ? "" : systemIdentifier.ToLower();
+            Access = access == null ? "" : access.ToUpper();
+            FPI = fpi ?? "";
+            URI = uri ?? "";
 
             if (DocTypeName == null || DocTypeName != "html")
             {
                 DocType = DocType.Unknown;
                 return;
             }
-            if (PublicIdentifier == "")
+            if (fpi == "" && uri=="")
             {
+                Access = "";
                 DocType = DocType.HTML5;
                 return;
             }
-            else if (PublicIdentifier.Contains("html 4"))
+            else if (FPI.IndexOf("html 4", StringComparison.CurrentCultureIgnoreCase) >= 0)
             {
-                DocType = DocType.HTML4;
+                if (FPI.IndexOf("strict", StringComparison.CurrentCultureIgnoreCase) >= 0)
+                {
+                    DocType = DocType.HTML4Strict;
+                }
+                else
+                {
+                    DocType = DocType.HTML4;
+                }
             }
-            else if (PublicIdentifier.Contains("xhtml 1"))
+            else if (FPI.IndexOf("xhtml", StringComparison.CurrentCultureIgnoreCase) >= 0)
             {
-                 DocType = DocType.XHTML;
-            } else {
+                if (FPI.IndexOf("strict", StringComparison.CurrentCultureIgnoreCase) >= 0)
+                {
+                    DocType = DocType.XHTMLStrict;
+                }
+                else
+                {
+                    DocType = DocType.XHTML;
+                }
+            }
+            else
+            {
                 DocType = DocType.Unknown;
             }
         }
@@ -193,18 +218,37 @@ namespace CsQuery.Implementation
             _DocType = type;
             switch (type)
             {
+                case DocType.Unknown:
+
                 case DocType.HTML5:
                     DocTypeName = "html";
-                    SystemIdentifier = null;
-                    PublicIdentifier = null;
+                    Access = null;
+                    FPI= null;
+                    URI = null;
                     break;
                 case DocType.XHTML:
-                    DocTypeName = "html PUBLIC";
+                    DocTypeName = "html";
+                    Access= "PUBLIC";
+                    FPI="-//W3C//DTD XHTML 1.0 Frameset//EN" ;
+                    URI="http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd" ;
                     break;
-                    //SystemIdentifier = 
-                    //return "html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"";
                 case DocType.HTML4:
-                    //return "html PUBLIC \"-//W3C//DTD HTML 4.01 Frameset//EN\" \"http://www.w3.org/TR/html4/frameset.dtd\"";
+                    DocTypeName = "html";
+                    Access = "PUBLIC";
+                    FPI="-//W3C//DTD HTML 4.01 Frameset//EN";
+                    URI="http://www.w3.org/TR/html4/frameset.dtd";
+                    break;
+                case DocType.HTML4Strict:
+                    DocTypeName="html";
+                    Access="PUBLIC";
+                    FPI="-//W3C//DTD HTML 4.01//EN" ;
+                    URI="http://www.w3.org/TR/html4/strict.dtd";
+                    break;
+                case DocType.XHTMLStrict:
+                    DocTypeName = "html";
+                    Access= "PUBLIC";
+                    FPI = "-//W3C//DTD XHTML 1.0 Strict//EN";
+                    URI = "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd";
                     break;
                 default:
                     throw new NotImplementedException("Unimplemented doctype");
@@ -246,8 +290,10 @@ namespace CsQuery.Implementation
         public override DomDocumentType Clone()
         {
             DomDocumentType clone = new DomDocumentType();
-            clone.PublicIdentifier = PublicIdentifier;
-            clone.SystemIdentifier = SystemIdentifier;
+            clone.FPI = FPI;
+            clone.Access = Access;
+            clone.URI = URI;
+            
             clone.DocTypeName = DocTypeName;
             clone.DocType = DocType;
             return clone;

@@ -138,18 +138,36 @@ namespace CsQuery
         /// <param name="type">
         /// The type.
         /// </param>
-        /// <param name="publicIdentifier">
-        /// The public type identifier.
+        /// <param name="access">
+        /// The access type, public or private.
         /// </param>
-        /// <param name="systemIdentifier">
-        /// The system type identifier.
+        /// <param name="fpi">
+        /// The formal public identifier of the doc type.
+        /// </param>
+        /// <param name="uri">
+        /// The URI of the doc type.
         /// </param>
         ///
         /// <returns>
         /// The new document type.
         /// </returns>
 
-        IDomDocumentType CreateDocumentType(string type, string publicIdentifier, string systemIdentifier);
+        IDomDocumentType CreateDocumentType(string type, string access, string fpi, string uri);
+
+        /// <summary>
+        /// Creates a document type node.
+        /// </summary>
+        ///
+        /// <param name="docType">
+        /// Returns the document type of this document. If no DOCTYPE node exists, this will return the
+        /// default document type defined through the CsQuery.Options variable.
+        /// </param>
+        ///
+        /// <returns>
+        /// The new document type.
+        /// </returns>
+
+        IDomDocumentType CreateDocumentType(DocType docType);
 
 
         /// <summary>

@@ -26,6 +26,17 @@ namespace CsQuery.Tests.Miscellaneous
     public class Reindex: CsQueryTest
     {
         [Test, TestMethod]
+        public void Issue104()
+        {
+            //var dom = TestDom("jquery-unit-index");
+            CQ dom = @"<div data-citationprefix='see'></div>";
+            var res = dom["div"].Data("citationprefix");
+            Assert.AreEqual("see", res);
+
+
+
+        }
+        [Test, TestMethod]
         public void Issue99()
         {
             //var dom = TestDom("jquery-unit-index");

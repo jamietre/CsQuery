@@ -14099,11 +14099,11 @@
              <param name="name">
              The name.
              </param>
-             <param name="publicIdentifier">
-             DocType public identifier
+             <param name="fpi">
+             The formal public identifier
              </param>
-             <param name="systemIdentifier">
-             DocType system identifier.
+             <param name="uri">
+             The URI
              </param>
         </member>
         <member name="M:CsQuery.HtmlParser.CsQueryTreeBuilder.AppendComment(CsQuery.Implementation.DomObject,System.String)">
@@ -17185,6 +17185,15 @@
             <summary>
             Merge options with defaults when needed.
             </summary>
+        </member>
+        <member name="M:CsQuery.Output.FormatDefault.SetDocType(CsQuery.IDomObject)">
+             <summary>
+             Sets document type.
+             </summary>
+            
+             <param name="element">
+             The element to render.
+             </param>
         </member>
         <member name="P:CsQuery.Output.FormatDefault.OutputStack">
             <summary>
@@ -21931,7 +21940,7 @@
         </member>
         <member name="F:CsQuery.DocType.XHTML">
             <summary>
-            XHTML -- all tags will be explicitly closed.
+            XHTML Transitional
             </summary>
         </member>
         <member name="F:CsQuery.DocType.Unknown">
@@ -21942,6 +21951,11 @@
         <member name="F:CsQuery.DocType.HTML4Strict">
             <summary>
             HTML 4 Strict
+            </summary>
+        </member>
+        <member name="F:CsQuery.DocType.XHTMLStrict">
+            <summary>
+            XHTML Strict.
             </summary>
         </member>
         <member name="T:CsQuery.DomRenderingOptions">
@@ -22277,7 +22291,7 @@
              https://developer.mozilla.org/en/DOM/document.createComment
              </url>
         </member>
-        <member name="M:CsQuery.IDomDocument.CreateDocumentType(System.String,System.String,System.String)">
+        <member name="M:CsQuery.IDomDocument.CreateDocumentType(System.String,System.String,System.String,System.String)">
              <summary>
              Creates a document type node.
              </summary>
@@ -22285,11 +22299,28 @@
              <param name="type">
              The type.
              </param>
-             <param name="publicIdentifier">
-             The public type identifier.
+             <param name="access">
+             The access type, public or private.
              </param>
-             <param name="systemIdentifier">
-             The system type identifier.
+             <param name="fpi">
+             The formal public identifier of the doc type.
+             </param>
+             <param name="uri">
+             The URI of the doc type.
+             </param>
+            
+             <returns>
+             The new document type.
+             </returns>
+        </member>
+        <member name="M:CsQuery.IDomDocument.CreateDocumentType(CsQuery.DocType)">
+             <summary>
+             Creates a document type node.
+             </summary>
+            
+             <param name="docType">
+             Returns the document type of this document. If no DOCTYPE node exists, this will return the
+             default document type defined through the CsQuery.Options variable.
              </param>
             
              <returns>
@@ -22731,19 +22762,22 @@
              https://developer.mozilla.org/en/DOM/document.createComment
              </url>
         </member>
-        <member name="M:CsQuery.Implementation.DomDocument.CreateDocumentType(System.String,System.String,System.String)">
+        <member name="M:CsQuery.Implementation.DomDocument.CreateDocumentType(System.String,System.String,System.String,System.String)">
              <summary>
-             Creates the document type node. 
+             Creates a document type node.
              </summary>
             
              <param name="type">
              The type.
              </param>
-             <param name="publicIdentifier">
-             Public identifier
+             <param name="access">
+             The access type, public or private.
              </param>
-             <param name="systemIdentifier">
-             System identifier
+             <param name="FPI">
+             The formal public identifier of the doc type.
+             </param>
+             <param name="URI">
+             The URI of the doc type.
              </param>
             
              <returns>
@@ -23167,19 +23201,22 @@
              Type of the document.
              </param>
         </member>
-        <member name="M:CsQuery.Implementation.DomDocumentType.#ctor(System.String,System.String,System.String)">
+        <member name="M:CsQuery.Implementation.DomDocumentType.#ctor(System.String,System.String,System.String,System.String)">
              <summary>
-             Constructor to create a specific document type node
+             Constructor to create a specific document type node.
              </summary>
             
              <param name="type">
              The type.
              </param>
-             <param name="publicIdentifier">
-             Identifier for the public.
+             <param name="access">
+             PUBLIC or SYSTEM
              </param>
-             <param name="systemIdentifier">
+             <param name="FPI">
              Identifier for the system.
+             </param>
+             <param name="URI">
+             URI of the document.
              </param>
         </member>
         <member name="M:CsQuery.Implementation.DomDocumentType.SetDocType(CsQuery.DocType)">

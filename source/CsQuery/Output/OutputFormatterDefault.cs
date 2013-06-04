@@ -48,6 +48,7 @@ namespace CsQuery.Output
         private DomRenderingOptions DomRenderingOptions;
         private IHtmlEncoder HtmlEncoder;
         private Stack<NodeStackElement> _OutputStack;
+        private bool IsXHTML;
 
         /// <summary>
         /// Stack of the output tree
@@ -86,8 +87,8 @@ namespace CsQuery.Output
 
         public void Render(IDomObject node, TextWriter writer)
         {
-            OutputStack.Push(new NodeStackElement(node,false,false));
-            RenderStack(writer);
+            SetDocType(node);
+            RenderInternal(node, writer);
         }
 
         /// <summary>
@@ -104,12 +105,14 @@ namespace CsQuery.Output
 
         public string Render(IDomObject node)
         {
+            SetDocType(node);
+
             StringBuilder sb = new StringBuilder();
             StringWriter sw = new StringWriter(sb);
 
             if (node is IDomDocument)
             {
-                RenderChildren(node,sw);
+                RenderChildrenInternal(node,sw);
             }
             else
             {
@@ -131,8 +134,11 @@ namespace CsQuery.Output
         /// <param name="includeChildren">
         /// true to include, false to exclude the children.
         /// </param>
+
         public virtual void RenderElement(IDomObject element, TextWriter writer, bool includeChildren)
         {
+            SetDocType(element);
+
             RenderElementInternal(element, writer, includeChildren);
             RenderStack(writer);
         }
@@ -150,6 +156,24 @@ namespace CsQuery.Output
 
         public void RenderChildren(IDomObject element, TextWriter writer)
         {
+            SetDocType(element);
+            RenderChildrenInternal(element, writer);
+        }
+
+        #endregion
+
+        #region private methods
+
+
+        private void RenderInternal(IDomObject node, TextWriter writer)
+        {
+            OutputStack.Push(new NodeStackElement(node, false, false));
+            RenderStack(writer);
+        }
+
+
+        private void RenderChildrenInternal(IDomObject element, TextWriter writer)
+        {
             if (element.HasChildren)
             {
                 ParseChildren(element);
@@ -162,10 +186,6 @@ namespace CsQuery.Output
             RenderStack(writer);
 
         }
-
-        #endregion
-
-        #region private methods
 
         /// <summary>
         /// Gets the HTML representation of this element and its children. (This is the implementation -
@@ -218,14 +238,12 @@ namespace CsQuery.Output
             }
             else
             {
-                if ((element.Document == null ? CsQuery.Config.DocType : element.Document.DocType) == DocType.XHTML)
-                {
-                    writer.Write(" />");
-                }
-                else
-                {
-                    writer.Write(">");
-                }
+                writer.Write(
+                    IsXHTML ?
+                    " />" :
+                    ">"
+                    );
+              
             }
         }
 
@@ -485,6 +503,21 @@ namespace CsQuery.Output
             {
                 DomRenderingOptions = CsQuery.Config.DomRenderingOptions | DomRenderingOptions & ~(DomRenderingOptions.Default);
             }
+        }
+
+        /// <summary>
+        /// Sets document type.
+        /// </summary>
+        ///
+        /// <param name="element">
+        /// The element to render.
+        /// </param>
+
+        protected void SetDocType(IDomObject element)
+        {
+            var docType = element.Document == null ? 
+                CsQuery.Config.DocType : element.Document.DocType;
+            IsXHTML = docType == DocType.XHTML || docType == DocType.XHTMLStrict;
         }
 
         #endregion
