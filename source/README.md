@@ -12,6 +12,7 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 **Bug fixes**
 
+- [Issue #104](https://github.com/jamietre/CsQuery/issues/104) `CQ.Data` method doesn't work for raw string values
 - [Issue #102](https://github.com/jamietre/CsQuery/issues/102)  &amp; [Issue #100](https://github.com/jamietre/CsQuery/issues/100) Incorrect document type handling
 - [Issue #82](https://github.com/jamietre/CsQuery/issues/82) `DomObject.Text` property not returning correct text when nested text nodes are present
 - Index not being updated correctly for some node removals
