@@ -8,7 +8,7 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 
 ### Change Log
 
-#### Version 1.3.5 (prerelease)
+#### Version 1.4 (prerelease)
 
 **Bug fixes**
 

@@ -25,6 +25,29 @@ namespace CsQuery.Tests.Miscellaneous
     [TestFixture, TestClass]
     public class Reindex: CsQueryTest
     {
+        /// <summary>
+        /// Issue 103.
+        /// </summary>
+
+        [Test, TestMethod]
+        public void Issue103()
+        {
+            //var dom = TestDom("jquery-unit-index");
+            CQ dom = @" <p class='need_to_select'>
+                    <p> Test </p> 
+                    <span class='need_to_remove'>
+                           <p> Need To remove</p>
+                    </span>
+ </p>";
+            
+            var res = dom["*"].Remove(".need_to_remove");
+            
+            Assert.AreEqual("see", res);
+
+
+
+        }
+
         [Test, TestMethod]
         public void Issue104()
         {
