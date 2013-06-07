@@ -210,6 +210,8 @@ namespace CsQuery
                     return value;
                 }
             }
+
+            // default to returning the raw string representation if it's not a parseable JSON value
             return data;
         }
 
@@ -238,7 +240,24 @@ namespace CsQuery
         public T Data<T>(string key)
         {
             string data = First().Attr("data-" + key);
-            return JSON.ParseJSON<T>(data);
+
+            try
+            {
+                if (!String.IsNullOrEmpty(data))
+                {
+                    object value;
+                    if (JSON.TryParseJSONValue(data, typeof(T), out value))
+                    {
+                        return (T)value;
+                    }
+                }
+           
+                    return (T)Convert.ChangeType(data, typeof(T));
+            }
+            catch (FormatException)
+            {
+                throw new InvalidCastException(String.Format("The value '{0}' can't be cast as type {1}", data,typeof(T).ToString()));
+            }
         }
 
         /// <summary>

@@ -230,6 +230,7 @@ namespace CsQuery.Utility
             return TryParseJSONValue(jsonValue, typeof(object), out value);
         }
 
+
         /// <summary>
         /// Parse a JSON value to a C# value of the type requested.
         /// </summary>
@@ -254,6 +255,20 @@ namespace CsQuery.Utility
             bool isObject = type==typeof(object);
 
             try {
+                // don't try to guess when explicitly requesting a string
+                if (type == typeof(string))
+                {
+                    if (IsJsonString(jsonValue))
+                    {
+                        value= ParseJsonString(jsonValue);
+                    }
+                    else
+                    {
+                        value=jsonValue;
+                    }
+                    return true;
+                }
+
                 if (TryParseJsonValueImpl(jsonValue, out value))
                 {
                     value = isObject ?
