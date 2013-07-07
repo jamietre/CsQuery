@@ -22,6 +22,30 @@ namespace CsQuery.ExtensionMethods.Forms
     /// </summary>
     public static class ExtensionMethods
     {
+        public static string Serialize(this CQ selection)
+        {
+            var doms = selection.SelectMany<IDomObject, IDomObject>(d =>
+            {
+                var cq = d.Cq();
+                if (cq.Is("form"))
+                {
+                    return cq.Find(":input[name]:not(:image):not(:submit):not(:file):not(:checkbox):not(:radio)")
+                        .Add(cq.Find(":checkbox[name]:checked, :radio[name]:checked"));
+                }
+                else if (cq.Is(":input[name]:not(:image):not(:submit):not(:file)"))
+                {
+                    if (!cq.Is(":checkbox, :radio") || cq.Is(":checkbox:checked, :radio:checked"))
+                    {
+                        return cq;
+                    }
+                }
+                return Enumerable.Empty<IDomObject>();
+            }).ToList();
+
+            var pairs = doms.Select(d => String.Format("{0}={1}", urlEncode(d.Name), urlEncode(d.Value ?? "on"))).ToList();
+            return String.Join("&", pairs);
+        }
+
         /// <summary>
         /// Get the value for a particular form element identified by "#ID" or "name". This method will
         /// create a selector that identifies any input, select, button or textarea element by name
@@ -365,6 +389,7 @@ namespace CsQuery.ExtensionMethods.Forms
                 opt.AppendChild(text);
             }
         }
+        
         private static string FormatEnumText(string enumText)
         {
             char[] text = enumText.ToCharArray();
@@ -376,6 +401,11 @@ namespace CsQuery.ExtensionMethods.Forms
                 lastChar = text[i];
             }
             return (result.Replace("_", "-"));
+        }
+        
+        private static string urlEncode(string value)
+        {
+            return HttpUtility.UrlEncode(value).RegexReplace(@"(?i)%[0-9A-F]{2}", m => m.Value.ToUpper());
         }
 
         #endregion
