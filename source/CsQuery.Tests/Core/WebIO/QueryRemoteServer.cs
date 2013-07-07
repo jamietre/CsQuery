@@ -20,7 +20,7 @@ namespace CsQuery.Tests.Core.WebIO
     public class _WebIO_QueryRemoteServer : CsQueryTest
     {
         private KeyValuePair<string,string>[] urls = new KeyValuePair<string,string>[] {
-            new KeyValuePair<string,string>("https://github.com/jamietre/csquery","div.repo-desc-homepage"),
+            new KeyValuePair<string,string>("https://github.com/jamietre/csquery","div.repository-description"),
             new KeyValuePair<string,string>("http://www.cnn.com/","#cnn_hdr")
         };
         
@@ -29,8 +29,20 @@ namespace CsQuery.Tests.Core.WebIO
             base.FixtureSetUp();
             ServerConfig.Default.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2";
         }
-        
-        [Test,TestMethod]
+
+        [Test, TestMethod]
+        public void GetHtmlWhoseContentTypeHasNoCharset()
+        {
+            var url = "http://www.pixnet.net";
+
+            Dom = CQ.CreateFromUrl(url);
+
+            Assert.IsTrue(Dom.Document != null, "Dom was created");
+            var csq = Dom.Find("title:contains('痞客邦 PIXNET')");
+            Assert.IsTrue(csq.Length > 0, "I found an expected content container - if Pixnet changed their web site this could fail.");
+        }
+
+        [Test, TestMethod]
         public void GetHtml()
         {
             var url = urls[0];
