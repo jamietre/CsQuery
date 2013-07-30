@@ -25,12 +25,12 @@ namespace CsQuery.WebFormsApp
         protected override void Cq_Render()
         {
             var table = Doc["table"];
-            for (int row = 1; row < TableRows; row++)
+            for (int row = 0; row < TableRows; row++)
             {
                 CQ curRow = Doc["<tr></tr>"];
-                for (int col = 1; col < TableColumns; col++)
+                for (int col = 0; col < TableColumns; col++)
                 {
-                    CQ curCol = Doc["<td /"].Text(
+                    CQ curCol = Doc["<td />"].Text(
                         String.Format("Row {0} Column {1}", row, col)
                     );
                     curRow.Append(curCol);
