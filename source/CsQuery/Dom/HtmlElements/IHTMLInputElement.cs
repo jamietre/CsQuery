@@ -19,7 +19,7 @@ namespace CsQuery
         /// The form with which to associate the element.
         /// </summary>
 
-        IDomElement Form {get;}
+        IHTMLFormElement Form {get;}
 
         /// <summary>
         /// A URL that provides the destination of the hyperlink. If the href attribute is not specified,
