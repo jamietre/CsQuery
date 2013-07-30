@@ -35,7 +35,7 @@ namespace CsQuery.Dom.Implementation.HtmlElements
             {
                 string formId = GetAttribute(HtmlData.tagFORM);
                 IHTMLFormElement form = null;
-                if (string.IsNullOrEmpty(formId))
+                if (!string.IsNullOrEmpty(formId))
                 {
                     form = Document.GetElementById(formId) as IHTMLFormElement;
                 }
