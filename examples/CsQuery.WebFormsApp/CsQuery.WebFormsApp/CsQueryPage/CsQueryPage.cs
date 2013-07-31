@@ -26,7 +26,6 @@ namespace CsQuery.AspNet
                 Cq_Render();
             }
 
-            Cq_Render();
             
             csqContext.Render();
         }
