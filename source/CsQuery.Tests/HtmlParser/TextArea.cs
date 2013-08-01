@@ -42,5 +42,19 @@ namespace CsQuery.Tests.HtmlParser
             Assert.AreEqual(expected, actual);
 
         }
+
+        /// <summary>
+        /// Ensure that the type of a TEXTAREA element is always the string "textarea"
+        /// </summary>
+        [Test, TestMethod]
+        public void Type()
+        {
+            CQ cq = CQ.Create("<textarea type=useless>Foo that bar</textarea>");
+            IHTMLTextAreaElement textArea = cq["textarea"].FirstElement() as IHTMLTextAreaElement;
+
+            Assert.IsNotNull(textArea);
+            Assert.AreEqual("textarea", textArea.Type);
+            Assert.AreEqual("useless", textArea.GetAttribute("type"));
+        }
     }
 }
