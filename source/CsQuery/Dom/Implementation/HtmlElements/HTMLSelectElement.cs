@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CsQuery.Dom.Implementation.HtmlElements;
 using CsQuery.HtmlParser;
 
 namespace CsQuery.Implementation
@@ -10,7 +11,7 @@ namespace CsQuery.Implementation
     /// An HTML SELECT element.
     /// </summary>
 
-    public class HTMLSelectElement : DomElement, IHTMLSelectElement
+    public class HTMLSelectElement : FormReassociateableElement, IHTMLSelectElement
     {
         /// <summary>
         /// Default constructor.

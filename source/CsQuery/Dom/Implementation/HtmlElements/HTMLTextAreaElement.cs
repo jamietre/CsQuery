@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using CsQuery.Dom.Implementation.HtmlElements;
 using CsQuery.HtmlParser;
 
 namespace CsQuery.Implementation
@@ -11,7 +12,7 @@ namespace CsQuery.Implementation
     /// An HTML text area element.
     /// </summary>
 
-    public class HTMLTextAreaElement : DomElement
+    public class HTMLTextAreaElement : FormReassociateableElement, IHTMLTextAreaElement
     {
         /// <summary>
         /// Default constructor.
@@ -41,6 +42,19 @@ namespace CsQuery.Implementation
                 ChildNodes.Clear();
                 ChildNodes.Add(Document.CreateTextNode(value));
             }
+        }
+
+
+        /// <summary>
+        /// The string "textarea", per the HTML5 spec.
+        /// </summary>
+        /// 
+        /// <url>
+        /// http://www.w3.org/html/wg/drafts/html/master/forms.html#dom-textarea-type
+        /// </url>
+        public override string Type
+        {
+            get { return "textarea"; }
         }
 
 

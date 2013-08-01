@@ -140,6 +140,8 @@ namespace CsQuery.Implementation
                     return new HtmlAnchorElement();
                 case HtmlData.tagFORM:
                     return new HtmlFormElement();
+                case HtmlData.tagBUTTON:
+                    return new HTMLButtonElement();
                 case HtmlData.tagINPUT:
                     return new HTMLInputElement();
                 case HtmlData.tagLABEL:

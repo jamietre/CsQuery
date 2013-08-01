@@ -12,6 +12,12 @@ namespace CsQuery
     public interface IHTMLSelectElement : IDomElement
     {
         /// <summary>
+        /// The form with which to associate the element.
+        /// </summary>
+
+        IHTMLFormElement Form { get; }
+
+        /// <summary>
         /// A collection of HTML option elements (in document order)
         /// </summary>
         /// <url>https://developer.mozilla.org/en/DOM/HTMLOptionsCollection</url>
