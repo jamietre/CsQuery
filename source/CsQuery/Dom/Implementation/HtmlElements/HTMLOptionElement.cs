@@ -78,9 +78,18 @@ namespace CsQuery.Implementation
         /// The form with which the element is associated.
         /// </summary>
 
-        public IDomElement Form
+        public IHTMLFormElement Form
         {
-            get { return Closest(HtmlData.tagFORM); }
+            get
+            {
+                IHTMLSelectElement optionOwner = OptionOwner();
+                if (optionOwner != null)
+                {
+                    return optionOwner.Form;
+                }
+
+                return null;
+            }
         }
 
         /// <summary>
@@ -143,7 +152,7 @@ namespace CsQuery.Implementation
             }
         }
 
-        private IDomElement OptionOwner()
+        private IHTMLSelectElement OptionOwner()
         {
             var node = this.ParentNode == null ?
                 null :
@@ -154,7 +163,7 @@ namespace CsQuery.Implementation
                             this.ParentNode.ParentNode.NodeNameID == HtmlData.tagSELECT ?
                                 this.ParentNode.ParentNode :
                                 null;
-            return (IDomElement)node;
+            return (IHTMLSelectElement)node;
         }
 
         private HTMLOptionsCollection OwnerSelectOptions()

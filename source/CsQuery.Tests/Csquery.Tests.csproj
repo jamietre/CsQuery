@@ -113,7 +113,9 @@
     <Compile Include="Core\Selectors\ContentIsNotNumeric.cs" />
     <Compile Include="Core\WebIO\BasicWeb.cs" />
     <Compile Include="ExtensionMethods\Xml.cs" />
+    <Compile Include="HtmlParser\Button.cs" />
     <Compile Include="HtmlParser\CharacterSetEncoding.cs" />
+    <Compile Include="HtmlParser\FormAssociatedElement.cs" />
     <Compile Include="HtmlParser\HtmlEncoding.cs" />
     <Compile Include="HtmlParser\PreProcessing.cs" />
     <Compile Include="HtmlParser\FragmentContext.cs" />
