@@ -22,7 +22,7 @@ namespace CsQuery
         /// The form with which the element is associated
         /// </summary>
 
-        IDomElement Form {get;}
+        IHTMLFormElement Form {get;}
 
         /// <summary>
         /// Gets or sets the label attribute.
