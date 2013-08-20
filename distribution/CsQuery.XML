@@ -5081,285 +5081,26 @@
             A page rule.
             </summary>
         </member>
-        <member name="T:CsQuery.ICSSRule">
+        <member name="T:CsQuery.IHTMLButtonElement">
              <summary>
-             Interface for icss rule.
+             An HTML BUTTON element.
              </summary>
             
              <url>
-             http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSRule
+             http://dev.w3.org/html5/markup/button.html
              </url>
         </member>
-        <member name="P:CsQuery.ICSSRule.Type">
+        <member name="T:CsQuery.IDomElement">
             <summary>
-            Gets the type of rule.
+            A regular DOM element
             </summary>
         </member>
-        <member name="P:CsQuery.ICSSRule.CssText">
+        <member name="T:CsQuery.IDomContainer">
             <summary>
-            The parsable textual representation of the rule. This reflects the current state of the rule
-            and not its initial value.
-            </summary>
-        </member>
-        <member name="P:CsQuery.ICSSRule.ParentStyleSheet">
-            <summary>
-            The style sheet that contains this rule.
-            </summary>
-        </member>
-        <member name="P:CsQuery.ICSSRule.ParentRule">
-            <summary>
-            If this rule is contained inside another rule (e.g. a style rule inside an @media block),
-            this is the containing rule. If this rule is not nested inside any other rules, this returns
-            null.
-            </summary>
-        </member>
-        <member name="T:CsQuery.ICSSStyleRule">
-             <summary>
-             Interface for a CSS style rule.
-             </summary>
-            
-             <url>
-             http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleRule
-             </url>
-        </member>
-        <member name="P:CsQuery.ICSSStyleRule.SelectorText">
-            <summary>
-            The textual representation of the selector for the rule set. The implementation may have
-            stripped out insignificant whitespace while parsing the selector.
-            </summary>
-        </member>
-        <member name="P:CsQuery.ICSSStyleRule.Style">
-            <summary>
-            The declaration-block of this rule set.
-            </summary>
-        </member>
-        <member name="T:CsQuery.ICSSStyleSheet">
-             <summary>
-             Interface to a CSS style sheet.
-             </summary>
-            
-             <url>
-             http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleSheet
-             </url>
-        </member>
-        <member name="P:CsQuery.ICSSStyleSheet.Disabled">
-            <summary>
-            Indicates whether the style sheet is applied to the document. 
-            </summary>
-        </member>
-        <member name="P:CsQuery.ICSSStyleSheet.Href">
-            <summary>
-            If the style sheet is a linked style sheet, the value of its attribute is its location. For inline style sheets, the value of this attribute is null.
-            </summary>
-        </member>
-        <member name="P:CsQuery.ICSSStyleSheet.OwnerNode">
-            <summary>
-            The node that associates this style sheet with the document. For HTML, this may be the
-            corresponding LINK or STYLE element.
-            </summary>
-        </member>
-        <member name="P:CsQuery.ICSSStyleSheet.Type">
-            <summary>
-            This specifies the style sheet language for this style sheet. This will always be "text/css"
-            </summary>
-        </member>
-        <member name="P:CsQuery.ICSSStyleSheet.CssRules">
-            <summary>
-            Gets the CSS rules for this style sheet.
-            </summary>
-        </member>
-        <member name="T:CsQuery.Implementation.CSSRule">
-             <summary>
-             Interface for icss rule.
-             </summary>
-            
-             <url>
-             http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSRule
-             </url>
-        </member>
-        <member name="M:CsQuery.Implementation.CSSRule.#ctor(CsQuery.ICSSStyleSheet,CsQuery.ICSSRule)">
-             <summary>
-             Constructor for a CSS rule.
-             </summary>
-            
-             <param name="parentStyleSheet">
-             The parent style sheet.
-             </param>
-             <param name="parentRule">
-             The parent rule.
-             </param>
-        </member>
-        <member name="P:CsQuery.Implementation.CSSRule.Type">
-            <summary>
-            Gets the type of rule.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.CSSRule.CssText">
-            <summary>
-            The parsable textual representation of the rule. This reflects the current state of the rule
-            and not its initial value.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.CSSRule.ParentStyleSheet">
-             <summary>
-             The style sheet that contains this rule.
-             </summary>
-            
-             <value>
-             The parent style sheet.
-             </value>
-        </member>
-        <member name="P:CsQuery.Implementation.CSSRule.ParentRule">
-             <summary>
-             If this rule is contained inside another rule (e.g. a style rule inside an @media block),
-             this is the containing rule. If this rule is not nested inside any other rules, this returns
-             null.
-             </summary>
-            
-             <value>
-             The parent rule.
-             </value>
-        </member>
-        <member name="T:CsQuery.Implementation.CSSStyleChangedArgs">
-            <summary>
-            Arguments for when a style is changed.
-            </summary>
-        </member>
-        <member name="M:CsQuery.Implementation.CSSStyleChangedArgs.#ctor(System.Boolean)">
-             <summary>
-             Constructor.
-             </summary>
-            
-             <param name="hasStyleAttribute">
-             A value indicating whether this object has styles following the change.
-             </param>
-        </member>
-        <member name="P:CsQuery.Implementation.CSSStyleChangedArgs.HasStyleAttribute">
-            <summary>
-            Gets a value indicating whether this object has styles following the change.
-            </summary>
-        </member>
-        <member name="T:CsQuery.Implementation.CSSStyleRule">
-             <summary>
-             A CSS style rule.
-             </summary>
-            
-             <url>
-             http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleRule
-             </url>
-        </member>
-        <member name="M:CsQuery.Implementation.CSSStyleRule.#ctor(CsQuery.ICSSStyleSheet,CsQuery.ICSSRule)">
-             <summary>
-             Constructor.
-             </summary>
-            
-             <param name="parentStyleSheet">
-             The parent style sheet.
-             </param>
-             <param name="parentRule">
-             The parent rule.
-             </param>
-        </member>
-        <member name="P:CsQuery.Implementation.CSSStyleRule.SelectorText">
-            <summary>
-            The textual representation of the selector for the rule set. The implementation may have
-            stripped out insignificant whitespace while parsing the selector.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.CSSStyleRule.Style">
-            <summary>
-            The declaration-block of this rule set.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.CSSStyleRule.CssText">
-            <summary>
-            The parsable textual representation of the rule. This reflects the current state of the rule
-            and not its initial value.
-            </summary>
-        </member>
-        <member name="T:CsQuery.Implementation.CSSStyleSheet">
-             <summary>
-             A CSS style sheet.
-             </summary>
-            
-             <url>
-             http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleSheet
-             </url>
-        </member>
-        <member name="M:CsQuery.Implementation.CSSStyleSheet.#ctor(CsQuery.IDomElement)">
-             <summary>
-             Constructor.
-             </summary>
-            
-             <param name="ownerNode">
-             The node that owns this item.
-             </param>
-        </member>
-        <member name="P:CsQuery.Implementation.CSSStyleSheet.Disabled">
-            <summary>
-            Indicates whether the style sheet is applied to the document.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.CSSStyleSheet.Href">
-            <summary>
-            If the style sheet is a linked style sheet, the value of its attribute is its location. For
-            inline style sheets, the value of this attribute is null.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.CSSStyleSheet.OwnerNode">
-             <summary>
-             The node that associates this style sheet with the document. For HTML, this may be the
-             corresponding LINK or STYLE element.
-             </summary>
-            
-             <value>
-             The owner node.
-             </value>
-        </member>
-        <member name="P:CsQuery.Implementation.CSSStyleSheet.Type">
-             <summary>
-             This specifies the style sheet language for this style sheet. This will always be "text/css".
-             </summary>
-            
-             <value>
-             The type.
-             </value>
-        </member>
-        <member name="P:CsQuery.Implementation.CSSStyleSheet.CssRules">
-             <summary>
-             Gets the CSS rules for this style sheet.
-             </summary>
-            
-             <value>
-             The CSS rules.
-             </value>
-        </member>
-        <member name="T:CsQuery.Implementation.HTMLStyleElement">
-            <summary>
-            A STYLE element
-            </summary>
-        </member>
-        <member name="T:CsQuery.Implementation.DomElement">
-            <summary>
-            HTML elements.
-            </summary>
-        </member>
-        <member name="T:CsQuery.Implementation.DomContainer`1">
-            <summary>
-            Base class for Dom object that contain other elements
-            </summary>
-        </member>
-        <member name="T:CsQuery.Implementation.DomObject`1">
-            <summary>
-            Base class for anything that exists in the DOM
-            </summary>
-            
-        </member>
-        <member name="T:CsQuery.Implementation.DomObject">
-            <summary>
-            Something that appears in the DOM. This is essentially the same as a Node in the browser DOM,
-            but IDomObject represents only things that may appear in the DOM (e.g. not an attribute,
-            document, doctype)
+            Interface for objects that can contain other objects. Note that to allow some consistency with how DOM
+            objects are used in the browser DOM, many methods are part of the base IDomObject interface so that they
+            can be used (and return null/missing data) on elements to which they don't apply. So in actuality the only 
+            unique methods are nonstandard ones.
             </summary>
         </member>
         <member name="T:CsQuery.IDomObject">
@@ -6213,6 +5954,354 @@
         <member name="P:CsQuery.IDomObject.NodeNameID">
             <summary>
             The internal token ID for this element's node name. 
+            </summary>
+        </member>
+        <member name="M:CsQuery.IDomContainer.CloneChildren">
+             <summary>
+             An enumeration of clones of the chilren of this object
+             </summary>
+            
+             <returns>
+             An enumerator 
+             </returns>
+        </member>
+        <member name="T:CsQuery.IDomIndexedNode">
+            <summary>
+            An marker and interface exposing properties required for a node that should be indexed
+            </summary>
+        </member>
+        <member name="M:CsQuery.IDomIndexedNode.IndexKeys">
+             <summary>
+             Enumerates index keys in this collection.
+             </summary>
+            
+             <returns>
+             An enumerator that allows foreach to be used to process index keys in this collection.
+             </returns>
+        </member>
+        <member name="P:CsQuery.IDomIndexedNode.IndexReference">
+            <summary>
+            The object that is the target of the index (normally, the object itself)
+            </summary>
+        </member>
+        <member name="M:CsQuery.IDomElement.ElementHtml">
+             <summary>
+             Returns the HTML for this element, but ignoring children/innerHTML.
+             </summary>
+            
+             <returns>
+             A string of HTML.
+             </returns>
+        </member>
+        <member name="P:CsQuery.IDomElement.IsBlock">
+            <summary>
+            The element is a block element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.IDomElement.ElementIndex">
+            <summary>
+            Get this element's index only among other elements (e.g. excluding text &amp; other non-
+            element node types)
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLButtonElement.Form">
+            <summary>
+            The form with which to associate the element.
+            </summary>
+        </member>
+        <member name="T:CsQuery.IHTMLTextAreaElement">
+             <summary>
+             An HTML TEXTAREA element.
+             </summary>
+            
+             <url>
+             http://dev.w3.org/html5/markup/textarea.html
+             </url>
+        </member>
+        <member name="P:CsQuery.IHTMLTextAreaElement.Form">
+            <summary>
+            The form with which to associate the element.
+            </summary>
+        </member>
+        <member name="T:CsQuery.ICSSRule">
+             <summary>
+             Interface for icss rule.
+             </summary>
+            
+             <url>
+             http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSRule
+             </url>
+        </member>
+        <member name="P:CsQuery.ICSSRule.Type">
+            <summary>
+            Gets the type of rule.
+            </summary>
+        </member>
+        <member name="P:CsQuery.ICSSRule.CssText">
+            <summary>
+            The parsable textual representation of the rule. This reflects the current state of the rule
+            and not its initial value.
+            </summary>
+        </member>
+        <member name="P:CsQuery.ICSSRule.ParentStyleSheet">
+            <summary>
+            The style sheet that contains this rule.
+            </summary>
+        </member>
+        <member name="P:CsQuery.ICSSRule.ParentRule">
+            <summary>
+            If this rule is contained inside another rule (e.g. a style rule inside an @media block),
+            this is the containing rule. If this rule is not nested inside any other rules, this returns
+            null.
+            </summary>
+        </member>
+        <member name="T:CsQuery.ICSSStyleRule">
+             <summary>
+             Interface for a CSS style rule.
+             </summary>
+            
+             <url>
+             http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleRule
+             </url>
+        </member>
+        <member name="P:CsQuery.ICSSStyleRule.SelectorText">
+            <summary>
+            The textual representation of the selector for the rule set. The implementation may have
+            stripped out insignificant whitespace while parsing the selector.
+            </summary>
+        </member>
+        <member name="P:CsQuery.ICSSStyleRule.Style">
+            <summary>
+            The declaration-block of this rule set.
+            </summary>
+        </member>
+        <member name="T:CsQuery.ICSSStyleSheet">
+             <summary>
+             Interface to a CSS style sheet.
+             </summary>
+            
+             <url>
+             http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleSheet
+             </url>
+        </member>
+        <member name="P:CsQuery.ICSSStyleSheet.Disabled">
+            <summary>
+            Indicates whether the style sheet is applied to the document. 
+            </summary>
+        </member>
+        <member name="P:CsQuery.ICSSStyleSheet.Href">
+            <summary>
+            If the style sheet is a linked style sheet, the value of its attribute is its location. For inline style sheets, the value of this attribute is null.
+            </summary>
+        </member>
+        <member name="P:CsQuery.ICSSStyleSheet.OwnerNode">
+            <summary>
+            The node that associates this style sheet with the document. For HTML, this may be the
+            corresponding LINK or STYLE element.
+            </summary>
+        </member>
+        <member name="P:CsQuery.ICSSStyleSheet.Type">
+            <summary>
+            This specifies the style sheet language for this style sheet. This will always be "text/css"
+            </summary>
+        </member>
+        <member name="P:CsQuery.ICSSStyleSheet.CssRules">
+            <summary>
+            Gets the CSS rules for this style sheet.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.CSSRule">
+             <summary>
+             Interface for icss rule.
+             </summary>
+            
+             <url>
+             http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSRule
+             </url>
+        </member>
+        <member name="M:CsQuery.Implementation.CSSRule.#ctor(CsQuery.ICSSStyleSheet,CsQuery.ICSSRule)">
+             <summary>
+             Constructor for a CSS rule.
+             </summary>
+            
+             <param name="parentStyleSheet">
+             The parent style sheet.
+             </param>
+             <param name="parentRule">
+             The parent rule.
+             </param>
+        </member>
+        <member name="P:CsQuery.Implementation.CSSRule.Type">
+            <summary>
+            Gets the type of rule.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.CSSRule.CssText">
+            <summary>
+            The parsable textual representation of the rule. This reflects the current state of the rule
+            and not its initial value.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.CSSRule.ParentStyleSheet">
+             <summary>
+             The style sheet that contains this rule.
+             </summary>
+            
+             <value>
+             The parent style sheet.
+             </value>
+        </member>
+        <member name="P:CsQuery.Implementation.CSSRule.ParentRule">
+             <summary>
+             If this rule is contained inside another rule (e.g. a style rule inside an @media block),
+             this is the containing rule. If this rule is not nested inside any other rules, this returns
+             null.
+             </summary>
+            
+             <value>
+             The parent rule.
+             </value>
+        </member>
+        <member name="T:CsQuery.Implementation.CSSStyleChangedArgs">
+            <summary>
+            Arguments for when a style is changed.
+            </summary>
+        </member>
+        <member name="M:CsQuery.Implementation.CSSStyleChangedArgs.#ctor(System.Boolean)">
+             <summary>
+             Constructor.
+             </summary>
+            
+             <param name="hasStyleAttribute">
+             A value indicating whether this object has styles following the change.
+             </param>
+        </member>
+        <member name="P:CsQuery.Implementation.CSSStyleChangedArgs.HasStyleAttribute">
+            <summary>
+            Gets a value indicating whether this object has styles following the change.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.CSSStyleRule">
+             <summary>
+             A CSS style rule.
+             </summary>
+            
+             <url>
+             http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleRule
+             </url>
+        </member>
+        <member name="M:CsQuery.Implementation.CSSStyleRule.#ctor(CsQuery.ICSSStyleSheet,CsQuery.ICSSRule)">
+             <summary>
+             Constructor.
+             </summary>
+            
+             <param name="parentStyleSheet">
+             The parent style sheet.
+             </param>
+             <param name="parentRule">
+             The parent rule.
+             </param>
+        </member>
+        <member name="P:CsQuery.Implementation.CSSStyleRule.SelectorText">
+            <summary>
+            The textual representation of the selector for the rule set. The implementation may have
+            stripped out insignificant whitespace while parsing the selector.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.CSSStyleRule.Style">
+            <summary>
+            The declaration-block of this rule set.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.CSSStyleRule.CssText">
+            <summary>
+            The parsable textual representation of the rule. This reflects the current state of the rule
+            and not its initial value.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.CSSStyleSheet">
+             <summary>
+             A CSS style sheet.
+             </summary>
+            
+             <url>
+             http://www.w3.org/TR/DOM-Level-2-Style/css.html#CSS-CSSStyleSheet
+             </url>
+        </member>
+        <member name="M:CsQuery.Implementation.CSSStyleSheet.#ctor(CsQuery.IDomElement)">
+             <summary>
+             Constructor.
+             </summary>
+            
+             <param name="ownerNode">
+             The node that owns this item.
+             </param>
+        </member>
+        <member name="P:CsQuery.Implementation.CSSStyleSheet.Disabled">
+            <summary>
+            Indicates whether the style sheet is applied to the document.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.CSSStyleSheet.Href">
+            <summary>
+            If the style sheet is a linked style sheet, the value of its attribute is its location. For
+            inline style sheets, the value of this attribute is null.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.CSSStyleSheet.OwnerNode">
+             <summary>
+             The node that associates this style sheet with the document. For HTML, this may be the
+             corresponding LINK or STYLE element.
+             </summary>
+            
+             <value>
+             The owner node.
+             </value>
+        </member>
+        <member name="P:CsQuery.Implementation.CSSStyleSheet.Type">
+             <summary>
+             This specifies the style sheet language for this style sheet. This will always be "text/css".
+             </summary>
+            
+             <value>
+             The type.
+             </value>
+        </member>
+        <member name="P:CsQuery.Implementation.CSSStyleSheet.CssRules">
+             <summary>
+             Gets the CSS rules for this style sheet.
+             </summary>
+            
+             <value>
+             The CSS rules.
+             </value>
+        </member>
+        <member name="T:CsQuery.Implementation.HTMLButtonElement">
+            <summary>
+            An HTML button element.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.DomElement">
+            <summary>
+            HTML elements.
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.DomContainer`1">
+            <summary>
+            Base class for Dom object that contain other elements
+            </summary>
+        </member>
+        <member name="T:CsQuery.Implementation.DomObject`1">
+            <summary>
+            Base class for anything that exists in the DOM
+            </summary>
+            
+        </member>
+        <member name="T:CsQuery.Implementation.DomObject">
+            <summary>
+            Something that appears in the DOM. This is essentially the same as a Node in the browser DOM,
+            but IDomObject represents only things that may appear in the DOM (e.g. not an attribute,
+            document, doctype)
             </summary>
         </member>
         <member name="F:CsQuery.Implementation.DomObject._Document">
@@ -7229,23 +7318,6 @@
              A new IDomObject
              </returns>
         </member>
-        <member name="T:CsQuery.IDomContainer">
-            <summary>
-            Interface for objects that can contain other objects. Note that to allow some consistency with how DOM
-            objects are used in the browser DOM, many methods are part of the base IDomObject interface so that they
-            can be used (and return null/missing data) on elements to which they don't apply. So in actuality the only 
-            unique methods are nonstandard ones.
-            </summary>
-        </member>
-        <member name="M:CsQuery.IDomContainer.CloneChildren">
-             <summary>
-             An enumeration of clones of the chilren of this object
-             </summary>
-            
-             <returns>
-             An enumerator 
-             </returns>
-        </member>
         <member name="M:CsQuery.Implementation.DomContainer`1.#ctor">
             <summary>
             Default constructor.
@@ -7398,50 +7470,6 @@
              <returns>
              IDomObject, the element at the specified index within this node's children.
              </returns>
-        </member>
-        <member name="T:CsQuery.IDomElement">
-            <summary>
-            A regular DOM element
-            </summary>
-        </member>
-        <member name="T:CsQuery.IDomIndexedNode">
-            <summary>
-            An marker and interface exposing properties required for a node that should be indexed
-            </summary>
-        </member>
-        <member name="M:CsQuery.IDomIndexedNode.IndexKeys">
-             <summary>
-             Enumerates index keys in this collection.
-             </summary>
-            
-             <returns>
-             An enumerator that allows foreach to be used to process index keys in this collection.
-             </returns>
-        </member>
-        <member name="P:CsQuery.IDomIndexedNode.IndexReference">
-            <summary>
-            The object that is the target of the index (normally, the object itself)
-            </summary>
-        </member>
-        <member name="M:CsQuery.IDomElement.ElementHtml">
-             <summary>
-             Returns the HTML for this element, but ignoring children/innerHTML.
-             </summary>
-            
-             <returns>
-             A string of HTML.
-             </returns>
-        </member>
-        <member name="P:CsQuery.IDomElement.IsBlock">
-            <summary>
-            The element is a block element.
-            </summary>
-        </member>
-        <member name="P:CsQuery.IDomElement.ElementIndex">
-            <summary>
-            Get this element's index only among other elements (e.g. excluding text &amp; other non-
-            element node types)
-            </summary>
         </member>
         <member name="T:CsQuery.IAttributeCollection">
             <summary>
@@ -8362,6 +8390,61 @@
              int
              </returntype>
         </member>
+        <member name="M:CsQuery.Dom.Implementation.HtmlElements.FormReassociateableElement.#ctor(System.UInt16)">
+            <summary>
+            Constructor to specify the element's token ID.
+            </summary>
+            <param name="tokenId">The token ID of the element.</param>
+        </member>
+        <member name="P:CsQuery.Dom.Implementation.HtmlElements.FormReassociateableElement.Form">
+             <summary>
+             The value of form element with which to associate the element.
+             </summary>
+            
+             <remarks>
+             The HTML5 spec says "The value of the id attribute on the form with which to associate the
+             element." This is not what browsers currently return; they return the actual element. We'll
+             keep that for now. If the "form" attribute is specified, the first form element with an ID
+             matching the value will be returned instead.
+             </remarks>
+        </member>
+        <member name="M:CsQuery.Implementation.HTMLButtonElement.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+        </member>
+        <member name="P:CsQuery.Implementation.HTMLButtonElement.Type">
+             <summary>
+             The value of the "type" attribute. For button elements, this property always returns a
+             lowercase value and defaults to "submit" if there is no type attribute.
+             </summary>
+            
+             <value>
+             The type.
+             </value>
+        </member>
+        <member name="M:CsQuery.Dom.Implementation.HtmlElements.FormAssociatedElement.#ctor(System.UInt16)">
+            <summary>
+            Constructor to specify the element's token ID.
+            </summary>
+            <param name="tokenId">The token ID of the element.</param>
+        </member>
+        <member name="P:CsQuery.Dom.Implementation.HtmlElements.FormAssociatedElement.Form">
+             <summary>
+             The value of form element with which to associate the element.
+             </summary>
+            
+             <remarks>
+             The HTML5 spec says "The value of the id attribute on the form with which to associate the
+             element." This is not what browsers currently return; they return the actual element. We'll
+             keep that for now.
+             </remarks>
+        </member>
+        <member name="T:CsQuery.Implementation.HTMLStyleElement">
+            <summary>
+            A STYLE element
+            </summary>
+        </member>
         <member name="M:CsQuery.Implementation.HTMLStyleElement.#ctor">
             <summary>
             Default constructor
@@ -8413,11 +8496,6 @@
         <member name="M:CsQuery.Implementation.HTMLLabelElement.#ctor">
             <summary>
             Default constructor.
-            </summary>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLLabelElement.Form">
-            <summary>
-            The form to which the label belongs
             </summary>
         </member>
         <member name="P:CsQuery.Implementation.HTMLLabelElement.HtmlFor">
@@ -9136,6 +9214,15 @@
             The value of the HTMLRawInnerTextElementBase's contents
             </summary>
         </member>
+        <member name="P:CsQuery.Implementation.HTMLTextAreaElement.Type">
+            <summary>
+            The string "textarea", per the HTML5 spec.
+            </summary>
+            
+            <url>
+            http://www.w3.org/html/wg/drafts/html/master/forms.html#dom-textarea-type
+            </url>
+        </member>
         <member name="P:CsQuery.Implementation.HTMLTextAreaElement.InnerText">
             <summary>
             For HTMLRawInnerTextElementBase elements, InnerText doesn't actually do anything, whereas Value is the InnerText.
@@ -9200,17 +9287,6 @@
              <returns>
              An enumerator that allows foreach to be used to process index keys in this collection.
              </returns>
-        </member>
-        <member name="P:CsQuery.Implementation.HTMLInputElement.Form">
-             <summary>
-             The value of form element with which to associate the element.
-             </summary>
-            
-             <remarks>
-             The HTML5 spec says "The value of the id attribute on the form with which to associate the
-             element." This is not what browsers currently return; they return the actual element. We'll
-             keep that for now.
-             </remarks>
         </member>
         <member name="P:CsQuery.Implementation.HTMLInputElement.Autofocus">
             <summary>
@@ -9299,6 +9375,11 @@
         <member name="T:CsQuery.IHTMLSelectElement">
             <summary>
             A SELECT element
+            </summary>
+        </member>
+        <member name="P:CsQuery.IHTMLSelectElement.Form">
+            <summary>
+            The form with which to associate the element.
             </summary>
         </member>
         <member name="P:CsQuery.IHTMLSelectElement.Options">
