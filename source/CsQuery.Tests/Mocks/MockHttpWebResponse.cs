@@ -11,6 +11,10 @@ namespace CsQuery.Tests.Mocks
 {
     public class MockHttpWebResponse: IHttpWebResponse
     {
+        public MockHttpWebResponse()
+        {
+            ContentType = "text/html";
+        }
        
         /// <summary>
         /// Gets or sets the HTML that will be sent as a response.
@@ -138,16 +142,21 @@ namespace CsQuery.Tests.Mocks
             }
         }
 
+        private string _ContentType;
         public string ContentType
         {
             get
             {
-                throw new NotImplementedException();
+                return _ContentType +
+                    (!String.IsNullOrEmpty(CharacterSet) ? 
+                    "; charset=" + CharacterSet :
+                    "");
             }
             set
             {
-                throw new NotImplementedException();
+                 _ContentType = value;
             }
+           
         }
 
         public Uri ResponseUri

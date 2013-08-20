@@ -44,9 +44,9 @@ Nested hidden span
 Nested hidden header
 Nested non-hidden span
 Nested non=hidden header
-";
+".NormalizeLineEndings();
 
-            Assert.AreEqual(expected, doc["body"][0].InnerText);
+            Assert.AreEqual(expected, doc["body"][0].InnerText.NormalizeLineEndings());
         }
 
         /// <summary>

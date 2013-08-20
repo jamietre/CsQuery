@@ -85,7 +85,7 @@ namespace CsQuery
             CQ output = NewCqInDomain();
             HashSet<IDomElement> targets = new HashSet<IDomElement>(elements);
 
-            var filtered = FilterElementsIgnoreNull(ParentsImpl(Elements, targets), filter);
+            var filtered = FilterElementsIgnoreNull(ParentsImpl(Selection, targets), filter);
             
             output.SetSelection(filtered,
                 SelectionSetOrder.OrderAdded,

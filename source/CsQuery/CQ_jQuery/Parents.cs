@@ -35,7 +35,7 @@ namespace CsQuery
             return ParentsUntil((string)null, filter);
         }
 
-        private IEnumerable<IDomElement> ParentsImpl(IEnumerable<IDomElement> source, HashSet<IDomElement> until)
+        private IEnumerable<IDomElement> ParentsImpl(IEnumerable<IDomObject> source, HashSet<IDomElement> until)
         {
 
             HashSet<IDomElement> alreadyAdded = new HashSet<IDomElement>();

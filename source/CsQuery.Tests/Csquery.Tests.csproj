@@ -108,6 +108,7 @@
     <Compile Include="Core\Dom\SpecialElements.cs" />
     <Compile Include="Core\Index\IndexTests.cs" />
     <Compile Include="Core\Index\SharedIndexTests.cs" />
+    <Compile Include="Core\Methods\Parents.cs" />
     <Compile Include="Core\Methods\Data.cs" />
     <Compile Include="Core\Selectors\ContentIsNotNumeric.cs" />
     <Compile Include="Core\WebIO\BasicWeb.cs" />
