@@ -39,6 +39,30 @@ namespace CsQuery.Tests.Core.Dom
             Assert.IsTrue(dom.Is(":hidden"));
         }
 
+        /// <summary>
+        /// Issue #133
+        /// </summary>
+        [Test, TestMethod]
+        public void GetDepth()
+        {
+            var html =
+                       @"<html>
+                             <body>
+                                <div>
+                                    <div id=""b"">
+                                        <div>
+                                            Field 1
+                                        </div>
+                                    </div>
+                                </div>
+                            </body>
+                        </html>";
+
+            var doc = CQ.Create(html);
+            var el = doc.Find("div > div > div").FirstElement();
+
+            Assert.AreEqual(4, el.Depth);
+        }
     
     }
 }
