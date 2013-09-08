@@ -488,11 +488,12 @@ namespace CsQuery.Implementation
         {
             DomObject curNode = this._ParentNode;
             int depth = 0;
-            while (curNode != null)
+            while (curNode != null && curNode.NodeType != NodeType.DOCUMENT_NODE)
             {
                 depth++;
+                curNode = curNode._ParentNode;
             }
-            return depth; 
+            return depth;
         }
 
         /// <summary>
