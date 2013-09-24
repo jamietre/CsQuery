@@ -13,12 +13,7 @@ namespace CsQuery
     /// http://dev.w3.org/html5/markup/textarea.html
     /// </url>
 
-    public interface IHTMLTextAreaElement : IDomElement
+    public interface IHTMLTextAreaElement : IDomElement, IFormSubmittableElement, IFormReassociateableElement
     {
-        /// <summary>
-        /// The form with which to associate the element.
-        /// </summary>
-
-        IHTMLFormElement Form { get; }
     }
 }

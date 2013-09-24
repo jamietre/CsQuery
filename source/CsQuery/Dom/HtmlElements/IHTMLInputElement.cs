@@ -13,14 +13,8 @@ namespace CsQuery
     /// http://dev.w3.org/html5/markup/input.html
     /// </url>
 
-    public interface IHTMLInputElement : IDomElement
+    public interface IHTMLInputElement : IDomElement, IFormSubmittableElement, IFormReassociateableElement
     {
-        /// <summary>
-        /// The form with which to associate the element.
-        /// </summary>
-
-        IHTMLFormElement Form {get;}
-
         /// <summary>
         /// A URL that provides the destination of the hyperlink. If the href attribute is not specified,
         /// the element represents a placeholder hyperlink.
@@ -33,7 +27,5 @@ namespace CsQuery
         /// </summary>
 
         bool Required {get;set;}
-
-
     }
 }

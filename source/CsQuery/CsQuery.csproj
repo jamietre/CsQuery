@@ -170,6 +170,9 @@
     <Compile Include="CQ_jQuery\Not.cs" />
     <Compile Include="CQ_jQuery\Parents.cs" />
     <Compile Include="Dom\enumCSSRuleType.cs" />
+    <Compile Include="Dom\HtmlElements\IFormReassociateableElement.cs" />
+    <Compile Include="Dom\HtmlElements\IFormSubmittableElement.cs" />
+    <Compile Include="Dom\HtmlElements\IFormAssociatedElement.cs" />
     <Compile Include="Dom\HtmlElements\IHTMLButtonElement.cs" />
     <Compile Include="Dom\HtmlElements\IHTMLTextAreaElement.cs" />
     <Compile Include="Dom\ICSSRule.cs" />
