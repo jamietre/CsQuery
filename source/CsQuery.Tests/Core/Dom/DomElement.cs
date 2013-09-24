@@ -63,7 +63,42 @@ namespace CsQuery.Tests.Core.Dom
 
             Assert.AreEqual(4, el.Depth);
         }
-    
+
+        [Test, TestMethod]
+        public void DisabledNoValue()
+        {
+            var dom = CQ.CreateFragment(@"<input disabled>");
+            IDomElement e = dom["input"].FirstElement();
+
+            Assert.IsTrue(e.Disabled);
+        }
+
+        [Test, TestMethod]
+        public void DisabledDisabledValue()
+        {
+            var dom = CQ.CreateFragment(@"<input disabled='disabled'>");
+            IDomElement e = dom["input"].FirstElement();
+
+            Assert.IsTrue(e.Disabled);
+        }
+
+        [Test, TestMethod]
+        public void DisabledOtherValue()
+        {
+            var dom = CQ.CreateFragment(@"<input disabled='yes'>");
+            IDomElement e = dom["input"].FirstElement();
+
+            Assert.IsTrue(e.Disabled);
+        }
+
+        [Test, TestMethod]
+        public void DisabledDefault()
+        {
+            var dom = CQ.CreateFragment(@"<input>");
+            IDomElement e = dom["input"].FirstElement();
+
+            Assert.IsFalse(e.Disabled);
+        }
     }
 }
 

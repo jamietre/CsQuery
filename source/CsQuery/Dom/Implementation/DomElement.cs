@@ -662,6 +662,26 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the element is disabled.
+        /// </summary>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/XUL/Property/disabled
+        /// </url>
+
+        public override bool Disabled
+        {
+            get
+            {
+                return HasAttribute(HtmlData.attrDISABLED);
+            }
+            set
+            {
+                SetAttribute(HtmlData.attrDISABLED, value ? "" : null);
+            }
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating whether the only should be read.
         /// </summary>
         ///

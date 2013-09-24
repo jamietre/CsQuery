@@ -12,7 +12,7 @@ namespace CsQuery.Implementation
     /// An HTML input element.
     /// </summary>
 
-    public class HTMLInputElement : FormReassociateableElement, IHTMLInputElement
+    public class HTMLInputElement : FormSubmittableElement, IHTMLInputElement
     {
         /// <summary>
         /// Default constructor.

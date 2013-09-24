@@ -420,6 +420,48 @@ namespace CsQuery.Implementation
         }
 
         /// <summary>
+        /// Returns all of the ancestors of the given node, in descending order of their depth from the root node.
+        /// </summary>
+        /// <returns>The ancestors.</returns>
+        public virtual IEnumerable<IDomContainer> GetAncestors()
+        {
+            IDomContainer current = ParentNode;
+            while (current != null)
+            {
+                yield return current;
+                current = current.ParentNode;
+            }
+        }
+
+        /// <summary>
+        /// Returns all of the descendents of the given node, in pre-order depth first order.
+        /// </summary>
+        /// <returns>The descendents.</returns>
+        public virtual IEnumerable<IDomObject> GetDescendents()
+        {
+            if (HasChildren)
+            {
+                foreach (IDomObject child in ChildNodes)
+                {
+                    yield return child;
+                    foreach (IDomObject descendent in child.GetDescendents())
+                    {
+                        yield return descendent;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns all IDomElement descendents of the given node, in pre-order depth first order.
+        /// </summary>
+        /// <returns>The descendents.</returns>
+        public virtual IEnumerable<IDomElement> GetDescendentElements()
+        {
+            return GetDescendents().OfType<IDomElement>();
+        }
+
+        /// <summary>
         /// The element is not associated with an IDomDocument.
         /// </summary>
 
@@ -812,6 +854,26 @@ namespace CsQuery.Implementation
         /// </url>
 
         public virtual bool Checked
+        {
+            get
+            {
+                return false;
+            }
+            set
+            {
+                throw new InvalidOperationException("Not valid for this element type.");
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the element is disabled.
+        /// </summary>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/XUL/Property/disabled
+        /// </url>
+
+        public virtual bool Disabled
         {
             get
             {

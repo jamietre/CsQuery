@@ -11,7 +11,7 @@ namespace CsQuery.Implementation
     /// An HTML button element.
     /// </summary>
 
-    public class HTMLButtonElement : FormReassociateableElement, IHTMLButtonElement
+    public class HTMLButtonElement : FormSubmittableElement, IHTMLButtonElement
     {
         /// <summary>
         /// Default constructor.

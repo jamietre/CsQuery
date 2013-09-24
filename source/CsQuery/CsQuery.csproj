@@ -182,6 +182,7 @@
     <Compile Include="Dom\Implementation\CSSStyleChangedArgs.cs" />
     <Compile Include="Dom\Implementation\CSSStyleRule.cs" />
     <Compile Include="Dom\Implementation\CSSStyleSheet.cs" />
+    <Compile Include="Dom\Implementation\HtmlElements\FormSubmittableElement.cs" />
     <Compile Include="Dom\Implementation\HtmlElements\HTMLButtonElement.cs" />
     <Compile Include="Dom\Implementation\HtmlElements\FormAssociatedElement.cs" />
     <Compile Include="Dom\Implementation\HtmlElements\FormReassociateableElement.cs" />

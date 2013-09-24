@@ -42,7 +42,7 @@ namespace CsQuery.Implementation
         /// Gets or sets a value indicating whether this object is disabled.
         /// </summary>
 
-        public bool Disabled
+        public override bool Disabled
         {
             get
             {

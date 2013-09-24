@@ -11,7 +11,7 @@ namespace CsQuery.Implementation
     /// An HTML SELECT element.
     /// </summary>
 
-    public class HTMLSelectElement : FormReassociateableElement, IHTMLSelectElement
+    public class HTMLSelectElement : FormSubmittableElement, IHTMLSelectElement
     {
         /// <summary>
         /// Default constructor.
