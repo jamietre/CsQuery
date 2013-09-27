@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using CsQuery.Dom.Implementation.HtmlElements;
+﻿using System.Collections.Generic;
 using CsQuery.HtmlParser;
-using CsQuery.ExtensionMethods;
 
 namespace CsQuery.Implementation
 {

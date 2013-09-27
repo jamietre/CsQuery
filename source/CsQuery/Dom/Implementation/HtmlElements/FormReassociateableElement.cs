@@ -5,9 +5,16 @@ using System.Text;
 using CsQuery.HtmlParser;
 using CsQuery.Implementation;
 
-namespace CsQuery.Dom.Implementation.HtmlElements
+namespace CsQuery.Implementation
 {
-    public abstract class FormReassociateableElement : DomElement
+    /// <summary>
+    /// An implementation of properties shared by all form reassociateable elements.
+    /// </summary>
+    /// 
+    /// <url>
+    /// http://www.w3.org/html/wg/drafts/html/master/forms.html#categories
+    /// </url>
+    public abstract class FormReassociateableElement : DomElement, IFormReassociateableElement
     {
         /// <summary>
         /// Constructor to specify the element's token ID.

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using CsQuery.Dom.Implementation.HtmlElements;
 using CsQuery.HtmlParser;
 
 namespace CsQuery.Implementation

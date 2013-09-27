@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using CsQuery.Dom.Implementation.HtmlElements;
+﻿using System.Linq;
 using CsQuery.HtmlParser;
 
-namespace CsQuery
+namespace CsQuery.Implementation
 {
+    /// <summary>
+    /// An implementation of properties shared by all form submittable elements.
+    /// </summary>
+    /// 
+    /// <url>
+    /// http://www.w3.org/html/wg/drafts/html/master/forms.html#category-submit
+    /// </url>
     public class FormSubmittableElement : FormReassociateableElement, IFormSubmittableElement
     {
         /// <summary>
