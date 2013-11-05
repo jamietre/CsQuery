@@ -33,6 +33,24 @@ namespace CsQuery
         IDomContainer ParentNode { get; }
 
         /// <summary>
+        /// Returns all of the ancestors of the given node, in descending order of their depth from the root node.
+        /// </summary>
+        /// <returns>The ancestors.</returns>
+        IEnumerable<IDomContainer> GetAncestors();
+
+        /// <summary>
+        /// Returns all of the descendents of the given node, in pre-order depth first order.
+        /// </summary>
+        /// <returns>The descendents.</returns>
+        IEnumerable<IDomObject> GetDescendents();
+
+        /// <summary>
+        /// Returns all IDomElement descendents of the given node, in pre-order depth first order.
+        /// </summary>
+        /// <returns>The descendents.</returns>
+        IEnumerable<IDomElement> GetDescendentElements();
+
+        /// <summary>
         /// The child node at the specified index.
         /// </summary>
         ///
@@ -637,6 +655,20 @@ namespace CsQuery
         /// </url>
 
         bool Checked { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the element is disabled.
+        /// </summary>
+        ///
+        /// <remarks>
+        /// In CsQuery, this property simply indicates the presence of a "disabled" attribute.
+        /// </remarks>
+        ///
+        /// <url>
+        /// https://developer.mozilla.org/en/XUL/Property/disabled
+        /// </url>
+
+        bool Disabled { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the only should be read.

@@ -97,6 +97,9 @@
     <Compile Include="AssertEx.cs" />
     <Compile Include="Core\Documents\MultipleDocs.cs" />
     <Compile Include="Core\Dom\DomContainer.cs" />
+    <Compile Include="Core\Dom\DomObject.cs" />
+    <Compile Include="Core\Dom\FormSubmittableElement.cs" />
+    <Compile Include="Core\Dom\HTMLOptionElement.cs" />
     <Compile Include="Core\Dom\InnerText.cs" />
     <Compile Include="Core\Dom\DomText.cs" />
     <Compile Include="Core\Dom\HTMLSelectElement.cs" />

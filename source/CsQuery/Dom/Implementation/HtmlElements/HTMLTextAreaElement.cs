@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using CsQuery.Dom.Implementation.HtmlElements;
+﻿using System.IO;
 using CsQuery.HtmlParser;
 
 namespace CsQuery.Implementation
@@ -12,7 +7,7 @@ namespace CsQuery.Implementation
     /// An HTML text area element.
     /// </summary>
 
-    public class HTMLTextAreaElement : FormReassociateableElement, IHTMLTextAreaElement
+    public class HTMLTextAreaElement : FormSubmittableElement, IHTMLTextAreaElement
     {
         /// <summary>
         /// Default constructor.

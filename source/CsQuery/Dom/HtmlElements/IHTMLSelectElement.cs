@@ -9,14 +9,8 @@ namespace CsQuery
     /// A SELECT element
     /// </summary>
 
-    public interface IHTMLSelectElement : IDomElement
+    public interface IHTMLSelectElement : IDomElement, IFormSubmittableElement, IFormReassociateableElement
     {
-        /// <summary>
-        /// The form with which to associate the element.
-        /// </summary>
-
-        IHTMLFormElement Form { get; }
-
         /// <summary>
         /// A collection of HTML option elements (in document order)
         /// </summary>

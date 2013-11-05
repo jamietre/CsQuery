@@ -170,6 +170,9 @@
     <Compile Include="CQ_jQuery\Not.cs" />
     <Compile Include="CQ_jQuery\Parents.cs" />
     <Compile Include="Dom\enumCSSRuleType.cs" />
+    <Compile Include="Dom\HtmlElements\IFormReassociateableElement.cs" />
+    <Compile Include="Dom\HtmlElements\IFormSubmittableElement.cs" />
+    <Compile Include="Dom\HtmlElements\IFormAssociatedElement.cs" />
     <Compile Include="Dom\HtmlElements\IHTMLButtonElement.cs" />
     <Compile Include="Dom\HtmlElements\IHTMLTextAreaElement.cs" />
     <Compile Include="Dom\ICSSRule.cs" />
@@ -179,6 +182,7 @@
     <Compile Include="Dom\Implementation\CSSStyleChangedArgs.cs" />
     <Compile Include="Dom\Implementation\CSSStyleRule.cs" />
     <Compile Include="Dom\Implementation\CSSStyleSheet.cs" />
+    <Compile Include="Dom\Implementation\HtmlElements\FormSubmittableElement.cs" />
     <Compile Include="Dom\Implementation\HtmlElements\HTMLButtonElement.cs" />
     <Compile Include="Dom\Implementation\HtmlElements\FormAssociatedElement.cs" />
     <Compile Include="Dom\Implementation\HtmlElements\FormReassociateableElement.cs" />

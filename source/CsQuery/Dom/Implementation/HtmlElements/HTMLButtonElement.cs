@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using CsQuery.Dom.Implementation.HtmlElements;
-using CsQuery.HtmlParser;
+﻿using CsQuery.HtmlParser;
 
 namespace CsQuery.Implementation
 {
@@ -11,7 +6,7 @@ namespace CsQuery.Implementation
     /// An HTML button element.
     /// </summary>
 
-    public class HTMLButtonElement : FormReassociateableElement, IHTMLButtonElement
+    public class HTMLButtonElement : FormSubmittableElement, IHTMLButtonElement
     {
         /// <summary>
         /// Default constructor.

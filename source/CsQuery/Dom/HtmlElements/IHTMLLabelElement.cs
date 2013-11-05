@@ -13,14 +13,8 @@ namespace CsQuery
     /// http://dev.w3.org/html5/spec/single-page.html#the-label-element
     /// </url>
 
-    public interface IHTMLLabelElement : IDomElement
+    public interface IHTMLLabelElement : IDomElement, IFormReassociateableElement
     {
-        /// <summary>
-        /// The form to which the label belongs
-        /// </summary>
-
-        IHTMLFormElement Form {get;}
-
         /// <summary>
         /// Gets or sets the for attribute
         /// </summary>

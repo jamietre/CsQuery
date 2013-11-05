@@ -13,12 +13,6 @@ namespace CsQuery
     public interface IHTMLOptionElement : IDomElement
     {
         /// <summary>
-        /// Gets or sets a value indicating whether this object is disabled.
-        /// </summary>
-
-        bool Disabled {get;set;}
-
-        /// <summary>
         /// The form with which the element is associated
         /// </summary>
 
