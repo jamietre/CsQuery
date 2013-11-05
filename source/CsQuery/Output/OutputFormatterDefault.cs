@@ -430,6 +430,10 @@ namespace CsQuery.Output
             {
                 return;
             }
+            else if (element.NodeValue.StartsWith("<?") && element.NodeValue.EndsWith("?>"))
+            {
+                writer.Write(element.NodeValue);
+            }
             else
             {
                 writer.Write("<!--" + element.NodeValue + "-->");

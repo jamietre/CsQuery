@@ -96,6 +96,7 @@
     <Compile Include="Arrays.cs" />
     <Compile Include="AssertEx.cs" />
     <Compile Include="Core\Documents\MultipleDocs.cs" />
+    <Compile Include="Core\OutputFormatters\FormatDefault.cs" />
     <Compile Include="Core\Dom\DomContainer.cs" />
     <Compile Include="Core\Dom\InnerText.cs" />
     <Compile Include="Core\Dom\DomText.cs" />
