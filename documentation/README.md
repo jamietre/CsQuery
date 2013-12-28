@@ -10,4 +10,4 @@ For now I am going to try to document important features here; these files will 
 - [CreateFromUrl](createfromurl.md) - loading from the web
 - [Promises](promises.md) - a programming device for simplifying asynchronous callbacks
 - [Render](render.md) - outputting the contents of a CQ object as HTML
-- [Indexing Strategies](indexing-strategies) - choosing an indexing strategy that is optimized for your purposes
+- [Indexing Strategies](indexing-strategies.md) - choosing an indexing strategy that is optimized for your purposes
