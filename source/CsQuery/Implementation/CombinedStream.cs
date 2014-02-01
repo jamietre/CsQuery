@@ -75,23 +75,23 @@ namespace CsQuery.Implementation
                 if (len > 0)
                     return len;
 
-                _streams.Current.Dispose();
+                //_streams.Current.Dispose();
                 _valid = _streams.MoveNext();
             }
 
             return 0;
         }
         /// <summary> Disposes of all remaining streams. </summary>
-        protected override void Dispose(bool disposing)
-        {
-            while (disposing && _valid)
-            {
-                _streams.Current.Dispose();
-                _valid = _streams.MoveNext();
-            }
+        //protected override void Dispose(bool disposing)
+        //{
+        //    while (disposing && _valid)
+        //    {
+        //        _streams.Current.Dispose();
+        //        _valid = _streams.MoveNext();
+        //    }
 
-            base.Dispose(disposing);
-        }
+        //    base.Dispose(disposing);
+        //}
     }
 
     /// <summary>

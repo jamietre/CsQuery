@@ -5081,6 +5081,35 @@
             A page rule.
             </summary>
         </member>
+        <member name="T:CsQuery.IFormReassociateableElement">
+            <summary>
+            An element that can be associated with a form during form submission.
+            </summary>
+            <url>
+            http://www.w3.org/html/wg/drafts/html/master/forms.html#category-form-attr
+            </url>
+        </member>
+        <member name="T:CsQuery.IFormAssociatedElement">
+            <summary>
+            An element that can be associated with a form during form submission.
+            </summary>
+            <url>
+            http://www.w3.org/html/wg/drafts/html/master/forms.html#form-associated-element
+            </url>
+        </member>
+        <member name="P:CsQuery.IFormAssociatedElement.Form">
+            <summary>
+            The form with which to associate the element.
+            </summary>
+        </member>
+        <member name="T:CsQuery.IFormSubmittableElement">
+            <summary>
+            An element that can be associated with a form during form submission.
+            </summary>
+            <url>
+            http://www.w3.org/html/wg/drafts/html/master/forms.html#category-submit
+            </url>
+        </member>
         <member name="T:CsQuery.IHTMLButtonElement">
              <summary>
              An HTML BUTTON element.
@@ -5266,6 +5295,24 @@
             Gets a value indicating whether this object belongs is a fragmment and is bound to an 
             IDomFragment object.
             </summary>
+        </member>
+        <member name="M:CsQuery.IDomObject.GetAncestors">
+            <summary>
+            Returns all of the ancestors of the given node, in descending order of their depth from the root node.
+            </summary>
+            <returns>The ancestors.</returns>
+        </member>
+        <member name="M:CsQuery.IDomObject.GetDescendents">
+            <summary>
+            Returns all of the descendents of the given node, in pre-order depth first order.
+            </summary>
+            <returns>The descendents.</returns>
+        </member>
+        <member name="M:CsQuery.IDomObject.GetDescendentElements">
+            <summary>
+            Returns all IDomElement descendents of the given node, in pre-order depth first order.
+            </summary>
+            <returns>The descendents.</returns>
         </member>
         <member name="M:CsQuery.IDomObject.AppendChild(CsQuery.IDomObject)">
              <summary>
@@ -5868,6 +5915,19 @@
              https://developer.mozilla.org/en/XUL/Property/checked
              </url>
         </member>
+        <member name="P:CsQuery.IDomObject.Disabled">
+             <summary>
+             Gets or sets a value indicating whether the element is disabled.
+             </summary>
+            
+             <remarks>
+             In CsQuery, this property simply indicates the presence of a "disabled" attribute.
+             </remarks>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Property/disabled
+             </url>
+        </member>
         <member name="P:CsQuery.IDomObject.ReadOnly">
              <summary>
              Gets or sets a value indicating whether the only should be read.
@@ -6004,11 +6064,6 @@
             element node types)
             </summary>
         </member>
-        <member name="P:CsQuery.IHTMLButtonElement.Form">
-            <summary>
-            The form with which to associate the element.
-            </summary>
-        </member>
         <member name="T:CsQuery.IHTMLTextAreaElement">
              <summary>
              An HTML TEXTAREA element.
@@ -6017,11 +6072,6 @@
              <url>
              http://dev.w3.org/html5/markup/textarea.html
              </url>
-        </member>
-        <member name="P:CsQuery.IHTMLTextAreaElement.Form">
-            <summary>
-            The form with which to associate the element.
-            </summary>
         </member>
         <member name="T:CsQuery.ICSSRule">
              <summary>
@@ -6276,10 +6326,23 @@
              The CSS rules.
              </value>
         </member>
-        <member name="T:CsQuery.Implementation.HTMLButtonElement">
+        <member name="T:CsQuery.Implementation.FormSubmittableElement">
             <summary>
-            An HTML button element.
+            An implementation of properties shared by all form submittable elements.
             </summary>
+            
+            <url>
+            http://www.w3.org/html/wg/drafts/html/master/forms.html#category-submit
+            </url>
+        </member>
+        <member name="T:CsQuery.Implementation.FormReassociateableElement">
+            <summary>
+            An implementation of properties shared by all form reassociateable elements.
+            </summary>
+            
+            <url>
+            http://www.w3.org/html/wg/drafts/html/master/forms.html#categories
+            </url>
         </member>
         <member name="T:CsQuery.Implementation.DomElement">
             <summary>
@@ -6348,6 +6411,24 @@
              <returns>
              The path.
              </returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.GetAncestors">
+            <summary>
+            Returns all of the ancestors of the given node, in descending order of their depth from the root node.
+            </summary>
+            <returns>The ancestors.</returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.GetDescendents">
+            <summary>
+            Returns all of the descendents of the given node, in pre-order depth first order.
+            </summary>
+            <returns>The descendents.</returns>
+        </member>
+        <member name="M:CsQuery.Implementation.DomObject.GetDescendentElements">
+            <summary>
+            Returns all IDomElement descendents of the given node, in pre-order depth first order.
+            </summary>
+            <returns>The descendents.</returns>
         </member>
         <member name="M:CsQuery.Implementation.DomObject.GetDepth">
              <summary>
@@ -7149,6 +7230,15 @@
             
              <url>
              https://developer.mozilla.org/en/XUL/Property/checked
+             </url>
+        </member>
+        <member name="P:CsQuery.Implementation.DomObject.Disabled">
+             <summary>
+             Gets or sets a value indicating whether the element is disabled.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Property/disabled
              </url>
         </member>
         <member name="P:CsQuery.Implementation.DomObject.ReadOnly">
@@ -8312,6 +8402,15 @@
              https://developer.mozilla.org/en/XUL/Property/checked
              </url>
         </member>
+        <member name="P:CsQuery.Implementation.DomElement.Disabled">
+             <summary>
+             Gets or sets a value indicating whether the element is disabled.
+             </summary>
+            
+             <url>
+             https://developer.mozilla.org/en/XUL/Property/disabled
+             </url>
+        </member>
         <member name="P:CsQuery.Implementation.DomElement.ReadOnly">
              <summary>
              Gets or sets a value indicating whether the only should be read.
@@ -8390,13 +8489,13 @@
              int
              </returntype>
         </member>
-        <member name="M:CsQuery.Dom.Implementation.HtmlElements.FormReassociateableElement.#ctor(System.UInt16)">
+        <member name="M:CsQuery.Implementation.FormReassociateableElement.#ctor(System.UInt16)">
             <summary>
             Constructor to specify the element's token ID.
             </summary>
             <param name="tokenId">The token ID of the element.</param>
         </member>
-        <member name="P:CsQuery.Dom.Implementation.HtmlElements.FormReassociateableElement.Form">
+        <member name="P:CsQuery.Implementation.FormReassociateableElement.Form">
              <summary>
              The value of form element with which to associate the element.
              </summary>
@@ -8407,6 +8506,27 @@
              keep that for now. If the "form" attribute is specified, the first form element with an ID
              matching the value will be returned instead.
              </remarks>
+        </member>
+        <member name="M:CsQuery.Implementation.FormSubmittableElement.#ctor(System.UInt16)">
+            <summary>
+            Constructor to specify the element's token ID.
+            </summary>
+            <param name="tokenId">The token ID of the element.</param>
+        </member>
+        <member name="P:CsQuery.Implementation.FormSubmittableElement.Disabled">
+            <summary>
+            A form submittable element is disabled if it has the disabled attribute,
+            or it is in a disabled fieldset and not in the legend.
+            </summary>
+            
+            <url>
+            http://www.w3.org/html/wg/drafts/html/master/forms.html#attr-fe-disabled
+            </url>
+        </member>
+        <member name="T:CsQuery.Implementation.HTMLButtonElement">
+            <summary>
+            An HTML button element.
+            </summary>
         </member>
         <member name="M:CsQuery.Implementation.HTMLButtonElement.#ctor">
             <summary>
@@ -8423,13 +8543,22 @@
              The type.
              </value>
         </member>
-        <member name="M:CsQuery.Dom.Implementation.HtmlElements.FormAssociatedElement.#ctor(System.UInt16)">
+        <member name="T:CsQuery.Implementation.FormAssociatedElement">
+            <summary>
+            An implementation of properties shared by all form associated elements.
+            </summary>
+            
+            <url>
+            http://www.w3.org/html/wg/drafts/html/master/forms.html#form-associated-element
+            </url>
+        </member>
+        <member name="M:CsQuery.Implementation.FormAssociatedElement.#ctor(System.UInt16)">
             <summary>
             Constructor to specify the element's token ID.
             </summary>
             <param name="tokenId">The token ID of the element.</param>
         </member>
-        <member name="P:CsQuery.Dom.Implementation.HtmlElements.FormAssociatedElement.Form">
+        <member name="P:CsQuery.Implementation.FormAssociatedElement.Form">
              <summary>
              The value of form element with which to associate the element.
              </summary>
@@ -8477,11 +8606,6 @@
              <url>
              http://dev.w3.org/html5/spec/single-page.html#the-label-element
              </url>
-        </member>
-        <member name="P:CsQuery.IHTMLLabelElement.Form">
-            <summary>
-            The form to which the label belongs
-            </summary>
         </member>
         <member name="P:CsQuery.IHTMLLabelElement.HtmlFor">
             <summary>
@@ -8804,11 +8928,6 @@
             </summary>
             <url>http://dev.w3.org/html5/spec/single-page.html#attr-option-disabled</url>
         </member>
-        <member name="P:CsQuery.IHTMLOptionElement.Disabled">
-            <summary>
-            Gets or sets a value indicating whether this object is disabled.
-            </summary>
-        </member>
         <member name="P:CsQuery.IHTMLOptionElement.Form">
             <summary>
             The form with which the element is associated
@@ -8827,11 +8946,6 @@
              <url>
              http://dev.w3.org/html5/markup/input.html
              </url>
-        </member>
-        <member name="P:CsQuery.IHTMLInputElement.Form">
-            <summary>
-            The form with which to associate the element.
-            </summary>
         </member>
         <member name="P:CsQuery.IHTMLInputElement.Autofocus">
             <summary>
@@ -9375,11 +9489,6 @@
         <member name="T:CsQuery.IHTMLSelectElement">
             <summary>
             A SELECT element
-            </summary>
-        </member>
-        <member name="P:CsQuery.IHTMLSelectElement.Form">
-            <summary>
-            The form with which to associate the element.
             </summary>
         </member>
         <member name="P:CsQuery.IHTMLSelectElement.Options">
@@ -14780,9 +14889,6 @@
         </member>
         <member name="M:CsQuery.Implementation.CombinedStream.Read(System.Byte[],System.Int32,System.Int32)">
             <summary> Reads from the next stream available </summary>
-        </member>
-        <member name="M:CsQuery.Implementation.CombinedStream.Dispose(System.Boolean)">
-            <summary> Disposes of all remaining streams. </summary>
         </member>
         <member name="P:CsQuery.Implementation.CombinedStream.CanRead">
             <summary>

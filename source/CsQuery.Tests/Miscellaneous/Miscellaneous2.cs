@@ -6,6 +6,7 @@ using System.Text;
 using System.Reflection;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
@@ -14,7 +15,7 @@ using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
 using CsQuery.Utility;
-using System.Net;
+using CsQuery.ExtensionMethods.Internal;
 
 namespace CsQuery.Tests.Miscellaneous
 {
@@ -263,6 +264,32 @@ namespace CsQuery.Tests.Miscellaneous
             var query = dom["div#123"];
             Assert.AreEqual(1, query.Length);
         }
+
+        [Test, TestMethod]
+        public void Issue145()
+        {
+            var dom= @"<html xmlns=""http://www.w3.org/1999/xhtml"" xmlns:xi=""http://www.w3.org/2001/XInclude""><body></html>";
+
+            var cq = CQ.CreateDocument(dom);
+            Assert.AreEqual(cq["html"].Attr("xmlns:xi"),"http://www.w3.org/2001/XInclude");
+        }
+
+        [Test, TestMethod]
+        public void Issue134()
+        {
+            var dom = @"<html xmlns=""http://www.w3.org/1999/xhtml"" xmlns:xi=""http://www.w3.org/2001/XInclude""><body></html>";
+
+            var str = dom.ToStream(); 
+
+            var cq = CQ.CreateDocument(str);
+
+            str.Position = 0;
+            
+            var reader = new StreamReader(str);
+            var textOut = reader.ReadToEnd();
+            Assert.AreEqual(dom, textOut);
+        }
+
         #region setup
         public override void FixtureSetUp()
         {
