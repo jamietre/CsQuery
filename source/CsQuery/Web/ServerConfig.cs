@@ -58,10 +58,8 @@ namespace CsQuery.Web
                 {
                     config.UserAgent = options.UserAgent;
                 }
-                if (options.Timeout != null)
-                {
-                    config.Timeout = options.Timeout;
-                }
+
+                config.Timeout = options.Timeout;
             }
             return config;
         }
@@ -80,10 +78,8 @@ namespace CsQuery.Web
         public static void Apply(ServerConfig options, ICsqWebRequest request)
         {
             var opts = Merge(options);
-            if (opts.Timeout != null)
-            {
-                request.Timeout = (int)Math.Floor(opts.Timeout.TotalMilliseconds);
-            }
+            request.Timeout = (int)Math.Floor(opts.Timeout.TotalMilliseconds);
+
             if (opts.UserAgent != null)
             {
                 request.UserAgent = opts.UserAgent;
@@ -111,8 +107,7 @@ namespace CsQuery.Web
 
             get
             {
-                return Timeout==null ? 0 :
-                    Timeout.TotalSeconds;
+                return Timeout.TotalSeconds;
             }
             set
             {
