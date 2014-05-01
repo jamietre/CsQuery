@@ -85,6 +85,12 @@ namespace CsQuery
         string Id { get; set; }
 
         /// <summary>
+        /// An interface to access the annotations collection of this object.
+        /// </summary>
+
+        IAnnotationCollection Annotations { get; }
+
+        /// <summary>
         /// An interface to access the attributes collection of this element.
         /// </summary>
 
