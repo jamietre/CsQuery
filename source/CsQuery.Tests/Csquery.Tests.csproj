@@ -115,6 +115,7 @@
     <Compile Include="Core\Methods\Data.cs" />
     <Compile Include="Core\Selectors\ContentIsNotNumeric.cs" />
     <Compile Include="Core\WebIO\BasicWeb.cs" />
+    <Compile Include="CQ_CsQuery\AttrReplace.cs" />
     <Compile Include="ExtensionMethods\Xml.cs" />
     <Compile Include="HtmlParser\Button.cs" />
     <Compile Include="HtmlParser\CharacterSetEncoding.cs" />
