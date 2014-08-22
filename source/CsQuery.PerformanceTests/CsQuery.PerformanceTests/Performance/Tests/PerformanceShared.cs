@@ -14,6 +14,7 @@ using CsQuery.Engine;
 using CsQuery.Implementation;
 using CsQuery.HtmlParser;
 using CsQuery.ExtensionMethods.Internal;
+using AngleSharp.DOM;
 
 namespace CsQuery.PerformanceTests.Tests
 {
@@ -90,6 +91,12 @@ namespace CsQuery.PerformanceTests.Tests
                 hapDoc.LoadHtml(html);
             });
 
+            Action angleSharp = new Action(() =>
+            {
+                var angleSharpDocument = AngleSharp.DocumentBuilder.Html(html);
+            });
+
+
             IDictionary<string,Action> tests = new Dictionary<string,Action>();
 
             if (Program.IncludeTests.HasFlag(TestMethods.CsQuery_NoIndex)) {
@@ -106,6 +113,12 @@ namespace CsQuery.PerformanceTests.Tests
             {
                 tests.Add("HAP", hap);
             }
+
+            if (Program.IncludeTests.HasFlag(TestMethods.AngleSharp))
+            {
+                tests.Add("AngleSharp", angleSharp);
+            }
+
             Compare(tests, "Create DOM from html");
 
         }

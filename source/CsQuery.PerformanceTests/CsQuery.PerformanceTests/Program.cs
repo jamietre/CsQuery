@@ -20,7 +20,8 @@ namespace CsQuery.PerformanceTests
         CsQuery_SimpleIndex = 2,
         CsQuery_RangedIndex = 4,
         HAP = 8,
-        Fizzler=16
+        Fizzler=16,
+        AngleSharp=32
     }
 
     public class Program
@@ -33,7 +34,8 @@ namespace CsQuery.PerformanceTests
                     TestMethods.CsQuery_NoIndex |
                     TestMethods.CsQuery_SimpleIndex |
                     TestMethods.Fizzler |
-                    TestMethods.HAP;
+                    TestMethods.HAP |
+                    TestMethods.AngleSharp;
             }
         }
         public static string OutputDirectory;

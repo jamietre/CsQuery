@@ -14,7 +14,6 @@ using Description = NUnit.Framework.DescriptionAttribute;
 using TestContext = Microsoft.VisualStudio.TestTools.UnitTesting.TestContext;
 using CsQuery;
 using CsQuery.Utility;
-using HtmlAgilityPack;
 
 namespace CsQuery.Tests.Miscellaneous
 {

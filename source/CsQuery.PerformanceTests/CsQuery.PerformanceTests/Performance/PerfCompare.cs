@@ -13,6 +13,7 @@ using CsQuery.EquationParser;
 using CsQuery.Engine;
 using CsQuery.HtmlParser;
 using CsQuery.ExtensionMethods.Internal;
+using AngleSharp.DOM;
 
 namespace CsQuery.PerformanceTests
 {
@@ -23,6 +24,7 @@ namespace CsQuery.PerformanceTests
         public CQ CsqueryDocument_Simple { get; set; }
         public CQ CsqueryDocument_Ranged { get; set; }
         public CQ CsqueryDocument_NoIndex { get; set; }
+        public IDocument AngleSharpDocument { get; set; }
         public HtmlDocument HapDocument { get; set; }
         public TimeSpan MaxTestTime { get; set; }
         
@@ -60,6 +62,8 @@ namespace CsQuery.PerformanceTests
 
             HapDocument = new HtmlDocument();
             HapDocument.LoadHtml(html);
+
+            AngleSharpDocument = AngleSharp.DocumentBuilder.Html(html);
         }
 
         public PerfComparison Compare(string selector, string xpath)
@@ -73,6 +77,13 @@ namespace CsQuery.PerformanceTests
             }
             catch { }
 
+            int angleSharpCount = 0;
+            try
+            {
+                angleSharpCount = AngleSharpDocument.QuerySelectorAll(selector).Count();
+            }
+            catch { }
+
             string description = String.Format("Selector returning {0} elements.", cqCount);
 
             bool same = true;
@@ -81,6 +92,13 @@ namespace CsQuery.PerformanceTests
                 description += String.Format(" NOTE: HAP returned {0} elements", hapCount);
                 same = false;
             }
+            if (angleSharpCount != cqCount)
+            {
+                description += String.Format(" NOTE: AngleSharp returned {0} elements", angleSharpCount);
+                same = false;
+            }
+
+
 
             // use Count() for both to ensure that all results are retrieved (e.g. if the engine is lazy)
 
@@ -111,6 +129,10 @@ namespace CsQuery.PerformanceTests
                 var hapLength = HapDocument.DocumentNode.SelectNodes(xpath).OrDefault().ToList();
             });
 
+            Action angle = new Action(() =>
+            {
+                var angleSharpLength = AngleSharpDocument.QuerySelectorAll(selector).ToList();
+            });
 
             IDictionary<string, Action> actions = new Dictionary<string, Action>();
             if (Program.IncludeTests.HasFlag(TestMethods.CsQuery_NoIndex))
@@ -132,6 +154,10 @@ namespace CsQuery.PerformanceTests
             if (Program.IncludeTests.HasFlag(TestMethods.Fizzler))
             {
                 actions.Add("Fizzler", fiz);
+            }
+            if (Program.IncludeTests.HasFlag(TestMethods.AngleSharp))
+            {
+                actions.Add("AngleSharp", angle);
             }
             var results = Compare(actions, testName, description);
             results.SameResults = same;
