@@ -94,7 +94,7 @@ Each of these returns the same thing: "I am feeling bold!"
 ### Installation
 
 
-**Latest release:** Version 1.3.4 (February 5, 2012)
+**Latest release:** Version 1.3.4 (February 5, 2013)
 
 To install the latest release from NuGet package manager:
 
