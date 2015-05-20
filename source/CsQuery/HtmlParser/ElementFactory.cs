@@ -256,7 +256,7 @@ namespace CsQuery.HtmlParser
             byte[] part1bytes = new byte[preprocessorBlockBytes];
             int part1size = inputStream.Read(part1bytes, 0, preprocessorBlockBytes);
 
-            MemoryStream part1stream = new MemoryStream(part1bytes);
+            MemoryStream part1stream = new MemoryStream(part1bytes, 0, part1size);
                  
             if (part1stream.Length==0)
             {
