@@ -644,7 +644,7 @@ namespace CsQuery.Implementation
                         }
                         break;
                     case CSSStyleType.Option:
-                        if (!style.Options.Contains(value))
+                        if (!style.Options.Contains(value.Replace("!important", String.Empty)))
                         {
                             throw new ArgumentException("The value '" + value + "' is not allowed for attribute '"
                                 + name + "'. Valid options are: " + OptionList(style));
@@ -807,6 +807,9 @@ namespace CsQuery.Implementation
             StringBuilder outVal = new StringBuilder();
             //TODO: this is not comprehensive.
             string type = name=="opacity" ? "" : "px";
+            bool important = value.Contains("!important");
+            if (important)
+                value = value.Replace("!important", String.Empty);
 
             if (String.IsNullOrEmpty(value))
             {
@@ -845,6 +848,8 @@ namespace CsQuery.Implementation
                 throw new ArgumentException("No data provided for attribute, data: '" + value + "'");
             }
             outVal.Append(type);
+            if (important)
+                outVal.Append(" !important");
             return outVal.ToString();
         }
 

@@ -108,6 +108,16 @@ namespace CsQuery.Tests.Core.Css
             Assert.AreEqual("height: 10;", dom["div"][0]["style"]);
         }
 
+        [Test, TestMethod]
+        public void SetHeightWithImportant() {
+            CQ dom = "<div style='height: 10; width: 10; display: none;'>";
+
+            Assert.AreEqual("height: 10; width: 10; display: none;", dom["div"][0]["style"]);
+
+            dom["div"].Css("height", "10px !important");
+            Assert.AreEqual("height: 10px !important; width: 10; display: none;", dom["div"][0]["style"]);
+        }
+
         protected class StylesClass
         {
             public string width;
