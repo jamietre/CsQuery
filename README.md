@@ -2,9 +2,11 @@
 
 ## Not Actively Maintained
 
-Note from the author: CsQuery is not being actively maintained. I no longer use it in my day-to-day work, and indeed don't even work in .NET much these day! While the current release is stable, there are a couple known bugs (see issues) and there are many conde changes since then in the repository. However, I am not going to publish any more official releases, since I don't have time to validate the current code base and address the known issues, or support problems that may arise from a new release.
+**Note from the author:** CsQuery is not being actively maintained. I no longer use it in my day-to-day work, and indeed don't even work in .NET much these day! Therefore it is difficult for me to spend any time addressing problems or questions. If you post issues, I may not be able to respond to them, and it's very unlikely I will be able to make bug fixes. 
 
-*If you use CsQuery and are interested in being a collaborator on the project* please contact me directly.
+While the current release is stable, there are a couple known bugs (see issues) and there are many conde changes since the last release in the repository. However, I am not going to publish any more official releases, since I don't have time to validate the current code base and address the known issues, or support any unforseen problems that may arise from a new release.
+
+I would welcome any community involvement in making this project active again. *If you use CsQuery and are interested in being a collaborator on the project* please contact me directly.
 
 You should also consider using [AngleSharp](https://github.com/AngleSharp/AngleSharp), which is a newer project that is being actively maintained. It's not a drop in replacement, but provides similar capabilities.
 
