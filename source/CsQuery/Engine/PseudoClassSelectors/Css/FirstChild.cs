@@ -48,10 +48,10 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
         public override IEnumerable<IDomObject> ChildMatches(IDomContainer element)
         {
-            IDomObject child = element.FirstChild;
+            IDomObject child = element.FirstElementChild;
             if (child != null)
             {
-                yield return element.FirstElementChild;
+                yield return child;
             }
         }
 
