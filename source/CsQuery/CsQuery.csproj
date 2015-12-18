@@ -175,9 +175,11 @@
     <Compile Include="Dom\HtmlElements\IFormAssociatedElement.cs" />
     <Compile Include="Dom\HtmlElements\IHTMLButtonElement.cs" />
     <Compile Include="Dom\HtmlElements\IHTMLTextAreaElement.cs" />
+    <Compile Include="Dom\IAnnotationCollection.cs" />
     <Compile Include="Dom\ICSSRule.cs" />
     <Compile Include="Dom\ICSSStyleRule.cs" />
     <Compile Include="Dom\ICSSStyleSheet.cs" />
+    <Compile Include="Dom\Implementation\AnnotationCollection.cs" />
     <Compile Include="Dom\Implementation\CSSRule.cs" />
     <Compile Include="Dom\Implementation\CSSStyleChangedArgs.cs" />
     <Compile Include="Dom\Implementation\CSSStyleRule.cs" />

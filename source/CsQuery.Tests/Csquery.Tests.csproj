@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="Arrays.cs" />
     <Compile Include="AssertEx.cs" />
+    <Compile Include="Core\Annotations\Annotations.cs" />
     <Compile Include="Core\Documents\MultipleDocs.cs" />
     <Compile Include="Core\Dom\DomContainer.cs" />
     <Compile Include="Core\Dom\DomObject.cs" />

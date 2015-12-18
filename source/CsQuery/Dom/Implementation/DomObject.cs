@@ -89,6 +89,12 @@ namespace CsQuery.Implementation
 
         protected DocumentInfo DocInfo;
 
+        /// <summary>
+        /// The collection of custom annotations applied to this DOM object.  It is initialized when
+        /// it is first accessed;
+        /// </summary>
+        private IAnnotationCollection _annotations;
+
         #endregion
         
         #region public properties
@@ -112,6 +118,14 @@ namespace CsQuery.Implementation
         /// </summary>
 
         public abstract bool InnerHtmlAllowed { get; }
+
+        /// <summary>
+        /// An interface to access the annotations collection of this object.
+        /// </summary>
+        public virtual IAnnotationCollection Annotations
+        {
+            get { return _annotations ?? (_annotations = new AnnotationCollection()); }
+        }
 
         /// <summary>
         /// Gets the identifier of the node name.
