@@ -507,17 +507,17 @@ namespace CsQuery.HtmlParser
         {
             
             int pos = 0;
-            string tag = "";
-            string readSoFar = "";
+            StringBuilder tag = new StringBuilder();
+            StringBuilder readSoFar = new StringBuilder();
             int mode=0;
             char[] buf = new char[1];
             bool finished = false;
-
+            
             while (!finished && reader.Read(buf,0,1)>0)
             {
                 
                 char cur = buf[0];
-                readSoFar += cur;
+                readSoFar.Append(cur);
 
                 switch(mode) {
                     case 0:
@@ -531,13 +531,13 @@ namespace CsQuery.HtmlParser
                             finished = true;
                             break;
                         }
-                        tag += cur;
+                        tag.Append(cur);
                         break;
                 }
                 pos++;
             }
-            context = GetContext(tag);
-            return new CombinedTextReader(new StringReader(readSoFar), reader);
+            context = GetContext(tag.ToString());
+            return new CombinedTextReader(new StringReader(readSoFar.ToString()), reader);
         }
 
         private void InitializeTreeBuilder()
