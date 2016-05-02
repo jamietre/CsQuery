@@ -31,9 +31,9 @@ namespace CsQuery.Implementation
 
         #region private properties
 
-        private IDictionary<ushort, string> Attributes = new Dictionary<ushort, string>();
+        private IDictionary<ulong, string> Attributes = new Dictionary<ulong, string>();
 
-        internal string this[ushort nodeId]
+        internal string this[ulong nodeId]
         {
             get
             {
@@ -151,7 +151,7 @@ namespace CsQuery.Implementation
         /// true if it succeeds, false if it fails.
         /// </returns>
 
-        public bool Remove(ushort tokenId)
+        public bool Remove(ulong tokenId)
         {
             return Unset(tokenId);
         }
@@ -209,7 +209,7 @@ namespace CsQuery.Implementation
         /// true if it exists, false if not.
         /// </returns>
 
-        public bool ContainsKey(ushort tokenId)
+        public bool ContainsKey(ulong tokenId)
         {
             return Attributes.ContainsKey(tokenId);
         }
@@ -278,7 +278,7 @@ namespace CsQuery.Implementation
         /// true if the key was present, false if not.
         /// </returns>
 
-        public bool TryGetValue(ushort tokenId, out string value)
+        public bool TryGetValue(ulong tokenId, out string value)
         {
             // do not use trygetvalue from dictionary. We need default handling in Get
             value = Get(tokenId);
@@ -296,7 +296,7 @@ namespace CsQuery.Implementation
 
         public void SetBoolean(string name)
         {
-            ushort tokenId = HtmlData.Tokenize(name);
+            var tokenId = HtmlData.Tokenize(name);
 
             SetBoolean(tokenId);
         }
@@ -309,7 +309,7 @@ namespace CsQuery.Implementation
         /// The attribute's unique token ID
         /// </param>
 
-        public void SetBoolean(ushort tokenId)
+        public void SetBoolean(ulong tokenId)
         {
             Attributes[tokenId] = null;
         }
@@ -343,7 +343,7 @@ namespace CsQuery.Implementation
         /// true if it succeeds, false if it fails.
         /// </returns>
 
-        public bool Unset(ushort tokenId)
+        public bool Unset(ulong tokenId)
         {
             bool result = Attributes.Remove(tokenId);
             return result;
@@ -363,7 +363,7 @@ namespace CsQuery.Implementation
             return Get(HtmlData.Tokenize(name));
         }
 
-        private string Get(ushort tokenId)
+        private string Get(ulong tokenId)
         {
             string value;
 
@@ -398,7 +398,7 @@ namespace CsQuery.Implementation
         /// </summary>
         /// <param name="tokenId"></param>
         /// <param name="value"></param>
-        private void Set(ushort tokenId, string value)
+        private void Set(ulong tokenId, string value)
         {
             SetRaw(tokenId, value);
         }
@@ -407,7 +407,7 @@ namespace CsQuery.Implementation
         /// </summary>
         /// <param name="tokenId"></param>
         /// <param name="value"></param>
-        internal void SetRaw(ushort tokenId, string value)
+        internal void SetRaw(ulong tokenId, string value)
         {
             if (value == null)
             {
@@ -434,7 +434,7 @@ namespace CsQuery.Implementation
                 yield return new KeyValuePair<string, string>(HtmlData.TokenName(kvp.Key).ToLower(), kvp.Value);
             }
         }
-        internal IEnumerable<ushort> GetAttributeIds()
+        internal IEnumerable<ulong> GetAttributeIds()
         {
             return Attributes.Keys;
         }

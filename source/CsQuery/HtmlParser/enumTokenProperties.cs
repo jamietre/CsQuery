@@ -10,7 +10,7 @@ namespace CsQuery.HtmlParser
     /// </summary>
 
     [Flags]
-    public enum TokenProperties: ushort
+    public enum TokenProperties : ulong
     {
         /// <summary>
         /// the element is an HTML block-level element

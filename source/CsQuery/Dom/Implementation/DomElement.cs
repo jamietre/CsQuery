@@ -42,13 +42,13 @@ namespace CsQuery.Implementation
         /// Backing field for _Classes.
         /// </summary>
 
-        private List<ushort> _Classes;
+        private List<ulong> _Classes;
 
         /// <summary>
         /// Backing field for NodeNameID property.
         /// </summary>
 
-        private ushort _NodeNameID;
+        private ulong _NodeNameID;
 
         /// <summary>
         /// Gets the dom attributes.
@@ -104,7 +104,7 @@ namespace CsQuery.Implementation
         /// Token represnting an existing tokenized node type.
         /// </param>
 
-        protected DomElement(ushort tokenId)
+        protected DomElement(ulong tokenId)
             : base()
         {
             _NodeNameID = tokenId;
@@ -132,7 +132,7 @@ namespace CsQuery.Implementation
             return Create(HtmlData.Tokenize(nodeName));
         }
 
-        internal static DomElement Create(ushort nodeNameId)
+        internal static DomElement Create(ulong nodeNameId)
         {
             switch (nodeNameId)
             {
@@ -262,7 +262,7 @@ namespace CsQuery.Implementation
                 {
                     //return String.Join(" ", _Classes.Select(item=>DomData.TokenName(item)));
                     string className = "";
-                    foreach (ushort clsId in _Classes)
+                    foreach (var clsId in _Classes)
                     {
                         className += (className == "" ? "" : " ") + HtmlData.TokenName(clsId);
                     }
@@ -324,7 +324,8 @@ namespace CsQuery.Implementation
         /// Gets the token that represents this element's NodeName
         /// </summary>
 
-        public override ushort NodeNameID { 
+        public override ulong NodeNameID
+        { 
             get { 
                 return _NodeNameID; 
             } 
@@ -883,9 +884,9 @@ namespace CsQuery.Implementation
         /// An enumerator that allows foreach to be used to process index keys in this collection.
         /// </returns>
 
-        public override IEnumerable<ushort[]> IndexKeys()
+        public override IEnumerable<ulong[]> IndexKeys()
         {
-            yield return new ushort[] {'+', _NodeNameID};
+            yield return new [] {'+', _NodeNameID};
 
             string id = Id;
 
@@ -897,7 +898,7 @@ namespace CsQuery.Implementation
 
             if (HasClasses)
             {
-                foreach (ushort clsId in _Classes)
+                foreach (var clsId in _Classes)
                 {
                     yield return ClassIndexKey(clsId);
                 }
@@ -914,7 +915,7 @@ namespace CsQuery.Implementation
                 yield return AttributeIndexKey(HtmlData.tagSTYLE);
             }
 
-            foreach (ushort token in IndexAttributesTokens())
+            foreach (var token in IndexAttributesTokens())
             {
                 yield return AttributeIndexKey(token);
             }
@@ -939,7 +940,7 @@ namespace CsQuery.Implementation
             }
             if (HasClasses)
             {
-                clone._Classes = new List<ushort>(_Classes);
+                clone._Classes = new List<ulong>(_Classes);
             }
             if (HasStyleAttribute)
             {
@@ -1038,9 +1039,9 @@ namespace CsQuery.Implementation
                 {
                     if (_Classes == null)
                     {
-                        _Classes = new List<ushort>();
+                        _Classes = new List<ulong>();
                     }
-                    ushort tokenId = HtmlData.TokenizeCaseSensitive(cls);
+                    var tokenId = HtmlData.TokenizeCaseSensitive(cls);
                     
                     _Classes.Add(tokenId);
                     if (IsIndexed)
@@ -1079,7 +1080,7 @@ namespace CsQuery.Implementation
             {
                 if (HasClass(cls))
                 {
-                    ushort tokenId = HtmlData.TokenizeCaseSensitive(cls);
+                    var tokenId = HtmlData.TokenizeCaseSensitive(cls);
                     _Classes.Remove(tokenId);
                     if (!IsDisconnected)
                     {
@@ -1143,7 +1144,7 @@ namespace CsQuery.Implementation
         /// The value to set
         /// </param>
 
-        protected void SetAttribute(ushort tokenId, string value)
+        protected void SetAttribute(ulong tokenId, string value)
         {
             switch (tokenId)
             {
@@ -1199,7 +1200,7 @@ namespace CsQuery.Implementation
         /// The token
         /// </param>
 
-        public void SetAttribute(ushort tokenId)
+        public void SetAttribute(ulong tokenId)
         {
             if (tokenId == HtmlData.ClassAttrId || tokenId == HtmlData.tagSTYLE)
             {
@@ -1221,7 +1222,7 @@ namespace CsQuery.Implementation
         /// The attribute value
         /// </param>
 
-        protected void SetAttributeRaw(ushort tokenId, string value)
+        protected void SetAttributeRaw(ulong tokenId, string value)
         {
             if (value == null)
             {
@@ -1265,7 +1266,7 @@ namespace CsQuery.Implementation
         /// true if it succeeds, false if it fails.
         /// </returns>
 
-        public bool RemoveAttribute(ushort tokenId)
+        public bool RemoveAttribute(ulong tokenId)
         {
             if (!HasAttributes)
             {
@@ -1352,7 +1353,7 @@ namespace CsQuery.Implementation
         /// The attribute value.
         /// </returns>
 
-        internal string GetAttribute(ushort tokenId)
+        internal string GetAttribute(ulong tokenId)
         {
             return GetAttribute(tokenId, null);
         }
@@ -1394,7 +1395,7 @@ namespace CsQuery.Implementation
         /// The attribute.
         /// </returns>
 
-        internal string GetAttribute(ushort tokenId, string defaultValue)
+        internal string GetAttribute(ulong tokenId, string defaultValue)
         {
 
             string value = null;
@@ -1426,7 +1427,7 @@ namespace CsQuery.Implementation
         /// true if the attribute exists, false if not
         /// </returns>
 
-        public bool TryGetAttribute(ushort tokenId, out string value)
+        public bool TryGetAttribute(ulong tokenId, out string value)
         {
             switch (tokenId)
             {
@@ -1738,14 +1739,14 @@ namespace CsQuery.Implementation
         }
 
 
-        private ushort[] ClassIndexKey(ushort classID)
+        private ulong[] ClassIndexKey(ulong classID)
         {
-            return new ushort[] { '.', classID };
+            return new [] { '.', classID };
         }
 
-        private ushort[] IDIndexKey(string id)
+        private ulong[] IDIndexKey(string id)
         {
-            return new ushort[] { '#', HtmlData.TokenizeCaseSensitive(id) };
+            return new [] { '#', HtmlData.TokenizeCaseSensitive(id) };
         }
 
         /// <summary>
@@ -1760,7 +1761,7 @@ namespace CsQuery.Implementation
         /// .
         /// </returns>
 
-        protected ushort[] AttributeIndexKey(string attrName)
+        protected ulong[] AttributeIndexKey(string attrName)
         {
             return AttributeIndexKey(HtmlData.Tokenize(attrName));
         }
@@ -1777,9 +1778,9 @@ namespace CsQuery.Implementation
         /// .
         /// </returns>
 
-        protected ushort[] AttributeIndexKey(ushort attrId)
+        protected ulong[] AttributeIndexKey(ulong attrId)
         {
-            return new ushort[] { '!', attrId };
+            return new [] { '!', attrId };
         }
 
         /// <summary>
@@ -1790,7 +1791,7 @@ namespace CsQuery.Implementation
         /// Identifier for the attribute.
         /// </param>
 
-        protected void AttributeRemoveFromIndex(ushort attrId)
+        protected void AttributeRemoveFromIndex(ulong attrId)
         {
             if (!IsDisconnected)
             {
@@ -1806,7 +1807,7 @@ namespace CsQuery.Implementation
         /// Identifier for the attribute.
         /// </param>
 
-        protected void AttributeAddToIndex(ushort attrId)
+        protected void AttributeAddToIndex(ulong attrId)
         {
             if (!IsDisconnected && !InnerAttributes.ContainsKey(attrId))
             {
@@ -1890,7 +1891,7 @@ namespace CsQuery.Implementation
         /// true if attribute, false if not.
         /// </returns>
 
-        internal bool HasAttribute(ushort tokenId)
+        internal bool HasAttribute(ulong tokenId)
         {
             switch (tokenId)
             {
@@ -1920,7 +1921,7 @@ namespace CsQuery.Implementation
         /// The attribute for matching.
         /// </returns>
 
-        internal virtual bool TryGetAttributeForMatching(ushort attributeId, out string value)
+        internal virtual bool TryGetAttributeForMatching(ulong attributeId, out string value)
         {
             return TryGetAttribute(attributeId, out value);
         }
@@ -1937,7 +1938,7 @@ namespace CsQuery.Implementation
         /// An IDomContainer
         /// </returns>
 
-        internal IDomElement Closest(ushort tagID)
+        internal IDomElement Closest(ulong tagID)
         {
             IDomContainer parent = ParentNode;
             while (parent != null)
@@ -1963,7 +1964,7 @@ namespace CsQuery.Implementation
         /// The value to set
         /// </param>
 
-        internal void SetProp(ushort tagId, bool value)
+        internal void SetProp(ulong tagId, bool value)
         {
             if (value)
             {
@@ -1995,12 +1996,12 @@ namespace CsQuery.Implementation
         /// An enumerator.
         /// </returns>
 
-        internal IEnumerable<T> ChildElementsOfTag<T>(ushort nodeNameId)
+        internal IEnumerable<T> ChildElementsOfTag<T>(ulong nodeNameId)
         {
             return ChildElementsOfTag<T>(this, nodeNameId);
         }
 
-        private IEnumerable<T> ChildElementsOfTag<T>(IDomElement parent, ushort nodeNameId)
+        private IEnumerable<T> ChildElementsOfTag<T>(IDomElement parent, ulong nodeNameId)
         {
             foreach (var el in ChildNodes)
             {
@@ -2121,10 +2122,10 @@ namespace CsQuery.Implementation
         /// </summary>
         ///
         /// <returns>
-        /// An enumerator of ushort.
+        /// An enumerator of ulong.
         /// </returns>
 
-        protected virtual IEnumerable<ushort> IndexAttributesTokens()
+        protected virtual IEnumerable<ulong> IndexAttributesTokens()
         {
             if (HasInnerAttributes)
             {

@@ -23,7 +23,7 @@ namespace CsQuery.Engine
             QueueChanges = true;
         }
 
-        private RangeSortedDictionary<ushort, IDomObject> _SelectorXref;
+        private RangeSortedDictionary<ulong, IDomObject> _SelectorXref;
 
         private Queue<IndexOperation> __PendingIndexChanges=null;
         private Queue<IndexOperation> _PendingIndexChanges
@@ -71,13 +71,13 @@ namespace CsQuery.Engine
         /// The index.
         /// </summary>
 
-        internal RangeSortedDictionary<ushort, IDomObject> SelectorXref
+        internal RangeSortedDictionary<ulong, IDomObject> SelectorXref
         {
             get
             {
                 if (_SelectorXref == null)
                 {
-                    _SelectorXref = new RangeSortedDictionary<ushort, IDomObject>(PathKeyComparer.Comparer,
+                    _SelectorXref = new RangeSortedDictionary<ulong, IDomObject>(PathKeyComparer.Comparer,
                         PathKeyComparer.Comparer,
                         HtmlData.indexSeparator);
                 }
@@ -102,13 +102,13 @@ namespace CsQuery.Engine
         public void AddToIndex(IDomIndexedNode element)
         {
 
-            
-            ushort[] path = element.IndexReference.NodePath;
+
+            var path = element.IndexReference.NodePath;
 
             QueueAddToIndex(RangePath(path), element);
 
 
-            foreach (ushort[] key in element.IndexKeys())
+            foreach (var key in element.IndexKeys())
             {
                 QueueAddToIndex(RangePath(key,path), element);
             }
@@ -135,7 +135,7 @@ namespace CsQuery.Engine
         /// The element to add.
         /// </param>
 
-        public void AddToIndex(ushort[] key, IDomIndexedNode element)
+        public void AddToIndex(ulong[] key, IDomIndexedNode element)
         {
             QueueAddToIndex(RangePath(key, element),element);
         }
@@ -151,7 +151,7 @@ namespace CsQuery.Engine
         /// The element to remove; this is ignored fort IDomIndexRange because it is identified by the key.
         /// </param>
 
-        public void RemoveFromIndex(ushort[] key, IDomIndexedNode element)
+        public void RemoveFromIndex(ulong[] key, IDomIndexedNode element)
         {
             QueueRemoveFromIndex(RangePath(key,element));
         }
@@ -166,7 +166,7 @@ namespace CsQuery.Engine
 
         public void RemoveFromIndex(IDomIndexedNode element)
         {
-            ushort[] path = element.IndexReference.NodePath;
+            var path = element.IndexReference.NodePath;
 
             QueueRemoveFromIndex(RangePath(null, path));
 
@@ -182,7 +182,7 @@ namespace CsQuery.Engine
                 }
             }
 
-            foreach (ushort[] key in element.IndexKeys())
+            foreach (var key in element.IndexKeys())
             {
                 QueueRemoveFromIndex(RangePath(key,path));
             }
@@ -208,7 +208,7 @@ namespace CsQuery.Engine
         /// A sequence of all matching keys
         /// </returns>
 
-        public IEnumerable<IDomObject> QueryIndex(ushort[] subKey, int depth, bool includeDescendants)
+        public IEnumerable<IDomObject> QueryIndex(ulong[] subKey, int depth, bool includeDescendants)
         {
             ProcessQueue();
             return SelectorXref.GetRange(subKey, depth, includeDescendants);
@@ -226,12 +226,12 @@ namespace CsQuery.Engine
         /// A sequence of all elements matching the index key.
         /// </returns>
 
-        public IEnumerable<IDomObject> QueryIndex(ushort[] key)
+        public IEnumerable<IDomObject> QueryIndex(ulong[] key)
         {
             ProcessQueue();
 
-            ushort[] subKey = new ushort[key.Length + 1];
-            Buffer.BlockCopy(key, 0, subKey, 0, key.Length<<1);
+            var subKey = new ulong[key.Length + 1];
+            Buffer.BlockCopy(key, 0, subKey, 0, key.Length * sizeof(ulong));
             
             subKey[key.Length] = HtmlData.indexSeparator;
 
@@ -277,7 +277,7 @@ namespace CsQuery.Engine
         /// The element target
         /// </param>
 
-        private void QueueAddToIndex(ushort[] key, IDomIndexedNode element)
+        private void QueueAddToIndex(ulong[] key, IDomIndexedNode element)
         {
             if (QueueChanges)
             {
@@ -294,7 +294,7 @@ namespace CsQuery.Engine
                 SelectorXref.Add(key, element.IndexReference);
             }
         }
-        private void QueueRemoveFromIndex(ushort[] key)
+        private void QueueRemoveFromIndex(ulong[] key)
         {
             if (QueueChanges)
             {
@@ -349,11 +349,11 @@ namespace CsQuery.Engine
         /// A key.
         /// </returns>
 
-        private ushort[] RangePath(ushort[] key, ushort[] path)
+        private ulong[] RangePath(ulong[] key, ulong[] path)
         {
-            int keyLen = key == null ? 0 : key.Length;
+            var keyLen = key == null ? 0 : key.Length;
 
-            ushort[] output = new ushort[keyLen + path.Length + 1];
+            var output = new ulong[keyLen + path.Length + 1];
 
             int i = 0;
             for (i = 0; i < keyLen; i++)
@@ -385,9 +385,9 @@ namespace CsQuery.Engine
         /// A key.
         /// </returns>
 
-        private ushort[] RangePath(ushort[] key, IDomIndexedNode element)
+        private ulong[] RangePath(ulong[] key, IDomIndexedNode element)
         {
-            ushort[] path = element.IndexReference.NodePath;
+            var path = element.IndexReference.NodePath;
             return RangePath(key, path);
         }
 
@@ -403,9 +403,9 @@ namespace CsQuery.Engine
         /// A key.
         /// </returns>
 
-        private ushort[] RangePath(ushort[] path)
+        private ulong[] RangePath(ulong[] path)
         {
-            ushort[] output = new ushort[path.Length + 1];
+            var output = new ulong[path.Length + 1];
             output[0] = HtmlData.indexSeparator;
             
             int j = 0;

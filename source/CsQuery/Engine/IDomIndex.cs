@@ -32,7 +32,7 @@ namespace CsQuery.Engine
         /// The element.
         /// </param>
 
-        void AddToIndex(ushort[] key, IDomIndexedNode element);
+        void AddToIndex(ulong[] key, IDomIndexedNode element);
 
         /// <summary>
         /// Removes an element from the index.
@@ -55,7 +55,7 @@ namespace CsQuery.Engine
         /// The element.
         /// </param>
 
-        void RemoveFromIndex(ushort[] key, IDomIndexedNode element);
+        void RemoveFromIndex(ulong[] key, IDomIndexedNode element);
 
         /// <summary>
         /// Clears this object to its blank/initial state.
