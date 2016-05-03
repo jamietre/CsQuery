@@ -24,7 +24,7 @@ namespace CsQuery.Engine
     internal struct IndexOperation
     {
         public IndexOperationType IndexOperationType;
-        public ushort[] Key;
+        public ulong[] Key;
         public IDomObject Value;
     }
 }

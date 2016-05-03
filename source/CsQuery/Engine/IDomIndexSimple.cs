@@ -24,7 +24,7 @@ namespace CsQuery.Engine
         /// An enumerator that allows foreach to be used to process query index in this collection.
         /// </returns>
 
-        IEnumerable<IDomObject> QueryIndex(ushort[] subKey);
+        IEnumerable<IDomObject> QueryIndex(ulong[] subKey);
 
     }
 }

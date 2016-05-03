@@ -40,6 +40,7 @@ namespace CsQuery.Tests.Core.Dom
             QueryByClass();
             QueryByAttribute();
             QueryByNodeName();
+            ManyTokensDoesNotCorruptIndex();
         }
 
         
@@ -111,14 +112,40 @@ namespace CsQuery.Tests.Core.Dom
 
         }
 
+        public void ManyTokensDoesNotCorruptIndex()
+        {
+            // Parse and render multiple large documents with a lot of unique string tokens (in this case, class names).
+            // This ensures that the index is not corrupted at the boundary that it was previously at ~65535 - 256 unique strings, 
+            // at which point the index counter would overflow and wrap around.
+            // Tests issue #204, #205, #189, #164.
+            CQ doc1 = Html(35000, 1);
+            CQ doc2 = Html(35000, 35001);
+            CQ doc3 = Html(35000, 70001);
+            
+            Assert.That(doc1.Render(), Is.EqualTo(Html(35000, 1)));
+            Assert.That(doc2.Render(), Is.EqualTo(Html(35000, 35001))); // At this point the index counter would wrap and, due to the storage method in HtmlData, throw an OutOfRangeException.
+            Assert.That(doc3.Render(), Is.EqualTo(Html(35000, 70001))); // At this point the index would be corrupted, giving unpredictable results for new unique strings
+        }
 
-        private ushort[] GetKey(string what)
+        private ulong[] GetKey(string what)
         {
             var token = HtmlData.Tokenize(what.Substring(1));
-            ushort[] key = new ushort[2] { what[0], token };
+            var key = new [] { what[0], token };
             return key;
 
         }
+
+        private static string Html(int uniqueClassCount, int startAt)
+        {
+            var strb = new StringBuilder("<html><head></head><body>");
+            for (var i = 0; i < uniqueClassCount; i++)
+            {
+                strb.AppendFormat("<i class=\"{0}\"></i>", startAt + i);
+            }
+            strb.Append("</body></html>");
+            return strb.ToString();
+        }
+
 
         private readonly string testHtml = @"
 <html>
