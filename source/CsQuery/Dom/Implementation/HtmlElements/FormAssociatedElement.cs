@@ -20,7 +20,7 @@ namespace CsQuery.Implementation
         /// Constructor to specify the element's token ID.
         /// </summary>
         /// <param name="tokenId">The token ID of the element.</param>
-        protected FormAssociatedElement(ushort tokenId)
+        protected FormAssociatedElement(ulong tokenId)
             : base(tokenId)
         {
         }
