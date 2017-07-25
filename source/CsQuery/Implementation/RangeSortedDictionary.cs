@@ -115,19 +115,19 @@ namespace CsQuery.Implementation
         {
             string humanReadableKey = "";
             int startIndex = 1;
-            ushort[] indexKey = (ushort[])indexKeyArray;
+            var indexKey = (ulong[])indexKeyArray;
 
             if (!indexKey[0].Equals(indexSeparator))
             {
-                ushort keyPart = (ushort)Convert.ChangeType(indexKey[1], typeof(ushort));
+                var keyPart = (ulong)Convert.ChangeType(indexKey[1], typeof(ulong));
                 humanReadableKey = Convert.ChangeType(indexKey[0], typeof(char)) + HtmlData.TokenName(keyPart) + '/';
                 startIndex = 3;
             }
 
             for (int i = startIndex; i < indexKey.Length; i++)
             {
-                ushort c = (ushort)Convert.ChangeType(indexKey[i], typeof(ushort));
-                humanReadableKey += ((ushort)c).ToString().PadLeft(3, '0');
+                var c = (ulong)Convert.ChangeType(indexKey[i], typeof(ulong));
+                humanReadableKey += c.ToString().PadLeft(3, '0');
                 if (i < indexKey.Length - 1)
                 {
                     humanReadableKey += '/';

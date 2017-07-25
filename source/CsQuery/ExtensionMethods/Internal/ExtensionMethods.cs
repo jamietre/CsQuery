@@ -794,7 +794,7 @@ namespace CsQuery.ExtensionMethods.Internal
 
         public static byte[] ToByteArray(this ushort[] source)
         {
-            var len = source.Length << 1;
+            var len = source.Length * sizeof(ushort);
             byte[] bytes = new byte[len];
 
             Buffer.BlockCopy(source, 0, bytes, 0, len);

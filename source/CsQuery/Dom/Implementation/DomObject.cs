@@ -117,7 +117,7 @@ namespace CsQuery.Implementation
         /// Gets the identifier of the node name.
         /// </summary>
 
-        public virtual ushort NodeNameID 
+        public virtual ulong NodeNameID 
         {
             get 
             {
@@ -164,7 +164,7 @@ namespace CsQuery.Implementation
         /// own ID.
         /// </summary>
 
-        public virtual ushort[] NodePath
+        public virtual ulong[] NodePath
         {
             get
             {
@@ -191,7 +191,7 @@ namespace CsQuery.Implementation
 
                 return _ParentNode != null ?
                    GetPath() :
-                    new ushort[2] { (ushort)'_', (ushort)Index };
+                    new ulong[2] { (ulong)'_', (ulong)Index };
 #endif
 
             }
@@ -224,10 +224,10 @@ namespace CsQuery.Implementation
         /// The path.
         /// </returns>
 
-        protected virtual ushort[] GetPath_UnOptimized()
+        protected virtual ulong[] GetPath_UnOptimized()
         {
             DomObject curNode = this;
-            List<ushort> path = new List<ushort>();
+            var path = new List<ulong>();
 
             while (curNode != null)
             {
@@ -239,7 +239,7 @@ namespace CsQuery.Implementation
 
 #endif
 
-                path.Add((ushort)curNode.Index);
+                path.Add((ulong)curNode.Index);
                 curNode = curNode._ParentNode;
             }
 
@@ -255,25 +255,25 @@ namespace CsQuery.Implementation
         /// The path.
         /// </returns>
         
-        protected virtual ushort[] GetPath()
+        protected virtual ulong[] GetPath()
         {
 
             DomObject curNode = this;
-            ushort index = 0;
+            ulong index = 0;
 
-            ushort[] path = new ushort[32];
-            int len = 32;
+            ulong[] path = new ulong[32];
+            ulong len = 32;
 
             while (curNode != null)
             {
-                path[index++] = (ushort)(curNode.Index);
+                path[index++] = (ulong)(curNode.Index);
 
                 if (index == len)
                 {
                     len <<= 1;
 
-                    var newPath= new ushort[len];
-                    Buffer.BlockCopy(path, 0, newPath, 0, index<<1);
+                    var newPath = new ulong[len];
+                    Buffer.BlockCopy(path, 0, newPath, 0, (int)index * sizeof(ulong));
                     path = newPath;
                 }
 
@@ -283,8 +283,8 @@ namespace CsQuery.Implementation
             // because we obtained the path by traversing backards up the tree, instead of recursing (which
             // will cause a stack overflow & performs a lot worse anyway) we must reverse the array before
             // returning it. 
-            
-            ushort[] output = new ushort[index];
+
+            ulong[] output = new ulong[index];
             int i = 0;
             
             while (index>0)
@@ -564,11 +564,11 @@ namespace CsQuery.Implementation
         /// TODO: We are going to use this to create a sparse index so we don't have to reindex each time a node is removed
         /// </summary>
 
-        public ushort NodePathID
+        public ulong NodePathID
         {
             get
             {
-                return (ushort)Index;
+                return (ulong)Index;
             }
         }
 
@@ -1695,7 +1695,7 @@ namespace CsQuery.Implementation
         /// A sequence of keys
         /// </returns>
 
-        public virtual IEnumerable<ushort[]> IndexKeysRanged()
+        public virtual IEnumerable<ulong[]> IndexKeysRanged()
         {
             throw new InvalidOperationException("This is not an indexed object.");
         }
@@ -1712,7 +1712,7 @@ namespace CsQuery.Implementation
         /// An enumerator that allows foreach to be used to process index keys in this collection.
         /// </returns>
 
-        public virtual IEnumerable<ushort[]> IndexKeys()
+        public virtual IEnumerable<ulong[]> IndexKeys()
         {
             throw new InvalidOperationException("This is not an indexed object.");
         }

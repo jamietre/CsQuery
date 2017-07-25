@@ -82,7 +82,7 @@ namespace CsQuery.Implementation
 
         #region private properties
 
-        private IDictionary<ushort, string> _Styles;
+        private IDictionary<ulong, string> _Styles;
         private string _QuickSetValue;
 
         /// <summary>
@@ -95,13 +95,13 @@ namespace CsQuery.Implementation
         /// access is required.
         /// </summary>
 
-        protected IDictionary<ushort, string> Styles
+        protected IDictionary<ulong, string> Styles
         {
             get
             {
                 if (_Styles == null)
                 {
-                    _Styles = new Dictionary<ushort, string>();
+                    _Styles = new Dictionary<ulong, string>();
                     if (QuickSetValue != null)
                     {
                         AddStyles(QuickSetValue, false);
@@ -357,8 +357,8 @@ namespace CsQuery.Implementation
             }
             else
             {
-                IDictionary<ushort, string> styles = new Dictionary<ushort, string>();
-                foreach (KeyValuePair<ushort, string> kvp in Styles)
+                IDictionary<ulong, string> styles = new Dictionary<ulong, string>();
+                foreach (KeyValuePair<ulong, string> kvp in Styles)
                 {
                     styles.Add(kvp);
                 }
@@ -899,7 +899,7 @@ namespace CsQuery.Implementation
         bool ICollection<KeyValuePair<string, string>>.Contains(KeyValuePair<string, string> item)
         {
             return HasStyleAttribute ?
-                Styles.Contains(new KeyValuePair<ushort, string>(HtmlData.Tokenize(item.Key), item.Value)) :
+                Styles.Contains(new KeyValuePair<ulong, string>(HtmlData.Tokenize(item.Key), item.Value)) :
                 false;
         }
 
@@ -920,7 +920,7 @@ namespace CsQuery.Implementation
         {
             if (HasStyleAttribute)
             {
-                var kvp = new KeyValuePair<ushort, string>(HtmlData.Tokenize(item.Key), item.Value);
+                var kvp = new KeyValuePair<ulong, string>(HtmlData.Tokenize(item.Key), item.Value);
                 return Styles.Remove(kvp);
             }
             else

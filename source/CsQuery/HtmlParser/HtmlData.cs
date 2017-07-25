@@ -43,7 +43,7 @@ namespace CsQuery.HtmlParser
         /// </summary>
         
         //public const char indexSeparator = (char)1;
-        public const ushort indexSeparator = 65535;
+        public const ulong indexSeparator = ulong.MaxValue;
 
         // Hardcode some tokens to improve performance when referring to them often
 
@@ -51,303 +51,303 @@ namespace CsQuery.HtmlParser
         /// Special token meaning "do nothing"
         /// </summary>
 
-        public const ushort tagActionNothing = 0;
+        public const ulong tagActionNothing = 0;
 
         /// <summary>
         /// Special token meaning "close the parent tag before opening the next one"
         /// </summary>
 
-        public const ushort tagActionClose = 1;
+        public const ulong tagActionClose = 1;
 
         /// <summary>
         /// Identifier for the Class attribute.
         /// </summary>
 
-        public const ushort ClassAttrId = 3;
+        public const ulong ClassAttrId = 3;
 
         /// <summary>
         /// Identifier for the Value attribute.
         /// </summary>
 
-        public const ushort ValueAttrId = 4;
+        public const ulong ValueAttrId = 4;
 
         /// <summary>
         /// Identifier for the ID attribute.
         /// </summary>
 
-        public const ushort IDAttrId = 5;
+        public const ulong IDAttrId = 5;
 
         /// <summary>
         /// Identifier for the selected attribute.
         /// </summary>
 
-        public const ushort SelectedAttrId = 6;
+        public const ulong SelectedAttrId = 6;
 
         /// <summary>
         /// Identifier for the readonly attribute.
         /// </summary>
 
-        public const ushort ReadonlyAttrId = 7;
+        public const ulong ReadonlyAttrId = 7;
 
         /// <summary>
         /// Identifier for the checked attribute.
         /// </summary>
 
-        public const ushort CheckedAttrId = 8;
+        public const ulong CheckedAttrId = 8;
 
         /// <summary>
         /// The INPUT tag.
         /// </summary>
 
-        public const ushort tagINPUT = 9;
+        public const ulong tagINPUT = 9;
 
         /// <summary>
         /// The SELECT tag.
         /// </summary>
 
-        public const ushort tagSELECT = 10;
+        public const ulong tagSELECT = 10;
 
         /// <summary>
         /// The OPTION tag.
         /// </summary>
 
-        public const ushort tagOPTION = 11;
+        public const ulong tagOPTION = 11;
 
         /// <summary>
         /// The P tag.
         /// </summary>
 
-        public const ushort tagP = 12;
+        public const ulong tagP = 12;
 
         /// <summary>
         /// The TR tag.
         /// </summary>
 
-        public const ushort tagTR = 13;
+        public const ulong tagTR = 13;
 
         /// <summary>
         /// The TD tag.
         /// </summary>
 
-        public const ushort tagTD = 14;
+        public const ulong tagTD = 14;
 
         /// <summary>
         /// The TH tag.
         /// </summary>
 
-        public const ushort tagTH = 15;
+        public const ulong tagTH = 15;
 
         /// <summary>
         /// The HEAD tag.
         /// </summary>
 
-        public const ushort tagHEAD = 16;
+        public const ulong tagHEAD = 16;
 
         /// <summary>
         /// The BODY tag.
         /// </summary>
 
-        public const ushort tagBODY = 17;
+        public const ulong tagBODY = 17;
 
         /// <summary>
         /// The DT tag
         /// </summary>
 
-        public const ushort tagDT = 18;
+        public const ulong tagDT = 18;
 
         /// <summary>
         /// The COLGROUP tag.
         /// </summary>
 
-        public const ushort tagCOLGROUP = 19;
+        public const ulong tagCOLGROUP = 19;
 
         /// <summary>
         /// The DD tag
         /// </summary>
 
-        public const ushort tagDD = 20;
+        public const ulong tagDD = 20;
 
         /// <summary>
         /// The LI tag
         /// </summary>
 
-        public const ushort tagLI = 21;
+        public const ulong tagLI = 21;
 
         /// <summary>
         /// The DL tag
         /// </summary>
 
-        public const ushort tagDL = 22;
+        public const ulong tagDL = 22;
 
         /// <summary>
         /// The TABLE tag.
         /// </summary>
 
-        public const ushort tagTABLE = 23;
+        public const ulong tagTABLE = 23;
 
         /// <summary>
         /// The OPTGROUP tag.
         /// </summary>
 
-        public const ushort tagOPTGROUP = 24;
+        public const ulong tagOPTGROUP = 24;
 
         /// <summary>
         /// The UL tag.
         /// </summary>
 
-        public const ushort tagUL = 25;
+        public const ulong tagUL = 25;
 
         /// <summary>
         /// The OL tag.
         /// </summary>
 
-        public const ushort tagOL = 26;
+        public const ulong tagOL = 26;
 
         /// <summary>
         /// The TBODY tag
         /// </summary>
 
-        public const ushort tagTBODY = 27;
+        public const ulong tagTBODY = 27;
 
         /// <summary>
         /// The TFOOT tag.
         /// </summary>
 
-        public const ushort tagTFOOT = 28;
+        public const ulong tagTFOOT = 28;
 
         /// <summary>
         /// The THEAD tag.
         /// </summary>
 
-        public const ushort tagTHEAD = 29;
+        public const ulong tagTHEAD = 29;
 
         /// <summary>
         /// The RT tag.
         /// </summary>
 
-        public const ushort tagRT = 30;
+        public const ulong tagRT = 30;
 
         /// <summary>
         /// The RP tag.
         /// </summary>
 
-        public const ushort tagRP = 31;
+        public const ulong tagRP = 31;
 
         /// <summary>
         /// The SCRIPT tag.
         /// </summary>
 
-        public const ushort tagSCRIPT = 32;
+        public const ulong tagSCRIPT = 32;
 
         /// <summary>
         /// The TEXTAREA tag.
         /// </summary>
 
-        public const ushort tagTEXTAREA = 33;
+        public const ulong tagTEXTAREA = 33;
 
         /// <summary>
         /// The STYLE tag.
         /// </summary>
 
-        public const ushort tagSTYLE = 34;
+        public const ulong tagSTYLE = 34;
 
         /// <summary>
         /// The COL tag.
         /// </summary>
 
-        public const ushort tagCOL = 35;
+        public const ulong tagCOL = 35;
 
         /// <summary>
         /// The HTML tag.
         /// </summary>
 
-        public const ushort tagHTML = 36;
+        public const ulong tagHTML = 36;
 
         /// <summary>
         /// The BUTTON tag.
         /// </summary>
 
-        public const ushort tagBUTTON = 37;
+        public const ulong tagBUTTON = 37;
 
         /// <summary>
         /// The BUTTON tag.
         /// </summary>
 
-        public const ushort attrMULTIPLE = 38;
+        public const ulong attrMULTIPLE = 38;
 
         /// <summary>
         /// the A tag
         /// </summary>
         
-        public const ushort tagA = 39;
+        public const ulong tagA = 39;
 
         /// <summary>
         /// the SPAN tag
         /// </summary>
 
-        public const ushort tagSPAN = 40;
+        public const ulong tagSPAN = 40;
 
         /// <summary>
         /// the SPAN tag
         /// </summary>
 
-        public const ushort tagFORM = 41;
+        public const ulong tagFORM = 41;
 
         /// <summary>
         /// The REQUIRED attribute.
         /// </summary>
 
-        public const ushort attrREQUIRED = 42;
+        public const ulong attrREQUIRED = 42;
 
 
         /// <summary>
         /// The REQUIRED attribute.
         /// </summary>
 
-        public const ushort attrAUTOFOCUS = 43;
+        public const ulong attrAUTOFOCUS = 43;
 
         /// <summary>
         /// The TYPE attribute.
         /// </summary>
 
-        public const ushort attrTYPE = 44;
+        public const ulong attrTYPE = 44;
 
         /// <summary>
         /// The PROGRESS element
         /// </summary>
 
-        public const ushort tagPROGRESS = 45;
+        public const ulong tagPROGRESS = 45;
 
         /// <summary>
         /// The LABEL element
         /// </summary>
 
-        public const ushort tagLABEL = 46;
+        public const ulong tagLABEL = 46;
 
 
         /// <summary>
         /// The DISABLED attribute
         /// </summary>
 
-        public const ushort attrDISABLED = 47;
+        public const ulong attrDISABLED = 47;
 
         /// <summary>
         /// The METER element
         /// </summary>
 
-        public const ushort tagMETER = 48;
+        public const ulong tagMETER = 48;
 
         /// <summary>
         /// The IMG element
         /// </summary>
 
-        public const ushort tagIMG = 49;
+        public const ulong tagIMG = 49;
 
         /// <summary>
         /// The IMG element
         /// </summary>
 
-        public const ushort tagLINK = 50;
+        public const ulong tagLINK = 50;
 
 
         // WHEN CHANGING THIS, YOU MUST UPDATE THE "hardcoded" ARRAY BELOW.
@@ -356,7 +356,7 @@ namespace CsQuery.HtmlParser
         /// should match final tag above; for self-checking.
         /// </summary>
         
-        private const ushort maxHardcodedTokenId = 50;
+        private const ulong maxHardcodedTokenId = 50;
 
         // Unquoted attribute value syntax: http://dev.w3.org/html5/spec-LC/syntax.html#attributes-0
         // 
@@ -397,9 +397,10 @@ namespace CsQuery.HtmlParser
         /// Fields used internally
         /// </summary>
 
-        private static ushort nextID = 2;
-        private static List<string> Tokens = new List<string>();
-        private static Dictionary<string, ushort> TokenIDs;
+        private static ulong nextID = 2;
+        //private static List<string> Tokens = new List<string>();
+        private static Dictionary<ulong, string> TokenLookup = new Dictionary<ulong, string>();
+        private static Dictionary<string, ulong> TokenIDs;
         private static object locker = new Object();
 
         // Constants for path encoding functions
@@ -411,11 +412,11 @@ namespace CsQuery.HtmlParser
         // so we can mask it for fast comparisons. If the number of tags with data exceeded 64
         // this can just increase; anything above the last used slot will just be 0.
 
-        private static ushort[] TokenMetadata = new ushort[256];
+        private static ulong[] TokenMetadata = new ulong[256];
 
         // (256 * 256) & ~256
         // this is the mask to test if an ID is in outside short list
-        private const ushort NonSpecialTokenMask = (ushort)65280;
+        private const ulong NonSpecialTokenMask = (ulong)65280;
 
         #endregion
 
@@ -540,7 +541,7 @@ namespace CsQuery.HtmlParser
                 "type","progress","label","disabled","meter","img","link"
             };
 
-            TokenIDs = new Dictionary<string, ushort>();
+            TokenIDs = new Dictionary<string, ulong>();
 
             foreach (var item in hardcoded) {
                 Tokenize(item);
@@ -567,9 +568,9 @@ namespace CsQuery.HtmlParser
 
             // Fill out the list of tokens to the boundary of the metadata array so the indices align
 
-            while (nextID < (ushort)TokenMetadata.Length)
+            while (nextID < (ulong)TokenMetadata.Length)
             {
-                Tokens.Add(null);
+                //Tokens.Add(null);
                 nextID++;
             }
 
@@ -591,9 +592,9 @@ namespace CsQuery.HtmlParser
             setBit(isFormControl, TokenProperties.FormInputControl);
         }
 
-        private static HashSet<ushort> PopulateTokenHashset(IEnumerable<string> tokens)
+        private static HashSet<ulong> PopulateTokenHashset(IEnumerable<string> tokens)
         {
-            var set = new HashSet<ushort>();
+            var set = new HashSet<ulong>();
             foreach (var item in tokens)
             {
                 set.Add(Tokenize(item));
@@ -618,7 +619,8 @@ namespace CsQuery.HtmlParser
         {
             get
             {
-                return Tokens;
+                return TokenIDs.Keys;
+                //return Tokens;
             }
         }
 
@@ -634,10 +636,10 @@ namespace CsQuery.HtmlParser
         /// true if it succeeds, false if it fails.
         /// </returns>
 
-        public static bool HtmlChildrenNotAllowed(ushort nodeId)
+        public static bool HtmlChildrenNotAllowed(ulong nodeId)
         {
             return (nodeId & NonSpecialTokenMask) == 0 &&
-                (TokenMetadata[nodeId] & (ushort)TokenProperties.HtmlChildrenNotAllowed) > 0;
+                (TokenMetadata[nodeId] & (ulong)TokenProperties.HtmlChildrenNotAllowed) > 0;
 
         }
 
@@ -670,14 +672,14 @@ namespace CsQuery.HtmlParser
         /// When false, this element type may never have children.
         /// </returns>
 
-        public static bool ChildrenAllowed(ushort tokenId)
+        public static bool ChildrenAllowed(ulong tokenId)
         {
             // nodeId & NonSpecialTokenMask returns zero for tokens that are in the short list.
             // anything outside the short list (or not matching special properties) os ok - 
             // innertextallowed is the default
 
             return (tokenId & NonSpecialTokenMask) != 0 ||
-                (TokenMetadata[tokenId] & (ushort)TokenProperties.ChildrenNotAllowed) == 0;
+                (TokenMetadata[tokenId] & (ulong)TokenProperties.ChildrenNotAllowed) == 0;
         }
 
         /// <summary>
@@ -709,11 +711,11 @@ namespace CsQuery.HtmlParser
         /// true if the token ID represents a block type element, false if not.
         /// </returns>
 
-        public static bool IsBlock(ushort tokenId)
+        public static bool IsBlock(ulong tokenId)
         {
 
             return (tokenId & NonSpecialTokenMask) == 0 &&
-                (TokenMetadata[tokenId] & (ushort)TokenProperties.BlockElement) != 0;
+                (TokenMetadata[tokenId] & (ulong)TokenProperties.BlockElement) != 0;
         }
 
         /// <summary>
@@ -745,10 +747,10 @@ namespace CsQuery.HtmlParser
         /// true if boolean, false if not.
         /// </returns>
 
-        public static bool IsBoolean(ushort tokenId)
+        public static bool IsBoolean(ulong tokenId)
         {
             return (tokenId & NonSpecialTokenMask) == 0 &&
-                  (TokenMetadata[tokenId] & (ushort)TokenProperties.BooleanProperty) != 0;
+                  (TokenMetadata[tokenId] & (ulong)TokenProperties.BooleanProperty) != 0;
         }
 
         /// <summary>
@@ -797,10 +799,10 @@ namespace CsQuery.HtmlParser
         /// true if the values are case insensitive, false if not.
         /// </returns>
 
-        public static bool IsCaseInsensitiveValues(ushort attributeToken)
+        public static bool IsCaseInsensitiveValues(ulong attributeToken)
         {
             return (attributeToken & NonSpecialTokenMask) == 0 &&
-                 (TokenMetadata[attributeToken] & (ushort)TokenProperties.CaseInsensitiveValues) != 0;
+                 (TokenMetadata[attributeToken] & (ulong)TokenProperties.CaseInsensitiveValues) != 0;
 
         }
 
@@ -833,10 +835,10 @@ namespace CsQuery.HtmlParser
         /// true if it has a VALUE property, false if not.
         /// </returns>
 
-        public static bool HasValueProperty(ushort nodeNameToken)
+        public static bool HasValueProperty(ulong nodeNameToken)
         {
             return (nodeNameToken & NonSpecialTokenMask) == 0 &&
-                 (TokenMetadata[nodeNameToken] & (ushort)TokenProperties.HasValue) != 0;
+                 (TokenMetadata[nodeNameToken] & (ulong)TokenProperties.HasValue) != 0;
         }
 
         /// <summary>
@@ -868,10 +870,10 @@ namespace CsQuery.HtmlParser
         /// true if a form input control, false if not.
         /// </returns>
 
-        public static bool IsFormInputControl(ushort nodeNameToken)
+        public static bool IsFormInputControl(ulong nodeNameToken)
         {
             return (nodeNameToken & NonSpecialTokenMask) == 0 &&
-                 (TokenMetadata[nodeNameToken] & (ushort)TokenProperties.HasValue) != 0;
+                 (TokenMetadata[nodeNameToken] & (ulong)TokenProperties.HasValue) != 0;
         }
 
         /// <summary>
@@ -886,7 +888,7 @@ namespace CsQuery.HtmlParser
         /// The token
         /// </returns>
 
-        public static ushort Tokenize(string name)
+        public static ulong Tokenize(string name)
         {
 
             if (String.IsNullOrEmpty(name))
@@ -910,7 +912,7 @@ namespace CsQuery.HtmlParser
         /// A token representation of the string
         /// </returns>
 
-        public static ushort TokenizeCaseSensitive(string name)
+        public static ulong TokenizeCaseSensitive(string name)
         {
             if (String.IsNullOrEmpty(name))
             {
@@ -932,9 +934,9 @@ namespace CsQuery.HtmlParser
         /// A token
         /// </returns>
 
-        private static ushort TokenizeImpl(string tokenName)
+        private static ulong TokenizeImpl(string tokenName)
         {
-            ushort id;
+            ulong id;
 
             if (!TokenIDs.TryGetValue(tokenName, out id))
             {
@@ -943,7 +945,8 @@ namespace CsQuery.HtmlParser
                 {
                     if (!TokenIDs.TryGetValue(tokenName, out id))
                     {
-                        Tokens.Add(tokenName);
+                        //Tokens.Add(tokenName);
+                        TokenLookup.Add(nextID, tokenName);
                         TokenIDs.Add(tokenName, nextID);
                         // if for some reason we go over 65,535, will overflow and crash. no need 
                         // to check
@@ -966,9 +969,12 @@ namespace CsQuery.HtmlParser
         /// The string, or an empty string if the token ID was not found
         /// </returns>
 
-        public static string TokenName(ushort tokenId)
+        public static string TokenName(ulong tokenId)
         {
-            return tokenId <= 0 ? "" : Tokens[tokenId - 2];
+            return tokenId <= 0
+                ? ""
+                : TokenLookup[tokenId];
+            //: Tokens[tokenId - 2];
         }
 
         /// <summary>
@@ -1068,7 +1074,7 @@ namespace CsQuery.HtmlParser
         /// .
         /// </returns>
 
-        public static ushort SpecialTagAction(string tag, string newTag, bool isDocument = true)
+        public static ulong SpecialTagAction(string tag, string newTag, bool isDocument = true)
         {
             return isDocument ?
                 SpecialTagActionForDocument(Tokenize(tag), Tokenize(newTag)) :
@@ -1092,7 +1098,7 @@ namespace CsQuery.HtmlParser
         /// A tokenId representing an action or a new tag to generate
         /// </returns>
 
-        public static ushort SpecialTagActionForDocument(ushort parentTagId, ushort newTagId)
+        public static ulong SpecialTagActionForDocument(ulong parentTagId, ulong newTagId)
         {
             if (parentTagId == HtmlData.tagHTML)
             {
@@ -1105,8 +1111,8 @@ namespace CsQuery.HtmlParser
 
                 // [csquery] When a metadata tag appears, we start a head. Otherwise, we start a body. If a body later appears it will be ignored.
 
-                    return (newTagId & NonSpecialTokenMask) == 0 && 
-                        (TokenMetadata[newTagId] & (ushort)TokenProperties.MetaDataTags) != 0 ?
+                    return (newTagId & NonSpecialTokenMask) == 0 &&
+                        (TokenMetadata[newTagId] & (ulong)TokenProperties.MetaDataTags) != 0 ?
                         HtmlData.tagHEAD :
                             newTagId != HtmlData.tagBODY && 
                             newTagId != HtmlData.tagHEAD ?
@@ -1147,7 +1153,7 @@ namespace CsQuery.HtmlParser
         /// tag is opened.
         /// </returns>
 
-        public static ushort SpecialTagAction(ushort parentTagId, ushort newTagId)
+        public static ulong SpecialTagAction(ulong parentTagId, ulong newTagId)
         {
 
             if ((parentTagId & NonSpecialTokenMask) != 0)
@@ -1158,7 +1164,7 @@ namespace CsQuery.HtmlParser
             switch(parentTagId) {
                 case HtmlData.tagHEAD:
                     return  (newTagId & NonSpecialTokenMask) == 0 &&
-                            (TokenMetadata[newTagId] & (ushort)TokenProperties.MetaDataTags) == 0 ?
+                            (TokenMetadata[newTagId] & (ulong)TokenProperties.MetaDataTags) == 0 ?
                                 tagActionClose : tagActionNothing;
       
                 // [html5] An li element's end tag may be omitted if the li element is immediately followed by another li element 
@@ -1185,7 +1191,7 @@ namespace CsQuery.HtmlParser
 
                 case HtmlData.tagP:
                     return (newTagId & NonSpecialTokenMask) == 0
-                        && (TokenMetadata[newTagId] & (ushort)TokenProperties.ParagraphCloser) != 0
+                        && (TokenMetadata[newTagId] & (ulong)TokenProperties.ParagraphCloser) != 0
                             ? tagActionClose : tagActionNothing;
 
 
@@ -1313,7 +1319,7 @@ namespace CsQuery.HtmlParser
         /// The bitflag to set
         /// </param>
 
-        private static void setBit(IEnumerable<ushort> tokens, TokenProperties bit)
+        private static void setBit(IEnumerable<ulong> tokens, TokenProperties bit)
         {
             foreach (var token in tokens)
             {
@@ -1332,9 +1338,9 @@ namespace CsQuery.HtmlParser
         /// The bit to set
         /// </param>
 
-        private static void setBit(ushort token, TokenProperties bit)
+        private static void setBit(ulong token, TokenProperties bit)
         {
-            TokenMetadata[token] |= (ushort)bit;
+            TokenMetadata[token] |= (ulong)bit;
         }
 
         #endregion
