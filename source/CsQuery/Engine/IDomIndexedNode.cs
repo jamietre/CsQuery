@@ -20,7 +20,7 @@ namespace CsQuery
         /// An enumerator that allows foreach to be used to process index keys in this collection.
         /// </returns>
 
-        IEnumerable<ushort[]> IndexKeys();
+        IEnumerable<ulong[]> IndexKeys();
 
         /// <summary>
         /// The object that is the target of the index (normally, the object itself)

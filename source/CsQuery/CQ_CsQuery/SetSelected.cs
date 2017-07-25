@@ -40,7 +40,7 @@ namespace CsQuery
             }
             if (item.Length > 0)
             {
-                ushort nodeNameID = group[0].NodeNameID;
+                var nodeNameID = group[0].NodeNameID;
                 string type = group[0]["type"].ToUpper();
                 if (nodeNameID == HtmlData.tagOPTION)
                 {

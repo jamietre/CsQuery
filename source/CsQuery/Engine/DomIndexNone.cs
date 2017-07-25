@@ -48,7 +48,7 @@ namespace CsQuery.Engine
         /// The element to add.
         /// </param>
 
-        public void AddToIndex(ushort[] key, IDomIndexedNode element)
+        public void AddToIndex(ulong[] key, IDomIndexedNode element)
         {
             return;
         }
@@ -64,7 +64,7 @@ namespace CsQuery.Engine
         /// The element to remove.
         /// </param>
 
-        public void RemoveFromIndex(ushort[] key, IDomIndexedNode element)
+        public void RemoveFromIndex(ulong[] key, IDomIndexedNode element)
         {
             return;
         }
@@ -94,7 +94,7 @@ namespace CsQuery.Engine
         /// A sequence of all matching keys
         /// </returns>
 
-        public IEnumerable<IDomObject> QueryIndex(ushort[] subKey)
+        public IEnumerable<IDomObject> QueryIndex(ulong[] subKey)
         {
             throw new NotImplementedException();
         }
@@ -121,7 +121,7 @@ namespace CsQuery.Engine
         /// An enumerator that allows foreach to be used to process query index in this collection.
         /// </returns>
 
-        public IEnumerable<IDomObject> QueryIndex(ushort[] subKey, int depth, bool includeDescendants)
+        public IEnumerable<IDomObject> QueryIndex(ulong[] subKey, int depth, bool includeDescendants)
         {
             throw new NotImplementedException();
         }

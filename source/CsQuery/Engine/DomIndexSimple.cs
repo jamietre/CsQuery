@@ -21,7 +21,7 @@ namespace CsQuery.Engine
 
         public DomIndexSimple()
         {
-            Index = new Dictionary<ushort[], IndexValue>(PathKeyComparer.Comparer);
+            Index = new Dictionary<ulong[], IndexValue>(PathKeyComparer.Comparer);
         }
 
 
@@ -41,7 +41,7 @@ namespace CsQuery.Engine
             }
         }
 
-        private IDictionary<ushort[], IndexValue> Index;
+        private IDictionary<ulong[], IndexValue> Index;
 
         
 
@@ -83,7 +83,7 @@ namespace CsQuery.Engine
         /// The element to add.
         /// </param>
 
-        public void AddToIndex(ushort[] key, IDomIndexedNode element)
+        public void AddToIndex(ulong[] key, IDomIndexedNode element)
         {
             IndexValue existing;
             if (!Index.TryGetValue(key, out existing))
@@ -110,7 +110,7 @@ namespace CsQuery.Engine
         /// The element to remove.
         /// </param>
 
-        public void RemoveFromIndex(ushort[] key, IDomIndexedNode element)
+        public void RemoveFromIndex(ulong[] key, IDomIndexedNode element)
         {
             IndexValue existing;
             if (Index.TryGetValue(key, out existing))
@@ -141,7 +141,7 @@ namespace CsQuery.Engine
                 }
             }
 
-            foreach (ushort[] key in element.IndexKeys())
+            foreach (var key in element.IndexKeys())
             {
                 RemoveFromIndex(key,element);
             }
@@ -159,7 +159,7 @@ namespace CsQuery.Engine
         /// A sequence of all matching keys
         /// </returns>
 
-        public IEnumerable<IDomObject> QueryIndex(ushort[] subKey)
+        public IEnumerable<IDomObject> QueryIndex(ulong[] subKey)
         {
             IndexValue existing;
             if (Index.TryGetValue(subKey, out existing))
@@ -238,7 +238,7 @@ namespace CsQuery.Engine
         /// An enumerator that allows foreach to be used to process query index in this collection.
         /// </returns>
 
-        public IEnumerable<IDomObject> QueryIndex(ushort[] subKey, int depth, bool includeDescendants)
+        public IEnumerable<IDomObject> QueryIndex(ulong[] subKey, int depth, bool includeDescendants)
         {
             throw new NotImplementedException();
         }

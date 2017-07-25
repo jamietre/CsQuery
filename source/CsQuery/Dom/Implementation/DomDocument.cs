@@ -239,11 +239,11 @@ namespace CsQuery.Implementation
         /// The full path to this node. For Document nodes, this is always empty.
         /// </summary>
 
-        public override ushort[] NodePath
+        public override ulong[] NodePath
         {
             get
             {
-                return new ushort[] {};
+                return new ulong[] { };
             }
         }
 

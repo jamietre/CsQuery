@@ -164,8 +164,8 @@ namespace CsQuery.Engine
                     selectionSource = GetSelectionSource(selector, context, lastResult);
                     lastResult = null;
                 }
-                
-                List<ushort> key = new List<ushort>();
+
+                var key = new List<ulong>();
                 SelectorType removeSelectorType = 0;
 
                 // determine the type of traversal & depth for this selector

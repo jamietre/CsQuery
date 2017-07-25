@@ -49,12 +49,12 @@ namespace CsQuery.Engine.PseudoClassSelectors
 
         public override IEnumerable<IDomObject> ChildMatches(IDomContainer element)
         {
-            HashSet<ushort> Types = new HashSet<ushort>();
+            var types = new HashSet<ulong>();
             foreach (var child in element.ChildElements.Reverse())
             {
-                if (!Types.Contains(child.NodeNameID))
+                if (!types.Contains(child.NodeNameID))
                 {
-                    Types.Add(child.NodeNameID);
+                    types.Add(child.NodeNameID);
                     yield return child;
                 }
             }

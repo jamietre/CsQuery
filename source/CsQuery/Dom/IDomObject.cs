@@ -110,7 +110,7 @@ namespace CsQuery
         /// All the unique class names applied to this object.
         /// </summary>
         /// <value>
-        /// A sequence of strings	   
+        /// A sequence of strings      
         /// </value>
 
         IEnumerable<string> Classes { get; }
@@ -768,13 +768,13 @@ namespace CsQuery
         /// have to reindex when removing things)
         /// </summary>
 
-        ushort NodePathID { get; }
+        ulong NodePathID { get; }
 
         /// <summary>
         /// Gets the full pathname of the node file.
         /// </summary>
 
-        ushort[] NodePath { get; }
+        ulong[] NodePath { get; }
 
         /// <summary>
         /// Wrap this element in a CQ object. This is the CsQuery equivalent of the common jQuery
@@ -802,6 +802,6 @@ namespace CsQuery
         /// The internal token ID for this element's node name. 
         /// </summary>
 
-        ushort NodeNameID { get; }
+        ulong NodeNameID { get; }
     }
 }
