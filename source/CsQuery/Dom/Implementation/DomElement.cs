@@ -1455,10 +1455,10 @@ namespace CsQuery.Implementation
             {
                 case HtmlData.ClassAttrId:
                     value = ClassName;
-                    return true;
+                    return HasClasses;
                 case HtmlData.tagSTYLE:
                     value = Style.ToString();
-                    return true;
+                    return HasStyleAttribute;
                 default:
                     if (HasInnerAttributes) {
                         return InnerAttributes.TryGetValue(tokenId, out value);
