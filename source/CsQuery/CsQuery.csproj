@@ -404,6 +404,7 @@
     <Compile Include="Engine\SelectorParser.cs" />
     <Compile Include="ExtensionMethods\Forms.cs" />
     <Compile Include="Utility\FastActivator.cs" />
+    <Compile Include="Utility\FastString.cs" />
     <Compile Include="Utility\SelectorCache.cs" />
     <Compile Include="Utility\Types.cs" />
     <Compile Include="Web\enumRequestState.cs" />

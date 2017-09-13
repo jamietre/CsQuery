@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CsQuery.Utility;
 
 namespace CsQuery.Implementation
 {
@@ -19,7 +20,7 @@ namespace CsQuery.Implementation
         public DomCData()
             : base()
         {
-            _NonAttributeData = "";
+            _NonAttributeData = new FastString("");
         }
 
         /// <summary>
@@ -33,10 +34,10 @@ namespace CsQuery.Implementation
         public DomCData(string value)
             : base()
         {
-            NodeValue = value;
+            _NonAttributeData = new FastString(value);
         }
 
-        private string _NonAttributeData;
+        private FastString _NonAttributeData;
 
         /// <summary>
         /// Gets or sets the node value. For CDATA nodes, this is the content.
@@ -46,13 +47,15 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return NonAttributeData;
-            }
-            set
-            {
-                NonAttributeData = value;
+                return _NonAttributeData.Value;
             }
         }
+
+        public override void AppendNodeValue(string text)
+        {
+            _NonAttributeData.AppendValue(text);
+        }
+
 
         /// <summary>
         /// Gets the type of the node. For CDATA nodes, this is NodeType.CDATA_SECTION_NODE.
@@ -75,11 +78,11 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return _NonAttributeData;
+                return _NonAttributeData.Value;
             }
             set
             {
-                _NonAttributeData = value ?? "";
+                _NonAttributeData = new FastString(value ?? "");
             }
         }
 

@@ -182,7 +182,7 @@ namespace CsQuery.Engine
         /// Gets or sets the identifier of the attribute name token.
         /// </summary>
 
-        public ushort AttributeNameTokenID
+        public ulong AttributeNameTokenID
         {
             get; private set;
         }

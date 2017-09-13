@@ -61,20 +61,20 @@ namespace CsQuery.Engine.PseudoClassSelectors
         /// <returns></returns>
         private IEnumerable<IDomObject> OnlyChildOfAnyType(IDomObject parent)
         {
-            IDictionary<ushort, IDomElement> Types = new Dictionary<ushort, IDomElement>();
+            var types = new Dictionary<ulong, IDomElement>();
             foreach (var child in parent.ChildElements)
             {
-                if (Types.ContainsKey(child.NodeNameID))
+                if (types.ContainsKey(child.NodeNameID))
                 {
-                    Types[child.NodeNameID] = null;
+                    types[child.NodeNameID] = null;
                 }
                 else
                 {
-                    Types[child.NodeNameID] = child;
+                    types[child.NodeNameID] = child;
                 }
             }
             // if the value is null, there was more than one of the type
-            return Types.Values.Where(item => item != null);
+            return types.Values.Where(item => item != null);
         }
 
 

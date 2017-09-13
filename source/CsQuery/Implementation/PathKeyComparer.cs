@@ -11,7 +11,7 @@ namespace CsQuery.Implementation
     /// A string comparer that is not concerned with anything other than the raw value of the characters. No encoding, no culture.
     /// </summary>
 
-    public class PathKeyComparer : IComparer<ushort[]>, IEqualityComparer<ushort[]>
+    public class PathKeyComparer : IComparer<ulong[]>, IEqualityComparer<ulong[]>
     {
         static PathKeyComparer()
         {
@@ -49,7 +49,7 @@ namespace CsQuery.Implementation
         /// </returns>
 
 
-        public int Compare(ushort[] x, ushort[] y)
+        public int Compare(ulong[] x, ulong[] y)
         {
             int xlen = x.Length;
             int ylen = y.Length;
@@ -81,7 +81,7 @@ namespace CsQuery.Implementation
         /// true if it succeeds, false if it fails.
         /// </returns>
 
-        protected bool CompareEqualLength(ushort[] x, ushort[] y)
+        protected bool CompareEqualLength(ulong[] x, ulong[] y)
         {
             int len = x.Length;
             for (int pos = 0; pos < len; pos++)
@@ -109,7 +109,7 @@ namespace CsQuery.Implementation
         /// true if the objects are considered equal, false if they are not.
         /// </returns>
 
-        public bool Equals(ushort[] x, ushort[] y)
+        public bool Equals(ulong[] x, ulong[] y)
         {
             int len = x.Length;
 
@@ -140,10 +140,10 @@ namespace CsQuery.Implementation
         /// <returns>
         /// The hash code for this object.
         /// </returns>
-        
-        
 
-        public int GetHashCode(ushort[] obj)
+
+
+        public int GetHashCode(ulong[] obj)
         {
             unchecked
             {
@@ -151,7 +151,7 @@ namespace CsQuery.Implementation
                 int hash = (int)2166136261;
 
                 for (int i = 0; i < obj.Length; i++)
-                    hash = (hash ^ obj[i]) * hashP;
+                    hash = (hash ^ obj[i].GetHashCode()) * hashP;
                 
                 return ((((hash + (hash << 13))
                     ^ (hash >> 7))

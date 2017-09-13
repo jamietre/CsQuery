@@ -11,7 +11,7 @@ Please see the main [readme](https://github.com/jamietre/CsQuery/blob/master/REA
 #### Version 1.4 (prerelease)
 
 **Bug fixes**
-
+- [Issue #205](https://github.com/jamietre/CsQuery/issues/205), [Issue #204](https://github.com/jamietre/CsQuery/issues/204), [Issue #189](https://github.com/jamietre/CsQuery/issues/189), [Issue #164](https://github.com/jamietre/CsQuery/issues/164) Fix for unreliable token index, indicated by occasional `OutOfRangeException`s and subsequent unreliable behaviour.
 - [Issue #104](https://github.com/jamietre/CsQuery/issues/104) `CQ.Data` method doesn't work for raw string values
 - [Issue #102](https://github.com/jamietre/CsQuery/issues/102)  &amp; [Issue #100](https://github.com/jamietre/CsQuery/issues/100) Incorrect document type handling
 - [Issue #82](https://github.com/jamietre/CsQuery/issues/82) `DomObject.Text` property not returning correct text when nested text nodes are present
