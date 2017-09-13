@@ -6,6 +6,7 @@ using System.Web;
 using System.IO;
 using CsQuery.HtmlParser;
 using CsQuery.Output;
+using CsQuery.Utility;
 
 namespace CsQuery.Implementation
 {
@@ -35,7 +36,7 @@ namespace CsQuery.Implementation
         public DomText(string nodeValue)
             : base()
         {
-            NodeValue = nodeValue;
+            _NodeValue = new FastString(nodeValue);
         }
 
 
@@ -43,7 +44,7 @@ namespace CsQuery.Implementation
         /// The inner node value; the text.
         /// </summary>
 
-        protected string _NodeValue;
+        protected readonly FastString _NodeValue;
        
 
         /// <summary>
@@ -77,12 +78,13 @@ namespace CsQuery.Implementation
         {
             get
             {
-                return _NodeValue ?? "";
+                return _NodeValue.Value ?? "";
             }
-            set
-            {
-                _NodeValue=value;
-            }
+        }
+
+        public override void AppendNodeValue(string text)
+        {
+            _NodeValue.AppendValue(text);
         }
 
         /// <summary>

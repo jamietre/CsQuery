@@ -90,8 +90,7 @@ namespace CsQuery.HtmlParser
             IDomText lastChild = parent.LastChild as IDomText;
             if (lastChild != null)
             {
-                lastChild.NodeValue += text;
-                
+                lastChild.AppendNodeValue(text);
             } else {
                 lastChild = Document.CreateTextNode(text);
                 parent.AppendChildUnsafe(lastChild);
@@ -374,7 +373,7 @@ namespace CsQuery.HtmlParser
                         && previousSibling.NodeType == NodeType.TEXT_NODE)
                 {
                     IDomText lastAsText = (IDomText)previousSibling;
-                    lastAsText.NodeValue += text;
+                    lastAsText.AppendNodeValue(text);
                     return;
                 }
                 parent.InsertBefore(Document.CreateTextNode(text), table);
@@ -385,7 +384,7 @@ namespace CsQuery.HtmlParser
             IDomText lastChild = stackParent.LastChild as IDomText;
             if (lastChild != null)
             {
-                lastChild.NodeValue += text;
+                lastChild.AppendNodeValue(text);
                 return;
             }
             else

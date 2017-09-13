@@ -599,10 +599,11 @@ namespace CsQuery.Implementation
             {
                 return null;
             }
-            set
-            {
-                throw new InvalidOperationException("You can't set NodeValue for this node type.");
-            }
+        }
+
+        public virtual void AppendNodeValue(string text)
+        {
+            throw new InvalidOperationException("You can't set NodeValue for this node type.");
         }
 
         /// <summary>
