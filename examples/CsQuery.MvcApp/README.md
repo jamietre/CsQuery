@@ -1,10 +1,10 @@
-##Sample MVC Application
+## Sample MVC Application
 
 This application contains a simple framework that lets you pipeline CsQuery into view rendering so you can perform manipulation of the HTML before it is finally rendered. This works by replacing the default view engine & controllers. The app shows a few things you can do with this.
 
 Instructions for using this are below. To see how it works, just to look at the example app, especially the `HomeController.cs` and `AboutController.cs` classes.
 
-####Configuration
+#### Configuration
 
 You'll need to copy several classes to your application. They are all found in the `CsQueryView` folder of the sample app:
 
@@ -19,7 +19,7 @@ Next, replace the default Razor engine with the CsQuery implementation, just add
     ViewEngines.Engines.Add(new CsQueryViewEngine());
 
 
-####Using It
+#### Using It
 
 To create a controller that can use CsQuery, just implement `ICsQueryController` in any controller. This exposes a new member of the controller:
 
